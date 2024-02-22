@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Routing;
@@ -8,7 +9,6 @@ using OrchardCore.Cors.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using System;
 using CorsService = OrchardCore.Cors.Services.CorsService;
 
 namespace OrchardCore.Cors

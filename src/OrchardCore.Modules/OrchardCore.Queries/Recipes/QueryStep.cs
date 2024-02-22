@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -16,15 +18,18 @@ namespace OrchardCore.Queries.Recipes
     {
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
         public QueryStep(
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             ILogger<QueryStep> logger)
         {
             _queryManager = queryManager;
             _querySources = querySources;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _logger = logger;
         }
 
@@ -35,7 +40,7 @@ namespace OrchardCore.Queries.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<QueryStepModel>();
+            var model = context.Step.ToObject<QueryStepModel>(_jsonSerializerOptions);
 
             foreach (var token in model.Queries.Cast<JsonObject>())
             {
@@ -49,7 +54,7 @@ namespace OrchardCore.Queries.Recipes
                     continue;
                 }
 
-                var query = token.ToObject(sample.GetType()) as Query;
+                var query = token.ToObject(sample.GetType(), _jsonSerializerOptions) as Query;
                 await _queryManager.SaveQueryAsync(query.Name, query);
             }
         }

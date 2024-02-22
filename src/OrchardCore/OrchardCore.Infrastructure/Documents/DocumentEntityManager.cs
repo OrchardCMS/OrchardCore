@@ -12,7 +12,10 @@ namespace OrchardCore.Documents
     {
         private readonly IDocumentManager<TDocumentEntity> _documentManager;
 
-        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager) => _documentManager = documentManager;
+        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager)
+        {
+            _documentManager = documentManager;
+        }
 
         public async Task<T> GetAsync<T>(string key) where T : new()
         {
