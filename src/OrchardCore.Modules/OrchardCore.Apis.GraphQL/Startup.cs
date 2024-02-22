@@ -1,9 +1,7 @@
 using System;
-using System.Text.Json;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
-using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -11,13 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.Apis.GraphQL.Controllers;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -25,12 +20,10 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
         private readonly IHostEnvironment _hostingEnvironment;
 
-        public Startup(IOptions<AdminOptions> adminOptions, IHostEnvironment hostingEnvironment)
+        public Startup(IHostEnvironment hostingEnvironment)
         {
-            _adminOptions = adminOptions.Value;
             _hostingEnvironment = hostingEnvironment;
         }
 
@@ -85,13 +78,6 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "GraphQL",
-                areaName: "OrchardCore.Apis.GraphQL",
-                pattern: _adminOptions.AdminUrlPrefix + "/GraphQL",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
-            );
-
             app.UseMiddleware<GraphQLMiddleware>();
         }
     }

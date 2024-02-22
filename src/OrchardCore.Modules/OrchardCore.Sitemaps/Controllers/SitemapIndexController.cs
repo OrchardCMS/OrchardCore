@@ -21,7 +21,7 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    [Admin]
+    [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
     public class SitemapIndexController : Controller
     {
         private const string _optionsSearch = "Options.Search";

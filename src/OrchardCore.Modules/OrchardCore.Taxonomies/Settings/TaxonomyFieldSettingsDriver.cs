@@ -21,8 +21,7 @@ namespace OrchardCore.Taxonomies.Settings
                 model.Unique = settings.Unique;
                 model.LeavesOnly = settings.LeavesOnly;
                 model.Open = settings.Open;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

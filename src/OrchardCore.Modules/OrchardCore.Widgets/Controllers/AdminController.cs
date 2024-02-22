@@ -1,6 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -10,6 +10,7 @@ using OrchardCore.Widgets.ViewModels;
 
 namespace OrchardCore.Widgets.Controllers
 {
+    [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
