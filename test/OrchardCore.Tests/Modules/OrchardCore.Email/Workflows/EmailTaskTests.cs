@@ -1,5 +1,5 @@
 using OrchardCore.Email;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -67,8 +67,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
 
             var resolver = new Mock<IEmailProviderResolver>();
+#pragma warning disable CA2012 // Use ValueTasks correctly
             resolver.Setup(x => x.GetAsync(It.IsAny<string>()))
                 .Returns(ValueTask.FromResult<IEmailProvider>(smtp));
+#pragma warning restore CA2012 // Use ValueTasks correctly
 
             var emailService = new Mock<IEmailService>();
 

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Core.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
@@ -32,7 +32,7 @@ public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailPr
     {
         var typeOptions = new EmailProviderTypeOptions(typeof(AzureEmailProvider))
         {
-            IsEnabled = _azureOptions.ConfigurationExists(),
+            IsEnabled = _azureOptions.IsEnabled,
         };
 
         options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);

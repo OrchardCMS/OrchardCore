@@ -2,7 +2,7 @@ using System;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Email.Core.Services;
 
 public class EmailProviderOptions
 {

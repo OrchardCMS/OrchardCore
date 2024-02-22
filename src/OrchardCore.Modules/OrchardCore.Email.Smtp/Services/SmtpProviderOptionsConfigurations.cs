@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Core.Services;
 
 namespace OrchardCore.Email.Smtp.Services;
 

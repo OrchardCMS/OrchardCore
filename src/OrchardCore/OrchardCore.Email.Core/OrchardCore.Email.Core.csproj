@@ -9,7 +9,6 @@
       Core implementation of Email Module.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Email</PackageTags>
-    <RootNamespace>OrchardCore.Email</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

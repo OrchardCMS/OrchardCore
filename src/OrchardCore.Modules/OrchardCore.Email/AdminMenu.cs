@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Controllers;
+using OrchardCore.Email.Core;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 

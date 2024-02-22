@@ -28,6 +28,7 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
             .GetResult()
             .As<AzureEmailSettings>();
 
+        options.IsEnabled = settings.IsEnabled;
         options.DefaultSender = settings.DefaultSender;
 
         if (!string.IsNullOrEmpty(settings.ConnectionString))

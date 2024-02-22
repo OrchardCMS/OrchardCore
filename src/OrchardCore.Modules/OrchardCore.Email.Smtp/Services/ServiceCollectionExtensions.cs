@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 

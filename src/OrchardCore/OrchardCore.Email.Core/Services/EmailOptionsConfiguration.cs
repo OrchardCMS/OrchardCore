@@ -1,8 +1,8 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Email.Core.Services;
 
 public class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
 {
@@ -32,7 +32,8 @@ public class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
 
         if (_emailProviderOptions.Providers.Count > 0)
         {
-            options.DefaultProviderName = _emailProviderOptions.Providers.Where(x => x.Value.IsEnabled)
+            options.DefaultProviderName = _emailProviderOptions.Providers
+                .Where(x => x.Value.IsEnabled)
                 .Select(x => x.Key)
                 .LastOrDefault()
                 ?? _emailProviderOptions.Providers.Keys.Last();

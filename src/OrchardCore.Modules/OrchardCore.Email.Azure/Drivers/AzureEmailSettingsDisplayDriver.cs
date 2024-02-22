@@ -12,6 +12,7 @@ using OrchardCore.Email;
 using OrchardCore.Email.Azure;
 using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Azure.ViewModels;
+using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -91,6 +92,8 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             var hasChanges = model.IsEnabled != settings.IsEnabled;
 
+            settings.IsEnabled = model.IsEnabled;
+
             if (!model.IsEnabled)
             {
                 if (hasChanges && emailSettings.DefaultProviderName == AzureEmailProvider.TechnicalName)
@@ -99,13 +102,9 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
                     site.Put(emailSettings);
                 }
-
-                settings.IsEnabled = false;
             }
             else
             {
-                settings.IsEnabled = true;
-
                 hasChanges |= model.DefaultSender != settings.DefaultSender;
 
                 if (string.IsNullOrEmpty(model.DefaultSender))

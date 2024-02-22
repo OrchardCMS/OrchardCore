@@ -7,33 +7,26 @@ public interface IEmailServiceEvents
     /// <summary>
     /// This event is triggered during the email validation and before sending the message.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="context"></param>
     Task ValidatingAsync(MailMessage message, MailMessageValidationContext context);
 
     /// <summary>
     /// After the email validation process is concluded, this event is activated.
     /// It will be triggered regardless of whether the validation was successful or not.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="context"></param>
     Task ValidatedAsync(MailMessage message, MailMessageValidationContext context);
 
     /// <summary>
     /// This event is triggered before sending the email via the email provider.
     /// </summary>
-    /// <param name="message"></param>
     Task SendingAsync(MailMessage message);
 
     /// <summary>
     /// This event is triggered after the email was successfully sent.
     /// </summary>
-    /// <param name="message"></param>
     Task SentAsync(MailMessage message);
 
     /// <summary>
     /// This event is triggered if the email fails to send.
     /// </summary>
-    /// <param name="message"></param>
     Task FailedAsync(MailMessage message);
 }

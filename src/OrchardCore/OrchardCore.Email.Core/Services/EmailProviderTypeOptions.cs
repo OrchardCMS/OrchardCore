@@ -1,6 +1,6 @@
 using System;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Email.Core.Services;
 
 public class EmailProviderTypeOptions
 {
