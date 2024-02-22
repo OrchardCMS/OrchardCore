@@ -622,6 +622,7 @@ dotnet_diagnostic.S881.severity = warning
 # StyleCop.Analyzers rules
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1000.severity = silent # Check later as warning.
+dotnet_diagnostic.SA1008.severity = silent # Check later as warning.
 dotnet_diagnostic.SA1009.severity = none
 dotnet_diagnostic.SA1011.severity = silent # Check later as warning.
 dotnet_diagnostic.SA1012.severity = silent # Check later as warning.
