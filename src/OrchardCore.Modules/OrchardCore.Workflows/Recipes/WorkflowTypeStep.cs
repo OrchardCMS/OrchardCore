@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Workflows.Http.Activities;
@@ -19,15 +21,18 @@ namespace OrchardCore.Workflows.Recipes
     {
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly ISecurityTokenService _securityTokenService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IUrlHelper _urlHelper;
 
         public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
             ISecurityTokenService securityTokenService,
             IActionContextAccessor actionContextAccessor,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IUrlHelperFactory urlHelperFactory)
         {
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
 
@@ -42,7 +47,7 @@ namespace OrchardCore.Workflows.Recipes
 
             foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var workflow = token.ToObject<WorkflowType>();
+                var workflow = token.ToObject<WorkflowType>(_jsonSerializerOptions);
 
                 foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                 {

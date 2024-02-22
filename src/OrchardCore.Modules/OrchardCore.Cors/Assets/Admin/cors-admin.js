@@ -24,14 +24,14 @@ var optionsList = Vue.component('options-list',
 
 var policyDetails = Vue.component('policy-details',
     {
-        components: { optionsList : optionsList },
+        components: { optionsList: optionsList },
         props: ['policy'],
         template: '#policy-details'
     });
 
 var corsApp = new Vue({
     el: '#corsAdmin',
-    components: { policyDetails : policyDetails, optionsList : optionsList },
+    components: { policyDetails: policyDetails, optionsList: optionsList },
     data: {
         selectedPolicy: null,
         policies: null,
@@ -70,24 +70,26 @@ var corsApp = new Vue({
             if (policy.isDefaultPolicy) {
                 this.policies.forEach(p => p.isDefaultPolicy = false);
             }
-            if (policy.OriginalName) {
+
+            if (policy.originalName) {
                 var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.name === policy.originalName);
                 this.policies[policyIndex] = policy;
             }
             else {
                 this.policies.push(policy);
             }
+
             this.save();
             this.back();
         },
         save: function () {
-            document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+            document.getElementById('corsSettings').value = JSON.stringify(this.policies);
             document.getElementById('corsForm').submit();
         },
         back: function () {
             this.selectedPolicy = null;
         },
-        searchBox: function() {
+        searchBox: function () {
             var searchBox = $('#search-box');
 
             // On Enter, edit the item if there is a single one
@@ -121,9 +123,8 @@ var corsApp = new Vue({
                         var found = text.indexOf(search) > -1;
                         $(this).toggle(found);
 
-                        if(found)
-                        {
-                            intVisible++; 
+                        if (found) {
+                            intVisible++;
                         }
                     });
 

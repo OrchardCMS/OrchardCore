@@ -16,8 +16,7 @@ namespace OrchardCore.Taxonomies.Settings
                 var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldTagsEditorSettings>();
 
                 model.Open = settings.Open;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
