@@ -17,7 +17,7 @@ namespace OrchardCore.ContentFields.GraphQL
 {
     public class UserPickerFieldQueryObjectType : ObjectGraphType<UserPickerField>
     {
-        public UserPickerFieldQueryObjectType()
+        public UserPickerFieldQueryObjectType(UserType userType)
         {
             Name = nameof(UserPickerField);
 
@@ -30,6 +30,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 });
 
             Field<ListGraphType<UserType>, IEnumerable<User>>("users")
+                .Type(new ListGraphType(userType))
                 .Description("the user items")
                 .PagingArguments()
                 .ResolveAsync(x =>
@@ -41,6 +42,7 @@ namespace OrchardCore.ContentFields.GraphQL
                     });
                 });
             Field<UserType, User>("user")
+                .Type(userType)
                 .Description("the first user")
                 .ResolveAsync(x =>
                 {
