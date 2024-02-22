@@ -456,7 +456,14 @@ dotnet_diagnostic.S106.severity = warning
 dotnet_diagnostic.S107.severity = silent # Check later as warning.
 dotnet_diagnostic.S108.severity = silent # Check later as warning.
 dotnet_diagnostic.S112.severity = silent # Check later as warning.
+# Covered by SA1518.
+dotnet_diagnostic.S113.severity = none
 dotnet_diagnostic.S125.severity = silent # Check later as warning.
+dotnet_diagnostic.S127.severity = warning
+dotnet_diagnostic.S131.severity = silent # Check later as warning.
+dotnet_diagnostic.S134.severity = silent # Check later as warning.
+dotnet_diagnostic.S881.severity = warning
+dotnet_diagnostic.S927.severity = silent # Check later as warning.
 dotnet_diagnostic.S1006.severity = silent # Check later as warning.
 dotnet_diagnostic.S1066.severity = silent # Check later as warning.
 dotnet_diagnostic.S1075.severity = none
@@ -467,9 +474,6 @@ dotnet_diagnostic.S1117.severity = silent # Check later as warning.
 dotnet_diagnostic.S1118.severity = silent # Check later as warning.
 dotnet_diagnostic.S1121.severity = silent # Check later as warning.
 dotnet_diagnostic.S1125.severity = silent # Check later as warning.
-# Covered by SA1518.
-dotnet_diagnostic.S113.severity = none
-dotnet_diagnostic.S927.severity = silent # Check later as warning.
 dotnet_diagnostic.S1133.severity = none
 dotnet_diagnostic.S1135.severity = silent # Check later as warning.
 dotnet_diagnostic.S1144.severity = silent # Check later as warning.
@@ -486,10 +490,7 @@ dotnet_diagnostic.S1226.severity = silent # Check later as warning.
 dotnet_diagnostic.S1227.severity = silent # Check later as warning.
 dotnet_diagnostic.S1244.severity = warning
 dotnet_diagnostic.S1264.severity = silent # Check later as warning.
-dotnet_diagnostic.S127.severity = warning
 dotnet_diagnostic.S1301.severity = silent # Check later as warning.
-dotnet_diagnostic.S131.severity = silent # Check later as warning.
-dotnet_diagnostic.S134.severity = silent # Check later as warning.
 dotnet_diagnostic.S1450.severity = silent # Check later as warning.
 dotnet_diagnostic.S1481.severity = silent # Check later as warning.
 dotnet_diagnostic.S1643.severity = silent # Check later as warning.
@@ -617,7 +618,6 @@ dotnet_diagnostic.S6603.severity = silent # Check later as warning.
 dotnet_diagnostic.S6605.severity = silent # Check later as warning.
 dotnet_diagnostic.S6608.severity = silent # Check later as warning.
 dotnet_diagnostic.S6612.severity = silent # Check later as warning.
-dotnet_diagnostic.S881.severity = warning
 
 # StyleCop.Analyzers rules
 dotnet_diagnostic.SA0001.severity = none
