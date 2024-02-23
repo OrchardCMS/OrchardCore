@@ -1,11 +1,6 @@
 using System;
 using Fluid;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.ContentFields.Controllers;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Handlers;
@@ -21,19 +16,11 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.ContentFields
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -154,28 +141,11 @@ namespace OrchardCore.ContentFields
             // Migration, can be removed in a future release.
             services.AddDataMigration<Migrations>();
         }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ContentPicker",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchContentItems",
-                defaults: new { controller = typeof(ContentPickerAdminController).ControllerName(), action = nameof(ContentPickerAdminController.SearchContentItems) }
-            );
-        }
     }
 
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public LocalizationSetContentPickerStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentField<LocalizationSetContentPickerField>()
@@ -185,16 +155,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
         }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "SearchLocalizationSets",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchLocalizationSets",
-                defaults: new { controller = typeof(LocalizationSetContentPickerAdminController).ControllerName(), action = nameof(LocalizationSetContentPickerAdminController.SearchLocalizationSets) }
-            );
-        }
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL")]
@@ -202,7 +162,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
+            services.AddDataMigration<Indexing.SQL.Migrations>();
             services.AddScopedIndexProvider<TextFieldIndexProvider>();
             services.AddScopedIndexProvider<BooleanFieldIndexProvider>();
             services.AddScopedIndexProvider<NumericFieldIndexProvider>();
@@ -219,13 +179,6 @@ namespace OrchardCore.ContentFields
     [RequireFeatures("OrchardCore.Users")]
     public class UserPickerStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public UserPickerStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -236,23 +189,13 @@ namespace OrchardCore.ContentFields
             });
 
             services.AddContentField<UserPickerField>()
-                .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
-                .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => string.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
                 .AddHandler<UserPickerFieldHandler>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
             services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "SearchUsers",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchUsers",
-                defaults: new { controller = typeof(UserPickerAdminController).ControllerName(), action = nameof(UserPickerAdminController.SearchUsers) }
-            );
         }
     }
 
@@ -261,7 +204,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, UserPickerMigrations>();
+            services.AddDataMigration<UserPickerMigrations>();
             services.AddScopedIndexProvider<UserPickerFieldIndexProvider>();
         }
     }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,24 +21,25 @@ namespace OrchardCore.ContentLocalization.GraphQL
             Field(x => x.Culture).Description(S["The culture for your content item."]);
             Field(x => x.LocalizationSet).Description(S["The localization set for your content item."]);
 
-            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
-                .Name("Localizations")
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("Localizations")
                 .Description(S["The localizations of the content item."])
-                .Argument<StringGraphType, string>("culture", "the culture of the content item")
-                .ResolveLockedAsync(async ctx =>
-               {
-                   var culture = ctx.GetArgument<string>("culture");
-                   var contentLocalizationManager = ctx.RequestServices.GetService<IContentLocalizationManager>();
+                .Argument<StringGraphType>("culture", "the culture of the content item")
+                .ResolveLockedAsync(GetContentItemsByLocalizationSetAsync);
+        }
 
-                   if (culture != null)
-                   {
-                       var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
+        private static async ValueTask<IEnumerable<ContentItem>> GetContentItemsByLocalizationSetAsync(IResolveFieldContext<LocalizationPart> context)
+        {
+            var culture = context.GetArgument<string>("culture");
+            var contentLocalizationManager = context.RequestServices.GetService<IContentLocalizationManager>();
 
-                       return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
-                   }
+            if (culture != null)
+            {
+                var contentItem = await contentLocalizationManager.GetContentItemAsync(context.Source.LocalizationSet, culture);
 
-                   return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);
-               });
+                return contentItem != null ? new[] { contentItem } : [];
+            }
+
+            return await contentLocalizationManager.GetItemsForSetAsync(context.Source.LocalizationSet);
         }
     }
 }

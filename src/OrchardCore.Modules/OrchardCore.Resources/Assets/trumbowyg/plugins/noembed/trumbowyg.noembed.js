@@ -24,9 +24,9 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
-            sl: {
+            az: {
                 noembed: 'Noembed',
-                noembedError: 'Napaka'
+                noembedError: 'Xəta'
             },
             by: {
                 noembedError: 'Памылка'
@@ -61,6 +61,10 @@
             },
             ru: {
                 noembedError: 'Ошибка'
+            },
+            sl: {
+                noembed: 'Noembed',
+                noembedError: 'Napaka'
             },
             sk: {
                 noembedError: 'Chyba'

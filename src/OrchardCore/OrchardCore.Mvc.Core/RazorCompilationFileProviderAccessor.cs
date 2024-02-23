@@ -12,10 +12,7 @@ namespace OrchardCore.Mvc
 
         public RazorCompilationFileProviderAccessor(IOptions<MvcRazorRuntimeCompilationOptions> options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(options);
 
             _options = options.Value;
         }
@@ -24,10 +21,7 @@ namespace OrchardCore.Mvc
         {
             get
             {
-                if (_compositeFileProvider == null)
-                {
-                    _compositeFileProvider = GetCompositeFileProvider(_options);
-                }
+                _compositeFileProvider ??= GetCompositeFileProvider(_options);
 
                 return _compositeFileProvider;
             }

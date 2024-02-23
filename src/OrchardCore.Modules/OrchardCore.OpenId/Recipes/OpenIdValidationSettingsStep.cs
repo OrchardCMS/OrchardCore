@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -14,12 +15,15 @@ namespace OrchardCore.OpenId.Recipes
     {
         private readonly IOpenIdValidationService _validationService;
 
-        public OpenIdValidationSettingsStep(IOpenIdValidationService validationService)
-            => _validationService = validationService;
+        public OpenIdValidationSettingsStep(
+            IOpenIdValidationService validationService)
+        {
+            _validationService = validationService;
+        }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

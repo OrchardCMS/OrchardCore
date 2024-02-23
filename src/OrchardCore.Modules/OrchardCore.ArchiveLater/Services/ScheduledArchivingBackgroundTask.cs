@@ -20,7 +20,7 @@ namespace OrchardCore.ArchiveLater.Services;
     Description = "Archives content items when their scheduled archive date time arrives.")]
 public class ScheduledArchivingBackgroundTask : IBackgroundTask
 {
-    private readonly ILogger<ScheduledArchivingBackgroundTask> _logger;
+    private readonly ILogger _logger;
     private readonly IClock _clock;
 
     public ScheduledArchivingBackgroundTask(ILogger<ScheduledArchivingBackgroundTask> logger, IClock clock)

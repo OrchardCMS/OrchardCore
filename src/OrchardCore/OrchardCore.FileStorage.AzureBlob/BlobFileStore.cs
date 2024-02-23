@@ -37,7 +37,7 @@ namespace OrchardCore.FileStorage.AzureBlob
     /// </remarks>
     public class BlobFileStore : IFileStore
     {
-        private const string _directoryMarkerFileName = "OrchardCore.Media.txt";
+        private const string DirectoryMarkerFileName = "OrchardCore.Media.txt";
 
         private readonly BlobStorageOptions _options;
         private readonly IClock _clock;
@@ -53,7 +53,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
 
-            if (!String.IsNullOrEmpty(_options.BasePath))
+            if (!string.IsNullOrEmpty(_options.BasePath))
             {
                 _basePrefix = NormalizePrefix(_options.BasePath);
             }
@@ -84,7 +84,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             try
             {
-                if (path == String.Empty)
+                if (path == string.Empty)
                 {
                     return new BlobDirectory(path, _clock.UtcNow);
                 }
@@ -135,9 +135,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                 if (blob.IsPrefix)
                 {
                     var folderPath = blob.Prefix;
-                    if (!String.IsNullOrEmpty(_basePrefix))
+                    if (!string.IsNullOrEmpty(_basePrefix))
                     {
-                        folderPath = folderPath.Substring(_basePrefix.Length - 1);
+                        folderPath = folderPath[(_basePrefix.Length - 1)..];
                     }
 
                     folderPath = folderPath.Trim('/');
@@ -146,8 +146,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                 else
                 {
                     var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+
                     // Ignore directory marker files.
-                    if (itemName != _directoryMarkerFileName)
+                    if (itemName != DirectoryMarkerFileName)
                     {
                         var itemPath = this.Combine(path?.Trim('/'), itemName);
                         yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
@@ -173,24 +174,29 @@ namespace OrchardCore.FileStorage.AzureBlob
                 // We can infer a hierarchy by examining the paths returned for the file contents
                 // and evaluate whether a directory exists and should be added to the results listing.
                 var directory = Path.GetDirectoryName(name);
+
                 // Strip base folder from directory name.
-                if (!String.IsNullOrEmpty(_basePrefix))
+                if (!string.IsNullOrEmpty(_basePrefix))
                 {
-                    directory = directory.Substring(_basePrefix.Length - 1);
+                    directory = directory[(_basePrefix.Length - 1)..];
                 }
+
                 // Do not include root folder, or current path, or multiple folders in folder listing.
-                if (!String.IsNullOrEmpty(directory) && !directories.Contains(directory) && (String.IsNullOrEmpty(path) ? true : !directory.EndsWith(path)))
+                if (!string.IsNullOrEmpty(directory) &&
+                    !directories.Contains(directory) &&
+                    (string.IsNullOrEmpty(path) ||
+                    !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
                     yield return new BlobDirectory(directory, _clock.UtcNow);
                 }
 
                 // Ignore directory marker files.
-                if (!name.EndsWith(_directoryMarkerFileName))
+                if (!name.EndsWith(DirectoryMarkerFileName))
                 {
-                    if (!String.IsNullOrEmpty(_basePrefix))
+                    if (!string.IsNullOrEmpty(_basePrefix))
                     {
-                        name = name.Substring(_basePrefix.Length - 1);
+                        name = name[(_basePrefix.Length - 1)..];
                     }
                     yield return new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified);
                 }
@@ -247,14 +253,14 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             try
             {
-                if (String.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                 {
                     throw new FileStoreException("Cannot delete the root directory.");
                 }
 
                 var blobsWereDeleted = false;
                 var prefix = this.Combine(_basePrefix, path);
-                prefix = this.NormalizePrefix(prefix);
+                prefix = NormalizePrefix(prefix);
 
                 var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
                 await foreach (var blob in page)
@@ -319,6 +325,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 while (properties.Value.CopyStatus == CopyStatus.Pending)
                 {
                     await Task.Delay(250);
+
                     // Need to fetch properties or CopyStatus will never update.
                     properties = await newBlob.GetPropertiesAsync();
                 }
@@ -429,24 +436,22 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private async Task CreateDirectoryAsync(string path)
         {
-            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+            var placeholderBlob = GetBlobReference(this.Combine(path, DirectoryMarkerFileName));
 
             // Create a directory marker file to make this directory appear when listing directories.
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it.")))
-            {
-                await placeholderBlob.UploadAsync(stream);
-            }
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it."));
+            await placeholderBlob.UploadAsync(stream);
         }
 
         /// <summary>
         /// Blob prefix requires a trailing slash except when loading the root of the container.
         /// </summary>
-        private string NormalizePrefix(string prefix)
+        private static string NormalizePrefix(string prefix)
         {
             prefix = prefix.Trim('/') + '/';
             if (prefix.Length == 1)
             {
-                return String.Empty;
+                return string.Empty;
             }
             else
             {

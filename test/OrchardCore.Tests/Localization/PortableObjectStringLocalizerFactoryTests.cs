@@ -10,7 +10,9 @@ namespace OrchardCore.Tests.Localization
 
         public class PortableObjectStringLocalizerFactory
         {
+#pragma warning disable CA1822 // Mark members as static
             public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
             {
                 services.AddMvc();
                 services.AddLocalization();
@@ -18,7 +20,9 @@ namespace OrchardCore.Tests.Localization
                 services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, StubPoFileLocationProvider>());
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public void Configure(
+#pragma warning restore CA1822 // Mark members as static
                 IApplicationBuilder app,
                 IStringLocalizer<Model> localizer)
             {

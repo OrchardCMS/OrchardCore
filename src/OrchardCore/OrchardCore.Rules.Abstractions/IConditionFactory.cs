@@ -8,13 +8,13 @@ namespace OrchardCore.Rules
 
     public class ConditionFactory<TCondition> : IConditionFactory where TCondition : Condition, new()
     {
-        private static readonly string TypeName = typeof(TCondition).Name;
-        public string Name => TypeName;
+        private static readonly string _typeName = typeof(TCondition).Name;
+        public string Name => _typeName;
 
         public Condition Create()
             => new TCondition()
             {
-                Name = this.Name
+                Name = Name,
             };
     }
 }

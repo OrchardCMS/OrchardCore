@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
@@ -26,10 +26,11 @@ namespace OrchardCore.Taxonomies.Indexing
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public TaxonomyIndexProvider(IServiceProvider serviceProvider)
+        public TaxonomyIndexProvider(
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
@@ -37,7 +38,7 @@ namespace OrchardCore.Taxonomies.Indexing
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<TaxonomyIndex>()
-                .Map(contentItem =>
+                .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
                     if (!contentItem.Published && !contentItem.Latest)
@@ -55,7 +56,7 @@ namespace OrchardCore.Taxonomies.Indexing
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                     if (contentTypeDefinition == null)
@@ -80,21 +81,19 @@ namespace OrchardCore.Taxonomies.Indexing
                     // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
+                        var jPart = contentItem.Content[fieldDefinition.PartDefinition.Name];
+                        if (jPart is null)
                         {
                             continue;
                         }
 
-                        var jField = jPart[fieldDefinition.Name] as JObject;
-
-                        if (jField == null)
+                        var jField = jPart[fieldDefinition.Name];
+                        if (jField is null)
                         {
                             continue;
                         }
 
-                        var field = jField.ToObject<TaxonomyField>();
+                        var field = ((JsonObject)jField).ToObject<TaxonomyField>();
 
                         foreach (var termContentItemId in field.TermContentItemIds)
                         {

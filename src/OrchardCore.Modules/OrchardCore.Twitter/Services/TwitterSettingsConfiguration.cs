@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services;
@@ -46,7 +45,7 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
 
         if ((_twitterSettingsService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("Twitter is not correctly configured.");
             }

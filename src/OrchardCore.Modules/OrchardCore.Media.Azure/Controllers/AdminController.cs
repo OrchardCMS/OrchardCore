@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Media.Azure.ViewModels;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
+    [Admin("MediaAzureBlob/{action}", "AzureBlob.{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

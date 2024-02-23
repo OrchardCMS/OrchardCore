@@ -1,67 +1,29 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services
 {
-    public class RedisService : ModularTenantEvents, IRedisService, IDisposable
+    public class RedisService : ModularTenantEvents, IRedisService
     {
+        private readonly IRedisDatabaseFactory _factory;
         private readonly RedisOptions _options;
-        private readonly ILogger _logger;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-
-        public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
+        public RedisService(IRedisDatabaseFactory factory, IOptions<RedisOptions> options)
         {
+            _factory = factory;
             _options = options.Value;
-            _logger = logger;
-
-            InstancePrefix = options.Value.InstancePrefix;
         }
 
-        public IConnectionMultiplexer Connection { get; private set; }
+        public IConnectionMultiplexer Connection => Database?.Multiplexer;
 
-        public string InstancePrefix { get; }
+        public string InstancePrefix => _options.InstancePrefix;
 
         public IDatabase Database { get; private set; }
 
         public override Task ActivatingAsync() => ConnectAsync();
 
-        public async Task ConnectAsync()
-        {
-            if (Database != null)
-            {
-                return;
-            }
-
-            await _semaphore.WaitAsync();
-
-            try
-            {
-                if (Database == null)
-                {
-                    Connection = await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions);
-
-                    Database = Connection.GetDatabase();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to connect to Redis.");
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        public void Dispose()
-        {
-            Connection?.Close();
-        }
+        public async Task ConnectAsync() => Database ??= await _factory.CreateAsync(_options);
     }
 }

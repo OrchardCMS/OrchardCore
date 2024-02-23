@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
@@ -46,7 +45,7 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
 
         if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("Google Authentication is not correctly configured.");
             }

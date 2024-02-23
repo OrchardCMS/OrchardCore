@@ -4,7 +4,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
+    var contentType = (await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType))?.DisplayName;
     var collapsed = !Model.Inline;
 
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
@@ -13,20 +13,20 @@
     }
 }
 
-<div class="widget widget-editor card@(collapsed ? " collapsed" : String.Empty)">
+<div class="widget widget-editor card@(collapsed ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove)
         {
-            <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
+            <div class="widget-editor-handle"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
         }
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-angle-down" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa-solid fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentType]
         @if (Model.CanDelete)
         {
             <div class="btn-group btn-group-sm float-end" role="group">
                 @* We don't render an Insert button as the container type is not known here *@
-                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
             </div>
         }
     </div>

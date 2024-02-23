@@ -10,9 +10,9 @@ namespace OrchardCore.AdminMenu.Services
 
     public class AdminNodeProviderFactory<TAdminNode> : IAdminNodeProviderFactory where TAdminNode : AdminNode, new()
     {
-        private static readonly string TypeName = typeof(TAdminNode).Name;
+        private static readonly string _typeName = typeof(TAdminNode).Name;
 
-        public string Name => TypeName;
+        public string Name => _typeName;
 
         public AdminNode Create()
         {

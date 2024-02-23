@@ -63,7 +63,7 @@ namespace OrchardCore.Documents
                 delegates.UpdateDelegateAsync += updateDelegate;
             }
 
-            if (afterUpdateAsync != null)
+            if (afterUpdateAsync is not null)
             {
                 var afterUpdateDelegate = new AfterUpdateDelegate(afterUpdateAsync);
                 if (delegates.Targets.Add(afterUpdateDelegate.Target))
@@ -92,16 +92,17 @@ namespace OrchardCore.Documents
                     document = await ((UpdateDelegate)d)();
                 }
 
-                if (document == null)
+                if (document is null)
                 {
                     return;
                 }
 
                 document.Identifier ??= IdGenerator.GenerateId();
 
+                // A volatile document can't be invalidated.
                 await SetInternalAsync(document);
 
-                if (delegates.AfterUpdateDelegateAsync != null)
+                if (delegates.AfterUpdateDelegateAsync is not null)
                 {
                     foreach (var d in delegates.AfterUpdateDelegateAsync.GetInvocationList())
                     {
@@ -115,7 +116,7 @@ namespace OrchardCore.Documents
         {
             public UpdateDelegate UpdateDelegateAsync;
             public AfterUpdateDelegate AfterUpdateDelegateAsync;
-            public HashSet<object> Targets = new();
+            public HashSet<object> Targets = [];
         }
     }
 }

@@ -17,7 +17,7 @@ else
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body p-3 text-end">
             <div class="btn-group">
                 <button type="submit" name="submit" class="btn btn-sm btn-primary save">@T["Save"]</button>
@@ -45,20 +45,20 @@ else
     <input type="hidden" asp-for="AdminTemplates" />
 
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the template."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"]</label>
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
         <input asp-for="Description" class="form-control" autofocus />
         <span class="hint">@T["The description of the template."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Content">
-        <label asp-for="Content">@T["Content"]</label>
+        <label asp-for="Content" class="form-label">@T["Content"]</label>
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
         <span asp-validation-for="Content"></span>
@@ -77,13 +77,13 @@ else
 
             ConfigureLiquidIntellisense(monaco);
 
-            var html = document.getElementsByTagName("html")[0];
+            var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')

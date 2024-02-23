@@ -4,7 +4,7 @@ namespace OrchardCore.Sitemaps
 {
     public class SitemapsOptions
     {
-        public RouteValueDictionary GlobalRouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary GlobalRouteValues { get; set; } = [];
         public string SitemapIdKey { get; set; } = "";
     }
 }

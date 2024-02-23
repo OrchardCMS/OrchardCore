@@ -16,14 +16,14 @@ namespace OrchardCore.AuditTrail.ViewModels
         public string Category { get; set; }
 
         /// <summary>
-        /// Event is a supported UI filter if a <see cref="CorrelationId"/> is provided from the route
+        /// Event is a supported UI filter if a <see cref="CorrelationId"/> is provided from the route.
         /// </summary>
         public string Event { get; set; }
         public string UserName { get; set; }
         public string CorrelationId { get; set; }
 
         /// <summary>
-        /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter
+        /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter.
         /// </summary>
         public bool CorrelationIdFromRoute { get; set; }
         public string Date { get; set; }
@@ -37,21 +37,21 @@ namespace OrchardCore.AuditTrail.ViewModels
         public QueryFilterResult<AuditTrailEvent> FilterResult { get; set; }
 
         [BindNever]
-        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary RouteValues { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Categories { get; set; } = [];
 
         /// <summary>
         /// Events for the current category when a <see cref="CorrelationId"/> is set from the route.
         /// </summary>
         [BindNever]
-        public List<SelectListItem> Events { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Events { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AuditTrailSorts { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AuditTrailSorts { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AuditTrailDates { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AuditTrailDates { get; set; } = [];
     }
 }

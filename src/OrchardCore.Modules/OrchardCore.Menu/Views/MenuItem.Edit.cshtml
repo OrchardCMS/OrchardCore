@@ -18,10 +18,10 @@
             }
         </div>
 
-        <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
+        <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
             @if (Model.Actions != null)
             {
-                <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
+                <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
                 </div>
             }
@@ -36,7 +36,7 @@
     }
 </div>
 
-@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+@if (!string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
 {
     @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
 }

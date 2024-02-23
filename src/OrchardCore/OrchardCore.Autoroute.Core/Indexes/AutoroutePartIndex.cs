@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -19,7 +19,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
         /// <summary>
         /// The id of the document.
         /// </summary>
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
 
         /// <summary>
         /// The container content item id.
@@ -55,8 +55,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = new();
-        private readonly HashSet<string> _partRemoved = new();
+        private readonly HashSet<ContentItem> _itemRemoved = [];
+        private readonly HashSet<string> _partRemoved = [];
         private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
@@ -92,8 +92,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for this part.
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
                 {
                     context.ContentItem.Remove<AutoroutePart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);
@@ -126,7 +126,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<AutoroutePart>();
-                    if (!partRemoved && String.IsNullOrEmpty(part?.Path))
+                    if (!partRemoved && string.IsNullOrEmpty(part?.Path))
                     {
                         return null;
                     }
@@ -134,8 +134,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled or was removed, a record is still added but with a null path.
-                        new AutoroutePartIndex
-                        {
+                        new() {
                             ContentItemId = contentItem.ContentItemId,
                             Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
@@ -152,19 +151,19 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
+                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
 
                     return results;
                 });
         }
 
-        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var items = accessor.Invoke(content);
 
-                foreach (JObject jItem in items)
+                foreach (var jItem in items.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -184,7 +183,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                             Published = containerContentItem.Published,
                             Latest = containerContentItem.Latest,
                             ContainedContentItemId = contentItem.ContentItemId,
-                            JsonPath = jItem.Path
+                            JsonPath = jItem.GetNormalizedPath(),
                         });
                     }
 

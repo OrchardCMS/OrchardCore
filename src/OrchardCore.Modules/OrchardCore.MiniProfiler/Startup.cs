@@ -35,7 +35,7 @@ namespace OrchardCore.MiniProfiler
 
             var store = serviceProvider.GetService<IStore>();
 
-            // Wrap the current factory with MiniProfilerConnectionFactory
+            // Wrap the current factory with MiniProfilerConnectionFactory.
             store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
         }
     }

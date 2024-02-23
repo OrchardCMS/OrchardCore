@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -19,6 +20,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Controllers
 {
+    [Admin("Roles/{action}/{id?}", "Roles{action}")]
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;
@@ -28,8 +30,8 @@ namespace OrchardCore.Roles.Controllers
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IDocumentStore documentStore,
@@ -96,12 +98,12 @@ namespace OrchardCore.Roles.Controllers
 
                 if (model.RoleName.Contains('/'))
                 {
-                    ModelState.AddModelError(String.Empty, S["Invalid role name."]);
+                    ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
-                    ModelState.AddModelError(String.Empty, S["The role is already used."]);
+                    ModelState.AddModelError(string.Empty, S["The role is already used."]);
                 }
             }
 
@@ -119,7 +121,7 @@ namespace OrchardCore.Roles.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(String.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
@@ -248,9 +250,9 @@ namespace OrchardCore.Roles.Controllers
                 {
                     var groupKey = GetGroupKey(feature, permission.Category);
 
-                    if (installedPermissions.ContainsKey(groupKey))
+                    if (installedPermissions.TryGetValue(groupKey, out var value))
                     {
-                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
+                        installedPermissions[groupKey] = value.Concat(new[] { permission });
 
                         continue;
                     }
@@ -264,12 +266,12 @@ namespace OrchardCore.Roles.Controllers
 
         private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
         {
-            if (!String.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(category))
             {
                 return new PermissionGroupKey(category, category);
             }
 
-            var title = String.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+            var title = string.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
 
             return new PermissionGroupKey(feature.Id, title)
             {
@@ -282,7 +284,7 @@ namespace OrchardCore.Roles.Controllers
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
             var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null);
+                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
 
             // Add role claims
             fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));
