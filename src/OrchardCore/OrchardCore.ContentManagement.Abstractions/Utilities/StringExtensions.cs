@@ -338,7 +338,17 @@ namespace OrchardCore.ContentManagement.Utilities
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 
-        public static string TrimEnd(this string source, string trimValue = "") => source.TrimEnd(trimValue.ToCharArray());
+        public static string TrimEnd(this string value, string trim = "")
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            return value.EndsWith(trim, StringComparison.Ordinal)
+                ? value[..^trim.Length]
+                : value;
+        }
 
         public static string ReplaceLastOccurrence(this string source, string searchedValue, string replacedValue)
         {
