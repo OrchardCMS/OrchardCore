@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
 {

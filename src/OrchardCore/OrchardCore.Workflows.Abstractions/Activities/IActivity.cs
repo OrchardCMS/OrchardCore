@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Activities
         string Name { get; }
         LocalizedString DisplayText { get; }
         LocalizedString Category { get; }
-        new JObject Properties { get; set; }
+        new JsonObject Properties { get; set; }
         bool HasEditor { get; }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// Called on each activity when a workflow is about to start.
         /// </summary>
-        Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when a workflow has started.
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// Called on each activity when a workflow is about to be resumed.
         /// </summary>
-        Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when a workflow is resumed.
@@ -64,9 +64,19 @@ namespace OrchardCore.Workflows.Activities
         Task OnWorkflowResumedAsync(WorkflowExecutionContext context);
 
         /// <summary>
+        /// Called on each activity when a workflow is about to be restarted.
+        /// </summary>
+        Task OnWorkflowRestartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Called on each activity when a workflow is restarted.
+        /// </summary>
+        Task OnWorkflowRestartedAsync(WorkflowExecutionContext context);
+
+        /// <summary>
         /// Called on each activity when an activity is about to be executed.
         /// </summary>
-        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when an activity has been executed.

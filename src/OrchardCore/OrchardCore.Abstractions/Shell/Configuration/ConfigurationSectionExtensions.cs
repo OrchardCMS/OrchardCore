@@ -37,7 +37,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             if (children.Count == 0)
             {
-                return JsonValue.Create<string>(null);
+                return null;
             }
 
             if (children[0].Key == "0")

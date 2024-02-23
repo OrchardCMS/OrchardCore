@@ -16,7 +16,7 @@ namespace OrchardCore.Themes.Services
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,
@@ -50,7 +50,7 @@ namespace OrchardCore.Themes.Services
                     : null;
             }
 
-            var currentTheme = await _siteThemeService.GetCurrentThemeNameAsync();
+            var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
 
             while (themes.Count > 0)
             {

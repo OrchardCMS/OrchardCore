@@ -50,14 +50,13 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BucketName = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty)
                 .Trim();
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage bucket name.");
-            throw;
         }
     }
 
@@ -69,14 +68,13 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BasePath = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty)
                 .Trim();
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage base path.");
-            throw;
         }
     }
 }

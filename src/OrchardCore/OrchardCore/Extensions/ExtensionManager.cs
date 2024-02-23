@@ -32,14 +32,11 @@ namespace OrchardCore.Environment.Extensions
         private Dictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
 
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
-
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
 
         private bool _isInitialized;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         public ExtensionManager(
             IApplicationContext applicationContext,
@@ -63,7 +60,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            if (!String.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
+            if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
             {
                 return extension.ExtensionInfo;
             }
@@ -130,7 +127,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return [];
                 }
 
                 var feature = entry.FeatureInfo;
@@ -147,7 +144,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return [];
                 }
 
                 var feature = entry.FeatureInfo;
@@ -360,7 +357,7 @@ namespace OrchardCore.Environment.Extensions
                         }
                         else
                         {
-                            featureTypes = Array.Empty<Type>();
+                            featureTypes = [];
                         }
 
                         loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));

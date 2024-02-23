@@ -27,12 +27,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellsFileStore>(sp =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
-                if (blobOptions == null)
-                {
-                    throw new ArgumentNullException(nameof(BlobShellStorageOptions),
-                        "The 'OrchardCore.Shells.Azure' configuration section must be defined");
-                }
+
+                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure")
+                    .Get<BlobShellStorageOptions>()
+                    ?? throw new Exception("The 'OrchardCore.Shells.Azure' configuration section must be defined");
 
                 var clock = sp.GetRequiredService<IClock>();
                 var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();

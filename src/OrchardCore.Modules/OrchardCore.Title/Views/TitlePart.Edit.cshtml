@@ -9,12 +9,12 @@
 }
 @if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
 {
-    <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Title">
-        <label asp-for="Title" class="@Orchard.GetLabelCssClasses()">@T["Title"]</label>
-        <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
+        <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
+        <div class="@Orchard.GetEndClasses()">
             <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
             <span asp-validation-for="Title"></span>
-            @if (!String.IsNullOrWhiteSpace(Model.Settings?.Pattern))
+            @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern))
             {
                 switch (Model.Settings?.Options)
                 {

@@ -1,4 +1,3 @@
-using System;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -70,12 +69,12 @@ namespace OrchardCore.Seo.Drivers
                 ["ContentItem"] = contentItem
             };
 
-            if (!String.IsNullOrEmpty(aspect.PageTitle))
+            if (!string.IsNullOrEmpty(aspect.PageTitle))
             {
                 _pageTitleBuilder.SetFixedTitle(new HtmlString(_htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.PageTitle, shortCodeContext))));
             }
 
-            if (!String.IsNullOrEmpty(aspect.MetaDescription))
+            if (!string.IsNullOrEmpty(aspect.MetaDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -84,7 +83,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.MetaKeywords))
+            if (!string.IsNullOrEmpty(aspect.MetaKeywords))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -93,7 +92,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.Canonical))
+            if (!string.IsNullOrEmpty(aspect.Canonical))
             {
                 _resourceManager.RegisterLink(new LinkEntry
                 {
@@ -102,7 +101,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.MetaRobots))
+            if (!string.IsNullOrEmpty(aspect.MetaRobots))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -123,7 +122,7 @@ namespace OrchardCore.Seo.Drivers
             }
 
             // OpenGraph.
-            if (!String.IsNullOrEmpty(aspect.OpenGraphType))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphType))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -132,7 +131,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphTitle))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphTitle))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -141,7 +140,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphDescription))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -150,7 +149,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphImage))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphImage))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -159,7 +158,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphImageAlt))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphImageAlt))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -168,7 +167,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphUrl))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphUrl))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -177,7 +176,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphSiteName))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphSiteName))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -186,7 +185,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphAppId))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphAppId))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -195,7 +194,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.OpenGraphLocale))
+            if (!string.IsNullOrEmpty(aspect.OpenGraphLocale))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -205,7 +204,7 @@ namespace OrchardCore.Seo.Drivers
             }
 
             // Twitter.
-            if (!String.IsNullOrEmpty(aspect.TwitterCard))
+            if (!string.IsNullOrEmpty(aspect.TwitterCard))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -214,7 +213,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterSite))
+            if (!string.IsNullOrEmpty(aspect.TwitterSite))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -223,7 +222,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterTitle))
+            if (!string.IsNullOrEmpty(aspect.TwitterTitle))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -232,7 +231,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterDescription))
+            if (!string.IsNullOrEmpty(aspect.TwitterDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -241,7 +240,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterImage))
+            if (!string.IsNullOrEmpty(aspect.TwitterImage))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -250,7 +249,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterImageAlt))
+            if (!string.IsNullOrEmpty(aspect.TwitterImageAlt))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -259,7 +258,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterCreator))
+            if (!string.IsNullOrEmpty(aspect.TwitterCreator))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -268,7 +267,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.TwitterUrl))
+            if (!string.IsNullOrEmpty(aspect.TwitterUrl))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
@@ -277,7 +276,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            if (!String.IsNullOrEmpty(aspect.GoogleSchema))
+            if (!string.IsNullOrEmpty(aspect.GoogleSchema))
             {
                 var json = await _shortcodeService.ProcessAsync(aspect.GoogleSchema, shortCodeContext);
 

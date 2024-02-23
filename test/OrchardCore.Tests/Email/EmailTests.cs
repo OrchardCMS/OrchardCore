@@ -230,7 +230,7 @@ namespace OrchardCore.Tests.Email
             Assert.Null(result.Response);
         }
 
-        private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
+        private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
 
@@ -263,7 +263,7 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static SmtpService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(settings);

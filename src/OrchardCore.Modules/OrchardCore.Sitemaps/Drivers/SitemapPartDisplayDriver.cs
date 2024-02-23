@@ -37,7 +37,7 @@ namespace OrchardCore.Sitemaps.Drivers
         }
 
 
-        private void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
+        private static void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
         {
             model.OverrideSitemapConfig = part.OverrideSitemapConfig;
             model.ChangeFrequency = part.ChangeFrequency;

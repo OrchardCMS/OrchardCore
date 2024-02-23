@@ -35,7 +35,7 @@ namespace OrchardCore.Data.Migration
         /// <inheritdocs />
         public override Task ActivatingAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (!_shellSettings.IsUninitialized())
             {
                 _logger.LogDebug("Executing data migrations for shell '{Name}'", _shellSettings.Name);
 

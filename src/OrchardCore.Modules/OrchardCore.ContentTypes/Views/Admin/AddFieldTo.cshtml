@@ -13,15 +13,15 @@
     @Html.ValidationSummary()
     <div class="mb-3">
         <div class="w-md-75 w-xl-50">
-            <label for="DisplayName">@T["Display Name"]</label>
+            <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
         </div>
         <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </div>
 
     <div class="mb-3">
-        <div class="w-sm-75 w-md-50 w-lg-25">
-            <label for="Name">@T["Technical Name"]</label>
+        <div class="w-sm-75 w-lg-75 w-xl-50">
+            <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" />
         </div>
         <span class="hint">@T["Technical name of the field."]</span>
@@ -29,10 +29,10 @@
 
     <div class="mb-3">
         <label for="DisplayName">@T["Field Type"]</label>
-        <ul class="list-group w-md-50">
+        <ul class="list-group w-sm-75 w-lg-75 w-xl-50">
             @for (var i = 0; i < Model.Fields.Count; i++)
             {
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-action">
                     <div class="form-check">
                         <input type="radio" class="form-check-input" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i])" value="@Model.Fields[i]" checked="@(i == 0)">
                         <label class="form-check-label" asp-for="Fields[i]">@Model.Fields[i].CamelFriendly()</label>
@@ -52,17 +52,17 @@
 </form>
 
 <script at="Foot">
-//<![CDATA[
-    $(function(){
+    //<![CDATA[
+    $(function () {
         var $name = $("#@Html.IdFor(m => m.Name)");
         var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
 
         var nameAltered;
-        $name.keypress(function() {
+        $name.keypress(function () {
             nameAltered = true;
         });
 
-        var compute = function() {
+        var compute = function () {
             // stop processing automatically if altered by the user
             if (nameAltered) {
                 return true;
@@ -74,5 +74,5 @@
         $displayName.keyup(compute);
         $displayName.blur(compute);
     })
-//]]>
+    //]]>
 </script>

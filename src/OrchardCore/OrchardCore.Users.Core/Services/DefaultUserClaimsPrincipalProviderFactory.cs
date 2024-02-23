@@ -10,7 +10,7 @@ using OrchardCore.Security;
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> allowing adding claims by implementing the <see cref="IUserClaimsProvider"/>
+    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> allowing adding claims by implementing the <see cref="IUserClaimsProvider"/>.
     /// </summary>
     public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {

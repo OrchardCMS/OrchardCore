@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private readonly IServiceCollection _innerServiceCollection;
 
-        private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
+        private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = [];
         private ServiceCollection _currentFeatureServiceCollection;
 
         public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection)
@@ -34,7 +34,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             if (!_featureServiceCollections.TryGetValue(feature, out _currentFeatureServiceCollection))
             {
-                _featureServiceCollections.Add(feature, _currentFeatureServiceCollection = new ServiceCollection());
+                _featureServiceCollections.Add(feature, _currentFeatureServiceCollection = []);
             }
         }
 

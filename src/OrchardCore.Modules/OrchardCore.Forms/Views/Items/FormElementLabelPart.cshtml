@@ -6,7 +6,7 @@
     var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
     var fieldName = formInputElementPart.Name;
-    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
 }
 
 @if (Model.Value.Option == LabelOptions.Standard)

@@ -83,9 +83,9 @@ With all _properties_ described as follows.
 |`Version`|`string`|Optional, recommended, semantic versioning text, defaults to `"0.0"`.|
 |`Dependencies`|`list`|Optional, semi-colon delimited list of _Module Identifier_ dependencies. <sup>3</sup>|
 |`Tags`|`list`|Optional, semi-colon delimited list of tags. <sup>3</sup>|
-|`DefaultTenant`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
-|`AlwaysEnabled`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
-|`EnabledByDependencyOnly`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to `false`.|
+|`DefaultTenant`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
+|`AlwaysEnabled`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
+|`EnabledByDependencyOnly`|`bool` <sup>1</sup>|Optional, Boolean, `true|false`, defaults to`false`.|
 
 <sup>[1] `MSBuild` relays all meta data as `string`, leaving authors to contend with either `string` or `object` type conversions i.e. either `int` or `bool`, which is fine for our purposes.</sup>
 <br/><sup>[2] Depending on the `Attribute` context, `ModuleAttribute` yields `"Module"`, `ThemeAttribute` yields `"Theme"` by default.</sup>

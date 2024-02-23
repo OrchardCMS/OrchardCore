@@ -21,8 +21,7 @@ Allows adding, editing and removing the registered applications.
 ## Authorization Server
 
 Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.  
-It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing.  
-Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.  
+It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
 
 - Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications.
 - Orchard Core services.
@@ -87,7 +86,7 @@ A sample of OpenID Connect Settings recipe step:
 
 ### Client OpenID Connect Apps Configuration
 
-OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature) 
+OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature)
 and also through a recipe step.
 
 OpenID Connect apps require the following configuration.
@@ -264,7 +263,7 @@ A sample of Token Validation Settings recipe step:
 
 ## OIDC Client
 
-Authenticates users from an external OpenID Connect identity provider. 
+Authenticates users from an external OpenID Connect identity provider.
 If the site allows to register new users, a local user is linked and the external login is linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
 

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement
 {
     public interface IContentItemIdGenerator
     {

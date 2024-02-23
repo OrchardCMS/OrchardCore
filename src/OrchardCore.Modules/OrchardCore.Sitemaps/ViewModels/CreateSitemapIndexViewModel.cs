@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         public bool Enabled { get; set; }
 
-        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = new ContainableSitemapEntryViewModel[] { };
+        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = [];
 
     }
 
@@ -23,4 +23,3 @@ namespace OrchardCore.Sitemaps.ViewModels
         public string Name { get; set; }
     }
 }
-

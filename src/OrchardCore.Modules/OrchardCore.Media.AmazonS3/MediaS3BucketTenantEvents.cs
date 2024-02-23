@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -18,7 +17,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     private readonly ShellSettings _shellSettings;
     private readonly AwsStorageOptions _options;
     private readonly IAmazonS3 _amazonS3Client;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public MediaS3BucketTenantEvents(
@@ -38,8 +37,8 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     public override async Task ActivatingAsync()
     {
         if (!_options.CreateBucket ||
-            _shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
-            String.IsNullOrEmpty(_options.BucketName))
+            _shellSettings.IsUninitialized() ||
+            string.IsNullOrEmpty(_options.BucketName))
         {
             return;
         }
@@ -97,7 +96,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
 
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (!_options.RemoveBucket || String.IsNullOrEmpty(_options.BucketName))
+        if (!_options.RemoveBucket || string.IsNullOrEmpty(_options.BucketName))
         {
             return;
         }

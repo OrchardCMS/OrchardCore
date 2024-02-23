@@ -9,11 +9,11 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class BindModelStateTask : TaskActivity
+    public class BindModelStateTask : TaskActivity<BindModelStateTask>
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public BindModelStateTask(
             IHttpContextAccessor httpContextAccessor,
@@ -26,8 +26,6 @@ namespace OrchardCore.Forms.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(BindModelStateTask);
-
         public override LocalizedString DisplayText => S["Bind Model State Task"];
 
         public override LocalizedString Category => S["Validation"];
@@ -39,12 +37,8 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var updater = _updateModelAccessor.ModelUpdater;
-
-            if (updater == null)
-            {
-                throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
-            }
+            var updater = _updateModelAccessor.ModelUpdater
+                ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
 
             var httpContext = _httpContextAccessor.HttpContext;
 

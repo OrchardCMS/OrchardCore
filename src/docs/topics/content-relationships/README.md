@@ -26,7 +26,6 @@ Content Picker Field can be used to select one or more arbitrary other content i
 !!! example
     In the product catalog of an e-commerce website, you could have bundles of products: One can buy the individual products as well, but a bundle is a special offer. The products can be selected for the bundle with Content Picker Field. Similarly, in a blog, you can use Content Picker Field to select related blog posts, and thus display a recommended selection of further reading under each post.
 
-
 The editor of a product bundle item, with products selected:
 
 ![The editor of a product bundle item, with products selected.](images/product-bundle.jpg)
@@ -62,7 +61,6 @@ The Taxonomies module is about categorizing and tagging content items with Terms
 
 !!! example
     Tags of blog posts and categories of news articles can use Taxonomies. Terms can also be in a hierarchy, so e.g. categories can have sub-categories. Check out how the Blog Post content type is modeled in the [Blog recipe](../../getting-started/starter-recipes.md#theblogtheme-and-blog-recipe).
-
 
 Tags and category Taxonomy Terms under a Blog Post content item:
 

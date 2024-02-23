@@ -14,10 +14,7 @@ namespace OrchardCore.Modules
     {
         private readonly IApplicationContext _applicationContext;
 
-        public ModuleEmbeddedStaticFileProvider(IApplicationContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        public ModuleEmbeddedStaticFileProvider(IApplicationContext applicationContext) => _applicationContext = applicationContext;
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
@@ -41,13 +38,13 @@ namespace OrchardCore.Modules
                 var application = _applicationContext.Application;
 
                 // Resolve the module id.
-                var module = path.Substring(0, index);
+                var module = path[..index];
 
                 // Check if it is an existing module.
                 if (application.Modules.Any(m => m.Name == module))
                 {
                     // Resolve the embedded file subpath: "wwwroot/**/*.*"
-                    var fileSubPath = Module.WebRoot + path.Substring(index + 1);
+                    var fileSubPath = Module.WebRoot + path[(index + 1)..];
 
                     if (module != application.Name)
                     {
@@ -65,14 +62,8 @@ namespace OrchardCore.Modules
             return new NotFoundFileInfo(subpath);
         }
 
-        public IChangeToken Watch(string filter)
-        {
-            return NullChangeToken.Singleton;
-        }
+        public IChangeToken Watch(string filter) => NullChangeToken.Singleton;
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/').Replace("//", "/");
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/').Replace("//", "/");
     }
 }

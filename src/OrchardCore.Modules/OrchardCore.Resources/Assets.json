@@ -8,6 +8,14 @@
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "generateRTL": false,
+    "generateSourceMaps": false,
+    "inputs": [
+      "node_modules/bootstrap/dist/css/bootstrap.rtl.css"
+    ],
+    "output": "wwwroot/Styles/bootstrap.rtl.css"
+  },
+  {
     "inputs": [
       "node_modules/bootstrap/dist/js/bootstrap.js"
     ],
@@ -32,7 +40,7 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
- {
+  {
     "inputs": [
       "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
     ],
@@ -281,6 +289,27 @@
       "node_modules/js-cookie/dist/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.js"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.d.ts"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.d.ts"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.css"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.css"
   },
   {
     "copy": true,
