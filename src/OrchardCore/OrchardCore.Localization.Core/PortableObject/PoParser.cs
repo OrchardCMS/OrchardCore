@@ -154,7 +154,7 @@ namespace OrchardCore.Localization.PortableObject
 
             public DictionaryRecordBuilder()
             {
-                _values = new List<string>();
+                _values = [];
             }
 
             public void Set(PoContext context, string text)

@@ -15,8 +15,7 @@ namespace OrchardCore.Taxonomies.GraphQL
 
             Field(x => x.TermContentType);
 
-            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
-                .Name("contentItems")
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
                 .Description("the content items")
                 .PagingArguments()
                 .Resolve(x => x.Page(x.Source.Terms));

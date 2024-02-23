@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -49,7 +48,7 @@ namespace OrchardCore.Users.Controllers
         }
 
         /// <summary>
-        /// Returns the created user, otherwise returns null
+        /// Returns the created user, otherwise returns null.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="model"></param>

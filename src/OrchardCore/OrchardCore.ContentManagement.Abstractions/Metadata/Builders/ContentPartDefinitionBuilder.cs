@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
@@ -12,8 +12,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     public class ContentPartDefinitionBuilder
     {
         private readonly ContentPartDefinition _part;
-        private readonly IList<ContentPartFieldDefinition> _fields;
-        private readonly JObject _settings;
+        private readonly List<ContentPartFieldDefinition> _fields;
+        private readonly JsonObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
 
@@ -28,14 +28,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _fields = new List<ContentPartFieldDefinition>();
+                _fields = [];
                 _settings = [];
             }
             else
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = new JObject(existing.Settings);
+                _settings = existing.Settings.Clone();
             }
         }
 
@@ -77,15 +77,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-
-            return this;
-        }
-
-        public ContentPartDefinitionBuilder MergeSettings(JObject settings)
+        public ContentPartDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
 
@@ -94,7 +86,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
@@ -137,7 +129,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
@@ -152,7 +144,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 // If there is no display name, let's use the field name by default.
                 settings.DisplayName = fieldName;
-                fieldDefinition.PopulateSettings(settings);
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
             }
 
             _fields.Add(fieldDefinition);
@@ -195,7 +188,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
@@ -210,7 +203,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 // If there is no display name, let's use the field name by default.
                 settings.DisplayName = fieldName;
-                fieldDefinition.PopulateSettings(settings);
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
             }
 
             _fields.Add(fieldDefinition);

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +16,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -29,6 +30,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
@@ -63,9 +65,9 @@ namespace OrchardCore.OpenId.Services
 
         private OpenIdServerSettings GetSettingsFromContainer(ISite container)
         {
-            if (container.Properties.TryGetValue(nameof(OpenIdServerSettings), out var settings))
+            if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
-                return settings.ToObject<OpenIdServerSettings>();
+                return settings.ToObject<OpenIdServerSettings>(JOptions.Default);
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
@@ -86,22 +88,16 @@ namespace OrchardCore.OpenId.Services
 
         public async Task UpdateSettingsAsync(OpenIdServerSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
         public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
@@ -288,7 +284,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate != null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
                 _logger.LogWarning("The encryption certificate '{Thumbprint}' could not be found in the " +
@@ -333,12 +329,15 @@ namespace OrchardCore.OpenId.Services
 
             // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
             // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            return
+            [
+                _memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
+                {
+                    entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                }),
+            ];
         }
 
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
@@ -357,7 +356,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate != null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
                 _logger.LogWarning("The signing certificate '{Thumbprint}' could not be found in the " +
@@ -402,12 +401,15 @@ namespace OrchardCore.OpenId.Services
 
             // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
             // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            return
+            [
+                _memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
+                {
+                    entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                }),
+            ];
         }
 
         public async Task PruneManagedCertificatesAsync()
@@ -431,7 +433,7 @@ namespace OrchardCore.OpenId.Services
                     }
                     catch (Exception exception)
                     {
-                        exceptions ??= new List<Exception>();
+                        exceptions ??= [];
 
                         exceptions.Add(exception);
                     }

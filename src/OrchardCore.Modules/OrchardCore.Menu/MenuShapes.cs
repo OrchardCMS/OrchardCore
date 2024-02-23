@@ -179,7 +179,7 @@ namespace OrchardCore.Menu
         }
 
         /// <summary>
-        /// Converts "foo-ba r" to "FooBaR"
+        /// Converts "foo-ba r" to "FooBaR".
         /// </summary>
         private static string FormatName(string name)
         {

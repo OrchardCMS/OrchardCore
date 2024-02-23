@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -22,17 +22,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
 
         private List<string> _classes;
-        public IList<string> Classes => _classes ??= new List<string>();
+        public IList<string> Classes => _classes ??= [];
 
         private Dictionary<string, string> _attributes;
-        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+        public IDictionary<string, string> Attributes => _attributes ??= [];
 
         private List<IPositioned> _items;
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
-                _items ??= new List<IPositioned>();
+                _items ??= [];
 
                 if (!_sorted)
                 {
@@ -63,28 +63,12 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             _sorted = false;
 
-            _items ??= new List<IPositioned>();
+            _items ??= [];
 
-            if (item is IHtmlContent)
+            var wrapped = PositionWrapper.TryWrap(item, position);
+            if (wrapped is not null)
             {
-                _items.Add(new PositionWrapper((IHtmlContent)item, position));
-            }
-            else if (item is string)
-            {
-                _items.Add(new PositionWrapper((string)item, position));
-            }
-            else
-            {
-                var shape = item as IPositioned;
-                if (shape != null)
-                {
-                    if (position != null)
-                    {
-                        shape.Position = position;
-                    }
-
-                    _items.Add(shape);
-                }
+                _items.Add(wrapped);
             }
 
             return new ValueTask<IShape>(this);
@@ -248,7 +232,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+                    attributes = JConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
 
                     foreach (var attribute in attributes)
                     {

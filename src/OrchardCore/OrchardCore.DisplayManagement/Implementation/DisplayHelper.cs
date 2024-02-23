@@ -72,6 +72,12 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
+            // Check if the shape is wrapper, return underlying IHtmlContent
+            if( shape is PositionWrapper wrapper)
+            {
+                return Task.FromResult(PositionWrapper.UnWrap(wrapper));
+            }
+
             // Check if the shape is pre-rendered.
             if (shape is IHtmlContent htmlContent)
             {
