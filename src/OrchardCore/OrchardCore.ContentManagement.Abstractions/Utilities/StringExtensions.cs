@@ -269,12 +269,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool All(this string source, params char[] chars)
         {
-            if (string.IsNullOrEmpty(source))
-            {
-                return true;
-            }
-
-            if (chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
