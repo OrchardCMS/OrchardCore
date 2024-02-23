@@ -1,0 +1,6 @@
+@using OrchardCore.Queries.Deployment
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<QueryBasedContentDeploymentStep>
+
+<h5>@T["Content Items fetched by a Query"]</h5>
+<span class="badge ta-badge">@Model.Value.QueryName</span>

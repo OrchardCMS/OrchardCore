@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -24,19 +25,17 @@ namespace OrchardCore.Html.GraphQL
             Name = "HtmlBodyPart";
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
+        private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
-            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
-            var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
+            var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
@@ -50,8 +49,8 @@ namespace OrchardCore.Html.GraphQL
                     HtmlBodyPart = ctx.Source,
                     ContentItem = ctx.Source.ContentItem
                 };
-                var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
-                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+                var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+                var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
                 html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }

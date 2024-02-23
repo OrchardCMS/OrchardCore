@@ -8,7 +8,7 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Initializes a new instance of a <see cref="Query"/>.
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="source"></param> 
         protected Query(string source)
         {
             Source = source;
@@ -29,5 +29,7 @@ namespace OrchardCore.Queries
         /// This is used runtime determination of the results returned when Content Items are not returned.
         /// </summary>
         public string Schema { get; set; }
+
+        public virtual bool ResultsOfType<T>() => typeof(T) == typeof(object);
     }
 }

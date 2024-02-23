@@ -23,10 +23,12 @@ namespace OrchardCore.XmlRpc.Models
 
         public T Optional<T>(string name)
         {
-            XRpcData data;
-            if (Members.TryGetValue(name, out data))
+            if (Members.TryGetValue(name, out var data))
+            {
                 return (T)data.Value;
-            return default(T);
+            }
+
+            return default;
         }
     }
 }

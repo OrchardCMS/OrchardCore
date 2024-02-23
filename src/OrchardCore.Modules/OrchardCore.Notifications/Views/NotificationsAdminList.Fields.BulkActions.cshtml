@@ -1,0 +1,15 @@
+@model ListNotificationOptions
+
+@inject IDisplayManager<ListNotificationOptions> ContentOptionsDisplayManager
+
+<div class="dropdown" style="display: none" id="actions">
+    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @T["Actions"]
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+        @{
+            dynamic bulkActions = await ContentOptionsDisplayManager.BuildDisplayAsync(Model, null, "BulkActions");
+            @await DisplayAsync(bulkActions.Content)
+        }
+    </ul>
+</div>

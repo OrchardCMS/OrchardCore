@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
@@ -57,10 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return new ObjectValue(s);
                         }
-                        if (!(o is IShape) && o is IHtmlContent c)
+                        else if (x is IHtmlContent c)
                         {
                             return new HtmlContentValue(c);
                         }
+
                         return null;
                     });
 
@@ -77,6 +78,26 @@ namespace Microsoft.Extensions.DependencyInjection
                             "Dir" => new StringValue(CultureInfo.CurrentUICulture.GetLanguageDirection()),
                             _ => NilValue.Instance
                         };
+                    });
+
+                    o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
+                    {
+                        var hostEnvironment = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHostEnvironment>();
+
+                        if (hostEnvironment != null)
+                        {
+                            return name switch
+                            {
+                                "IsDevelopment" => BooleanValue.Create(hostEnvironment.IsDevelopment()),
+                                "IsStaging" => BooleanValue.Create(hostEnvironment.IsStaging()),
+                                "IsProduction" => BooleanValue.Create(hostEnvironment.IsProduction()),
+                                "Name" => StringValue.Create(hostEnvironment.EnvironmentName),
+                                _ => NilValue.Instance
+                            };
+                        }
+
+                        return NilValue.Instance;
                     });
 
                     o.Scope.SetValue("Request", new ObjectValue(new LiquidRequestAccessor()));

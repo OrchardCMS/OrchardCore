@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -17,7 +18,7 @@ namespace OrchardCore.Media.Processing
         private const string TokenCacheKeyPrefix = "MediaToken:";
         private readonly IMemoryCache _memoryCache;
 
-        private readonly HashSet<string> _knownCommands = new HashSet<string>(12);
+        private readonly HashSet<string> _knownCommands = new(12);
         private readonly byte[] _hashKey;
 
         public MediaTokenService(
@@ -47,7 +48,7 @@ namespace OrchardCore.Media.Processing
 
             if (pathIndex != -1)
             {
-                ParseQuery(path.Substring(pathIndex + 1), out processingCommands, out otherCommands);
+                ParseQuery(path[(pathIndex + 1)..], out processingCommands, out otherCommands);
             }
 
             // If no commands or only a version command don't bother tokenizing.
@@ -58,7 +59,7 @@ namespace OrchardCore.Media.Processing
                 return path;
             }
 
-            // Using the command values as a key retrieve from cache
+            // Using the command values as a key retrieve from cache.
             var queryStringTokenKey = CreateQueryStringTokenKey(processingCommands);
             var queryStringToken = GetHash(queryStringTokenKey);
 
@@ -114,14 +115,14 @@ namespace OrchardCore.Media.Processing
             }
         }
 
-        public bool TryValidateToken(IDictionary<string, string> commands, string token)
+        public bool TryValidateToken(KeyedCollection<string, KeyValuePair<string, string>> commands, string token)
         {
-            var queryStringTokenKey = CreateQueryStringTokenKey(commands);
+            var queryStringTokenKey = CreateCommandCollectionTokenKey(commands);
 
             // Store a hash of the valid query string commands.
             var queryStringToken = GetHash(queryStringTokenKey);
 
-            if (String.Equals(queryStringToken, token, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(queryStringToken, token, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -140,10 +141,11 @@ namespace OrchardCore.Media.Processing
             {
                 builder.Append(pair.Value.ToString());
             }
+
             return builder.ToString();
         }
 
-        private static string CreateQueryStringTokenKey(IDictionary<string, string> values)
+        private static string CreateCommandCollectionTokenKey(KeyedCollection<string, KeyValuePair<string, string>> values)
         {
             using var builder = ZString.CreateStringBuilder();
             builder.Append(TokenCacheKeyPrefix);
@@ -151,6 +153,7 @@ namespace OrchardCore.Media.Processing
             {
                 builder.Append(pair.Value);
             }
+
             return builder.ToString();
         }
 
@@ -164,26 +167,26 @@ namespace OrchardCore.Media.Processing
 
                 using var hmac = new HMACSHA256(_hashKey);
 
-                // queryStringTokenKey also contains prefix
+                // 'queryStringTokenKey' also contains prefix.
                 var chars = queryStringTokenKey.AsSpan(TokenCacheKeyPrefix.Length);
 
-                // only allocate on stack if it's small enough
+                // Only allocate on stack if it's small enough.
                 var requiredLength = Encoding.UTF8.GetByteCount(chars);
                 var stringBytes = requiredLength < 1024
                     ? stackalloc byte[requiredLength]
                     : new byte[requiredLength];
 
-                // 256 for SHA-256, fits in stack nicely
+                // 256 for SHA-256, fits in stack nicely.
                 Span<byte> hashBytes = stackalloc byte[hmac.HashSize];
 
                 var stringBytesLength = Encoding.UTF8.GetBytes(chars, stringBytes);
 
-                hmac.TryComputeHash(stringBytes.Slice(0, stringBytesLength), hashBytes, out var hashBytesLength);
+                hmac.TryComputeHash(stringBytes[..stringBytesLength], hashBytes, out var hashBytesLength);
 
-                entry.Value = result = Convert.ToBase64String(hashBytes.Slice(0, hashBytesLength));
+                entry.Value = result = Convert.ToBase64String(hashBytes[..hashBytesLength]);
             }
 
-            return (string) result;
+            return (string)result;
         }
 
         /// <summary>
@@ -197,11 +200,12 @@ namespace OrchardCore.Media.Processing
             var anchorIndex = uri.IndexOf('#');
             var uriToBeAppended = uri;
             var anchorText = ReadOnlySpan<char>.Empty;
+
             // If there is an anchor, then the query string must be inserted before its first occurrence.
             if (anchorIndex != -1)
             {
-                anchorText = uri.Slice(anchorIndex);
-                uriToBeAppended = uri.Slice(0, anchorIndex);
+                anchorText = uri[anchorIndex..];
+                uriToBeAppended = uri[..anchorIndex];
             }
 
             var queryIndex = uriToBeAppended.IndexOf('?');
@@ -219,6 +223,7 @@ namespace OrchardCore.Media.Processing
             }
 
             sb.Append(anchorText);
+
             return sb.ToString();
         }
     }

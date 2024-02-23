@@ -13,7 +13,7 @@ namespace OrchardCore.Indexing
         /// <summary>
         /// Returns a page of <see cref="IndexingTask"/>.
         /// </summary>
-        Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(int afterTaskId, int count);
+        Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count);
 
         /// <summary>
         /// Creates a new <see cref="IndexingTask"/>.

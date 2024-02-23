@@ -26,7 +26,7 @@ namespace OrchardCore.ResourceManagement
 
         public Dictionary<string, string> Attributes
         {
-            get => _attributes ?? (_attributes = new Dictionary<string, string>());
+            get => _attributes ??= [];
             private set { _attributes = value; }
         }
 
@@ -49,7 +49,7 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed in the head of the page
+        /// The resource will be displayed in the head of the page.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtHead()
@@ -58,7 +58,7 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the foot of the page
+        /// The resource will be displayed at the foot of the page.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,9 +68,9 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the specified location
+        /// The resource will be displayed at the specified location.
         /// </summary>
-        /// <param name="location">The location where the resource should be displayed</param>
+        /// <param name="location">The location where the resource should be displayed.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtLocation(ResourceLocation location)
         {
@@ -82,7 +82,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseCulture(string cultureName)
         {
-            if (!String.IsNullOrEmpty(cultureName))
+            if (!string.IsNullOrEmpty(cultureName))
             {
                 Culture = cultureName;
             }
@@ -139,7 +139,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseVersion(string version)
         {
-            if (!String.IsNullOrEmpty(version))
+            if (!string.IsNullOrEmpty(version))
             {
                 Version = version;
             }
@@ -156,10 +156,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings SetDependencies(params string[] dependencies)
         {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
+            Dependencies ??= [];
 
             Dependencies.AddRange(dependencies);
 
@@ -189,10 +186,7 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings SetAttribute(string name, string value)
         {
-            if (_attributes == null)
-            {
-                _attributes = new Dictionary<string, string>();
-            }
+            _attributes ??= [];
             _attributes[name] = value;
             return this;
         }

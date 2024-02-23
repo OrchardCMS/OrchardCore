@@ -111,8 +111,10 @@ $(function () {
             var alignDropdown = $(this).closest('.dropdown-menu');
             var $btn = alignDropdown.prev('button');
             $btn.html(svg);
-
         }
+
+        $(this).parent().find('.dropdown-item').removeClass('active');
+        $(this).toggleClass('active');
         $(document).trigger('contentpreview:render');
     });
 

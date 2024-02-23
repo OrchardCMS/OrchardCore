@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = ["OrchardCore.ContentTypes"],
     Category = "Navigation"
 )]

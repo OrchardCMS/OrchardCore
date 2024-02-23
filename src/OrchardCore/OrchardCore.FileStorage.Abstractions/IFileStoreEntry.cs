@@ -23,7 +23,7 @@ namespace OrchardCore.FileStorage
         string DirectoryPath { get; }
 
         /// <summary>
-        /// Gets the length of the file (0 if the file story entry is a directory).
+        /// Gets the length of the file (0 if the file store entry is a directory).
         /// </summary>
         long Length { get; }
 

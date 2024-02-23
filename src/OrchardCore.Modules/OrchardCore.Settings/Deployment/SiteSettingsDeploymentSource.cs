@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
@@ -16,82 +16,81 @@ namespace OrchardCore.Settings.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var settingsStep = step as SiteSettingsDeploymentStep;
-            if (settingsStep == null)
+            if (step is not SiteSettingsDeploymentStep settingsStep)
             {
                 return;
             }
 
             var site = await _siteService.GetSiteSettingsAsync();
 
-            var data = new JObject(new JProperty("name", "Settings"));
+            var data = new JsonObject { ["name"] = "Settings" };
 
             foreach (var settingName in settingsStep.Settings)
             {
                 switch (settingName)
                 {
                     case "BaseUrl":
-                        data.Add(new JProperty(nameof(ISite.BaseUrl), site.BaseUrl));
+                        data.Add(nameof(ISite.BaseUrl), site.BaseUrl);
                         break;
 
                     case "Calendar":
-                        data.Add(new JProperty(nameof(ISite.Calendar), site.Calendar));
+                        data.Add(nameof(ISite.Calendar), site.Calendar);
                         break;
 
                     case "MaxPagedCount":
-                        data.Add(new JProperty(nameof(ISite.MaxPagedCount), site.MaxPagedCount));
+                        data.Add(nameof(ISite.MaxPagedCount), site.MaxPagedCount);
                         break;
 
                     case "MaxPageSize":
-                        data.Add(new JProperty(nameof(ISite.MaxPageSize), site.MaxPageSize));
+                        data.Add(nameof(ISite.MaxPageSize), site.MaxPageSize);
                         break;
 
                     case "PageSize":
-                        data.Add(new JProperty(nameof(ISite.PageSize), site.PageSize));
+                        data.Add(nameof(ISite.PageSize), site.PageSize);
                         break;
 
                     case "ResourceDebugMode":
-                        data.Add(new JProperty(nameof(ISite.ResourceDebugMode), site.ResourceDebugMode));
+                        data.Add(nameof(ISite.ResourceDebugMode), JsonValue.Create(site.ResourceDebugMode));
                         break;
 
                     case "SiteName":
-                        data.Add(new JProperty(nameof(ISite.SiteName), site.SiteName));
+                        data.Add(nameof(ISite.SiteName), site.SiteName);
                         break;
 
                     case "PageTitleFormat":
-                        data.Add(new JProperty(nameof(ISite.PageTitleFormat), site.PageTitleFormat));
+                        data.Add(nameof(ISite.PageTitleFormat), site.PageTitleFormat);
                         break;
 
                     case "SiteSalt":
-                        data.Add(new JProperty(nameof(ISite.SiteSalt), site.SiteSalt));
+                        data.Add(nameof(ISite.SiteSalt), site.SiteSalt);
                         break;
 
                     case "SuperUser":
-                        data.Add(new JProperty(nameof(ISite.SuperUser), site.SuperUser));
+                        data.Add(nameof(ISite.SuperUser), site.SuperUser);
                         break;
 
                     case "TimeZoneId":
-                        data.Add(new JProperty(nameof(ISite.TimeZoneId), site.TimeZoneId));
+                        data.Add(nameof(ISite.TimeZoneId), site.TimeZoneId);
                         break;
 
                     case "UseCdn":
-                        data.Add(new JProperty(nameof(ISite.UseCdn), site.UseCdn));
+                        data.Add(nameof(ISite.UseCdn), site.UseCdn);
                         break;
 
                     case "CdnBaseUrl":
-                        data.Add(new JProperty(nameof(ISite.CdnBaseUrl), site.CdnBaseUrl));
+                        data.Add(nameof(ISite.CdnBaseUrl), site.CdnBaseUrl);
                         break;
 
                     case "AppendVersion":
-                        data.Add(new JProperty(nameof(ISite.AppendVersion), site.AppendVersion));
+                        data.Add(nameof(ISite.AppendVersion), site.AppendVersion);
                         break;
 
                     case "HomeRoute":
-                        data.Add(new JProperty(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute)));
+                        data.Add(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute));
                         break;
 
                     case "CacheMode":
-                        data.Add(new JProperty(nameof(ISite.CacheMode), site.CacheMode));
+                        data.Add(nameof(ISite.CacheMode), JsonValue.Create(site.CacheMode));
                         break;
 
                     default:

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
 import { buildClientSchema, getIntrospectionQuery } from "graphql";
+import { GraphiQLToolbarConfig } from "graphiql/dist/components/GraphiQL";
 
 import "graphiql/graphiql.css";
 import "../css/graphiql-orchard.css";
@@ -40,8 +41,6 @@ function fetcher(params: Object): Promise<any> {
 }
 
 function App() {
-    var _graphiql: GraphiQL;
-
     // Gets a graphql query from the URL if present and sets it as the default query.
     var parameters: any = parseQueryFromUrl(window.location);
 
@@ -109,6 +108,17 @@ function App() {
         }).join('&');
         history.replaceState(null, null, newSearch);
     }
+     
+
+    const btnToggleExplorer: GraphiQLToolbarConfig = {
+        additionalContent: (
+            <GraphiQL.Button
+                onClick={handleToggleExplorer}
+                label="Explorer"
+                title="Toggle Explorer"
+            />
+        ),
+    };
 
     return (
         <div className="graphiql-container">
@@ -116,12 +126,10 @@ function App() {
                 schema={schema}
                 query={query}
                 onEdit={handleEditQuery}
-                onRunOperation={operationName =>
-                    _graphiql.handleRunQuery(operationName)
-                }
                 explorerIsOpen={explorerIsOpen}
                 onToggleExplorer={handleToggleExplorer}
             />
+            {/*@ts-ignore */}
             <GraphiQL
                 fetcher={fetcher}
                 schema={schema}
@@ -131,25 +139,8 @@ function App() {
                 onEditOperationName={onEditOperationName}
                 query={query}
                 onEditQuery={handleEditQuery}
-            >
-                <GraphiQL.Toolbar>
-                <GraphiQL.Button
-                    onClick={() => _graphiql.handlePrettifyQuery()}
-                    label="Prettify"
-                    title="Prettify Query (Shift-Ctrl-P)"
-                />
-                <GraphiQL.Button
-                    onClick={() => _graphiql.handleToggleHistory()}
-                    label="History"
-                    title="Show History"
-                />
-                <GraphiQL.Button
-                    onClick={handleToggleExplorer}
-                    label="Explorer"
-                    title="Toggle Explorer"
-                />
-                </GraphiQL.Toolbar>
-            </GraphiQL>
+                toolbar={btnToggleExplorer}
+            ></GraphiQL>
         </div>
     );
 }

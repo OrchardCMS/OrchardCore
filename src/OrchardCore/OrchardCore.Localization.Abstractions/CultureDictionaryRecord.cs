@@ -11,7 +11,7 @@ namespace OrchardCore.Localization
         /// Creates new instance of <see cref="CultureDictionaryRecord"/>.
         /// </summary>
         /// <param name="messageId">The message Id.</param>
-        /// <param name="translations">a list of translations</param>
+        /// <param name="translations">a list of translations.</param>
         public CultureDictionaryRecord(string messageId, params string[] translations)
             : this(messageId, null, translations)
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
-        /// <param name="translations">a list of translations</param>
+        /// <param name="translations">a list of translations.</param>
         public CultureDictionaryRecord(string messageId, string context, string[] translations)
         {
             Key = GetKey(messageId, context);
@@ -48,7 +48,7 @@ namespace OrchardCore.Localization
         /// <returns>The resource key.</returns>
         public static CultureDictionaryRecordKey GetKey(string messageId, string context)
         {
-            if (String.IsNullOrEmpty(messageId))
+            if (string.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }

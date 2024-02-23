@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -25,7 +24,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ResetPasswordController(
             IUserService userService,
@@ -112,7 +111,7 @@ namespace OrchardCore.Users.Controllers
             }
             if (code == null)
             {
-                //"A code must be supplied for password reset.";
+                // "A code must be supplied for password reset.";
             }
             return View(new ResetPasswordViewModel { ResetToken = code });
         }
@@ -131,7 +130,7 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key, message)))
+                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)))
                 {
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }
@@ -147,16 +146,14 @@ namespace OrchardCore.Users.Controllers
             return View();
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private RedirectResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return Redirect("~/");
-            }
+
+            return Redirect("~/");
         }
     }
 }

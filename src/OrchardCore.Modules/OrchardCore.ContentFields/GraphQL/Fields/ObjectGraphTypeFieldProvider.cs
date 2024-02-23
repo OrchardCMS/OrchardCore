@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -12,6 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
     public class ObjectGraphTypeFieldProvider : IContentFieldProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly ConcurrentDictionary<string, IObjectGraphType> _partObjectGraphTypes = new();
 
         public ObjectGraphTypeFieldProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -21,29 +24,27 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         public FieldType GetField(ContentPartFieldDefinition field)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
-            var activator = typeActivator.GetTypeActivator(field.FieldDefinition.Name);
+            var queryGraphType = _partObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
+                                                       partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
+                                                            .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
+                                                   );
 
-            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
-
-            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType)
+            if (queryGraphType != null)
             {
                 return new FieldType
                 {
                     Name = field.Name,
                     Description = field.FieldDefinition.Name,
-                    Type = queryGraphType,
+                    Type = queryGraphType.GetType(),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
-                        var typeToResolve = context.ReturnType.GetType().BaseType.GetGenericArguments().First();
+                        var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                         // Check if part has been collapsed by trying to get the parent part.
                         var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                        if (contentPart == null)
-                        {
-                            // Part is not collapsed, access field directly.
-                            contentPart = context.Source;
-                        }
+
+                        // Part is not collapsed, access field directly.
+                        contentPart ??= context.Source;
 
                         var contentField = contentPart?.Get(typeToResolve, field.Name);
                         return contentField;

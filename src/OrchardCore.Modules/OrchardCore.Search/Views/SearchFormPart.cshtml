@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Search.Models
+
+@model ShapeViewModel<SearchFormPart>
+
+<form asp-action="Search" asp-controller="Search" asp-area="OrchardCore.Search" asp-route-index="@Model.Value.IndexName" method="get">
+    <div class="input-group mb-3 mt-5">
+        <input name="Terms" type="text" value="" class="form-control form-control-lg" placeholder="@Model.Value.Placeholder" autofocus />
+        <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
+    </div>
+</form>

@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
@@ -10,6 +9,14 @@ namespace OrchardCore.Navigation
 {
     public class NavigationHelper
     {
+        /// <summary>
+        /// Checks if the given name matches the value <see cref="NavigationConstants.AdminId"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>boolean.</returns>
+        public static bool IsAdminMenu(string name)
+            => NavigationConstants.AdminId == name;
+
         /// <summary>
         /// Populates the menu shapes.
         /// </summary>
@@ -34,11 +41,11 @@ namespace OrchardCore.Navigation
         /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            foreach (MenuItem menuItem in menuItems)
+            foreach (var menuItem in menuItems)
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
-                if (menuItem.Items != null && menuItem.Items.Any())
+                if (menuItem.Items != null && menuItem.Items.Count > 0)
                 {
                     await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
@@ -75,7 +82,7 @@ namespace OrchardCore.Navigation
 
             menuItemShape.Id = menuItem.Id;
 
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
             }
@@ -92,7 +99,7 @@ namespace OrchardCore.Navigation
 
         private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
 
@@ -129,7 +136,7 @@ namespace OrchardCore.Navigation
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
-                viewContext.HttpContext.Response.Cookies.Append(selectedItem.Menu.MenuName + '_' + ShellScope.Context.Settings.Name, selectedItem.Hash);
+                viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
 
                 while (selectedItem.Parent != null)
                 {
@@ -140,17 +147,17 @@ namespace OrchardCore.Navigation
         }
 
         /// <summary>
-        /// Traverses the menu and returns the selected item with the highest priority
+        /// Traverses the menu and returns the selected item with the highest priority.
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>
-        /// <returns>The selected menu item shape</returns>
+        /// <returns>The selected menu item shape.</returns>
         private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
         {
             dynamic result = null;
 
             var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
 
-            while (tempStack.Any())
+            while (tempStack.Count > 0)
             {
                 // evaluate first
                 dynamic item = tempStack.Pop();

@@ -1,10 +1,11 @@
 @inject OrchardCore.Settings.ISiteService siteService
 @using OrchardCore.Entities
 @using OrchardCore.Admin.Models
+@using OrchardCore.Navigation
 @{
     var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
-    tag.Attributes["Id"] = "adminMenu";
+    tag.Attributes["Id"] = NavigationConstants.AdminMenuId;
 
     foreach (var item in Model)
     {
@@ -13,7 +14,7 @@
 }
 @if (adminSettings.DisplayMenuFilter)
 {
-    <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-toggle="tooltip" data-html="true" title="Ctrl+Shift+F" />
+    <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" data-bs-toggle="tooltip" data-bs-placement="right" data-html="true" title="Ctrl+Shift+F" />
 }
 <nav id="left-nav">
     @tag

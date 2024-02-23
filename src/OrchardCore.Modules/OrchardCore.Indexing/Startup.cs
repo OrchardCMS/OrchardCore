@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Indexing
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {
@@ -15,7 +15,7 @@ namespace OrchardCore.Indexing
         {
             services.AddScoped<IIndexingTaskManager, IndexingTaskManager>();
             services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
     }
 }

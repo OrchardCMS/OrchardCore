@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Menu.Models
@@ -7,6 +7,6 @@ namespace OrchardCore.Menu.Models
     // This part is automatically added to all menus.
     public class MenuItemsListPart : ContentPart
     {
-        public List<ContentItem> MenuItems { get; set; } = new List<ContentItem>();
+        public List<ContentItem> MenuItems { get; set; } = [];
     }
 }
