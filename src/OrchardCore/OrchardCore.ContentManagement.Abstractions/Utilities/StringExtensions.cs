@@ -55,9 +55,9 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             if (characterCount < 0 || text.Length <= characterCount)
@@ -67,13 +67,13 @@ namespace OrchardCore.ContentManagement.Utilities
 
             // search beginning of word
             var backup = characterCount;
-            while (characterCount > 0 && text[characterCount - 1].IsLetter())
+            while (characterCount > 0 && char.IsLetter(text[characterCount - 1]))
             {
                 characterCount--;
             }
 
             // search previous word
-            while (characterCount > 0 && text[characterCount - 1].IsSpace())
+            while (characterCount > 0 && char.IsWhiteSpace(text[characterCount - 1]))
             {
                 characterCount--;
             }
@@ -90,7 +90,7 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
-            => String.IsNullOrEmpty(text)
+            => string.IsNullOrEmpty(text)
                 ? defaultValue
                 : new LocalizedString(null, text);
 
@@ -167,21 +167,17 @@ namespace OrchardCore.ContentManagement.Utilities
         /// </remarks>
         public static string ToSafeName(this string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             name = RemoveDiacritics(name);
-            name = name.Strip(c =>
-                !c.IsLetter()
-                && !Char.IsDigit(c)
-                );
 
-            name = name.Trim();
+            name = name.Strip(c => !char.IsLetter(c) && !char.IsDigit(c)).Trim();
 
             // don't allow non A-Z chars as first letter, as they are not allowed in prefixes
-            while (name.Length > 0 && !IsLetter(name[0]))
+            while (name.Length > 0 && !char.IsLetter(name[0]))
             {
                 name = name[1..];
             }
@@ -195,13 +191,6 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         public static bool IsReservedContentName(this string name) => _reservedNames.Contains(name);
-
-        /// <summary>
-        /// Whether the char is a letter between A and Z or not.
-        /// </summary>
-        public static bool IsLetter(this char c) => ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
-
-        public static bool IsSpace(this char c) => (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ');
 
         public static string RemoveDiacritics(this string name)
         {
@@ -222,7 +211,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Strip(this string source, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(source))
+            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(source))
             {
                 return source;
             }
@@ -261,7 +250,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool Any(this string source, params char[] chars)
         {
-            if (String.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
@@ -280,7 +269,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool All(this string source, params char[] chars)
         {
-            if (String.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
@@ -299,7 +288,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Translate(this string subject, char[] from, char[] to)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -339,7 +328,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements)
         {
-            var pattern = $"{String.Join("|", replacements.Keys)}";
+            var pattern = $"{string.Join("|", replacements.Keys)}";
 
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
