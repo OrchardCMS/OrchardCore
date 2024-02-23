@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.GraphQL
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL","OrchardCore.Users")]
+    [RequireFeatures("OrchardCore.Apis.GraphQL")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
