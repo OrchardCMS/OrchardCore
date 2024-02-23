@@ -32,7 +32,7 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string CamelFriendly(this string camel)
         {
             // optimize common cases
-            if (String.IsNullOrWhiteSpace(camel))
+            if (string.IsNullOrWhiteSpace(camel))
             {
                 return "";
             }
@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement.Utilities
             for (var i = 0; i < camel.Length; ++i)
             {
                 var c = camel[i];
-                if (i != 0 && Char.IsUpper(c))
+                if (i != 0 && char.IsUpper(c))
                 {
                     sb.Append(' ');
                 }
@@ -96,9 +96,9 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var result = new char[html.Length];
@@ -137,11 +137,11 @@ namespace OrchardCore.ContentManagement.Utilities
 
         // not accounting for only \r (e.g. Apple OS 9 carriage return only new lines)
         public static string ReplaceNewLinesWith(this string text, string replacement)
-            => String.IsNullOrWhiteSpace(text)
-                ? String.Empty
+            => string.IsNullOrWhiteSpace(text)
+                ? string.Empty
                 : text.Replace("\r\n", "\r\r")
-                    .Replace("\n", String.Format(replacement, "\r\n"))
-                    .Replace("\r\r", String.Format(replacement, "\r\n"));
+                    .Replace("\n", string.Format(replacement, "\r\n"))
+                    .Replace("\r\r", string.Format(replacement, "\r\n"));
 
         public static bool IsValidUrlSegment(this string segment)
         {
