@@ -1,7 +1,7 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @model EditPartViewModel
-<div class="properties">
-    <div class="related">
+<div class="w-100">
+    <div class="float-end">
         <a id="btn-edit-@Model.Name" class="btn btn-primary btn-sm" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
     </div>
     <div>@Model.PartDefinition.DisplayName()</div>

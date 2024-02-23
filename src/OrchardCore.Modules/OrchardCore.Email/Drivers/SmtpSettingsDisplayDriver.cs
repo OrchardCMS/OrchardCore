@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -53,13 +54,16 @@ namespace OrchardCore.Email.Drivers
                     model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                     model.Host = settings.Host;
                     model.Port = settings.Port;
+                    model.ProxyHost = settings.ProxyHost;
+                    model.ProxyPort = settings.ProxyPort;
                     model.EncryptionMethod = settings.EncryptionMethod;
                     model.AutoSelectEncryption = settings.AutoSelectEncryption;
                     model.RequireCredentials = settings.RequireCredentials;
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
-                }).Location("Content:5").OnGroup(GroupId)
+                    model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
+                }).Location("Content:5").OnGroup(GroupId),
             };
 
             if (settings?.DefaultSender != null)
@@ -79,7 +83,7 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var previousPassword = section.Password;
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
@@ -96,7 +100,7 @@ namespace OrchardCore.Email.Drivers
                     section.Password = protector.Protect(section.Password);
                 }
 
-                // Release the tenant to apply the settings
+                // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 

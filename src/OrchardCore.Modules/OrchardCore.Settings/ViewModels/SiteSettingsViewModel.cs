@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace OrchardCore.Settings.ViewModels
 {
     public class SiteSettingsViewModel
@@ -6,7 +8,10 @@ namespace OrchardCore.Settings.ViewModels
         public string PageTitleFormat { get; set; }
         public string BaseUrl { get; set; }
         public string TimeZone { get; set; }
-        public int PageSize { get; set; }
+
+        [Required]
+        public int? PageSize { get; set; }
+
         public bool UseCdn { get; set; }
         public string CdnBaseUrl { get; set; }
         public ResourceDebugMode ResourceDebugMode { get; set; }

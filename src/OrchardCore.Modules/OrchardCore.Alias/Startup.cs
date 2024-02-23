@@ -38,9 +38,10 @@ namespace OrchardCore.Alias
                     {
                         var session = context.Services.GetRequiredService<ISession>();
 
+#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
                         var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
-                            x.Published && x.Alias == alias.ToLowerInvariant())
-                        .FirstOrDefaultAsync();
+                            x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
+#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
                         if (contentItem == null)
                         {
@@ -59,7 +60,7 @@ namespace OrchardCore.Alias
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 
             // Identity Part

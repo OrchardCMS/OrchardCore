@@ -15,6 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL" />
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.MicrosoftDI" />
+    <PackageReference Include="GraphQL.SystemTextJson" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 

@@ -5,7 +5,6 @@
         "Component.Microsoft.VisualStudio.RazorExtension",
         "Microsoft.Component.MSBuild",
         "Microsoft.Net.ComponentGroup.DevelopmentPrerequisites",
-        "Microsoft.NetCore.ComponentGroup.Web.2.1",
         "Microsoft.VisualStudio.Component.Common.Azure.Tools",
         "Microsoft.VisualStudio.Component.CoreEditor",
         "Microsoft.VisualStudio.Component.JavaScript.TypeScript",
@@ -15,14 +14,12 @@
         "Microsoft.VisualStudio.Component.NuGet",
         "Microsoft.VisualStudio.Component.Roslyn.Compiler",
         "Microsoft.VisualStudio.Component.Roslyn.LanguageServices",
-        "Microsoft.VisualStudio.Component.TypeScript.3.5",
         "Microsoft.VisualStudio.Component.TextTemplating",
         "Microsoft.VisualStudio.Component.Web",
         "Microsoft.VisualStudio.Component.WebDeploy",
         "Microsoft.VisualStudio.ComponentGroup.Web",
         "Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions",
         "Microsoft.VisualStudio.Workload.CoreEditor",
-        "Microsoft.VisualStudio.Workload.NetWeb",
-        "Microsoft.VisualStudio.Workload.NetCoreTools"
+        "Microsoft.VisualStudio.Workload.NetWeb"
     ]
 }

@@ -1,70 +1,63 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
-namespace OrchardCore.Users
+namespace OrchardCore.Users;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-        public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+    public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
+    public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+    public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
+    public static readonly Permission EditOwnUser = CommonPermissions.EditOwnUser;
+    public static readonly Permission ListUsers = CommonPermissions.ListUsers;
+    public static readonly Permission EditUsers = CommonPermissions.EditUsers;
+    public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
 
-        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageUsers,
+        ViewUsers,
+        EditOwnUser,
+        ListUsers,
+        EditUsers,
+        DeleteUsers,
+    ];
 
-        private readonly IRoleService _roleService;
+    private readonly IEnumerable<Permission> _generalPermissions =
+    [
+        EditOwnUser,
+    ];
 
-        public Permissions(IRoleService roleService)
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+         new PermissionStereotype
+         {
+             Name = "Administrator",
+             Permissions = _allPermissions,
+         },
+        new PermissionStereotype
         {
-            _roleService = roleService;
-        }
-
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+            Name = "Editor",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
         {
-            var list = new List<Permission>
-            {
-                ManageUsers,
-                ManageOwnUserInformation,
-                ViewUsers
-            };
-
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var role in roles)
-            {
-                list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
-            }
-
-            return list;
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+            Name = "Moderator",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageUsers }
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Author",
-                    Permissions = new[] { ManageOwnUserInformation }
-                }
-            };
+            Name = "Contributor",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Author",
+            Permissions = _generalPermissions,
         }
-    }
+    ];
 }

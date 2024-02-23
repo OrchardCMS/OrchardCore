@@ -21,7 +21,7 @@ namespace OrchardCore.Workflows.Models
             Input = input ?? new Dictionary<string, object>();
             Output = output ?? new Dictionary<string, object>();
             Properties = properties ?? new Dictionary<string, object>();
-            ExecutedActivities = new Stack<ExecutedActivity>(executedActivities ?? new List<ExecutedActivity>());
+            ExecutedActivities = new Stack<ExecutedActivity>(executedActivities ?? []);
             LastResult = lastResult;
             WorkflowType = workflowType;
             Workflow = workflow;
@@ -79,7 +79,7 @@ namespace OrchardCore.Workflows.Models
             return Activities[activityId];
         }
 
-        public void Fault(Exception exception, ActivityContext activityContext)
+        public void Fault(Exception exception, ActivityContext _)
         {
             Workflow.Status = WorkflowStatus.Faulted;
             Workflow.FaultMessage = exception.Message;

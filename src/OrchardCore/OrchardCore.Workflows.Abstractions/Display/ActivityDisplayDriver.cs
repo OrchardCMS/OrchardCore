@@ -12,14 +12,14 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity> where TActivity : class, IActivity
     {
-        private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
-        private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
+        private static readonly string _thumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
+        private static readonly string _designShapeType = $"{typeof(TActivity).Name}_Fields_Design";
 
         public override IDisplayResult Display(TActivity model)
         {
             return Combine(
-                Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
-                Shape(DesignShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
+                Shape(_thumbnailshapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
+                Shape(_designShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
             );
         }
     }
@@ -29,11 +29,11 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
-        private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
+        private static readonly string _editShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
         public override IDisplayResult Edit(TActivity model)
         {
-            return Initialize(EditShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
+            return Initialize(_editShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
             {
                 return EditActivityAsync(model, viewModel);
             })).Location("Content");

@@ -1,32 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {
@@ -59,8 +41,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var result = await controller.Register();
             Assert.IsType<ViewResult>(result);
 
-            result = await controller.Register(new RegisterViewModel());
-            Assert.IsType<ViewResult>(result);
+            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            Assert.IsType<RedirectResult>(result);
         }
 
         [Fact]
@@ -71,8 +53,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var controller = SetupRegistrationController();
 
             // Act
-            var result = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
-            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            _ = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
+            var result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
 
             // Assert
             Assert.IsType<ViewResult>(result);
@@ -152,15 +134,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns<string>(e =>
                 {
                     var user = users.SingleOrDefault(u => (u as User).Email == e);
-
                     return Task.FromResult(user);
                 });
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }))
-                    )
-            );
+            var mockSite = SiteMockHelper.GetSite(registrationSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
             mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
@@ -187,12 +166,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                new EmailAddressValidator(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                mockStringLocalizer.Object);
-
-            controller.Url = urlHelperMock.Object;
+                mockStringLocalizer.Object)
+            {
+                Url = urlHelperMock.Object
+            };
 
             var mockServiceProvider = new Mock<IServiceProvider>();
 
@@ -207,7 +186,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(mockSiteService);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IEnumerable<IRegistrationFormEvents>)))
-                .Returns(Enumerable.Empty<IRegistrationFormEvents>());
+                .Returns(Array.Empty<IRegistrationFormEvents>());
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IUserService)))
                 .Returns(userService.Object);

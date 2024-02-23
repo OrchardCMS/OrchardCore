@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -8,7 +9,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(ContentPickerField field, BuildFieldIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             if (field.ContentItemIds.Length > 0)
             {
@@ -24,7 +25,7 @@ namespace OrchardCore.ContentFields.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, "NULL", options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
 

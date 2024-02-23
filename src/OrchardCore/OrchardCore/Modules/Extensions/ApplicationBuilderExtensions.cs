@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Builder
 
             configure?.Invoke(app);
 
-            app.UseMiddleware<ModularTenantRouterMiddleware>(app.ServerFeatures);
+            app.UseMiddleware<ModularTenantRouterMiddleware>();
 
             return app;
         }

@@ -14,7 +14,8 @@ namespace OrchardCore.ReverseProxy.Drivers
 {
     public class ReverseProxySettingsDisplayDriver : SectionDisplayDriver<ISite, ReverseProxySettings>
     {
-        private const string SettingsGroupId = "ReverseProxy";
+        public const string GroupId = "ReverseProxy";
+
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -36,7 +37,7 @@ namespace OrchardCore.ReverseProxy.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
             {
                 return null;
             }
@@ -46,19 +47,19 @@ namespace OrchardCore.ReverseProxy.Drivers
                 model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
                 model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
                 model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            }).Location("Content:2").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
             {
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId == GroupId)
             {
                 var model = new ReverseProxySettingsViewModel();
 

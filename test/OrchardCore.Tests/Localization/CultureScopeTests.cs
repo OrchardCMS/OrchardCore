@@ -1,45 +1,40 @@
-using System;
-using System.Globalization;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
     public class CultureScopeTests
     {
         [Fact]
-        public void CultureScopeSetUICultureAutomaticallyIfNotSet()
+        public void CultureScopeSetsUICultureIfNotProvided()
         {
             // Arrange
             var culture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture))
-            {
-                // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(culture, cultureScope.UICulture.Name);
-            }
+            using var cultureScope = CultureScope.Create(culture);
+
+            // Assert
+            Assert.Equal(culture, CultureInfo.CurrentCulture.Name);
+            Assert.Equal(culture, CultureInfo.CurrentUICulture.Name);
         }
 
         [Fact]
-        public void CultureScopeRetrievesBothCultureAndUICulture()
+        public void CultureScopeSetsBothCultureAndUICulture()
         {
             // Arrange
             var culture = "ar";
             var uiCulture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture, uiCulture))
-            {
-                // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(uiCulture, cultureScope.UICulture.Name);
-            }
+            using var cultureScope = CultureScope.Create(culture, uiCulture);
+
+            // Assert
+            Assert.Equal(culture, CultureInfo.CurrentCulture.Name);
+            Assert.Equal(uiCulture, CultureInfo.CurrentUICulture.Name);
         }
 
         [Fact]
-        public void CultureScopeRetrievesTheOrginalCulturesAfterScopeEnded()
+        public void CultureScopeSetsOrginalCulturesAfterEndOfScope()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
@@ -57,20 +52,19 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
+        public async Task CultureScopeSetsOrginalCulturesOnException()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act & Assert
-            Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<Exception>(Task () =>
             {
-                using (var cultureScope = CultureScope.Create("FR"))
-                {
-                    throw new Exception("Something goes wrong!!");
-                }
+                using var cultureScope = CultureScope.Create("FR");
+                throw new Exception("Something goes wrong!!");
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

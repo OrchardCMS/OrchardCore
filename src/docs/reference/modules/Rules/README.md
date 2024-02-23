@@ -23,4 +23,4 @@ Refer [Layers](../Layers/README.md) for more information about rules and conditi
 
 #### Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Iq6VbXZg0B0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Iq6VbXZg0B0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

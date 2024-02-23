@@ -7,6 +7,6 @@ namespace OrchardCore.Tenants.Models
 {
     public class FeatureProfilesDocument : Document
     {
-        public Dictionary<string, FeatureProfile> FeatureProfiles = new Dictionary<string, FeatureProfile>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, FeatureProfile> FeatureProfiles = new(StringComparer.OrdinalIgnoreCase);
     }
 }

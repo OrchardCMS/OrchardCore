@@ -2,6 +2,7 @@
 @if ((bool)Model.HasItems)
 {
     TagBuilder tag = Tag(Model, "ul");
+    tag.AddCssClass("list-group");
 
     foreach (var item in Model.Items)
     {

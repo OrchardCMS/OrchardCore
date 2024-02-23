@@ -1,0 +1,7 @@
+@using Microsoft.AspNetCore.Html
+
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+</p>
+
+@await DisplayAsync((IHtmlContent)Model.Metadata.ChildContent)

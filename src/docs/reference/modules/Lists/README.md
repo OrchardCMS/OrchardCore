@@ -86,7 +86,7 @@ The `list_items` filter loads published content items for a given `ContentItem` 
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Lucene Indexing
 
@@ -97,6 +97,6 @@ The indexed data in Lucene before Orchard Core 1.1 was:
 
 After 1.1 this has changed for also including the display order, so it is now:
 
-`"Content.ContentItem.ContainedPart.ListContentItemId"`   
+`"Content.ContentItem.ContainedPart.ListContentItemId"`
 and  
 `"Content.ContentItem.ContainedPart.Order"`

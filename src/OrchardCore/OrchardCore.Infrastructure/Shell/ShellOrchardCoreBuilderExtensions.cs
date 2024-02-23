@@ -18,15 +18,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 .ConfigureServices(services =>
                 {
                     services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
-                    services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
-                    services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
                 });
 
             return builder;
         }
 
         /// <summary>
-        /// Host services to load site settings from the file system
+        /// Host services to load site settings from the file system.
         /// </summary>
         public static OrchardCoreBuilder AddSitesFolder(this OrchardCoreBuilder builder)
         {

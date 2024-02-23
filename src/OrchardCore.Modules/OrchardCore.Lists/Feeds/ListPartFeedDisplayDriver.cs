@@ -22,6 +22,7 @@ namespace OrchardCore.Lists.Feeds
         {
             return Initialize<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
+                m.DisableRssFeed = part.ContentItem.Content.ListPart.DisableRssFeed ?? false;
                 m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
                 m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;
                 m.ContentItem = part.ContentItem;
@@ -30,11 +31,14 @@ namespace OrchardCore.Lists.Feeds
 
         public override async Task<IDisplayResult> UpdateAsync(ListPart part, IUpdateModel updater)
         {
-            var model = new ListFeedEditViewModel();
-            model.ContentItem = part.ContentItem;
+            var model = new ListFeedEditViewModel
+            {
+                ContentItem = part.ContentItem,
+            };
 
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.FeedProxyUrl, t => t.FeedItemsCount);
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 
+            part.ContentItem.Content.ListPart.DisableRssFeed = model.DisableRssFeed;
             part.ContentItem.Content.ListPart.FeedProxyUrl = model.FeedProxyUrl;
             part.ContentItem.Content.ListPart.FeedItemsCount = model.FeedItemsCount;
 

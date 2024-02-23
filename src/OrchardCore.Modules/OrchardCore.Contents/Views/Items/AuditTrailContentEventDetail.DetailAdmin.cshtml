@@ -54,7 +54,7 @@
         <tr>
             <th>@T["Comment"]</th>
             <td>
-                @if (!String.IsNullOrEmpty(Model.Comment))
+                @if (!string.IsNullOrEmpty(Model.Comment))
                 {
                     @* a pre tag respects whitespace and newlines.*@
                     <pre class="audittrail-comment">@Model.Comment</pre>

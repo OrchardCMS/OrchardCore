@@ -31,13 +31,13 @@ You might invoke the `TermShape` from a content template to render a sidebar of 
 === "Liquid"
 
     ``` liquid
-    {% shape "term", alias: "alias:categories" %}
+    {% shape "term", alias: "alias:Categories" %}
     ```
 
 === "Razor"
 
     ``` html
-    <shape type="Term" alias="Categories" />
+    <shape type="Term" alias="alias:Categories" />
     ```
 
 You can also specify a `TermContentItemId` to render a part of the term hierarchy.
@@ -100,7 +100,6 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
     {
         <p class="alert alert-warning">@T["The list is empty"]</p>
     }
-    @tag
     ```
 
 ### TermItem
@@ -276,13 +275,13 @@ Returns the list of terms including their parents.
 
 Provides a way to query content items that are categorized with specific terms.
 
-#### QueryCategorizedContentItemsAsync Example 
+#### QueryCategorizedContentItemsAsync Example
 
-The following example queries content items that are related to the current content item 
+The following example queries content items that are related to the current content item
 by the term category, but excluding the current content item.
 
 ```csharp
-@using YesSql.Services;
+@using YesSql.Services
 @{
     var termContentItemIds = Model.TermContentItemIds;
     var contentItems = await Orchard.QueryCategorizedContentItemsAsync(
@@ -302,7 +301,7 @@ by the term category, but excluding the current content item.
 
 The `taxonomy_terms` filter loads the specified term content items.
 
-#### taxonomy_terms Example 
+#### taxonomy_terms Example
 
 The following example lists all the terms related to the **Colors** field on the **BlogPost**
 content type, then renders them.
@@ -368,8 +367,8 @@ You can access the `TagNames` property directly with the following accessor:
 
     ``` liquid
     {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
-        <span class="badge bg-secondary">
-            <i class="fas fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
+        <span class="badge text-bg-secondary">
+            <i class="fa-solid fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
             <span class="align-middle"> {{ tagName }} </span> 
         </span>
     {% endfor %}
@@ -393,10 +392,10 @@ Provides taxonomy filters in the admin contents list.
 
 ## Videos
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/nyPgQMwizbU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/nyPgQMwizbU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
