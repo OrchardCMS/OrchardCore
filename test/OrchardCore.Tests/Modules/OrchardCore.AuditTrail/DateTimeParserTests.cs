@@ -1,6 +1,5 @@
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.Modules;
-using Parlot;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AuditTrail
 {

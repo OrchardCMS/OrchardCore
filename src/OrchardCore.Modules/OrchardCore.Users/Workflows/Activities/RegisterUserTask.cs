@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class RegisterUserTask : TaskActivity
+    public class RegisterUserTask : TaskActivity<RegisterUserTask>
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
@@ -48,9 +47,6 @@ namespace OrchardCore.Users.Workflows.Activities
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        // The technical name of the activity. Activities on a workflow definition reference this name.
-        public override string Name => nameof(RegisterUserTask);
 
         public override LocalizedString DisplayText => S["Register User Task"];
 

@@ -240,10 +240,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return ThemeLayout.Zones.IsNotEmpty(name);
         }
@@ -256,10 +253,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return RenderSection(name, required: true);
         }
@@ -273,10 +267,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return RenderSectionAsync(name, required).GetAwaiter().GetResult();
         }
@@ -289,10 +280,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return RenderSectionAsync(name, required: true);
         }
@@ -306,10 +294,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             var zone = ThemeLayout.Zones[name];
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -19,16 +20,18 @@ namespace OrchardCore.Media.Recipes
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
-        private static readonly HttpClient _httpClient = new();
 
         public MediaStep(
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
+            IHttpClientFactory httpClientFactory,
             ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -64,7 +67,10 @@ namespace OrchardCore.Media.Recipes
                 }
                 else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
                 {
-                    var response = await _httpClient.GetAsync(file.SourceUrl);
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    var response = await httpClient.GetAsync(file.SourceUrl);
+
                     if (response.IsSuccessStatusCode)
                     {
                         stream = await response.Content.ReadAsStreamAsync();
@@ -79,7 +85,7 @@ namespace OrchardCore.Media.Recipes
                     }
                     finally
                     {
-                        stream?.Dispose();
+                        await stream.DisposeAsync();
                     }
                 }
             }

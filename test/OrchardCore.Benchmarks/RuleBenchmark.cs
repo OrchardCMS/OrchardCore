@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
@@ -50,13 +49,13 @@ namespace OrchardCore.Benchmark
             _ruleService = serviceProvider.GetRequiredService<IRuleService>();
             _rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new HomepageCondition
                     {
                         Value = true
                     }
-                }
+                ]
             };
         }
 

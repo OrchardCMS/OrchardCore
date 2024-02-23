@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Entities;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Settings;
@@ -16,6 +15,8 @@ namespace OrchardCore.ReCaptcha
         private readonly ISiteService _siteService;
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IShapeFactory _shapeFactory;
+
+        private ReCaptchaSettings _reCaptchaSettings;
 
         public ReCaptchaLoginFilter(
             ILayoutAccessor layoutAccessor,
@@ -38,9 +39,9 @@ namespace OrchardCore.ReCaptcha
                 return;
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+            _reCaptchaSettings ??= (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
-            if (!settings.IsValid())
+            if (!_reCaptchaSettings.IsValid())
             {
                 await next();
                 return;

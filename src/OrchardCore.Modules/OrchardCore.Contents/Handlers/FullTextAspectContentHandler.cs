@@ -16,7 +16,7 @@ using OrchardCore.Liquid;
 namespace OrchardCore.Contents.Handlers
 {
     /// <summary>
-    /// Provides the content for FullTextAspect based on FullTextAspectSettings
+    /// Provides the content for FullTextAspect based on FullTextAspectSettings.
     /// </summary>
     public class FullTextAspectContentHandler : ContentHandlerBase
     {
@@ -35,18 +35,18 @@ namespace OrchardCore.Contents.Handlers
             _serviceProvider = serviceProvider;
         }
 
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            return context.ForAsync<FullTextAspect>(async fullTextAspect =>
+            await context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
                 var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
                 if (settings.IncludeDisplayText)

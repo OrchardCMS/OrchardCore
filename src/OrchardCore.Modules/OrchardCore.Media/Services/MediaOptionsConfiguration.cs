@@ -11,9 +11,9 @@ namespace OrchardCore.Media.Services
 {
     public class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     {
-        private static readonly int[] _defaultSupportedSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+        private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
-        private static readonly string[] _defaultAllowedFileExtensions = new string[] {
+        private static readonly string[] _defaultAllowedFileExtensions = [
             // Images
             ".jpg",
             ".jpeg",
@@ -25,10 +25,15 @@ namespace OrchardCore.Media.Services
 
             // Documents
             ".pdf", // (Portable Document Format; Adobe Acrobat)
-            ".doc", ".docx", // (Microsoft Word Document)
-            ".ppt", ".pptx", ".pps", ".ppsx", // (Microsoft PowerPoint Presentation)
+            ".doc",
+            ".docx", // (Microsoft Word Document)
+            ".ppt",
+            ".pptx",
+            ".pps",
+            ".ppsx", // (Microsoft PowerPoint Presentation)
             ".odt", // (OpenDocument Text Document)
-            ".xls", ".xlsx", // (Microsoft Excel Document)
+            ".xls",
+            ".xlsx", // (Microsoft Excel Document)
             ".psd", // (Adobe Photoshop Document)
 
             // Audio
@@ -38,14 +43,15 @@ namespace OrchardCore.Media.Services
             ".wav",
 
             // Video
-            ".mp4", ".m4v", // (MPEG-4)
+            ".mp4",
+            ".m4v", // (MPEG-4)
             ".mov", // (QuickTime)
             ".wmv", // (Windows Media Video)
             ".avi",
             ".mpg",
             ".ogv", // (Ogg)
             ".3gp", // (3GPP)
-        };
+        ];
 
         private const int DefaultMaxBrowserCacheDays = 30;
         private const int DefaultMaxCacheDays = 365;
@@ -63,7 +69,7 @@ namespace OrchardCore.Media.Services
 
         private const int DefaultMaxUploadChunkSize = 104_857_600; // 100MB
 
-        private static readonly TimeSpan DefaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
+        private static readonly TimeSpan _defaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -87,6 +93,8 @@ namespace OrchardCore.Media.Services
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
+            options.ResizedCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.ResizedCacheMaxStale));
+            options.RemoteCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.RemoteCacheMaxStale));
             options.MaxFileSize = section.GetValue("MaxFileSize", DefaultMaxFileSize);
             options.CdnBaseUrl = section.GetValue("CdnBaseUrl", string.Empty).TrimEnd('/').ToLower();
             options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath);
@@ -94,7 +102,7 @@ namespace OrchardCore.Media.Services
             options.AssetsUsersFolder = section.GetValue("AssetsUsersFolder", DefaultAssetsUsersFolder);
             options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
             options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
-            options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), DefaultTemporaryFileLifeTime);
+            options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), _defaultTemporaryFileLifeTime);
 
             var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

@@ -1,0 +1,13 @@
+@import '../../_variables';
+@import '../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+
+@include color-mode(dark) {
+    --oc-scrollbar-color: #76787A;
+    --oc-admin-menu-bg-color: var(--bs-dark);
+
+    @import "badge";
+    @import "bootstrap-select";
+    @import "card";
+    @import "modal";
+    @import "theme_helpers";
+}

@@ -12,8 +12,7 @@ namespace OrchardCore.Media.GraphQL
 
             Field(file => file.Name).Description("The name of the asset.");
 
-            Field<StringGraphType>()
-                .Name("path")
+            Field<StringGraphType>("path")
                 .Description("The url to the asset.")
                 .Resolve(x =>
                 {
@@ -23,7 +22,9 @@ namespace OrchardCore.Media.GraphQL
                 });
 
             Field(file => file.Length).Description("The length of the file.");
-            Field<DateTimeGraphType>("lastModifiedUtc", resolve: file => file.Source.LastModifiedUtc, description: "The date and time in UTC when the asset was last modified.");
+            Field<DateTimeGraphType>("lastModifiedUtc")
+                .Description("The date and time in UTC when the asset was last modified.")
+                .Resolve(file => file.Source.LastModifiedUtc);
         }
     }
 }

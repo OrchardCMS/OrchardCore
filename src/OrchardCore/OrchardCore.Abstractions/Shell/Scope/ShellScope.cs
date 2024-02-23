@@ -19,11 +19,11 @@ namespace OrchardCore.Environment.Shell.Scope
         private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
         private readonly AsyncServiceScope _serviceScope;
-        private readonly Dictionary<object, object> _items = new();
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = new();
-        private readonly HashSet<string> _deferredSignals = new();
-        private readonly List<Func<ShellScope, Task>> _deferredTasks = new();
-        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new();
+        private readonly Dictionary<object, object> _items = [];
+        private readonly List<Func<ShellScope, Task>> _beforeDispose = [];
+        private readonly HashSet<string> _deferredSignals = [];
+        private readonly List<Func<ShellScope, Task>> _deferredTasks = [];
+        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = [];
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;
@@ -301,6 +301,14 @@ namespace OrchardCore.Environment.Shell.Scope
             (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
             if (!locked)
             {
+                // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
+                // many concurrent requests, one may experience a timeout while waiting before a new retry.
+                if (ShellContext.IsActivated)
+                {
+                    // Don't throw if the shell is activated.
+                    return;
+                }
+
                 throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
@@ -394,7 +402,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            if (_deferredSignals.Any())
+            if (_deferredSignals.Count > 0)
             {
                 var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
                 foreach (var key in _deferredSignals)
@@ -403,7 +411,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            if (_deferredTasks.Any())
+            if (_deferredTasks.Count > 0)
             {
                 var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 

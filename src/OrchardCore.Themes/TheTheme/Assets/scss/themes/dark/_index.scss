@@ -1,0 +1,11 @@
+@import '../../_variables';
+@import '../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+
+@include color-mode(dark) {
+
+    .card {
+        --bs-card-bg: var(--bs-body);
+    }
+
+    @import "theme-helpers";
+}

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,21 +18,21 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         {
             private const char RequiredAttributeWildcardSuffix = '*';
 
-            private static readonly IReadOnlyDictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
-                new Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode>
+            private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
+                new()
                 {
                     { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
                     { '^', RequiredAttributeDescriptor.ValueComparisonMode.PrefixMatch },
                     { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
                 };
 
-            private static readonly char[] _invalidPlainAttributeNameCharacters = { ' ', '\t', ',', RequiredAttributeWildcardSuffix };
+            private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
 
             private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
                 .Concat(_cssValueComparisons.Keys)
                 .ToArray();
 
-            private static readonly char[] _invalidCssQuotelessValueCharacters = { ' ', '\t', ']' };
+            private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
 
             private int _index;
             private readonly string _requiredAttributes;
@@ -88,8 +87,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         }
                         else if (!AtEnd)
                         {
-                            //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
-                            //attributeBuilder.Diagnostics.Add(diagnostic);
+                            // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
+                            // attributeBuilder.Diagnostics.Add(diagnostic);
                             successfulParse = false;
                             return;
                         }
@@ -162,16 +161,16 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                     else if (op != '=') // We're at an incomplete operator (ex: [foo^]
                     {
-                        //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
-                        //builder.Diagnostics.Add(diagnostic);
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
 
                         return false;
                     }
                 }
                 else if (!At(']'))
                 {
-                    //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
-                    //builder.Diagnostics.Add(diagnostic);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
+                    // builder.Diagnostics.Add(diagnostic);
 
                     return false;
                 }
@@ -196,8 +195,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     valueEnd = _requiredAttributes.IndexOf(quote, _index);
                     if (valueEnd == -1)
                     {
-                        //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
-                        //builder.Diagnostics.Add(diagnostic);
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
 
                         return false;
                     }

@@ -11,15 +11,13 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
-<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
+<style asp-name="media" at="Head"></style>
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
-    <label asp-for="Paths" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
+    <label asp-for="Paths" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <div class="hint mt-lg-2">@settings.Hint</div>
@@ -27,7 +25,7 @@
 
         <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-        <div class="form-control-plaintext media-field-toolbar" v-cloak>
+        <div class="media-field-toolbar mb-1" v-cloak>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
                     <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-compress-alt" aria-hidden="true"></i></span>
@@ -41,8 +39,8 @@
                 <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
             </div>
-            <label class="selected-media-name">
-                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+            <label class="selected-media-name form-label">
+                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
             </label>
         </div>
 
@@ -66,6 +64,7 @@
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
 </div>
 
+<script asp-name="media" at="Foot"></script>
 <script at="Foot">
     initializeAttachedMediaField(
         document.getElementById('@mediaFieldId'),

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -39,13 +38,13 @@ namespace OrchardCore.Search.Lucene.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)
         {
-            resetIndexStep.IndexNames = Array.Empty<string>();
+            resetIndexStep.IndexNames = [];
 
             await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
 
             if (resetIndexStep.IncludeAll)
             {
-                resetIndexStep.IndexNames = Array.Empty<string>();
+                resetIndexStep.IndexNames = [];
             }
 
             return Edit(resetIndexStep);

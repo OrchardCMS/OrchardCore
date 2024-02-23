@@ -1,12 +1,12 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -101,7 +101,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (string.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                if (string.IsNullOrEmpty(model?.ContentType) || await _contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
                 {
                     return BadRequest();
                 }

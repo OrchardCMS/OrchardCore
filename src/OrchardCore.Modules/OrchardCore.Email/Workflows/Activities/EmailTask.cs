@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities
 {
-    public class EmailTask : TaskActivity
+    public class EmailTask : TaskActivity<EmailTask>
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -30,8 +29,8 @@ namespace OrchardCore.Email.Workflows.Activities
             _htmlEncoder = htmlEncoder;
         }
 
-        public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
+
         public override LocalizedString Category => S["Messaging"];
 
         public WorkflowExpression<string> Author
@@ -115,7 +114,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 Bcc = bcc?.Trim(),
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
-                Subject = subject.Trim(),
+                Subject = subject?.Trim(),
                 Body = body?.Trim(),
                 IsHtmlBody = IsHtmlBody
             };

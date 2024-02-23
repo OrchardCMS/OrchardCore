@@ -21,13 +21,18 @@ namespace OrchardCore.Mvc
 
         public IViewCompiler GetCompiler()
         {
-            if (_compiler != null)
+            if (_compiler is not null)
             {
                 return _compiler;
             }
 
             lock (_synLock)
             {
+                if (_compiler is not null)
+                {
+                    return _compiler;
+                }
+
                 _compiler = _services
                     .GetServices<IViewCompilerProvider>()
                     .FirstOrDefault()

@@ -1,5 +1,6 @@
 using System.IO;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/Import/{action}", "DeploymentPlanImport{action}")]
     public class ImportController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;
@@ -129,7 +130,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            if (!model.Json.IsJson())
+            if (!model.Json.IsJson(JOptions.Document))
             {
                 ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
             }

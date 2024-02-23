@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -18,6 +20,7 @@ using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
 using YesSql.Provider.Sqlite;
 using YesSql.Provider.SqlServer;
+using YesSql.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -78,7 +81,9 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
 
-                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder);
+                            // Only allow creating a file DB when a tenant is in the Initializing state
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
+
                             storeConfiguration
                                 .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
@@ -101,7 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
 
-                        storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
+                        storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
                     var store = StoreFactory.Create(storeConfiguration);
@@ -170,17 +175,21 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
+        private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+
+            var serializerOptions = sp.GetRequiredService<IOptions<JsonSerializerOptions>>();
 
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
-                ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
+                Logger = loggerFactory.CreateLogger("YesSql"),
+                ContentSerializer = new DefaultJsonContentSerializer(serializerOptions.Value)
             };
 
             if (yesSqlOptions.IdGenerator != null)

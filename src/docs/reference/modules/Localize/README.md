@@ -31,7 +31,7 @@ Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing f
 
 ### Publishing Localization files
 
-The PO files need to be included in the publish output directory. 
+The PO files need to be included in the publish output directory.
 Add the following configurations to your `[Web Project].csproj` file to include them as Content.
 
 ```xml
@@ -166,16 +166,3 @@ Then, you will be able to run this command to generate the .po files:
 ``` bash
 extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template {"razor"|"liquid"}]
 ```
-
-### Shapes
-
-#### `AdminCulturePicker`
-
-The `AdminCulturePicker` shape loads data for the `AdminCulturePickerContainer` shape.  
-
-#### `AdminCulturePickerContainer`
-
-The `AdminCulturePickerContainer` shape is used to render the `AdminCulturePicker`.
-
-The `AdminCulturePicker` will be rendered automatically on the admin once you enable the `OrchardCore.Localization.AdminCulturePicker` feature.
-

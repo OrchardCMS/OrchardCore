@@ -65,7 +65,7 @@ namespace OrchardCore.Email
         public string UserName { get; set; }
 
         /// <summary>
-        /// Gets or sets the user password
+        /// Gets or sets the user password.
         /// </summary>
         public string Password { get; set; }
 
@@ -78,6 +78,11 @@ namespace OrchardCore.Email
         /// Gets or sets the proxy port number.
         /// </summary>
         public int ProxyPort { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether invalid SSL certificates should be ignored.
+        /// </summary>
+        public bool IgnoreInvalidSslCertificate { get; set; }
 
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

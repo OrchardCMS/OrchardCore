@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply an "equal" constraint to the named property
+        /// Apply an "equal" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply a "like" constraint to the named property
+        /// Apply a "like" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply a "greater than" constraint to the named property
+        /// Apply a "greater than" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -44,7 +44,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply a "greater than or equal" constraint to the named property
+        /// Apply a "greater than or equal" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -54,7 +54,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply a "less than" constraint to the named property
+        /// Apply a "less than" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply a "less than or equal" constraint to the named property
+        /// Apply a "less than or equal" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="value">The value for the property.</param>
@@ -74,7 +74,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Apply an "in" constraint to the named property
+        /// Apply an "in" constraint to the named property.
         /// </summary>
         /// <param name="propertyName">The name of the property.</param>
         /// <param name="values">An array of values.</param>
@@ -85,7 +85,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Return the conjunction of two expressions
+        /// Return the conjunction of two expressions.
         /// </summary>
         /// <param name="left">The left hand side expression.</param>
         /// <param name="right">The right hand side expression.</param>
@@ -96,7 +96,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Return the disjunction of two expressions
+        /// Return the disjunction of two expressions.
         /// </summary>
         /// <param name="left">The left hand side expression.</param>
         /// <param name="right">The right hand side expression.</param>
@@ -107,7 +107,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <summary>
-        /// Return the negation of an expression
+        /// Return the negation of an expression.
         /// </summary>
         /// <param name="expression">The expression to negate.</param>
         /// <returns>A <see cref="NotExpression" />.</returns>

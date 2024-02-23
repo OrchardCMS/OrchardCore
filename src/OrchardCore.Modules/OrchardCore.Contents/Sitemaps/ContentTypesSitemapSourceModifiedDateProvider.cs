@@ -31,8 +31,7 @@ namespace OrchardCore.Contents.Sitemaps
 
             if (source.IndexAll)
             {
-                var typesToIndex = _routeableContentTypeCoordinator
-                    .ListRoutableTypeDefinitions()
+                var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync())
                     .Select(ctd => ctd.Name);
 
                 var query = _session.Query<ContentItem>()
@@ -51,8 +50,7 @@ namespace OrchardCore.Contents.Sitemaps
             }
             else
             {
-                var typesToIndex = _routeableContentTypeCoordinator
-                    .ListRoutableTypeDefinitions()
+                var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync())
                     .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
                     .Select(ctd => ctd.Name);
 

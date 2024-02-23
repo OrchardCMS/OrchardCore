@@ -23,9 +23,9 @@ namespace OrchardCore.Facebook.Widgets
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(FacebookPluginPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(FacebookPluginPart), builder => builder
                 .Attachable()
-                .WithDescription("Provides a facebook plugin part to create facebook social plugin widgets."));
+                .WithDescription("Provides a Facebook plugin part to create Facebook social plugin widgets."));
 
             await _recipeMigrator.ExecuteAsync($"Widgets/migration{RecipesConstants.RecipeExtension}", this);
             return 1;

@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,6 +47,7 @@ namespace OrchardCore.OpenId.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
+        [Admin("OpenId/ServerConfiguration", "OpenIdServerConfiguration")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))

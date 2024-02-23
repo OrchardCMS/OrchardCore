@@ -26,7 +26,7 @@ namespace OrchardCore.Users.ViewModels
         public QueryFilterResult<User> FilterResult { get; set; }
 
         [BindNever]
-        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary RouteValues { get; set; } = [];
 
         [BindNever]
         public List<SelectListItem> UserFilters { get; set; }

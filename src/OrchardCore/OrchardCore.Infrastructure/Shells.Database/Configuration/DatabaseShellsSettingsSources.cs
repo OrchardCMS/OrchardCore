@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
@@ -44,7 +44,8 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+                var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
 
@@ -53,12 +54,9 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
-                var shellSettings = new JObject
-                {
-                    [tenant] = document.ShellsSettings[tenant]
-                };
-
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettings.ToString(Formatting.None))));
+                var shellSettings = new JsonObject { [tenant] = document.ShellsSettings[tenant] };
+                var shellSettingsString = shellSettings.ToJsonString(JOptions.Default);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }
 
@@ -71,7 +69,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
-                JObject tenantsSettings;
+                JsonObject tenantsSettings;
                 if (document is not null)
                 {
                     tenantsSettings = document.ShellsSettings;
@@ -79,10 +77,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellsSettings();
-                    tenantsSettings = new JObject();
+                    tenantsSettings = [];
                 }
 
-                var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
+                var settings = tenantsSettings[tenant] as JsonObject ?? [];
 
                 foreach (var key in data.Keys)
                 {
@@ -97,10 +95,9 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
 
                 tenantsSettings[tenant] = settings;
-
                 document.ShellsSettings = tenantsSettings;
 
-                session.Save(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
@@ -115,7 +112,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 if (document is not null)
                 {
                     document.ShellsSettings.Remove(tenant);
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
         }
@@ -130,17 +127,15 @@ namespace OrchardCore.Shells.Database.Configuration
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
-
                 if (document is null)
                 {
                     document = new DatabaseShellsSettings();
-
                     if (!_options.MigrateFromFiles || !await TryMigrateFromFileAsync(document))
                     {
                         return;
                     }
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
@@ -154,10 +149,8 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using var file = File.OpenText(_tenants);
-            var settings = await file.ReadToEndAsync();
-
-            document.ShellsSettings = JObject.Parse(settings);
+            using var fileStream = File.OpenRead(_tenants);
+            document.ShellsSettings = await JObject.LoadAsync(fileStream);
 
             return true;
         }

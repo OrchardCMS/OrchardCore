@@ -7,9 +7,10 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides SEO meta features",
     Category = "Content Management",
-    Dependencies = new string[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
         "OrchardCore.Recipes.Core",
-    }
+        "OrchardCore.Media",
+    ]
 )]

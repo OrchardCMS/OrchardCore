@@ -22,7 +22,7 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = [',', ';'];
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
@@ -109,7 +109,7 @@ namespace OrchardCore.Email.Services
             return result;
         }
 
-        private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
+        private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
         {
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
@@ -239,35 +239,6 @@ namespace OrchardCore.Email.Services
             return mimeMessage;
         }
 
-        private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            const string LogErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
-                "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
-                "is considered invalid with {SslPolicyErrors} policy errors";
-
-            if (sslPolicyErrors == SslPolicyErrors.None)
-            {
-                return true;
-            }
-
-            _logger.LogError(LogErrorMessage,
-                certificate.Subject,
-                certificate.Issuer,
-                certificate.GetCertHashString(),
-                certificate.GetExpirationDateString(),
-                sslPolicyErrors);
-
-            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
-            {
-                foreach (var chainStatus in chain.ChainStatus)
-                {
-                    _logger.LogError("Status: {Status} - {StatusInformation}", chainStatus.Status, chainStatus.StatusInformation);
-                }
-            }
-
-            return false;
-        }
-
         protected virtual Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
 
         private async Task<string> SendOnlineMessageAsync(MimeMessage message)
@@ -322,6 +293,35 @@ namespace OrchardCore.Email.Services
         {
             var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
             return message.WriteToAsync(mailPath, CancellationToken.None);
+        }
+
+        private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            const string logErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
+                                           "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
+                                           "is considered invalid with {SslPolicyErrors} policy errors";
+
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            _logger.LogError(logErrorMessage,
+                certificate.Subject,
+                certificate.Issuer,
+                certificate.GetCertHashString(),
+                certificate.GetExpirationDateString(),
+                sslPolicyErrors);
+
+            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
+            {
+                foreach (var chainStatus in chain.ChainStatus)
+                {
+                    _logger.LogError("Status: {Status} - {StatusInformation}", chainStatus.Status, chainStatus.StatusInformation);
+                }
+            }
+
+            return _options.IgnoreInvalidSslCertificate;
         }
     }
 }

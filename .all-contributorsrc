@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "Contributors.md"
+    "src/docs/community/contributors/README.md"
   ],
   "imageSize": 100,
   "commit": true,
@@ -2780,7 +2780,53 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "emrahtokalak",
+      "name": "Emrah Tokalak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90242?v=4",
+      "profile": "http://emrahtokalak.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vjacquet",
+      "name": "vjacquet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6363920?v=4",
+      "profile": "https://github.com/vjacquet",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yaricrolletservico",
+      "name": "yaricrolletservico",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101557629?v=4",
+      "profile": "https://github.com/yaricrolletservico",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "viktoriamagyar",
+      "name": "Viktória Magyar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84029837?v=4",
+      "profile": "https://github.com/viktoriamagyar",
+      "contributions": [
+        "eventOrganizing"
+      ]
+    },
+    {
+      "login": "SimonCropp",
+      "name": "Simon Cropp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/122666?v=4",
+      "profile": "https://github.com/SimonCropp",
+      "contributions": [
+        "code"
+      ]
     }
   ],
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }

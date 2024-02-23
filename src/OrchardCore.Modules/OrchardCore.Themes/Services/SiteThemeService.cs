@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
@@ -20,7 +19,7 @@ namespace OrchardCore.Themes.Services
 
         public async Task<IExtensionInfo> GetSiteThemeAsync()
         {
-            string currentThemeName = await GetSiteThemeNameAsync();
+            var currentThemeName = await GetSiteThemeNameAsync();
             if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;

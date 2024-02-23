@@ -162,8 +162,8 @@ namespace OrchardCore.Environment.Shell
         /// <param name="featureInfo">The info of the feature to be enabled.</param>
         /// <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies.</param>
-        /// <returns>An enumeration of the features to disable, empty if 'force' = true and a dependency is disabled</returns>
-        private IEnumerable<IFeatureInfo> GetFeaturesToEnable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
+        /// <returns>An enumeration of the features to disable, empty if 'force' = true and a dependency is disabled.</returns>
+        private List<IFeatureInfo> GetFeaturesToEnable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
             var featuresToEnable = _extensionManager
                 .GetFeatureDependencies(featureInfo.Id)
@@ -177,7 +177,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To enable '{FeatureId}', additional features need to be enabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return [];
             }
 
             return featuresToEnable;
@@ -189,8 +189,8 @@ namespace OrchardCore.Environment.Shell
         /// <param name="featureInfo">The info of the feature to be disabled.</param>
         /// <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable it's dependents.</param>
-        /// <returns>An enumeration of the features to enable, empty if 'force' = true and a dependent is enabled</returns>
-        private IEnumerable<IFeatureInfo> GetFeaturesToDisable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
+        /// <returns>An enumeration of the features to enable, empty if 'force' = true and a dependent is enabled.</returns>
+        private List<IFeatureInfo> GetFeaturesToDisable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
             var featuresToDisable = _extensionManager
                 .GetDependentFeatures(featureInfo.Id)
@@ -204,7 +204,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To disable '{FeatureId}', additional features need to be disabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return [];
             }
 
             return featuresToDisable;

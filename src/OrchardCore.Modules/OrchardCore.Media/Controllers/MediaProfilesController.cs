@@ -21,17 +21,20 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin]
+    [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
     public class MediaProfilesController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly MediaProfilesManager _mediaProfilesManager;
         private readonly MediaOptions _mediaOptions;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public MediaProfilesController(
             IAuthorizationService authorizationService,
@@ -49,11 +52,12 @@ namespace OrchardCore.Media.Controllers
             _mediaOptions = mediaOptions.Value;
             _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
+        [Admin("MediaProfiles", "MediaProfiles.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
@@ -75,9 +79,18 @@ namespace OrchardCore.Media.Controllers
 
             mediaProfiles = mediaProfiles.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize)
+                .ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new MediaProfileIndexViewModel
             {
@@ -85,21 +98,21 @@ namespace OrchardCore.Media.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -115,7 +128,7 @@ namespace OrchardCore.Media.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(MediaProfileViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
@@ -142,8 +155,8 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-                var isCustomHeight = model.SelectedHeight != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+                var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
+                var isCustomHeight = model.SelectedHeight != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
 
                 var mediaProfile = new MediaProfile
                 {
@@ -183,15 +196,14 @@ namespace OrchardCore.Media.Controllers
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            if (!mediaProfilesDocument.MediaProfiles.ContainsKey(name))
+            if (!mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
 
-            var mediaProfile = mediaProfilesDocument.MediaProfiles[name];
             // Is a custom width if the width is not 0 and it is not in the array of supported sizes.
-            var isCustomWidth = mediaProfile.Width != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, mediaProfile.Width) < 0;
-            var isCustomHeight = mediaProfile.Height != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, mediaProfile.Height) < 0;
+            var isCustomWidth = mediaProfile.Width != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Width) < 0;
+            var isCustomHeight = mediaProfile.Height != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Height) < 0;
 
             var model = new MediaProfileViewModel
             {
@@ -237,8 +249,8 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCustomWidth = Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-                var isCustomHeight = Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+                var isCustomWidth = Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
+                var isCustomHeight = Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
 
                 var mediaProfile = new MediaProfile
                 {
@@ -294,7 +306,7 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
             {
@@ -317,7 +329,7 @@ namespace OrchardCore.Media.Controllers
                         await _notifier.SuccessAsync(H["Media profiles successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 
