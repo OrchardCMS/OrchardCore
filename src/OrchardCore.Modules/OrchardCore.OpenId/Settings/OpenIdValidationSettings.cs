@@ -9,6 +9,5 @@ namespace OrchardCore.OpenId.Settings
         public bool DisableTokenTypeValidation { get; set; }
         public string Tenant { get; set; }
         public Uri MetadataAddress { get; set; }
-
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
@@ -77,13 +78,13 @@ namespace OrchardCore.Workflows.Services
             return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
         }
 
-        public static Task<WorkflowExecutionContext> RestartWorkflowAsync(this IWorkflowManager workflowManager, Workflow workflow, WorkflowType workflowType)
+        public static Task<WorkflowExecutionContext> RestartWorkflowAsync(this IWorkflowManager workflowManager, Workflow workflow, WorkflowType workflowType, JsonSerializerOptions jsonSerializerOptions = null)
         {
             ArgumentNullException.ThrowIfNull(workflow);
 
             ArgumentNullException.ThrowIfNull(workflowType);
 
-            var state = workflow.State.ToObject<WorkflowState>();
+            var state = workflow.State.ToObject<WorkflowState>(jsonSerializerOptions);
 
             return workflowManager.RestartWorkflowAsync(workflowType, state.Input, workflow.CorrelationId);
         }
