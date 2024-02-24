@@ -34,8 +34,8 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost]
         [DeleteFileResultFilter]
-        [Admin("DeploymentPlan/ExportFile/Execute/{id}", "DeploymentPlanExportFileExecute")]
-        public async Task<IActionResult> Execute(long id)
+        [Admin("DeploymentPlan/ExportFile/ExecuteCompressed/{id}", "DeploymentPlanExportFileExecuteCompressed")]
+        public async Task<IActionResult> ExecuteCompressed(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -68,8 +68,8 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost]
         [DeleteFileResultFilter]
-        [Admin("DeploymentPlan/ExecuteJson/Execute/{id}", "DeploymentPlanExportFileExecuteJson")]
-        public async Task<IActionResult> ExecuteJson(long id)
+        [Admin("DeploymentPlan/ExecuteUncompressed/Execute/{id}", "DeploymentPlanExportFileExecuteUncompressed")]
+        public async Task<IActionResult> ExecuteUncompressed(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {

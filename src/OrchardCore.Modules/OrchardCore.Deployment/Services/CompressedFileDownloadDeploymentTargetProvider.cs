@@ -5,11 +5,11 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Deployment
 {
-    public class JsonFileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
+    public class CompressedFileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
         protected readonly IStringLocalizer S;
 
-        public JsonFileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
+        public CompressedFileDownloadDeploymentTargetProvider(IStringLocalizer<CompressedFileDownloadDeploymentTargetProvider> stringLocalizer)
         {
             S = stringLocalizer;
         }
@@ -19,13 +19,13 @@ namespace OrchardCore.Deployment
             return Task.FromResult<IEnumerable<DeploymentTarget>>(
                 new[] {
                     new DeploymentTarget(
-                        name: S["Json File Download"],
-                        description: S["Download a Json deployment plan locally."],
+                        name: S["Compressed File Download"],
+                        description: S["Download a compressed deployment plan locally."],
                         route: new RouteValueDictionary(new
                         {
                             area = "OrchardCore.Deployment",
                             controller = "ExportFile",
-                            action = "ExecuteJson"
+                            action = "ExecuteCompressed"
                         })
                     )
                 }

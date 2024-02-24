@@ -5,11 +5,11 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Deployment
 {
-    public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
+    public class UncompressedFileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
         protected readonly IStringLocalizer S;
 
-        public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
+        public UncompressedFileDownloadDeploymentTargetProvider(IStringLocalizer<CompressedFileDownloadDeploymentTargetProvider> stringLocalizer)
         {
             S = stringLocalizer;
         }
@@ -19,13 +19,13 @@ namespace OrchardCore.Deployment
             return Task.FromResult<IEnumerable<DeploymentTarget>>(
                 new[] {
                     new DeploymentTarget(
-                        name: S["File Download"],
-                        description: S["Download a compressed deployment plan locally."],
+                        name: S["Uncompressed File Download"],
+                        description: S["Download an uncompressed deployment plan locally."],
                         route: new RouteValueDictionary(new
                         {
                             area = "OrchardCore.Deployment",
                             controller = "ExportFile",
-                            action = "Execute"
+                            action = "ExecuteUncompressed"
                         })
                     )
                 }
