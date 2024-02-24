@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Localization.Data;
 
 public interface ILocalizationDataProvider
 {
-    IEnumerable<DataLocalizedString> GetDescriptors();
+    Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync();
 }

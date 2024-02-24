@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Localization.Data;
 
@@ -17,9 +18,8 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
     }
     
     // TODO: Check if there's a better way to get the fields
-    public IEnumerable<DataLocalizedString> GetDescriptors() => _contentDefinitionService.GetTypesAsync()
-        .GetAwaiter()
-        .GetResult()
-        .SelectMany(t => t.TypeDefinition.Parts)
-        .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(_contentFieldsContext, f.Name)));
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
+        => (await _contentDefinitionService.GetTypesAsync())
+            .SelectMany(t => t.TypeDefinition.Parts)
+            .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(_contentFieldsContext, f.Name)));
 }

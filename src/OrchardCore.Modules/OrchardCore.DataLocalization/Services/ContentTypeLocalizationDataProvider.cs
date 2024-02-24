@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Localization.Data;
 
@@ -16,8 +17,7 @@ public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
         _contentDefinitionService = contentDefinitionService;
     }
     
-    public IEnumerable<DataLocalizedString> GetDescriptors() => _contentDefinitionService.GetTypesAsync()
-        .GetAwaiter()
-        .GetResult()
-        .Select(t => new DataLocalizedString(_contentTypesContext, t.DisplayName));
+    public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
+        => (await _contentDefinitionService.GetTypesAsync())
+            .Select(t => new DataLocalizedString(_contentTypesContext, t.DisplayName));
 }

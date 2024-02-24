@@ -8,7 +8,7 @@ namespace OrchardCore.DataLocalization.Services.Tests;
 public class DataLocalizationProviderTests
 {
     [Fact]
-    public void ContentTypeDataLocalizationProvider_GetLocalizedStrings()
+    public async Task ContentTypeDataLocalizationProvider_GetLocalizedStrings()
     {
         var contentDefinitionService = new Mock<IContentDefinitionService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
@@ -18,14 +18,14 @@ public class DataLocalizationProviderTests
                 new() { DisplayName = "News" }
             });
         var dataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
-        var localizedStrings = dataLocalizationProvider.GetDescriptors();
+        var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
         Assert.Equal(3, localizedStrings.Count());
         Assert.True(localizedStrings.All(s => s.Context == "Content Types"));
     }
 
     [Fact]
-    public void ContentFieldDataLocalizationProvider_GetLocalizedStrings()
+    public async Task ContentFieldDataLocalizationProvider_GetLocalizedStrings()
     {
         var contentDefinitionService = new Mock<IContentDefinitionService>();
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
@@ -35,7 +35,7 @@ public class DataLocalizationProviderTests
                 new() { DisplayName = "Person", TypeDefinition = CreateContentTypeDefinition("Person", "Person",  ["FirstName", "LastName"]) },
             });
         var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
-        var localizedStrings = dataLocalizationProvider.GetDescriptors();
+        var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
 
         Assert.Equal(5, localizedStrings.Count());
         Assert.True(localizedStrings.All(s => s.Context == "Content Fields"));
