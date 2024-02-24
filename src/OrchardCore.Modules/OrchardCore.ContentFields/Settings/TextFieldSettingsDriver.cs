@@ -18,8 +18,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;
                 model.DefaultValue = settings.DefaultValue;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

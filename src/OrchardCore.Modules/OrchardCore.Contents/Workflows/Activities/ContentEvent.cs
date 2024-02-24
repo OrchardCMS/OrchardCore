@@ -11,7 +11,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentEvent : ContentActivity, IEvent
     {
-        protected ContentEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(contentManager, scriptEvaluator, localizer)
+        protected ContentEvent(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

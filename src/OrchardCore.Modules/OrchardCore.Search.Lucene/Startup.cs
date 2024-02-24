@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,6 @@ using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Search.Lucene
 {
