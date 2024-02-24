@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 
@@ -15,12 +14,9 @@ public class MemoryDeploymentPlanResult : DeploymentPlanResult
         _stream = stream;
     }
 
-    public override async Task FinalizeAsync()
+    protected override async Task WriteAsync()
     {
-        Recipe["steps"] = JArray.FromObject(Steps);
-
         // Add the recipe steps as its own file content
-
         await _stream.WriteAsync(GetContent());
     }
 }

@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 
@@ -13,7 +11,6 @@ namespace OrchardCore.Deployment
         protected DeploymentPlanResult(RecipeDescriptor recipeDescriptor)
             : base(recipeDescriptor)
         {
-
         }
 
         public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor)
@@ -24,17 +21,10 @@ namespace OrchardCore.Deployment
 
         public IFileBuilder FileBuilder { get; }
 
-        public override async Task FinalizeAsync()
+        protected override Task WriteAsync()
         {
-            Recipe["steps"] = JArray.FromObject(Steps);
-
             // Add the recipe steps as its own file content
-            await FileBuilder.SetFileAsync("Recipe.json", GetContent());
-        }
-
-        protected byte[] GetContent()
-        {
-            return Encoding.UTF8.GetBytes(Recipe.ToString());
+            return FileBuilder.SetFileAsync("Recipe.json", GetContent());
         }
     }
 }
