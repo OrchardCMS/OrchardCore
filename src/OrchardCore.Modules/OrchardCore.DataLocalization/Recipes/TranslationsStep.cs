@@ -1,10 +1,10 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
 using OrchardCore.DataLocalization.Models;
 using OrchardCore.DataLocalization.Services;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.DataLocalization.Recipes;
 
@@ -19,20 +19,33 @@ public class TranslationsStep : IRecipeStepHandler
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        if (!String.Equals(context.Name, "DynamicDataTranslations", StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.Name, "DynamicDataTranslations", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        if (context.Step.Property("DynamicDataTranslations").Value is JObject translations)
-        {
-            foreach (var property in translations.Properties())
-            {
-                var name = property.Name;
-                var value = property.Value.ToObject<Translation>();
+        var model = context.Step.ToObject<TranslationsStepModel>();
 
-                await _translationsManager.UpdateTranslationAsync(name, new[] { value });
+        foreach (var importedTranslation in model.Translations)
+        {
+            if (string.IsNullOrWhiteSpace(importedTranslation.Name))
+            {
+                continue;
             }
+
+            await _translationsManager.UpdateTranslationAsync(importedTranslation.Name, new[] { importedTranslation.Translation });
         }
     }
+
+    public class TranslationsStepModel
+    {
+        public TranslationsStepRoleModel[] Translations { get; set; }
+    }
+}
+
+public class TranslationsStepRoleModel
+{
+    public string Name { get; set; }
+
+    public Translation Translation { get; set; }
 }

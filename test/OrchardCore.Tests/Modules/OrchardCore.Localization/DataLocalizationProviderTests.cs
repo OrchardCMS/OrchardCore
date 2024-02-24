@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
@@ -11,7 +12,7 @@ namespace OrchardCore.Modules.Localization.Tests
         public void ContentTypeDataLocalizationProvider_GetLocalizedStrings()
         {
             var contentDefinitionService = new Mock<IContentDefinitionService>();
-            contentDefinitionService.Setup(cds => cds.GetTypes())
+            contentDefinitionService.Setup(cds => cds.GetTypesAsync())
                 .Returns(() => new List<EditTypeViewModel> {
                         new EditTypeViewModel { DisplayName = "Article" },
                         new EditTypeViewModel { DisplayName = "BlogPost" },
@@ -28,7 +29,7 @@ namespace OrchardCore.Modules.Localization.Tests
         public void ContentFieldDataLocalizationProvider_GetLocalizedStrings()
         {
             var contentDefinitionService = new Mock<IContentDefinitionService>();
-            contentDefinitionService.Setup(cds => cds.GetTypes())
+            contentDefinitionService.Setup(cds => cds.GetTypesAsync())
                 .Returns(() => new List<EditTypeViewModel>
                 {
                     new EditTypeViewModel { DisplayName = "BlogPost", TypeDefinition = CreateContentTypeDefinition("BlogPost", "Blog Post", new [] { "Title", "Body", "Author" }) },
@@ -44,7 +45,7 @@ namespace OrchardCore.Modules.Localization.Tests
         private ContentTypeDefinition CreateContentTypeDefinition(string name, string displayName, string[] fields)
         {
             var contentPartFieldDefinitions = new List<ContentPartFieldDefinition>();
-            var settings = new JObject();
+            var settings = new JsonObject();
 
             foreach (var field in fields)
             {

@@ -1,8 +1,8 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Deployment;
 using OrchardCore.DataLocalization.Services;
+using OrchardCore.Deployment;
 
 namespace OrchardCore.DataLocalization.Deployment;
 
@@ -24,7 +24,7 @@ public class AllDataTranslationsDeploymentSource : IDeploymentSource
             return;
         }
 
-        var translationObjects = new JObject();
+        var translationObjects = new JsonArray();
         var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
 
         foreach (var translation in translationsDocument.Translations)
@@ -32,10 +32,11 @@ public class AllDataTranslationsDeploymentSource : IDeploymentSource
             translationObjects[translation.Key] = JObject.FromObject(translation.Value);
         }
 
-        result.Steps.Add(new JObject(
-            new JProperty("name", "DynamicDataTranslations"),
-            new JProperty("DynamicDataTranslations", translationObjects)
-        ));
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "DynamicDataTranslations",
+            ["DynamicDataTranslations"] = translationObjects,
+        });
 
         await Task.CompletedTask;
     }
