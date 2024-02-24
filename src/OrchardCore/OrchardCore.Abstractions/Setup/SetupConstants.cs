@@ -14,6 +14,5 @@ namespace OrchardCore.Abstractions.Setup
         public const string DatabaseSchema = "DatabaseSchema";
         public const string SiteTimeZone = "SiteTimeZone";
         public const string FeatureProfile = "FeatureProfile";
-
     }
 }

@@ -1,6 +1,6 @@
 namespace OrchardCore;
 
-public static class ShellOptionConstants
+public class ShellOptionConstants
 {
     public const string OrchardAppData = "ORCHARD_APP_DATA";
     public const string DefaultAppDataPath = "App_Data";
