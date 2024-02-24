@@ -4,9 +4,9 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DataLocalization.Deployment;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization;
 

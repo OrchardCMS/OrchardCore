@@ -43,7 +43,7 @@ public class DataLocalizer : IDataLocalizer
         get
         {
             var (translation, argumentsWithCount) = GetTranslation(name, arguments);
-            var formatted = String.Format(translation.Value, argumentsWithCount);
+            var formatted = string.Format(translation.Value, argumentsWithCount);
 
             return new LocalizedString(name, formatted, translation.ResourceNotFound);
         }
@@ -60,10 +60,7 @@ public class DataLocalizer : IDataLocalizer
 
     public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
     {
-        if (name == null)
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
+        ArgumentNullException.ThrowIfNull(name);
 
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
@@ -80,7 +77,7 @@ public class DataLocalizer : IDataLocalizer
             }
             else
             {
-                argumentsWithCount = new object[] { pluralArgument.Count };
+                argumentsWithCount = [pluralArgument.Count];
             }
 
             translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
@@ -139,7 +136,7 @@ public class DataLocalizer : IDataLocalizer
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
+                _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, string.Join(", ", pluralForms));
             }
 
             return pluralForms[^1];

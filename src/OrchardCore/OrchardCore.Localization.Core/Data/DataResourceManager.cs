@@ -11,7 +11,7 @@ public class DataResourceManager
 {
     private const string _cacheKeyPrefix = "CultureDictionary-";
 
-    private static readonly PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
+    private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n != 1 ? 1 : 0);
 
     private readonly IDataTranslationProvider _translationProvider;
     private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
@@ -31,12 +31,12 @@ public class DataResourceManager
 
     public string GetString(string name, string context, CultureInfo culture)
     {
-        if (String.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
         {
             throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
         }
 
-        if (String.IsNullOrEmpty(context))
+        if (string.IsNullOrEmpty(context))
         {
             throw new ArgumentException($"'{nameof(context)}' cannot be null or empty.", nameof(context));
         }
@@ -59,10 +59,7 @@ public class DataResourceManager
 
     public IDictionary<string, string> GetResources(CultureInfo culture, bool tryParents)
     {
-        if (culture is null)
-        {
-            throw new ArgumentNullException(nameof(culture));
-        }
+        ArgumentNullException.ThrowIfNull(culture);
 
         var currentCulture = culture;
 
@@ -95,7 +92,7 @@ public class DataResourceManager
     {
         var cachedDictionary = _cache.GetOrCreate(_cacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
         {
-            var rule = DefaultPluralRule;
+            var rule = _defaultPluralRule;
 
             foreach (var provider in _pluralRuleProviders)
             {
@@ -105,7 +102,7 @@ public class DataResourceManager
                 }
             }
 
-            var dictionary = new CultureDictionary(culture.Name, rule ?? DefaultPluralRule);
+            var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
             _translationProvider.LoadTranslations(culture.Name, dictionary);
 
             return dictionary;

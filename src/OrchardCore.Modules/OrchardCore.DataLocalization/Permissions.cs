@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -13,29 +12,22 @@ public class Permissions : IPermissionProvider
     /// <summary>
     /// Gets a permission for managing the cultures.
     /// </summary>
-    public static readonly Permission ManageLocalization = new Permission("ManageLocalization", "Manage dynamic localizations");
+    public static readonly Permission ManageLocalization = new("ManageLocalization", "Manage dynamic localizations");
 
-    /// <inheritdocs />
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageLocalization
+    ];
+
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[] { ManageLocalization }.AsEnumerable());
-    }
+        => Task.FromResult(_allPermissions);
 
-    /// <inheritdocs />
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] { ManageLocalization }
-            },
-            new PermissionStereotype
-            {
-                Name = "Editor",
-                Permissions = new[] { ManageLocalization }
-            }
-        };
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }
