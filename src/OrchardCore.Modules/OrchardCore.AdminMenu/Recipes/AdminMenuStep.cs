@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,10 +16,16 @@ namespace OrchardCore.AdminMenu.Recipes
     public class AdminMenuStep : IRecipeStepHandler
     {
         private readonly IAdminMenuService _adminMenuService;
+        private readonly JsonSerializerOptions _serializationOptions;
 
-        public AdminMenuStep(IAdminMenuService adminMenuService)
+        public AdminMenuStep(
+            IAdminMenuService adminMenuService,
+            IOptions<JsonSerializerOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
+
+            // The recipe step contains polymorphic types (menu items) which need to be resolved
+            _serializationOptions = serializationOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,13 +35,11 @@ namespace OrchardCore.AdminMenu.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<AdminMenuStepModel>();
-
-            // var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
+            var model = context.Step.ToObject<AdminMenuStepModel>(_serializationOptions);
 
             foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var adminMenu = token.ToObject<Models.AdminMenu>(/*serializer*/);
+                var adminMenu = token.ToObject<Models.AdminMenu>(_serializationOptions);
 
                 // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
                 if (string.IsNullOrEmpty(adminMenu.Id))

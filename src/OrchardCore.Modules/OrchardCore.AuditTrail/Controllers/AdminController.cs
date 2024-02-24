@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.ViewModels;
@@ -51,6 +52,7 @@ namespace OrchardCore.AuditTrail.Controllers
             S = stringLocalizer;
         }
 
+        [Admin("AuditTrail/{correlationId?}", "AuditTrailIndex")]
         public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, string correlationId = "")
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
@@ -137,6 +139,7 @@ namespace OrchardCore.AuditTrail.Controllers
             return RedirectToAction(nameof(Index), options.RouteValues);
         }
 
+        [Admin("AuditTrail/Display/{auditTrailEventId}", "AuditTrailDisplay")]
         public async Task<ActionResult> Display(string auditTrailEventId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))

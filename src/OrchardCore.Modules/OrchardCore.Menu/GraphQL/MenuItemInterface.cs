@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.GraphQL
 {

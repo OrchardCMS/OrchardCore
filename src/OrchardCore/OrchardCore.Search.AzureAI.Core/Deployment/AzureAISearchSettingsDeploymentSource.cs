@@ -12,9 +12,7 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : I
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var settingsStep = step as AzureAISearchSettingsDeploymentStep;
-
-        if (settingsStep == null)
+        if (step is not AzureAISearchSettingsDeploymentStep)
         {
             return;
         }

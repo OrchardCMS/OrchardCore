@@ -1,7 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -12,7 +12,8 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using YesSql;
+using OrchardCore.Json;
+using OrchardCore.Json.Serialization;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -38,8 +39,21 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _prefix = "tp";
             _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
-            _store.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
-            _prefixedStore.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
+            var jsonDerivedTypesOptions = new JsonDerivedTypesOptions();
+
+            var jsonOptions = new JsonSerializerOptions(JOptions.Base);
+            jsonOptions.TypeInfoResolverChain.Add(new System.Text.Json.Serialization.PolymorphicJsonTypeInfoResolver(jsonDerivedTypesOptions));
+            jsonOptions.Converters.Add(DynamicJsonConverter.Instance);
+            jsonOptions.Converters.Add(PathStringJsonConverter.Instance);
+
+            var jsonSerializerOptions = new Mock<IOptions<JsonSerializerOptions>>();
+            jsonSerializerOptions.Setup(x => x.Value)
+                .Returns(jsonOptions);
+
+            var contentSerializer = new DefaultJsonContentSerializer(jsonSerializerOptions.Object);
+
+            _store.Configuration.ContentSerializer = contentSerializer;
+            _prefixedStore.Configuration.ContentSerializer = contentSerializer;
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -143,7 +157,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
             var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
-                            .ResolveAsync(context) as IEnumerable<ContentItem>;            
+                            .ResolveAsync(context) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);

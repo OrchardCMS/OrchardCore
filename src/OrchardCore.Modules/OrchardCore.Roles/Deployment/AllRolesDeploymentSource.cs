@@ -16,7 +16,9 @@ namespace OrchardCore.Roles.Deployment
         private readonly RoleManager<IRole> _roleManager;
         private readonly IRoleService _roleService;
 
-        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleService roleService)
+        public AllRolesDeploymentSource(
+            RoleManager<IRole> roleManager,
+            IRoleService roleService)
         {
             _roleManager = roleManager;
             _roleService = roleService;

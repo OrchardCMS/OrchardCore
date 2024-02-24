@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 
