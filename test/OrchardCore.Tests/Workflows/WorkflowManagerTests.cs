@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Locking.Distributed;
@@ -113,6 +114,8 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
+            var jsonOptionsMock = new Mock<IOptions<JsonSerializerOptions>>();
+
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
@@ -124,6 +127,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
+                jsonOptionsMock.Object,
                 clock.Object
                 );
 
