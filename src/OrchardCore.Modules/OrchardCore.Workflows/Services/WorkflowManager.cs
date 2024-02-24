@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -30,6 +32,7 @@ namespace OrchardCore.Workflows.Services
         private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IClock _clock;
 
         private readonly Dictionary<string, int> _recursions = [];
@@ -47,6 +50,7 @@ namespace OrchardCore.Workflows.Services
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IClock clock)
         {
             _activityLibrary = activityLibrary;
@@ -59,6 +63,7 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _clock = clock;
         }
 
@@ -73,7 +78,7 @@ namespace OrchardCore.Workflows.Services
                 State = JObject.FromObject(new WorkflowState
                 {
                     ActivityStates = workflowType.Activities.ToDictionary(x => x.ActivityId, x => x.Properties)
-                }),
+                }, _jsonSerializerOptions),
                 CorrelationId = correlationId,
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
@@ -90,7 +95,7 @@ namespace OrchardCore.Workflows.Services
 
             ArgumentNullException.ThrowIfNull(workflow);
 
-            var state = workflow.State.ToObject<WorkflowState>();
+            var state = workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
                 if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
@@ -551,7 +556,7 @@ namespace OrchardCore.Workflows.Services
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
         {
-            var state = workflowContext.Workflow.State.ToObject<WorkflowState>();
+            var state = workflowContext.Workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
 
             state.Input = await SerializeAsync(workflowContext.Input);
             state.Output = await SerializeAsync(workflowContext.Output);
@@ -560,7 +565,7 @@ namespace OrchardCore.Workflows.Services
             state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
             state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
-            workflowContext.Workflow.State = JObject.FromObject(state);
+            workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
             await _workflowStore.SaveAsync(workflowContext.Workflow);
         }
 

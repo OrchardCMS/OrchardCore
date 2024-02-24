@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -28,6 +29,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -151,6 +153,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
+
+            services.AddTransient<IConfigureOptions<JsonSerializerOptions>, JsonSerializerOptionsConfiguration>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();

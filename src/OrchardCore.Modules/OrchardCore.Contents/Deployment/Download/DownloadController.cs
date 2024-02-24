@@ -18,8 +18,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
         public DownloadController(
             IAuthorizationService authorizationService,
-            IContentManager contentManager
-            )
+            IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
