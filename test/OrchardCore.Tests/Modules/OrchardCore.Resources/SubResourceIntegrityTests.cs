@@ -6,6 +6,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
 public class SubResourceIntegrityTests
 {
+    private static readonly HttpClient _httpClient = new();
+
     [Fact]
     public async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
     {
@@ -58,12 +60,7 @@ public class SubResourceIntegrityTests
 
     private static async Task<string> GetSubResourceIntegrityAsync(string url)
     {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(url)
-        };
-
-        var data = await httpClient.GetByteArrayAsync(url);
+        var data = await _httpClient.GetByteArrayAsync(url);
 
         using var memoryStream = new MemoryStream(data);
         using var sha384Hash = SHA384.Create();
