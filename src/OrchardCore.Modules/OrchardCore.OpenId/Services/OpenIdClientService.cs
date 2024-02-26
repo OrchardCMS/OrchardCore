@@ -13,6 +13,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientService(
