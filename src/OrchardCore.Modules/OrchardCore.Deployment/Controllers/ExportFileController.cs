@@ -34,7 +34,7 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost]
         [DeleteFileResultFilter]
-        [Admin("DeploymentPlan/ExportFile/ExecuteCompressed/{id}", "DeploymentPlanExportFileExecuteCompressed")]
+        [Admin("DeploymentPlan/ExportFile/Execute/{id}", "DeploymentPlanExportFileExecute")]
         public async Task<IActionResult> Execute(long id, string format = "")
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
