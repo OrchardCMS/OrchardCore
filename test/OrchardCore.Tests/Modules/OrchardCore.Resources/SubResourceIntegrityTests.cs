@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
 public class SubResourceIntegrityTests : IDisposable
 {
-    private static readonly HttpClient _httpClient = new();
+    private readonly HttpClient _httpClient = new();
 
     [Fact]
     public async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
@@ -40,7 +40,7 @@ public class SubResourceIntegrityTests : IDisposable
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(resourceDefinition.UrlCdnDebug);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(_httpClient, resourceDefinition.UrlCdnDebug);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity),
                             $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -48,7 +48,7 @@ public class SubResourceIntegrityTests : IDisposable
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(resourceDefinition.UrlCdn);
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(_httpClient, resourceDefinition.UrlCdn);
 
                         Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity),
                             $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
@@ -58,9 +58,9 @@ public class SubResourceIntegrityTests : IDisposable
         }
     }
 
-    private static async Task<string> GetSubResourceIntegrityAsync(string url)
+    private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url)
     {
-        var data = await _httpClient.GetByteArrayAsync(url);
+        var data = await httpClient.GetByteArrayAsync(url);
 
         using var memoryStream = new MemoryStream(data);
         using var sha384Hash = SHA384.Create();
