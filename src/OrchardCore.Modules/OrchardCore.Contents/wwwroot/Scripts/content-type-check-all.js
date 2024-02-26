@@ -4,7 +4,7 @@
 */
 
 /** Content Type Check All **/
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener('DOMContentLoaded', function (event) {
   var checkAllContainer = document.querySelectorAll('.check-all.content-types');
   checkAllContainer.forEach(function (container) {
     var master = container.querySelector('input[type="checkbox"].master');

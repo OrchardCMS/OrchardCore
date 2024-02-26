@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,7 +12,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Search.Lucene.Recipes
 {
     /// <summary>
-    /// This recipe step rebuilds a lucene index.
+    /// This recipe step rebuilds a Lucene index.
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {

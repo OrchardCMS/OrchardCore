@@ -62,7 +62,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin]
+    [Admin("Authenticator/Configure/Email", "ConfigureEmailAuthenticator")]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -79,7 +79,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View();
     }
 
-    [HttpPost, Admin]
+    [HttpPost]
+    [Admin("Authenticator/Configure/Email/RequestCode", "ConfigureEmailAuthenticatorRequestCode")]
     public async Task<IActionResult> RequestCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -121,6 +122,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     }
 
     [HttpPost]
+    [Admin("Authenticator/Configure/Email/ValidateCode", "ConfigureEmailAuthenticatorValidateCode")]
     public async Task<IActionResult> ValidateCode(EnableEmailAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);

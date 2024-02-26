@@ -34,6 +34,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 .Returns(
                     new ValueTask<object>(actual));
 
+
             var step = new OpenIdApplicationStep(appManagerMock.Object);
             var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext

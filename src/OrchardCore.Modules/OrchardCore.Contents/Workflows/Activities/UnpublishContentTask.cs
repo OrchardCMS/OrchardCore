@@ -12,7 +12,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class UnpublishContentTask : ContentTask
     {
-        public UnpublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UnpublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public UnpublishContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<UnpublishContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
