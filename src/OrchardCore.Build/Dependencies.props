@@ -25,10 +25,10 @@
     <PackageManagement Include="GraphQL.DataLoader" Version="7.8.0" />
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="7.8.0" />
-    <PackageManagement Include="Jint" Version="3.0.0" />
+    <PackageManagement Include="Jint" Version="3.0.1" />
     <PackageManagement Include="HtmlSanitizer" Version="8.1.844-beta" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="libphonenumber-csharp" Version="8.13.30" />
+    <PackageManagement Include="libphonenumber-csharp" Version="8.13.31" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
@@ -58,7 +58,7 @@
     <PackageManagement Include="OpenIddict.Validation.SystemNetHttp" Version="5.2.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.8.0" />
     <PackageManagement Include="PdfPig" Version="0.1.8" />
-    <PackageManagement Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageManagement Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageManagement Include="Shortcodes" Version="1.3.3" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="3.1.0" />
     <PackageManagement Include="StackExchange.Redis" Version="2.7.20" />
