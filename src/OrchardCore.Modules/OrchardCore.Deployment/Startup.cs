@@ -22,8 +22,8 @@ namespace OrchardCore.Deployment
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddSingleton<IDeploymentTargetProvider, CompressedFileDownloadDeploymentTargetProvider>();
-            services.AddSingleton<IDeploymentTargetProvider, UncompressedFileDownloadDeploymentTargetProvider>();
+            services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
+            //services.AddSingleton<IDeploymentTargetProvider, UncompressedFileDownloadDeploymentTargetProvider>();
 
             // Custom File deployment step
             services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();

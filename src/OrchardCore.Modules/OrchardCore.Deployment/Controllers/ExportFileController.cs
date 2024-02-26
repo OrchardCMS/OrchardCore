@@ -35,7 +35,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         [DeleteFileResultFilter]
         [Admin("DeploymentPlan/ExportFile/ExecuteCompressed/{id}", "DeploymentPlanExportFileExecuteCompressed")]
-        public async Task<IActionResult> ExecuteCompressed(long id)
+        public async Task<IActionResult> Execute(long id, string format = "")
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -49,14 +49,30 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
+            var recipeDescriptor = GetRecipeDescriptor(deploymentPlan);
+            var filename = deploymentPlan.Name.ToSafeName();
+
+            if (format == "json")
+            {
+                filename += ".json";
+
+                var stream = new MemoryStream();
+                var deploymentPlanResult = new MemoryDeploymentPlanResult(stream, recipeDescriptor);
+                await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
+                stream.Seek(0, SeekOrigin.Begin);
+
+                return new FileStreamResult(stream, "application/json")
+                {
+                    FileDownloadName = filename
+                };
+            }
+
             string archiveFileName;
-            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
+            filename += ".zip";
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
                 archiveFileName = fileBuilder.Folder + ".zip";
-
-                var recipeDescriptor = GetRecipeDescriptor(deploymentPlan);
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
@@ -64,37 +80,6 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
-        }
-
-        [HttpPost]
-        [DeleteFileResultFilter]
-        [Admin("DeploymentPlan/ExecuteUncompressed/Execute/{id}", "DeploymentPlanExportFileExecuteUncompressed")]
-        public async Task<IActionResult> ExecuteUncompressed(long id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
-            {
-                return Forbid();
-            }
-
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
-            {
-                return NotFound();
-            }
-
-            var filename = deploymentPlan.Name.ToSafeName() + ".json";
-            var recipeDescriptor = GetRecipeDescriptor(deploymentPlan);
-
-            var stream = new MemoryStream();
-            var deploymentPlanResult = new MemoryDeploymentPlanResult(stream, recipeDescriptor);
-            await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
-            stream.Seek(0, SeekOrigin.Begin);
-
-            return new FileStreamResult(stream, "application/json")
-            {
-                FileDownloadName = filename
-            };
         }
 
         private static RecipeDescriptor GetRecipeDescriptor(DeploymentPlan deploymentPlan)

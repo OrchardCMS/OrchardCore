@@ -104,6 +104,15 @@
                                 <div class="card-body">
                                     <h4 class="card-title">@target.Name</h4>
                                     <p>@target.Description</p>
+                                    @if (target.Formats?.Any() == true)
+                                    {
+                                        <select name="Format" class="form-select format-selector">
+                                            @foreach (var d in target.Formats)
+                                            {
+                                                <option value="@d.Value">@d.Text</option>
+                                            }
+                                        </select>
+                                    }
                                 </div>
                                 <div class="card-footer text-muted text-sm-end">
                                     <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" data-url-af="UnsafeUrl">@T["Select"]</a>
@@ -121,6 +130,16 @@
 </div>
 <script at="Foot">
     $(document).ready(function () {
+        $('.format-selector').on('change', function () {
+            var self = $(this);
+            var button = self.closest('div.col').find("[data-url-af]:first");
+
+            var parts = button.attr('href').split('?');
+            var urlParams = new URLSearchParams(parts[1] || '');
+            urlParams.set('format', self.val());
+            button.attr('href', parts[0] + '?' + decodeURIComponent(urlParams));
+        });
+
         $('#modalSteps').on('shown.bs.modal', function () {
             $('#search-box').trigger('focus');
         });
