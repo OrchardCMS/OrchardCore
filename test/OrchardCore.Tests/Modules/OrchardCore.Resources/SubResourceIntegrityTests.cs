@@ -4,7 +4,7 @@ using OrchardCore.Resources;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 
-public class SubResourceIntegrityTests
+public class SubResourceIntegrityTests : IDisposable
 {
     private static readonly HttpClient _httpClient = new();
 
@@ -68,4 +68,6 @@ public class SubResourceIntegrityTests
 
         return "sha384-" + Convert.ToBase64String(hash);
     }
+
+    public void Dispose() => _httpClient.Dispose();
 }
