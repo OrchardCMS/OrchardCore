@@ -62,7 +62,6 @@
     <PackageManagement Include="Shortcodes" Version="1.3.3" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="3.1.0" />
     <PackageManagement Include="StackExchange.Redis" Version="2.7.20" />
-    <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
     <PackageManagement Include="xunit" Version="2.7.0" />
     <PackageManagement Include="xunit.analyzers" Version="1.11.0" />
@@ -73,5 +72,18 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="5.0.0-beta-0002" />
     <PackageManagement Include="YesSql.Filters.Query" Version="5.0.0-beta-0002" />
     <PackageManagement Include="ZString" Version="2.5.1" />
+  </ItemGroup>
+
+  <!-- Analyzer packages. -->
+  <ItemGroup>
+    <PackageManagement Include="AsyncFixer" Version="1.6.0" />
+    <PackageManagement Include="DotNetAnalyzers.DocumentationAnalyzers" Version="1.0.0-beta.59" />
+    <PackageManagement Include="Meziantou.Analyzer" Version="2.0.139" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.8.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" />
+    <PackageManagement Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14" />
+    <PackageManagement Include="SecurityCodeScan.VS2019" Version="5.6.7" />
+    <PackageManagement Include="SonarAnalyzer.CSharp" Version="9.19.0.84025" />
+    <PackageManagement Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />    
   </ItemGroup>
 </Project>

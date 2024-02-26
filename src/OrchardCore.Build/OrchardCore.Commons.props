@@ -7,6 +7,7 @@
     <VersionPrefix>1.9.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -50,7 +51,16 @@
     </None>
   </ItemGroup>
 
+  <!-- Analyzer packages. -->
   <ItemGroup>
+    <PackageReference Include="AsyncFixer" PrivateAssets="all" />
+    <PackageReference Include="DotNetAnalyzers.DocumentationAnalyzers" PrivateAssets="all" />
+    <PackageReference Include="Meziantou.Analyzer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="SecurityCodeScan.VS2019" PrivateAssets="all" />
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
