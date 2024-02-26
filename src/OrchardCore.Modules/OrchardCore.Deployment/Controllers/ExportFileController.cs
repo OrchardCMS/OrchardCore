@@ -74,7 +74,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 archiveFileName = fileBuilder.Folder + ".zip";
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+                var deploymentPlanResult = new FileDeploymentPlanResult(fileBuilder, recipeDescriptor);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

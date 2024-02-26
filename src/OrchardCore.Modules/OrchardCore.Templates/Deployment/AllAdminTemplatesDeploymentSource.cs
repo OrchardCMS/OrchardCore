@@ -32,7 +32,12 @@ namespace OrchardCore.Templates.Deployment
                 {
                     var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
                     var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
-                    await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+
+                    if (result is FileDeploymentPlanResult fileResult)
+                    {
+                        await fileResult.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+                    }
+
                     templateObjects[template.Key] = JObject.FromObject(templateValue);
                 }
             }
