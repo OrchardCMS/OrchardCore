@@ -161,10 +161,21 @@ namespace OrchardCore.Tests.OrchardCore.Users
             mockDisplayHelper.Setup(x => x.ShapeExecuteAsync(It.IsAny<IShape>()))
                 .ReturnsAsync(HtmlString.Empty);
 
+            var userControllerService = new DefaultUserControllerService(
+                mockSmtpService,
+                mockDisplayHelper.Object,
+                HtmlEncoder.Default,
+                Array.Empty<IRegistrationFormEvents>(),
+                userService.Object, mockSiteService,
+                MockSignInManager(mockUserManager.Object).Object,
+                mockUserManager.Object,
+                Mock.Of<ILogger<DefaultUserControllerService>>());
+
             var controller = new RegistrationController(
                 mockUserManager.Object,
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
+                userControllerService,
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),

@@ -41,6 +41,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IUserControllerService _userControllerService;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -57,7 +58,8 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IUserControllerService userControllerService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -70,7 +72,7 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
-
+            _userControllerService = userControllerService;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -424,13 +426,13 @@ namespace OrchardCore.Users.Controllers
 
                     if (noInformationRequired)
                     {
-                        iUser = await this.RegisterUser(new RegisterViewModel()
+                        iUser = await _userControllerService.RegisterUser(this, new RegisterViewModel()
                         {
                             UserName = externalLoginViewModel.UserName,
                             Email = externalLoginViewModel.Email,
                             Password = null,
                             ConfirmPassword = null
-                        }, S["Confirm your account"], _logger);
+                        }, S["Confirm your account"]);
 
                         // If the registration was successful we can link the external provider and redirect the user.
                         if (iUser != null)
@@ -540,14 +542,14 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                var iUser = await this.RegisterUser(
+                var iUser = await _userControllerService.RegisterUser(this,
                     new RegisterViewModel()
                     {
                         UserName = model.UserName,
                         Email = model.Email,
                         Password = model.Password,
                         ConfirmPassword = model.ConfirmPassword
-                    }, S["Confirm your account"], _logger);
+                    }, S["Confirm your account"]);
 
                 if (iUser is null)
                 {

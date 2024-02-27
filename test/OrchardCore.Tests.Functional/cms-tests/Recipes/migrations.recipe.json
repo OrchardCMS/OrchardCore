@@ -23,6 +23,7 @@
         "OrchardCore.Admin",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
+        "OrchardCore.Email",
         "OrchardCore.Features",
         "OrchardCore.Navigation",
         "OrchardCore.Recipes",

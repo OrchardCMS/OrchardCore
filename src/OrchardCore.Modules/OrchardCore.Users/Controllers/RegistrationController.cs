@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
@@ -20,6 +21,7 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
+        private readonly IUserControllerService _userControllerService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
@@ -29,6 +31,7 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
+            IUserControllerService userControllerService,
             INotifier notifier,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
@@ -37,6 +40,7 @@ namespace OrchardCore.Users.Controllers
             _userManager = userManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
+            _userControllerService = userControllerService;
             _notifier = notifier;
             _logger = logger;
             H = htmlLocalizer;
@@ -89,7 +93,7 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
+                var iUser = await _userControllerService.RegisterUser(this, model, S["Confirm your account"]);
                 // If we get a user, redirect to returnUrl
                 if (iUser is User user)
                 {
@@ -159,7 +163,7 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
+                await _userControllerService.SendEmailConfirmationTokenAsync(this, user, S["Confirm your account"]);
 
                 await _notifier.SuccessAsync(H["Verification email sent."]);
             }
