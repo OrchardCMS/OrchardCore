@@ -42,7 +42,7 @@ using OrchardCore.OpenId;
     Id = OpenIdConstants.Features.Server,
     Name = "OpenID Authorization Server",
     Category = "OpenID Connect",
-    Description = "Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards. Note: to call the ApiController endpoints of this OrchardCore, you must also enable the 'OpenID Token Validation' feature to perform an OAuth 2.0 authentication.",
+    Description = "Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards. In order to reach the ApiController endpoints within OrchardCore, it is necessary to activate the 'OpenID Token Validation' feature for authentication validation.",
     Dependencies =
     [
         OpenIdConstants.Features.Core,
