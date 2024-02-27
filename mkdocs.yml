@@ -208,6 +208,8 @@ nav:
           - Data Migrations: docs/reference/modules/Migrations/README.md
           - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
           - Email: docs/reference/modules/Email/README.md
+          - SMTP Provider: docs/reference/modules/Email.Smtp/README.md
+          - Azure Email Provider: docs/reference/modules/Email.Azure/README.md
           - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
           - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
           - Health Check: docs/reference/modules/HealthChecks/README.md
