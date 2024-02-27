@@ -34,7 +34,7 @@ namespace OrchardCore.Users.Controllers
                 body = sw.ToString();
             }
 
-            var result = await smtpService.SendAsync(email, subject, body);
+            var result = await emailService.SendAsync(email, subject, body);
 
             return result.Succeeded;
         }

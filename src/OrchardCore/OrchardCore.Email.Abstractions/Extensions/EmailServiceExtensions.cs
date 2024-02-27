@@ -5,12 +5,12 @@ namespace OrchardCore.Email;
 /// <summary>
 /// Provides an extension methods to <see cref="ISmtpService"/>.
 /// </summary>
-public static class SmtpServiceExtensions
+public static class EmailServiceExtensions
 {
     /// <summary>
     /// Sends the specified message to an SMTP server for delivery.
     /// </summary>
-    /// <param name="smtpService">The <see cref="ISmtpService"/>.</param>
+    /// <param name="emailService">The <see cref="IEmailService"/>.</param>
     /// <param name="to">The email recipients.</param>
     /// <param name="subject">The email subject.</param>
     /// <param name="body">The email body.</param>
@@ -20,13 +20,13 @@ public static class SmtpServiceExtensions
     /// <param name="replyTo">The replied to emails. Defaults to <c>null</c>.</param>
     /// <returns></returns>
     /// <exception cref="System.ArgumentException"></exception>
-    public static async Task<SmtpResult> SendAsync(this ISmtpService smtpService, string to, string subject, string body, bool isHtmlBody = true, string cc = null, string bcc = null, string replyTo = null)
-        => await smtpService.SendAsync(from: null, to, subject, body, isHtmlBody, cc, bcc, replyTo);
+    public static async Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true, string cc = null, string bcc = null, string replyTo = null)
+        => await emailService.SendAsync(from: null, to, subject, body, isHtmlBody, cc, bcc, replyTo);
 
     /// <summary>
     /// Sends the specified message to an SMTP server for delivery.
     /// </summary>
-    /// <param name="smtpService">The <see cref="ISmtpService"/>.</param>
+    /// <param name="emailService">The <see cref="IEmailService"/>.</param>
     /// <param name="from">The email sender.</param>
     /// <param name="to">The email recipients.</param>
     /// <param name="subject">The email subject.</param>
@@ -35,7 +35,7 @@ public static class SmtpServiceExtensions
     /// <param name="cc">The carbon copy emails. Defaults to <c>null</c>.</param>
     /// <param name="bcc">A blind copy emails. Defaults to <c>null</c>.</param>
     /// <param name="replyTo">The replied to emails. Defaults to <c>null</c>.</param>
-    public static async Task<SmtpResult> SendAsync(this ISmtpService smtpService, string from, string to, string subject, string body, bool isHtmlBody = true, string cc = null, string bcc = null, string replyTo = null)
+    public static async Task<EmailResult> SendAsync(this IEmailService emailService, string from, string to, string subject, string body, bool isHtmlBody = true, string cc = null, string bcc = null, string replyTo = null)
     {
         var message = new MailMessage
         {
@@ -49,6 +49,6 @@ public static class SmtpServiceExtensions
             IsHtmlBody = isHtmlBody
         };
 
-        return await smtpService.SendAsync(message);
+        return await emailService.SendAsync(message);
     }
 }

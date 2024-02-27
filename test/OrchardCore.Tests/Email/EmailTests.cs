@@ -201,7 +201,7 @@ namespace OrchardCore.Tests.Email
             var smtp = CreateSmtpService(options);
 
             // Act
-            var result = await smtp.SendAsync(to: null, "Test", "Test Message");
+            var result = await smtp.SendAsync(message);
 
             // Assert
             Assert.True(result.Errors.Any());
@@ -225,7 +225,7 @@ namespace OrchardCore.Tests.Email
             var smtp = CreateSmtpService(settings);
 
             // Act
-            var result = await smtp.SendAsync("info@oc.com", "Test", "Test Message");
+            var result = await smtp.SendAsync(message);
 
             // Assert
             Assert.Null(result.Response);

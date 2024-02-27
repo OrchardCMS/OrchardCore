@@ -136,7 +136,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
 
-                    var result = await smtpService.SendAsync(email, subject, body, isHtmlBody: true);
+                    var result = await _emailService.SendAsync(email, subject, body, isHtmlBody: true);
 
                     if (!result.Succeeded)
                     {
