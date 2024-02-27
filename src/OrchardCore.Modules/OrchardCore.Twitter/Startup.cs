@@ -38,6 +38,8 @@ namespace OrchardCore.Twitter
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureTwitterSettings();
+
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
@@ -45,7 +47,8 @@ namespace OrchardCore.Twitter
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
-            services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
+
+            services.TryAddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()
@@ -74,12 +77,16 @@ namespace OrchardCore.Twitter
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureTwitterSettings();
+
             services.AddScoped<INavigationProvider, AdminMenuSignin>();
             services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
             services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
+
             // Register the options initializers required by the Twitter Handler.
             services.TryAddEnumerable(new[]
             {
+                ServiceDescriptor.Transient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>(),
                 // Orchard-specific initializers:
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, TwitterOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>(),

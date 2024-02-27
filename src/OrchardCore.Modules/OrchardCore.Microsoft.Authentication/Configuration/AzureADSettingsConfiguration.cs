@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -27,11 +26,11 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 
     public void Configure(AzureADSettings options)
     {
-        var settings = GetAzureADSettingsAsync()
+        var settings = _azureADService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.AppId = settings.AppId;
             options.DisplayName = settings.DisplayName;
@@ -39,22 +38,25 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
             options.TenantId = settings.TenantId;
             options.SaveTokens = settings.SaveTokens;
         }
+        else
+        {
+            if (!IsSettingsValid(options))
+            {
+                _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+            }
+        }
     }
 
-    private async Task<AzureADSettings> GetAzureADSettingsAsync()
+    private bool IsSettingsValid(AzureADSettings settings)
     {
-        var settings = await _azureADService.GetSettingsAsync();
-
         if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+                return false;
             }
-
-            return null;
         }
 
-        return settings;
+        return true;
     }
 }

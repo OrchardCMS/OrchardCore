@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -26,33 +25,36 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
 
     public void Configure(GoogleAuthenticationSettings options)
     {
-        var settings = GetGoogleAuthenticationSettingsAsync()
+        var settings = _googleAuthenticationService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.CallbackPath = settings.CallbackPath;
             options.ClientID = settings.ClientID;
             options.ClientSecret = settings.ClientSecret;
             options.SaveTokens = settings.SaveTokens;
         }
-    }
-
-    private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
-    {
-        var settings = await _googleAuthenticationService.GetSettingsAsync();
-
-        if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        else
         {
-            if (_shellSettings.IsRunning())
+            if (!IsSettingsValid(options))
             {
                 _logger.LogWarning("Google Authentication is not correctly configured.");
             }
+        }
+    }
 
-            return null;
+    private bool IsSettingsValid(GoogleAuthenticationSettings settings)
+    {
+        if (_googleAuthenticationService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
+        {
+            if (_shellSettings.IsRunning())
+            {
+                return false;
+            }
         }
 
-        return settings;
+        return true;
     }
 }

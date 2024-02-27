@@ -28,6 +28,8 @@ namespace OrchardCore.Facebook
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureFacebookSettings();
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 

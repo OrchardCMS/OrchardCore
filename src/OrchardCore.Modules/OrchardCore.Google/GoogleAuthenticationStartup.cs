@@ -30,6 +30,8 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureGoogleSettings();
+
             services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();

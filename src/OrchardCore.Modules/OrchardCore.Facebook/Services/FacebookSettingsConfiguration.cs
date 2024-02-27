@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -26,11 +25,11 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 
     public void Configure(FacebookSettings options)
     {
-        var settings = GetFacebookSettingsAsync()
+        var settings = _facebookService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
@@ -39,22 +38,26 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
             options.FBInitParams = settings.FBInitParams;
             options.SdkJs = settings.SdkJs;
         }
+        else
+        {
+            if (!IsSettingsValid(options))
+            {
+                _logger.LogWarning("Facebook is not correctly configured.");
+            }
+        }
     }
 
-    private async Task<FacebookSettings> GetFacebookSettingsAsync()
+    private bool IsSettingsValid(FacebookSettings settings)
     {
-        var settings = await _facebookService.GetSettingsAsync();
-
         if (_facebookService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("Facebook is not correctly configured.");
+                return false;
             }
 
-            return null;
         }
 
-        return settings;
+        return true;
     }
 }
