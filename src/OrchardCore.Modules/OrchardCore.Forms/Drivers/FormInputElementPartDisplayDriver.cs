@@ -7,41 +7,40 @@ using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
 {
-    public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
+    protected readonly IStringLocalizer S;
+
+    public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
     {
-        protected readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
+    public override IDisplayResult Edit(FormInputElementPart part)
+    {
+        return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
         {
-            S = stringLocalizer;
-        }
+            m.Name = part.Name;
+        });
+    }
 
-        public override IDisplayResult Edit(FormInputElementPart part)
+    public async override Task<IDisplayResult> UpdateAsync(FormInputElementPart part, IUpdateModel updater)
+    {
+        var viewModel = new FormInputElementPartEditViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
-                m.Name = part.Name;
-            });
-        }
-
-        public async override Task<IDisplayResult> UpdateAsync(FormInputElementPart part, IUpdateModel updater)
-        {
-            var viewModel = new FormInputElementPartEditViewModel();
-
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                if (string.IsNullOrWhiteSpace(viewModel.Name))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
-                }
-
-                part.Name = viewModel.Name?.Trim();
-                part.ContentItem.DisplayText = part.Name;
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
             }
 
-            return Edit(part);
+            part.Name = viewModel.Name?.Trim();
+            part.ContentItem.DisplayText = part.Name;
         }
+
+        return Edit(part);
     }
 }

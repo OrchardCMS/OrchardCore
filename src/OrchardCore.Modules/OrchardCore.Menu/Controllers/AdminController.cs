@@ -15,306 +15,305 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
 using YesSql;
 
-namespace OrchardCore.Menu.Controllers
+namespace OrchardCore.Menu.Controllers;
+
+[Admin("Menu/{action}/{id?}", "Menu{action}")]
+public class AdminController : Controller
 {
-    [Admin("Menu/{action}/{id?}", "Menu{action}")]
-    public class AdminController : Controller
+    private readonly IContentManager _contentManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ISession _session;
+    private readonly INotifier _notifier;
+    protected readonly IHtmlLocalizer H;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    public AdminController(
+        ISession session,
+        IContentManager contentManager,
+        IAuthorizationService authorizationService,
+        IContentItemDisplayManager contentItemDisplayManager,
+        IContentDefinitionManager contentDefinitionManager,
+        INotifier notifier,
+        IHtmlLocalizer<AdminController> localizer,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly IContentManager _contentManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISession _session;
-        private readonly INotifier _notifier;
-        protected readonly IHtmlLocalizer H;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        _contentManager = contentManager;
+        _authorizationService = authorizationService;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _contentDefinitionManager = contentDefinitionManager;
+        _session = session;
+        _notifier = notifier;
+        _updateModelAccessor = updateModelAccessor;
+        H = localizer;
+    }
 
-        public AdminController(
-            ISession session,
-            IContentManager contentManager,
-            IAuthorizationService authorizationService,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IContentDefinitionManager contentDefinitionManager,
-            INotifier notifier,
-            IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+    public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
+    {
+        if (string.IsNullOrWhiteSpace(id))
         {
-            _contentManager = contentManager;
-            _authorizationService = authorizationService;
-            _contentItemDisplayManager = contentItemDisplayManager;
-            _contentDefinitionManager = contentDefinitionManager;
-            _session = session;
-            _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            H = localizer;
+            return NotFound();
         }
 
-        public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return NotFound();
-            }
+            return Forbid();
+        }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
-            {
-                return Forbid();
-            }
+        var contentItem = await _contentManager.NewAsync(id);
 
-            var contentItem = await _contentManager.NewAsync(id);
+        dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+        model.MenuContentItemId = menuContentItemId;
+        model.MenuItemId = menuItemId;
 
+        return View(model);
+    }
+
+    [HttpPost]
+    [ActionName("Create")]
+    public async Task<IActionResult> CreatePost(string id, string menuContentItemId, string menuItemId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
+        {
+            return Forbid();
+        }
+
+        ContentItem menu;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+
+        if (!contentTypeDefinition.IsDraftable())
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+        }
+
+        if (menu == null)
+        {
+            return NotFound();
+        }
+
+        var contentItem = await _contentManager.NewAsync(id);
+
+        dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+
+        if (!ModelState.IsValid)
+        {
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
 
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Create")]
-        public async Task<IActionResult> CreatePost(string id, string menuContentItemId, string menuItemId)
+        if (menuItemId == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
-            {
-                return Forbid();
-            }
-
-            ContentItem menu;
-
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-            }
-
-            if (menu == null)
-            {
-                return NotFound();
-            }
-
-            var contentItem = await _contentManager.NewAsync(id);
-
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
-
-            if (!ModelState.IsValid)
-            {
-                model.MenuContentItemId = menuContentItemId;
-                model.MenuItemId = menuItemId;
-
-                return View(model);
-            }
-
-            if (menuItemId == null)
-            {
-                // Use the menu as the parent if no target is specified.
-                menu.Alter<MenuItemsListPart>(part => part.MenuItems.Add(contentItem));
-            }
-            else
-            {
-                // Look for the target menu item in the hierarchy.
-                var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
-
-                // Couldn't find targeted menu item.
-                if (parentMenuItem == null)
-                {
-                    return NotFound();
-                }
-
-                var menuItems = (JsonArray)parentMenuItem["MenuItemsListPart"]?["MenuItems"];
-
-                if (menuItems == null)
-                {
-                    parentMenuItem["MenuItemsListPart"] = new JsonObject
-                    {
-                        ["MenuItems"] = menuItems = [],
-                    };
-                }
-
-                menuItems.Add(JObject.FromObject(contentItem));
-            }
-
-            await _contentManager.SaveDraftAsync(menu);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+            // Use the menu as the parent if no target is specified.
+            menu.Alter<MenuItemsListPart>(part => part.MenuItems.Add(contentItem));
         }
-
-        public async Task<IActionResult> Edit(string menuContentItemId, string menuItemId)
+        else
         {
-            var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-
-            if (menu == null)
-            {
-                return NotFound();
-            }
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu, menu))
-            {
-                return Forbid();
-            }
-
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
+            var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
-            if (menuItem == null)
+            if (parentMenuItem == null)
             {
                 return NotFound();
             }
 
-            var contentItem = menuItem.ToObject<ContentItem>();
+            var menuItems = (JsonArray)parentMenuItem["MenuItemsListPart"]?["MenuItems"];
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            if (menuItems == null)
+            {
+                parentMenuItem["MenuItemsListPart"] = new JsonObject
+                {
+                    ["MenuItems"] = menuItems = [],
+                };
+            }
 
+            menuItems.Add(JObject.FromObject(contentItem));
+        }
+
+        await _contentManager.SaveDraftAsync(menu);
+
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+    }
+
+    public async Task<IActionResult> Edit(string menuContentItemId, string menuItemId)
+    {
+        var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+
+        if (menu == null)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu, menu))
+        {
+            return Forbid();
+        }
+
+        // Look for the target menu item in the hierarchy.
+        var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
+
+        // Couldn't find targeted menu item.
+        if (menuItem == null)
+        {
+            return NotFound();
+        }
+
+        var contentItem = menuItem.ToObject<ContentItem>();
+
+        dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+
+        model.MenuContentItemId = menuContentItemId;
+        model.MenuItemId = menuItemId;
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ActionName("Edit")]
+    public async Task<IActionResult> EditPost(string menuContentItemId, string menuItemId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
+        {
+            return Forbid();
+        }
+
+        ContentItem menu;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+
+        if (!contentTypeDefinition.IsDraftable())
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+        }
+
+        if (menu == null)
+        {
+            return NotFound();
+        }
+
+        // Look for the target menu item in the hierarchy.
+        var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
+
+        // Couldn't find targeted menu item
+        if (menuItem == null)
+        {
+            return NotFound();
+        }
+
+        var existing = menuItem.ToObject<ContentItem>();
+
+        // Create a new item to take into account the current type definition.
+        var contentItem = await _contentManager.NewAsync(existing.ContentType);
+
+        contentItem.Merge(existing);
+
+        dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+
+        if (!ModelState.IsValid)
+        {
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
 
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Edit")]
-        public async Task<IActionResult> EditPost(string menuContentItemId, string menuItemId)
+        menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
-            {
-                return Forbid();
-            }
+            MergeArrayHandling = MergeArrayHandling.Replace,
+            MergeNullValueHandling = MergeNullValueHandling.Merge
+        });
 
-            ContentItem menu;
+        // Merge doesn't copy the properties.
+        menuItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+        await _contentManager.SaveDraftAsync(menu);
 
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-            }
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+    }
 
-            if (menu == null)
-            {
-                return NotFound();
-            }
-
-            // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
-
-            // Couldn't find targeted menu item
-            if (menuItem == null)
-            {
-                return NotFound();
-            }
-
-            var existing = menuItem.ToObject<ContentItem>();
-
-            // Create a new item to take into account the current type definition.
-            var contentItem = await _contentManager.NewAsync(existing.ContentType);
-
-            contentItem.Merge(existing);
-
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-
-            if (!ModelState.IsValid)
-            {
-                model.MenuContentItemId = menuContentItemId;
-                model.MenuItemId = menuItemId;
-
-                return View(model);
-            }
-
-            menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-            {
-                MergeArrayHandling = MergeArrayHandling.Replace,
-                MergeNullValueHandling = MergeNullValueHandling.Merge
-            });
-
-            // Merge doesn't copy the properties.
-            menuItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
-
-            await _contentManager.SaveDraftAsync(menu);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+    [HttpPost]
+    public async Task<IActionResult> Delete(string menuContentItemId, string menuItemId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
+        {
+            return Forbid();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string menuContentItemId, string menuItemId)
+        ContentItem menu;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
+
+        if (!contentTypeDefinition.IsDraftable())
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
-            {
-                return Forbid();
-            }
-
-            ContentItem menu;
-
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-            }
-
-            if (menu == null)
-            {
-                return NotFound();
-            }
-
-            // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
-
-            // Couldn't find targeted menu item.
-            if (menuItem == null)
-            {
-                return NotFound();
-            }
-
-            menu.Content.Remove(menuItemId);
-
-            await _contentManager.SaveDraftAsync(menu);
-
-            await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
         }
 
-        private static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
+        if (menu == null)
         {
-            if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
-            {
-                return contentItem;
-            }
+            return NotFound();
+        }
 
-            if (contentItem["MenuItemsListPart"] is null)
-            {
-                return null;
-            }
+        // Look for the target menu item in the hierarchy.
+        var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
-            var menuItems = (JsonArray)contentItem["MenuItemsListPart"]["MenuItems"];
+        // Couldn't find targeted menu item.
+        if (menuItem == null)
+        {
+            return NotFound();
+        }
 
-            JsonObject result;
-            foreach (var menuItem in menuItems.Cast<JsonObject>())
-            {
-                // Search in inner menu items.
-                result = FindMenuItem(menuItem, menuItemId);
+        menu.Content.Remove(menuItemId);
 
-                if (result != null)
-                {
-                    return result;
-                }
-            }
+        await _contentManager.SaveDraftAsync(menu);
 
+        await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
+
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
+    }
+
+    private static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
+    {
+        if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
+        {
+            return contentItem;
+        }
+
+        if (contentItem["MenuItemsListPart"] is null)
+        {
             return null;
         }
+
+        var menuItems = (JsonArray)contentItem["MenuItemsListPart"]["MenuItems"];
+
+        JsonObject result;
+        foreach (var menuItem in menuItems.Cast<JsonObject>())
+        {
+            // Search in inner menu items.
+            result = FindMenuItem(menuItem, menuItemId);
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 }

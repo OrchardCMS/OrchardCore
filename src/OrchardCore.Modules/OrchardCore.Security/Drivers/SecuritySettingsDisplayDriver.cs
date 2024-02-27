@@ -13,120 +13,119 @@ using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Security.Drivers
+namespace OrchardCore.Security.Drivers;
+
+public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
 {
-    public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
+    internal const string SettingsGroupId = "SecurityHeaders";
+
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly SecuritySettings _securitySettings;
+
+    public SecuritySettingsDisplayDriver(
+        IShellHost shellHost,
+        ShellSettings shellSettings,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IOptionsSnapshot<SecuritySettings> securitySettings)
     {
-        internal const string SettingsGroupId = "SecurityHeaders";
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _securitySettings = securitySettings.Value;
+    }
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly SecuritySettings _securitySettings;
-
-        public SecuritySettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IOptionsSnapshot<SecuritySettings> securitySettings)
+    public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
+    {
+        if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-            _securitySettings = securitySettings.Value;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
         {
-            if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
-            {
-                return null;
-            }
-
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
-
-            return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
-            {
-                // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
-                var currentSettings = settings;
-                if (_securitySettings.FromConfiguration)
-                {
-                    currentSettings = _securitySettings;
-                }
-
-                model.FromConfiguration = currentSettings.FromConfiguration;
-                model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
-                model.PermissionsPolicy = currentSettings.PermissionsPolicy;
-                model.ReferrerPolicy = currentSettings.ReferrerPolicy;
-
-                model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
-                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
-
-                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
-                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)
+        context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
+        return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
+            // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
+            var currentSettings = settings;
+            if (_securitySettings.FromConfiguration)
             {
-                return null;
+                currentSettings = _securitySettings;
             }
 
-            if (context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
-            {
-                var model = new SecuritySettingsViewModel();
+            model.FromConfiguration = currentSettings.FromConfiguration;
+            model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
+            model.PermissionsPolicy = currentSettings.PermissionsPolicy;
+            model.ReferrerPolicy = currentSettings.ReferrerPolicy;
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
+                currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
 
-                PrepareContentSecurityPolicyValues(model);
+            model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
+                currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+        }).Location("Content:2").OnGroup(SettingsGroupId);
+    }
 
-                section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-                section.ContentSecurityPolicy = model.ContentSecurityPolicy;
-                section.PermissionsPolicy = model.PermissionsPolicy;
-                section.ReferrerPolicy = model.ReferrerPolicy;
+    public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
-            }
-
-            return await EditAsync(section, context);
+        if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
+        {
+            return null;
         }
 
-        private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
+        if (context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
         {
-            if (!model.EnableSandbox)
-            {
-                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.Sandbox);
-            }
-            else if (!model.ContentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.Sandbox, out _))
-            {
-                model.ContentSecurityPolicy[ContentSecurityPolicyValue.Sandbox] = null;
-            }
+            var model = new SecuritySettingsViewModel();
 
-            if (!model.UpgradeInsecureRequests)
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            PrepareContentSecurityPolicyValues(model);
+
+            section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
+            section.ContentSecurityPolicy = model.ContentSecurityPolicy;
+            section.PermissionsPolicy = model.PermissionsPolicy;
+            section.ReferrerPolicy = model.ReferrerPolicy;
+
+            if (context.Updater.ModelState.IsValid)
             {
-                model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
-            else
-            {
-                model.ContentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
-            }
+        }
+
+        return await EditAsync(section, context);
+    }
+
+    private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
+    {
+        if (!model.EnableSandbox)
+        {
+            model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.Sandbox);
+        }
+        else if (!model.ContentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.Sandbox, out _))
+        {
+            model.ContentSecurityPolicy[ContentSecurityPolicyValue.Sandbox] = null;
+        }
+
+        if (!model.UpgradeInsecureRequests)
+        {
+            model.ContentSecurityPolicy.Remove(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+        }
+        else
+        {
+            model.ContentSecurityPolicy[ContentSecurityPolicyValue.UpgradeInsecureRequests] = null;
         }
     }
 }

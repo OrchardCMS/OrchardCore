@@ -14,73 +14,72 @@ using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Search.Drivers
+namespace OrchardCore.Search.Drivers;
+
+public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
 {
-    public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
+    [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
+    public const string GroupId = SearchConstants.SearchSettingsGroupId;
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IServiceProvider _serviceProvider;
+
+    public SearchSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IServiceProvider serviceProvider
+        )
     {
-        [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
-        public const string GroupId = SearchConstants.SearchSettingsGroupId;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _serviceProvider = serviceProvider;
+    }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IServiceProvider _serviceProvider;
+    public override async Task<IDisplayResult> EditAsync(SearchSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        public SearchSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IServiceProvider serviceProvider
-            )
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-            _serviceProvider = serviceProvider;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SearchSettings settings, BuildEditorContext context)
+        return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
-            {
-                return null;
-            }
+            model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+            model.Placeholder = settings.Placeholder;
+            model.PageTitle = settings.PageTitle;
+            model.ProviderName = settings.ProviderName;
+        }).Location("Content:2")
+        .OnGroup(SearchConstants.SearchSettingsGroupId);
+    }
 
-            return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
-            {
-                var searchServices = _serviceProvider.GetServices<ISearchService>();
-
-                model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
-                model.Placeholder = settings.Placeholder;
-                model.PageTitle = settings.PageTitle;
-                model.ProviderName = settings.ProviderName;
-            }).Location("Content:2")
-            .OnGroup(SearchConstants.SearchSettingsGroupId);
+    public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
+    {
+        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
         {
-            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-            {
-                return null;
-            }
-
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
-            {
-                return null;
-            }
-
-            var model = new SearchSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                section.ProviderName = model.ProviderName;
-                section.Placeholder = model.Placeholder;
-                section.PageTitle = model.PageTitle;
-            }
-
-            return await EditAsync(section, context);
+            return null;
         }
+
+        var model = new SearchSettingsViewModel();
+
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        {
+            section.ProviderName = model.ProviderName;
+            section.Placeholder = model.Placeholder;
+            section.PageTitle = model.PageTitle;
+        }
+
+        return await EditAsync(section, context);
     }
 }

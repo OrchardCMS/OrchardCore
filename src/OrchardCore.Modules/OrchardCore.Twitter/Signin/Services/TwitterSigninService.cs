@@ -4,41 +4,40 @@ using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 
-namespace OrchardCore.Twitter.Signin.Services
+namespace OrchardCore.Twitter.Signin.Services;
+
+public class TwitterSigninService : ITwitterSigninService
 {
-    public class TwitterSigninService : ITwitterSigninService
+    private readonly ISiteService _siteService;
+
+    public TwitterSigninService(
+        ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public TwitterSigninService(
-            ISiteService siteService)
+    public async Task<TwitterSigninSettings> GetSettingsAsync()
+    {
+        var container = await _siteService.GetSiteSettingsAsync();
+        return container.As<TwitterSigninSettings>();
+    }
+
+    public async Task<TwitterSigninSettings> LoadSettingsAsync()
+    {
+        var container = await _siteService.LoadSiteSettingsAsync();
+        return container.As<TwitterSigninSettings>();
+    }
+
+    public async Task UpdateSettingsAsync(TwitterSigninSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var container = await _siteService.LoadSiteSettingsAsync();
+        container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
         {
-            _siteService = siteService;
-        }
+            aspect.CallbackPath = settings.CallbackPath;
+        });
 
-        public async Task<TwitterSigninSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterSigninSettings>();
-        }
-
-        public async Task<TwitterSigninSettings> LoadSettingsAsync()
-        {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<TwitterSigninSettings>();
-        }
-
-        public async Task UpdateSettingsAsync(TwitterSigninSettings settings)
-        {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
-            {
-                aspect.CallbackPath = settings.CallbackPath;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
+        await _siteService.UpdateSiteSettingsAsync(container);
     }
 }

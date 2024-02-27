@@ -14,38 +14,37 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Menu
+namespace OrchardCore.Menu;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<IShapeTableProvider, MenuShapes>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddDataMigration<Migrations>();
+        services.AddScoped<IShapeTableProvider, MenuShapes>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-            // MenuPart
-            services.AddScoped<IContentHandler, MenuContentHandler>();
-            services.AddContentPart<MenuPart>()
-                .UseDisplayDriver<MenuPartDisplayDriver>();
+        // MenuPart
+        services.AddScoped<IContentHandler, MenuContentHandler>();
+        services.AddContentPart<MenuPart>()
+            .UseDisplayDriver<MenuPartDisplayDriver>();
 
-            services.AddContentPart<MenuItemsListPart>();
+        services.AddContentPart<MenuItemsListPart>();
 
-            // LinkMenuItemPart
-            services.AddContentPart<LinkMenuItemPart>()
-                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
+        // LinkMenuItemPart
+        services.AddContentPart<LinkMenuItemPart>()
+            .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
-            // ContentMenuItemPart
-            services.AddContentPart<ContentMenuItemPart>()
-                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
+        // ContentMenuItemPart
+        services.AddContentPart<ContentMenuItemPart>()
+            .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
-            // HtmlMenuItemPart
-            services.AddContentPart<HtmlMenuItemPart>()
-                .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
+        // HtmlMenuItemPart
+        services.AddContentPart<HtmlMenuItemPart>()
+            .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
 
-            services.AddTagHelpers<MenuTagHelper>();
-        }
+        services.AddTagHelpers<MenuTagHelper>();
     }
 }

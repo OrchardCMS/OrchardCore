@@ -2,21 +2,20 @@ using System.Threading.Tasks;
 using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.TagManager.Services
+namespace OrchardCore.Google.TagManager.Services;
+
+public class GoogleTagManagerService : IGoogleTagManagerService
 {
-    public class GoogleTagManagerService : IGoogleTagManagerService
+    private readonly ISiteService _siteService;
+
+    public GoogleTagManagerService(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public GoogleTagManagerService(ISiteService siteService)
-        {
-            _siteService = siteService;
-        }
-
-        public async Task<GoogleTagManagerSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GoogleTagManagerSettings>();
-        }
+    public async Task<GoogleTagManagerSettings> GetSettingsAsync()
+    {
+        var container = await _siteService.GetSiteSettingsAsync();
+        return container.As<GoogleTagManagerSettings>();
     }
 }

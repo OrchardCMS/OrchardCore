@@ -9,21 +9,20 @@ using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
 
-namespace OrchardCore.Widgets
-{
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Add Widget Card Shapes
-            services.AddScoped<IShapeTableProvider, ContentCardShapes>();
-            // Widgets List Part
-            services.AddContentPart<WidgetsListPart>()
-                .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+namespace OrchardCore.Widgets;
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.AddContentPart<WidgetMetadata>();
-            services.AddDataMigration<Migrations>();
-        }
+public class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Add Widget Card Shapes
+        services.AddScoped<IShapeTableProvider, ContentCardShapes>();
+        // Widgets List Part
+        services.AddContentPart<WidgetsListPart>()
+            .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
+        services.AddContentPart<WidgetMetadata>();
+        services.AddDataMigration<Migrations>();
     }
 }

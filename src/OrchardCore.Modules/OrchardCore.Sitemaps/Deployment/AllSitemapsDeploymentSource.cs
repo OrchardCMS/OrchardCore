@@ -3,33 +3,32 @@ using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Deployment
+namespace OrchardCore.Sitemaps.Deployment;
+
+public class AllSitemapsDeploymentSource : IDeploymentSource
 {
-    public class AllSitemapsDeploymentSource : IDeploymentSource
+    private readonly ISitemapManager _sitemapManager;
+
+    public AllSitemapsDeploymentSource(ISitemapManager sitemapManager)
     {
-        private readonly ISitemapManager _sitemapManager;
+        _sitemapManager = sitemapManager;
+    }
 
-        public AllSitemapsDeploymentSource(ISitemapManager sitemapManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        if (step is not AllSitemapsDeploymentStep)
         {
-            _sitemapManager = sitemapManager;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+        var jArray = JArray.FromObject(sitemaps);
+
+        result.Steps.Add(new JsonObject
         {
-            if (step is not AllSitemapsDeploymentStep)
-            {
-                return;
-            }
-
-            var sitemaps = await _sitemapManager.GetSitemapsAsync();
-
-            var jArray = JArray.FromObject(sitemaps);
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Sitemaps",
-                ["data"] = jArray,
-            });
-        }
+            ["name"] = "Sitemaps",
+            ["data"] = jArray,
+        });
     }
 }

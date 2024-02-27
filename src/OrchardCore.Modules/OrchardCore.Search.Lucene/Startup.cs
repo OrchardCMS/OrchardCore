@@ -26,95 +26,94 @@ using OrchardCore.Search.Lucene.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Search.Lucene
+namespace OrchardCore.Search.Lucene;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
-            services.AddSingleton<LuceneIndexingState>();
-            services.AddSingleton<LuceneIndexSettingsService>();
-            services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
-            services.AddScoped<LuceneIndexingService>();
-            services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
-            services.AddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddDataMigration<Migrations>();
+        services.AddSingleton<LuceneIndexingState>();
+        services.AddSingleton<LuceneIndexSettingsService>();
+        services.AddSingleton<LuceneIndexManager>();
+        services.AddSingleton<LuceneAnalyzerManager>();
+        services.AddScoped<LuceneIndexingService>();
+        services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
+        services.AddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.Configure<LuceneOptions>(o =>
-                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+        services.Configure<LuceneOptions>(o =>
+            o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
+                new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
+        services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
-            services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
-            services.AddLuceneQueries();
+        services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
+        services.AddLuceneQueries();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage.
-            services.AddScoped<IQuerySource, LuceneQuerySource>();
-            services.AddScoped<LuceneQuerySource>();
-            services.AddRecipeExecutionStep<LuceneIndexStep>();
-            services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
-            services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
+        // LuceneQuerySource is registered for both the Queries module and local usage.
+        services.AddScoped<IQuerySource, LuceneQuerySource>();
+        services.AddScoped<LuceneQuerySource>();
+        services.AddRecipeExecutionStep<LuceneIndexStep>();
+        services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
+        services.AddRecipeExecutionStep<LuceneIndexResetStep>();
+        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
 
-            // Allows to serialize 'LuceneQuery' from its base type.
-            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
-        }
+        // Allows to serialize 'LuceneQuery' from its base type.
+        services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Search")]
-    public class SearchStartup : StartupBase
+[RequireFeatures("OrchardCore.Search")]
+public class SearchStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ISearchService, LuceneSearchService>();
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
-        }
+        services.AddScoped<ISearchService, LuceneSearchService>();
+        services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+        services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
-            services.AddDeployment<LuceneSettingsDeploymentSource, LuceneSettingsDeploymentStep, LuceneSettingsDeploymentStepDriver>();
-            services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
-            services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
-        }
+        services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
+        services.AddDeployment<LuceneSettingsDeploymentSource, LuceneSettingsDeploymentStep, LuceneSettingsDeploymentStepDriver>();
+        services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
+        services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
     }
+}
 
-    [Feature("OrchardCore.Search.Lucene.Worker")]
-    public class LuceneWorkerStartup : StartupBase
+[Feature("OrchardCore.Search.Lucene.Worker")]
+public class LuceneWorkerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
-        }
+        services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
     }
+}
 
-    [Feature("OrchardCore.Search.Lucene.ContentPicker")]
-    public class LuceneContentPickerStartup : StartupBase
+[Feature("OrchardCore.Search.Lucene.ContentPicker")]
+public class LuceneContentPickerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
-            services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
-        }
+        services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
+        services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
     }
+}
 
-    [RequireFeatures("OrchardCore.ContentTypes")]
-    public class ContentTypesStartup : StartupBase
+[RequireFeatures("OrchardCore.ContentTypes")]
+public class ContentTypesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-        }
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
     }
 }

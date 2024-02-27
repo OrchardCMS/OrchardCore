@@ -8,127 +8,126 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
+
+public class DynamicContentTypeBuilder : IContentTypeBuilder
 {
-    public class DynamicContentTypeBuilder : IContentTypeBuilder
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly GraphQLContentOptions _contentOptions;
+    protected readonly IStringLocalizer S;
+    private readonly Dictionary<string, FieldType> _dynamicPartFields;
+
+    public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+        IOptions<GraphQLContentOptions> contentOptionsAccessor,
+        IStringLocalizer<DynamicContentTypeBuilder> localizer)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly GraphQLContentOptions _contentOptions;
-        protected readonly IStringLocalizer S;
-        private readonly Dictionary<string, FieldType> _dynamicPartFields;
+        _httpContextAccessor = httpContextAccessor;
+        _contentOptions = contentOptionsAccessor.Value;
+        _dynamicPartFields = [];
 
-        public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
-            IOptions<GraphQLContentOptions> contentOptionsAccessor,
-            IStringLocalizer<DynamicContentTypeBuilder> localizer)
+        S = localizer;
+    }
+
+    public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+    {
+        var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+
+        if (_contentOptions.ShouldHide(contentTypeDefinition))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _contentOptions = contentOptionsAccessor.Value;
-            _dynamicPartFields = [];
-
-            S = localizer;
+            return;
         }
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        foreach (var part in contentTypeDefinition.Parts)
         {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+            var partName = part.Name;
 
-            if (_contentOptions.ShouldHide(contentTypeDefinition))
+            // This builder only handles parts with fields.
+            if (!part.PartDefinition.Fields.Any())
             {
-                return;
+                continue;
             }
 
-            foreach (var part in contentTypeDefinition.Parts)
+            if (_contentOptions.ShouldSkip(part))
             {
-                var partName = part.Name;
+                continue;
+            }
 
-                // This builder only handles parts with fields.
-                if (!part.PartDefinition.Fields.Any())
+            if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
+            {
+                continue;
+            }
+
+            if (_contentOptions.ShouldCollapse(part))
+            {
+                foreach (var field in part.PartDefinition.Fields)
                 {
-                    continue;
+                    foreach (var fieldProvider in contentFieldProviders)
+                    {
+                        var fieldType = fieldProvider.GetField(field);
+
+                        if (fieldType != null)
+                        {
+                            if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
+                            {
+                                continue;
+                            }
+
+                            contentItemType.AddField(fieldType);
+                            break;
+                        }
+                    }
                 }
-
-                if (_contentOptions.ShouldSkip(part))
+            }
+            else
+            {
+                // Check if another builder has already added a field for this part.
+                var existingField = contentItemType.GetField(partName.ToFieldName());
+                if (existingField != null)
                 {
-                    continue;
-                }
-
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
-                {
-                    continue;
-                }
-
-                if (_contentOptions.ShouldCollapse(part))
-                {
+                    // Add content field types.
                     foreach (var field in part.PartDefinition.Fields)
                     {
                         foreach (var fieldProvider in contentFieldProviders)
                         {
-                            var fieldType = fieldProvider.GetField(field);
+                            var contentFieldType = fieldProvider.GetField(field);
 
-                            if (fieldType != null)
+                            if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
                             {
-                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
-                                {
-                                    continue;
-                                }
-
-                                contentItemType.AddField(fieldType);
+                                contentItemType.AddField(contentFieldType);
                                 break;
                             }
                         }
                     }
+                    continue;
+                }
+
+                if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                {
+                    contentItemType.AddField(fieldType);
                 }
                 else
                 {
-                    // Check if another builder has already added a field for this part.
-                    var existingField = contentItemType.GetField(partName.ToFieldName());
-                    if (existingField != null)
-                    {
-                        // Add content field types.
-                        foreach (var field in part.PartDefinition.Fields)
+                    var field = contentItemType
+                        .Field<DynamicPartGraphType>(partName.ToFieldName())
+                        .Description(S["Represents a {0}.", part.PartDefinition.Name])
+                        .Resolve(context =>
                         {
-                            foreach (var fieldProvider in contentFieldProviders)
-                            {
-                                var contentFieldType = fieldProvider.GetField(field);
+                            var nameToResolve = partName;
+                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
-                                {
-                                    contentItemType.AddField(contentFieldType);
-                                    break;
-                                }
-                            }
-                        }
-                        continue;
-                    }
+                            return context.Source.Get(typeToResolve, nameToResolve);
+                        });
 
-                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
-                    {
-                        contentItemType.AddField(fieldType);
-                    }
-                    else
-                    {
-                        var field = contentItemType
-                            .Field<DynamicPartGraphType>(partName.ToFieldName())
-                            .Description(S["Represents a {0}.", part.PartDefinition.Name])
-                            .Resolve(context =>
-                            {
-                                var nameToResolve = partName;
-                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
-
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
-
-                        field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
-                        _dynamicPartFields[partName] = field.FieldType;
-                    }
+                    field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+                    _dynamicPartFields[partName] = field.FieldType;
                 }
             }
         }
+    }
 
-        public void Clear()
-        {
-            _dynamicPartFields.Clear();
-        }
+    public void Clear()
+    {
+        _dynamicPartFields.Clear();
     }
 }

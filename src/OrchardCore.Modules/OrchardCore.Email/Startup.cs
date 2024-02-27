@@ -9,18 +9,17 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email
-{
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddEmailServices()
-                .AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>()
-                .AddScoped<IPermissionProvider, Permissions>()
-                .AddScoped<INavigationProvider, AdminMenu>();
+namespace OrchardCore.Email;
 
-            services.AddDataMigration<EmailMigrations>();
-        }
+public class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddEmailServices()
+            .AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>()
+            .AddScoped<IPermissionProvider, Permissions>()
+            .AddScoped<INavigationProvider, AdminMenu>();
+
+        services.AddDataMigration<EmailMigrations>();
     }
 }

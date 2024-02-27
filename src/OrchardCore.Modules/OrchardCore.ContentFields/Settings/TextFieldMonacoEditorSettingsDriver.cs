@@ -8,53 +8,52 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
 {
-    public class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    protected readonly IStringLocalizer S;
+
+    public TextFieldMonacoEditorSettingsDriver(IStringLocalizer<TextFieldMonacoEditorSettingsDriver> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public TextFieldMonacoEditorSettingsDriver(IStringLocalizer<TextFieldMonacoEditorSettingsDriver> localizer)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+    {
+        return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
         {
-            S = localizer;
-        }
-
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-        {
-            return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
+            var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
+            if (string.IsNullOrWhiteSpace(settings.Options))
             {
-                var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
-                {
-                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                }
-
-                model.Options = settings.Options;
-            })
-            .Location("Editor");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            if (partFieldDefinition.Editor() == "Monaco")
-            {
-                var model = new MonacoSettingsViewModel();
-                var settings = new TextFieldMonacoEditorSettings();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (!model.Options.IsJson())
-                {
-                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
-                }
-                else
-                {
-                    settings.Options = model.Options;
-                    context.Builder.WithSettings(settings);
-                }
+                settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            model.Options = settings.Options;
+        })
+        .Location("Editor");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        if (partFieldDefinition.Editor() == "Monaco")
+        {
+            var model = new MonacoSettingsViewModel();
+            var settings = new TextFieldMonacoEditorSettings();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (!model.Options.IsJson())
+            {
+                context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+            }
+            else
+            {
+                settings.Options = model.Options;
+                context.Builder.WithSettings(settings);
+            }
         }
+
+        return Edit(partFieldDefinition, context.Updater);
     }
 }

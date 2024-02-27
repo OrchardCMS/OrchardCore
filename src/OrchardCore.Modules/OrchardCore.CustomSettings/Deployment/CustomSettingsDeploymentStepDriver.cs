@@ -7,52 +7,51 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.CustomSettings.Deployment
+namespace OrchardCore.CustomSettings.Deployment;
+
+public class CustomSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomSettingsDeploymentStep>
 {
-    public class CustomSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomSettingsDeploymentStep>
+    private readonly CustomSettingsService _customSettingsService;
+
+    public CustomSettingsDeploymentStepDriver(CustomSettingsService customSettingsService)
     {
-        private readonly CustomSettingsService _customSettingsService;
+        _customSettingsService = customSettingsService;
+    }
 
-        public CustomSettingsDeploymentStepDriver(CustomSettingsService customSettingsService)
+    public override IDisplayResult Display(CustomSettingsDeploymentStep step)
+    {
+        return
+            Combine(
+                View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
+    }
+
+    public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
+    {
+        return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
         {
-            _customSettingsService = customSettingsService;
-        }
+            model.IncludeAll = step.IncludeAll;
+            model.SettingsTypeNames = step.SettingsTypeNames;
+            model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+        }).Location("Content");
+    }
 
-        public override IDisplayResult Display(CustomSettingsDeploymentStep step)
-        {
-            return
-                Combine(
-                    View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
-        }
+    public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
+    {
+        step.SettingsTypeNames = [];
 
-        public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
-        {
-            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-            }).Location("Content");
-        }
+        await updater.TryUpdateModelAsync(step,
+                                          Prefix,
+                                          x => x.SettingsTypeNames,
+                                          x => x.IncludeAll);
 
-        public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
+        // don't have the selected option if include all
+        if (step.IncludeAll)
         {
             step.SettingsTypeNames = [];
-
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.SettingsTypeNames,
-                                              x => x.IncludeAll);
-
-            // don't have the selected option if include all
-            if (step.IncludeAll)
-            {
-                step.SettingsTypeNames = [];
-            }
-
-            return Edit(step);
         }
+
+        return Edit(step);
     }
 }

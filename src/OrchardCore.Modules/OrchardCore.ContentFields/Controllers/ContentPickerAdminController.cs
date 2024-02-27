@@ -10,73 +10,72 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentFields.Controllers
+namespace OrchardCore.ContentFields.Controllers;
+
+[Admin]
+public class ContentPickerAdminController : Controller
 {
-    [Admin]
-    public class ContentPickerAdminController : Controller
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
+
+    public ContentPickerAdminController(
+        IContentDefinitionManager contentDefinitionManager,
+        IEnumerable<IContentPickerResultProvider> resultProviders
+        )
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
+        _contentDefinitionManager = contentDefinitionManager;
+        _resultProviders = resultProviders;
+    }
 
-        public ContentPickerAdminController(
-            IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentPickerResultProvider> resultProviders
-            )
+    [Admin("ContentFields/SearchContentItems", "ContentPicker")]
+    public async Task<IActionResult> SearchContentItems(string part, string field, string query)
+    {
+        if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _resultProviders = resultProviders;
+            return BadRequest("Part and field are required parameters");
         }
 
-        [Admin("ContentFields/SearchContentItems", "ContentPicker")]
-        public async Task<IActionResult> SearchContentItems(string part, string field, string query)
+        var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
+            .FirstOrDefault(f => f.Name == field);
+
+        var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
+        if (fieldSettings == null)
         {
-            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
-            {
-                return BadRequest("Part and field are required parameters");
-            }
-
-            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
-                .FirstOrDefault(f => f.Name == field);
-
-            var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
-            if (fieldSettings == null)
-            {
-                return BadRequest("Unable to find field definition");
-            }
-
-            var editor = partFieldDefinition.Editor() ?? "Default";
-
-            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
-                ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
-
-            if (resultProvider == null)
-            {
-                return new ObjectResult(new List<ContentPickerResult>());
-            }
-
-            var contentTypes = fieldSettings.DisplayedContentTypes;
-
-            if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
-            {
-                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Where(contentType =>
-                    {
-                        var hasStereotype = contentType.TryGetStereotype(out var stereotype);
-
-                        return hasStereotype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
-                    }).Select(contentType => contentType.Name)
-                    .ToArray();
-            }
-
-            var results = await resultProvider.Search(new ContentPickerSearchContext
-            {
-                Query = query,
-                DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
-                ContentTypes = contentTypes,
-                PartFieldDefinition = partFieldDefinition,
-            });
-
-            return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
+            return BadRequest("Unable to find field definition");
         }
+
+        var editor = partFieldDefinition.Editor() ?? "Default";
+
+        var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
+            ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
+
+        if (resultProvider == null)
+        {
+            return new ObjectResult(new List<ContentPickerResult>());
+        }
+
+        var contentTypes = fieldSettings.DisplayedContentTypes;
+
+        if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
+        {
+            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Where(contentType =>
+                {
+                    var hasStereotype = contentType.TryGetStereotype(out var stereotype);
+
+                    return hasStereotype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
+                }).Select(contentType => contentType.Name)
+                .ToArray();
+        }
+
+        var results = await resultProvider.Search(new ContentPickerSearchContext
+        {
+            Query = query,
+            DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
+            ContentTypes = contentTypes,
+            PartFieldDefinition = partFieldDefinition,
+        });
+
+        return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
     }
 }

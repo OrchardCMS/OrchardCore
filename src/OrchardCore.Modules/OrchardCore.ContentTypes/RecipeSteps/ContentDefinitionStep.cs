@@ -7,80 +7,79 @@ using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.ContentTypes.RecipeSteps
+namespace OrchardCore.ContentTypes.RecipeSteps;
+
+/// <summary>
+/// This recipe step creates content definitions.
+/// </summary>
+public class ContentDefinitionStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates content definitions.
-    /// </summary>
-    public class ContentDefinitionStep : IRecipeStepHandler
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!string.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var step = context.Step.ToObject<ContentDefinitionStepModel>();
+
+        foreach (var contentType in step.ContentTypes)
         {
-            if (!string.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
+            var newType = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType.Name)
+                ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
 
-            var step = context.Step.ToObject<ContentDefinitionStepModel>();
-
-            foreach (var contentType in step.ContentTypes)
-            {
-                var newType = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType.Name)
-                    ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
-
-                await UpdateContentTypeAsync(newType, contentType);
-            }
-
-            foreach (var contentPart in step.ContentParts)
-            {
-                var newPart = await _contentDefinitionManager.LoadPartDefinitionAsync(contentPart.Name)
-                    ?? new ContentPartDefinition(contentPart.Name);
-
-                await UpdateContentPartAsync(newPart, contentPart);
-            }
+            await UpdateContentTypeAsync(newType, contentType);
         }
 
-        private Task UpdateContentTypeAsync(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
-            => _contentDefinitionManager.AlterTypeDefinitionAsync(type.Name, builder =>
-            {
-                if (!string.IsNullOrEmpty(record.DisplayName))
-                {
-                    builder.DisplayedAs(record.DisplayName);
-                    builder.MergeSettings(record.Settings);
-                }
+        foreach (var contentPart in step.ContentParts)
+        {
+            var newPart = await _contentDefinitionManager.LoadPartDefinitionAsync(contentPart.Name)
+                ?? new ContentPartDefinition(contentPart.Name);
 
-                foreach (var part in record.ContentTypePartDefinitionRecords)
-                {
-                    builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
-                }
-            });
+            await UpdateContentPartAsync(newPart, contentPart);
+        }
+    }
 
-        private Task UpdateContentPartAsync(ContentPartDefinition part, ContentPartDefinitionRecord record)
-            => _contentDefinitionManager.AlterPartDefinitionAsync(part.Name, builder =>
+    private Task UpdateContentTypeAsync(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
+        => _contentDefinitionManager.AlterTypeDefinitionAsync(type.Name, builder =>
+        {
+            if (!string.IsNullOrEmpty(record.DisplayName))
             {
+                builder.DisplayedAs(record.DisplayName);
                 builder.MergeSettings(record.Settings);
+            }
 
-                foreach (var field in record.ContentPartFieldDefinitionRecords)
-                {
-                    builder.WithField(field.Name, fieldBuilder =>
-                    {
-                        fieldBuilder.OfType(field.FieldName);
-                        fieldBuilder.MergeSettings(field.Settings);
-                    });
-                }
-            });
+            foreach (var part in record.ContentTypePartDefinitionRecords)
+            {
+                builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
+            }
+        });
 
-        private class ContentDefinitionStepModel
+    private Task UpdateContentPartAsync(ContentPartDefinition part, ContentPartDefinitionRecord record)
+        => _contentDefinitionManager.AlterPartDefinitionAsync(part.Name, builder =>
         {
-            public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
-            public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
-        }
+            builder.MergeSettings(record.Settings);
+
+            foreach (var field in record.ContentPartFieldDefinitionRecords)
+            {
+                builder.WithField(field.Name, fieldBuilder =>
+                {
+                    fieldBuilder.OfType(field.FieldName);
+                    fieldBuilder.MergeSettings(field.Settings);
+                });
+            }
+        });
+
+    private class ContentDefinitionStepModel
+    {
+        public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
+        public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
     }
 }

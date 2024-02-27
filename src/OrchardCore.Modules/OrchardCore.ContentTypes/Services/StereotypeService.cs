@@ -1,27 +1,26 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services;
+
+public class StereotypeService : IStereotypeService
 {
-    public class StereotypeService : IStereotypeService
+    private readonly IEnumerable<IStereotypesProvider> _providers;
+
+    public StereotypeService(IEnumerable<IStereotypesProvider> providers)
     {
-        private readonly IEnumerable<IStereotypesProvider> _providers;
+        _providers = providers;
+    }
 
-        public StereotypeService(IEnumerable<IStereotypesProvider> providers)
+    public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
+    {
+        var descriptions = new List<StereotypeDescription>();
+
+        foreach (var provider in _providers)
         {
-            _providers = providers;
+            descriptions.AddRange(await provider.GetStereotypesAsync());
         }
 
-        public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
-        {
-            var descriptions = new List<StereotypeDescription>();
-
-            foreach (var provider in _providers)
-            {
-                descriptions.AddRange(await provider.GetStereotypesAsync());
-            }
-
-            return descriptions;
-        }
+        return descriptions;
     }
 }

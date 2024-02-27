@@ -7,95 +7,94 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
-namespace OrchardCore.Search.Elasticsearch
+namespace OrchardCore.Search.Elasticsearch;
+
+[Route("api/elasticsearch")]
+[ApiController]
+[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+public class ApiController : Controller
 {
-    [Route("api/elasticsearch")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ElasticQuerySource _elasticQuerySource;
+
+    public ApiController(
+        IAuthorizationService authorizationService,
+        ElasticQuerySource elasticQuerySource)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ElasticQuerySource _elasticQuerySource;
+        _authorizationService = authorizationService;
+        _elasticQuerySource = elasticQuerySource;
+    }
 
-        public ApiController(
-            IAuthorizationService authorizationService,
-            ElasticQuerySource elasticQuerySource)
+    [HttpGet]
+    [Route("content")]
+    public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
         {
-            _authorizationService = authorizationService;
-            _elasticQuerySource = elasticQuerySource;
+            return this.ChallengeOrForbid("Api");
         }
 
-        [HttpGet]
-        [Route("content")]
-        public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
+        var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("content")]
+    public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
-            {
-                return this.ChallengeOrForbid("Api");
-            }
-
-            var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid();
         }
 
-        [HttpPost]
-        [Route("content")]
-        public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
+        var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpGet]
+    [Route("documents")]
+    public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
-            {
-                return this.ChallengeOrForbid();
-            }
-
-            var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid();
         }
 
-        [HttpGet]
-        [Route("documents")]
-        public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
+        var result = await ElasticQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("documents")]
+    public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
-            {
-                return this.ChallengeOrForbid();
-            }
-
-            var result = await ElasticQueryApiAsync(queryModel);
-
-            return new ObjectResult(result);
+            return this.ChallengeOrForbid("Api");
         }
 
-        [HttpPost]
-        [Route("documents")]
-        public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
+        var result = await ElasticQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
+    {
+        var elasticQuery = new ElasticQuery
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
-            {
-                return this.ChallengeOrForbid("Api");
-            }
+            Index = queryModel.IndexName,
+            Template = queryModel.Query,
+            ReturnContentItems = returnContentItems
+        };
 
-            var result = await ElasticQueryApiAsync(queryModel);
+        var queryParameters = queryModel.Parameters != null ?
+            JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            : [];
 
-            return new ObjectResult(result);
-        }
-
-        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
-        {
-            var elasticQuery = new ElasticQuery
-            {
-                Index = queryModel.IndexName,
-                Template = queryModel.Query,
-                ReturnContentItems = returnContentItems
-            };
-
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
-                : [];
-
-            var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
-            return result;
-        }
+        var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
+        return result;
     }
 }

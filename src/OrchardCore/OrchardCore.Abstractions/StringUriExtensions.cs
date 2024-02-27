@@ -1,24 +1,23 @@
 using System.Linq;
 
-namespace System
+namespace System;
+
+public static class StringUriExtensions
 {
-    public static class StringUriExtensions
+    public static string ToUriComponents(this string url, UriFormat uriFormat = UriFormat.UriEscaped)
     {
-        public static string ToUriComponents(this string url, UriFormat uriFormat = UriFormat.UriEscaped)
+        if (string.IsNullOrEmpty(url))
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                return url;
-            }
-
-            var uri = new Uri(url, UriKind.RelativeOrAbsolute);
-
-            return uri.GetComponents(UriComponents.SerializationInfoString, uriFormat);
+            return url;
         }
 
-        public static string ToSnakeCase(this string str)
-        {
-            return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
-        }
+        var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+
+        return uri.GetComponents(UriComponents.SerializationInfoString, uriFormat);
+    }
+
+    public static string ToSnakeCase(this string str)
+    {
+        return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
     }
 }

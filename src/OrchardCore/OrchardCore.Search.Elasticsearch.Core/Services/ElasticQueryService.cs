@@ -7,84 +7,83 @@ using Microsoft.Extensions.Logging;
 using Nest;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Services
+namespace OrchardCore.Search.Elasticsearch.Core.Services;
+
+public class ElasticQueryService : IElasticQueryService
 {
-    public class ElasticQueryService : IElasticQueryService
+    private readonly string _indexPrefix;
+    private readonly IElasticClient _elasticClient;
+    private readonly ILogger _logger;
+
+    public ElasticQueryService(
+        IElasticClient elasticClient,
+        ShellSettings shellSettings,
+        ILogger<ElasticQueryService> logger
+        )
     {
-        private readonly string _indexPrefix;
-        private readonly IElasticClient _elasticClient;
-        private readonly ILogger _logger;
+        _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
+        _elasticClient = elasticClient;
+        _logger = logger;
+    }
 
-        public ElasticQueryService(
-            IElasticClient elasticClient,
-            ShellSettings shellSettings,
-            ILogger<ElasticQueryService> logger
-            )
+    public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
+    {
+        var elasticTopDocs = new ElasticTopDocs();
+
+        if (_elasticClient == null)
         {
-            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
-            _elasticClient = elasticClient;
-            _logger = logger;
+            _logger.LogWarning("Elasticsearch Client is not setup, please validate your Elasticsearch Configurations");
         }
 
-        public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
+        try
         {
-            var elasticTopDocs = new ElasticTopDocs();
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
+            var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
 
-            if (_elasticClient == null)
+            var searchRequest = new SearchRequest(_indexPrefix + indexName)
             {
-                _logger.LogWarning("Elasticsearch Client is not setup, please validate your Elasticsearch Configurations");
-            }
+                Query = deserializedSearchRequest.Query,
+                From = deserializedSearchRequest.From,
+                Size = deserializedSearchRequest.Size,
+                Fields = deserializedSearchRequest.Fields,
+                Sort = deserializedSearchRequest.Sort,
+                Source = deserializedSearchRequest.Source,
+            };
 
-            try
+            var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
+            var hits = new List<Dictionary<string, object>>();
+
+            foreach (var hit in searchResponse.Hits)
             {
-                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
-                var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
-
-                var searchRequest = new SearchRequest(_indexPrefix + indexName)
+                if (hit.Fields != null)
                 {
-                    Query = deserializedSearchRequest.Query,
-                    From = deserializedSearchRequest.From,
-                    Size = deserializedSearchRequest.Size,
-                    Fields = deserializedSearchRequest.Fields,
-                    Sort = deserializedSearchRequest.Sort,
-                    Source = deserializedSearchRequest.Source,
-                };
+                    var row = new Dictionary<string, object>();
 
-                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
-                var hits = new List<Dictionary<string, object>>();
-
-                foreach (var hit in searchResponse.Hits)
-                {
-                    if (hit.Fields != null)
+                    foreach (var keyValuePair in hit.Fields)
                     {
-                        var row = new Dictionary<string, object>();
-
-                        foreach (var keyValuePair in hit.Fields)
-                        {
-                            row[keyValuePair.Key] = keyValuePair.Value.As<string[]>();
-                        }
-
-                        hits.Add(row);
+                        row[keyValuePair.Key] = keyValuePair.Value.As<string[]>();
                     }
-                }
 
-                if (searchResponse.IsValid)
-                {
-                    elasticTopDocs.Count = searchResponse.Total;
-                    elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
-                    elasticTopDocs.Fields = hits;
-                }
-                else
-                {
-                    _logger.LogError("Received failure response from Elasticsearch: {ServerError}", searchResponse.ServerError);
+                    hits.Add(row);
                 }
             }
-            catch (Exception ex)
+
+            if (searchResponse.IsValid)
             {
-                _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
+                elasticTopDocs.Count = searchResponse.Total;
+                elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
+                elasticTopDocs.Fields = hits;
             }
-
-            return elasticTopDocs;
+            else
+            {
+                _logger.LogError("Received failure response from Elasticsearch: {ServerError}", searchResponse.ServerError);
+            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
+        }
+
+        return elasticTopDocs;
     }
 }

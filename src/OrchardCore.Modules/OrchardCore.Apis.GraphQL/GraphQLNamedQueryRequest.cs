@@ -1,10 +1,9 @@
 
 using GraphQL.Transport;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public class GraphQLNamedQueryRequest : GraphQLRequest
 {
-    public class GraphQLNamedQueryRequest : GraphQLRequest
-    {
-        public string NamedQuery { get; set; }
-    }
+    public string NamedQuery { get; set; }
 }

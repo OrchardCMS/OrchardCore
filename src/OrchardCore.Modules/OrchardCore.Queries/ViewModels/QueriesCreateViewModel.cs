@@ -1,8 +1,7 @@
-namespace OrchardCore.Queries.ViewModels
+namespace OrchardCore.Queries.ViewModels;
+
+public class QueriesCreateViewModel
 {
-    public class QueriesCreateViewModel
-    {
-        public string SourceName { get; set; }
-        public dynamic Editor { get; set; }
-    }
+    public string SourceName { get; set; }
+    public dynamic Editor { get; set; }
 }

@@ -7,51 +7,50 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene.Model;
 
-namespace OrchardCore.Search.Lucene.Recipes
-{
-    /// <summary>
-    /// This recipe step creates a lucene index.
-    /// </summary>
-    public class LuceneIndexStep : IRecipeStepHandler
-    {
-        private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneIndexManager _luceneIndexManager;
+namespace OrchardCore.Search.Lucene.Recipes;
 
-        public LuceneIndexStep(
-            LuceneIndexingService luceneIndexingService,
-            LuceneIndexManager luceneIndexManager
-            )
+/// <summary>
+/// This recipe step creates a lucene index.
+/// </summary>
+public class LuceneIndexStep : IRecipeStepHandler
+{
+    private readonly LuceneIndexingService _luceneIndexingService;
+    private readonly LuceneIndexManager _luceneIndexManager;
+
+    public LuceneIndexStep(
+        LuceneIndexingService luceneIndexingService,
+        LuceneIndexManager luceneIndexManager
+        )
+    {
+        _luceneIndexManager = luceneIndexManager;
+        _luceneIndexingService = luceneIndexingService;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!string.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
         {
-            _luceneIndexManager = luceneIndexManager;
-            _luceneIndexingService = luceneIndexingService;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var indices = context.Step["Indices"];
+        if (indices is JsonArray jsonArray)
         {
-            if (!string.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
+            foreach (var index in jsonArray)
             {
-                return;
-            }
+                var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
 
-            var indices = context.Step["Indices"];
-            if (indices is JsonArray jsonArray)
-            {
-                foreach (var index in jsonArray)
+                if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
                 {
-                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
-
-                    if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
-                    {
-                        luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
-                        await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
-                    }
+                    luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
                 }
             }
         }
     }
+}
 
-    public class ContentStepModel
-    {
-        public JsonObject Data { get; set; }
-    }
+public class ContentStepModel
+{
+    public JsonObject Data { get; set; }
 }

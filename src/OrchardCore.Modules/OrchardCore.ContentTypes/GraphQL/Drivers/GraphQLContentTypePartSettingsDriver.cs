@@ -7,46 +7,45 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentTypes.GraphQL.Drivers
+namespace OrchardCore.ContentTypes.GraphQL.Drivers;
+
+public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
+    private readonly GraphQLContentOptions _contentOptions;
+
+    public GraphQLContentTypePartSettingsDriver(IOptions<GraphQLContentOptions> optionsAccessor)
     {
-        private readonly GraphQLContentOptions _contentOptions;
+        _contentOptions = optionsAccessor.Value;
+    }
 
-        public GraphQLContentTypePartSettingsDriver(IOptions<GraphQLContentOptions> optionsAccessor)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+    {
+        if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
         {
-            _contentOptions = optionsAccessor.Value;
+            return null;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
         {
-            if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
-            {
-                return null;
-            }
+            model.Definition = contentTypePartDefinition;
+            model.Options = _contentOptions;
+            model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
+        }).Location("Content");
+    }
 
-            return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
-            {
-                model.Definition = contentTypePartDefinition;
-                model.Options = _contentOptions;
-                model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
-            }).Location("Content");
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
-            {
-                return null;
-            }
+        var model = new GraphQLContentTypePartSettingsViewModel();
 
-            var model = new GraphQLContentTypePartSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+        context.Builder.WithSettings(model.Settings);
 
-            context.Builder.WithSettings(model.Settings);
-
-            return Edit(contentTypePartDefinition);
-        }
+        return Edit(contentTypePartDefinition);
     }
 }

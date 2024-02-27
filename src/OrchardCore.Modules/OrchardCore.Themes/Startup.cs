@@ -12,27 +12,26 @@ using OrchardCore.Themes.Drivers;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
-namespace OrchardCore.Themes
+namespace OrchardCore.Themes;
+
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRecipeExecutionStep<ThemesStep>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IThemeSelector, SiteThemeSelector>();
-            services.AddScoped<ISiteThemeService, SiteThemeService>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IThemeService, ThemeService>();
+        services.AddRecipeExecutionStep<ThemesStep>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<IThemeSelector, SiteThemeSelector>();
+        services.AddScoped<ISiteThemeService, SiteThemeService>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IThemeService, ThemeService>();
 #pragma warning disable CS0618 // Type or member is obsolete
-            services.AddScoped<DarkModeService>();
+        services.AddScoped<DarkModeService>();
 #pragma warning restore CS0618 // Type or member is obsolete
-            services.AddScoped<ThemeTogglerService>();
-            services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
-            services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
-        }
+        services.AddScoped<ThemeTogglerService>();
+        services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
+        services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
     }
 }

@@ -4,53 +4,52 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 
-namespace OrchardCore.Placements.Services
+namespace OrchardCore.Placements.Services;
+
+public class PlacementsManager
 {
-    public class PlacementsManager
+    private readonly IPlacementStore _placementStore;
+
+    public PlacementsManager(IPlacementStore placementStore)
+        => _placementStore = placementStore;
+
+    public async Task<IReadOnlyDictionary<string, IEnumerable<PlacementNode>>> ListShapePlacementsAsync()
     {
-        private readonly IPlacementStore _placementStore;
+        var document = await _placementStore.GetPlacementsAsync();
 
-        public PlacementsManager(IPlacementStore placementStore)
-            => _placementStore = placementStore;
+        return document.Placements.ToFrozenDictionary(kvp => kvp.Key, kvp => kvp.Value.AsEnumerable());
+    }
 
-        public async Task<IReadOnlyDictionary<string, IEnumerable<PlacementNode>>> ListShapePlacementsAsync()
+    public async Task<IEnumerable<PlacementNode>> GetShapePlacementsAsync(string shapeType)
+    {
+        var document = await _placementStore.GetPlacementsAsync();
+
+        if (document.Placements.TryGetValue(shapeType, out var nodes))
         {
-            var document = await _placementStore.GetPlacementsAsync();
-
-            return document.Placements.ToFrozenDictionary(kvp => kvp.Key, kvp => kvp.Value.AsEnumerable());
+            return nodes;
         }
-
-        public async Task<IEnumerable<PlacementNode>> GetShapePlacementsAsync(string shapeType)
+        else
         {
-            var document = await _placementStore.GetPlacementsAsync();
-
-            if (document.Placements.TryGetValue(shapeType, out var nodes))
-            {
-                return nodes;
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
+    }
 
-        public async Task UpdateShapePlacementsAsync(string shapeType, IEnumerable<PlacementNode> placementNodes)
+    public async Task UpdateShapePlacementsAsync(string shapeType, IEnumerable<PlacementNode> placementNodes)
+    {
+        var document = await _placementStore.LoadPlacementsAsync();
+
+        document.Placements[shapeType] = placementNodes.ToArray();
+
+        await _placementStore.SavePlacementsAsync(document);
+    }
+
+    public async Task RemoveShapePlacementsAsync(string shapeType)
+    {
+        var document = await _placementStore.LoadPlacementsAsync();
+
+        if (document.Placements.Remove(shapeType))
         {
-            var document = await _placementStore.LoadPlacementsAsync();
-
-            document.Placements[shapeType] = placementNodes.ToArray();
-
             await _placementStore.SavePlacementsAsync(document);
-        }
-
-        public async Task RemoveShapePlacementsAsync(string shapeType)
-        {
-            var document = await _placementStore.LoadPlacementsAsync();
-
-            if (document.Placements.Remove(shapeType))
-            {
-                await _placementStore.SavePlacementsAsync(document);
-            }
         }
     }
 }

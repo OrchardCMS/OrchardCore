@@ -7,53 +7,52 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
 {
-    public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
+    protected readonly IStringLocalizer S;
+
+    public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
     {
-        protected readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
+    public override IDisplayResult Display(SelectPart part)
+    {
+        return View("SelectPart", part).Location("Detail", "Content");
+    }
 
-        public override IDisplayResult Display(SelectPart part)
+    public override IDisplayResult Edit(SelectPart part)
+    {
+        return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
         {
-            return View("SelectPart", part).Location("Detail", "Content");
-        }
+            m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
+            m.DefaultValue = part.DefaultValue;
+            m.Editor = part.Editor;
+        });
+    }
 
-        public override IDisplayResult Edit(SelectPart part)
+    public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
+    {
+        var viewModel = new SelectPartEditViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
+            part.DefaultValue = viewModel.DefaultValue;
+            try
             {
-                m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
-                m.DefaultValue = part.DefaultValue;
-                m.Editor = part.Editor;
-            });
-        }
-
-        public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
-        {
-            var viewModel = new SelectPartEditViewModel();
-
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.DefaultValue = viewModel.DefaultValue;
-                try
-                {
-                    part.Editor = viewModel.Editor;
-                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
-                        ? []
-                        : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
-                }
-                catch
-                {
-                    updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
-                }
+                part.Editor = viewModel.Editor;
+                part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
+                    ? []
+                    : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
             }
-
-            return Edit(part);
+            catch
+            {
+                updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
+            }
         }
+
+        return Edit(part);
     }
 }

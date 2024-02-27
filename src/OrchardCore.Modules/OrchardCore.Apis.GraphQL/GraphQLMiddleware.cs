@@ -23,182 +23,181 @@ using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Routing;
 
-namespace OrchardCore.Apis.GraphQL
-{
-    public class GraphQLMiddleware : IMiddleware
-    {
-        private readonly GraphQLSettings _settings;
-        private readonly IGraphQLSerializer _serializer;
-        private readonly IDocumentExecuter _executer;
-        internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-        private static readonly MediaType _jsonMediaType = new("application/json");
-        private static readonly MediaType _graphQlMediaType = new("application/graphql");
+namespace OrchardCore.Apis.GraphQL;
 
-        public GraphQLMiddleware(
-            IOptions<GraphQLSettings> settingsOption,
-            IDocumentExecuter executer,
-            IGraphQLSerializer serializer)
+public class GraphQLMiddleware : IMiddleware
+{
+    private readonly GraphQLSettings _settings;
+    private readonly IGraphQLSerializer _serializer;
+    private readonly IDocumentExecuter _executer;
+    internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
+    private static readonly MediaType _jsonMediaType = new("application/json");
+    private static readonly MediaType _graphQlMediaType = new("application/graphql");
+
+    public GraphQLMiddleware(
+        IOptions<GraphQLSettings> settingsOption,
+        IDocumentExecuter executer,
+        IGraphQLSerializer serializer)
+    {
+        _settings = settingsOption.Value;
+        _executer = executer;
+        _serializer = serializer;
+    }
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        if (!IsGraphQLRequest(context))
         {
-            _settings = settingsOption.Value;
-            _executer = executer;
-            _serializer = serializer;
+            await next(context);
         }
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        else
         {
-            if (!IsGraphQLRequest(context))
+            var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
+            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+            if (authenticateResult.Succeeded)
             {
-                await next(context);
+                context.User = authenticateResult.Principal;
+            }
+            var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
+            var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
+
+            if (authorized)
+            {
+                await ExecuteAsync(context);
             }
             else
             {
-                var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-                var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
-                if (authenticateResult.Succeeded)
-                {
-                    context.User = authenticateResult.Principal;
-                }
-                var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-                var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
-
-                if (authorized)
-                {
-                    await ExecuteAsync(context);
-                }
-                else
-                {
-                    await context.ChallengeAsync("Api");
-                }
+                await context.ChallengeAsync("Api");
             }
         }
-        private bool IsGraphQLRequest(HttpContext context)
+    }
+    private bool IsGraphQLRequest(HttpContext context)
+    {
+        return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task ExecuteAsync(HttpContext context)
+    {
+        GraphQLNamedQueryRequest request = null;
+
+        // c.f. https://graphql.org/learn/serving-over-http/#post-request
+
+        try
         {
-            return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private async Task ExecuteAsync(HttpContext context)
-        {
-            GraphQLNamedQueryRequest request = null;
-
-            // c.f. https://graphql.org/learn/serving-over-http/#post-request
-
-            try
+            if (HttpMethods.IsPost(context.Request.Method))
             {
-                if (HttpMethods.IsPost(context.Request.Method))
+                var mediaType = new MediaType(context.Request.ContentType);
+
+                if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                 {
-                    var mediaType = new MediaType(context.Request.ContentType);
 
-                    if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
+                    if (mediaType.IsSubsetOf(_graphQlMediaType))
                     {
+                        using var sr = new StreamReader(context.Request.Body);
 
-                        if (mediaType.IsSubsetOf(_graphQlMediaType))
+                        request = new GraphQLNamedQueryRequest
                         {
-                            using var sr = new StreamReader(context.Request.Body);
-
-                            request = new GraphQLNamedQueryRequest
-                            {
-                                Query = await sr.ReadToEndAsync()
-                            };
-                        }
-                        else
-                        {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, JOptions.CamelCase);
-                        }
+                            Query = await sr.ReadToEndAsync()
+                        };
                     }
                     else
                     {
-                        request = CreateRequestFromQueryString(context);
+                        request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, JOptions.CamelCase);
                     }
                 }
-                else if (HttpMethods.IsGet(context.Request.Method))
+                else
                 {
-                    request = CreateRequestFromQueryString(context, true);
-                }
-
-                if (request == null)
-                {
-                    throw new InvalidOperationException("Unable to create a graphqlrequest from this request");
+                    request = CreateRequestFromQueryString(context);
                 }
             }
-            catch (Exception e)
+            else if (HttpMethods.IsGet(context.Request.Method))
             {
-                await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
-                return;
+                request = CreateRequestFromQueryString(context, true);
             }
 
-            var queryToExecute = request.Query;
-
-            if (!string.IsNullOrEmpty(request.NamedQuery))
+            if (request == null)
             {
-                var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
-
-                var queries = namedQueries
-                    .SelectMany(dict => dict.Resolve())
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-                queryToExecute = queries[request.NamedQuery];
+                throw new InvalidOperationException("Unable to create a graphqlrequest from this request");
             }
-
-            var schemaService = context.RequestServices.GetService<ISchemaFactory>();
-            var schema = await schemaService.GetSchemaAsync();
-            var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
-            var result = await _executer.ExecuteAsync(options =>
-            {
-                options.Schema = schema;
-                options.Query = queryToExecute;
-                options.OperationName = request.OperationName;
-                options.Variables = request.Variables;
-                options.UserContext = _settings.BuildUserContext?.Invoke(context);
-                options.ValidationRules = DocumentValidator.CoreRules
-                    .Concat(context.RequestServices.GetServices<IValidationRule>())
-                    .Append(new ComplexityValidationRule(new ComplexityConfiguration
-                    {
-                        MaxDepth = _settings.MaxDepth,
-                        MaxComplexity = _settings.MaxComplexity,
-                        FieldImpact = _settings.FieldImpact
-                    }));
-                options.Listeners.Add(dataLoaderDocumentListener);
-                options.RequestServices = context.RequestServices;
-            });
-
-            context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
-                ? HttpStatusCode.OK
-                : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
-                    ? HttpStatusCode.Unauthorized
-                    : HttpStatusCode.BadRequest);
-
-            context.Response.ContentType = MediaTypeNames.Application.Json;
-
-            await _serializer.WriteAsync(context.Response.Body, result);
         }
-
-        private static GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        catch (Exception e)
         {
-            if (!context.Request.Query.ContainsKey("query"))
-            {
-                if (validateQueryKey)
-                {
-                    throw new InvalidOperationException("The 'query' query string parameter is missing");
-                }
-
-                return null;
-            }
-
-            var request = new GraphQLNamedQueryRequest
-            {
-                Query = context.Request.Query["query"]
-            };
-
-            if (context.Request.Query.ContainsKey("variables"))
-            {
-                request.Variables = JsonSerializer.Deserialize<Inputs>(context.Request.Query["variables"], JOptions.CamelCase);
-            }
-
-            if (context.Request.Query.ContainsKey("operationName"))
-            {
-                request.OperationName = context.Request.Query["operationName"];
-            }
-
-            return request;
+            await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+            return;
         }
+
+        var queryToExecute = request.Query;
+
+        if (!string.IsNullOrEmpty(request.NamedQuery))
+        {
+            var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
+
+            var queries = namedQueries
+                .SelectMany(dict => dict.Resolve())
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            queryToExecute = queries[request.NamedQuery];
+        }
+
+        var schemaService = context.RequestServices.GetService<ISchemaFactory>();
+        var schema = await schemaService.GetSchemaAsync();
+        var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
+        var result = await _executer.ExecuteAsync(options =>
+        {
+            options.Schema = schema;
+            options.Query = queryToExecute;
+            options.OperationName = request.OperationName;
+            options.Variables = request.Variables;
+            options.UserContext = _settings.BuildUserContext?.Invoke(context);
+            options.ValidationRules = DocumentValidator.CoreRules
+                .Concat(context.RequestServices.GetServices<IValidationRule>())
+                .Append(new ComplexityValidationRule(new ComplexityConfiguration
+                {
+                    MaxDepth = _settings.MaxDepth,
+                    MaxComplexity = _settings.MaxComplexity,
+                    FieldImpact = _settings.FieldImpact
+                }));
+            options.Listeners.Add(dataLoaderDocumentListener);
+            options.RequestServices = context.RequestServices;
+        });
+
+        context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
+            ? HttpStatusCode.OK
+            : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
+                ? HttpStatusCode.Unauthorized
+                : HttpStatusCode.BadRequest);
+
+        context.Response.ContentType = MediaTypeNames.Application.Json;
+
+        await _serializer.WriteAsync(context.Response.Body, result);
+    }
+
+    private static GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+    {
+        if (!context.Request.Query.ContainsKey("query"))
+        {
+            if (validateQueryKey)
+            {
+                throw new InvalidOperationException("The 'query' query string parameter is missing");
+            }
+
+            return null;
+        }
+
+        var request = new GraphQLNamedQueryRequest
+        {
+            Query = context.Request.Query["query"]
+        };
+
+        if (context.Request.Query.ContainsKey("variables"))
+        {
+            request.Variables = JsonSerializer.Deserialize<Inputs>(context.Request.Query["variables"], JOptions.CamelCase);
+        }
+
+        if (context.Request.Query.ContainsKey("operationName"))
+        {
+            request.OperationName = context.Request.Query["operationName"];
+        }
+
+        return request;
     }
 }

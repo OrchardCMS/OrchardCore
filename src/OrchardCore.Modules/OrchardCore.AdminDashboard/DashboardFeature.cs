@@ -1,7 +1,6 @@
-namespace OrchardCore.AdminDashboard
+namespace OrchardCore.AdminDashboard;
+
+public class DashboardFeature
 {
-    public class DashboardFeature
-    {
-        public bool IsManageRequest { get; set; }
-    }
+    public bool IsManageRequest { get; set; }
 }

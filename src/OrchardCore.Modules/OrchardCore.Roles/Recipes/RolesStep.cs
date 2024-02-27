@@ -8,69 +8,68 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles.Recipes
+namespace OrchardCore.Roles.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of roles.
+/// </summary>
+public class RolesStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of roles.
-    /// </summary>
-    public class RolesStep : IRecipeStepHandler
+    private readonly RoleManager<IRole> _roleManager;
+
+    public RolesStep(RoleManager<IRole> roleManager)
     {
-        private readonly RoleManager<IRole> _roleManager;
+        _roleManager = roleManager;
+    }
 
-        public RolesStep(RoleManager<IRole> roleManager)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
         {
-            _roleManager = roleManager;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var model = context.Step.ToObject<RolesStepModel>();
+
+        foreach (var importedRole in model.Roles)
         {
-            if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(importedRole.Name))
             {
-                return;
+                continue;
             }
 
-            var model = context.Step.ToObject<RolesStepModel>();
+            var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
+            var isNewRole = role == null;
 
-            foreach (var importedRole in model.Roles)
+            if (isNewRole)
             {
-                if (string.IsNullOrWhiteSpace(importedRole.Name))
-                {
-                    continue;
-                }
-
-                var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
-                var isNewRole = role == null;
-
-                if (isNewRole)
-                {
-                    role = new Role { RoleName = importedRole.Name };
-                }
-
-                role.RoleDescription = importedRole.Description;
-                role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
-
-                if (isNewRole)
-                {
-                    await _roleManager.CreateAsync(role);
-                }
-                else
-                {
-                    await _roleManager.UpdateAsync(role);
-                }
+                role = new Role { RoleName = importedRole.Name };
             }
-        }
 
-        public class RolesStepModel
-        {
-            public RolesStepRoleModel[] Roles { get; set; }
+            role.RoleDescription = importedRole.Description;
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+
+            if (isNewRole)
+            {
+                await _roleManager.CreateAsync(role);
+            }
+            else
+            {
+                await _roleManager.UpdateAsync(role);
+            }
         }
     }
 
-    public class RolesStepRoleModel
+    public class RolesStepModel
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string[] Permissions { get; set; }
+        public RolesStepRoleModel[] Roles { get; set; }
     }
+}
+
+public class RolesStepRoleModel
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string[] Permissions { get; set; }
 }

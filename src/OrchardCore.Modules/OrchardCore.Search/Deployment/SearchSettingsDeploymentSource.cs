@@ -4,32 +4,31 @@ using OrchardCore.Deployment;
 using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Search.Deployment
+namespace OrchardCore.Search.Deployment;
+
+public class SearchSettingsDeploymentSource : IDeploymentSource
 {
-    public class SearchSettingsDeploymentSource : IDeploymentSource
+    private readonly ISiteService _site;
+
+    public SearchSettingsDeploymentSource(ISiteService site)
     {
-        private readonly ISiteService _site;
+        _site = site;
+    }
 
-        public SearchSettingsDeploymentSource(ISiteService site)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        if (step is not SearchSettingsDeploymentStep)
         {
-            _site = site;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var settings = await _site.GetSiteSettingsAsync();
+        var searchSettings = settings.As<SearchSettings>();
+
+        result.Steps.Add(new JsonObject
         {
-            if (step is not SearchSettingsDeploymentStep)
-            {
-                return;
-            }
-
-            var settings = await _site.GetSiteSettingsAsync();
-            var searchSettings = settings.As<SearchSettings>();
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["SearchSettings"] = JObject.FromObject(searchSettings),
-            });
-        }
+            ["name"] = "Settings",
+            ["SearchSettings"] = JObject.FromObject(searchSettings),
+        });
     }
 }

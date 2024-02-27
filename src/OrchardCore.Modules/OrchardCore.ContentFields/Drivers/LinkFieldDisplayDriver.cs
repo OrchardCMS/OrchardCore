@@ -15,116 +15,115 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Drivers
+namespace OrchardCore.ContentFields.Drivers;
+
+public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
 {
-    public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
+    private readonly IUrlHelperFactory _urlHelperFactory;
+    private readonly IActionContextAccessor _actionContextAccessor;
+    protected readonly IStringLocalizer S;
+    private readonly IHtmlSanitizerService _htmlSanitizerService;
+    private readonly HtmlEncoder _htmlencoder;
+
+    public LinkFieldDisplayDriver(
+        IUrlHelperFactory urlHelperFactory,
+        IActionContextAccessor actionContextAccessor,
+        IStringLocalizer<LinkFieldDisplayDriver> localizer,
+        IHtmlSanitizerService htmlSanitizerService,
+        HtmlEncoder htmlencoder)
     {
-        private readonly IUrlHelperFactory _urlHelperFactory;
-        private readonly IActionContextAccessor _actionContextAccessor;
-        protected readonly IStringLocalizer S;
-        private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly HtmlEncoder _htmlencoder;
+        _urlHelperFactory = urlHelperFactory;
+        _actionContextAccessor = actionContextAccessor;
+        S = localizer;
+        _htmlSanitizerService = htmlSanitizerService;
+        _htmlencoder = htmlencoder;
+    }
 
-        public LinkFieldDisplayDriver(
-            IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor,
-            IStringLocalizer<LinkFieldDisplayDriver> localizer,
-            IHtmlSanitizerService htmlSanitizerService,
-            HtmlEncoder htmlencoder)
+    public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<DisplayLinkFieldViewModel>(GetDisplayShapeType(context), model =>
         {
-            _urlHelperFactory = urlHelperFactory;
-            _actionContextAccessor = actionContextAccessor;
-            S = localizer;
-            _htmlSanitizerService = htmlSanitizerService;
-            _htmlencoder = htmlencoder;
-        }
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        })
+        .Location("Detail", "Content")
+        .Location("Summary", "Content");
+    }
 
-        public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
+    public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
         {
-            return Initialize<DisplayLinkFieldViewModel>(GetDisplayShapeType(context), model =>
+            var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
+            model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
+            model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
+
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    {
+        var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
+
+        if (modelUpdated)
+        {
+            var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
+
+            var urlToValidate = field.Url;
+            if (!string.IsNullOrEmpty(urlToValidate))
             {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
-                model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
-                model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
-        {
-            var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
-
-            if (modelUpdated)
-            {
-                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
-
-                var urlToValidate = field.Url;
-                if (!string.IsNullOrEmpty(urlToValidate))
+                var indexAnchor = urlToValidate.IndexOf('#');
+                if (indexAnchor > -1)
                 {
-                    var indexAnchor = urlToValidate.IndexOf('#');
-                    if (indexAnchor > -1)
-                    {
-                        urlToValidate = urlToValidate[..indexAnchor];
-                    }
-
-                    if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
-                    {
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-                        urlToValidate = urlHelper.Content(urlToValidate);
-                    }
-
-                    urlToValidate = urlToValidate.ToUriComponents();
+                    urlToValidate = urlToValidate[..indexAnchor];
                 }
 
-                // Validate Url
-                if (settings.Required && string.IsNullOrWhiteSpace(field.Url))
+                if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+                    urlToValidate = urlHelper.Content(urlToValidate);
                 }
-                else if (!string.IsNullOrWhiteSpace(field.Url))
+
+                urlToValidate = urlToValidate.ToUriComponents();
+            }
+
+            // Validate Url
+            if (settings.Required && string.IsNullOrWhiteSpace(field.Url))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else if (!string.IsNullOrWhiteSpace(field.Url))
+            {
+                if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
-                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                }
+                else
+                {
+                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
+
+                    if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                     }
-                    else
-                    {
-                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                        if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
-                        }
-                    }
-                }
-
-                // Validate Text
-                if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
-                else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 
-            return Edit(field, context);
+            // Validate Text
+            if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
         }
+
+        return Edit(field, context);
     }
 }

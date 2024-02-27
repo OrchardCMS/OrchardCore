@@ -11,92 +11,91 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
-namespace OrchardCore.Settings.Controllers
+namespace OrchardCore.Settings.Controllers;
+
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly CultureOptions _cultureOptions;
+    protected readonly IHtmlLocalizer H;
+
+    public AdminController(
+        ISiteService siteService,
+        IDisplayManager<ISite> siteSettingsDisplayManager,
+        IAuthorizationService authorizationService,
+        INotifier notifier,
+        IHtmlLocalizer<AdminController> h,
+        IOptions<CultureOptions> cultureOptions,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly CultureOptions _cultureOptions;
-        protected readonly IHtmlLocalizer H;
+        _siteSettingsDisplayManager = siteSettingsDisplayManager;
+        _siteService = siteService;
+        _notifier = notifier;
+        _authorizationService = authorizationService;
+        _updateModelAccessor = updateModelAccessor;
+        _cultureOptions = cultureOptions.Value;
+        H = h;
+    }
 
-        public AdminController(
-            ISiteService siteService,
-            IDisplayManager<ISite> siteSettingsDisplayManager,
-            IAuthorizationService authorizationService,
-            INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
-            IOptions<CultureOptions> cultureOptions,
-            IUpdateModelAccessor updateModelAccessor)
+    [Admin("Settings/{groupId}", "AdminSettings")]
+    public async Task<IActionResult> Index(string groupId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
         {
-            _siteSettingsDisplayManager = siteSettingsDisplayManager;
-            _siteService = siteService;
-            _notifier = notifier;
-            _authorizationService = authorizationService;
-            _updateModelAccessor = updateModelAccessor;
-            _cultureOptions = cultureOptions.Value;
-            H = h;
+            return Forbid();
         }
 
-        [Admin("Settings/{groupId}", "AdminSettings")]
-        public async Task<IActionResult> Index(string groupId)
+        var site = await _siteService.GetSiteSettingsAsync();
+
+        var viewModel = new AdminIndexViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
-            {
-                return Forbid();
-            }
+            GroupId = groupId,
+            Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+        };
 
-            var site = await _siteService.GetSiteSettingsAsync();
+        return View(viewModel);
+    }
 
-            var viewModel = new AdminIndexViewModel
-            {
-                GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
-            };
-
-            return View(viewModel);
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    public async Task<IActionResult> IndexPost(string groupId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
+        {
+            return Forbid();
         }
 
-        [HttpPost]
-        [ActionName(nameof(Index))]
-        public async Task<IActionResult> IndexPost(string groupId)
+        var site = await _siteService.LoadSiteSettingsAsync();
+
+        var viewModel = new AdminIndexViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
+            GroupId = groupId,
+            Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+        };
+
+        if (ModelState.IsValid)
+        {
+            await _siteService.UpdateSiteSettingsAsync(site);
+
+            string culture = null;
+            if (site.Properties.TryGetPropertyValue("LocalizationSettings", out var settings))
             {
-                return Forbid();
+                culture = settings.Value<string>("DefaultCulture");
             }
 
-            var site = await _siteService.LoadSiteSettingsAsync();
-
-            var viewModel = new AdminIndexViewModel
+            // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
+            using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
             {
-                GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
-            };
-
-            if (ModelState.IsValid)
-            {
-                await _siteService.UpdateSiteSettingsAsync(site);
-
-                string culture = null;
-                if (site.Properties.TryGetPropertyValue("LocalizationSettings", out var settings))
-                {
-                    culture = settings.Value<string>("DefaultCulture");
-                }
-
-                // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
-                {
-                    await _notifier.SuccessAsync(H["Site settings updated successfully."]);
-                }
-
-                return RedirectToAction(nameof(Index), new { groupId });
+                await _notifier.SuccessAsync(H["Site settings updated successfully."]);
             }
 
-            return View(viewModel);
+            return RedirectToAction(nameof(Index), new { groupId });
         }
+
+        return View(viewModel);
     }
 }

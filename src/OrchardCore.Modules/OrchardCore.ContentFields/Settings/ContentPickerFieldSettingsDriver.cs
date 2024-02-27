@@ -9,115 +9,114 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
 {
-    public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
+    private readonly ILiquidTemplateManager _templateManager;
+    protected readonly IStringLocalizer S;
+
+    public ContentPickerFieldSettingsDriver(ILiquidTemplateManager templateManager, IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
+        _templateManager = templateManager;
+        S = localizer;
+    }
 
-        public ContentPickerFieldSettingsDriver(ILiquidTemplateManager templateManager, IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+    {
+        return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
         {
-            _templateManager = templateManager;
-            S = localizer;
-        }
+            var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+            model.Hint = settings.Hint;
+            model.Required = settings.Required;
+            model.Multiple = settings.Multiple;
+            model.Source = GetSource(settings);
+            model.DisplayedContentTypes = settings.DisplayedContentTypes;
+            model.TitlePattern = settings.TitlePattern;
+            model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
+        }).Location("Content");
+    }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new ContentPickerFieldSettingsViewModel();
+
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
+            var settings = new ContentPickerFieldSettings
             {
-                var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Multiple = settings.Multiple;
-                model.Source = GetSource(settings);
-                model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                model.TitlePattern = settings.TitlePattern;
-                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
-            }).Location("Content");
-        }
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple,
+                TitlePattern = model.TitlePattern,
+            };
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new ContentPickerFieldSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            switch (model.Source)
             {
-                var settings = new ContentPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple,
-                    TitlePattern = model.TitlePattern,
-                };
-
-                switch (model.Source)
-                {
-                    case ContentPickerSettingType.ContentTypes:
-                        SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
-                        break;
-                    case ContentPickerSettingType.Stereotypes:
-                        SetStereoTypes(context.Updater, model.Stereotypes, settings);
-                        break;
-                    default:
-                        settings.DisplayAllContentTypes = true;
-                        break;
-                }
-
-                if (IsValidTitlePattern(context, model))
-                {
-                    context.Builder.WithSettings(settings);
-                }
+                case ContentPickerSettingType.ContentTypes:
+                    SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                    break;
+                case ContentPickerSettingType.Stereotypes:
+                    SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                    break;
+                default:
+                    settings.DisplayAllContentTypes = true;
+                    break;
             }
 
-            return Edit(partFieldDefinition);
-        }
-
-        private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
-        {
-            if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
+            if (IsValidTitlePattern(context, model))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
-                return false;
+                context.Builder.WithSettings(settings);
             }
-
-            return true;
         }
 
-        private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
+        return Edit(partFieldDefinition);
+    }
+
+    private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
+    {
+        if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
         {
-            if (string.IsNullOrEmpty(stereotypes))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
-
-                return;
-            }
-
-            settings.DisplayedStereotypes = stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+            return false;
         }
 
-        private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
+        return true;
+    }
+
+    private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
+    {
+        if (string.IsNullOrEmpty(stereotypes))
         {
-            if (displayedContentTypes == null || displayedContentTypes.Length == 0)
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.DisplayedContentTypes), S["At least one content type must be selected."]);
+            updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
 
-                return;
-            }
-
-            settings.DisplayedContentTypes = displayedContentTypes;
+            return;
         }
 
-        private static ContentPickerSettingType GetSource(ContentPickerFieldSettings settings)
+        settings.DisplayedStereotypes = stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
+    {
+        if (displayedContentTypes == null || displayedContentTypes.Length == 0)
         {
-            if (settings.DisplayAllContentTypes)
-            {
-                return ContentPickerSettingType.AllTypes;
-            }
+            updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.DisplayedContentTypes), S["At least one content type must be selected."]);
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
-                ? ContentPickerSettingType.Stereotypes
-                : ContentPickerSettingType.ContentTypes;
+            return;
         }
+
+        settings.DisplayedContentTypes = displayedContentTypes;
+    }
+
+    private static ContentPickerSettingType GetSource(ContentPickerFieldSettings settings)
+    {
+        if (settings.DisplayAllContentTypes)
+        {
+            return ContentPickerSettingType.AllTypes;
+        }
+
+        return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
+            ? ContentPickerSettingType.Stereotypes
+            : ContentPickerSettingType.ContentTypes;
     }
 }
