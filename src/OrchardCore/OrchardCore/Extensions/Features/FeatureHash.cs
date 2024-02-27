@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -30,7 +31,7 @@ namespace OrchardCore.Environment.Extensions.Features
 
             serial = enabledFeatures
                 .OrderBy(x => x.Id)
-                .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
+                .Aggregate(0, (a, f) => HashCode.Combine(a, f.Id.GetHashCode()));
 
             _memoryCache.Set(FeatureHashCacheKey, serial);
 
