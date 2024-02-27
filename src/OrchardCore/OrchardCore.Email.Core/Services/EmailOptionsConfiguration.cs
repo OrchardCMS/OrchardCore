@@ -23,7 +23,9 @@ public class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
 
         var emailSettings = site.As<EmailSettings>();
 
-        if (!string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+        if (!string.IsNullOrEmpty(emailSettings.DefaultProviderName)
+            && _emailProviderOptions.Providers.TryGetValue(emailSettings.DefaultProviderName, out var provider)
+            && provider.IsEnabled)
         {
             options.DefaultProviderName = emailSettings.DefaultProviderName;
 
