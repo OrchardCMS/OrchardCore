@@ -25,7 +25,7 @@ public static class CreateEndpoint
 
     private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
     {
-        MergeArrayHandling = MergeArrayHandling.Replace
+        MergeArrayHandling = MergeArrayHandling.Replace,
     };
 
     [Authorize(AuthenticationSchemes = "Api")]
