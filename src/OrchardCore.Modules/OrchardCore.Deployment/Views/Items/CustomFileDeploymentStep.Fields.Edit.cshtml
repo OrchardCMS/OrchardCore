@@ -11,14 +11,14 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="FileName">
-    <label asp-for="FileName">@T["File Name"]</label>
+    <label asp-for="FileName" class="form-label">@T["File Name"]</label>
     <input asp-for="FileName" class="form-control" />
     <span asp-validation-for="FileName"></span>
     <span class="hint">@T["The filename as it will be added in the archive."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="FileContent">@T["File Content"]</label>
+    <label asp-for="FileContent" class="form-label">@T["File Content"]</label>
     <code><textarea asp-for="FileContent" class="form-control"></textarea></code>
     <span class="hint">@T["The content of the file."]</span>
 </div>

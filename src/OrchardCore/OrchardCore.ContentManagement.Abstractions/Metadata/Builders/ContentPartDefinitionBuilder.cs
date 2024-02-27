@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
@@ -12,8 +12,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     public class ContentPartDefinitionBuilder
     {
         private readonly ContentPartDefinition _part;
-        private readonly IList<ContentPartFieldDefinition> _fields;
-        private readonly JObject _settings;
+        private readonly List<ContentPartFieldDefinition> _fields;
+        private readonly JsonObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
 
@@ -28,14 +28,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _fields = new List<ContentPartFieldDefinition>();
-                _settings = new JObject();
+                _fields = [];
+                _settings = [];
             }
             else
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = new JObject(existing.Settings);
+                _settings = existing.Settings.Clone();
             }
         }
 
@@ -62,6 +62,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartDefinitionBuilder Named(string name)
         {
             Name = name;
+
             return this;
         }
 
@@ -72,25 +73,20 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 _fields.Remove(existingField);
             }
+
             return this;
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            return this;
-        }
-
-        public ContentPartDefinitionBuilder MergeSettings(JObject settings)
+        public ContentPartDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+
             return this;
         }
 
         public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
@@ -101,15 +97,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var settingsToMerge = existingJObject.ToObject<T>();
             setting(settingsToMerge);
             _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+
             return this;
         }
 
         public ContentPartDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -118,16 +112,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         }
 
         public ContentPartDefinitionBuilder WithField(string fieldName)
-        {
-            return WithField(fieldName, configuration => { });
-        }
+            => WithField(fieldName, configuration => { });
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
-            if (string.IsNullOrWhiteSpace(fieldName))
-            {
-                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
@@ -140,23 +129,52 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
+
             var configurer = new FieldConfigurerImpl(existingField, _part);
-            // Assume that the display name is the same as the field name.
-            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
-            configurer.WithDisplayName(fieldName);
+
             configuration(configurer);
-            _fields.Add(configurer.Build());
+
+            var fieldDefinition = configurer.Build();
+
+            var settings = fieldDefinition.GetSettings<ContentPartFieldSettings>();
+
+            if (string.IsNullOrEmpty(settings.DisplayName))
+            {
+                // If there is no display name, let's use the field name by default.
+                settings.DisplayName = fieldName;
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
+            }
+
+            _fields.Add(fieldDefinition);
+
             return this;
         }
 
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName)
+            => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
+
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
+            => WithField(fieldName, field =>
+            {
+                configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
+        public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
+            => WithFieldAsync(fieldName, async field =>
+            {
+                await configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
-            if (string.IsNullOrWhiteSpace(fieldName))
-            {
-                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
@@ -170,17 +188,26 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
-            // Assume that the display name is the same as the field name.
-            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
-            configurer.WithDisplayName(fieldName);
 
             await configurationAsync(configurer);
 
-            _fields.Add(configurer.Build());
+            var fieldDefinition = configurer.Build();
+
+            var settings = fieldDefinition.GetSettings<ContentPartFieldSettings>();
+
+            if (string.IsNullOrEmpty(settings.DisplayName))
+            {
+                // If there is no display name, let's use the field name by default.
+                settings.DisplayName = fieldName;
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
+            }
+
+            _fields.Add(fieldDefinition);
 
             return this;
         }
@@ -214,19 +241,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             public override string Name
-            {
-                get { return _fieldName; }
-            }
+                => _fieldName;
 
             public override string FieldType
-            {
-                get { return _fieldDefinition.Name; }
-            }
+                => _fieldDefinition.Name;
+
 
             public override string PartName
-            {
-                get { return _partDefinition.Name; }
-            }
+                => _partDefinition.Name;
 
             public override ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition)
             {

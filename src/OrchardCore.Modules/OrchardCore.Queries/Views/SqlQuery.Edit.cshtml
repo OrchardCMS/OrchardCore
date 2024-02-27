@@ -18,18 +18,22 @@
 </div>
 
 <div class="mb-3">
-    <label asp-for="Query">@T["Query"]</label>
+    <label asp-for="Query" class="form-label">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
     <span class="hint">@T["The SQL query to execute."]</span>
 </div>
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql",
-            indentWithTabs: true, smartIndent: true, matchBrackets : true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
-            extraKeys: {"Ctrl-Space": "autocomplete"},
-            hintOptions: {tables: {
-              ContentItemIndex: ["DocumentId"]
-            }} });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
+            mode: "text/x-pgsql",
+            indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            hintOptions: {
+                tables: {
+                    ContentItemIndex: ["DocumentId"]
+                }
+            }
+        });
     });
 </script>

@@ -12,7 +12,6 @@ Enables you to present HTTP errors in a personalized style and offers a means to
 | `HttpError__Unauthorized` | Generates the `401` HTTP error page. You can adjust its appearance by modifying the `HttpError-Unauthorized.cshtml` or `HttpError-Unauthorized.liquid` views. |
 | `HttpError__HttpStatusCode` | Fallback template which generates the HTTP error page when no explicit template defined (ex, `HttpError-MethodNotAllowed.cshtml`). You can adjust its appearance by modifying the `HttpError.cshtml` or `HttpError.liquid` views. |
 
-
 ### Example
 
 To alter the presentation of a particular HTTP status code, you can easily create a template within your theme that corresponds to the HTTP status code. For instance, if you wish to customize the 404 error page, you can achieve this by creating a template in your theme named `HttpError-NotFound.cshtml` or `HttpError-NotFound.liquid` as outlined below.

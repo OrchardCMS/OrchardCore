@@ -16,7 +16,7 @@ using YesSql.Services;
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    [Admin]
+    [Admin("AddToDeploymentPlan/{action}/{deploymentPlanId}", AdminAttribute.NameFromControllerAndAction)]
     public class AddToDeploymentPlanController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return this.LocalRedirect(returnUrl, true);
         }
@@ -136,7 +136,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return this.LocalRedirect(returnUrl, true);
         }

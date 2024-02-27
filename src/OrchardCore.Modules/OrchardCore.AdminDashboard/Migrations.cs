@@ -22,11 +22,11 @@ namespace OrchardCore.AdminDashboard
 
         public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<DashboardPartIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
                .Column<double>("Position")
             );
 
-            SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
                 .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
                     "Position")
@@ -51,9 +51,9 @@ namespace OrchardCore.AdminDashboard
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
                 .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
                     "Position")

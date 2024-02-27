@@ -2,7 +2,7 @@
 @model CorrelateTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Value">
-    <label asp-for="Value">@T["Value"]</label>
+    <label asp-for="Value" class="form-label">@T["Value"]</label>
     <input type="hidden" asp-for="Value" class="form-control " />
     <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
     <span asp-validation-for="Value"></span>
@@ -10,7 +10,7 @@
 </div>
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 "automaticLayout": true,

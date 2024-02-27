@@ -1,6 +1,4 @@
 using OrchardCore.Queries.Sql;
-using YesSql;
-using YesSql.Provider.SqlServer;
 
 namespace OrchardCore.Tests.OrchardCore.Queries
 {

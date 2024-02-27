@@ -31,7 +31,7 @@ Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing f
 
 ### Publishing Localization files
 
-The PO files need to be included in the publish output directory. 
+The PO files need to be included in the publish output directory.
 Add the following configurations to your `[Web Project].csproj` file to include them as Content.
 
 ```xml

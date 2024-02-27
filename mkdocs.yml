@@ -98,6 +98,7 @@ nav:
       - Create a website: docs/guides/create-cms-application/README.md
       - Leverage CSPROJ meta information: docs/guides/leverage-csproj-meta-info/README.md
       - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
+      - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
       - Add an admin menu: docs/guides/add-admin-menu/README.md
       - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
       - Install localization files: docs/guides/install-localization-files/README.md
@@ -192,6 +193,7 @@ nav:
               - Ticket store: docs/reference/modules/Users/TicketStore.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
+          - Commerce: https://commerce.orchardcore.net/en/latest
       - Core Modules:
           - Audit Trail: docs/reference/modules/AuditTrail/README.md
           - Auto Setup: docs/reference/modules/AutoSetup/README.md
@@ -206,6 +208,8 @@ nav:
           - Data Migrations: docs/reference/modules/Migrations/README.md
           - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
           - Email: docs/reference/modules/Email/README.md
+          - SMTP Provider: docs/reference/modules/Email.Smtp/README.md
+          - Azure Email Provider: docs/reference/modules/Email.Azure/README.md
           - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
           - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
           - Health Check: docs/reference/modules/HealthChecks/README.md
@@ -242,6 +246,9 @@ nav:
       - Owners: docs/resources/owners/README.md
       - Workshops: docs/resources/workshops/README.md
   - Releases:
+      - 1.8.2: docs/releases/1.8.2.md
+      - 1.8.1: docs/releases/1.8.1.md
+      - 1.8.0: docs/releases/1.8.0.md
       - 1.7.2: docs/releases/1.7.2.md
       - 1.7.1: docs/releases/1.7.1.md
       - 1.7.0: docs/releases/1.7.0.md
@@ -259,3 +266,11 @@ nav:
       - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
       - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
       - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
+  - Community:
+      - Overview: docs/community/README.md
+      - Contributors:
+          - Our wonderful contributors: docs/community/contributors/README.md
+          - Contributors Map: docs/community/contributors/Map.md
+      - Honorable Members:
+          - Jean-Thierry Kéchichian: docs/community/jean-thierry/README.md
+      - Jean-Thierry Kéchichian Community Award: docs/community/jean-thierry-community-award/README.md

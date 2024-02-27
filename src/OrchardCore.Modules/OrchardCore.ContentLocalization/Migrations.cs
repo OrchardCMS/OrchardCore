@@ -26,7 +26,7 @@ namespace OrchardCore.ContentLocalization.Records
                 .Attachable()
                 .WithDescription("Provides a way to create localized version of content."));
 
-            SchemaBuilder.CreateMapIndexTable<LocalizedContentItemIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<LocalizedContentItemIndex>(table => table
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
                 .Column<string>("Culture", col => col.WithLength(16))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Records
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
                 "DocumentId",
                 "LocalizationSet",
@@ -49,22 +49,22 @@ namespace OrchardCore.ContentLocalization.Records
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest))
             );
 
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
                 "DocumentId",
                 "LocalizationSet",
@@ -91,7 +91,7 @@ namespace OrchardCore.ContentLocalization.Records
                 foreach (var localizedContentItem in localizedContentItems)
                 {
                     localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
-                    session.Save(localizedContentItem);
+                    await session.SaveAsync(localizedContentItem);
                 }
             });
 

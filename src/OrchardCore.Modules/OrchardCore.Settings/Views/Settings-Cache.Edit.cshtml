@@ -4,7 +4,7 @@
 
 <div class="mb-3">
     <div class="col-xl-6" asp-validation-class-for="CacheMode">
-        <label asp-for="CacheMode">@T["Cache Mode"]</label>
+        <label asp-for="CacheMode" class="form-label">@T["Cache Mode"]</label>
         <select asp-for="CacheMode" class="form-select">
             <option value="@CacheMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise"]</option>
             <option value="@CacheMode.Enabled.ToString()">@T["Enabled"]</option>

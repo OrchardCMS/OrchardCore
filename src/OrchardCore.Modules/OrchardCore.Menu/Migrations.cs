@@ -60,7 +60,7 @@ namespace OrchardCore.Menu
                     menu.Apply(menuItemsListPart);
                 }
 
-                _session.Save(menu);
+                await _session.SaveAsync(menu);
             }
 
             return 4;

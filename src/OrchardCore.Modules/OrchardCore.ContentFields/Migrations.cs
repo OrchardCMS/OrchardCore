@@ -4,21 +4,39 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.ContentFields
 {
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _shellDescriptor = shellDescriptor;
         }
 
-        // This migration does not need to run on new installations, but because there is no
-        // initial migration record, there is no way to shortcut the Create migration.
+        // New installations don't need to be upgraded, but because there is no initial migration record,
+        // 'UpgradeAsync' is called in a new 'CreateAsync' but only if the feature was already installed.
         public async Task<int> CreateAsync()
+        {
+            if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.ContentFields"))
+            {
+                await UpgradeAsync();
+            }
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 2;
+        }
+
+        // Upgrade an existing installation.
+        private async Task UpgradeAsync()
         {
             // Boolean field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>();
@@ -55,14 +73,14 @@ namespace OrchardCore.ContentFields
             // Time field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>();
 
-            // Youtube field
+            // YouTube field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
 
-            // Shortcut other migration steps on new content definition schemas.
-            return 2;
+            // Keep in sync the upgrade process.
+            await UpdateFrom1Async();
         }
 
-        // This code can be removed in a later version.
+        // This step is part of the upgrade process.
         public async Task<int> UpdateFrom1Async()
         {
             // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.

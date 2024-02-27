@@ -108,7 +108,7 @@
         {
             <form method="post">
                 <div class="mb-3">
-                    <label asp-for="PreferredProvider">@T["Preferred Two-Factor Method"]</label>
+                    <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
                     <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
                         @if (string.IsNullOrEmpty(Model.PreferredProvider))
                         {

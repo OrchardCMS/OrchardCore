@@ -25,20 +25,16 @@
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
   --bs-bg-opacity: 1;
 }
 
-body {
+body, html {
   height: 100%;
-}
-
-[dir] body {
-  margin-bottom: var(--oc-footer-height);
 }
 
 [dir] .cursor-move {
@@ -49,10 +45,17 @@ body {
   cursor: pointer;
 }
 
+.ta-wrapper {
+  height: 100%;
+}
+
+.ta-content {
+  min-height: 100%;
+}
+
 [dir] .ta-content {
-  padding: 15px;
-  margin-top: var(--oc-top-nav-height);
-  margin-bottom: var(--oc-footer-height);
+  padding: 1rem;
+  padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
 }
 
 [dir=ltr] .ta-content {
@@ -123,8 +126,8 @@ body {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;

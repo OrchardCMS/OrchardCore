@@ -24,6 +24,10 @@
     @include border-radius($border-radius);
 }
 
+.form-label {
+    margin-bottom: 0.25rem;
+}
+
 .label-link {
     float: right;
     font-size: 12px;

@@ -13,12 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -56,15 +55,12 @@ namespace OrchardCore.Users
     public class Startup : StartupBase
     {
         private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-        private static readonly string _adminControllerName = typeof(AdminController).ControllerName();
 
-        private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
         private UserOptions _userOptions;
 
-        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
+        public Startup(ShellSettings shellSettings)
         {
-            _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
         }
 
@@ -104,49 +100,6 @@ namespace OrchardCore.Users
                 areaName: UserConstants.Features.Users,
                 pattern: _userOptions.ExternalLoginsUrl,
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.ExternalLogins) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "UsersIndex",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Index",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersCreate",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Create",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersDelete",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Delete/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEdit",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditPassword",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.EditPassword) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersUnlock",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Unlock) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersDisplay",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Display/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Display) }
             );
 
             builder.UseAuthorization();
@@ -206,7 +159,7 @@ namespace OrchardCore.Users
                 options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
             });
-
+            services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
             services.AddDataMigration<Migrations>();
 
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
@@ -505,10 +458,7 @@ namespace OrchardCore.Users
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
-
-            services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<CustomUserSettingsDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
+            services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         }
     }
 
@@ -516,9 +466,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllUsersDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AllUsersDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllUsersDeploymentStepDriver>();
+            services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.Queries;
@@ -27,7 +27,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
                 {
                     contentItem = null;
 
-                    if (result is JObject jObject)
+                    if (result is JsonObject jObject)
                     {
                         contentItem = jObject.ToObject<ContentItem>();
                     }
@@ -60,7 +60,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
                 {
                     contentItem = null;
 
-                    if (item is JObject jObject)
+                    if (item is JsonObject jObject)
                     {
                         contentItem = jObject.ToObject<ContentItem>();
                     }

@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.Routing
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -56,8 +56,8 @@ namespace OrchardCore.Tests.Routing
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -90,8 +90,8 @@ namespace OrchardCore.Tests.Routing
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -125,17 +125,17 @@ namespace OrchardCore.Tests.Routing
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path1", "contained1"),
-                    new AutorouteEntry("container", "contained-path2", "contained2")
+                    new("container", "container-path"),
+                    new("container", "contained-path1", "contained1"),
+                    new("container", "contained-path2", "contained2")
                 };
 
                 entries.AddEntries(initialEntries);
 
                 var updatedEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path1", "contained1")
+                    new("container", "container-path"),
+                    new("container", "contained-path1", "contained1")
                 };
 
                 entries.AddEntries(updatedEntries);
@@ -167,16 +167,16 @@ namespace OrchardCore.Tests.Routing
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path-old", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path-old", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
 
                 var updatedEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path-new", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path-new", "contained")
                 };
 
                 entries.AddEntries(updatedEntries);

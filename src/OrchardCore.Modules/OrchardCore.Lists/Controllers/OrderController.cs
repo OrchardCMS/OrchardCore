@@ -24,6 +24,7 @@ namespace OrchardCore.Lists.Controllers
         }
 
         [HttpPost]
+        [Admin("Lists/Order/{containerId?}", "ListOrder")]
         public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
         {
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
@@ -60,7 +61,7 @@ namespace OrchardCore.Lists.Controllers
                 new ContainedItemOptions { Status = ContentsStatus.Latest }))
                 .ToList();
 
-            if (pageOfContentItems == null || !pageOfContentItems.Any())
+            if (pageOfContentItems == null || pageOfContentItems.Count == 0)
             {
                 return NotFound();
             }

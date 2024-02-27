@@ -30,10 +30,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         if (!(context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
             || context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase)

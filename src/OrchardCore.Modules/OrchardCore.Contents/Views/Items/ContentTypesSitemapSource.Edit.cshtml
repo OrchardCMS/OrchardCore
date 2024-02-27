@@ -23,12 +23,12 @@
             </div>
             <div class="card-body">
                 <div class="mb-3" asp-validation-class-for="ChangeFrequency">
-                    <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
+                    <label asp-for="ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
                     <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
                     <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
                 </div>
                 <div class="mb-3" asp-validation-class-for="Priority">
-                    <label asp-for="Priority">@T["Priority"] </label>
+                    <label asp-for="Priority" class="form-label">@T["Priority"] </label>
                     <select asp-for="Priority" class="form-select w-25">
                         <option value="0">@T["0.0"]</option>
                         <option value="1">@T["0.1"]</option>
@@ -74,14 +74,14 @@
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="mb-3" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
-                                    <label asp-for="ContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
+                                    <label asp-for="ContentTypes[i].ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
                                     <select asp-for="ContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
                                     <span class="hint">@T["The default frequency these content types are likely to change."]</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="mb-3" asp-validation-class-for="ContentTypes[i].Priority">
-                                    <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
+                                    <label asp-for="ContentTypes[i].Priority" class="form-label">@T["Priority"] </label>
                                     <select asp-for="ContentTypes[i].Priority" class="form-select" disabled="@notChecked">
                                         <option value="0">@T["0.0"]</option>
                                         <option value="1">@T["0.1"]</option>
@@ -132,14 +132,14 @@
                             </div>
                             <div class="col-12 col-md-3 ">
                                 <div class="mb-3" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
-                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
+                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
                                     <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
                                     <span class="hint">@T["The default frequency these content types are likely to change."]</span>
                                 </div>
                             </div>
                             <div class="col-12 col-md-3">
                                 <div class="mb-3" asp-validation-class-for="LimitedContentTypes[i].Priority">
-                                    <label asp-for="LimitedContentTypes[i].Priority">@T["Priority"] </label>
+                                    <label asp-for="LimitedContentTypes[i].Priority" class="form-label">@T["Priority"] </label>
                                     <select asp-for="LimitedContentTypes[i].Priority" class="form-select" disabled="@notChecked">
                                         <option value="0">@T["0.0"]</option>
                                         <option value="1">@T["0.1"]</option>

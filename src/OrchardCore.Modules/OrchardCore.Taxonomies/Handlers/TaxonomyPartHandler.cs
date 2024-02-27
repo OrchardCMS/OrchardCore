@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Taxonomies.Models;
@@ -12,9 +12,9 @@ namespace OrchardCore.Taxonomies.Handlers
         {
             return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
-                aspect.Accessors.Add((jObject) =>
+                aspect.Accessors.Add((jsonObject) =>
                 {
-                    return jObject["TaxonomyPart"]["Terms"] as JArray;
+                    return jsonObject["TaxonomyPart"]["Terms"] as JsonArray;
                 });
 
                 return Task.CompletedTask;

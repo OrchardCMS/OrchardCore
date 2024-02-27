@@ -61,7 +61,7 @@ public class ApiController : Controller
 
             updated = true;
 
-            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
         }
 
         return Ok(new

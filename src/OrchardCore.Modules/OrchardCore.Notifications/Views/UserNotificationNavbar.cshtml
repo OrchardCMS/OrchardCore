@@ -28,11 +28,11 @@
                 <i class="fa-regular fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@T["You have no unread notifications"]"></i>
             }
         </button>
-        <ul class="dropdown-menu dropdown-menu-end notification-navbar scrollable position-absolute" style="max-width: 20rem;">
+        <ul class="dropdown-menu dropdown-menu-end notification-navbar scrollable position-absolute">
             @if (Model.Notifications.Count > 0)
             {
                 var maxCount = Math.Min(Model.MaxVisibleNotifications, Model.Notifications.Count);
-                <li style="max-height: 30rem; overflow-y: auto;">
+                <li>
                     @for (int i = 0; i < maxCount; i++)
                     {
                         var notification = Model.Notifications[i];
@@ -61,7 +61,11 @@
 </script>
 
 <style at="Head">
-    .notification-navbar .notification-is-unread {
-        font-weight: 600 !important;
+    .notification-navbar {
+        max-width: 20rem;
     }
+
+        .notification-navbar .notification-is-unread {
+            font-weight: 600 !important;
+        }
 </style>

@@ -1,15 +1,16 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Util.Automaton;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 {
     public class FuzzyFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
         {
             if (type != "fuzzy")
             {
@@ -21,36 +22,36 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            var queryObj = filter as JObject;
-            var first = queryObj.Properties().First();
+            var queryObj = filter.AsObject();
+            var first = queryObj.First();
 
             FuzzyQuery fuzzyQuery;
 
-            switch (first.Value.Type)
+            switch (first.Value.GetValueKind())
             {
-                case JTokenType.String:
-                    fuzzyQuery = new FuzzyQuery(new Term(first.Name, first.Value.ToString()));
+                case JsonValueKind.String:
+                    fuzzyQuery = new FuzzyQuery(new Term(first.Key, first.Value.ToString()));
                     break;
-                case JTokenType.Object:
-                    var obj = (JObject)first.Value;
+                case JsonValueKind.Object:
+                    var obj = first.Value.AsObject();
 
-                    if (!obj.TryGetValue("value", out var value))
+                    if (!obj.TryGetPropertyValue("value", out var value))
                     {
                         throw new ArgumentException("Missing value in fuzzy query");
                     }
 
-                    obj.TryGetValue("fuzziness", out var fuzziness);
-                    obj.TryGetValue("prefix_length", out var prefixLength);
-                    obj.TryGetValue("max_expansions", out var maxExpansions);
+                    obj.TryGetPropertyValue("fuzziness", out var fuzziness);
+                    obj.TryGetPropertyValue("prefix_length", out var prefixLength);
+                    obj.TryGetPropertyValue("max_expansions", out var maxExpansions);
 
                     fuzzyQuery = new FuzzyQuery(
-                        new Term(first.Name, value.Value<string>()),
+                        new Term(first.Key, value.Value<string>()),
                         fuzziness?.Value<int>() ?? LevenshteinAutomata.MAXIMUM_SUPPORTED_DISTANCE,
                         prefixLength?.Value<int>() ?? 0,
                         maxExpansions?.Value<int>() ?? 50,
                         true);
 
-                    if (obj.TryGetValue("boost", out var boost))
+                    if (obj.TryGetPropertyValue("boost", out var boost))
                     {
                         fuzzyQuery.Boost = boost.Value<float>();
                     }

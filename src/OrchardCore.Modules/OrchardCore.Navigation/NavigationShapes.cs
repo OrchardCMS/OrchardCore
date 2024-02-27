@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,9 +10,9 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
 {
-    public class NavigationShapes : IShapeTableProvider
+    public class NavigationShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
@@ -103,6 +104,8 @@ namespace OrchardCore.Navigation
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__" + encodedMenuName);
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__" + encodedMenuName + "__level__" + level);
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

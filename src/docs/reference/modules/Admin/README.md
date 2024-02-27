@@ -13,6 +13,7 @@ If you want to specify another prefix in the urls to access the admin section, y
       }
     }
 ```
+
 ## Customize Admin branding
 
 By default, OrchardCore logo and site name are displayed in the top navbar.
@@ -51,10 +52,9 @@ Here are samples using logo and favicon from media module.
     </a>
     ```
 
-
 ## Navbar Shape
 
-The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`. 
+The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`.
 
 As an illustration, we inject the Visit Site link into `DetailAdmin` display type using a display driver as outlined below:
 
@@ -90,3 +90,22 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
         </a>
     </li>
     ```
+
+## Admin Routes
+
+The `[Admin]` attribute has optional parameters for a custom route template and route name. It works just like the `[Route(template, name)]` attribute, except it prepends the configured admin prefix. You can apply it to the controller or the action; if both are specified then the action's template takes precedence. The route name can contain `{area}`, `{controller}`, and `{action}`, which are substituted during mapping so the names can be unique for each action. This means you don't have to define these admin routes in your module's `Startup` class anymore, but that option is still available and supported. Take a look at this example:
+
+```csharp
+[Admin("Person/{action}/{id?}", "Person{action}")]
+public class PersonController : Controller
+{
+    [Admin("Person", "Person")]
+    public IActionResult Index() { ... }
+
+    public IActionResult Create() { ... }
+
+    public IActionResult Edit(string id) { ... }
+}
+```
+
+In this example, (if the admin prefix remains the default "Admin") you can reach the Index action at `~/Admin/Person` (or by the route name `Person`), because its own action-level attribute took precedence. You can reach Create at `~/Admin/Person/Create` (route name `PersonCreate`) and Edit for the person whose identifier string is "john-doe" at `~/Admin/Person/john-doe` (route name `PersonEdit`).

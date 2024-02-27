@@ -7,7 +7,7 @@
     <input type="hidden" value="@Model.Name" name="sourceName" />
     <div class="form-g mb-3" asp-validation-class-for="Name">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="Name">@T["Name"]</label>
+            <label asp-for="Name" class="form-label">@T["Name"]</label>
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name"></span>
         </div>
@@ -18,7 +18,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="Hint">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="Hint">@T["Hint"]</label>
+            <label asp-for="Hint" class="form-label">@T["Hint"]</label>
             <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
             <span asp-validation-for="Hint"></span>
         </div>
@@ -29,7 +29,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedWidth">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="SelectedWidth">@T["Width"]</label>
+            <label asp-for="SelectedWidth" class="form-label">@T["Width"]</label>
             <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-select content-preview-select" asp-validation-class-for="SelectedWidth"></select>
             <span asp-validation-for="SelectedWidth"></span>
             <input type="number" asp-for="CustomWidth" class="form-control mt-3" style="@(Model.CustomWidth != 0 ? "" : "display: none;")" />
@@ -42,7 +42,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedHeight">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="SelectedHeight">@T["Height"]</label>
+            <label asp-for="SelectedHeight" class="form-label">@T["Height"]</label>
             <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-select content-preview-select" asp-validation-class-for="SelectedHeight"></select>
             <span asp-validation-for="SelectedHeight"></span>
             <input type="number" asp-for="CustomHeight" class="form-control mt-3" style="@(Model.CustomHeight != 0 ? "" : "display: none;")" />
@@ -55,7 +55,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedMode">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="SelectedMode">@T["Resize Mode"]</label>
+            <label asp-for="SelectedMode" class="form-label">@T["Resize Mode"]</label>
             <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode"></select>
             <span asp-validation-for="SelectedMode"></span>
         </div>
@@ -66,7 +66,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="BackgroundColor">@T["Background Color"]</label>
+            <label asp-for="BackgroundColor" class="form-label">@T["Background Color"]</label>
             <input type="text" asp-for="BackgroundColor" class="form-control" />
             <span asp-validation-for="BackgroundColor"></span>
         </div>
@@ -77,7 +77,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedFormat">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="SelectedFormat">@T["Format"]</label>
+            <label asp-for="SelectedFormat" class="form-label">@T["Format"]</label>
             <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-select content-preview-select" asp-validation-class-for="SelectedFormat"></select>
             <span asp-validation-for="SelectedFormat"></span>
         </div>
@@ -88,7 +88,7 @@
 
     <div class="form-g mb-3" asp-validation-class-for="Quality">
         <div class="w-100 w-lg-75 w-xl-50">
-            <label asp-for="Quality">@T["Quality"]</label>
+            <label asp-for="Quality" class="form-label">@T["Quality"]</label>
             <input asp-for="Quality" class="form-control" min="1" max="100" />
             <span asp-validation-for="Quality"></span>
         </div>

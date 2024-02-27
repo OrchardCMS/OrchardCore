@@ -7,14 +7,14 @@ namespace OrchardCore.Notifications.Services;
 
 public class EmailNotificationProvider : INotificationMethodProvider
 {
-    private readonly ISmtpService _smtpService;
+    private readonly IEmailService _emailService;
     protected readonly IStringLocalizer S;
 
     public EmailNotificationProvider(
-        ISmtpService smtpService,
+        IEmailService emailService,
         IStringLocalizer<EmailNotificationProvider> stringLocalizer)
     {
-        _smtpService = smtpService;
+        _emailService = emailService;
         S = stringLocalizer;
     }
 
@@ -44,7 +44,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             isHtmlBody = false;
         }
 
-        var result = await _smtpService.SendAsync(user.Email, message.Summary, body, isHtmlBody: isHtmlBody);
+        var result = await _emailService.SendAsync(mailMessage);
 
         return result.Succeeded;
     }

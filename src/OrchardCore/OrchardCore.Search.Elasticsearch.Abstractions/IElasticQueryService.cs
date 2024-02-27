@@ -15,7 +15,7 @@ namespace OrchardCore.Search.Elasticsearch
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-fields.html#source-filtering">The _source option</see>.
         /// </para>
         /// </summary>
-        /// <returns><see cref="ElasticTopDocs"/></returns>
+        /// <returns><see cref="ElasticTopDocs"/>.</returns>
         Task<ElasticTopDocs> SearchAsync(string indexName, string query);
     }
 }

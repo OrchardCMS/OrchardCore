@@ -1,6 +1,6 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = JsonConvert.SerializeObject(settings.Options, Formatting.Indented);
+                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
             })
             .Location("Content");
         }
@@ -42,7 +42,7 @@ namespace OrchardCore.ContentFields.Settings
                 settings.Hint = model.Hint;
                 try
                 {
-                    settings.Options = JsonConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
+                    settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
                 }
                 catch
                 {

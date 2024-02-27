@@ -122,7 +122,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="meta-tags-textarea">@T["Custom Meta Tags"]</label>
+                            <label for="meta-tags-textarea" class="form-label">@T["Custom Meta Tags"]</label>
                             <textarea id="meta-tags-textarea" name="meta-tags-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.metaTags)" v-on:input="data.metaTags = JSON.parse($event.target.value)"></textarea>
                             <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { content: 'First content', name: 'name1', property: 'prop1', httpEquiv: 'http-equiv1', charset: 'charset1' }, { content: 'Second content', name: 'name2', property: 'prop2', httpEquiv: 'http-equiv2', charset: 'charset2' } ]"]</span>
                         </div>
@@ -137,7 +137,7 @@
     </script>
 
     <div id="@Html.IdFor(m => m)" class="mb-3">
-        <label asp-for="CustomMetaTags">@T["Custom Meta Tags"]</label>
+        <label asp-for="CustomMetaTags" class="form-label">@T["Custom Meta Tags"]</label>
         <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
         <meta-tags-table :data="sharedState"></meta-tags-table>
         <meta-tags-modal :data="sharedState" v-on:reload-data="reloadData()"></meta-tags-modal>

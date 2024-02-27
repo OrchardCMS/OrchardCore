@@ -20,7 +20,7 @@
         <div class="col-md-6">
 
             <div class="mb-3">
-                <label asp-for="DecodedQuery">@T["Template"]</label>
+                <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
                 <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
                 <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
                 <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
@@ -29,7 +29,7 @@
         <div class="col-md-6">
 
             <div class="mb-3">
-                <label asp-for="Parameters">@T["Parameters"]</label>
+                <label asp-for="Parameters" class="form-label">@T["Parameters"]</label>
                 <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
                 <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
             </div>
@@ -49,7 +49,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="mb-3">
-                <label asp-for="RawSql">@T["Final SQL Query"]</label>
+                <label asp-for="RawSql" class="form-label">@T["Final SQL Query"]</label>
                 <textarea asp-for="RawSql" rows="12" class="form-control"></textarea>
                 <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
             </div>
@@ -122,7 +122,7 @@
 </script>
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;
