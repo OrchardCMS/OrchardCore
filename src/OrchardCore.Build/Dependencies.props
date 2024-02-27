@@ -61,7 +61,7 @@
     <PackageManagement Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageManagement Include="Shortcodes" Version="1.3.3" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="3.1.0" />
-    <PackageManagement Include="StackExchange.Redis" Version="2.7.20" />
+    <PackageManagement Include="StackExchange.Redis" Version="2.7.23" />
     <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
     <PackageManagement Include="xunit" Version="2.7.0" />
