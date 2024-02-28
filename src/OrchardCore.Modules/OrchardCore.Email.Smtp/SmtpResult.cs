@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Smtp;
 
 [Obsolete("This class should no longer be used. Instead use EmailResult.")]
 public class SmtpResult : EmailResult

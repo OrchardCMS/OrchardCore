@@ -1,4 +1,4 @@
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Smtp;
 
 public class DefaultSmtpOptions : SmtpOptions
 {

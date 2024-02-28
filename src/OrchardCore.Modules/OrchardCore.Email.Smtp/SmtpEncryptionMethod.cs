@@ -1,4 +1,4 @@
-namespace OrchardCore.Email
+namespace OrchardCore.Email.Smtp
 {
     /// <summary>
     /// Represents an enumeration for mail encryption methods.

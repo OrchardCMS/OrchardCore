@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Smtp;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Environment.Shell.Builders;
 

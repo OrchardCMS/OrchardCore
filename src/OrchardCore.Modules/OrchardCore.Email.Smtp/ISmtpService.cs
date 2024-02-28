@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Smtp;
 
 /// <summary>
 /// Represents a contract for an SMTP email service.
