@@ -22,7 +22,7 @@ public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
 
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
-                string propertyName = reader.GetString();
+                var propertyName = reader.GetString();
                 reader.Read();
 
                 switch (propertyName)
