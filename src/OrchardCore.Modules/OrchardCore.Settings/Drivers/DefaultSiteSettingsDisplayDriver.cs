@@ -35,7 +35,7 @@ namespace OrchardCore.Settings.Drivers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))

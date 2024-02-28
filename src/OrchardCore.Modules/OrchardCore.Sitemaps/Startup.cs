@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +25,6 @@ using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
-using System;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Sitemaps
 {

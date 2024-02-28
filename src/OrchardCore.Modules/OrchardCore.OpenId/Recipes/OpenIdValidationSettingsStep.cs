@@ -15,8 +15,11 @@ namespace OrchardCore.OpenId.Recipes
     {
         private readonly IOpenIdValidationService _validationService;
 
-        public OpenIdValidationSettingsStep(IOpenIdValidationService validationService)
-            => _validationService = validationService;
+        public OpenIdValidationSettingsStep(
+            IOpenIdValidationService validationService)
+        {
+            _validationService = validationService;
+        }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

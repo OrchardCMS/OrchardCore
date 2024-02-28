@@ -1,3 +1,4 @@
+using System;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
@@ -28,7 +29,6 @@ using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
-using System;
 
 namespace OrchardCore.Taxonomies
 {
