@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
-namespace OrchardCore.Users.Json;
+namespace OrchardCore.Json.Serialization;
 
 public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
 {
