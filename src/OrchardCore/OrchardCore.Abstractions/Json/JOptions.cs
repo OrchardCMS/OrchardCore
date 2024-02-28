@@ -34,7 +34,7 @@ public static class JOptions
         Default = new JsonSerializerOptions(Base);
         Default.Converters.Add(new DynamicJsonConverter());
         Default.Converters.Add(new PathStringJsonConverter());
-        Default.Converters.Add(new LoginInfoConverter());
+        Default.Converters.Add(new LoginInfoJsonConverter());
 
         Indented = new JsonSerializerOptions(Default)
         {

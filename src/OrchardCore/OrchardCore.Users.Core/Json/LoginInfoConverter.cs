@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace OrchardCore.Users.Json;
 
-public class LoginInfoConverter : JsonConverter<UserLoginInfo>
+public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
 {
-    public static readonly LoginInfoConverter Instance = new();
+    public static readonly LoginInfoJsonConverter Instance = new();
 
     public override UserLoginInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
