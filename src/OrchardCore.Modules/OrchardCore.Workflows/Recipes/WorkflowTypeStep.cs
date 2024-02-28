@@ -33,7 +33,11 @@ namespace OrchardCore.Workflows.Recipes
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;
             _jsonSerializerOptions = jsonSerializerOptions.Value;
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            // When an instance of this class is created outside of a controller's action, the ActionContext is null.
+            if (actionContextAccessor.ActionContext != null)
+            {
+                _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            }
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -49,12 +53,15 @@ namespace OrchardCore.Workflows.Recipes
             {
                 var workflow = token.ToObject<WorkflowType>(_jsonSerializerOptions);
 
-                foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
+                if (_urlHelper is not null)
                 {
-                    var tokenLifeSpan = activity.Properties["TokenLifeSpan"];
-                    if (tokenLifeSpan != null)
+                    foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                     {
-                        activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(workflow, activity, tokenLifeSpan.ToObject<int>());
+                        var tokenLifeSpan = activity.Properties["TokenLifeSpan"];
+                        if (tokenLifeSpan != null)
+                        {
+                            activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(workflow, activity, tokenLifeSpan.ToObject<int>());
+                        }
                     }
                 }
 
