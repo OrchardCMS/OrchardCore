@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
 
@@ -8,10 +10,12 @@ namespace OrchardCore.AdminMenu.Deployment
     public class AdminMenuDeploymentSource : IDeploymentSource
     {
         private readonly IAdminMenuService _adminMenuService;
+        private readonly JsonSerializerOptions _serializationOptions;
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService, IOptions<JsonSerializerOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
+            _serializationOptions = serializationOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -32,7 +36,7 @@ namespace OrchardCore.AdminMenu.Deployment
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
-                var objectData = JObject.FromObject(adminMenu);
+                var objectData = JObject.FromObject(adminMenu, _serializationOptions);
                 data.Add(objectData);
             }
 

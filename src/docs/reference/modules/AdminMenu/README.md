@@ -83,7 +83,7 @@ Commonly the steps that you follow in order to do that are:
 3. Optionally, you could implement a ViewModel to move info between the edit views and the driver.
 4. Add a class that implements IAdminNodeNavigationBuilder. Its BuildNavigationAsync() method will be called by the AdminMenuNavigationProvidersCoordinator class when it is time to render the menu.
 5. Create the views required to create and edit the admin nodes based on your node type.
-6. Register the new services `services.AddAdminMenu<CustomAdminNode, CustomAdminNodeNavigationBuilder, CustomAdminNodeDriver>();`
+6. Register the new services `services.AddAdminNode<CustomAdminNode, CustomAdminNodeNavigationBuilder, CustomAdminNodeDriver>();`
 
 By convention you should store all these non-view classes on a "AdminNodes" folder. This is optional.
 

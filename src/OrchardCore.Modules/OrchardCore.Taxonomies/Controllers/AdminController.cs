@@ -1,10 +1,13 @@
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,6 +19,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
+    [Admin]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -23,9 +27,10 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISession session,
@@ -47,6 +52,7 @@ namespace OrchardCore.Taxonomies.Controllers
             H = localizer;
         }
 
+        [Admin("Taxonomies/Create/{id}", "Taxonomies.Create")]
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -158,6 +164,7 @@ namespace OrchardCore.Taxonomies.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
+        [Admin("Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Create")]
         public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
@@ -178,7 +185,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JsonObject taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -231,7 +238,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JsonObject taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -274,6 +281,7 @@ namespace OrchardCore.Taxonomies.Controllers
         }
 
         [HttpPost]
+        [Admin("Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Delete")]
         public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
