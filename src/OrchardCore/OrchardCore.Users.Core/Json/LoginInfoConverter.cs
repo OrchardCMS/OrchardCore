@@ -4,13 +4,22 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace OrchardCore.Users.Json;
+
 public class LoginInfoConverter : JsonConverter<UserLoginInfo>
 {
+    public static readonly LoginInfoConverter Instance = new();
+
     public override UserLoginInfo Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var loginInfo = new UserLoginInfo(string.Empty, string.Empty, string.Empty);
+
         while (reader.Read())
         {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
                 string propertyName = reader.GetString();
@@ -31,17 +40,12 @@ public class LoginInfoConverter : JsonConverter<UserLoginInfo>
                         break;
                 }
             }
-            else if (reader.TokenType == JsonTokenType.EndObject)
-            {
-                break;
-            }
         }
 
         return loginInfo;
     }
-    public override void Write(Utf8JsonWriter writer,
-                            UserLoginInfo objectToWrite,
-                            JsonSerializerOptions options) =>
-                            JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
+
+    public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
+        => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
     
 }

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data;
@@ -10,7 +8,6 @@ using OrchardCore.Users;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
-using OrchardCore.Users.Json;
 using OrchardCore.Users.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -58,10 +55,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
             services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
 
-            if (!JOptions.Base.Converters.Any(x => x.Type == typeof(LoginInfoConverter)))
-            {
-                JOptions.Base.Converters.Add(new LoginInfoConverter());
-            }
             return services;
         }
     }

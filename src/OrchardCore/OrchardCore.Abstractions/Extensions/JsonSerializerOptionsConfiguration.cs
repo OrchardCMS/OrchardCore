@@ -28,5 +28,6 @@ public class JsonSerializerOptionsConfiguration : IConfigureOptions<JsonSerializ
         options.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
         options.Converters.Add(DynamicJsonConverter.Instance);
         options.Converters.Add(PathStringJsonConverter.Instance);
+        options.Converters.Add(LoginInfoConverter.Instance);
     }
 }
