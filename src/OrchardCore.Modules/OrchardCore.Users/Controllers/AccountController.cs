@@ -77,7 +77,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
+        public async Task<IActionResult> Login(bool rememberMe = false, string returnUrl = null)
         {
             if (HttpContext.User?.Identity?.IsAuthenticated ?? false)
             {
@@ -108,7 +108,10 @@ namespace OrchardCore.Users.Controllers
             CopyTempDataErrorsToModelState();
             ViewData["ReturnUrl"] = returnUrl;
 
-            return View();
+            return View(new LoginViewModel
+            {
+                RememberMe = rememberMe,
+            });
         }
 
         [HttpGet]
