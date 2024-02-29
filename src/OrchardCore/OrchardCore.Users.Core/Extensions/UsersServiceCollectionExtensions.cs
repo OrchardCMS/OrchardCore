@@ -58,7 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<JsonSerializerOptions>(options =>
             {
-                options.Converters.Add(new LoginInfoJsonConverter())
+                options.Converters.Add(new LoginInfoJsonConverter());
             });
 
             return services;
