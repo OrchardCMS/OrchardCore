@@ -10,6 +10,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Core.Json;
+using System.Text.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
