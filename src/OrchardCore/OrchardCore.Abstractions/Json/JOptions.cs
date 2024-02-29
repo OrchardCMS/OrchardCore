@@ -31,10 +31,11 @@ public static class JOptions
 
     static JOptions()
     {
+        Base.Converters.Add(new LoginInfoJsonConverter());
+
         Default = new JsonSerializerOptions(Base);
         Default.Converters.Add(new DynamicJsonConverter());
         Default.Converters.Add(new PathStringJsonConverter());
-        Default.Converters.Add(new LoginInfoJsonConverter());
 
         Indented = new JsonSerializerOptions(Default)
         {
