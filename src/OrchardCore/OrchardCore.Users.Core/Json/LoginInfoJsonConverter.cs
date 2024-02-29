@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
-namespace OrchardCore.Json.Serialization;
+namespace OrchardCore.Users.Core.Json;
 
 public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
 {
@@ -45,6 +45,6 @@ public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
         return loginInfo;
     }
 
-    public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
-        => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
+    // public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
+    //    => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
 }
