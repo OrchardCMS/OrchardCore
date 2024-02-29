@@ -45,6 +45,6 @@ public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
         return loginInfo;
     }
 
-    // public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
-    //    => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
+    public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
+        => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
 }
