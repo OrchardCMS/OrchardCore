@@ -161,6 +161,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
             => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
 
+        public ContentTypeDefinitionBuilder WithPart<TPart>(Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
+            => WithPart(typeof(TPart).Name, configuration);
+
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
             => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
 
