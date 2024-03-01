@@ -23,8 +23,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
         public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
         {
-            return Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem).Location("SummaryAdmin", "ActionsMenu:10")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, OrchardCore.AuditTrail.AuditTrailPermissions.ViewAuditTrail));
+            return Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem)
+                .Location("SummaryAdmin", "ActionsMenu:10")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, OrchardCore.AuditTrail.AuditTrailPermissions.ViewAuditTrail));
         }
     }
 }
