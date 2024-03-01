@@ -17,6 +17,9 @@ namespace OrchardCore.Data.Migration
     /// </summary>
     public class DataMigrationManager : IDataMigrationManager
     {
+        const string _updateFromPrefix = "UpdateFrom";
+        const string _asyncSuffix = "Async";
+
         private readonly IEnumerable<IDataMigration> _dataMigrations;
         private readonly ISession _session;
         private readonly IStore _store;
@@ -83,18 +86,16 @@ namespace OrchardCore.Data.Migration
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
                 }
 
-                return ((GetCreateMethod(dataMigration) ?? GetCreateAsyncMethod(dataMigration)) != null);
+                return GetCreateMethod(dataMigration) != null;
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToArray();
         }
 
         public async Task Uninstall(string feature)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
-            }
+            _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
+
             var migrations = GetDataMigrations(feature);
 
             // apply update methods to each migration class for the module
@@ -107,12 +108,10 @@ namespace OrchardCore.Data.Migration
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var uninstallMethod = GetUninstallMethod(migration);
-                uninstallMethod?.Invoke(migration, []);
 
-                var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
-                if (uninstallAsyncMethod != null)
+                if (uninstallMethod != null)
                 {
-                    await (Task)uninstallAsyncMethod.Invoke(migration, []);
+                    await InvokeMethod(uninstallMethod, migration);
                 }
 
                 if (dataMigrationRecord == null)
@@ -144,10 +143,7 @@ namespace OrchardCore.Data.Migration
 
             _processedFeatures.Add(featureId);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
-            }
+            _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
 
             // proceed with dependent features first, whatever the module it's in
             var dependencies = _extensionManager
@@ -166,10 +162,10 @@ namespace OrchardCore.Data.Migration
                 var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.BeginTransactionAsync());
                 migration.SchemaBuilder = schemaBuilder;
 
-                // copy the object for the Linq query
+                // Copy the object for the Linq query.
                 var tempMigration = migration;
 
-                // get current version for this migration
+                // Get current version for this migration.
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var current = 0;
@@ -186,47 +182,31 @@ namespace OrchardCore.Data.Migration
 
                 try
                 {
-                    // do we need to call Create() ?
+                    // Do we need to call Create or CreateAsync?
                     if (current == 0)
                     {
-                        // try to resolve a Create method
-
+                        // Try to get a Create method.
                         var createMethod = GetCreateMethod(migration);
-                        if (createMethod != null)
+
+                        if (createMethod == null)
                         {
-                            current = (int)createMethod.Invoke(migration, []);
+                            _logger.LogWarning("The migration '{name}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migration.GetType().FullName, featureId);
+                            continue;
                         }
 
-                        // try to resolve a CreateAsync method
-
-                        var createAsyncMethod = GetCreateAsyncMethod(migration);
-                        if (createAsyncMethod != null)
-                        {
-                            current = await (Task<int>)createAsyncMethod.Invoke(migration, []);
-                        }
+                        current = await InvokeMethod(createMethod, migration);
                     }
 
                     var lookupTable = CreateUpgradeLookupTable(migration);
 
                     while (lookupTable.TryGetValue(current, out var methodInfo))
                     {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
-                        }
+                        _logger.LogInformation("Applying migration for '{FeatureName}' from version {Version}.", featureId, current);
 
-                        var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
-                        if (isAwaitable)
-                        {
-                            current = await (Task<int>)methodInfo.Invoke(migration, []);
-                        }
-                        else
-                        {
-                            current = (int)methodInfo.Invoke(migration, []);
-                        }
+                        current = await InvokeMethod(methodInfo, migration);
                     }
 
-                    // if current is 0, it means no upgrade/create method was found or succeeded
+                    // If current is 0, it means no upgrade/create method was found or succeeded.
                     if (current == 0)
                     {
                         return;
@@ -248,6 +228,16 @@ namespace OrchardCore.Data.Migration
             }
         }
 
+        private static async Task<int> InvokeMethod(MethodInfo method, IDataMigration migration)
+        {
+            if (method.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null)
+            {
+                return await (Task<int>)method.Invoke(migration, []);
+            }
+
+            return (int)method.Invoke(migration, []);
+        }
+
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
         {
             var dataMigrationRecord = await GetDataMigrationRecordAsync();
@@ -259,11 +249,11 @@ namespace OrchardCore.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders.
         /// </summary>
-        private List<IDataMigration> GetDataMigrations(string featureId)
+        private IDataMigration[] GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
-                    .ToList();
+                    .ToArray();
 
             return migrations;
         }
@@ -283,14 +273,12 @@ namespace OrchardCore.Data.Migration
 
         private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo methodInfo)
         {
-            const string updateFromPrefix = "UpdateFrom";
-            const string asyncSuffix = "Async";
-
-            if (methodInfo.Name.StartsWith(updateFromPrefix, StringComparison.Ordinal) && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
+            if (methodInfo.Name.StartsWith(_updateFromPrefix, StringComparison.Ordinal)
+                && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
-                var version = methodInfo.Name.EndsWith(asyncSuffix, StringComparison.Ordinal)
-                    ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
-                    : methodInfo.Name[updateFromPrefix.Length..];
+                var version = methodInfo.Name.EndsWith(_asyncSuffix, StringComparison.Ordinal)
+                    ? methodInfo.Name.Substring(_updateFromPrefix.Length, methodInfo.Name.Length - _updateFromPrefix.Length - _asyncSuffix.Length)
+                    : methodInfo.Name[_updateFromPrefix.Length..];
 
                 if (int.TryParse(version, out var versionValue))
                 {
@@ -302,25 +290,17 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the Create method from a data migration class if it's found.
+        /// Returns the Create or CreateAsync method from a data migration class if it's found.
         /// </summary>
         private static MethodInfo GetCreateMethod(IDataMigration dataMigration)
         {
             var methodInfo = dataMigration.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.Instance);
-            if (methodInfo != null && methodInfo.ReturnType == typeof(int))
+            if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
                 return methodInfo;
             }
 
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the CreateAsync method from a data migration class if it's found.
-        /// </summary>
-        private static MethodInfo GetCreateAsyncMethod(IDataMigration dataMigration)
-        {
-            var methodInfo = dataMigration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
+            methodInfo = dataMigration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
             if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
             {
                 return methodInfo;
@@ -335,21 +315,13 @@ namespace OrchardCore.Data.Migration
         private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
         {
             var methodInfo = dataMigration.GetType().GetMethod("Uninstall", BindingFlags.Public | BindingFlags.Instance);
-            if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
                 return methodInfo;
             }
 
-            return null;
-        }
-
-        /// <summary>
-        /// Returns the UninstallAsync method from a data migration class if it's found.
-        /// </summary>
-        private static MethodInfo GetUninstallAsyncMethod(IDataMigration dataMigration)
-        {
-            var methodInfo = dataMigration.GetType().GetMethod("UninstallAsync", BindingFlags.Public | BindingFlags.Instance);
-            if (methodInfo != null && methodInfo.ReturnType == typeof(Task))
+            methodInfo = dataMigration.GetType().GetMethod("UninstallAsync", BindingFlags.Public | BindingFlags.Instance);
+            if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
             {
                 return methodInfo;
             }
