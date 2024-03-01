@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
@@ -21,6 +22,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
     private readonly ILogger _logger;
     private readonly string _cachePath;
     private readonly TimeSpan? _cacheMaxStale;
+    private readonly IMediaFileStoreCache _mediaFileStoreCache;
 
     public RemoteMediaCacheBackgroundTask(
         ShellSettings shellSettings,
@@ -31,13 +33,12 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
         ILogger<RemoteMediaCacheBackgroundTask> logger)
     {
         _mediaFileStore = mediaFileStore;
-
         _cachePath = Path.Combine(
             webHostEnvironment.WebRootPath,
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
-
         _cacheMaxStale = mediaOptions.Value.RemoteCacheMaxStale;
+        _mediaFileStoreCache = mediaFileStoreCache;
         _logger = logger;
     }
 
@@ -45,6 +46,12 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
     {
         // Ensure that the cache folder exists and should be cleaned.
         if (!_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
+        {
+            return;
+        }
+
+        // Ensure that a remote media cache has been registered.
+        if (_mediaFileStoreCache is NullMediaFileStoreCache)
         {
             return;
         }

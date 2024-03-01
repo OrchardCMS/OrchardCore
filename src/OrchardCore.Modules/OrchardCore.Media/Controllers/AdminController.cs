@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -35,7 +36,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly IChunkFileUploadService _chunkFileUploadService;
         private readonly IFileVersionProvider _fileVersionProvider;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IMediaFileStoreCache _mediaFileStoreCache;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -48,7 +49,7 @@ namespace OrchardCore.Media.Controllers
             IUserAssetFolderNameProvider userAssetFolderNameProvider,
             IChunkFileUploadService chunkFileUploadService,
             IFileVersionProvider fileVersionProvider,
-            IServiceProvider serviceProvider)
+            IMediaFileStoreCache mediaFileStoreCache)
         {
             _mediaFileStore = mediaFileStore;
             _mediaNameNormalizerService = mediaNameNormalizerService;
@@ -60,7 +61,7 @@ namespace OrchardCore.Media.Controllers
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _chunkFileUploadService = chunkFileUploadService;
             _fileVersionProvider = fileVersionProvider;
-            _serviceProvider = serviceProvider;
+            _mediaFileStoreCache = mediaFileStoreCache;
         }
 
         [Admin("Media", "Media.Index")]
@@ -519,8 +520,7 @@ namespace OrchardCore.Media.Controllers
         // This is not required for files moved across folders, because the folder will be reopened anyway.
         private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
         {
-            var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
-            if (mediaFileStoreCache == null)
+            if (_mediaFileStoreCache is NullMediaFileStoreCache)
             {
                 return;
             }
@@ -534,7 +534,7 @@ namespace OrchardCore.Media.Controllers
 
             try
             {
-                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+                await _mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
             }
             finally
             {

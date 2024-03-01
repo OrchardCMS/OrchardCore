@@ -199,8 +199,13 @@ namespace OrchardCore.Media
         {
             var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+            var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
-            app.UseMiddleware<MediaFileStoreResolverMiddleware>();
+            // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
+            if (mediaFileStoreCache is not NullMediaFileStoreCache)
+            {
+                app.UseMiddleware<MediaFileStoreResolverMiddleware>();
+            }
 
             // ImageSharp before the static file provider.
             app.UseImageSharp();
