@@ -30,7 +30,7 @@ public class QueryUserTests
              Assert.NotNull(dbUser);
              var loginInfo1 = dbUser.LoginInfos.FirstOrDefault();
              Assert.NotNull(loginInfo);
-             Assert.Equal(loginInfo.ProviderKey, loginInfo.ProviderKey);
+             Assert.Equal(loginInfo.ProviderKey, loginInfo1.ProviderKey);
 
          });
     }
