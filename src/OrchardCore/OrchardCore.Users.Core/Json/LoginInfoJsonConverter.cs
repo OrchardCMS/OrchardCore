@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
@@ -45,6 +46,12 @@ public class LoginInfoJsonConverter : JsonConverter<UserLoginInfo>
         return loginInfo;
     }
 
-    public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options) 
-        => JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
+    public override void Write(Utf8JsonWriter writer, UserLoginInfo objectToWrite, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteString(nameof(UserLoginInfo.LoginProvider), objectToWrite.LoginProvider);
+        writer.WriteString(nameof(UserLoginInfo.ProviderKey), objectToWrite.ProviderKey);
+        writer.WriteString(nameof(UserLoginInfo.ProviderDisplayName), objectToWrite.ProviderDisplayName);
+        writer.WriteEndObject();
+    }
 }
