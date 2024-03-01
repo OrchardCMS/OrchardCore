@@ -20,7 +20,10 @@ namespace OrchardCore.OpenId.Drivers
             => _shellHost = shellHost;
 
         public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
-            => Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
+        {
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
+            return Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.MetadataAddress = settings.MetadataAddress?.AbsoluteUri;
@@ -47,6 +50,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 model.AvailableTenants = availableTenants;
             }).Location("Content:2"));
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
         {
