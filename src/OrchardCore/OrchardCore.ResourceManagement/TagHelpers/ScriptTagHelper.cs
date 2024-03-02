@@ -52,7 +52,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             output.SuppressOutput();
 
-            if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+            var hasName = !string.IsNullOrEmpty(Name);
+            var hasSource = !string.IsNullOrEmpty(Src);
+
+            if (!hasName && hasSource)
             {
                 // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
                 RequireSettings setting;
@@ -142,7 +145,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+            else if (hasName && !hasSource)
             {
                 // Resource required
                 // <script asp-name="bootstrap"></script>
@@ -221,7 +224,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+            else if (hasName && hasSource)
             {
                 // Inline declaration
 
@@ -298,7 +301,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     }
                 }
             }
-            else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+            else
             {
                 // Custom script content
 
