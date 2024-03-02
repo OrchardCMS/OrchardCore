@@ -35,7 +35,7 @@
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
-    <PackageManagement Include="MailKit" Version="4.3.0" />
+    <PackageManagement Include="MailKit" Version="4.4.0" />
     <PackageManagement Include="Markdig" Version="0.35.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.2" />
@@ -43,7 +43,7 @@
     <PackageManagement Include="Microsoft.Identity.Web" Version="2.17.1" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <PackageManagement Include="MimeKit" Version="4.3.0" />
+    <PackageManagement Include="MimeKit" Version="4.4.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
     <PackageManagement Include="Moq" Version="4.20.70" />
     <PackageManagement Include="ncrontab" Version="3.3.3" />
