@@ -62,9 +62,7 @@ namespace OrchardCore.Workflows.Recipes
                     {
                         foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                         {
-                            var tokenLifeSpan = activity.Properties["TokenLifeSpan"];
-
-                            if (tokenLifeSpan is null)
+                            if (!activity.Properties.TryGetPropertyValue("TokenLifeSpan", out var tokenLifeSpan))
                             {
                                 continue;
                             }
