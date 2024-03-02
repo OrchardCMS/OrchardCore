@@ -140,7 +140,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
-                    using var sw = new StringWriter();
+                    await using var sw = new StringWriter();
                     _resourceManager.RenderLocalScript(setting, sw);
                     output.Content.AppendHtml(sw.ToString());
                 }
@@ -212,14 +212,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        using var sw = new StringWriter();
+                        await using var sw = new StringWriter();
                         _resourceManager.RenderLocalScript(setting, sw);
                         output.Content.AppendHtml(sw.ToString());
                     }
                 }
                 else
                 {
-                    using var sw = new StringWriter();
+                    await using var sw = new StringWriter();
                     _resourceManager.RenderLocalScript(setting, sw);
                     output.Content.AppendHtml(sw.ToString());
                 }
@@ -295,7 +295,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        using var sw = new StringWriter();
+                        await using var sw = new StringWriter();
                         _resourceManager.RenderLocalScript(setting, sw);
                         output.Content.AppendHtml(sw.ToString());
                     }
@@ -318,11 +318,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Head)
                 {
-                    _resourceManager.RegisterHeadScript(builder);
+
                 }
                 else if (At == ResourceLocation.Inline)
                 {
-                    output.Content.SetHtmlContent(builder);
+
                 }
                 else
                 {
