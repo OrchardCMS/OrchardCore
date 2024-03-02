@@ -91,9 +91,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
-                    await using var sw = new StringWriter();
-                    _resourceManager.RenderLocalScript(setting, sw);
-                    output.Content.AppendHtml(sw.ToString());
+                    RenderScript(output, setting);
                 }
             }
             else if (hasName && !hasSource)
@@ -140,16 +138,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        await using var sw = new StringWriter();
-                        _resourceManager.RenderLocalScript(setting, sw);
-                        output.Content.AppendHtml(sw.ToString());
+                        RenderScript(output, setting);
                     }
                 }
                 else
                 {
-                    await using var sw = new StringWriter();
-                    _resourceManager.RenderLocalScript(setting, sw);
-                    output.Content.AppendHtml(sw.ToString());
+                    RenderScript(output, setting);
                 }
             }
             else if (hasName && hasSource)
@@ -172,9 +166,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        await using var sw = new StringWriter();
-                        _resourceManager.RenderLocalScript(setting, sw);
-                        output.Content.AppendHtml(sw.ToString());
+                        RenderScript(output, setting);
                     }
                 }
             }
@@ -264,6 +256,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 setting.UseCulture(Culture);
             }
+        }
+
+        private void RenderScript(TagHelperOutput output, RequireSettings setting)
+        {
+            using var sw = new StringWriter();
+            _resourceManager.RenderLocalScript(setting, sw);
+            output.Content.AppendHtml(sw.ToString());
         }
     }
 }
