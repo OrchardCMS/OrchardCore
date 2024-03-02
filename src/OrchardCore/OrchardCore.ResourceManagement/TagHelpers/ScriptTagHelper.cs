@@ -77,16 +77,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting = _resourceManager.RegisterResource("script", name);
                 }
 
-                PopulateRequireSettings(setting, hasName: false);
+                PopulateRequireSettings(setting, output, hasName: false);
 
                 if (AppendVersion.HasValue)
                 {
                     setting.ShouldAppendVersion(AppendVersion);
-                }
-
-                foreach (var attribute in output.Attributes)
-                {
-                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
@@ -101,7 +96,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
-                PopulateRequireSettings(setting, hasName: true);
+                PopulateRequireSettings(setting, output, hasName: true);
 
                 if (AppendVersion.HasValue)
                 {
@@ -117,11 +112,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!string.IsNullOrEmpty(DependsOn))
                 {
                     setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
-                }
-
-                foreach (var attribute in output.Attributes)
-                {
-                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 // Allow Inline to work with both named scripts, and named inline scripts.
@@ -157,12 +147,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     var setting = _resourceManager.RegisterResource("script", Name);
 
-                    PopulateRequireSettings(setting, hasName: true);
-
-                    foreach (var attribute in output.Attributes)
-                    {
-                        setting.SetAttribute(attribute.Name, attribute.Value.ToString());
-                    }
+                    PopulateRequireSettings(setting, output, hasName: true);
 
                     if (At == ResourceLocation.Inline)
                     {
@@ -230,7 +215,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             }
         }
 
-        private void PopulateRequireSettings(RequireSettings setting, bool hasName)
+        private void PopulateRequireSettings(RequireSettings setting, TagHelperOutput output, bool hasName)
         {
             if (At != ResourceLocation.Unspecified)
             {
@@ -255,6 +240,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             if (!string.IsNullOrEmpty(Culture))
             {
                 setting.UseCulture(Culture);
+            }
+
+            foreach (var attribute in output.Attributes)
+            {
+                setting.SetAttribute(attribute.Name, attribute.Value.ToString());
             }
         }
 
