@@ -72,33 +72,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     // Using the source as the name to prevent duplicate references to the same file
                     var name = Src.ToLowerInvariant();
 
-                    var definition = _resourceManager.InlineManifest.DefineScript(name);
-                    definition.SetUrl(Src, DebugSrc);
-
-                    if (!string.IsNullOrEmpty(CdnSrc))
-                    {
-                        definition.SetCdn(CdnSrc, DebugCdnSrc);
-                    }
-
-                    if (!string.IsNullOrEmpty(Culture))
-                    {
-                        definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
-                    }
-
-                    if (!string.IsNullOrEmpty(DependsOn))
-                    {
-                        definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
-                    }
-
-                    if (AppendVersion.HasValue)
-                    {
-                        definition.ShouldAppendVersion(AppendVersion);
-                    }
-
-                    if (!string.IsNullOrEmpty(Version))
-                    {
-                        definition.SetVersion(Version);
-                    }
+                    PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(name));
 
                     setting = _resourceManager.RegisterResource("script", name);
                 }
@@ -223,33 +197,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 // Inline declaration
 
-                var definition = _resourceManager.InlineManifest.DefineScript(Name);
-                definition.SetUrl(Src, DebugSrc);
-
-                if (!string.IsNullOrEmpty(CdnSrc))
-                {
-                    definition.SetCdn(CdnSrc, DebugCdnSrc);
-                }
-
-                if (!string.IsNullOrEmpty(Culture))
-                {
-                    definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
-                }
-
-                if (!string.IsNullOrEmpty(DependsOn))
-                {
-                    definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
-                }
-
-                if (AppendVersion.HasValue)
-                {
-                    definition.ShouldAppendVersion(AppendVersion);
-                }
-
-                if (!string.IsNullOrEmpty(Version))
-                {
-                    definition.SetVersion(Version);
-                }
+                PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(Name));
 
                 // If At is specified then we also render it
                 if (At != ResourceLocation.Unspecified)
@@ -318,6 +266,36 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }
+            }
+        }
+
+        private void PopulateResourceDefinition(ResourceDefinition definition)
+        {
+            definition.SetUrl(Src, DebugSrc);
+
+            if (!string.IsNullOrEmpty(CdnSrc))
+            {
+                definition.SetCdn(CdnSrc, DebugCdnSrc);
+            }
+
+            if (!string.IsNullOrEmpty(Culture))
+            {
+                definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            if (!string.IsNullOrEmpty(DependsOn))
+            {
+                definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            if (AppendVersion.HasValue)
+            {
+                definition.ShouldAppendVersion(AppendVersion);
+            }
+
+            if (!string.IsNullOrEmpty(Version))
+            {
+                definition.SetVersion(Version);
             }
         }
     }
