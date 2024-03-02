@@ -4,7 +4,7 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 
-namespace OrchardCore.Email.Azure.Services;
+namespace OrchardCore.Email.Smtp.Extensions;
 
 public static class ServiceCollectionExtensions
 {
