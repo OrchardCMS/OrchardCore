@@ -194,7 +194,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, string> MergeAttributes(RequireSettings other)
         {
             // efficiently merge the two dictionaries, taking into account that one or both may not exist
-            // and that attributes in 'other' should overridde attributes in this, even if the value is null.
+            // and that attributes in 'other' should override attributes in this, even if the value is null.
             if (_attributes == null)
             {
                 return other._attributes == null ? null : new Dictionary<string, string>(other._attributes);
