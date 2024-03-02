@@ -75,11 +75,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
                     definition.SetUrl(Src, DebugSrc);
 
-                    if (!string.IsNullOrEmpty(Version))
-                    {
-                        definition.SetVersion(Version);
-                    }
-
                     if (!string.IsNullOrEmpty(CdnSrc))
                     {
                         definition.SetCdn(CdnSrc, DebugCdnSrc);
@@ -230,11 +225,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var definition = _resourceManager.InlineManifest.DefineScript(Name);
                 definition.SetUrl(Src, DebugSrc);
-
-                if (!string.IsNullOrEmpty(Version))
-                {
-                    definition.SetVersion(Version);
-                }
 
                 if (!string.IsNullOrEmpty(CdnSrc))
                 {
