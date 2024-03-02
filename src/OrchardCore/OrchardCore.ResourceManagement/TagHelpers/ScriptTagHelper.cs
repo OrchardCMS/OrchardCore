@@ -187,11 +187,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Head)
                 {
-
+                    _resourceManager.RegisterHeadScript(builder);
                 }
                 else if (At == ResourceLocation.Inline)
                 {
-
+                    output.Content.SetHtmlContent(builder);
                 }
                 else
                 {
