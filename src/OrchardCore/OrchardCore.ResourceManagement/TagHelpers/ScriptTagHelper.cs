@@ -77,25 +77,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting = _resourceManager.RegisterResource("script", name);
                 }
 
-                if (At != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(At);
-                }
-
-                if (!string.IsNullOrEmpty(Condition))
-                {
-                    setting.UseCondition(Condition);
-                }
-
-                if (Debug != null)
-                {
-                    setting.UseDebugMode(Debug.Value);
-                }
-
-                if (!string.IsNullOrEmpty(Culture))
-                {
-                    setting.UseCulture(Culture);
-                }
+                PopulateRequireSettings(setting, hasName: false);
 
                 if (AppendVersion.HasValue)
                 {
@@ -121,30 +103,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
-                if (At != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(At);
-                }
-
-                if (UseCdn != null)
-                {
-                    setting.UseCdn(UseCdn.Value);
-                }
-
-                if (!string.IsNullOrEmpty(Condition))
-                {
-                    setting.UseCondition(Condition);
-                }
-
-                if (Debug != null)
-                {
-                    setting.UseDebugMode(Debug.Value);
-                }
-
-                if (!string.IsNullOrEmpty(Culture))
-                {
-                    setting.UseCulture(Culture);
-                }
+                PopulateRequireSettings(setting, hasName: true);
 
                 if (AppendVersion.HasValue)
                 {
@@ -204,27 +163,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     var setting = _resourceManager.RegisterResource("script", Name);
 
-                    setting.AtLocation(At);
-
-                    if (UseCdn != null)
-                    {
-                        setting.UseCdn(UseCdn.Value);
-                    }
-
-                    if (!string.IsNullOrEmpty(Condition))
-                    {
-                        setting.UseCondition(Condition);
-                    }
-
-                    if (Debug != null)
-                    {
-                        setting.UseDebugMode(Debug.Value);
-                    }
-
-                    if (!string.IsNullOrEmpty(Culture))
-                    {
-                        setting.UseCulture(Culture);
-                    }
+                    PopulateRequireSettings(setting, hasName: true);
 
                     foreach (var attribute in output.Attributes)
                     {
@@ -296,6 +235,34 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             if (!string.IsNullOrEmpty(Version))
             {
                 definition.SetVersion(Version);
+            }
+        }
+
+        private void PopulateRequireSettings(RequireSettings setting, bool hasName)
+        {
+            if (At != ResourceLocation.Unspecified)
+            {
+                setting.AtLocation(At);
+            }
+
+            if (hasName && UseCdn != null)
+            {
+                setting.UseCdn(UseCdn.Value);
+            }
+
+            if (!string.IsNullOrEmpty(Condition))
+            {
+                setting.UseCondition(Condition);
+            }
+
+            if (Debug != null)
+            {
+                setting.UseDebugMode(Debug.Value);
+            }
+
+            if (!string.IsNullOrEmpty(Culture))
+            {
+                setting.UseCulture(Culture);
             }
         }
     }
