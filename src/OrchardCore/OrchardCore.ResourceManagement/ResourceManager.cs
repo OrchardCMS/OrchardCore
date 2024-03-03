@@ -385,24 +385,18 @@ namespace OrchardCore.ResourceManagement
                 dependencies = new List<string>(settings.Dependencies);
             }
 
-            // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
-            // location is Head, so too should Bar's location, similarly, if Foo is First positioned, Bar dependency should be too.
-            //
-            // Forge the effective require settings for this resource.
-            // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
-            // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
+            // Settings is given so the location can cascade down into dependencies. For example, if Foo depends on Bar,
+            // and Foo's required location is Head, so too should Bar's location, similarly, if Foo is First positioned,
+            // Bar dependency should be too.
 
-            var dependencySettings = (((RequireSettings)allResources[resource])
-                    ?.NewAndCombine(settings)
+            var dependencySettings =  ((RequireSettings)allResources[resource])?.New()
                 ?? new RequireSettings(_options)
                 {
                     Name = resource.Name,
                     Type = resource.Type,
-                    Position = resource.Position
-                }
-                    .Combine(settings))
-                    .CombinePosition(settings)
-                    ;
+                    Position = resource.Position,
+                };
+            dependencySettings = dependencySettings.AtLocation(settings.Location).CombinePosition(settings);
 
             if (dependencies != null)
             {
