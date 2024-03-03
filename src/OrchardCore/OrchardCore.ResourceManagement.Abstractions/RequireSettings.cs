@@ -43,10 +43,7 @@ namespace OrchardCore.ResourceManagement
             AppendVersion = options.AppendVersion;
         }
 
-        public bool HasAttributes
-        {
-            get { return _attributes != null && _attributes.Any(a => a.Value != null); }
-        }
+        public bool HasAttributes => _attributes != null && _attributes.Any(a => a.Value != null);
 
         /// <summary>
         /// The resource will be displayed in the head of the page.
