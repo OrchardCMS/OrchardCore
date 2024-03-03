@@ -43,6 +43,22 @@ namespace OrchardCore.ResourceManagement
             AppendVersion = options.AppendVersion;
         }
 
+        public RequireSettings(ResourceManagementOptions options, ResourceDefinition resource)
+            : this(options)
+        {
+            Name = resource.Name;
+            Type = resource.Type;
+            BasePath = resource.BasePath;
+            Version = resource.Version;
+            Dependencies = resource.Dependencies;
+            Position = resource.Position;
+
+            if (resource.Attributes != null)
+            {
+                _attributes = new Dictionary<string, string>(resource.Attributes);
+            }
+        }
+
         public bool HasAttributes => _attributes != null && _attributes.Any(a => a.Value != null);
 
         /// <summary>

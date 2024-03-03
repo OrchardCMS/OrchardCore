@@ -389,14 +389,9 @@ namespace OrchardCore.ResourceManagement
             // and Foo's required location is Head, so too should Bar's location, similarly, if Foo is First positioned,
             // Bar dependency should be too.
 
-            var dependencySettings =  ((RequireSettings)allResources[resource])?.New()
-                ?? new RequireSettings(_options)
-                {
-                    Name = resource.Name,
-                    Type = resource.Type,
-                    Position = resource.Position,
-                };
-            dependencySettings = dependencySettings.AtLocation(settings.Location).CombinePosition(settings);
+            var dependencySettings =  (((RequireSettings)allResources[resource])?.New() ?? new RequireSettings(_options, resource))
+                .AtLocation(settings.Location)
+                .CombinePosition(settings);
 
             if (dependencies != null)
             {
