@@ -243,18 +243,17 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings NewAndCombine(RequireSettings other)
-        {
-            return new RequireSettings
+        public RequireSettings New() =>
+            new()
             {
                 Name = Name,
                 Type = Type,
                 Location = Location,
                 Position = Position
-            }
-                .Combine(other)
-                ;
-        }
+            };
+
+        public RequireSettings NewAndCombine(RequireSettings other) =>
+            New().Combine(other);
 
         public RequireSettings Combine(RequireSettings other)
         {
