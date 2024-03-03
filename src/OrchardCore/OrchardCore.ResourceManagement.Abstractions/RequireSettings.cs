@@ -50,7 +50,6 @@ namespace OrchardCore.ResourceManagement
             Type = resource.Type;
             BasePath = resource.BasePath;
             Version = resource.Version;
-            Dependencies = resource.Dependencies;
             Position = resource.Position;
 
             if (resource.Attributes != null)

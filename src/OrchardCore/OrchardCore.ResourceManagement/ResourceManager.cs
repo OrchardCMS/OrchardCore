@@ -361,7 +361,14 @@ namespace OrchardCore.ResourceManagement
         protected virtual void ExpandDependencies(
             ResourceDefinition resource,
             RequireSettings settings,
-            ResourceDictionary allResources)
+            ResourceDictionary allResources) =>
+            ExpandDependenciesImplementation(resource, settings, allResources, isTopLevel: true);
+
+        private void ExpandDependenciesImplementation(
+            ResourceDefinition resource,
+            RequireSettings settings,
+            ResourceDictionary allResources,
+            bool isTopLevel)
         {
             if (resource == null)
             {
@@ -387,11 +394,13 @@ namespace OrchardCore.ResourceManagement
 
             // Settings is given so the location can cascade down into dependencies. For example, if Foo depends on Bar,
             // and Foo's required location is Head, so too should Bar's location, similarly, if Foo is First positioned,
-            // Bar dependency should be too.
+            // Bar dependency should be too. This behavior only applies to the dependencies.
 
-            var dependencySettings =  (((RequireSettings)allResources[resource])?.New() ?? new RequireSettings(_options, resource))
-                .AtLocation(settings.Location)
-                .CombinePosition(settings);
+            var dependencySettings = isTopLevel
+                ? settings.NewAndCombine(settings)
+                : ((RequireSettings)allResources[resource])?.New() ?? new RequireSettings(_options, resource)
+                    .AtLocation(settings.Location)
+                    .CombinePosition(settings);
 
             if (dependencies != null)
             {
@@ -420,7 +429,7 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    ExpandDependencies(dependency, dependencySettings, allResources);
+                    ExpandDependenciesImplementation(dependency, dependencySettings, allResources, isTopLevel: false);
                 }
             }
 
