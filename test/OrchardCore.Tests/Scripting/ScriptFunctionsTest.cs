@@ -14,7 +14,6 @@ public class ScriptFunctionsTest
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var userProperties = @"{
             ""UserProfile"": {
                 ""ContentItemId"": ""4fkpnj0fnawmzy3zdc5kx5pnn1"",
@@ -95,8 +94,10 @@ public class ScriptFunctionsTest
                     return userInfo;
                 }
             };
+
+            var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([findUser], scope.ServiceProvider, null, null);
-            var result = scriptingEngine.Evaluate(scriptingScope, "return getUserByName('admin')");
+            var result = scriptingEngine.Evaluate(scriptingScope, "var user= getUserByName('admin'); return user.userName=='admin'");
             Assert.NotNull(result);
         });
     }
