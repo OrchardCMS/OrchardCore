@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Text.Json.Nodes;
 using Jint;
+using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 
@@ -19,7 +22,34 @@ namespace OrchardCore.Scripting.JavaScript
 
         public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
-            var engine = new Engine();
+            var engine = new Engine(options =>
+            {
+                // make JsonArray behave like JS array 
+                options.Interop.WrapObjectHandler = static (e, target, type) =>
+                {
+                    var wrapped = new ObjectWrapper(e, target);
+                    if (target is JsonArray)
+                    {
+                        wrapped.Prototype = e.Intrinsics.Array.PrototypeObject;
+                    }
+                    return wrapped;
+                };
+
+                // we cannot access this[string] with anything else than JsonObject, otherwise itw will throw 
+                options.Interop.TypeResolver = new TypeResolver
+                {
+                    MemberFilter = static info =>
+                    {
+                        if (info.ReflectedType != typeof(JsonObject) && info.Name == "Item" && info is PropertyInfo p)
+                        {
+                            var parameters = p.GetIndexParameters();
+                            return parameters.Length != 1 || parameters[0].ParameterType != typeof(string);
+                        }
+
+                        return true;
+                    }
+                };
+            });
 
             foreach (var method in methods)
             {
