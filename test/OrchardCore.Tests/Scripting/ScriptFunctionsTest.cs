@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Apis.Context;
@@ -91,14 +92,22 @@ public class ScriptFunctionsTest
                 {
                     var userManager = sp.GetRequiredService<UserManager<IUser>>();
                     var userInfo = userManager.FindByNameAsync(userName).GetAwaiter().GetResult();
+                    var jobjUser = JObject.FromObject(userInfo, JOptions.CamelCase);
+                    jobjUser.Remove("securityStamp");
+                    jobjUser.Remove("passwordHash");
+                    jobjUser.Remove("resetToken");
+                    jobjUser.Remove("userTokens");
+                    jobjUser.Remove("properties");
                     return userInfo;
                 }
             };
 
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([findUser], scope.ServiceProvider, null, null);
-            var result = scriptingEngine.Evaluate(scriptingScope, "var user= getUserByName('admin'); return user.userName=='admin'");
-            Assert.NotNull(result);
+            var result = (bool)scriptingEngine.Evaluate(scriptingScope, "var user = getUserByName('admin'); return user.userName == 'admin'");
+            Assert.True(result);
+            var result1 = scriptingEngine.Evaluate(scriptingScope, "var user2 = getUserByName('admin'); return user2.userName");
+            Assert.NotNull(result1);
         });
     }
 }
