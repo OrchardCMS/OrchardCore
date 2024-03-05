@@ -97,8 +97,7 @@ public class ScriptFunctionsTest
                     jobjUser.Remove("passwordHash");
                     jobjUser.Remove("resetToken");
                     jobjUser.Remove("userTokens");
-                    jobjUser.Remove("properties");
-                    return userInfo;
+                    return jobjUser;
                 }
             };
 
