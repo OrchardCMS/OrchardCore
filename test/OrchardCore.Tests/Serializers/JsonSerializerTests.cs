@@ -1,8 +1,10 @@
 using System.Text.Json;
+using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users.Core.Json;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Serializers;
 
@@ -73,5 +75,17 @@ public class JsonSerializerTests
             Assert.Equal(loginInfo.ProviderKey, userLoginInfo.ProviderKey);
             Assert.Equal(loginInfo.ProviderDisplayName, userLoginInfo.ProviderDisplayName);
         });
+    }
+
+    [Fact]
+    public async Task ValidateTheCustomQueryResultResponse()
+    { 
+        using var context = new BlogContext();
+        await context.InitializeAsync();
+        await context.RunRecipeAsync("TestQueryRecipe.json");
+
+        var fistResponse = await context.Client.GetAsync("moduleSample/tests/testCustomQuery");
+        var result1 = await fistResponse.Content.ReadAsStringAsync();
+        Assert.NotEmpty(result1);
     }
 }

@@ -1,0 +1,31 @@
+{
+  "name": "TestQueryRecipe",
+  "displayName": "TestQueryRecipe",
+  "description": "",
+  "author": "Tony Han",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "ModuleSample"
+      ]
+    },
+    {
+
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Sql",
+          "Name": "TakeBlogPosts",
+          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT {{size}}",
+          "ReturnContentItems": true
+        }
+      ]
+    }
+  ]
+}

@@ -99,7 +99,7 @@ namespace OrchardCore.Tests.Apis.Context
             await shellScope.UsingAsync(execute, activateShell);
         }
 
-        public async Task RunRecipeAsync(string recipeName, string recipePath)
+        public async Task RunRecipeAsync(string recipeName, string recipeBasePath = null)
         {
             await UsingTenantScopeAsync(async scope =>
             {
@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Apis.Context
 
                 var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
                 var recipe = recipes
-                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
+                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipeBasePath);
 
                 var executionId = Guid.NewGuid().ToString("n");
 

@@ -7,6 +7,12 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Category = "Test"
 )]
+[assembly: Feature(
+    Id = "TestCustomQueryFeature",
+    Name = "TestCustomQuery",
+    Description = "Feature with no dependencies.",
+    Dependencies = new string[0]
+)]
 
 [assembly: Feature(
     Id = "Sample1",
