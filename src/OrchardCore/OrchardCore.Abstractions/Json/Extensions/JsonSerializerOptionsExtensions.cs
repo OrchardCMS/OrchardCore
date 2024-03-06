@@ -1,0 +1,31 @@
+using System.Text.Json;
+
+namespace OrchardCore.Json.Extensions;
+
+public static class JsonSerializerOptionsExtensions
+{
+    public static JsonSerializerOptions Apply(this JsonSerializerOptions destenation, JsonSerializerOptions source)
+    {
+        destenation.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
+        destenation.ReferenceHandler = source.ReferenceHandler;
+        destenation.ReadCommentHandling = source.ReadCommentHandling;
+        destenation.PropertyNameCaseInsensitive = source.PropertyNameCaseInsensitive;
+        destenation.AllowTrailingCommas = source.AllowTrailingCommas;
+        destenation.WriteIndented = source.WriteIndented;
+        destenation.PropertyNamingPolicy = source.PropertyNamingPolicy;
+        destenation.Encoder = source.Encoder;
+        destenation.TypeInfoResolver = source.TypeInfoResolver;
+
+        foreach (var resolver in source.TypeInfoResolverChain)
+        {
+            destenation.TypeInfoResolverChain.Add(resolver);
+        }
+
+        foreach (var converter in source.Converters)
+        {
+            destenation.Converters.Add(converter);
+        }
+
+        return destenation;
+    }
+}
