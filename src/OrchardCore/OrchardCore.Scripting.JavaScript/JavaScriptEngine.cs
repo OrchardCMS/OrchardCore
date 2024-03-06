@@ -24,7 +24,7 @@ namespace OrchardCore.Scripting.JavaScript
         {
             var engine = new Engine(options =>
             {
-                // make JsonArray behave like JS array 
+                // Make JsonArray behave like JS array.
                 options.Interop.WrapObjectHandler = static (e, target, type) =>
                 {
                     var wrapped = new ObjectWrapper(e, target);
@@ -35,7 +35,7 @@ namespace OrchardCore.Scripting.JavaScript
                     return wrapped;
                 };
 
-                // we cannot access this[string] with anything else than JsonObject, otherwise itw will throw 
+                // We cannot access this[string] with anything else than JsonObject, otherwise itw will throw.
                 options.Interop.TypeResolver = new TypeResolver
                 {
                     MemberFilter = static info =>
