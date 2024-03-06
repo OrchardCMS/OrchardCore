@@ -12,7 +12,7 @@ To enable the "Custom User Settings" module, select it from the "Features" list.
     Don't mark any existing Content Type with this `CustomUserSettings` stereotype, as this will break existing content items of this type.
 
 Custom User Settings are then comprised of parts and fields like any other content type.  
-Once created, open the user list, create or edit an existing user, and each of these sections should appear alongside the module-provided ones. For more details see the video at the [bottom of this page](#Video). 
+After creation, go to Security >> Users to either create a new user or modify an existing one. Each of these sections will be accessible through distinct tabs. For further information, refer to the video located at the [bottom of this page.](#Video). 
 
 ## Usage
 
