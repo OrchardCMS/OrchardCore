@@ -18,11 +18,21 @@ public static class JsonSerializerOptionsExtensions
 
         foreach (var resolver in source.TypeInfoResolverChain)
         {
+            if (destenation.TypeInfoResolverChain.Contains(resolver))
+            {
+                continue;
+            }
+
             destenation.TypeInfoResolverChain.Add(resolver);
         }
 
         foreach (var converter in source.Converters)
         {
+            if (destenation.Converters.Contains(converter))
+            {
+                continue;
+            }
+
             destenation.Converters.Add(converter);
         }
 
