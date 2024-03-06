@@ -9,10 +9,11 @@ namespace ModuleSample.Controllers;
 
 
 [ApiController]
+[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
 public class ApiController : Controller
 {
     [HttpPost, HttpGet]
-    [Route("~/moduleSample/tests/testCustomQuery")]
+    [Route("api/moduleSample/tests/testCustomQuery")]
     public async Task<IActionResult> TestCustomQueryAsync()
     {
         var result = new CustomQueryResult { Data = new { user = "Tom", age = 5 } };
