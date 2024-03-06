@@ -62,8 +62,7 @@ public class SubResourceIntegrityTests
         var data = await httpClient.GetByteArrayAsync(url);
 
         using var memoryStream = new MemoryStream(data);
-        using var sha384Hash = SHA384.Create();
-        var hash = sha384Hash.ComputeHash(memoryStream);
+        var hash = await SHA384.HashDataAsync(memoryStream);
 
         return "sha384-" + Convert.ToBase64String(hash);
     }
