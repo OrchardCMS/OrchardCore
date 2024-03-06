@@ -6,7 +6,7 @@ Custom Users Settings allow a site administrator to create a customized set of p
 
 Custom User Settings are organized in sections, each section is represented by a Content Type with the `CustomUserSettings` stereotype. 
 
-From the "Features" list, activate the module `Custom User Settings`. To add a new section is necessary to create a new Content Type (called e.g. "User Settings"), disable `Creatable`, `Listable`, `Draftable` and `Securable` metadata as they don't apply, and add a field, or parts, that we want as a new property for our users (e.g. we can add a "Text Field" to show user nicknames). 
+To enable the "Custom User Settings" module, select it from the "Features" list. To incorporate a new section, it is essential to generate a fresh Content Type, such as "User Settings." In this process, deactivate the Creatable, Listable, Draftable, and Securable metadata since they are not applicable. Additionally, include a field or components to define the new property for users; for instance, one can append a "Text Field" to display user nicknames.
 
 !!! warning
     Don't mark any existing Content Type with this `CustomUserSettings` stereotype, as this will break existing content items of this type.
