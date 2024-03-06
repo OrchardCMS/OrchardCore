@@ -84,7 +84,8 @@ public class JsonSerializerTests
         await context.InitializeAsync();
         await context.RunRecipeAsync("TestQueryRecipe.json");
 
-        var fistResponse = await context.Client.GetAsync("api/moduleSample/tests/testCustomQuery");
+        var fistResponse = await context.Client.GetAsync("api/tests/testCustomQuery");
+        fistResponse.EnsureSuccessStatusCode();
         var result1 = await fistResponse.Content.ReadAsStringAsync();
         Assert.NotEmpty(result1);
     }

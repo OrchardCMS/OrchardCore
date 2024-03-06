@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
 namespace ModuleSample;
-[Feature("TestCustomQueryFeature")]
+[Feature("TestCustomQuery")]
 public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

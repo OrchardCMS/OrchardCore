@@ -12,7 +12,7 @@
     {
       "name": "feature",
       "enable": [
-        "TestCustomQueryFeature"
+        "TestCustomQuery"
       ]
     },
     {

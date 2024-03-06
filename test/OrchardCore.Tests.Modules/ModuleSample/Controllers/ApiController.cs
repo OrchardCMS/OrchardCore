@@ -13,7 +13,7 @@ namespace ModuleSample.Controllers;
 public class ApiController : Controller
 {
     [HttpPost, HttpGet]
-    [Route("api/moduleSample/tests/testCustomQuery")]
+    [Route("api/tests/testCustomQuery")]
     public async Task<IActionResult> TestCustomQueryAsync()
     {
         var result = new CustomQueryResult { Data = new { user = "Tom", age = 5 } };

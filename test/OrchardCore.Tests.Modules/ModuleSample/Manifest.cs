@@ -8,7 +8,7 @@ using OrchardCore.Modules.Manifest;
     Category = "Test"
 )]
 [assembly: Feature(
-    Id = "TestCustomQueryFeature",
+    Id = "TestCustomQuery",
     Name = "TestCustomQuery",
     Description = "Feature with no dependencies.",
     Dependencies = new string[0]
