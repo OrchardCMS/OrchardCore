@@ -16,6 +16,6 @@ public class JsonOptionsConfigurations : IConfigureOptions<JsonOptions>
 
     public void Configure(JsonOptions options)
     {
-        options.SerializerOptions.Apply(_jsonSerializerOptions);
+        options.SerializerOptions.Merge(_jsonSerializerOptions);
     }
 }

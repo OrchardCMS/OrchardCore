@@ -4,7 +4,10 @@ namespace OrchardCore.Json.Extensions;
 
 public static class JsonSerializerOptionsExtensions
 {
-    public static JsonSerializerOptions Apply(this JsonSerializerOptions destenation, JsonSerializerOptions source)
+    /// <summary>
+    /// Merges the given <see cref="JsonSerializerOptions"/> into the current options.
+    /// </summary>
+    public static JsonSerializerOptions Merge(this JsonSerializerOptions destenation, JsonSerializerOptions source)
     {
         destenation.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
         destenation.ReferenceHandler = source.ReferenceHandler;
