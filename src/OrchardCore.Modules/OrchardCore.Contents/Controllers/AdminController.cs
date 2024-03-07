@@ -650,7 +650,7 @@ namespace OrchardCore.Contents.Controllers
                 : RedirectToAction(nameof(List));
         }
 
-        public async Task<IActionResult> OwnerFilterUserSearch(string searchTerm, int page = 1)
+        public async Task<IActionResult> OwnerFilterUserSearch(string searchTerm, string selectedOwnerUserName, int page = 1)
         {
             var pageSize = 50;
 
@@ -676,7 +676,29 @@ namespace OrchardCore.Contents.Controllers
                 hasMoreResults = page * pageSize < totalUsersCount;
             }
 
-            return new ObjectResult(new { results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserName }), hasMoreResults });
+            var results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserName }).ToList();
+
+            // always include the selected owner if there is no search term and only for the first page so that the initial load always includes it
+            if (string.IsNullOrEmpty(searchTerm) && !string.IsNullOrEmpty(selectedOwnerUserName) && page == 1)
+            {
+                var selectedOwnerFromResults = results.FirstOrDefault(r => _userManager.NormalizeName(r.Value) == _userManager.NormalizeName(selectedOwnerUserName));
+
+                if (selectedOwnerFromResults == null)
+                {
+                    var user = await _userManager.FindByNameAsync(selectedOwnerUserName);
+
+                    if (user != null)
+                    {
+                        results.Add(new SelectListItem { Text = user.UserName, Value = user.UserName, Selected = true });
+                    }
+                }
+                else
+                {
+                    selectedOwnerFromResults.Selected = true;
+                }
+            }
+
+            return new ObjectResult(new { results, hasMoreResults });
         }
 
         private async Task<IActionResult> CreatePOST(
