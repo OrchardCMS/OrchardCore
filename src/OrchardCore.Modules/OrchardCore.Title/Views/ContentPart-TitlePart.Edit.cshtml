@@ -9,12 +9,14 @@
     var settings = typePartDefinition.GetSettings<TitlePartSettings>();
 }
 
-@if (settings?.Options != TitlePartOptions.GeneratedHidden)
+@if (settings.Options == TitlePartOptions.GeneratedHidden)
 {
-    <div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
-        @foreach (var shape in Model)
-        {
-            @await DisplayAsync(shape)
-        }
-    </div>
+    return;
 }
+
+<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+    @foreach (var shape in Model)
+    {
+        @await DisplayAsync(shape)
+    }
+</div>
