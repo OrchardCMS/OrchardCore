@@ -22,6 +22,8 @@ namespace OrchardCore.Contents.ViewModels
 
         public string SelectedContentType { get; set; }
 
+        public string SelectedUserId { get; set; }
+
         public bool CanCreateSelectedContentType { get; set; }
 
         public ContentsOrder OrderBy { get; set; }

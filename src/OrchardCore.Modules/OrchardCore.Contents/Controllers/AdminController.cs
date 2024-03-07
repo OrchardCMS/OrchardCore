@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,6 +25,9 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -37,6 +41,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
 
@@ -49,6 +54,7 @@ namespace OrchardCore.Contents.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
+            UserManager<IUser> userManager,
             ISession session,
             INotifier notifier,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -59,6 +65,7 @@ namespace OrchardCore.Contents.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
+            _userManager = userManager;
             _session = session;
             _notifier = notifier;
 
@@ -641,6 +648,35 @@ namespace OrchardCore.Contents.Controllers
             return Url.IsLocalUrl(returnUrl)
                 ? this.LocalRedirect(returnUrl, true)
                 : RedirectToAction(nameof(List));
+        }
+
+        public async Task<IActionResult> SearchUsers(string searchTerm, int page = 1)
+        {
+            var pageSize = 40;
+
+            var query = _session.Query<User, UserIndex>();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query.Where(x => x.NormalizedUserName.Contains(_userManager.NormalizeName(searchTerm)));
+            }
+
+            var users = await query
+                .OrderBy(u => u.NormalizedUserName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ListAsync();
+
+            var hasMoreResults = false;
+
+            // only check if we have more results if the current page had a full page of results
+            if (users.Count() == pageSize)
+            {
+                var totalUsersCount = await query.CountAsync();
+                hasMoreResults = page * pageSize < totalUsersCount;
+            }
+
+            return new ObjectResult(new { results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserId }), hasMoreResults });
         }
 
         private async Task<IActionResult> CreatePOST(
