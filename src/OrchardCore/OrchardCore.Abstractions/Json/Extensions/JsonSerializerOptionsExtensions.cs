@@ -7,38 +7,38 @@ public static class JsonSerializerOptionsExtensions
     /// <summary>
     /// Merges the given <see cref="JsonSerializerOptions"/> into the current options.
     /// </summary>
-    public static JsonSerializerOptions Merge(this JsonSerializerOptions destenation, JsonSerializerOptions source)
+    public static JsonSerializerOptions Merge(this JsonSerializerOptions destination, JsonSerializerOptions source)
     {
-        destenation.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
-        destenation.ReferenceHandler = source.ReferenceHandler;
-        destenation.ReadCommentHandling = source.ReadCommentHandling;
-        destenation.PropertyNameCaseInsensitive = source.PropertyNameCaseInsensitive;
-        destenation.AllowTrailingCommas = source.AllowTrailingCommas;
-        destenation.WriteIndented = source.WriteIndented;
-        destenation.PropertyNamingPolicy = source.PropertyNamingPolicy;
-        destenation.Encoder = source.Encoder;
-        destenation.TypeInfoResolver = source.TypeInfoResolver;
+        destination.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
+        destination.ReferenceHandler = source.ReferenceHandler;
+        destination.ReadCommentHandling = source.ReadCommentHandling;
+        destination.PropertyNameCaseInsensitive = source.PropertyNameCaseInsensitive;
+        destination.AllowTrailingCommas = source.AllowTrailingCommas;
+        destination.WriteIndented = source.WriteIndented;
+        destination.PropertyNamingPolicy = source.PropertyNamingPolicy;
+        destination.Encoder = source.Encoder;
+        destination.TypeInfoResolver = source.TypeInfoResolver;
 
         foreach (var resolver in source.TypeInfoResolverChain)
         {
-            if (destenation.TypeInfoResolverChain.Contains(resolver))
+            if (destination.TypeInfoResolverChain.Contains(resolver))
             {
                 continue;
             }
 
-            destenation.TypeInfoResolverChain.Add(resolver);
+            destination.TypeInfoResolverChain.Add(resolver);
         }
 
         foreach (var converter in source.Converters)
         {
-            if (destenation.Converters.Contains(converter))
+            if (destination.Converters.Contains(converter))
             {
                 continue;
             }
 
-            destenation.Converters.Add(converter);
+            destination.Converters.Add(converter);
         }
 
-        return destenation;
+        return destination;
     }
 }
