@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -13,6 +12,7 @@ using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Json;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -180,7 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            var serializerOptions = sp.GetRequiredService<IOptions<JsonSerializerOptions>>();
+            var serializerOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>();
 
             var storeConfiguration = new YesSql.Configuration
             {
@@ -189,7 +189,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
                 Logger = loggerFactory.CreateLogger("YesSql"),
-                ContentSerializer = new DefaultJsonContentSerializer(serializerOptions.Value)
+                ContentSerializer = new DefaultJsonContentSerializer(serializerOptions.Value.SerializerOptions)
             };
 
             if (yesSqlOptions.IdGenerator != null)

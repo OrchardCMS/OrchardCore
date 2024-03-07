@@ -46,9 +46,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             jsonOptions.Converters.Add(DynamicJsonConverter.Instance);
             jsonOptions.Converters.Add(PathStringJsonConverter.Instance);
 
-            var jsonSerializerOptions = new Mock<IOptions<JsonSerializerOptions>>();
+            var jsonSerializerOptions = new Mock<IOptions<ContentSerializerJsonOptions>>();
             jsonSerializerOptions.Setup(x => x.Value)
-                .Returns(jsonOptions);
+                .Returns(new ContentSerializerJsonOptions(jsonOptions));
 
             var contentSerializer = new DefaultJsonContentSerializer(jsonSerializerOptions.Object);
 
