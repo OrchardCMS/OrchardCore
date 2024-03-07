@@ -101,7 +101,7 @@ namespace OrchardCore.Tests.Workflows
             WorkflowType workflowType
         )
         {
-            var workflowValueSerializer = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
+            var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
             var workflowTypeStore = new Mock<IWorkflowTypeStore>();
             var workflowStore = new Mock<IWorkflowStore>();
@@ -123,7 +123,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowTypeStore.Object,
                 workflowStore.Object,
                 workflowIdGenerator.Object,
-                workflowValueSerializer,
+                workflowValueSerializers,
                 workflowFaultHandler.Object,
                 distributedLock.Object,
                 workflowManagerLogger.Object,
