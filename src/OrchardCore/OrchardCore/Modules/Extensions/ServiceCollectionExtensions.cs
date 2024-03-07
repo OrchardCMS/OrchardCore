@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -30,6 +31,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Extensions;
+using OrchardCore.Json;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -154,6 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
+            services.AddTransient<IConfigureOptions<JsonOptions>, JsonOptionsConfigurations>();
             services.AddTransient<IConfigureOptions<JsonSerializerOptions>, JsonSerializerOptionsConfiguration>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
