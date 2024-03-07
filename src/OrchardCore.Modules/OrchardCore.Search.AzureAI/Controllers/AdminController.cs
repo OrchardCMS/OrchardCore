@@ -37,7 +37,6 @@ public class AdminController : Controller
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IContentManager _contentManager;
-    private readonly IShapeFactory _shapeFactory;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
     private readonly INotifier _notifier;
@@ -53,7 +52,6 @@ public class AdminController : Controller
         AzureAISearchIndexManager indexManager,
         AzureAISearchIndexSettingsService indexSettingsService,
         IContentManager contentManager,
-        IShapeFactory shapeFactory,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         INotifier notifier,
@@ -68,7 +66,6 @@ public class AdminController : Controller
         _indexManager = indexManager;
         _indexSettingsService = indexSettingsService;
         _contentManager = contentManager;
-        _shapeFactory = shapeFactory;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAIOptions = azureAIOptions.Value;
         _notifier = notifier;
@@ -78,7 +75,10 @@ public class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(AzureAIIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        [FromServices] IShapeFactory shapeFactory,
+        AzureAIIndexOptions options,
+        PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
@@ -120,7 +120,7 @@ public class AdminController : Controller
         {
             Indexes = indexes,
             Options = options,
-            Pager = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData)
+            Pager = await shapeFactory.PagerAsync(pager, totalIndexes, routeData)
         };
 
         model.Options.ContentsBulkAction =

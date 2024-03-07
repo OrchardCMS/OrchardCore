@@ -18,7 +18,7 @@ using YesSql;
 namespace OrchardCore.Menu.Controllers
 {
     [Admin("Menu/{action}/{id?}", "Menu{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -26,8 +26,8 @@ namespace OrchardCore.Menu.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISession session,
@@ -36,8 +36,7 @@ namespace OrchardCore.Menu.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IHtmlLocalizer<AdminController> localizer)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -45,7 +44,6 @@ namespace OrchardCore.Menu.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
             H = localizer;
         }
 
@@ -63,7 +61,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -100,7 +98,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
@@ -169,7 +167,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -220,7 +218,7 @@ namespace OrchardCore.Menu.Controllers
 
             contentItem.Merge(existing);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
             if (!ModelState.IsValid)
             {

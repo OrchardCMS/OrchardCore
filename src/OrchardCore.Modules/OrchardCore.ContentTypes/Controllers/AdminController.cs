@@ -21,17 +21,17 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
+        private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
-        private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
@@ -41,8 +41,7 @@ namespace OrchardCore.ContentTypes.Controllers
             IDocumentStore documentStore,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
             _notifier = notifier;
             _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
@@ -50,7 +49,6 @@ namespace OrchardCore.ContentTypes.Controllers
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
-            _updateModelAccessor = updateModelAccessor;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -165,7 +163,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
+            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, this);
 
             return View(typeViewModel);
         }
@@ -189,7 +187,7 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.Settings = contentTypeDefinition.Settings;
             viewModel.TypeDefinition = contentTypeDefinition;
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, _updateModelAccessor.ModelUpdater);
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
             if (!ModelState.IsValid)
             {
@@ -529,7 +527,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var viewModel = new EditPartViewModel(contentPartDefinition)
             {
-                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, this),
             };
 
             return View(viewModel);
@@ -553,7 +551,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var viewModel = new EditPartViewModel(contentPartDefinition)
             {
-                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, this),
             };
 
             if (!ModelState.IsValid)
@@ -739,7 +737,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 DisplayMode = partFieldDefinition.DisplayMode(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater)
+                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -794,7 +792,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 if (!ModelState.IsValid)
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
-                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
+                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
                     await _documentStore.CancelAsync();
 
                     ViewData["ReturnUrl"] = returnUrl;
@@ -809,7 +807,7 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local field variable in case it has been altered
             field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
 
             if (!ModelState.IsValid)
             {
@@ -908,7 +906,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater)
+                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
             };
 
             return View(typePartViewModel);
@@ -963,7 +961,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
                     if (!ModelState.IsValid)
                     {
-                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
+                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
                         await _documentStore.CancelAsync();
                         return View(viewModel);
                     }
@@ -975,7 +973,7 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local part variable in case it has been altered
             part = (await _contentDefinitionManager.LoadTypeDefinitionAsync(id)).Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
 
             if (!ModelState.IsValid)
             {

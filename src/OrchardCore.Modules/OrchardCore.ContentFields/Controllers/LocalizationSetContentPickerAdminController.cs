@@ -14,7 +14,6 @@ using OrchardCore.Contents;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
-using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -27,22 +26,19 @@ namespace OrchardCore.ContentFields.Controllers
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LocalizationSetContentPickerAdminController(
             IContentDefinitionManager contentDefinitionManager,
             IContentLocalizationManager contentLocalizationManager,
             IContentManager contentManager,
             ISession session,
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+            IAuthorizationService authorizationService)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentLocalizationManager = contentLocalizationManager;
             _contentManager = contentManager;
             _session = session;
             _authorizationService = authorizationService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -80,7 +76,7 @@ namespace OrchardCore.ContentFields.Controllers
 
             foreach (var contentItem in cleanedContentItems)
             {
-                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent, contentItem))
+                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
                 {
                     results.Add(new VueMultiselectItemViewModel
                     {

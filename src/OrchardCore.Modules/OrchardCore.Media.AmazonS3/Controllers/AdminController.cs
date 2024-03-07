@@ -15,6 +15,7 @@ namespace OrchardCore.Media.AmazonS3
         private readonly IAuthorizationService _authorizationService;
         private readonly AwsStorageOptions _options;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -35,7 +36,7 @@ namespace OrchardCore.Media.AmazonS3
             {
                 return Forbid();
             }
-            
+
             if (_options.Validate().Any())
             {
                 await _notifier.ErrorAsync(H["The Amazon S3 Media feature is enabled, but it was not configured with appsettings.json."]);

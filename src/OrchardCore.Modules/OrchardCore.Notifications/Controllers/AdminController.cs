@@ -36,8 +36,6 @@ public class AdminController : Controller, IUpdateModel
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
-    private readonly IShapeFactory _shapeFactory;
-    private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;
 
     protected readonly IStringLocalizer S;
@@ -46,14 +44,11 @@ public class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-
-        IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
         INotifier notifier,
         IClock clock,
-        IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -63,8 +58,6 @@ public class AdminController : Controller, IUpdateModel
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
         _notifier = notifier;
-        _shapeFactory = shapeFactory;
-        _pagerOptions = pagerOptions.Value;
         _clock = clock;
 
         S = stringLocalizer;
@@ -73,6 +66,8 @@ public class AdminController : Controller, IUpdateModel
 
     [Admin("notifications", "ListNotifications")]
     public async Task<IActionResult> List(
+        [FromServices] IOptions<PagerOptions> pagerOptions,
+        [FromServices] IShapeFactory shapeFactory,
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
         ListNotificationOptions options)
@@ -108,11 +103,11 @@ public class AdminController : Controller, IUpdateModel
             new(S["Remove"], nameof(NotificationBulkAction.Remove)),
         ];
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        dynamic pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
+        dynamic pagerShape = await shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
         var notificationSummaries = new List<dynamic>();
 
@@ -132,7 +127,7 @@ public class AdminController : Controller, IUpdateModel
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-        var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
+        var shapeViewModel = await shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {
             viewModel.Options = options;
             viewModel.Header = header;

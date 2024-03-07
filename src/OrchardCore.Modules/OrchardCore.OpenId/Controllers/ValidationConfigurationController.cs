@@ -16,7 +16,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers
 {
     [Admin, Feature(OpenIdConstants.Features.Validation)]
-    public class ValidationConfigurationController : Controller
+    public class ValidationConfigurationController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IDisplayManager<OpenIdValidationSettings> _validationSettingsDisplayManager;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+
         protected readonly IHtmlLocalizer H;
 
         public ValidationConfigurationController(
@@ -34,8 +34,7 @@ namespace OrchardCore.OpenId.Controllers
             IOpenIdValidationService validationService,
             IDisplayManager<OpenIdValidationSettings> validationSettingsDisplayManager,
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IUpdateModelAccessor updateModelAccessor)
+            ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             H = htmlLocalizer;
@@ -44,7 +43,6 @@ namespace OrchardCore.OpenId.Controllers
             _validationSettingsDisplayManager = validationSettingsDisplayManager;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _updateModelAccessor = updateModelAccessor;
         }
 
         [Admin("OpenId/ValidationConfiguration", "OpenIdValidationConfiguration")]
@@ -56,7 +54,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: this, isNew: false, string.Empty, string.Empty);
 
             return View(shape);
         }
@@ -71,7 +69,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {

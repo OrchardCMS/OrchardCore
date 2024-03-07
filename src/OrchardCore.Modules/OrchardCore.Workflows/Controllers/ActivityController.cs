@@ -14,7 +14,7 @@ using YesSql;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class ActivityController : Controller
+    public class ActivityController : Controller, IUpdateModel
     {
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+
         protected readonly IHtmlLocalizer H;
 
         public ActivityController
@@ -35,8 +35,7 @@ namespace OrchardCore.Workflows.Controllers
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
             INotifier notifier,
-            IHtmlLocalizer<ActivityController> h,
-            IUpdateModelAccessor updateModelAccessor)
+            IHtmlLocalizer<ActivityController> stringLocalizer)
         {
             _session = session;
             _activityLibrary = activityLibrary;
@@ -45,8 +44,7 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            H = h;
+            H = stringLocalizer;
         }
 
         [Admin("Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add", "AddActivity")]
@@ -59,7 +57,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var activity = _activityLibrary.InstantiateActivity(activityName);
             var activityId = _activityIdGenerator.GenerateUniqueId(new ActivityRecord());
-            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activity, this, isNew: true, string.Empty, string.Empty);
 
             activityEditor.Metadata.Type = "Activity_Edit";
 
@@ -91,7 +89,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
             var activity = _activityLibrary.InstantiateActivity(activityName);
-            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activity, this, isNew: true, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -126,7 +124,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _session.GetAsync<WorkflowType>(workflowTypeId);
             var activityRecord = workflowType.Activities.Single(x => x.ActivityId == activityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
-            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var activityEditor = await _activityDisplayManager.BuildEditorAsync(activityContext.Activity, this, isNew: false, string.Empty, string.Empty);
 
             activityEditor.Metadata.Type = "Activity_Edit";
 
@@ -153,7 +151,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _session.GetAsync<WorkflowType>(model.WorkflowTypeId);
             var activityRecord = workflowType.Activities.Single(x => x.ActivityId == model.ActivityId);
             var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(activityRecord, activityRecord.Properties);
-            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var activityEditor = await _activityDisplayManager.UpdateEditorAsync(activityContext.Activity, this, isNew: false, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {

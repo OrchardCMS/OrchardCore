@@ -13,14 +13,14 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -28,17 +28,15 @@ namespace OrchardCore.Settings.Controllers
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
-            IOptions<CultureOptions> cultureOptions,
-            IUpdateModelAccessor updateModelAccessor)
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IOptions<CultureOptions> cultureOptions)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
-            _updateModelAccessor = updateModelAccessor;
             _cultureOptions = cultureOptions.Value;
-            H = h;
+            H = htmlLocalizer;
         }
 
         [Admin("Settings/{groupId}", "AdminSettings")]
@@ -54,7 +52,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, false, groupId, string.Empty)
             };
 
             return View(viewModel);
@@ -74,7 +72,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, false, groupId, string.Empty)
             };
 
             if (ModelState.IsValid)

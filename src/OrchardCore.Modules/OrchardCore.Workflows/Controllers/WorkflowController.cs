@@ -29,9 +29,8 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers
 {
     [Admin]
-    public class WorkflowController : Controller
+    public class WorkflowController : Controller, IUpdateModel
     {
-        private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -39,29 +38,23 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
         private readonly IDistributedLock _distributedLock;
 
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
         public WorkflowController(
-            IOptions<PagerOptions> pagerOptions,
             ISession session,
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
             IWorkflowStore workflowStore,
             IAuthorizationService authorizationService,
             IActivityDisplayManager activityDisplayManager,
-            IShapeFactory shapeFactory,
             INotifier notifier,
-            IHtmlLocalizer<WorkflowController> htmlLocalizer,
             IDistributedLock distributedLock,
-            IStringLocalizer<WorkflowController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IStringLocalizer<WorkflowController> stringLocalizer)
         {
-            _pagerOptions = pagerOptions.Value;
             _session = session;
             _workflowManager = workflowManager;
             _workflowTypeStore = workflowTypeStore;
@@ -69,15 +62,19 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            _shapeFactory = shapeFactory;
-            H = htmlLocalizer;
             _distributedLock = distributedLock;
+            H = htmlLocalizer;
             S = stringLocalizer;
         }
 
         [Admin("Workflows/Types/{workflowTypeId}/Instances/{action}", "Workflows")]
-        public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            long workflowTypeId,
+            WorkflowIndexViewModel model,
+            PagerParameters pagerParameters,
+            string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -107,12 +104,12 @@ namespace OrchardCore.Workflows.Controllers
                 _ => query.OrderByDescending(x => x.CreatedUtc),
             };
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var routeData = new RouteData();
             routeData.Values.Add("Filter", model.Options.Filter);
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, await query.CountAsync(), routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, await query.CountAsync(), routeData);
 
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
@@ -332,7 +329,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
+            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
             activityShape.Activity = activityContext.Activity;
             activityShape.ActivityRecord = activityContext.ActivityRecord;

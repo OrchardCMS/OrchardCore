@@ -32,8 +32,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly FeatureProfilesManager _featureProfilesManager;
         private readonly INotifier _notifier;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -42,8 +40,6 @@ namespace OrchardCore.Tenants.Controllers
             IAuthorizationService authorizationService,
             FeatureProfilesManager featureProfilesManager,
             INotifier notifier,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IStringLocalizer<FeatureProfilesController> stringLocalizer,
             IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
             )
@@ -51,21 +47,23 @@ namespace OrchardCore.Tenants.Controllers
             _authorizationService = authorizationService;
             _featureProfilesManager = featureProfilesManager;
             _notifier = notifier;
-            _pagerOptions = pagerOptions.Value;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         [Admin("TenantFeatureProfiles", "TenantFeatureProfilesIndex")]
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
             var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
@@ -89,7 +87,7 @@ namespace OrchardCore.Tenants.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new FeatureProfilesIndexViewModel
             {

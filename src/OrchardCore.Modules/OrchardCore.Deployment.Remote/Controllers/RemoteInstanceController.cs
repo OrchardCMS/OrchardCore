@@ -25,8 +25,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private const string _optionsSearch = "Options.Search";
 
         private readonly IAuthorizationService _authorizationService;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
 
@@ -36,30 +34,30 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public RemoteInstanceController(
             RemoteInstanceService service,
             IAuthorizationService authorizationService,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
             INotifier notifier
             )
         {
             _authorizationService = authorizationService;
-            _pagerOptions = pagerOptions.Value;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _notifier = notifier;
             _service = service;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
@@ -79,7 +77,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, remoteInstances.Count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, remoteInstances.Count, routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {

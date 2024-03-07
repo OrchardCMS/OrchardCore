@@ -11,26 +11,31 @@ using OrchardCore.Widgets.ViewModels;
 namespace OrchardCore.Widgets.Controllers
 {
     [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentManager contentManager,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IShapeFactory shapeFactory,
-            IUpdateModelAccessor updateModelAccessor)
+            IContentItemDisplayManager contentItemDisplayManager)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
-            _shapeFactory = shapeFactory;
-            _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(
+            [FromServices] IShapeFactory shapeFactory,
+            string id,
+            string prefix,
+            string prefixesName,
+            string contentTypesName,
+            string contentItemsName,
+            string zonesName,
+            string zone,
+            string targetId,
+            string parentContentType,
+            string partName)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -44,9 +49,9 @@ namespace OrchardCore.Widgets.Controllers
             var cardCollectionType = nameof(WidgetsListPart);
 
             // Create a Card Shape
-            dynamic contentCard = await _shapeFactory.New.ContentCard(
+            dynamic contentCard = await shapeFactory.New.ContentCard(
                 // Updater is the controller for AJAX Requests
-                Updater: _updateModelAccessor.ModelUpdater,
+                Updater: this,
                 // Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,

@@ -24,6 +24,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
+
         protected readonly IStringLocalizer S;
 
         public ResetPasswordController(
@@ -37,7 +38,6 @@ namespace OrchardCore.Users.Controllers
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
-
             S = stringLocalizer;
             _logger = logger;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;

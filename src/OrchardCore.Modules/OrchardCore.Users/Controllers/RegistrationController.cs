@@ -22,6 +22,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 

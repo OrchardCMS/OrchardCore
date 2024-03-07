@@ -15,14 +15,13 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
-    public class StepController : Controller
+    public class StepController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<DeploymentStep> _displayManager;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         protected readonly IHtmlLocalizer H;
 
@@ -32,15 +31,13 @@ namespace OrchardCore.Deployment.Controllers
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
             IHtmlLocalizer<StepController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
             _displayManager = displayManager;
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
         }
 
@@ -74,7 +71,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
+                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: true, string.Empty, string.Empty)
             };
 
             model.Editor.DeploymentStep = step;
@@ -104,7 +101,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: true, string.Empty, string.Empty);
             editor.DeploymentStep = step;
 
             if (ModelState.IsValid)
@@ -151,7 +148,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = step.GetType().Name,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(step, updater: this, isNew: false, string.Empty, string.Empty)
             };
 
             model.Editor.DeploymentStep = step;
@@ -181,7 +178,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {

@@ -32,8 +32,6 @@ namespace OrchardCore.Placements.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly PlacementsManager _placementsManager;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly PagerOptions _pagerOptions;
 
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
@@ -44,30 +42,30 @@ namespace OrchardCore.Placements.Controllers
             PlacementsManager placementsManager,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            INotifier notifier,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory)
+            INotifier notifier)
         {
             _logger = logger;
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
-            _pagerOptions = pagerOptions.Value;
 
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
         [Admin("Placements", "Placements.Index")]
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
@@ -95,7 +93,7 @@ namespace OrchardCore.Placements.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ListShapePlacementsViewModel
             {

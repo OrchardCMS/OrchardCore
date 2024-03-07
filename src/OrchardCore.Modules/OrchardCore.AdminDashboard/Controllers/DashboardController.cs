@@ -19,14 +19,13 @@ using OrchardCore.DisplayManagement.ModelBinding;
 namespace OrchardCore.AdminDashboard.Controllers
 {
     [Admin]
-    public class DashboardController : Controller
+    public class DashboardController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminDashboardService _adminDashboardService;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly YesSql.ISession _session;
 
         public DashboardController(
@@ -35,7 +34,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            IUpdateModelAccessor updateModelAccessor,
             YesSql.ISession session)
         {
             _authorizationService = authorizationService;
@@ -43,7 +41,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _updateModelAccessor = updateModelAccessor;
             _session = session;
         }
 
@@ -75,7 +72,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                     wrappers.Add(new DashboardWrapper
                     {
                         Dashboard = widget,
-                        Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                        Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, this, "DetailAdmin")
                     });
                 }
 
@@ -127,7 +124,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var wrapper = new DashboardWrapper
                 {
                     Dashboard = widget,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, this, "DetailAdmin")
                 };
 
                 wrappers.Add(wrapper);

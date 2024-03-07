@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -21,15 +22,13 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Controllers
 {
     [Admin("Templates/{action}/{name?}", "Templates.{action}")]
-    public class TemplateController : Controller
+    public class TemplateController : Controller, IUpdateModel
     {
         private const string _optionsSearch = "Options.Search";
 
         private readonly IAuthorizationService _authorizationService;
         private readonly TemplatesManager _templatesManager;
         private readonly AdminTemplatesManager _adminTemplatesManager;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
 
         protected readonly IStringLocalizer S;
@@ -39,8 +38,6 @@ namespace OrchardCore.Templates.Controllers
             IAuthorizationService authorizationService,
             TemplatesManager templatesManager,
             AdminTemplatesManager adminTemplatesManager,
-            IShapeFactory shapeFactory,
-            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<TemplateController> stringLocalizer,
             IHtmlLocalizer<TemplateController> htmlLocalizer,
             INotifier notifier)
@@ -48,23 +45,29 @@ namespace OrchardCore.Templates.Controllers
             _authorizationService = authorizationService;
             _templatesManager = templatesManager;
             _adminTemplatesManager = adminTemplatesManager;
-            _shapeFactory = shapeFactory;
-            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public Task<IActionResult> Admin(ContentOptions options, PagerParameters pagerParameters)
+        public Task<IActionResult> Admin(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             options.AdminTemplates = true;
 
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones.
-            return Index(options, pagerParameters);
+            return Index(pagerOptions, shapeFactory, options, pagerParameters);
         }
 
         [Admin("Templates", "Templates.Index")]
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -76,7 +79,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
             var templatesDocument = options.AdminTemplates
                 ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
                 : await _templatesManager.GetTemplatesDocumentAsync()
@@ -103,7 +106,7 @@ namespace OrchardCore.Templates.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
             var model = new TemplateIndexViewModel
             {
                 Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),

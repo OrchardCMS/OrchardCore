@@ -42,10 +42,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ITenantValidator _tenantValidator;
-        private readonly PagerOptions _pagerOptions;
         private readonly TenantsOptions _tenantsOptions;
         private readonly ILogger _logger;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -63,10 +61,8 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ITenantValidator tenantValidator,
-            IOptions<PagerOptions> pagerOptions,
             IOptions<TenantsOptions> tenantsOptions,
             ILogger<AdminController> logger,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -82,16 +78,18 @@ namespace OrchardCore.Tenants.Controllers
             _clock = clock;
             _notifier = notifier;
             _tenantValidator = tenantValidator;
-            _pagerOptions = pagerOptions.Value;
             _tenantsOptions = tenantsOptions.Value;
             _logger = logger;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         [Admin("Tenants", "Tenants")]
-        public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            TenantIndexOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
@@ -106,7 +104,7 @@ namespace OrchardCore.Tenants.Controllers
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var entries = allSettings.Select(settings =>
                {
@@ -173,7 +171,7 @@ namespace OrchardCore.Tenants.Controllers
                 routeData.Values.TryAdd("Options.Search", options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, entries.Count, routeData);
 
             var model = new AdminIndexViewModel
             {
