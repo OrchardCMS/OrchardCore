@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.ViewModels
 
         public string SelectedContentType { get; set; }
 
-        public string SelectedUserId { get; set; }
+        public string SelectedOwnerUserName { get; set; }
 
         public bool CanCreateSelectedContentType { get; set; }
 

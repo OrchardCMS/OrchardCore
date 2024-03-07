@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Drivers
             m.OrderBy = model.OrderBy;
             m.SelectedContentType = model.SelectedContentType;
             m.FilterResult = model.FilterResult;
-            m.SelectedUserId = model.SelectedUserId;
+            m.SelectedOwnerUserName = model.SelectedOwnerUserName;
         }
     }
 }

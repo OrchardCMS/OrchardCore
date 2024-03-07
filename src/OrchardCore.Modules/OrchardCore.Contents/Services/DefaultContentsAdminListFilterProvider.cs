@@ -5,12 +5,15 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -250,57 +253,32 @@ namespace OrchardCore.Contents.Services
                     })
                 )
                 .WithNamedTerm("owner", builder => builder
-                    .OneCondition((userId, query, ctx) =>
+                    .OneCondition(async (userName, query, ctx) =>
                     {
-                        //var context = (ContentQueryContext)ctx;
-                        //if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
-                        //{
-                        //    switch (contentsStatus)
-                        //    {
-                        //        case ContentsStatus.Draft:
-                        //            query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                        //            break;
-                        //        case ContentsStatus.Published:
-                        //            query.With<ContentItemIndex>(x => x.Published);
-                        //            break;
-                        //        case ContentsStatus.Owner:
-                        //            var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                        //            var userNameIdentifier = httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-                        //            query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier && x.Latest);
-                        //            break;
-                        //        case ContentsStatus.AllVersions:
-                        //            query.With<ContentItemIndex>(x => x.Latest);
-                        //            break;
-                        //        default:
-                        //            query.With<ContentItemIndex>(x => x.Latest);
-                        //            break;
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    // Draft is the default value.
-                        //    query.With<ContentItemIndex>(x => x.Latest);
-                        //}
-
-                        if (!string.IsNullOrEmpty(userId))
+                        if (!string.IsNullOrEmpty(userName))
                         {
+                            var context = (ContentQueryContext)ctx;
+                            var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                            var user = await userManager.FindByNameAsync(userName) as User;
+                            var userId = user?.UserId;
+
                             query.With<ContentItemIndex>(x => x.Owner == userId);
                         }
 
-                        return new ValueTask<IQuery<ContentItem>>(query);
+                        return query;
                     })
-                    .MapTo<ContentOptionsViewModel>((val, model) =>
+                    .MapTo<ContentOptionsViewModel>((userName, model) =>
                     {
-                        if (!string.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(userName))
                         {
-                            model.SelectedUserId = val;
+                            model.SelectedOwnerUserName = userName;
                         }
                     })
                     .MapFrom<ContentOptionsViewModel>((model) =>
                     {
-                        if (!string.IsNullOrEmpty(model.SelectedUserId))
+                        if (!string.IsNullOrEmpty(model.SelectedOwnerUserName))
                         {
-                            return (true, model.SelectedUserId);
+                            return (true, model.SelectedOwnerUserName);
                         }
 
                         return (false, string.Empty);

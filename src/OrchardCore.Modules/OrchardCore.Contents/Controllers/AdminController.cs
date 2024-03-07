@@ -650,7 +650,7 @@ namespace OrchardCore.Contents.Controllers
                 : RedirectToAction(nameof(List));
         }
 
-        public async Task<IActionResult> SearchUsers(string searchTerm, int page = 1)
+        public async Task<IActionResult> OwnerFilterUserSearch(string searchTerm, int page = 1)
         {
             var pageSize = 50;
 
@@ -676,7 +676,7 @@ namespace OrchardCore.Contents.Controllers
                 hasMoreResults = page * pageSize < totalUsersCount;
             }
 
-            return new ObjectResult(new { results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserId }), hasMoreResults });
+            return new ObjectResult(new { results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserName }), hasMoreResults });
         }
 
         private async Task<IActionResult> CreatePOST(

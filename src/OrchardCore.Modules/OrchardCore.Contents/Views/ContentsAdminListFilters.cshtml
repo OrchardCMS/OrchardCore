@@ -1,6 +1,6 @@
 @model ContentOptionsViewModel
 @{
-    var userSearchUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "SearchUsers" });
+    var ownerFilterUserSearchUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "OwnerFilterUserSearch" });
 }
 <div class="btn-group filter">
     @if (Model.ContentTypeOptions.Count > 0)
@@ -8,7 +8,7 @@
         <select asp-for="SelectedContentType" asp-items="Model.ContentTypeOptions" class="selectpicker contenttypes-selectpicker show-tick me-2" data-header="@T["Filter by content type"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Content Type"]" data-style="btn-sm" data-live-search="true"></select>
     }
     <select asp-for="ContentsStatus" asp-items="@Model.ContentStatuses" class="selectpicker contentstatuses-selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm"></select>
-    <select asp-for="SelectedUserId" class="contentowners-selectpicker show-tick me-2" data-header="@T["Filter by owner"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Owner"]" data-style="btn-sm" data-live-search="true"></select>
+    <select asp-for="SelectedOwnerUserName" class="ajax-selectpicker contentowners-selectpicker show-tick me-2" data-header="@T["Filter by owner"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Owner"]" data-style="btn-sm" data-live-search="true"></select>
     <select asp-for="OrderBy" asp-items="@Model.ContentSorts" class="selectpicker contentsorts-selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
 </div>
 
@@ -19,14 +19,14 @@
         var previousPage;
         var previousSearchTerm;
 
-        $('#@Html.IdFor(m => m.SelectedUserId)').selectpicker({
+        $('#@Html.IdFor(m => m.SelectedOwnerUserName)').selectpicker({
             source: {
                 pageSize: 50,
                 data: function (callback, page) {
                     if (previousPage !== page) {
                         previousPage = page;
 
-                        $.ajax('@userSearchUrl', { data: { page } })
+                        $.ajax('@ownerFilterUserSearchUrl', { data: { page } })
                             .then((response) => callback(response.results, response.hasMoreResults));
                     }
                 },
@@ -35,7 +35,7 @@
                         previousPage = page;
                         previousSearchTerm = searchTerm;
 
-                        $.ajax('@userSearchUrl', { data: { page, searchTerm } })
+                        $.ajax('@ownerFilterUserSearchUrl', { data: { page, searchTerm } })
                             .then((response) => callback(response.results, response.hasMoreResults));
                     }
                     
