@@ -1,7 +1,5 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
@@ -14,8 +12,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         public async Task UsersShouldNotBeAbleToCreateIfNotAllowed()
         {
             var controller = new ApplicationController(
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IOptions<PagerOptions>>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 Mock.Of<IAuthorizationService>(),
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -35,8 +31,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var mockData = Array.Empty<object>();
             mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IOptions<PagerOptions>>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -60,8 +54,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         public async Task ConfidentionalClientNeedsSecret(string clientType, string clientSecret, bool allowAuthFlow, bool allowPasswordFlow, bool expectValidModel)
         {
             var controller = new ApplicationController(
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IOptions<PagerOptions>>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
@@ -101,8 +93,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             // Arrange
             var controller = new ApplicationController(
-                Mock.Of<IShapeFactory>(),
-                Mock.Of<IOptions<PagerOptions>>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
