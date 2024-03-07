@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
@@ -10,16 +12,22 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
 
-        public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
+        protected readonly IStringLocalizer S;
+        private readonly ContentTypeDefinitionOptions _options;
+
+        public ContentTypeSettingsDisplayDriver(
+            IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
+            IOptions<ContentTypeDefinitionOptions> options)
         {
             S = stringLocalizer;
+            _options = options.Value;
         }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
+            return Initialize("ContentTypeSettings_Edit", (Action<ContentTypeSettingsViewModel>)(model =>
             {
                 var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
@@ -30,7 +38,9 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
                 model.Description = settings.Description;
-            }).Location("Content:5");
+                model.Options = GetOptions(contentTypeDefinition, settings.Stereotype);
+
+            })).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -39,23 +49,56 @@ namespace OrchardCore.ContentTypes.Editors
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Builder.Creatable(model.Creatable);
-                context.Builder.Listable(model.Listable);
-                context.Builder.Draftable(model.Draftable);
-                context.Builder.Versionable(model.Versionable);
-                context.Builder.Securable(model.Securable);
-                context.Builder.WithDescription(model.Description);
-
                 var stereotype = model.Stereotype?.Trim();
+                context.Builder.WithDescription(model.Description);
                 context.Builder.Stereotype(stereotype);
 
                 if (!IsAlphaNumericOrEmpty(stereotype))
                 {
                     context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
                 }
+
+                var options = GetOptions(contentTypeDefinition, stereotype);
+
+                Apply(context, model, options);
             }
 
             return Edit(contentTypeDefinition);
+        }
+
+        private static void Apply(UpdateTypeEditorContext context, ContentTypeSettingsViewModel model, ContentTypeDefinitionDriverOptions options)
+        {
+            if (options.ShowVersionable)
+            {
+                context.Builder.Versionable(model.Versionable);
+            }
+            if (options.ShowCreatable)
+            {
+                context.Builder.Creatable(model.Creatable);
+            }
+            if (options.ShowSecurable)
+            {
+                context.Builder.Securable(model.Securable);
+            }
+            if (options.ShowListable)
+            {
+                context.Builder.Listable(model.Listable);
+            }
+        }
+
+        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string sterotype)
+        {
+            if (sterotype != null && _options.Stereotypes.TryGetValue(sterotype, out var stereotypesOptions))
+            {
+                return stereotypesOptions;
+            }
+
+            if (contentTypeDefinition.Name != null && _options.Stereotypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
+            {
+                return typeOptions;
+            }
+
+            return _defaultOptions;
         }
 
         private static bool IsAlphaNumericOrEmpty(string value)
