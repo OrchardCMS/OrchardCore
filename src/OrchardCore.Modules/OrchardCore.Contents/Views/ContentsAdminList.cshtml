@@ -61,7 +61,7 @@
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
     @* This applies to all filter selectpickers on page. Add .nosubmit to not submit *@
-            $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $('.selectpicker:not(.nosubmit),.contentowners-selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
                 $("[name='submit.Filter']").click();
             });
 

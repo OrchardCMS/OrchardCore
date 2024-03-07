@@ -22,7 +22,8 @@ namespace OrchardCore.Contents.Drivers
                 View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:20"),
                 View("ContentsAdminFilters_Thumbnail__Stereotype", model).Location("Thumbnail", "Content:30"),
                 View("ContentsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:40"),
-                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:50")
+                View("ContentsAdminFilters_Thumbnail__Owner", model).Location("Thumbnail", "Content:50"),
+                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:60")
             );
         }
 
@@ -65,6 +66,7 @@ namespace OrchardCore.Contents.Drivers
             m.OrderBy = model.OrderBy;
             m.SelectedContentType = model.SelectedContentType;
             m.FilterResult = model.FilterResult;
+            m.SelectedUserId = model.SelectedUserId;
         }
     }
 }

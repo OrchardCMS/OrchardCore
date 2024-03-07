@@ -249,6 +249,64 @@ namespace OrchardCore.Contents.Services
                         return query;
                     })
                 )
+                .WithNamedTerm("owner", builder => builder
+                    .OneCondition((userId, query, ctx) =>
+                    {
+                        //var context = (ContentQueryContext)ctx;
+                        //if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
+                        //{
+                        //    switch (contentsStatus)
+                        //    {
+                        //        case ContentsStatus.Draft:
+                        //            query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+                        //            break;
+                        //        case ContentsStatus.Published:
+                        //            query.With<ContentItemIndex>(x => x.Published);
+                        //            break;
+                        //        case ContentsStatus.Owner:
+                        //            var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                        //            var userNameIdentifier = httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                        //            query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier && x.Latest);
+                        //            break;
+                        //        case ContentsStatus.AllVersions:
+                        //            query.With<ContentItemIndex>(x => x.Latest);
+                        //            break;
+                        //        default:
+                        //            query.With<ContentItemIndex>(x => x.Latest);
+                        //            break;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    // Draft is the default value.
+                        //    query.With<ContentItemIndex>(x => x.Latest);
+                        //}
+
+                        if (!string.IsNullOrEmpty(userId))
+                        {
+                            query.With<ContentItemIndex>(x => x.Owner == userId);
+                        }
+
+                        return new ValueTask<IQuery<ContentItem>>(query);
+                    })
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
+                    {
+                        if (!string.IsNullOrEmpty(val))
+                        {
+                            model.SelectedUserId = val;
+                        }
+                    })
+                    .MapFrom<ContentOptionsViewModel>((model) =>
+                    {
+                        if (!string.IsNullOrEmpty(model.SelectedUserId))
+                        {
+                            return (true, model.SelectedUserId);
+                        }
+
+                        return (false, string.Empty);
+                    })
+                    .AlwaysRun()
+                )
                 .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
