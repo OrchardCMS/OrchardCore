@@ -36,6 +36,8 @@ namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
+        private const int OwnerFilterPageSize = 50;
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -652,8 +654,6 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> OwnerFilterUserSearch(string searchTerm, string selectedOwnerUserName, int page = 1)
         {
-            var pageSize = 50;
-
             var query = _session.Query<User, UserIndex>();
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -663,17 +663,17 @@ namespace OrchardCore.Contents.Controllers
 
             var users = await query
                 .OrderBy(u => u.NormalizedUserName)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((page - 1) * OwnerFilterPageSize)
+                .Take(OwnerFilterPageSize)
                 .ListAsync();
 
             var hasMoreResults = false;
 
             // only check if we have more results if the current page had a full page of results
-            if (users.Count() == pageSize)
+            if (users.Count() == OwnerFilterPageSize)
             {
                 var totalUsersCount = await query.CountAsync();
-                hasMoreResults = page * pageSize < totalUsersCount;
+                hasMoreResults = page * OwnerFilterPageSize < totalUsersCount;
             }
 
             var results = users.Select(u => new SelectListItem()
