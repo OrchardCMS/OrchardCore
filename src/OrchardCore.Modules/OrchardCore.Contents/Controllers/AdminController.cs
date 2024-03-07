@@ -652,7 +652,7 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> SearchUsers(string searchTerm, int page = 1)
         {
-            var pageSize = 40;
+            var pageSize = 50;
 
             var query = _session.Query<User, UserIndex>();
 

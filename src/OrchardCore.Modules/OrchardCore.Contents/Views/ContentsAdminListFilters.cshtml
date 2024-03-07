@@ -14,16 +14,31 @@
 
 <script at="Foot">
     $(function () {
+        // bootstrap-select has an issue with hammering the server, so we use flags to only make a request 
+        // if something changes that would warrant another request
+        var previousPage;
+        var previousSearchTerm;
+
         $('#@Html.IdFor(m => m.SelectedUserId)').selectpicker({
             source: {
+                pageSize: 50,
                 data: function (callback, page) {
-                    $.ajax('@userSearchUrl', { data: { page } })
-                        .then((response) => callback(response.results, response.hasMoreResults))
+                    if (previousPage !== page) {
+                        previousPage = page;
+
+                        $.ajax('@userSearchUrl', { data: { page } })
+                            .then((response) => callback(response.results, response.hasMoreResults));
+                    }
                 },
                 search: function (callback, page, searchTerm) {
-                    console.log(page)
-                    $.ajax('@userSearchUrl', { data: { page, searchTerm } })
-                        .then((response) => callback(response.results, response.hasMoreResults))
+                    if (previousPage !== page || previousSearchTerm !== searchTerm) {
+                        previousPage = page;
+                        previousSearchTerm = searchTerm;
+
+                        $.ajax('@userSearchUrl', { data: { page, searchTerm } })
+                            .then((response) => callback(response.results, response.hasMoreResults));
+                    }
+                    
                 }
             }
         });
