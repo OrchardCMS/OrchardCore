@@ -37,10 +37,9 @@
                         previousPage = page;
                         previousSearchTerm = searchTerm;
 
-                        $.ajax('@ownerFilterUserSearchUrl', { data: { page, searchTerm } })
+                        $.ajax('@ownerFilterUserSearchUrl', { data: { page, searchTerm, selectedOwnerUserName } })
                             .then((response) => callback(response.results, response.hasMoreResults));
-                    }
-                    
+                    }                    
                 }
             }
         });

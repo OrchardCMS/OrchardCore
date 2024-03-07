@@ -676,27 +676,12 @@ namespace OrchardCore.Contents.Controllers
                 hasMoreResults = page * pageSize < totalUsersCount;
             }
 
-            var results = users.Select(u => new SelectListItem() { Text = u.UserName, Value = u.UserName }).ToList();
-
-            // always include the selected owner if there is no search term and only for the first page so that the initial load always includes it
-            if (string.IsNullOrEmpty(searchTerm) && !string.IsNullOrEmpty(selectedOwnerUserName) && page == 1)
+            var results = users.Select(u => new SelectListItem()
             {
-                var selectedOwnerFromResults = results.FirstOrDefault(r => _userManager.NormalizeName(r.Value) == _userManager.NormalizeName(selectedOwnerUserName));
-
-                if (selectedOwnerFromResults == null)
-                {
-                    var user = await _userManager.FindByNameAsync(selectedOwnerUserName);
-
-                    if (user != null)
-                    {
-                        results.Add(new SelectListItem { Text = user.UserName, Value = user.UserName, Selected = true });
-                    }
-                }
-                else
-                {
-                    selectedOwnerFromResults.Selected = true;
-                }
-            }
+                Text = u.UserName,
+                Value = u.UserName,
+                Selected = _userManager.NormalizeName(u.UserName) == _userManager.NormalizeName(selectedOwnerUserName)
+            });
 
             return new ObjectResult(new { results, hasMoreResults });
         }
