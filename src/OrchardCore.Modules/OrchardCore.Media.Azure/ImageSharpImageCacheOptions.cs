@@ -18,6 +18,11 @@ public class ImageSharpImageCacheOptions
     public bool CreateContainer { get; set; } = true;
 
     /// <summary>
+    /// The base directory path to use inside the container for this store's content.
+    /// </summary>
+    public string BasePath { get; set; } = "";
+
+    /// <summary>
     /// Remove blob container on tenant removal if it exists.
     /// </summary>
     public bool RemoveContainer { get; set; }

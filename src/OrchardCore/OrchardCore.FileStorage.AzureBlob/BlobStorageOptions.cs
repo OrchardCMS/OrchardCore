@@ -13,7 +13,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         public string ContainerName { get; set; }
 
         /// <summary>
-        /// The base directory path to use inside the container for this stores contents.
+        /// The base directory path to use inside the container for this store's content.
         /// </summary>
         public string BasePath { get; set; } = "";
 

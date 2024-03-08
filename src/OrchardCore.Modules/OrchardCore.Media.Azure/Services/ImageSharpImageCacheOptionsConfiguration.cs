@@ -29,16 +29,26 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
         var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
         section.Bind(options);
 
+        var fluidParserHelper = new FluidParserHelper<ImageSharpImageCacheOptions>(_shellSettings);
+
         try
         {
-            var fluidParserHelper = new FluidParserHelper<ImageSharpImageCacheOptions>(_shellSettings);
-
             // Container name must be lowercase.
             options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLowerInvariant();
         }
         catch (Exception ex)
         {
             _logger.LogCritical(ex, "Unable to parse Azure Media ImageSharp Image Cache container name.");
+            throw;
+        }
+
+        try
+        {
+            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(e, "Unable to parse Azure Media ImageSharp Image Cache base path.");
             throw;
         }
     }

@@ -142,6 +142,8 @@ The following configuration values are used by default and can be customized:
         "ConnectionString": "", 
         // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
         "ContainerName": "somecontainer",
+        // Optionally, set to a path to store media in a subdirectory inside your container.
+        "BasePath": "some/base/path",
         // Activates an event to create the container if it does not already exist.
         "CreateContainer": true,
         // Whether the 'Container' is deleted if the tenant is removed, false by default.

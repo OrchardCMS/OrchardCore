@@ -18,5 +18,6 @@ internal class AzureBlobStorageCacheOptionsConfiguration : IConfigureOptions<Azu
     {
         options.ConnectionString = _options.ConnectionString;
         options.ContainerName = _options.ContainerName;
+        options.CacheFolder = _options.BasePath;
     }
 }
