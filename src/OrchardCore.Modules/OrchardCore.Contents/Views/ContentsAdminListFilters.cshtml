@@ -8,41 +8,59 @@
         <select asp-for="SelectedContentType" asp-items="Model.ContentTypeOptions" class="selectpicker contenttypes-selectpicker show-tick me-2" data-header="@T["Filter by content type"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Content Type"]" data-style="btn-sm" data-live-search="true"></select>
     }
     <select asp-for="ContentsStatus" asp-items="@Model.ContentStatuses" class="selectpicker contentstatuses-selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm"></select>
-    <select asp-for="SelectedOwnerUserName" class="ajax-selectpicker contentowners-selectpicker show-tick me-2" data-header="@T["Filter by owner"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Owner"]" data-style="btn-sm" data-live-search="true" data-size="5"></select>
+    <button type="button" id="contentowners-selectpicker-button" class="btn dropdown-toggle btn-sm me-2">@T["Owner"]</button>
+    <select asp-for="SelectedOwnerUserName" style="display:none;" class="ajax-selectpicker contentowners-selectpicker show-tick me-2" data-header="@T["Filter by owner"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Owner"]" data-style="btn-sm" data-live-search="true" data-size="10"></select>
     <select asp-for="OrderBy" asp-items="@Model.ContentSorts" class="selectpicker contentsorts-selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
 </div>
 
 <script depends-on="jQuery" at="Foot">
     $(function () {
         var selectedOwnerUserName = '@Model.SelectedOwnerUserName';
+        var ownerFilterSelect = $('#@Html.IdFor(m => m.SelectedOwnerUserName)');
+        var ownerFilterButton = $('#contentowners-selectpicker-button');
 
         // bootstrap-select has an issue with hammering the server, so we use flags to only make a request 
         // if something changes that would warrant another request
-        var previousPage;
-        var previousSearchTerm;
+        var ownerFilterPreviousPage;
+        var ownerFilterPreviousSearchTerm;
 
-        $('#@Html.IdFor(m => m.SelectedOwnerUserName)').selectpicker({
-            chunkSize: 10,
-            source: {
-                pageSize: 10,
-                data: function (callback, page) {
-                    if (previousPage !== page) {
-                        previousPage = page;
+        // Hack: boostrap-select v1.14.0-beta3 makes the intitial ajax request on initialization and has no way of controlling that.
+        // It also does not allow switching from static data to ajax data after the fact. Therefore we have this hack where on click 
+        // of a 'dummy' button we initialize the bootstrap-select for the owner filter and then remove the dummy button.
+        ownerFilterButton.on('click', function (event) {
+            event.stopPropagation();
 
-                        $.ajax('@ownerFilterUserSearchUrl', { data: { page, selectedOwnerUserName } })
-                            .then((response) => callback(response.results, response.hasMoreResults));
+            ownerFilterSelect.selectpicker({
+                chunkSize: 50,
+                source: {
+                    pageSize: 50,
+                    data: function (callback, page) {
+                        if (ownerFilterPreviousPage !== page) {
+                            ownerFilterPreviousPage = page;
+
+                            $.ajax('@ownerFilterUserSearchUrl', { data: { page, selectedOwnerUserName } })
+                                .then((response) => callback(response.results, response.hasMoreResults));
+                        }
+                    },
+                    search: function (callback, page, searchTerm) {
+                        if (ownerFilterPreviousPage !== page || ownerFilterPreviousSearchTerm !== searchTerm) {
+                            ownerFilterPreviousPage = page;
+                            ownerFilterPreviousSearchTerm = searchTerm;
+
+                            $.ajax('@ownerFilterUserSearchUrl', { data: { page, searchTerm, selectedOwnerUserName } })
+                                .then((response) => callback(response.results, response.hasMoreResults));
+                        }
                     }
-                },
-                search: function (callback, page, searchTerm) {
-                    if (previousPage !== page || previousSearchTerm !== searchTerm) {
-                        previousPage = page;
-                        previousSearchTerm = searchTerm;
-
-                        $.ajax('@ownerFilterUserSearchUrl', { data: { page, searchTerm, selectedOwnerUserName } })
-                            .then((response) => callback(response.results, response.hasMoreResults));
-                    }                    
                 }
-            }
+            }).selectpicker('hide');
+
+            // once the owner filter selectpicker is loaded, swap out the button and show the dropdown
+            ownerFilterSelect.on('loaded.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                ownerFilterButton.remove();
+                ownerFilterSelect.show();
+                ownerFilterSelect.selectpicker('show')
+                ownerFilterSelect.selectpicker('toggle');                
+            });
         });
     })
 </script>

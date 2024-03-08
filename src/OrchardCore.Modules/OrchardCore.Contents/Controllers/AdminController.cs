@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
-        private const int OwnerFilterPageSize = 10;
+        private const int OwnerFilterPageSize = 50;
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
