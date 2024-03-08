@@ -1,15 +1,15 @@
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Deployment.Download
 {
-    [Admin]
+    [Admin("Download/{action}/{contentItemId}", AdminAttribute.NameFromControllerAndAction)]
     [Feature("OrchardCore.Contents.Deployment.Download")]
     public class DownloadController : Controller
     {
@@ -18,8 +18,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
         public DownloadController(
             IAuthorizationService authorizationService,
-            IContentManager contentManager
-            )
+            IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;

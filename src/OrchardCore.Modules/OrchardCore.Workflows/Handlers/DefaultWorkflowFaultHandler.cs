@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Models;
@@ -25,7 +24,7 @@ namespace OrchardCore.Workflows.Handlers
                 FaultMessage = workflowContext.Workflow.FaultMessage,
                 ActivityId = activityContext.ActivityRecord.ActivityId,
                 ActivityTypeName = activityContext.Activity.Name,
-                ActivityDisplayName = activityContext.ActivityRecord.Properties["ActivityMetadata"]?["Title"].ToString(),
+                ActivityDisplayName = activityContext.ActivityRecord.Properties["ActivityMetadata"]?["Title"]?.ToString(),
                 ExceptionDetails = exception?.ToString(),
                 ErrorMessage = exception.Message,
             };

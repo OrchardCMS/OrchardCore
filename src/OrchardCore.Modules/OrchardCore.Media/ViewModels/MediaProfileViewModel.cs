@@ -20,14 +20,14 @@ namespace OrchardCore.Media.ViewModels
         public string BackgroundColor { get; set; }
 
         [BindNever]
-        public List<SelectListItem> AvailableWidths { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableWidths { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AvailableHeights { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableHeights { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AvailableResizeModes { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableResizeModes { get; set; } = [];
         [BindNever]
-        public List<SelectListItem> AvailableFormats { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AvailableFormats { get; set; } = [];
     }
 }

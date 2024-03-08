@@ -6,12 +6,12 @@ namespace OrchardCore.ContentTypes.ViewModels
     public class EditTypePartViewModel
     {
         /// <summary>
-        /// The technical name of the part
+        /// The technical name of the part.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The display name of the part
+        /// The display name of the part.
         /// </summary>
         public string DisplayName { get; set; }
 
@@ -24,12 +24,12 @@ namespace OrchardCore.ContentTypes.ViewModels
         public dynamic Shape { get; set; }
 
         /// <summary>
-        /// The editor name of the part
+        /// The editor name of the part.
         /// </summary>
         public string Editor { get; set; }
 
         /// <summary>
-        /// The display mode of the part
+        /// The display mode of the part.
         /// </summary>
         public string DisplayMode { get; set; }
     }

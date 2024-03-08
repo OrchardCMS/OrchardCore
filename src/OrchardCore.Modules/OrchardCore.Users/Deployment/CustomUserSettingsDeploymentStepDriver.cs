@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -39,12 +38,12 @@ namespace OrchardCore.Users.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, IUpdateModel updater)
         {
-            step.SettingsTypeNames = Array.Empty<string>();
+            step.SettingsTypeNames = [];
             await updater.TryUpdateModelAsync(step, Prefix);
 
             if (step.IncludeAll)
             {
-                step.SettingsTypeNames = Array.Empty<string>();
+                step.SettingsTypeNames = [];
             }
 
             return Edit(step);

@@ -1,11 +1,12 @@
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -17,11 +18,15 @@ namespace OrchardCore.Contents.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
-        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+        {
+            MergeArrayHandling = MergeArrayHandling.Replace
+        };
 
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
+
         protected readonly IStringLocalizer S;
 
         public ApiController(
@@ -36,7 +41,8 @@ namespace OrchardCore.Contents.Controllers
             S = stringLocalizer;
         }
 
-        [Route("{contentItemId}"), HttpGet]
+        [HttpGet]
+        [Route("{contentItemId}")]
         public async Task<IActionResult> Get(string contentItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))

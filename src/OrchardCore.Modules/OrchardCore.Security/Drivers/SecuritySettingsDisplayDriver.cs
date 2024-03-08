@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -39,6 +41,11 @@ namespace OrchardCore.Security.Drivers
 
         public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
@@ -46,9 +53,11 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
-                // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
+                // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
                 var currentSettings = settings;
                 if (_securitySettings.FromConfiguration)
                 {
@@ -77,7 +86,7 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
             {
                 var model = new SecuritySettingsViewModel();
 

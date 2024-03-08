@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -14,6 +13,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientService(
@@ -38,10 +38,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task UpdateSettingsAsync(OpenIdClientSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
@@ -50,10 +47,7 @@ namespace OrchardCore.OpenId.Services
 
         public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdClientSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 

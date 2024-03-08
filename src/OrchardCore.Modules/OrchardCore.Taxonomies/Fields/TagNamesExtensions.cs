@@ -1,5 +1,4 @@
-using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Taxonomies.Fields
 {
@@ -11,9 +10,9 @@ namespace OrchardCore.Taxonomies.Fields
         /// </summary>
         public static string[] GetTagNames(this TaxonomyField taxonomyField)
         {
-            var tagNames = taxonomyField.Content["TagNames"] as JArray;
+            var tagNames = (JsonArray)taxonomyField.Content["TagNames"];
 
-            return tagNames != null ? tagNames.ToObject<string[]>() : Array.Empty<string>();
+            return tagNames != null ? tagNames.ToObject<string[]>() : [];
         }
 
         /// <summary>

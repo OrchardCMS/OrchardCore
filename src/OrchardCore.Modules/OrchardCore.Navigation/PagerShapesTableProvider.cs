@@ -513,7 +513,7 @@ namespace OrchardCore.Navigation
                 }
             }
 
-            var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? new RouteValueDictionary();
+            var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? [];
             if (!Disabled)
             {
                 shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
