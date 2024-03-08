@@ -9,9 +9,9 @@ public class JsonOptionsConfigurations : IConfigureOptions<JsonOptions>
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public JsonOptionsConfigurations(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+    public JsonOptionsConfigurations(IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
     {
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
     public void Configure(JsonOptions options)
