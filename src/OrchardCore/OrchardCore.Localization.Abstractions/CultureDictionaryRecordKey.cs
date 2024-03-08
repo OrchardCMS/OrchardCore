@@ -11,7 +11,8 @@ namespace OrchardCore.Localization
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
         /// </summary>
         /// <param name="messageId">The message Id.</param>
-        public CultureDictionaryRecordKey(string messageId) : this(messageId, null)
+        public CultureDictionaryRecordKey(string messageId) 
+            : this(messageId, null)
         {
         }
 
@@ -49,6 +50,6 @@ namespace OrchardCore.Localization
         public override string ToString()
             => string.IsNullOrEmpty(Context)
                 ? MessageId
-                : Context.ToLowerInvariant() + "|" + MessageId;
+                : $"{Context.ToLowerInvariant()}|{MessageId}";
     }
 }
