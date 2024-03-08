@@ -6,12 +6,11 @@ using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Extensions;
 
-public class JsonSerializerOptionsConfiguration : IConfigureOptions<ContentSerializerJsonOptions>
+public class ContentSerializerJsonOptionsConfiguration : IConfigureOptions<ContentSerializerJsonOptions>
 {
     private readonly JsonDerivedTypesOptions _derivedTypesOptions;
 
-    public JsonSerializerOptionsConfiguration(
-        IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+    public ContentSerializerJsonOptionsConfiguration(IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
     {
         _derivedTypesOptions = derivedTypesOptions.Value;
     }
