@@ -8,12 +8,12 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets the message Id.
         /// </summary>
-        public string MessageId { get; }
+        public required string MessageId { get; init; }
 
         /// <summary>
         /// Gets the message context.
         /// </summary>
-        public string Context { get; }
+        public string Context { get; init; }
 
         public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
             => cultureDictionaryRecordKey.ToString();
