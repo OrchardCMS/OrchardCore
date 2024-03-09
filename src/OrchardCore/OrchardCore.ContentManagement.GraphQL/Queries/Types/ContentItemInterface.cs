@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.ModifiedUtc, nullable: true);
             Field(ci => ci.PublishedUtc, nullable: true);
             Field(ci => ci.CreatedUtc, nullable: true);
-            Field(ci => ci.Owner);
+            Field(ci => ci.Owner, nullable: true);
             Field(ci => ci.Author, nullable: true);
         }
 
