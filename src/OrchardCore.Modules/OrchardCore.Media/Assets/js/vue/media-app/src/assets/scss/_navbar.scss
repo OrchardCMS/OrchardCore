@@ -1,16 +1,33 @@
 .action-bar {
-  border-bottom: $media-border-content;
+  border-bottom: $file-border-content;
   align-items: center;
 
   .badge {
     color: black;
   }
 
-  .media-filter {
+  .btn-light{
+    background-color: #f1f6ff;
+  }
+
+  .file-filter {
+    button {
+        border-color: #6c757d;
+    }
+
+    button:disabled{
+        border-color: #CED4DA !important;
+        opacity: 1;
+    }
+
+    svg {
+        opacity: 0.6;
+    }
+
     .fa-filter {
       position: relative;
       left: 23px;
-      top: 8px;
+      top: 10px;
       z-index: 100;
       margin-left: -20px;
     }
@@ -18,10 +35,7 @@
     .input-filter {
       border-color: $gray-400;
       border-right: none;
-      max-width: 80px;
       padding-left: 32px;
-
-
     }
 
     .input-group-append button {
@@ -47,9 +61,6 @@
   /* Upload button */
   .fileinput-button {
     cursor: pointer;
-    margin: 0;
-    padding: 4px 12px 4px 8px;
-    border: 0;
 
     svg {
       margin-right: 6px;
@@ -72,11 +83,10 @@
 }
 
 #breadcrumb {
-  background-color: transparent;
-  border-bottom: $media-border-content;
+  background-color: #f1f6ff;
+  border-bottom: $file-border-content;
   border-radius: 0px;
-  min-height: 50px;
-  font-size: 0.875rem;
+  min-height: 40px;
 
   .breadcrumb-path {
     flex-grow: 1;
@@ -116,6 +126,6 @@
   }
 }
 
-#clear-media-filter-button {
-    z-index: 100;
+#clear-file-filter-button {
+  z-index: 100;
 }

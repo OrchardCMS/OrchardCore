@@ -1,4 +1,4 @@
-#media-pager {   
+#file-pager {   
     display: flex;
     justify-content: center;
 
@@ -34,15 +34,15 @@
 }
 
 @media only screen and ( max-width: 576px ) {
-    #media-pager {
-        .media-last-button, .media-first-button, .total-info, .page-size-label  {
+    #file-pager {
+        .file-last-button, .file-first-button, .total-info, .page-size-label  {
             display: none;
         }
     }
 }
 
 @media only screen and ( max-width: 1200px ) {
-    #media-pager .page-number {
+    #file-pager .page-number {
         display: none;
     }
 }

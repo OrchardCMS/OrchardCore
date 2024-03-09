@@ -6,7 +6,7 @@
   .treeroot {
     font-weight: 600;
     height: 40px;
-    border-bottom: $media-border-content;
+    border-bottom: $file-border-content;
 
     a {
       font-size: 1rem;
@@ -30,6 +30,7 @@
   li.selected > div:not(.treeroot), li.selected > .treeroot {
     font-weight: bold;
     background-color: $selected-background-color;
+    border-left: 2px solid var(--topcon-red);
   }
 
   .folderhovered {
@@ -39,7 +40,6 @@
   li div {
     min-height: 40px;
     padding: 0;
-    font-size: 0.875rem;
 
     a {
       display: block;
@@ -77,9 +77,6 @@
   .empty {
     transform: none;
     visibility: hidden;
-  }
-
-  .closed {
   }
 
   .folder-menu-item {

@@ -1,716 +1,716 @@
 <template>
-    <div class="mediaApp" v-on:dragover="handleScrollWhileDrag">
-        <div class="alert alert-danger message-warning" v-if="errors.length > 0">
-            <ul>
-                <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
-            </ul>
-        </div>
-        <div id="customdropzone">
-            <h3>{{ t.DropHere }}</h3>
-            <p>{{ t.DropTitle }}</p>
-        </div>
-        <div id="mediaContainer" class="align-items-stretch">
-            <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
-                <ol id="folder-tree">
-                    <folder :model="root" :t="t" :base-path="basePath" ref="rootFolder"
-                        :selected-in-media-app="selectedFolder" :level="1">
-                    </folder>
-                </ol>
-            </div>
-
-            <div id="mediaContainerMain" v-cloak>
-                <div class="media-container-top-bar">
-                    <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
-                        <div class="breadcrumb-path p-3">
-                            <span class="breadcrumb-item" :class="{ active: isHome }">
-                                <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'"
-                                    v-on:click="selectRoot">{{
-                                        t.FolderRoot }}</a>
-                            </span>
-                            <span v-for="(folder, i) in parents" :key="folder.path" v-cloak class="breadcrumb-item"
-                                :class="{ active: parents.length - i == 1, 'no-breadcrumb-divider': i == 0 }">
-                                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'"
-                                    v-on:click="selectedFolder = folder;">{{
-                                        folder.name }}</a>
-                            </span>
-                        </div>
-                    </nav>
-                    <nav class="nav action-bar p-3 flex">
-                        <div class="me-auto">
-                            <a :title="isSelectedAll ? t.SelectNone : t.SelectAll" href="javascript:void(0)"
-                                class="btn btn-light btn-sm me-2" v-on:click="selectAll">
-                                <fa-icon v-if="isSelectedAll" icon="fa-regular fa-square-check"></fa-icon>
-                                <fa-icon v-if="!isSelectedAll" icon="fa-regular fa-square"></fa-icon>
-                            </a>
-                            <a :title="t.Invert" href="javascript:void(0)" class="btn btn-light btn-sm me-2"
-                                v-on:click="invertSelection">
-                                <fa-icon icon="fa-solid fa-right-left"></fa-icon>
-                            </a>
-                            <a :title="t.Delete" href="javascript:void(0)" class="btn btn-light btn-sm me-2"
-                                @click="() => openModal('nav', 'delete')" :class="{ disabled: selectedMedias.length < 1 }">
-                                <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                                <span class="badge rounded-pill ms-1" v-show="selectedMedias.length > 0">{{
-                                    selectedMedias.length }}</span>
-                                <ModalConfirm :t="t" :action-name="t.Delete" :modal-name="getModalName('nav', 'delete')"
-                                    :title="t.DeleteMediaTitle" @confirm="() => confirm('nav', 'delete')">
-                                    <p>{{ t.DeleteMediaMessage }}</p>
-                                </ModalConfirm>
-                            </a>
-                        </div>
-                        <div class="btn-group visibility-buttons">
-                            <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm"
-                                :class="{ selected: gridView }" v-on:click="gridView = true">
-                                <span title="Grid View"><fa-icon icon="fa-solid fa-th-large"></fa-icon></span>
-                            </button>
-                            <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm"
-                                :class="{ selected: !gridView }" v-on:click="gridView = false">
-                                <span title="List View"><fa-icon icon="fa-solid fa-th-list"></fa-icon></span>
-                            </button>
-                        </div>
-                        <div class="btn-group visibility-buttons" v-show="gridView">
-                            <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm"
-                                :class="{ selected: smallThumbs }" v-on:click="smallThumbs = true">
-                                <span title="Small Thumbs"><fa-icon icon="fa-solid fa-compress"></fa-icon></span>
-                            </button>
-                            <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm"
-                                :class="{ selected: !smallThumbs }" v-on:click="smallThumbs = false">
-                                <span title="Large Thumbs"><fa-icon icon="fa-solid fa-expand"></fa-icon></span>
-                            </button>
-                        </div>
-
-                        <div class="nav-item ms-3 me-2">
-                            <div class="media-filter">
-                                <div class="input-group input-group-sm">
-                                    <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
-                                    <input type="text" id="media-filter-input" v-model="mediaFilter"
-                                        class="form-control input-filter" :placeholder="t.Filter" :aria-label="t.Filter" />
-                                    <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button"
-                                        :disabled="mediaFilter == ''" v-on:click="mediaFilter = ''"><fa-icon
-                                            icon="fa-solid fa-times"></fa-icon></button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-inline-flex mb-1 pt-1">
-                            <div class="btn-group btn-group-sm">
-                                <label :title="t.UploadFiles" for="fileupload"
-                                    class="btn btn-sm btn-primary fileinput-button upload-button">
-                                    <input id="fileupload" type="file" name="files" multiple />
-                                    <fa-icon icon="fa-solid fa-plus"></fa-icon>
-                                    {{ t.Upload }}
-                                </label>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-                <div class="media-container-middle p-3">
-                    <upload-list upload-input-id="fileupload" :t="t"></upload-list>
-
-                    <media-items-table :t="t" :base-path="basePath" :sort-by="sortBy" :sort-asc="sortAsc"
-                        :filtered-media-items="itemsInPage" :selected-medias="selectedMedias" :thumb-size="thumbSize"
-                        v-show="itemsInPage.length > 0 && !gridView"></media-items-table>
-
-                    <media-items-grid :t="t" :base-path="basePath" v-show="gridView" :filtered-media-items="itemsInPage"
-                        :selected-medias="selectedMedias" :thumb-size="thumbSize"></media-items-grid>
-
-                    <div class="alert alert-info p-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">{{
-                        t.FolderFilterEmpty }}</div>
-                    <div class="alert alert-info p-2" v-show="mediaItems.length < 1">{{ t.FolderEmpty }}</div>
-                </div>
-                <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3 pb-0">
-                    <pager :t="t" :source-items="filteredMediaItems"> </pager>
-                </div>
-            </div>
-        </div>
+  <div class="fileApp" v-on:dragover="handleScrollWhileDrag">
+    <div class="alert alert-danger message-warning" v-if="errors.length > 0">
+      <ul>
+        <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
+      </ul>
     </div>
-</template>
-   
-<style lang="scss">
-@import "./assets/scss/media.scss";
-</style>
-  
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
-import dbg from 'debug';
-import FolderComponent from './components/FolderComponent.vue';
-import UploadListComponent from './components/UploadListComponent.vue';
-import MediaItemsGridComponent from './components/MediaItemsGridComponent.vue';
-import MediaItemsTableComponent from './components/MediaItemsTableComponent.vue';
-import PagerComponent from './components/PagerComponent.vue';
-import DragDropThumbnail from './assets/drag-thumbnail.png';
-import { ModalsContainer, useVfm } from 'vue-final-modal'
-import ModalConfirm from './components/ModalConfirm.vue'
-import { MediaApiClient, MoveMedia } from "./services/MediaApiClient";
-import { notify, registerNotificationBus } from "./services/Notifier";
-import { SeverityLevel } from "./interfaces/interfaces"
+    <div id="customdropzone">
+      <h3>{{ t.DropHere }}</h3>
+      <p>{{ t.DropTitle }}</p>
+    </div>
+    <div id="fileContainer" class="align-items-stretch">
+      <div id="navigationApp" class="file-container-navigation m-0 p-0" v-cloak>
+        <ol id="folder-tree">
+          <folder :base-url="baseUrl" :current-folder="rootFolder" :t="t" ref="baseFolder"
+            :selected-in-file-app="selectedFolder" :level="1"> </folder>
+        </ol>
+      </div>
 
-const debug = dbg("oc:media-app");
-const rootFolder = ref(null);
+      <div id="fileContainerMain" v-cloak>
+        <div class="file-container-top-bar">
+          <nav id="breadcrumb" class="d-flex justify-content-end align-items-center">
+            <div class="breadcrumb-path px-3">
+              <span class="breadcrumb-item" :class="{ active: isHome }">
+                <a id="t-fileLibrary" :href="isHome ? 'javascript:void(0)' : '#'" v-on:click="selectRootFolder">
+                  {{ t.FolderRoot }}
+                </a>
+              </span>
+              <span v-for="(folder, i) in parents" :key="folder.path" v-cloak class="breadcrumb-item"
+                :class="{ active: parents.length - i == 1, 'no-breadcrumb-divider': i == 0 }">
+                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'" v-on:click="selectedFolder = folder">
+                  {{ folder.name }}
+                </a>
+              </span>
+            </div>
+          </nav>
+          <nav class="nav action-bar p-3 flex">
+            <div class="me-auto">
+              <div class="btn-group btn-group me-2">
+                <label :title="t.UploadFiles" for="fileupload" class="btn btn-primary fileinput-button upload-button">
+                  <input id="fileupload" type="file" name="files" multiple />
+                  <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
+                  {{ t.UploadFiles }}
+                </label>
+              </div>
+              <a :title="t.Invert" href="javascript:void(0)" class="btn btn-light me-2" v-on:click="invertSelection">
+                <fa-icon icon="fa-solid fa-right-left"></fa-icon>
+              </a>
+              <a :title="t.Delete" href="javascript:void(0)" class="btn btn-light me-2"
+                @click="() => openModal('deleteAll')" :class="{ disabled: selectedFiles.length < 1 }">
+                <fa-icon icon="fa-solid fa-trash"></fa-icon>
+                <span class="badge rounded-pill ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  }}</span>
+                <ModalConfirm :t="t" :action-name="t.Delete" modal-name="deleteAll" :title="t.DeleteFileTitle"
+                  @confirm="() => confirmModal('deleteAll')">
+                  <p>{{ t.DeleteFileMessage }}</p>
+                </ModalConfirm>
+              </a>
+            </div>
+            <div class="nav-item mx-2 mt-3 md:mt-0">
+              <div class="file-filter">
+                <div class="input-group input-group">
+                  <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
+                  <input type="text" id="file-filter-input" v-model="fileFilter" class="form-control input-filter"
+                    :placeholder="t.Filter" :aria-label="t.Filter" />
+                  <button id="clear-file-filter-button" class="btn btn-outline-secondary" :disabled="fileFilter == ''"
+                    v-on:click="fileFilter = ''">
+                    <fa-icon icon="fa-solid fa-times"></fa-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </nav>
+        </div>
+        <div class="file-container-middle p-3">
+          <upload-list upload-input-id="fileupload" :t="t"></upload-list>
+
+          <file-items :t="t" :is-selected-all="isSelectedAll" :sort-by="sortBy" :sort-asc="sortAsc"
+            :filtered-file-items="itemsInPage" :selected-files="selectedFiles" :thumb-size="thumbSize"
+            v-show="itemsInPage.length > 0 && !gridView" ref="fileItems" :base-host="baseHost"></file-items>
+
+          <div v-show="fileItems.length > 0 && filteredFileItems.length < 1"
+            class="p-message p-component p-message-info" role="alert" aria-live="assertive" aria-atomic="true"
+            data-pc-name="message" data-pc-section="root">
+            <div class="p-message-wrapper" data-pc-section="wrapper">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
+                class="p-icon p-message-icon" aria-hidden="true" data-pc-section="icon">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z"
+                  fill="currentColor"></path>
+              </svg>
+              <div class="p-message-text p-message-text" data-pc-section="text">{{ t.FolderFilterEmpty }}
+              </div>
+            </div>
+          </div>
+
+          <div v-show="fileItems.length < 1" class="p-message p-component p-message-info" role="alert"
+            aria-live="assertive" aria-atomic="true" data-pc-name="message" data-pc-section="root">
+            <div class="p-message-wrapper" data-pc-section="wrapper"><svg width="14" height="14" viewBox="0 0 14 14"
+                fill="none" xmlns="http://www.w3.org/2000/svg" class="p-icon p-message-icon" aria-hidden="true"
+                data-pc-section="icon">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z"
+                  fill="currentColor"></path>
+              </svg>
+              <div class="p-message-text p-message-text" data-pc-section="text">{{ t.FolderEmpty }}</div>
+            </div>
+          </div>
+        </div>
+        <div v-show="filteredFileItems.length > 0" class="file-container-footer p-3 pb-0">
+          <pager :t="t" :source-items="filteredFileItems"> </pager>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss">
+@import "./assets/scss/file.scss";
+</style>
+
+<script lang="ts">
+import { defineComponent, ref, nextTick } from "vue";
+import dbg from "debug";
+import FolderComponent from "./components/folderComponent.vue";
+import UploadListComponent from "./components/uploadListComponent.vue";
+import FileItemsComponent from "./components/fileItemsComponent.vue";
+import PagerComponent from "./components/pagerComponent.vue";
+import DragDropThumbnail from "./assets/drag-thumbnail.png";
+import { MediaApiClient, IFileStoreEntry, MoveMedia } from "./services/MediaApiClient";
+import { notify, tryGetErrorMessage } from "./services/notifier";
+import { SeverityLevel } from "./interfaces/interfaces";
+import { useVfm } from 'vue-final-modal'
+import ModalConfirm from './components/ModalConfirm.vue'
+import { v4 as uuidv4 } from 'uuid';
+
+const debug = dbg("aptix:file-app");
+const baseFolder = ref(null);
+const fileItems = ref(null);
 
 export default defineComponent({
-    components: {
-        Folder: FolderComponent,
-        UploadList: UploadListComponent,
-        MediaItemsGrid: MediaItemsGridComponent,
-        MediaItemsTable: MediaItemsTableComponent,
-        Pager: PagerComponent,
-        ModalsContainer: ModalsContainer,
-        ModalConfirm: ModalConfirm
+  components: {
+    Folder: FolderComponent,
+    UploadList: UploadListComponent,
+    FileItems: FileItemsComponent,
+    Pager: PagerComponent,
+    ModalConfirm: ModalConfirm,
+  },
+  name: "file-app",
+  props: {
+    baseHost: {
+      type: String,
+      required: false,
     },
-    name: "media-app",
-    props: {
-        basePath: {
-            type: String,
-            required: true
-        },
-        siteId: {
-            type: String,
-            required: true
-        },
-        translations: {
-            type: String,
-            required: true
-        },
-        uploadFilesUrl: {
-            type: String,
-            required: true
-        },
-        maxUploadChunkSize: {
-            type: Number,
-            required: true
-        }
+    basePath: {
+      type: String,
+      required: true,
     },
-    data() {
+    siteId: {
+      type: String,
+      required: true,
+    },
+    translations: {
+      type: String,
+      required: true,
+    },
+    uploadFilesUrl: {
+      type: String,
+      required: true,
+    },
+    maxUploadChunkSize: {
+      type: Number,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      t: <any>Object,
+      selectedFolder: {} as IFileStoreEntry,
+      fileItems: <any>[],
+      uploadedFileItems: [] as IFileStoreEntry[],
+      selectedFiles: [] as IFileStoreEntry[],
+      isSelectedAll: false,
+      errors: <any>[],
+      dragDropThumbnail: new Image(),
+      smallThumbs: false,
+      gridView: false,
+      fileFilter: "",
+      sortBy: "",
+      sortAsc: true,
+      itemsInPage: [] as IFileStoreEntry[],
+      rootFolder: {} as IFileStoreEntry,
+    };
+  },
+  created: function () {
+    const me = this;
+    this.t = JSON.parse(this.$props.translations);
+
+    me.dragDropThumbnail.src = DragDropThumbnail;
+
+    this.rootFolder = {
+      name: this.t.FileLibrary,
+      path: "/",
+      isDirectory: true,
+    };
+
+    this.emitter.on("folderSelected", (folder: IFileStoreEntry) => {
+      me.selectedFolder = folder;
+      me.isSelectedAll = false;
+    });
+
+    this.emitter.on("folderDeleted", () => {
+      me.selectRootFolder();
+    });
+
+    this.emitter.on("folderAdded", (folder: IFileStoreEntry) => {
+      me.selectedFolder = folder;
+      folder.selected = true;
+    });
+
+    this.emitter.on("fileListMove", (elem: any) => {
+      me.fileListMove(elem);
+    });
+
+    this.emitter.on("fileListMoved", (errorInfo: never) => {
+      me.loadFolder(me.selectedFolder);
+    });
+
+    this.emitter.on("fileRenamed", (element: any) => {
+      me.loadFolder(me.selectedFolder);
+    });
+
+    this.emitter.on("createFolderRequested", (folder: IFileStoreEntry) => {
+      me.createFolder(folder);
+    });
+
+    this.emitter.on("deleteFolderRequested", (folder: IFileStoreEntry) => {
+      me.deleteFolder(folder);
+    });
+
+    // common handlers for actions in both grid and table view.
+    this.emitter.on("sortChangeRequested", (newSort: any) => {
+      me.changeSort(newSort);
+    });
+
+    this.emitter.on("fileToggleRequested", (file: IFileStoreEntry) => {
+      me.toggleSelectionOfFile(file);
+      me.isSelectedAll = false;
+    });
+
+    this.emitter.on("renameFileRequested", (file: any) => {
+      me.renameFile(file);
+    });
+
+    this.emitter.on("deleteFileRequested", (file: IFileStoreEntry) => {
+      me.deleteFileItem(file);
+    });
+
+    this.emitter.on("fileDragStartRequested", (file: IFileStoreEntry) => {
+      me.handleDragStart(file);
+    });
+
+    // handler for pager events
+    this.emitter.on("pagerEvent", (itemsInPage: IFileStoreEntry[]) => {
+      //debug("pagerEvent", itemsInPage)
+      me.itemsInPage = itemsInPage;
+    });
+
+    this.emitter.on("select-all", () => {
+      me.selectAll();
+    });
+
+    if (!localStorage.getItem("FileLibraryPrefs" + "-" + this.$props.siteId)) {
+      me.selectedFolder = this.rootFolder;
+      return;
+    }
+
+    const fileApplicationPrefs = localStorage.getItem("FileLibraryPrefs" + "-" + this.$props.siteId);
+
+    if (fileApplicationPrefs != null) {
+      me.currentPrefs = JSON.parse(fileApplicationPrefs);
+    }
+  },
+  computed: {
+    baseUrl: function () {
+      return this.$props.baseHost ? this.$props.baseHost + this.$props.basePath : this.$props.basePath;
+    },
+    isHome: function () {
+      return this.selectedFolder == this.rootFolder;
+    },
+    parents: function () {
+      let p = [];
+      let parentFolder = this.selectedFolder;
+
+      while (parentFolder && parentFolder.path != "") {
+        p.unshift(parentFolder);
+        parentFolder = parentFolder.parent; // TODO: refactor as this is a param added programmatically
+      }
+      
+      return p;
+    },
+    filteredFileItems: function () {
+      const me = this;
+
+      let filtered = me.fileItems.filter(function (item: any) {
+        return item.name.toLowerCase().indexOf(me.fileFilter.toLowerCase()) > -1;
+      });
+
+      switch (me.sortBy) {
+        case "size":
+          filtered.sort(function (a: any, b: any) {
+            return me.sortAsc ? a.size - b.size : b.size - a.size;
+          });
+          break;
+        case "mime":
+          filtered.sort(function (a: any, b: any) {
+            return me.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
+          });
+          break;
+        case "lastModify":
+          filtered.sort(function (a: any, b: any) {
+            return me.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
+          });
+          break;
+        default:
+          filtered.sort(function (a: any, b: any) {
+            return me.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+          });
+      }
+
+      return filtered;
+    },
+    hiddenCount: function () {
+      let result = 0;
+      result = this.fileItems.length - this.filteredFileItems.length;
+      return result;
+    },
+    thumbSize: function () {
+      return this.smallThumbs ? 160 : 240;
+    },
+    currentPrefs: {
+      get: function () {
         return {
-            t: <any>Object,
-            selectedFolder: <any>{},
-            mediaItems: <any>[],
-            selectedMedias: <any>[],
-            isSelectedAll: false,
-            errors: <any>[],
-            dragDropThumbnail: new Image(),
-            smallThumbs: false,
-            gridView: false,
-            mediaFilter: '',
-            sortBy: '',
-            sortAsc: true,
-            itemsInPage: <any>[],
-            root: {
-                name: document.querySelector('#t-mediaLibrary')?.textContent,
-                path: '',
-                folder: '',
-                isDirectory: true
-            }
+          smallThumbs: this.smallThumbs,
+          selectedFolder: this.selectedFolder,
+          gridView: this.gridView,
+        };
+      },
+      set: function (newPrefs: any) {
+        if (!newPrefs) {
+          return;
         }
+
+        this.smallThumbs = newPrefs.smallThumbs;
+        this.selectedFolder = newPrefs.selectedFolder;
+        this.gridView = newPrefs.gridView;
+      },
     },
-    created: function () {
-        let self = this;
-
-        self.dragDropThumbnail.src = DragDropThumbnail;
-
-        this.t = JSON.parse(this.$props.translations);
-
-        this.emitter.on('folderSelected', (folder: any) => {
-            self.selectedFolder = folder;
-            self.isSelectedAll = false;
-        })
-
-        this.emitter.on('folderDeleted', () => {
-            self.selectRoot();
-        })
-
-        this.emitter.on('folderAdded', (folder: any) => {
-            self.selectedFolder = folder;
-            folder.selected = true;
-        })
-
-        this.emitter.on('mediaListMove', (elem: any) => {
-            self.mediaListMove(elem);
-        })
-
-        this.emitter.on('mediaListMoved', (errorInfo: never) => {
-            self.loadFolder(self.selectedFolder);
-        })
-
-        this.emitter.on('mediaRenamed', (element: any) => {
-            self.loadFolder(self.selectedFolder);
-        })
-
-        this.emitter.on('createFolderRequested', (folderName: any) => {
-            self.createFolder(folderName);
-        })
-
-        this.emitter.on('deleteFolderRequested', () => {
-            self.deleteFolder();
-        })
-
-        // common handlers for actions in both grid and table view.
-        this.emitter.on('sortChangeRequested', (newSort: any) => {
-            self.changeSort(newSort);
-        })
-
-        this.emitter.on('mediaToggleRequested', (media: any) => {
-            self.toggleSelectionOfMedia(media);
-            self.isSelectedAll = false;
-        })
-
-        this.emitter.on('renameMediaRequested', (media: any) => {
-            self.renameMedia(media);
-        })
-
-        this.emitter.on('deleteMediaRequested', (media: any) => {
-            self.deleteMediaItem(media);
-        })
-
-        this.emitter.on('mediaDragStartRequested', (media: any) => {
-            self.handleDragStart(media);
-        })
-
-        // handler for pager events
-        this.emitter.on('pagerEvent', (itemsInPage: any) => {
-            self.itemsInPage = itemsInPage;
-            self.selectedMedias = [];
-        })
-
-        if (!localStorage.getItem('MediaLibraryPrefs' + "-" + this.$props.siteId)) {
-            self.selectedFolder = this.root;
-            return;
-        }
-
-        let mediaApplicationPrefs = localStorage.getItem('MediaLibraryPrefs' + "-" + this.$props.siteId);
-
-        if (mediaApplicationPrefs != null) {
-            self.currentPrefs = JSON.parse(mediaApplicationPrefs);
-        }
+  },
+  watch: {
+    currentPrefs: function (newPrefs) {
+      localStorage.setItem("FileLibraryPrefs" + "-" + this.$props.siteId, JSON.stringify(newPrefs));
     },
-    computed: {
-        isHome: function () {
-            return this.selectedFolder == this.root;
-        },
-        parents: function () {
-            let p = [];
-            let parentFolder = this.selectedFolder;
-            while (parentFolder && parentFolder.path != '') {
-                p.unshift(parentFolder);
-                parentFolder = parentFolder.parent;
-            }
-            return p;
-        },
-        filteredMediaItems: function () {
-            let self = this;
-
-            self.selectedMedias = [];
-
-            let filtered = self.mediaItems.filter(function (item: any) {
-                return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
-            });
-
-            switch (self.sortBy) {
-                case 'size':
-                    filtered.sort(function (a: any, b: any) {
-                        return self.sortAsc ? a.size - b.size : b.size - a.size;
-                    });
-                    break;
-                case 'mime':
-                    filtered.sort(function (a: any, b: any) {
-                        return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
-                    });
-                    break;
-                case 'lastModify':
-                    filtered.sort(function (a: any, b: any) {
-                        return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
-                    });
-                    break;
-                default:
-                    filtered.sort(function (a: any, b: any) {
-                        return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
-                    });
-            }
-
-            return filtered;
-        },
-        hiddenCount: function () {
-            let result = 0;
-            result = this.mediaItems.length - this.filteredMediaItems.length;
-            return result;
-        },
-        thumbSize: function () {
-            return this.smallThumbs ? 160 : 240;
-        },
-        currentPrefs: {
-            get: function () {
-                return {
-                    smallThumbs: this.smallThumbs,
-                    selectedFolder: this.selectedFolder,
-                    gridView: this.gridView
-                };
-            },
-            set: function (newPrefs: any) {
-                if (!newPrefs) {
-                    return;
-                }
-
-                this.smallThumbs = newPrefs.smallThumbs;
-                this.selectedFolder = newPrefs.selectedFolder;
-                this.gridView = newPrefs.gridView;
-            }
-        }
+    selectedFolder: function (newFolder) {
+      this.fileFilter = "";
+      this.selectedFolder = newFolder;
+      this.loadFolder(newFolder);
     },
-    watch: {
-        currentPrefs: function (newPrefs) {
-            localStorage.setItem('MediaLibraryPrefs' + "-" + this.$props.siteId, JSON.stringify(newPrefs));
+  },
+  mounted: function () {
+    const me = this;
+
+    if (me.currentPrefs.selectedFolder != null) {
+      (<any>me.$refs.baseFolder).selectFolder(me.currentPrefs.selectedFolder);
+    } else {
+      (<any>me.$refs.baseFolder).select();
+    }
+
+    let chunkedFileUploadId = crypto.randomUUID();
+
+    let fileInput = $("#fileupload");
+
+    let uploadUrl = me.baseHost ? me.baseHost + me.uploadFilesUrl : me.uploadFilesUrl;
+
+    // `singleFileUploads` option is necessary to process all files in a single XHR request
+    // and that the `done` event returns them all in it's data.
+    // TODO: new browsers have API's that are better than XHR for file uploading.
+    // Consider eventually using Uppy https://uppy.io/ with Tus https://tus.io/
+    fileInput
+      .fileupload({
+        dropZone: $("#fileApp"),
+        limitConcurrentUploads: 20,
+        dataType: "json",
+        url: uploadUrl,
+        maxChunkSize: me.maxUploadChunkSize,
+        singleFileUploads: false,
+        formData: function () {
+          var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+          return [
+            { name: "path", value: me.selectedFolder.path },
+            { name: "__RequestVerificationToken", value: antiForgeryToken },
+            { name: "__chunkedFileUploadId", value: chunkedFileUploadId },
+          ];
         },
-        selectedFolder: function (newFolder) {
-            this.mediaFilter = '';
-            this.selectedFolder = newFolder;
-            this.loadFolder(newFolder);
+        done: async function (e: any, data: any) {
+
+          $.each(data.result.files, function (index, file: any) {
+            if (!file.error) {
+              me.fileItems.push(<never>file);
+              me.uploadedFileItems.push(file);
+            }
+          });
+
+          const rootFolder = data.result.files[0].folder ? data.result.files[0].folder.split('/')[0] : data.result.files[0].folder;
+
+/*           if (Object.keys(ProcessingFolders).includes(rootFolder)) {
+            await nextTick();
+            debug("Done File Upload", data.result.files)
+            me.emitter.emit('openFilesModal', { files: data.result.files, action: data.result.files.length > 1 ? 'files-action' : 'file-action', uuid: uuidv4() });
+          } */
+        },
+      })
+      .on("fileuploadchunkbeforesend", (e: any, options: any) => {
+        const file = options.files[0];
+        // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+        options.blob = new File([options.blob], file.name, {
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+      });
+
+    $(document).on("dragover", function (e: any) {
+      const dt = e.originalEvent.dataTransfer;
+
+      if (dt.types && (dt.types.indexOf ? dt.types.indexOf("Files") != -1 : dt.types.contains("Files"))) {
+        const dropZone = document.getElementById("customdropzone");
+        const timeout = (<any>window).dropZoneTimeout;
+
+        if (timeout) {
+          clearTimeout(timeout);
+        } else {
+          dropZone?.classList.add("in");
         }
 
+        (<any>window).dropZoneTimeout = setTimeout(function () {
+          (<any>window).dropZoneTimeout = null;
+          dropZone?.classList.remove("in");
+        }, 100);
+      }
+    });
+  },
+  methods: {
+    openModal: function (action: string) {
+      const uVfm = useVfm();
+      uVfm.open(action);
     },
-    mounted: function () {
-        console.log("allo");
-        let me = this;
-        registerNotificationBus();
+    confirmModal: function (action: string) {
+      const uVfm = useVfm();
 
-        if (me.currentPrefs.selectedFolder != null) {
-            (<any>me.$refs.rootFolder).selectFolder(me.currentPrefs.selectedFolder);
-        }
-        else {
-            (<any>me.$refs.rootFolder).select();
-        }
+      if (action == "deleteAll") {
+        this.deleteFileList();
+      }
 
-        let chunkedFileUploadId = crypto.randomUUID();
+      uVfm.close(action);
+    },
+    selectRootFolder: function () {
+      this.selectedFolder = this.rootFolder;
+    },
+    fileListMove: function (elem: any) {
+      const me = this;
+      debug("fileListMove", elem, me.baseUrl)
 
-        let fileInput = $('#fileupload');
-
-        fileInput
-            .fileupload({
-                dropZone: $('#mediaApp'),
-                limitConcurrentUploads: 20,
-                dataType: 'json',
-                url: me.basePath + me.uploadFilesUrl,
-                maxChunkSize: me.maxUploadChunkSize,
-                formData: function () {
-                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
-
-                    return [
-                        { name: 'path', value: me.selectedFolder.path },
-                        { name: '__RequestVerificationToken', value: antiForgeryToken },
-                        { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
-                    ]
-                },
-                done: function (e: any, data: any) {
-                    $.each(data.result.files, function (index, file: any) {
-                        if (!file.error) {
-                            me.mediaItems.push(<never>file)
-                        }
-                    });
-                }
+      if (elem) {
+        const apiClient = new MediaApiClient(me.baseUrl);
+        apiClient
+          .moveMediaList(
+            new MoveMedia({
+              mediaNames: elem.fileNames,
+              sourceFolder: elem.sourceFolder,
+              targetFolder: elem.targetFolder,
             })
-            .on('fileuploadchunkbeforesend', (e: any, options: any) => {
-                let file = options.files[0];
-                // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
-                options.blob = new File(
-                    [options.blob],
-                    file.name,
-                    {
-                        type: file.type,
-                        lastModified: file.lastModified,
-                    });
-            });
+          )
+          .then((res) => {
+            me.emitter.emit("fileListMoved"); // FileApp will listen to this, and then it will reload page so the moved files won't be there anymore
+          })
+          .catch(async (error) => {
+            notify({ summary: me.t.ErrorMovingFile, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+          });
+      }
+    },
+    loadFolder: function (folder: IFileStoreEntry) {
+      this.errors = [];
+      this.selectedFiles = [];
+      const me = this;
 
-        $(document).on('dragover', function (e: any) {
-            let dt = e.originalEvent.dataTransfer;
-
-            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
-                let dropZone = $('#customdropzone'),
-                    timeout = (<any>window).dropZoneTimeout;
-
-                if (timeout) {
-                    clearTimeout(timeout);
-                } else {
-                    dropZone.addClass('in');
-                }
-
-                (<any>window).dropZoneTimeout = setTimeout(function () {
-                    (<any>window).dropZoneTimeout = null;
-                    dropZone.removeClass('in');
-                }, 100);
-            }
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .getMediaItems(folder.path, null)
+        .then((response: any) => {
+          response.forEach(function (item: any) {
+            item.open = false;
+          });
+          me.fileItems = response;
+          me.selectedFiles = [];
+          me.sortBy = "";
+          me.sortAsc = true;
+        })
+        .catch(async (error) => {
+          notify({ summary: me.t.ErrorLoadingFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+          me.selectRootFolder();
         });
     },
-    methods: {
-        getModalName: function (name: String, action: String) {
-            return action + "-media-" + name;
-        },
-        openModal: function (media: String, action: String) {
-            const uVfm = useVfm();
+    selectAll: function () {
+      if (this.isSelectedAll) {
+        this.selectedFiles = [];
+        this.isSelectedAll = false;
+      } else {
+        this.selectedFiles = [];
+        for (let i = 0; i < this.filteredFileItems.length; i++) {
+          this.selectedFiles.push(this.filteredFileItems[i]);
+        }
+        this.isSelectedAll = true;
+      }
+    },
+    invertSelection: function () {
+      this.isSelectedAll = false;
+      let temp = [];
 
-            uVfm.open(this.getModalName(media, action));
-        },
-        confirm: function (media: String, action: String) {
-            const uVfm = useVfm();
+      for (let i = 0; i < this.filteredFileItems.length; i++) {
+        if (this.isFileSelected(this.filteredFileItems[i]) == false) {
+          temp.push(this.filteredFileItems[i]);
+        }
+      }
+      this.selectedFiles = temp;
 
-            if (action == "delete") {
-                this.deleteMediaList();
+      if (temp.length == this.filteredFileItems.length) {
+        this.isSelectedAll = true;
+      }
+    },
+    toggleSelectionOfFile: function (file: any) {
+      if (this.isFileSelected(file) == true) {
+        this.selectedFiles.splice(this.selectedFiles.indexOf(file), 1);
+      } else {
+        this.selectedFiles.push(file);
+      }
+    },
+    isFileSelected: function (file: IFileStoreEntry) {
+      let result = this.selectedFiles?.some(function (element: any, index: any, array: any) {
+        return element.url.toLowerCase() === file.url?.toLowerCase();
+      });
+      return result;
+    },
+    deleteFolder: function (folder: IFileStoreEntry) {
+      const me = this;
+      // The root folder can't be deleted
+      if (folder == this.rootFolder) {
+        return;
+      }
+
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .deleteFolder(folder.path)
+        .then((response: any) => {
+          me.emitter.emit("deleteFolder", folder);
+        })
+        .catch(async (error) => {
+          notify({ summary: me.t.ErrorDeleteFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        });
+    },
+    createFolder: function (folder: IFileStoreEntry) {
+      const me = this;
+      $("createFolderModal-errors")?.empty();
+
+      if (folder.name === "") {
+        return;
+      }
+
+      debug("selected folder before create new one", me.selectedFolder.path)
+
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .createFolder(me.selectedFolder.path, folder.name)
+        .then((response: any) => {
+          me.emitter.emit("addFolder", { selectedFolder: me.selectedFolder, data: response });
+        })
+        .catch(async (error) => {
+          notify({ summary: me.t.ErrorCreateFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        });
+    },
+    renameFile: function (element: any) {  //TODO, create TS interface for this
+      const me = this;
+      let newName = element.newName;
+      let file = element.file;
+
+      debug("Rename file", element, file.name, newName, this.basePath);
+
+      const oldPath = file.filePath; // TODO make this better
+      const newPath = oldPath.replace(file.name, newName);
+
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .moveMedia(oldPath, newPath)
+        .then((response: any) => {
+          me.emitter.emit("fileRenamed", { newName: newName, newPath: newPath, oldPath: oldPath });
+        })
+        .catch(async (error) => {
+          error.response.text().then((text: any) => {
+            const error = JSON.parse(text);
+            notify({ summary: me.t.ErrorRenamingFile, detail: error.detail, severity: SeverityLevel.Error });
+          });
+        });
+    },
+    deleteFileList: function () {
+      const me = this;
+      let files = this.selectedFiles;
+
+      if (files.length < 1) {
+        return;
+      }
+
+      let imagePaths: string[] = [];
+
+      for (let i = 0; i < files.length; i++) {
+        imagePaths.push(files[i].mediaPath ?? ""); // Can't be a required field on IFileStoreEntry for a folder 
+      }
+
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .deleteMediaList(imagePaths)
+        .then((response: any) => {
+          for (let i = 0; i < me.selectedFiles.length; i++) {
+            let index = me.fileItems && me.fileItems.indexOf(me.selectedFiles[i]);
+            if (index > -1) {
+              me.fileItems.splice(index, 1);
+              me.emitter.emit("fileDeleted", me.selectedFiles[i]);
             }
+          }
+          me.selectedFiles = [];
+          me.isSelectedAll = false;
+        })
+        .catch(async (error) => {
+          notify({ summary: me.t.ErrorDeleteFile, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        });
+    },
+    deleteFileItem: function (file: IFileStoreEntry) {
+      const me = this;
 
-            uVfm.close(this.getModalName(media, action));
-        },
-        selectRoot: function () {
-            this.selectedFolder = this.root;
-        },
-        mediaListMove: function (elem: any) {
-            let self = this;
+      if (!file) {
+        debug("Cannot delete null file item", file);
+        return;
+      }
 
-            if (elem) {
+      debug("delete file item", file);
 
-                const apiClient = new MediaApiClient(this.basePath);
-                apiClient
-                    .moveMediaList(new MoveMedia({
-                        mediaNames: elem.mediaNames,
-                        sourceFolder: elem.sourceFolder,
-                        targetFolder: elem.targetFolder,
-                    }))
-                    .then((res) => {
-                        self.emitter.emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-                    })
-                    .catch(async (error) => {
-                        error.response.text().then((text: any) => {
-                            const error = JSON.parse(text);
-                            self.emitter.emit('mediaListMoved', error.detail);
-                            notify({ summary: self.t.ErrorMovingFile, detail: error.detail, severity: SeverityLevel.Error });
-                        })
-                    })
-            }
-        },
-        loadFolder: function (folder: any) {
-            this.errors = [];
-            this.selectedMedias = [];
-            let self = this;
+      const apiClient = new MediaApiClient(me.baseUrl);
+      apiClient
+        .deleteMedia(file.mediaPath)
+        .then((response: any) => {
+          let index = me.fileItems && me.fileItems.indexOf(file);
+          if (index > -1) {
+            me.fileItems.splice(index, 1);
+            me.emitter.emit("fileDeleted", file);
+          }
+        })
+        .catch(async (error) => {
+          tryGetErrorMessage(error).then((message: any) => {
+            notify({ summary: me.t.ErrorDeleteFile, detail: message, severity: SeverityLevel.Error });
+          });
+        });
+    },
+    handleDragStart: function (element: any) {
+      // first part of move file to folder:
+      // prepare the data that will be handled by the folder component on drop event
+      let fileNames = [];
+      this.selectedFiles.forEach(function (item: any) {
+        fileNames.push(item.name);
+      });
 
-            if (this.basePath != null) {
-                const apiClient = new MediaApiClient(this.basePath);
-                apiClient
-                    .getMediaItems(folder.path, null)
-                    .then((response: any) => {
-                        response.forEach(function (item: any) {
-                            item.open = false;
-                        });
-                        self.mediaItems = response;
-                        self.selectedMedias = [];
-                        self.sortBy = '';
-                        self.sortAsc = true;
-                    })
-                    .catch(async (error) => {
-                        debug('loadFolder: error loading folder:', folder, error);
-                        self.selectRoot();
-                    })
-            }
-        },
-        selectAll: function () {
-            if (this.isSelectedAll) {
-                this.selectedMedias = [];
-                this.isSelectedAll = false;
-            }
-            else {
-                this.selectedMedias = [];
-                for (let i = 0; i < this.filteredMediaItems.length; i++) {
-                    this.selectedMedias.push(this.filteredMediaItems[i]);
-                }
-                this.isSelectedAll = true;
-            }
-        },
-        invertSelection: function () {
-            this.isSelectedAll = false;
-            let temp = [];
-            for (let i = 0; i < this.filteredMediaItems.length; i++) {
-                if (this.isMediaSelected(this.filteredMediaItems[i]) == false) {
-                    temp.push(this.filteredMediaItems[i]);
-                }
-            }
-            this.selectedMedias = temp;
-        },
-        toggleSelectionOfMedia: function (media: any) {
-            if (this.isMediaSelected(media) == true) {
-                this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
-            } else {
-                this.selectedMedias.push(media);
-            }
-        },
-        isMediaSelected: function (media: any) {
-            let result = this.selectedMedias?.some(function (element: any, index: any, array: any) {
-                return element.url.toLowerCase() === media.url.toLowerCase();
-            });
-            return result;
-        },
-        deleteFolder: function () {
-            let folder = this.selectedFolder;
-            let self = this;
-            // The root folder can't be deleted
-            if (folder == this.root) {
-                return;
-            }
+      // in case the user drags an unselected item, we select it first
+      if (this.isFileSelected(element.file) == false) {
+        fileNames.push(element.file.name);
+        this.selectedFiles.push(element.file);
+      }
 
-            const config = {
-                headers: {
-                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
-                }
-            }
+      element.e.dataTransfer.setData("fileNames", JSON.stringify(fileNames));
+      element.e.dataTransfer.setData("sourceFolder", this.selectedFolder.path);
+      element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
+      element.e.dataTransfer.effectAllowed = "move";
+    },
+    handleScrollWhileDrag: function (e: any) {
+      const me = this;
 
-            const apiClient = new MediaApiClient(this.basePath);
-            apiClient
-                .deleteFolder(folder.path)
-                .then((response: any) => {
-                    self.emitter.emit('deleteFolder', folder);
-                })
-                .catch(async (error) => {
-                    error.response.text().then((text: any) => {
-                        const error = JSON.parse(text);
-                        debug('deleteFolder error: ', folder, error.detail);
-                        notify({ summary: self.t.ErrorDeleteFolder, detail: error.detail, severity: SeverityLevel.Error });
-                    })
-                })
-        },
-        createFolder: function (folderName: any) {
-            let self = this;
-            $('createFolderModal-errors')?.empty();
+      if (e.clientY < 150) {
+        window.scrollBy(0, -10);
+      }
 
-            if (folderName === "") {
-                return;
-            }
+      if (e.clientY > window.innerHeight - 100) {
+        window.scrollBy(0, 10);
+      }
 
-            const apiClient = new MediaApiClient(this.basePath);
-            apiClient
-                .createFolder(self.selectedFolder.path, folderName)
-                .then((response: any) => {
-                    self.emitter.emit('addFolder', { selectedFolder: self.selectedFolder, data: response });
-                })
-                .catch(async (error) => {
-                    notify({ summary: self.t.ErrorCreateFolder, detail: error.response.detail, severity: SeverityLevel.Error });
-                })
-        },
-        renameMedia: function (element: any) {
-            let self = this;
-            let newName = element.newName;
-            let media = element.media;
-
-            debug("Rename media", media.name, newName, this.basePath);
-
-            const oldPath = media.mediaPath; // TODO make this better
-            const newPath = oldPath.replace(media.name, newName);
-
-            const apiClient = new MediaApiClient(this.basePath);
-            apiClient
-                .moveMedia(oldPath, newPath)
-                .then((response: any) => {
-                    self.emitter.emit('mediaRenamed', { newName: newName, newPath: newPath, oldPath: oldPath });
-                })
-                .catch(async (error) => {
-                    error.response.text().then((text: any) => {
-                        const error = JSON.parse(text);
-                        notify({ summary: self.t.ErrorRenamingFile, detail: error.detail, severity: SeverityLevel.Error });
-                    })
-                })
-        },
-        deleteMediaList: function () {
-            let mediaList = this.selectedMedias;
-            let self = this;
-
-            if (mediaList.length < 1) {
-                return;
-            }
-
-            let imagePaths = [];
-
-            for (let i = 0; i < mediaList.length; i++) {
-                imagePaths.push(mediaList[i].mediaPath);
-            }
-
-            const apiClient = new MediaApiClient(this.basePath);
-            apiClient
-                .deleteMediaList(imagePaths)
-                .then((response: any) => {
-                    for (let i = 0; i < self.selectedMedias.length; i++) {
-                        let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
-                        if (index > -1) {
-                            self.mediaItems.splice(index, 1);
-                            self.emitter.emit('mediaDeleted', self.selectedMedias[i]);
-                        }
-                    }
-                    self.selectedMedias = [];
-                    self.isSelectedAll = false;
-                })
-                .catch(async (error) => {
-                    error.response.text().then((text: any) => {
-                        const error = JSON.parse(text);
-                        notify({ summary: self.t.ErrorDeleteFiles, detail: error.detail, severity: SeverityLevel.Error });
-                    })
-                })
-        },
-        deleteMediaItem: function (media: any) {
-            let self = this;
-            if (!media) {
-                debug("Cannot delete null media item", media);
-                return;
-            }
-
-            debug("delete media item", media);
-
-            const apiClient = new MediaApiClient(this.basePath);
-            apiClient
-                .deleteMedia(media.mediaPath)
-                .then((response: any) => {
-                    let index = self.mediaItems && self.mediaItems.indexOf(media)
-                    if (index > -1) {
-                        self.mediaItems.splice(index, 1);
-                        self.emitter.emit('mediaDeleted', media)
-                    }
-                })
-                .catch(async (error) => {
-                    error.response.text().then((text: any) => {
-                        const error = JSON.parse(text);
-                        debug('deleteMediaItem: error deleting media item:', media, error);
-                        notify({ summary: self.t.ErrorDeleteFile, detail: error.detail, severity: SeverityLevel.Error });
-                    })
-                })
-        },
-        handleDragStart: function (element: any) {
-            // first part of move media to folder:
-            // prepare the data that will be handled by the folder component on drop event
-            let mediaNames = [];
-            this.selectedMedias.forEach(function (item: any) {
-                mediaNames.push(item.name);
-            });
-
-            // in case the user drags an unselected item, we select it first
-            if (this.isMediaSelected(element.media) == false) {
-                mediaNames.push(element.media.name);
-                this.selectedMedias.push(element.media);
-            }
-
-            element.e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
-            element.e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
-            element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
-            element.e.dataTransfer.effectAllowed = 'move';
-        },
-        handleScrollWhileDrag: function (e: any) {
-            if (e.clientY < 150) {
-                window.scrollBy(0, -10);
-            }
-
-            if (e.clientY > window.innerHeight - 100) {
-                window.scrollBy(0, 10);
-            }
-        },
-        changeSort: function (newSort: any) {
-            if (this.sortBy == newSort) {
-                this.sortAsc = !this.sortAsc;
-            } else {
-                this.sortAsc = true;
-                this.sortBy = newSort;
-            }
-        },
-    }
+      me.selectedFiles = [];
+      me.isSelectedAll = false;
+    },
+    changeSort: function (newSort: any) {
+      if (this.sortBy == newSort) {
+        this.sortAsc = !this.sortAsc;
+      } else {
+        this.sortAsc = true;
+        this.sortBy = newSort;
+      }
+    },
+  }
 });
 </script>
-  

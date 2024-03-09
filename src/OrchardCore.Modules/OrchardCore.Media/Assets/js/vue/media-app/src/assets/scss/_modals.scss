@@ -114,5 +114,10 @@
     font-size: 1.5rem;
     font-weight: 700;
   }
+}
 
+@media only screen and (max-width: 992px) {
+  .action-modal {
+    width: 95vw !important;
+  }
 }

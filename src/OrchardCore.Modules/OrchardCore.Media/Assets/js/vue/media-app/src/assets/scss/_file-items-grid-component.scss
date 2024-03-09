@@ -1,4 +1,4 @@
-ol.media-items-grid {
+ol.file-items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     align-items: stretch;
@@ -14,7 +14,7 @@ ol.media-items-grid {
         margin-left: 0;
         border-radius: 0;
 
-        .inline-media-button {
+        .inline-file-button {
             color: $gray-700;
             margin-left: 5px;
         }
@@ -28,7 +28,7 @@ ol.media-items-grid {
             border: 1px solid red;
         }
 
-        &.selected .inline-media-button, &:hover .inline-media-button {
+        &.selected .inline-file-button, &:hover .inline-file-button {
             opacity: 1;
             margin-top: 0px;
             transition: all 0.2s;

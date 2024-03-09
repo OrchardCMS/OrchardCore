@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -351,7 +352,7 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [Route("MoveMediaList")]
-        public async Task<IActionResult> MoveMediaList([FromBody] MoveMedia model)
+        public async Task<IActionResult> MoveMediaList([FromBody] MoveMedias model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)model.sourceFolder)
@@ -496,7 +497,38 @@ namespace OrchardCore.Media.Controllers
         }
     }
 
-    public class MoveMedia
+    public class FileStoreEntry : IFileStoreEntry
+    {
+        #region IFileStoreEntry
+        [Required]
+        public string Path { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        public string DirectoryPath { get; set; }
+
+        public long Length { get; set; }
+
+        public DateTime LastModifiedUtc { get; set; }
+
+        public bool IsDirectory { get; set; }
+
+        #endregion
+
+        public double LastModify { get; set; }
+        public long Size { get; set; }
+        public string Error { get; set; }
+        public string Folder { get; set; }
+        public string Url { get; set; }
+        public string FilePath { get; set; }
+        public string Mime { get; set; }
+        public string MediaText { get; set; }
+        public object Anchor { get; set; } // TODO make non anonymous
+        public string AttachedFileName { get; set; }
+    }
+
+    public class MoveMedias
     {
         public string[] mediaNames { get; set; }
         public string sourceFolder { get; set; }

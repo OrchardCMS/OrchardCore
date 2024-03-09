@@ -21,7 +21,7 @@
 // needs to be imported last
 @import "../../../node_modules/bootstrap/scss/utilities/api";
 
-// media variables
+// file variables
 @import "./variables";
 
 // main basic layout
@@ -30,8 +30,8 @@
 // vuejs components
 @import "./upload-component";
 @import "./upload-list-component";
-@import "./media-items-grid-component";
-@import "./media-items-table-component";
+@import "./file-items-grid-component";
+@import "./file-items-table-component";
 @import "./pager-component";
 @import "./modals";
 
@@ -39,6 +39,5 @@
 @import "./navbar";
 @import "./treeview";
 @import "./drop-zone";
-@import "./media-field";
 @import "./modal-view";
 @import "./utils";

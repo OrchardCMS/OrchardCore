@@ -23,7 +23,7 @@ public class NullJSLocalizer: IJSLocalizer
     /// in a .cshtml template for the po Extractor to find the strings to translate.
     /// </summary>
     /// <returns>Returns a list of localized strings</returns>
-    public IDictionary<string, string> GetLocalizations(string[] groups)
+    public Dictionary<string, string> GetLocalizations(string[] groups)
     {
         var dictionary = new Dictionary<string, string>();
 

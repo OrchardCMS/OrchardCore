@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp } from "vue";
 import App from "./App.vue";
 import mitt from "mitt";
 /* import the fontawesome core */
@@ -12,8 +12,6 @@ import { createVfm } from "vue-final-modal";
 
 const emitter = mitt();
 const vfm = createVfm();
-
-console.log("pass main");
 
 /* add icons to the library */
 library.add(fas);

@@ -1,3 +1,3 @@
 import mitt from "mitt";
 
-export default mitt()
+export default mitt();

@@ -1,0 +1,7 @@
+/** Orchard Core specific styles **/
+@media only screen and (min-width: 923px) {
+  #fileContainer {
+    height: calc(100vh - 84px) !important;
+  }
+}
+/*# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lZGlhMi1vYy5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0FBRUE7RUFDSTtJQUNJIiwiZmlsZSI6Im1lZGlhMi1vYy5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIvKiogT3JjaGFyZCBDb3JlIHNwZWNpZmljIHN0eWxlcyAqKi9cclxuXHJcbkBtZWRpYSBvbmx5IHNjcmVlbiBhbmQgKG1pbi13aWR0aDogOTIzcHgpIHtcclxuICAgICNmaWxlQ29udGFpbmVyIHtcclxuICAgICAgICBoZWlnaHQ6IGNhbGMoMTAwdmggLSA4NHB4KSAhaW1wb3J0YW50O1xyXG4gICAgfVxyXG59Il19 */

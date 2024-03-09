@@ -1,9 +1,9 @@
-// media item title. Shared by grid and table-view
-.media-container-main-item-title {
+// file item title. Shared by grid and table-view
+.file-container-main-item-title {
     border-top: solid 1px $gray-300;
     overflow: hidden;
 
-    .media-filename {
+    .file-filename {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -45,9 +45,17 @@
 .card-footer {
     padding: 0.5rem 1rem;
     background-color: #e1f0ff;
-    border-top: $media-border-content;
+    border-top: $file-border-content;
+}
+
+.flex {
+    display: flex;
 }
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.uppercase {
+    text-transform: uppercase;
 }

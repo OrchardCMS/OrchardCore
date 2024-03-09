@@ -30,5 +30,11 @@
       "Assets/js/vue/media-app/dist/assets/index.css"
     ],
     "output": "wwwroot/Styles/media2.css"
+  },
+  {
+    "inputs": [
+      "Assets/scss/media2-oc.scss"
+    ],
+    "output": "wwwroot/Styles/media2-oc.css"
   }
 ]
