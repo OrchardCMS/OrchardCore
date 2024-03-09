@@ -6,7 +6,7 @@
     var siteId = ShellSettings.TenantId;
 }
 
-<script type="module" asp-name="media" version="2" at="Foot" depends-on="jQuery"></script>
+<script type="module" asp-name="media" version="2" at="Foot"></script>
 <style asp-name="media" version="2" at="Head"></style>
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
@@ -16,7 +16,7 @@
         site-id="@siteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")"
-        upload-files-url="@Href("~/api/files/upload")"
+        upload-files-url="@Href("~/api/media/upload")"
         :max-upload-chunk-size="0"
     >
     </media-app>
