@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="AngleSharp" Version="1.1.1" />
+    <PackageManagement Include="AngleSharp" Version="1.1.2" />
     <PackageManagement Include="AWSSDK.S3" Version="3.7.104.11" />
     <PackageManagement Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
     <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.101.60" />
