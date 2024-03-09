@@ -4,7 +4,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 1.1.1 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
+| [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 1.1.2 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
 | [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.104.11 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.60 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.7 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
