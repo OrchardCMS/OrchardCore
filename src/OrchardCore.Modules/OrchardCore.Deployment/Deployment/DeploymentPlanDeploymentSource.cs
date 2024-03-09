@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 
 namespace OrchardCore.Deployment.Deployment
 {
@@ -16,11 +17,11 @@ namespace OrchardCore.Deployment.Deployment
         public DeploymentPlanDeploymentSource(
             IDeploymentPlanService deploymentPlanService,
             IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
         {
             _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
