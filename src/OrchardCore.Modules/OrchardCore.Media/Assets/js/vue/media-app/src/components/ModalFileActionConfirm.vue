@@ -100,7 +100,7 @@ const emit = defineEmits<{
           <li class="p-1 w-100 flex align-items-center">
             <input class="p-radiobutton p-component" role="radiobutton" :name="'action[' + index + ']'" type="radio"
               :id="'action[' + index + ']-' + fileActionElem.id" :value="fileActionElem.id" v-model="fileActionEntry.action" />
-            <label class="ml-2 cursor-pointer w-100" :for="'action[' + index + ']-' + fileActionElem.id">
+            <label class="ms-2 cursor-pointer w-100" :for="'action[' + index + ']-' + fileActionElem.id">
               {{ fileActionElem.displayName }}
             </label>
           </li>
@@ -111,7 +111,7 @@ const emit = defineEmits<{
       <button class="btn btn-secondary" @click="emit('closed')">
         {{ t.Cancel }}
       </button>
-      <button id="btn-submit" class="ml-2 btn btn-primary"
+      <button id="btn-submit" class="ms-2 btn btn-primary"
         @click="emit('confirm', { actionEntries: inputValues })">
         <slot name="submit"></slot>
       </button>

@@ -77,7 +77,7 @@ const emit = defineEmits<{
         <li class="p-1 w-100 flex align-items-center">
           <input class="p-radiobutton p-component" role="radiobutton" name="folder-action" type="radio"
             :id="'action-' + folderActionElem.id" :value="folderActionElem.id" v-model="folderAction" />
-          <label class="ml-2 cursor-pointer w-100" :for="'action-' + folderActionElem.id">
+          <label class="ms-2 cursor-pointer w-100" :for="'action-' + folderActionElem.id">
             {{ folderActionElem.displayName }}
           </label>
         </li>
@@ -87,7 +87,7 @@ const emit = defineEmits<{
       <button class="btn btn-secondary" @click="showModal = false">
         {{ t.Cancel }}
       </button>
-      <button id="btn-submit" class="ml-2 btn btn-primary"
+      <button id="btn-submit" class="ms-2 btn btn-primary"
         @click="emit('confirm', { action: folderAction, folder: folder, inputValue: inputValue })">
         <slot name="submit"></slot>
       </button>

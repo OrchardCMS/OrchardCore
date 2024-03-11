@@ -69,8 +69,8 @@ const remove = (arr, el) => {
     arr.splice(i, 1);
   }
 };
-const hasOwnProperty$2 = Object.prototype.hasOwnProperty;
-const hasOwn = (val, key) => hasOwnProperty$2.call(val, key);
+const hasOwnProperty$3 = Object.prototype.hasOwnProperty;
+const hasOwn = (val, key) => hasOwnProperty$3.call(val, key);
 const isArray$1 = Array.isArray;
 const isMap = (val) => toTypeString(val) === "[object Map]";
 const isSet = (val) => toTypeString(val) === "[object Set]";
@@ -78,13 +78,13 @@ const isDate$1 = (val) => toTypeString(val) === "[object Date]";
 const isRegExp$1 = (val) => toTypeString(val) === "[object RegExp]";
 const isFunction$1 = (val) => typeof val === "function";
 const isString$1 = (val) => typeof val === "string";
-const isSymbol = (val) => typeof val === "symbol";
-const isObject$2 = (val) => val !== null && typeof val === "object";
+const isSymbol$2 = (val) => typeof val === "symbol";
+const isObject$6 = (val) => val !== null && typeof val === "object";
 const isPromise = (val) => {
-  return (isObject$2(val) || isFunction$1(val)) && isFunction$1(val.then) && isFunction$1(val.catch);
+  return (isObject$6(val) || isFunction$1(val)) && isFunction$1(val.then) && isFunction$1(val.catch);
 };
-const objectToString = Object.prototype.toString;
-const toTypeString = (value) => objectToString.call(value);
+const objectToString$2 = Object.prototype.toString;
+const toTypeString = (value) => objectToString$2.call(value);
 const toRawType = (value) => {
   return toTypeString(value).slice(8, -1);
 };
@@ -136,7 +136,7 @@ const looseToNumber = (val) => {
   const n = parseFloat(val);
   return isNaN(n) ? val : n;
 };
-const toNumber = (val) => {
+const toNumber$2 = (val) => {
   const n = isString$1(val) ? Number(val) : NaN;
   return isNaN(n) ? val : n;
 };
@@ -159,7 +159,7 @@ function normalizeStyle(value) {
       }
     }
     return res;
-  } else if (isString$1(value) || isObject$2(value)) {
+  } else if (isString$1(value) || isObject$6(value)) {
     return value;
   }
 }
@@ -187,7 +187,7 @@ function normalizeClass(value) {
         res += normalized + " ";
       }
     }
-  } else if (isObject$2(value)) {
+  } else if (isObject$6(value)) {
     for (const name in value) {
       if (value[name]) {
         res += name + " ";
@@ -238,8 +238,8 @@ function looseEqual(a, b) {
   if (aValidType || bValidType) {
     return aValidType && bValidType ? a.getTime() === b.getTime() : false;
   }
-  aValidType = isSymbol(a);
-  bValidType = isSymbol(b);
+  aValidType = isSymbol$2(a);
+  bValidType = isSymbol$2(b);
   if (aValidType || bValidType) {
     return a === b;
   }
@@ -248,8 +248,8 @@ function looseEqual(a, b) {
   if (aValidType || bValidType) {
     return aValidType && bValidType ? looseCompareArrays(a, b) : false;
   }
-  aValidType = isObject$2(a);
-  bValidType = isObject$2(b);
+  aValidType = isObject$6(a);
+  bValidType = isObject$6(b);
   if (aValidType || bValidType) {
     if (!aValidType || !bValidType) {
       return false;
@@ -273,7 +273,7 @@ function looseIndexOf(arr, val) {
   return arr.findIndex((item) => looseEqual(item, val));
 }
 const toDisplayString = (val) => {
-  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject$2(val) && (val.toString === objectToString || !isFunction$1(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
+  return isString$1(val) ? val : val == null ? "" : isArray$1(val) || isObject$6(val) && (val.toString === objectToString$2 || !isFunction$1(val.toString)) ? JSON.stringify(val, replacer, 2) : String(val);
 };
 const replacer = (_key, val) => {
   if (val && val.__v_isRef) {
@@ -292,16 +292,16 @@ const replacer = (_key, val) => {
     return {
       [`Set(${val.size})`]: [...val.values()].map((v) => stringifySymbol(v))
     };
-  } else if (isSymbol(val)) {
+  } else if (isSymbol$2(val)) {
     return stringifySymbol(val);
-  } else if (isObject$2(val) && !isArray$1(val) && !isPlainObject$1(val)) {
+  } else if (isObject$6(val) && !isArray$1(val) && !isPlainObject$1(val)) {
     return String(val);
   }
   return val;
 };
 const stringifySymbol = (v, i = "") => {
   var _a;
-  return isSymbol(v) ? `Symbol(${(_a = v.description) != null ? _a : i})` : v;
+  return isSymbol$2(v) ? `Symbol(${(_a = v.description) != null ? _a : i})` : v;
 };
 /**
 * @vue/reactivity v3.4.21
@@ -599,7 +599,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
   } else if (key === "length" && isArray$1(target)) {
     const newLength = Number(newValue);
     depsMap.forEach((dep, key2) => {
-      if (key2 === "length" || !isSymbol(key2) && key2 >= newLength) {
+      if (key2 === "length" || !isSymbol$2(key2) && key2 >= newLength) {
         deps.push(dep);
       }
     });
@@ -650,7 +650,7 @@ function getDepFromReactive(object, key) {
 }
 const isNonTrackableKeys = /* @__PURE__ */ makeMap(`__proto__,__v_isRef,__isVue`);
 const builtInSymbols = new Set(
-  /* @__PURE__ */ Object.getOwnPropertyNames(Symbol).filter((key) => key !== "arguments" && key !== "caller").map((key) => Symbol[key]).filter(isSymbol)
+  /* @__PURE__ */ Object.getOwnPropertyNames(Symbol).filter((key) => key !== "arguments" && key !== "caller").map((key) => Symbol[key]).filter(isSymbol$2)
 );
 const arrayInstrumentations = /* @__PURE__ */ createArrayInstrumentations();
 function createArrayInstrumentations() {
@@ -681,7 +681,7 @@ function createArrayInstrumentations() {
   });
   return instrumentations;
 }
-function hasOwnProperty$1(key) {
+function hasOwnProperty$2(key) {
   const obj = toRaw(this);
   track(obj, "has", key);
   return obj.hasOwnProperty(key);
@@ -713,11 +713,11 @@ class BaseReactiveHandler {
         return Reflect.get(arrayInstrumentations, key, receiver);
       }
       if (key === "hasOwnProperty") {
-        return hasOwnProperty$1;
+        return hasOwnProperty$2;
       }
     }
     const res = Reflect.get(target, key, receiver);
-    if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
+    if (isSymbol$2(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
       return res;
     }
     if (!isReadonly2) {
@@ -729,7 +729,7 @@ class BaseReactiveHandler {
     if (isRef(res)) {
       return targetIsArray && isIntegerKey(key) ? res : res.value;
     }
-    if (isObject$2(res)) {
+    if (isObject$6(res)) {
       return isReadonly2 ? readonly(res) : reactive(res);
     }
     return res;
@@ -778,7 +778,7 @@ class MutableReactiveHandler extends BaseReactiveHandler {
   }
   has(target, key) {
     const result = Reflect.has(target, key);
-    if (!isSymbol(key) || !builtInSymbols.has(key)) {
+    if (!isSymbol$2(key) || !builtInSymbols.has(key)) {
       track(target, "has", key);
     }
     return result;
@@ -1135,7 +1135,7 @@ function shallowReadonly(target) {
   );
 }
 function createReactiveObject(target, isReadonly2, baseHandlers, collectionHandlers, proxyMap) {
-  if (!isObject$2(target)) {
+  if (!isObject$6(target)) {
     return target;
   }
   if (target["__v_raw"] && !(isReadonly2 && target["__v_isReactive"])) {
@@ -1181,8 +1181,8 @@ function markRaw(value) {
   }
   return value;
 }
-const toReactive = (value) => isObject$2(value) ? reactive(value) : value;
-const toReadonly = (value) => isObject$2(value) ? readonly(value) : value;
+const toReactive = (value) => isObject$6(value) ? reactive(value) : value;
+const toReadonly = (value) => isObject$6(value) ? readonly(value) : value;
 class ComputedRefImpl {
   constructor(getter, _setter, isReadonly2, isSSR) {
     this.getter = getter;
@@ -1326,12 +1326,12 @@ class CustomRefImpl {
   constructor(factory) {
     this.dep = void 0;
     this.__v_isRef = true;
-    const { get: get3, set: set3 } = factory(
+    const { get: get22, set: set22 } = factory(
       () => trackRefValue(this),
       () => triggerRefValue(this)
     );
-    this._get = get3;
-    this._set = set3;
+    this._get = get22;
+    this._set = set22;
   }
   get value() {
     return this._get();
@@ -1383,7 +1383,7 @@ function toRef(source, key, defaultValue) {
     return source;
   } else if (isFunction$1(source)) {
     return new GetterRefImpl(source);
-  } else if (isObject$2(source) && arguments.length > 1) {
+  } else if (isObject$6(source) && arguments.length > 1) {
     return propertyToRef(source, key, defaultValue);
   } else {
     return ref(source);
@@ -1647,14 +1647,14 @@ function nextTick(fn) {
   const p2 = currentFlushPromise || resolvedPromise;
   return fn ? p2.then(this ? fn.bind(this) : fn) : p2;
 }
-function findInsertionIndex(id) {
+function findInsertionIndex(id2) {
   let start = flushIndex + 1;
   let end3 = queue.length;
   while (start < end3) {
     const middle = start + end3 >>> 1;
     const middleJob = queue[middle];
     const middleJobId = getId(middleJob);
-    if (middleJobId < id || middleJobId === id && middleJob.pre) {
+    if (middleJobId < id2 || middleJobId === id2 && middleJob.pre) {
       start = middle + 1;
     } else {
       end3 = middle;
@@ -1746,7 +1746,6 @@ function flushJobs(seen2) {
   isFlushPending = false;
   isFlushing = true;
   queue.sort(comparator);
-  const check = NOOP;
   try {
     for (flushIndex = 0; flushIndex < queue.length; flushIndex++) {
       const job = queue[flushIndex];
@@ -1873,7 +1872,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
     }
   }
   if (!raw && !hasExtends) {
-    if (isObject$2(comp)) {
+    if (isObject$6(comp)) {
       cache.set(comp, null);
     }
     return null;
@@ -1883,7 +1882,7 @@ function normalizeEmitsOptions(comp, appContext, asMixin = false) {
   } else {
     extend$1(normalized, raw);
   }
-  if (isObject$2(comp)) {
+  if (isObject$6(comp)) {
     cache.set(comp, normalized);
   }
   return normalized;
@@ -1903,8 +1902,8 @@ function setCurrentRenderingInstance(instance) {
   currentScopeId = instance && instance.type.__scopeId || null;
   return prev;
 }
-function pushScopeId(id) {
-  currentScopeId = id;
+function pushScopeId(id2) {
+  currentScopeId = id2;
 }
 function popScopeId() {
   currentScopeId = null;
@@ -2013,10 +2012,10 @@ function renderComponentRoot(instance) {
     handleError(err, instance, 1);
     result = createVNode(Comment);
   }
-  let root = result;
+  let root2 = result;
   if (fallthroughAttrs && inheritAttrs !== false) {
     const keys = Object.keys(fallthroughAttrs);
-    const { shapeFlag } = root;
+    const { shapeFlag } = root2;
     if (keys.length) {
       if (shapeFlag & (1 | 6)) {
         if (propsOptions && keys.some(isModelListener)) {
@@ -2025,19 +2024,19 @@ function renderComponentRoot(instance) {
             propsOptions
           );
         }
-        root = cloneVNode(root, fallthroughAttrs);
+        root2 = cloneVNode(root2, fallthroughAttrs);
       }
     }
   }
   if (vnode.dirs) {
-    root = cloneVNode(root);
-    root.dirs = root.dirs ? root.dirs.concat(vnode.dirs) : vnode.dirs;
+    root2 = cloneVNode(root2);
+    root2.dirs = root2.dirs ? root2.dirs.concat(vnode.dirs) : vnode.dirs;
   }
   if (vnode.transition) {
-    root.transition = vnode.transition;
+    root2.transition = vnode.transition;
   }
   {
-    result = root;
+    result = root2;
   }
   setCurrentRenderingInstance(prev);
   return result;
@@ -2137,11 +2136,11 @@ function hasPropsChanged(prevProps, nextProps, emitsOptions) {
 }
 function updateHOCHostEl({ vnode, parent }, el) {
   while (parent) {
-    const root = parent.subTree;
-    if (root.suspense && root.suspense.activeBranch === vnode) {
-      root.el = vnode.el;
+    const root2 = parent.subTree;
+    if (root2.suspense && root2.suspense.activeBranch === vnode) {
+      root2.el = vnode.el;
     }
-    if (root === vnode) {
+    if (root2 === vnode) {
       (vnode = parent.vnode).el = el;
       parent = parent.parent;
     } else {
@@ -2469,7 +2468,7 @@ function createSuspenseBoundary(vnode, parentSuspense, parentComponent, containe
       parentSuspense.deps++;
     }
   }
-  const timeout = vnode.props ? toNumber(vnode.props.timeout) : void 0;
+  const timeout = vnode.props ? toNumber$2(vnode.props.timeout) : void 0;
   const initialAnchor = anchor;
   const suspense = {
     vnode,
@@ -2961,7 +2960,7 @@ function createPathGetter(ctx, path) {
   };
 }
 function traverse(value, depth, currentDepth = 0, seen2) {
-  if (!isObject$2(value) || value["__v_skip"]) {
+  if (!isObject$6(value) || value["__v_skip"]) {
     return value;
   }
   if (depth && depth > 0) {
@@ -3483,9 +3482,9 @@ function defineAsyncComponent(source) {
   });
 }
 function createInnerComp(comp, parent) {
-  const { ref: ref2, props, children, ce } = parent.vnode;
+  const { ref: ref22, props, children, ce } = parent.vnode;
   const vnode = createVNode(comp, props, children);
-  vnode.ref = ref2;
+  vnode.ref = ref22;
   vnode.ce = ce;
   delete parent.vnode.ce;
   return vnode;
@@ -3782,7 +3781,7 @@ function renderList(source, renderItem, cache, index) {
     for (let i = 0; i < source; i++) {
       ret[i] = renderItem(i + 1, i, void 0, cached && cached[i]);
     }
-  } else if (isObject$2(source)) {
+  } else if (isObject$6(source)) {
     if (source[Symbol.iterator]) {
       ret = Array.from(
         source,
@@ -4159,7 +4158,7 @@ function applyOptions(instance) {
   }
   if (dataOptions) {
     const data = dataOptions.call(publicThis, publicThis);
-    if (!isObject$2(data))
+    if (!isObject$6(data))
       ;
     else {
       instance.data = reactive(data);
@@ -4247,7 +4246,7 @@ function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP) 
   for (const key in injectOptions) {
     const opt = injectOptions[key];
     let injected;
-    if (isObject$2(opt)) {
+    if (isObject$6(opt)) {
       if ("default" in opt) {
         injected = inject(
           opt.from || key,
@@ -4288,7 +4287,7 @@ function createWatcher(raw, ctx, publicThis, key) {
     }
   } else if (isFunction$1(raw)) {
     watch(getter, raw.bind(publicThis));
-  } else if (isObject$2(raw)) {
+  } else if (isObject$6(raw)) {
     if (isArray$1(raw)) {
       raw.forEach((r) => createWatcher(r, ctx, publicThis, key));
     } else {
@@ -4325,7 +4324,7 @@ function resolveMergedOptions(instance) {
     }
     mergeOptions(resolved, base, optionMergeStrategies);
   }
-  if (isObject$2(base)) {
+  if (isObject$6(base)) {
     cache.set(base, resolved);
   }
   return resolved;
@@ -4466,7 +4465,7 @@ function createAppAPI(render3, hydrate2) {
     if (!isFunction$1(rootComponent)) {
       rootComponent = extend$1({}, rootComponent);
     }
-    if (rootProps != null && !isObject$2(rootProps)) {
+    if (rootProps != null && !isObject$6(rootProps)) {
       rootProps = null;
     }
     const context = createAppContext();
@@ -4811,7 +4810,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
     }
   }
   if (!raw && !hasExtends) {
-    if (isObject$2(comp)) {
+    if (isObject$6(comp)) {
       cache.set(comp, EMPTY_ARR);
     }
     return EMPTY_ARR;
@@ -4848,7 +4847,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
     }
   }
   const res = [normalized, needCastKeys];
-  if (isObject$2(comp)) {
+  if (isObject$6(comp)) {
     cache.set(comp, res);
   }
   return res;
@@ -4984,11 +4983,11 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   }
   const refValue = vnode.shapeFlag & 4 ? getExposeProxy(vnode.component) || vnode.component.proxy : vnode.el;
   const value = isUnmount ? null : refValue;
-  const { i: owner, r: ref2 } = rawRef;
+  const { i: owner, r: ref3 } = rawRef;
   const oldRef = oldRawRef && oldRawRef.r;
   const refs = owner.refs === EMPTY_OBJ ? owner.refs = {} : owner.refs;
   const setupState = owner.setupState;
-  if (oldRef != null && oldRef !== ref2) {
+  if (oldRef != null && oldRef !== ref3) {
     if (isString$1(oldRef)) {
       refs[oldRef] = null;
       if (hasOwn(setupState, oldRef)) {
@@ -4998,40 +4997,40 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
       oldRef.value = null;
     }
   }
-  if (isFunction$1(ref2)) {
-    callWithErrorHandling(ref2, owner, 12, [value, refs]);
+  if (isFunction$1(ref3)) {
+    callWithErrorHandling(ref3, owner, 12, [value, refs]);
   } else {
-    const _isString = isString$1(ref2);
-    const _isRef = isRef(ref2);
+    const _isString = isString$1(ref3);
+    const _isRef = isRef(ref3);
     if (_isString || _isRef) {
       const doSet = () => {
         if (rawRef.f) {
-          const existing = _isString ? hasOwn(setupState, ref2) ? setupState[ref2] : refs[ref2] : ref2.value;
+          const existing = _isString ? hasOwn(setupState, ref3) ? setupState[ref3] : refs[ref3] : ref3.value;
           if (isUnmount) {
             isArray$1(existing) && remove(existing, refValue);
           } else {
             if (!isArray$1(existing)) {
               if (_isString) {
-                refs[ref2] = [refValue];
-                if (hasOwn(setupState, ref2)) {
-                  setupState[ref2] = refs[ref2];
+                refs[ref3] = [refValue];
+                if (hasOwn(setupState, ref3)) {
+                  setupState[ref3] = refs[ref3];
                 }
               } else {
-                ref2.value = [refValue];
+                ref3.value = [refValue];
                 if (rawRef.k)
-                  refs[rawRef.k] = ref2.value;
+                  refs[rawRef.k] = ref3.value;
               }
             } else if (!existing.includes(refValue)) {
               existing.push(refValue);
             }
           }
         } else if (_isString) {
-          refs[ref2] = value;
-          if (hasOwn(setupState, ref2)) {
-            setupState[ref2] = value;
+          refs[ref3] = value;
+          if (hasOwn(setupState, ref3)) {
+            setupState[ref3] = value;
           }
         } else if (_isRef) {
-          ref2.value = value;
+          ref3.value = value;
           if (rawRef.k)
             refs[rawRef.k] = value;
         } else
@@ -5073,9 +5072,6 @@ function createHydrationFunctions(rendererInternals) {
   } = rendererInternals;
   const hydrate2 = (vnode, container) => {
     if (!container.hasChildNodes()) {
-      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && warn$1(
-        `Attempting to hydrate existing markup but container is empty. Performing full mount instead.`
-      );
       patch(null, vnode, container);
       flushPostFlushCbs();
       container._vnode = vnode;
@@ -5099,7 +5095,7 @@ function createHydrationFunctions(rendererInternals) {
       slotScopeIds,
       isFragmentStart
     );
-    const { type, ref: ref2, shapeFlag, patchFlag } = vnode;
+    const { type, ref: ref3, shapeFlag, patchFlag } = vnode;
     let domType = node.nodeType;
     vnode.el = node;
     if (patchFlag === -2) {
@@ -5119,15 +5115,6 @@ function createHydrationFunctions(rendererInternals) {
         } else {
           if (node.data !== vnode.children) {
             hasMismatch = true;
-            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && warn$1(
-              `Hydration text mismatch in`,
-              node.parentNode,
-              `
-  - rendered on server: ${JSON.stringify(
-                node.data
-              )}
-  - expected on client: ${JSON.stringify(vnode.children)}`
-            );
             node.data = vnode.children;
           }
           nextNode = nextSibling(node);
@@ -5253,12 +5240,11 @@ function createHydrationFunctions(rendererInternals) {
             rendererInternals,
             hydrateNode
           );
-        } else if (__VUE_PROD_HYDRATION_MISMATCH_DETAILS__) {
-          warn$1("Invalid HostVNode type:", type, `(${typeof type})`);
-        }
+        } else
+          ;
     }
-    if (ref2 != null) {
-      setRef(ref2, null, parentSuspense, vnode);
+    if (ref3 != null) {
+      setRef(ref3, null, parentSuspense, vnode);
     }
     return nextNode;
   };
@@ -5291,18 +5277,8 @@ function createHydrationFunctions(rendererInternals) {
           slotScopeIds,
           optimized
         );
-        let hasWarned = false;
         while (next) {
           hasMismatch = true;
-          if (__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && !hasWarned) {
-            warn$1(
-              `Hydration children mismatch on`,
-              el,
-              `
-Server rendered element contains more child nodes than client vdom.`
-            );
-            hasWarned = true;
-          }
           const cur = next;
           next = next.nextSibling;
           remove2(cur);
@@ -5310,13 +5286,6 @@ Server rendered element contains more child nodes than client vdom.`
       } else if (shapeFlag & 8) {
         if (el.textContent !== vnode.children) {
           hasMismatch = true;
-          __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && warn$1(
-            `Hydration text content mismatch on`,
-            el,
-            `
-  - rendered on server: ${el.textContent}
-  - expected on client: ${vnode.children}`
-          );
           el.textContent = vnode.children;
         }
       }
@@ -5369,7 +5338,6 @@ Server rendered element contains more child nodes than client vdom.`
     optimized = optimized || !!parentVNode.dynamicChildren;
     const children = parentVNode.children;
     const l = children.length;
-    let hasWarned = false;
     for (let i = 0; i < l; i++) {
       const vnode = optimized ? children[i] : children[i] = normalizeVNode(children[i]);
       if (node) {
@@ -5385,15 +5353,6 @@ Server rendered element contains more child nodes than client vdom.`
         continue;
       } else {
         hasMismatch = true;
-        if (__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && !hasWarned) {
-          warn$1(
-            `Hydration children mismatch on`,
-            container,
-            `
-Server rendered element contains fewer child nodes than client vdom.`
-          );
-          hasWarned = true;
-        }
         patch(
           null,
           vnode,
@@ -5433,15 +5392,6 @@ Server rendered element contains fewer child nodes than client vdom.`
   };
   const handleMismatch = (node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragment) => {
     hasMismatch = true;
-    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ && warn$1(
-      `Hydration node mismatch:
-- rendered on server:`,
-      node,
-      node.nodeType === 3 ? `(text)` : isComment(node) && node.data === "[" ? `(start of fragment)` : ``,
-      `
-- expected on client:`,
-      vnode.type
-    );
     vnode.el = null;
     if (isFragment) {
       const end3 = locateClosingAnchor(node);
@@ -5470,17 +5420,17 @@ Server rendered element contains fewer child nodes than client vdom.`
     return next;
   };
   const locateClosingAnchor = (node, open = "[", close = "]") => {
-    let match = 0;
+    let match2 = 0;
     while (node) {
       node = nextSibling(node);
       if (node && isComment(node)) {
         if (node.data === open)
-          match++;
+          match2++;
         if (node.data === close) {
-          if (match === 0) {
+          if (match2 === 0) {
             return nextSibling(node);
           } else {
-            match--;
+            match2--;
           }
         }
       }
@@ -5505,11 +5455,6 @@ Server rendered element contains fewer child nodes than client vdom.`
   };
   return [hydrate2, hydrateNode];
 }
-function initFeatureFlags() {
-  if (typeof __VUE_PROD_HYDRATION_MISMATCH_DETAILS__ !== "boolean") {
-    getGlobalThis().__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
-  }
-}
 const queuePostRenderEffect = queueEffectWithSuspense;
 function createRenderer(options) {
   return baseCreateRenderer(options);
@@ -5518,9 +5463,6 @@ function createHydrationRenderer(options) {
   return baseCreateRenderer(options, createHydrationFunctions);
 }
 function baseCreateRenderer(options, createHydrationFns) {
-  {
-    initFeatureFlags();
-  }
   const target = getGlobalThis();
   target.__VUE__ = true;
   const {
@@ -5550,7 +5492,7 @@ function baseCreateRenderer(options, createHydrationFns) {
       optimized = false;
       n2.dynamicChildren = null;
     }
-    const { type, ref: ref2, shapeFlag } = n2;
+    const { type, ref: ref3, shapeFlag } = n2;
     switch (type) {
       case Text:
         processText(n1, n2, container, anchor);
@@ -5630,8 +5572,8 @@ function baseCreateRenderer(options, createHydrationFns) {
         } else
           ;
     }
-    if (ref2 != null && parentComponent) {
-      setRef(ref2, n1 && n1.ref, parentSuspense, n2 || n1, !n2);
+    if (ref3 != null && parentComponent) {
+      setRef(ref3, n1 && n1.ref, parentSuspense, n2 || n1, !n2);
     }
   };
   const processText = (n1, n2, container, anchor) => {
@@ -6624,15 +6566,15 @@ function baseCreateRenderer(options, createHydrationFns) {
     const {
       type,
       props,
-      ref: ref2,
+      ref: ref3,
       children,
       dynamicChildren,
       shapeFlag,
       patchFlag,
       dirs
     } = vnode;
-    if (ref2 != null) {
-      setRef(ref2, null, parentSuspense, vnode, true);
+    if (ref3 != null) {
+      setRef(ref3, null, parentSuspense, vnode, true);
     }
     if (shapeFlag & 256) {
       parentComponent.ctx.deactivate(vnode);
@@ -7203,14 +7145,14 @@ function transformVNodeArgs(transformer) {
 const InternalObjectKey = `__vInternal`;
 const normalizeKey = ({ key }) => key != null ? key : null;
 const normalizeRef = ({
-  ref: ref2,
+  ref: ref3,
   ref_key,
   ref_for
 }) => {
-  if (typeof ref2 === "number") {
-    ref2 = "" + ref2;
+  if (typeof ref3 === "number") {
+    ref3 = "" + ref3;
   }
-  return ref2 != null ? isString$1(ref2) || isRef(ref2) || isFunction$1(ref2) ? { i: currentRenderingInstance, r: ref2, k: ref_key, f: !!ref_for } : ref2 : null;
+  return ref3 != null ? isString$1(ref3) || isRef(ref3) || isFunction$1(ref3) ? { i: currentRenderingInstance, r: ref3, k: ref_key, f: !!ref_for } : ref3 : null;
 };
 function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === Fragment ? 0 : 1, isBlockNode = false, needFullChildrenNormalization = false) {
   const vnode = {
@@ -7296,14 +7238,14 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
     if (klass && !isString$1(klass)) {
       props.class = normalizeClass(klass);
     }
-    if (isObject$2(style)) {
+    if (isObject$6(style)) {
       if (isProxy(style) && !isArray$1(style)) {
         style = extend$1({}, style);
       }
       props.style = normalizeStyle(style);
     }
   }
-  const shapeFlag = isString$1(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$2(type) ? 4 : isFunction$1(type) ? 2 : 0;
+  const shapeFlag = isString$1(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$6(type) ? 4 : isFunction$1(type) ? 2 : 0;
   return createBaseVNode(
     type,
     props,
@@ -7321,7 +7263,7 @@ function guardReactiveProps(props) {
   return isProxy(props) || InternalObjectKey in props ? extend$1({}, props) : props;
 }
 function cloneVNode(vnode, extraProps, mergeRef = false) {
-  const { props, ref: ref2, patchFlag, children } = vnode;
+  const { props, ref: ref3, patchFlag, children } = vnode;
   const mergedProps = extraProps ? mergeProps(props || {}, extraProps) : props;
   const cloned = {
     __v_isVNode: true,
@@ -7333,8 +7275,8 @@ function cloneVNode(vnode, extraProps, mergeRef = false) {
       // #2078 in the case of <component :is="vnode" ref="extra"/>
       // if the vnode itself already has a ref, cloneVNode will need to merge
       // the refs so the single vnode can be set on multiple refs
-      mergeRef && ref2 ? isArray$1(ref2) ? ref2.concat(normalizeRef(extraProps)) : [ref2, normalizeRef(extraProps)] : normalizeRef(extraProps)
-    ) : ref2,
+      mergeRef && ref3 ? isArray$1(ref3) ? ref3.concat(normalizeRef(extraProps)) : [ref3, normalizeRef(extraProps)] : normalizeRef(extraProps)
+    ) : ref3,
     scopeId: vnode.scopeId,
     slotScopeIds: vnode.slotScopeIds,
     children,
@@ -7662,7 +7604,7 @@ function handleSetupResult(instance, setupResult, isSSR) {
     } else {
       instance.render = setupResult;
     }
-  } else if (isObject$2(setupResult)) {
+  } else if (isObject$6(setupResult)) {
     instance.setupState = proxyRefs(setupResult);
   } else
     ;
@@ -7766,9 +7708,9 @@ function getComponentName(Component, includeInferred = true) {
 function formatComponentName(instance, Component, isRoot = false) {
   let name = getComponentName(Component);
   if (!name && Component.__file) {
-    const match = Component.__file.match(/([^/\\]+)\.\w+$/);
-    if (match) {
-      name = match[1];
+    const match2 = Component.__file.match(/([^/\\]+)\.\w+$/);
+    if (match2) {
+      name = match2[1];
     }
   }
   if (!name && instance && instance.parent) {
@@ -7839,7 +7781,7 @@ function useModel(props, name, options = EMPTY_OBJ) {
 function h(type, propsOrChildren, children) {
   const l = arguments.length;
   if (l === 2) {
-    if (isObject$2(propsOrChildren) && !isArray$1(propsOrChildren)) {
+    if (isObject$6(propsOrChildren) && !isArray$1(propsOrChildren)) {
       if (isVNode(propsOrChildren)) {
         return createVNode(type, null, [propsOrChildren]);
       }
@@ -7939,8 +7881,8 @@ const nodeOps = {
   parentNode: (node) => node.parentNode,
   nextSibling: (node) => node.nextSibling,
   querySelector: (selector) => doc.querySelector(selector),
-  setScopeId(el, id) {
-    el.setAttribute(id, "");
+  setScopeId(el, id2) {
+    el.setAttribute(id2, "");
   },
   // __UNSAFE__
   // Reason: innerHTML.
@@ -8123,7 +8065,7 @@ function resolveTransitionProps(rawProps) {
 function normalizeDuration(duration) {
   if (duration == null) {
     return null;
-  } else if (isObject$2(duration)) {
+  } else if (isObject$6(duration)) {
     return [NumberOf(duration.enter), NumberOf(duration.leave)];
   } else {
     const n = NumberOf(duration);
@@ -8131,7 +8073,7 @@ function normalizeDuration(duration) {
   }
 }
 function NumberOf(val) {
-  const res = toNumber(val);
+  const res = toNumber$2(val);
   return res;
 }
 function addTransitionClass(el, cls) {
@@ -8155,9 +8097,9 @@ function nextFrame(cb) {
 }
 let endId = 0;
 function whenTransitionEnds(el, expectedType, explicitTimeout, resolve2) {
-  const id = el._endId = ++endId;
+  const id2 = el._endId = ++endId;
   const resolveIfNotStale = () => {
-    if (id === el._endId) {
+    if (id2 === el._endId) {
       resolve2();
     }
   };
@@ -8727,7 +8669,7 @@ class VueElement extends BaseClass {
           const opt = props[key];
           if (opt === Number || opt && opt.type === Number) {
             if (key in this._props) {
-              this._props[key] = toNumber(this._props[key]);
+              this._props[key] = toNumber$2(this._props[key]);
             }
             (numberProps || (numberProps = /* @__PURE__ */ Object.create(null)))[camelize(key)] = true;
           }
@@ -8770,7 +8712,7 @@ class VueElement extends BaseClass {
     let value = this.getAttribute(key);
     const camelKey = camelize(key);
     if (this._numberProps && this._numberProps[camelKey]) {
-      value = toNumber(value);
+      value = toNumber$2(value);
     }
     this._setProp(camelKey, value, false);
   }
@@ -8966,7 +8908,7 @@ function applyTranslation(c) {
     return c;
   }
 }
-function hasCSSTransform(el, root, moveClass) {
+function hasCSSTransform(el, root2, moveClass) {
   const clone = el.cloneNode();
   const _vtc = el[vtcKey];
   if (_vtc) {
@@ -8976,7 +8918,7 @@ function hasCSSTransform(el, root, moveClass) {
   }
   moveClass.split(/\s+/).forEach((c) => c && clone.classList.add(c));
   clone.style.display = "none";
-  const container = root.nodeType === 1 ? root : root.parentNode;
+  const container = root2.nodeType === 1 ? root2 : root2.parentNode;
   container.appendChild(clone);
   const { hasTransform } = getTransitionInfo(clone);
   container.removeChild(clone);
@@ -11469,24 +11411,24 @@ function baseParse(input, options) {
     tokenizer.delimiterOpen = toCharCodes(delimiters[0]);
     tokenizer.delimiterClose = toCharCodes(delimiters[1]);
   }
-  const root = currentRoot = createRoot([], input);
+  const root2 = currentRoot = createRoot([], input);
   tokenizer.parse(currentInput);
-  root.loc = getLoc(0, input.length);
-  root.children = condenseWhitespace(root.children);
+  root2.loc = getLoc(0, input.length);
+  root2.children = condenseWhitespace(root2.children);
   currentRoot = null;
-  return root;
+  return root2;
 }
-function hoistStatic(root, context) {
+function hoistStatic(root2, context) {
   walk(
-    root,
+    root2,
     context,
     // Root node is unfortunately non-hoistable due to potential parent
     // fallthrough attributes.
-    isSingleElementRoot(root, root.children[0])
+    isSingleElementRoot(root2, root2.children[0])
   );
 }
-function isSingleElementRoot(root, child) {
-  const { children } = root;
+function isSingleElementRoot(root2, child) {
+  const { children } = root2;
   return children.length === 1 && child.type === 1 && !isSlotOutlet(child);
 }
 function walk(node, context, doNotHoistNode = false) {
@@ -11645,7 +11587,7 @@ function getConstantType(node, context) {
       let returnType = 3;
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
-        if (isString$1(child) || isSymbol(child)) {
+        if (isString$1(child) || isSymbol$2(child)) {
           continue;
         }
         const childType = getConstantType(child, context);
@@ -11719,7 +11661,7 @@ function getPatchFlag(node) {
   const flag = node.patchFlag;
   return flag ? parseInt(flag, 10) : void 0;
 }
-function createTransformContext(root, {
+function createTransformContext(root2, {
   filename = "",
   prefixIdentifiers = false,
   hoistStatic: hoistStatic2 = false,
@@ -11770,7 +11712,7 @@ function createTransformContext(root, {
     onWarn,
     compatConfig,
     // state
-    root,
+    root: root2,
     helpers: /* @__PURE__ */ new Map(),
     components: /* @__PURE__ */ new Set(),
     directives: /* @__PURE__ */ new Set(),
@@ -11787,7 +11729,7 @@ function createTransformContext(root, {
       vOnce: 0
     },
     parent: null,
-    currentNode: root,
+    currentNode: root2,
     childIndex: 0,
     inVOnce: false,
     // methods
@@ -11854,48 +11796,48 @@ function createTransformContext(root, {
   }
   return context;
 }
-function transform(root, options) {
-  const context = createTransformContext(root, options);
-  traverseNode(root, context);
+function transform(root2, options) {
+  const context = createTransformContext(root2, options);
+  traverseNode(root2, context);
   if (options.hoistStatic) {
-    hoistStatic(root, context);
+    hoistStatic(root2, context);
   }
   if (!options.ssr) {
-    createRootCodegen(root, context);
+    createRootCodegen(root2, context);
   }
-  root.helpers = /* @__PURE__ */ new Set([...context.helpers.keys()]);
-  root.components = [...context.components];
-  root.directives = [...context.directives];
-  root.imports = context.imports;
-  root.hoists = context.hoists;
-  root.temps = context.temps;
-  root.cached = context.cached;
-  root.transformed = true;
+  root2.helpers = /* @__PURE__ */ new Set([...context.helpers.keys()]);
+  root2.components = [...context.components];
+  root2.directives = [...context.directives];
+  root2.imports = context.imports;
+  root2.hoists = context.hoists;
+  root2.temps = context.temps;
+  root2.cached = context.cached;
+  root2.transformed = true;
   {
-    root.filters = [...context.filters];
+    root2.filters = [...context.filters];
   }
 }
-function createRootCodegen(root, context) {
+function createRootCodegen(root2, context) {
   const { helper } = context;
-  const { children } = root;
+  const { children } = root2;
   if (children.length === 1) {
     const child = children[0];
-    if (isSingleElementRoot(root, child) && child.codegenNode) {
+    if (isSingleElementRoot(root2, child) && child.codegenNode) {
       const codegenNode = child.codegenNode;
       if (codegenNode.type === 13) {
         convertToBlock(codegenNode, context);
       }
-      root.codegenNode = codegenNode;
+      root2.codegenNode = codegenNode;
     } else {
-      root.codegenNode = child;
+      root2.codegenNode = child;
     }
   } else if (children.length > 1) {
     let patchFlag = 64;
-    root.codegenNode = createVNodeCall(
+    root2.codegenNode = createVNodeCall(
       context,
       helper(FRAGMENT),
       void 0,
-      root.children,
+      root2.children,
       patchFlag + ``,
       void 0,
       void 0,
@@ -12198,13 +12140,13 @@ function genAssets(assets, type, { helper, push, newline, isTS }) {
     type === "filter" ? RESOLVE_FILTER : type === "component" ? RESOLVE_COMPONENT : RESOLVE_DIRECTIVE
   );
   for (let i = 0; i < assets.length; i++) {
-    let id = assets[i];
-    const maybeSelfReference = id.endsWith("__self");
+    let id2 = assets[i];
+    const maybeSelfReference = id2.endsWith("__self");
     if (maybeSelfReference) {
-      id = id.slice(0, -6);
+      id2 = id2.slice(0, -6);
     }
     push(
-      `const ${toValidAssetId(id, type)} = ${resolver}(${JSON.stringify(id)}${maybeSelfReference ? `, true` : ``})${isTS ? `!` : ``}`
+      `const ${toValidAssetId(id2, type)} = ${resolver}(${JSON.stringify(id2)}${maybeSelfReference ? `, true` : ``})${isTS ? `!` : ``}`
     );
     if (i < assets.length - 1) {
       newline();
@@ -12272,7 +12214,7 @@ function genNode(node, context) {
     );
     return;
   }
-  if (isSymbol(node)) {
+  if (isSymbol$2(node)) {
     context.push(context.helper(node));
     return;
   }
@@ -13165,7 +13107,7 @@ const transformElement = (node, context) => {
     const { tag, props } = node;
     const isComponent2 = node.tagType === 1;
     let vnodeTag = isComponent2 ? resolveComponentType(node, context) : `"${tag}"`;
-    const isDynamicComponent = isObject$2(vnodeTag) && vnodeTag.callee === RESOLVE_DYNAMIC_COMPONENT;
+    const isDynamicComponent = isObject$6(vnodeTag) && vnodeTag.callee === RESOLVE_DYNAMIC_COMPONENT;
     let vnodeProps;
     let vnodeChildren;
     let vnodePatchFlag;
@@ -13462,7 +13404,7 @@ function buildProps(node, context, props = node.props, isComponent2, isDynamicCo
         }
         if (needRuntime) {
           runtimeDirectives.push(prop);
-          if (isSymbol(needRuntime)) {
+          if (isSymbol$2(needRuntime)) {
             directiveImportMap.set(prop, needRuntime);
           }
         }
@@ -14689,6 +14631,7 @@ function compileToFunction(template, options) {
   return cache[key] = render3;
 }
 registerRuntimeCompiler(compileToFunction);
+var commonjsGlobal$1 = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 function getDefaultExportFromCjs(x) {
   return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
 }
@@ -14722,14 +14665,14 @@ function requireMs() {
     if (str.length > 100) {
       return;
     }
-    var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+    var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
       str
     );
-    if (!match) {
+    if (!match2) {
       return;
     }
-    var n = parseFloat(match[1]);
-    var type = (match[2] || "ms").toLowerCase();
+    var n = parseFloat(match2[1]);
+    var type = (match2[2] || "ms").toLowerCase();
     switch (type) {
       case "years":
       case "year":
@@ -14856,19 +14799,19 @@ function setup(env) {
         args.unshift("%O");
       }
       let index = 0;
-      args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
-        if (match === "%%") {
+      args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
+        if (match2 === "%%") {
           return "%";
         }
         index++;
         const formatter = createDebug.formatters[format];
         if (typeof formatter === "function") {
           const val = args[index];
-          match = formatter.call(self2, val);
+          match2 = formatter.call(self2, val);
           args.splice(index, 1);
           index--;
         }
-        return match;
+        return match2;
       });
       createDebug.formatArgs.call(self2, args);
       const logFn = self2.log || createDebug.log;
@@ -14969,12 +14912,13 @@ function setup(env) {
 }
 var common = setup;
 (function(module, exports) {
+  var define_process_env_default = {};
   exports.formatArgs = formatArgs;
   exports.save = save;
   exports.load = load;
   exports.useColors = useColors;
   exports.storage = localstorage();
-  exports.destroy = (() => {
+  exports.destroy = /* @__PURE__ */ (() => {
     let warned = false;
     return () => {
       if (!warned) {
@@ -15083,12 +15027,12 @@ var common = setup;
     args.splice(1, 0, c, "color: inherit");
     let index = 0;
     let lastC = 0;
-    args[0].replace(/%[a-zA-Z%]/g, (match) => {
-      if (match === "%%") {
+    args[0].replace(/%[a-zA-Z%]/g, (match2) => {
+      if (match2 === "%%") {
         return;
       }
       index++;
-      if (match === "%c") {
+      if (match2 === "%c") {
         lastC = index;
       }
     });
@@ -15113,7 +15057,7 @@ var common = setup;
     } catch (error) {
     }
     if (!r && typeof process !== "undefined" && "env" in process) {
-      r = {}.DEBUG;
+      r = define_process_env_default.DEBUG;
     }
     return r;
   }
@@ -15148,7 +15092,7 @@ function toValue(r) {
 const isClient = typeof window !== "undefined" && typeof document !== "undefined";
 typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
 const toString$1 = Object.prototype.toString;
-const isObject$1 = (val) => toString$1.call(val) === "[object Object]";
+const isObject$5 = (val) => toString$1.call(val) === "[object Object]";
 const noop$4 = () => {
 };
 function getLifeCycleTarget(target) {
@@ -15167,19 +15111,19 @@ function unrefElement(elRef) {
 const defaultWindow = isClient ? window : void 0;
 function useEventListener(...args) {
   let target;
-  let events;
+  let events2;
   let listeners;
   let options;
   if (typeof args[0] === "string" || Array.isArray(args[0])) {
-    [events, listeners, options] = args;
+    [events2, listeners, options] = args;
     target = defaultWindow;
   } else {
-    [target, events, listeners, options] = args;
+    [target, events2, listeners, options] = args;
   }
   if (!target)
     return noop$4;
-  if (!Array.isArray(events))
-    events = [events];
+  if (!Array.isArray(events2))
+    events2 = [events2];
   if (!Array.isArray(listeners))
     listeners = [listeners];
   const cleanups = [];
@@ -15197,9 +15141,9 @@ function useEventListener(...args) {
       cleanup();
       if (!el)
         return;
-      const optionsClone = isObject$1(options2) ? { ...options2 } : options2;
+      const optionsClone = isObject$5(options2) ? { ...options2 } : options2;
       cleanups.push(
-        ...events.flatMap((event) => {
+        ...events2.flatMap((event) => {
           return listeners.map((listener3) => register(el, event, listener3, optionsClone));
         })
       );
@@ -17396,7 +17340,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
               onClick: _cache[1] || (_cache[1] = ($event) => isRef(showModal) ? showModal.value = false : showModal = false)
             }, toDisplayString(__props.t.Cancel), 1),
             createBaseVNode("button", {
-              class: "ml-2 btn btn-primary",
+              class: "ms-2 btn btn-primary",
               onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm"))
             }, toDisplayString(__props.actionName), 1)
           ])
@@ -17528,7 +17472,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
                   [vModelRadio, unref(folderAction)]
                 ]),
                 createBaseVNode("label", {
-                  class: "ml-2 cursor-pointer w-100",
+                  class: "ms-2 cursor-pointer w-100",
                   for: "action-" + folderActionElem.id
                 }, toDisplayString(folderActionElem.displayName), 9, _hoisted_6$4)
               ]);
@@ -17541,7 +17485,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
             }, toDisplayString(__props.t.Cancel), 1),
             createBaseVNode("button", {
               id: "btn-submit",
-              class: "ml-2 btn btn-primary",
+              class: "ms-2 btn btn-primary",
               onClick: _cache[4] || (_cache[4] = ($event) => emit2("confirm", { action: unref(folderAction), folder: __props.folder, inputValue: unref(inputValue) }))
             }, [
               renderSlot(_ctx.$slots, "submit")
@@ -17560,7 +17504,7 @@ function bind(fn, thisArg) {
 }
 const { toString } = Object.prototype;
 const { getPrototypeOf } = Object;
-const kindOf = ((cache) => (thing) => {
+const kindOf = /* @__PURE__ */ ((cache) => (thing) => {
   const str = toString.call(thing);
   return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
 })(/* @__PURE__ */ Object.create(null));
@@ -17587,7 +17531,7 @@ function isArrayBufferView(val) {
 const isString = typeOfTest("string");
 const isFunction = typeOfTest("function");
 const isNumber = typeOfTest("number");
-const isObject = (thing) => thing !== null && typeof thing === "object";
+const isObject$4 = (thing) => thing !== null && typeof thing === "object";
 const isBoolean = (thing) => thing === true || thing === false;
 const isPlainObject = (val) => {
   if (kindOf(val) !== "object") {
@@ -17600,7 +17544,7 @@ const isDate = kindOfTest("Date");
 const isFile = kindOfTest("File");
 const isBlob = kindOfTest("Blob");
 const isFileList = kindOfTest("FileList");
-const isStream = (val) => isObject(val) && isFunction(val.pipe);
+const isStream = (val) => isObject$4(val) && isFunction(val.pipe);
 const isFormData = (thing) => {
   let kind;
   return thing && (typeof FormData === "function" && thing instanceof FormData || isFunction(thing.append) && ((kind = kindOf(thing)) === "formdata" || // detect form-data instance
@@ -17725,7 +17669,7 @@ const endsWith = (str, searchString, position) => {
   const lastIndex = str.indexOf(searchString, position);
   return lastIndex !== -1 && lastIndex === position;
 };
-const toArray$1 = (thing) => {
+const toArray$2 = (thing) => {
   if (!thing)
     return null;
   if (isArray(thing))
@@ -17739,7 +17683,7 @@ const toArray$1 = (thing) => {
   }
   return arr;
 };
-const isTypedArray = ((TypedArray) => {
+const isTypedArray = /* @__PURE__ */ ((TypedArray) => {
   return (thing) => {
     return TypedArray && thing instanceof TypedArray;
   };
@@ -17770,7 +17714,7 @@ const toCamelCase = (str) => {
     }
   );
 };
-const hasOwnProperty = (({ hasOwnProperty: hasOwnProperty2 }) => (obj, prop) => hasOwnProperty2.call(obj, prop))(Object.prototype);
+const hasOwnProperty$1 = (({ hasOwnProperty: hasOwnProperty2 }) => (obj, prop) => hasOwnProperty2.call(obj, prop))(Object.prototype);
 const isRegExp = kindOfTest("RegExp");
 const reduceDescriptors = (obj, reducer) => {
   const descriptors2 = Object.getOwnPropertyDescriptors(obj);
@@ -17840,7 +17784,7 @@ function isSpecCompliantForm(thing) {
 const toJSONObject = (obj) => {
   const stack2 = new Array(10);
   const visit = (source, i) => {
-    if (isObject(source)) {
+    if (isObject$4(source)) {
       if (stack2.indexOf(source) >= 0) {
         return;
       }
@@ -17860,7 +17804,7 @@ const toJSONObject = (obj) => {
   return visit(obj, 0);
 };
 const isAsyncFn = kindOfTest("AsyncFunction");
-const isThenable = (thing) => thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
+const isThenable = (thing) => thing && (isObject$4(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
 const utils$1 = {
   isArray,
   isArrayBuffer,
@@ -17870,7 +17814,7 @@ const utils$1 = {
   isString,
   isNumber,
   isBoolean,
-  isObject,
+  isObject: isObject$4,
   isPlainObject,
   isUndefined,
   isDate,
@@ -17892,12 +17836,12 @@ const utils$1 = {
   kindOf,
   kindOfTest,
   endsWith,
-  toArray: toArray$1,
+  toArray: toArray$2,
   forEachEntry,
   matchAll,
   isHTMLForm,
-  hasOwnProperty,
-  hasOwnProp: hasOwnProperty,
+  hasOwnProperty: hasOwnProperty$1,
+  hasOwnProp: hasOwnProperty$1,
   // an alias to avoid ESLint no-prototype-builtins detection
   reduceDescriptors,
   freezeMethods,
@@ -18107,8 +18051,8 @@ function encode$1(str) {
     "%20": "+",
     "%00": "\0"
   };
-  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer2(match) {
-    return charMap[match];
+  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer2(match2) {
+    return charMap[match2];
   });
 }
 function AxiosURLSearchParams(params, options) {
@@ -18179,9 +18123,9 @@ class InterceptorManager {
    *
    * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
    */
-  eject(id) {
-    if (this.handlers[id]) {
-      this.handlers[id] = null;
+  eject(id2) {
+    if (this.handlers[id2]) {
+      this.handlers[id2] = null;
     }
   }
   /**
@@ -18212,7 +18156,6 @@ class InterceptorManager {
     });
   }
 }
-const InterceptorManager$1 = InterceptorManager;
 const transitionalDefaults = {
   silentJSONParsing: true,
   forcedJSONParsing: true,
@@ -18260,8 +18203,8 @@ function toURLEncodedForm(data, options) {
   }, options));
 }
 function parsePropPath(name) {
-  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
-    return match[0] === "[]" ? "" : match[1] || match[0];
+  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map((match2) => {
+    return match2[0] === "[]" ? "" : match2[1] || match2[0];
   });
 }
 function arrayToObject(arr) {
@@ -18470,9 +18413,9 @@ function normalizeValue(value) {
 function parseTokens(str) {
   const tokens = /* @__PURE__ */ Object.create(null);
   const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
-  let match;
-  while (match = tokensRE.exec(str)) {
-    tokens[match[1]] = match[2];
+  let match2;
+  while (match2 = tokensRE.exec(str)) {
+    tokens[match2[1]] = match2[2];
   }
   return tokens;
 }
@@ -18720,8 +18663,8 @@ const cookies = platform.hasStandardBrowserEnv ? (
       document.cookie = cookie.join("; ");
     },
     read(name) {
-      const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
-      return match ? decodeURIComponent(match[3]) : null;
+      const match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+      return match2 ? decodeURIComponent(match2[3]) : null;
     },
     remove(name) {
       this.write(name, "", Date.now() - 864e5);
@@ -18784,15 +18727,15 @@ const isURLSameOrigin = platform.hasStandardBrowserEnv ? (
   }()
 ) : (
   // Non standard browser envs (web workers, react-native) lack needed support.
-  function nonStandardBrowserEnv() {
+  /* @__PURE__ */ function nonStandardBrowserEnv() {
     return function isURLSameOrigin2() {
       return true;
     };
   }()
 );
 function parseProtocol(url) {
-  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-  return match && match[1] || "";
+  const match2 = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
+  return match2 && match2[1] || "";
 }
 function speedometer(samplesCount, min) {
   samplesCount = samplesCount || 10;
@@ -18803,13 +18746,13 @@ function speedometer(samplesCount, min) {
   let firstSampleTS;
   min = min !== void 0 ? min : 1e3;
   return function push(chunkLength) {
-    const now = Date.now();
+    const now2 = Date.now();
     const startedAt = timestamps[tail];
     if (!firstSampleTS) {
-      firstSampleTS = now;
+      firstSampleTS = now2;
     }
     bytes[head] = chunkLength;
-    timestamps[head] = now;
+    timestamps[head] = now2;
     let i = tail;
     let bytesCount = 0;
     while (i !== head) {
@@ -18820,10 +18763,10 @@ function speedometer(samplesCount, min) {
     if (head === tail) {
       tail = (tail + 1) % samplesCount;
     }
-    if (now - firstSampleTS < min) {
+    if (now2 - firstSampleTS < min) {
       return;
     }
-    const passed = startedAt && now - startedAt;
+    const passed = startedAt && now2 - startedAt;
     return passed ? Math.round(bytesCount * 1e3 / passed) : void 0;
   };
 }
@@ -19019,22 +18962,22 @@ const adapters = {
     const rejectedReasons = {};
     for (let i = 0; i < length; i++) {
       nameOrAdapter = adapters2[i];
-      let id;
+      let id2;
       adapter = nameOrAdapter;
       if (!isResolvedHandle(nameOrAdapter)) {
-        adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
+        adapter = knownAdapters[(id2 = String(nameOrAdapter)).toLowerCase()];
         if (adapter === void 0) {
-          throw new AxiosError(`Unknown adapter '${id}'`);
+          throw new AxiosError(`Unknown adapter '${id2}'`);
         }
       }
       if (adapter) {
         break;
       }
-      rejectedReasons[id || "#" + i] = adapter;
+      rejectedReasons[id2 || "#" + i] = adapter;
     }
     if (!adapter) {
       const reasons = Object.entries(rejectedReasons).map(
-        ([id, state]) => `adapter ${id} ` + (state === false ? "is not supported by the environment" : "is not available in the build")
+        ([id2, state]) => `adapter ${id2} ` + (state === false ? "is not supported by the environment" : "is not available in the build")
       );
       let s = length ? reasons.length > 1 ? "since :\n" + reasons.map(renderReason).join("\n") : " " + renderReason(reasons[0]) : "as no adapter specified";
       throw new AxiosError(
@@ -19170,17 +19113,17 @@ function mergeConfig(config1, config2) {
 const VERSION = "1.6.7";
 const validators$1 = {};
 ["object", "boolean", "number", "function", "string", "symbol"].forEach((type, i) => {
-  validators$1[type] = function validator6(thing) {
+  validators$1[type] = function validator5(thing) {
     return typeof thing === type || "a" + (i < 1 ? "n " : " ") + type;
   };
 });
 const deprecatedWarnings = {};
-validators$1.transitional = function transitional(validator6, version2, message) {
+validators$1.transitional = function transitional(validator5, version2, message) {
   function formatMessage(opt, desc) {
     return "[Axios v" + VERSION + "] Transitional option '" + opt + "'" + desc + (message ? ". " + message : "");
   }
   return (value, opt, opts) => {
-    if (validator6 === false) {
+    if (validator5 === false) {
       throw new AxiosError(
         formatMessage(opt, " has been removed" + (version2 ? " in " + version2 : "")),
         AxiosError.ERR_DEPRECATED
@@ -19195,7 +19138,7 @@ validators$1.transitional = function transitional(validator6, version2, message)
         )
       );
     }
-    return validator6 ? validator6(value, opt, opts) : true;
+    return validator5 ? validator5(value, opt, opts) : true;
   };
 };
 function assertOptions(options, schema, allowUnknown) {
@@ -19206,10 +19149,10 @@ function assertOptions(options, schema, allowUnknown) {
   let i = keys.length;
   while (i-- > 0) {
     const opt = keys[i];
-    const validator6 = schema[opt];
-    if (validator6) {
+    const validator5 = schema[opt];
+    if (validator5) {
       const value = options[opt];
-      const result = value === void 0 || validator6(value, opt, options);
+      const result = value === void 0 || validator5(value, opt, options);
       if (result !== true) {
         throw new AxiosError("option " + opt + " must be " + result, AxiosError.ERR_BAD_OPTION_VALUE);
       }
@@ -19229,8 +19172,8 @@ class Axios {
   constructor(instanceConfig) {
     this.defaults = instanceConfig;
     this.interceptors = {
-      request: new InterceptorManager$1(),
-      response: new InterceptorManager$1()
+      request: new InterceptorManager(),
+      response: new InterceptorManager()
     };
   }
   /**
@@ -19577,13 +19520,12 @@ axios.formToJSON = (thing) => formDataToJSON(utils$1.isHTMLForm(thing) ? new For
 axios.getAdapter = adapters.getAdapter;
 axios.HttpStatusCode = HttpStatusCode$1;
 axios.default = axios;
-const axios$1 = axios;
 class MediaApiClient {
   constructor(baseUrl, instance) {
     __publicField(this, "instance");
     __publicField(this, "baseUrl");
     __publicField(this, "jsonParseReviver");
-    this.instance = instance ? instance : axios$1.create();
+    this.instance = instance ? instance : axios.create();
     this.baseUrl = baseUrl !== void 0 && baseUrl !== null ? baseUrl : "https://localhost:44383/developmentapis";
   }
   getFolders(path, cancelToken) {
@@ -20495,7 +20437,7 @@ const _export_sfc = (sfc, props) => {
 };
 const _hoisted_1$7 = /* @__PURE__ */ createBaseVNode("span", null, [
   /* @__PURE__ */ createBaseVNode("svg", {
-    class: "ml-1 ms-1",
+    class: "ms-1",
     width: "16",
     height: "16",
     viewBox: "0 0 16 16",
@@ -20977,7 +20919,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
                       [vModelRadio, fileActionEntry.action]
                     ]),
                     createBaseVNode("label", {
-                      class: "ml-2 cursor-pointer w-100",
+                      class: "ms-2 cursor-pointer w-100",
                       for: "action[" + index + "]-" + fileActionElem.id
                     }, toDisplayString(fileActionElem.displayName), 9, _hoisted_9$2)
                   ]);
@@ -20992,7 +20934,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
             }, toDisplayString(__props.t.Cancel), 1),
             createBaseVNode("button", {
               id: "btn-submit",
-              class: "ml-2 btn btn-primary",
+              class: "ms-2 btn btn-primary",
               onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { actionEntries: unref(inputValues) }))
             }, [
               renderSlot(_ctx.$slots, "submit")
@@ -21142,12 +21084,6 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     printSize: function(file) {
       return humanFileSize(file.size ?? 0, true, 2);
     },
-    canProcessFolder: function() {
-      if (this.filteredFileItems) {
-        this.filteredFileItems[0];
-      }
-      return false;
-    },
     isFileSelected: function(file) {
       var _a;
       let result = (_a = this.selectedFiles) == null ? void 0 : _a.some(function(element) {
@@ -21252,10 +21188,7 @@ const _hoisted_4$2 = {
 const _hoisted_5$2 = { class: "form-check" };
 const _hoisted_6$2 = ["checked", "title"];
 const _hoisted_7$2 = { class: "optional-col" };
-const _hoisted_8$2 = {
-  key: 0,
-  class: "table-cell text-center"
-};
+const _hoisted_8$2 = { class: "table-cell text-center" };
 const _hoisted_9$1 = /* @__PURE__ */ createBaseVNode("div", { class: "table-cell" }, null, -1);
 const _hoisted_10$1 = { class: "table-body" };
 const _hoisted_11$1 = ["onDragstart"];
@@ -21287,16 +21220,11 @@ const _hoisted_23$1 = { class: "table-cell" };
 const _hoisted_24$1 = { class: "text-col" };
 const _hoisted_25$1 = { class: "table-cell" };
 const _hoisted_26$1 = { class: "text-col optional-col" };
-const _hoisted_27$1 = {
-  key: 0,
-  class: "table-cell text-center"
-};
-const _hoisted_28$1 = /* @__PURE__ */ createBaseVNode("span", { class: "dot" }, null, -1);
-const _hoisted_29$1 = [
-  _hoisted_28$1
-];
-const _hoisted_30$1 = { class: "table-cell text-right text-end" };
-const _hoisted_31$1 = ["onClick"];
+const _hoisted_27$1 = /* @__PURE__ */ createBaseVNode("div", { class: "table-cell text-center" }, [
+  /* @__PURE__ */ createBaseVNode("span", { class: "dot" })
+], -1);
+const _hoisted_28$1 = { class: "table-cell text-right text-end" };
+const _hoisted_29$1 = ["onClick"];
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_sort_indicator = resolveComponent("sort-indicator");
   const _component_fa_icon = resolveComponent("fa-icon");
@@ -21358,7 +21286,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
             }, null, 8, ["selectedcolname", "asc"])
           ])
         ]),
-        _ctx.canProcessFolder() ? (openBlock(), createElementBlock("div", _hoisted_8$2, toDisplayString(_ctx.t.Status), 1)) : createCommentVNode("", true),
+        createBaseVNode("div", _hoisted_8$2, toDisplayString(_ctx.t.Status), 1),
         _hoisted_9$1
       ])
     ]),
@@ -21402,8 +21330,8 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_25$1, [
             createBaseVNode("div", _hoisted_26$1, toDisplayString(_ctx.printSize(file)), 1)
           ]),
-          _ctx.canProcessFolder() ? (openBlock(), createElementBlock("div", _hoisted_27$1, _hoisted_29$1)) : createCommentVNode("", true),
-          createBaseVNode("div", _hoisted_30$1, [
+          _hoisted_27$1,
+          createBaseVNode("div", _hoisted_28$1, [
             createBaseVNode("a", {
               href: "javascript:void(0)",
               class: "btn btn-link btn-sm action-button px-4 py-3",
@@ -21429,7 +21357,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
                 ]),
                 _: 2
               }, 1032, ["t", "modal-name", "files", "title", "onClosed"])
-            ], 8, _hoisted_31$1)
+            ], 8, _hoisted_29$1)
           ])
         ], 40, _hoisted_11$1);
       }), 128))
@@ -21619,6 +21547,3796 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const PagerComponent = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const DragDropThumbnail = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAAb5JREFUeNrsl79rwkAUx7+GEHKBDlYQh3PJ4OrgnxC6ZXVwFixxEVzsv+DiLG6ucXWzu0sdXIVOZpUOhRxkMF1isanx7vKjQvFBCCSPfF6+933vklIYhrhlqAAwHA55eSaAEYA2gPKVvA8ALwBmogUoAjktAG8Aehw4ovttaQU48NUJTCmFbdsXEz3Pw3K5TLcEPLimaUEQBJphGGg0Grl6QOHBq9XqZ6fT0YoyoXINXqvV/MFg8EAIKbYLYiZyAZR1XT92u10jA7wl0DEbNQZfATB1XT/2+32lUqmkAZsA3qMzL8ZqDN4ihISO4yiU0rRvbkrkjk4F9CLJwBgrTSYTaSpj7Ne1pOfsdjtMp9MfJuyJQJrNZuIMcF0XACDrGfVcNtu2kSS9YRgX763XaywWC5wGlWVZmM/n6bqAUio1aOJwx3Gw3+9zGUSp4IQQ1Ov14gtIgmfxgHBst9tvOCEElmVJy56pgPMdjzGWaDhRJaSWwPM8HA4Hbh4hJHHbzqSA7/vcIZPXdvxncS9AjZuMZ8JCC0jzUZnXEjxHXyg3K2AG4BFAiXM83bvgf7ehTAj80BaiwCuATY4CjL8GAOnXhYO+byIBAAAAAElFTkSuQmCC";
+function _classPrivateFieldLooseBase$6(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$6 = 0;
+function _classPrivateFieldLooseKey$6(name) {
+  return "__private_" + id$6++ + "_" + name;
+}
+function insertReplacement(source, rx, replacement) {
+  const newParts = [];
+  source.forEach((chunk) => {
+    if (typeof chunk !== "string") {
+      return newParts.push(chunk);
+    }
+    return rx[Symbol.split](chunk).forEach((raw, i, list) => {
+      if (raw !== "") {
+        newParts.push(raw);
+      }
+      if (i < list.length - 1) {
+        newParts.push(replacement);
+      }
+    });
+  });
+  return newParts;
+}
+/**
+ * Takes a string with placeholder variables like `%{smart_count} file selected`
+ * and replaces it with values from options `{smart_count: 5}`
+ *
+ * @license https://github.com/airbnb/polyglot.js/blob/master/LICENSE
+ * taken from https://github.com/airbnb/polyglot.js/blob/master/lib/polyglot.js#L299
+ *
+ * @param phrase that needs interpolation, with placeholders
+ * @param options with values that will be used to replace placeholders
+ */
+function interpolate(phrase, options) {
+  const dollarRegex = /\$/g;
+  const dollarBillsYall = "$$$$";
+  let interpolated = [phrase];
+  if (options == null)
+    return interpolated;
+  for (const arg of Object.keys(options)) {
+    if (arg !== "_") {
+      let replacement = options[arg];
+      if (typeof replacement === "string") {
+        replacement = dollarRegex[Symbol.replace](replacement, dollarBillsYall);
+      }
+      interpolated = insertReplacement(interpolated, new RegExp(`%\\{${arg}\\}`, "g"), replacement);
+    }
+  }
+  return interpolated;
+}
+const defaultOnMissingKey = (key) => {
+  throw new Error(`missing string: ${key}`);
+};
+var _onMissingKey = /* @__PURE__ */ _classPrivateFieldLooseKey$6("onMissingKey");
+var _apply = /* @__PURE__ */ _classPrivateFieldLooseKey$6("apply");
+class Translator {
+  constructor(locales, _temp) {
+    let {
+      onMissingKey = defaultOnMissingKey
+    } = _temp === void 0 ? {} : _temp;
+    Object.defineProperty(this, _apply, {
+      value: _apply2
+    });
+    Object.defineProperty(this, _onMissingKey, {
+      writable: true,
+      value: void 0
+    });
+    this.locale = {
+      strings: {},
+      pluralize(n) {
+        if (n === 1) {
+          return 0;
+        }
+        return 1;
+      }
+    };
+    if (Array.isArray(locales)) {
+      locales.forEach(_classPrivateFieldLooseBase$6(this, _apply)[_apply], this);
+    } else {
+      _classPrivateFieldLooseBase$6(this, _apply)[_apply](locales);
+    }
+    _classPrivateFieldLooseBase$6(this, _onMissingKey)[_onMissingKey] = onMissingKey;
+  }
+  /**
+   * Public translate method
+   *
+   * @param key
+   * @param options with values that will be used later to replace placeholders in string
+   * @returns string translated (and interpolated)
+   */
+  translate(key, options) {
+    return this.translateArray(key, options).join("");
+  }
+  /**
+   * Get a translation and return the translated and interpolated parts as an array.
+   *
+   * @returns The translated and interpolated parts, in order.
+   */
+  translateArray(key, options) {
+    let string = this.locale.strings[key];
+    if (string == null) {
+      _classPrivateFieldLooseBase$6(this, _onMissingKey)[_onMissingKey](key);
+      string = key;
+    }
+    const hasPluralForms = typeof string === "object";
+    if (hasPluralForms) {
+      if (options && typeof options.smart_count !== "undefined") {
+        const plural = this.locale.pluralize(options.smart_count);
+        return interpolate(string[plural], options);
+      }
+      throw new Error("Attempted to use a string with plural forms, but no value was given for %{smart_count}");
+    }
+    if (typeof string !== "string") {
+      throw new Error(`string was not a string`);
+    }
+    return interpolate(string, options);
+  }
+}
+function _apply2(locale2) {
+  if (!(locale2 != null && locale2.strings)) {
+    return;
+  }
+  const prevLocale = this.locale;
+  Object.assign(this.locale, {
+    strings: {
+      ...prevLocale.strings,
+      ...locale2.strings
+    },
+    pluralize: locale2.pluralize || prevLocale.pluralize
+  });
+}
+var namespaceEmitter = function createNamespaceEmitter() {
+  var emitter2 = {};
+  var _fns = emitter2._fns = {};
+  emitter2.emit = function emit2(event, arg1, arg2, arg3, arg4, arg5, arg6) {
+    var toEmit = getListeners(event);
+    if (toEmit.length) {
+      emitAll(event, toEmit, [arg1, arg2, arg3, arg4, arg5, arg6]);
+    }
+  };
+  emitter2.on = function on(event, fn) {
+    if (!_fns[event]) {
+      _fns[event] = [];
+    }
+    _fns[event].push(fn);
+  };
+  emitter2.once = function once(event, fn) {
+    function one() {
+      fn.apply(this, arguments);
+      emitter2.off(event, one);
+    }
+    this.on(event, one);
+  };
+  emitter2.off = function off(event, fn) {
+    var keep = [];
+    if (event && fn) {
+      var fns = this._fns[event];
+      var i = 0;
+      var l = fns ? fns.length : 0;
+      for (i; i < l; i++) {
+        if (fns[i] !== fn) {
+          keep.push(fns[i]);
+        }
+      }
+    }
+    keep.length ? this._fns[event] = keep : delete this._fns[event];
+  };
+  function getListeners(e) {
+    var out = _fns[e] ? _fns[e] : [];
+    var idx = e.indexOf(":");
+    var args = idx === -1 ? [e] : [e.substring(0, idx), e.substring(idx + 1)];
+    var keys = Object.keys(_fns);
+    var i = 0;
+    var l = keys.length;
+    for (i; i < l; i++) {
+      var key = keys[i];
+      if (key === "*") {
+        out = out.concat(_fns[key]);
+      }
+      if (args.length === 2 && args[0] === key) {
+        out = out.concat(_fns[key]);
+        break;
+      }
+    }
+    return out;
+  }
+  function emitAll(e, fns, args) {
+    var i = 0;
+    var l = fns.length;
+    for (i; i < l; i++) {
+      if (!fns[i])
+        break;
+      fns[i].event = e;
+      fns[i].apply(fns[i], args);
+    }
+  }
+  return emitter2;
+};
+const ee = /* @__PURE__ */ getDefaultExportFromCjs(namespaceEmitter);
+let urlAlphabet$1 = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+let nanoid$1 = (size2 = 21) => {
+  let id2 = "";
+  let i = size2;
+  while (i--) {
+    id2 += urlAlphabet$1[Math.random() * 64 | 0];
+  }
+  return id2;
+};
+function isObject$3(value) {
+  var type = typeof value;
+  return value != null && (type == "object" || type == "function");
+}
+var isObject_1 = isObject$3;
+var freeGlobal$1 = typeof commonjsGlobal$1 == "object" && commonjsGlobal$1 && commonjsGlobal$1.Object === Object && commonjsGlobal$1;
+var _freeGlobal = freeGlobal$1;
+var freeGlobal = _freeGlobal;
+var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+var root$2 = freeGlobal || freeSelf || Function("return this")();
+var _root = root$2;
+var root$1 = _root;
+var now$1 = function() {
+  return root$1.Date.now();
+};
+var now_1 = now$1;
+var reWhitespace = /\s/;
+function trimmedEndIndex$1(string) {
+  var index = string.length;
+  while (index-- && reWhitespace.test(string.charAt(index))) {
+  }
+  return index;
+}
+var _trimmedEndIndex = trimmedEndIndex$1;
+var trimmedEndIndex = _trimmedEndIndex;
+var reTrimStart = /^\s+/;
+function baseTrim$1(string) {
+  return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
+}
+var _baseTrim = baseTrim$1;
+var root = _root;
+var Symbol$3 = root.Symbol;
+var _Symbol = Symbol$3;
+var Symbol$2 = _Symbol;
+var objectProto$1 = Object.prototype;
+var hasOwnProperty = objectProto$1.hasOwnProperty;
+var nativeObjectToString$1 = objectProto$1.toString;
+var symToStringTag$1 = Symbol$2 ? Symbol$2.toStringTag : void 0;
+function getRawTag$1(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag$1), tag = value[symToStringTag$1];
+  try {
+    value[symToStringTag$1] = void 0;
+    var unmasked = true;
+  } catch (e) {
+  }
+  var result = nativeObjectToString$1.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag$1] = tag;
+    } else {
+      delete value[symToStringTag$1];
+    }
+  }
+  return result;
+}
+var _getRawTag = getRawTag$1;
+var objectProto = Object.prototype;
+var nativeObjectToString = objectProto.toString;
+function objectToString$1(value) {
+  return nativeObjectToString.call(value);
+}
+var _objectToString = objectToString$1;
+var Symbol$1 = _Symbol, getRawTag = _getRawTag, objectToString = _objectToString;
+var nullTag = "[object Null]", undefinedTag = "[object Undefined]";
+var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : void 0;
+function baseGetTag$1(value) {
+  if (value == null) {
+    return value === void 0 ? undefinedTag : nullTag;
+  }
+  return symToStringTag && symToStringTag in Object(value) ? getRawTag(value) : objectToString(value);
+}
+var _baseGetTag = baseGetTag$1;
+function isObjectLike$1(value) {
+  return value != null && typeof value == "object";
+}
+var isObjectLike_1 = isObjectLike$1;
+var baseGetTag = _baseGetTag, isObjectLike = isObjectLike_1;
+var symbolTag = "[object Symbol]";
+function isSymbol$1(value) {
+  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
+}
+var isSymbol_1 = isSymbol$1;
+var baseTrim = _baseTrim, isObject$2 = isObject_1, isSymbol = isSymbol_1;
+var NAN = 0 / 0;
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+var reIsBinary = /^0b[01]+$/i;
+var reIsOctal = /^0o[0-7]+$/i;
+var freeParseInt = parseInt;
+function toNumber$1(value) {
+  if (typeof value == "number") {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject$2(value)) {
+    var other = typeof value.valueOf == "function" ? value.valueOf() : value;
+    value = isObject$2(other) ? other + "" : other;
+  }
+  if (typeof value != "string") {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim(value);
+  var isBinary = reIsBinary.test(value);
+  return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+}
+var toNumber_1 = toNumber$1;
+var isObject$1 = isObject_1, now = now_1, toNumber = toNumber_1;
+var FUNC_ERROR_TEXT$1 = "Expected a function";
+var nativeMax = Math.max, nativeMin = Math.min;
+function debounce$1(func, wait, options) {
+  var lastArgs, lastThis, maxWait, result, timerId, lastCallTime, lastInvokeTime = 0, leading = false, maxing = false, trailing = true;
+  if (typeof func != "function") {
+    throw new TypeError(FUNC_ERROR_TEXT$1);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject$1(options)) {
+    leading = !!options.leading;
+    maxing = "maxWait" in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = "trailing" in options ? !!options.trailing : trailing;
+  }
+  function invokeFunc(time) {
+    var args = lastArgs, thisArg = lastThis;
+    lastArgs = lastThis = void 0;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+  function leadingEdge(time) {
+    lastInvokeTime = time;
+    timerId = setTimeout(timerExpired, wait);
+    return leading ? invokeFunc(time) : result;
+  }
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime, timeWaiting = wait - timeSinceLastCall;
+    return maxing ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
+  }
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime;
+    return lastCallTime === void 0 || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && timeSinceLastInvoke >= maxWait;
+  }
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+  function trailingEdge(time) {
+    timerId = void 0;
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = void 0;
+    return result;
+  }
+  function cancel() {
+    if (timerId !== void 0) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = void 0;
+  }
+  function flush() {
+    return timerId === void 0 ? result : trailingEdge(now());
+  }
+  function debounced() {
+    var time = now(), isInvoking = shouldInvoke(time);
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+    if (isInvoking) {
+      if (timerId === void 0) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        clearTimeout(timerId);
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === void 0) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+var debounce_1 = debounce$1;
+var debounce = debounce_1, isObject = isObject_1;
+var FUNC_ERROR_TEXT = "Expected a function";
+function throttle(func, wait, options) {
+  var leading = true, trailing = true;
+  if (typeof func != "function") {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  if (isObject(options)) {
+    leading = "leading" in options ? !!options.leading : leading;
+    trailing = "trailing" in options ? !!options.trailing : trailing;
+  }
+  return debounce(func, wait, {
+    "leading": leading,
+    "maxWait": wait,
+    "trailing": trailing
+  });
+}
+var throttle_1 = throttle;
+const throttle$1 = /* @__PURE__ */ getDefaultExportFromCjs(throttle_1);
+function _classPrivateFieldLooseBase$5(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$5 = 0;
+function _classPrivateFieldLooseKey$5(name) {
+  return "__private_" + id$5++ + "_" + name;
+}
+const packageJson$3 = {
+  "version": "3.2.2"
+};
+var _callbacks = /* @__PURE__ */ _classPrivateFieldLooseKey$5("callbacks");
+var _publish = /* @__PURE__ */ _classPrivateFieldLooseKey$5("publish");
+class DefaultStore {
+  constructor() {
+    Object.defineProperty(this, _publish, {
+      value: _publish2
+    });
+    this.state = {};
+    Object.defineProperty(this, _callbacks, {
+      writable: true,
+      value: /* @__PURE__ */ new Set()
+    });
+  }
+  getState() {
+    return this.state;
+  }
+  setState(patch) {
+    const prevState = {
+      ...this.state
+    };
+    const nextState = {
+      ...this.state,
+      ...patch
+    };
+    this.state = nextState;
+    _classPrivateFieldLooseBase$5(this, _publish)[_publish](prevState, nextState, patch);
+  }
+  subscribe(listener3) {
+    _classPrivateFieldLooseBase$5(this, _callbacks)[_callbacks].add(listener3);
+    return () => {
+      _classPrivateFieldLooseBase$5(this, _callbacks)[_callbacks].delete(listener3);
+    };
+  }
+}
+function _publish2() {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+  _classPrivateFieldLooseBase$5(this, _callbacks)[_callbacks].forEach((listener3) => {
+    listener3(...args);
+  });
+}
+DefaultStore.VERSION = packageJson$3.version;
+function getFileNameAndExtension(fullFileName) {
+  const lastDot = fullFileName.lastIndexOf(".");
+  if (lastDot === -1 || lastDot === fullFileName.length - 1) {
+    return {
+      name: fullFileName,
+      extension: void 0
+    };
+  }
+  return {
+    name: fullFileName.slice(0, lastDot),
+    extension: fullFileName.slice(lastDot + 1)
+  };
+}
+const mimeTypes = {
+  __proto__: null,
+  md: "text/markdown",
+  markdown: "text/markdown",
+  mp4: "video/mp4",
+  mp3: "audio/mp3",
+  svg: "image/svg+xml",
+  jpg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+  heic: "image/heic",
+  heif: "image/heif",
+  yaml: "text/yaml",
+  yml: "text/yaml",
+  csv: "text/csv",
+  tsv: "text/tab-separated-values",
+  tab: "text/tab-separated-values",
+  avi: "video/x-msvideo",
+  mks: "video/x-matroska",
+  mkv: "video/x-matroska",
+  mov: "video/quicktime",
+  dicom: "application/dicom",
+  doc: "application/msword",
+  docm: "application/vnd.ms-word.document.macroenabled.12",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  dot: "application/msword",
+  dotm: "application/vnd.ms-word.template.macroenabled.12",
+  dotx: "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+  xla: "application/vnd.ms-excel",
+  xlam: "application/vnd.ms-excel.addin.macroenabled.12",
+  xlc: "application/vnd.ms-excel",
+  xlf: "application/x-xliff+xml",
+  xlm: "application/vnd.ms-excel",
+  xls: "application/vnd.ms-excel",
+  xlsb: "application/vnd.ms-excel.sheet.binary.macroenabled.12",
+  xlsm: "application/vnd.ms-excel.sheet.macroenabled.12",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  xlt: "application/vnd.ms-excel",
+  xltm: "application/vnd.ms-excel.template.macroenabled.12",
+  xltx: "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+  xlw: "application/vnd.ms-excel",
+  txt: "text/plain",
+  text: "text/plain",
+  conf: "text/plain",
+  log: "text/plain",
+  pdf: "application/pdf",
+  zip: "application/zip",
+  "7z": "application/x-7z-compressed",
+  rar: "application/x-rar-compressed",
+  tar: "application/x-tar",
+  gz: "application/gzip",
+  dmg: "application/x-apple-diskimage"
+};
+function getFileType(file) {
+  var _getFileNameAndExtens;
+  if (file.type)
+    return file.type;
+  const fileExtension = file.name ? (_getFileNameAndExtens = getFileNameAndExtension(file.name).extension) == null ? void 0 : _getFileNameAndExtens.toLowerCase() : null;
+  if (fileExtension && fileExtension in mimeTypes) {
+    return mimeTypes[fileExtension];
+  }
+  return "application/octet-stream";
+}
+function encodeCharacter(character) {
+  return character.charCodeAt(0).toString(32);
+}
+function encodeFilename(name) {
+  let suffix = "";
+  return name.replace(/[^A-Z0-9]/gi, (character) => {
+    suffix += `-${encodeCharacter(character)}`;
+    return "/";
+  }) + suffix;
+}
+function generateFileID(file) {
+  let id2 = "uppy";
+  if (typeof file.name === "string") {
+    id2 += `-${encodeFilename(file.name.toLowerCase())}`;
+  }
+  if (file.type !== void 0) {
+    id2 += `-${file.type}`;
+  }
+  if (file.meta && typeof file.meta.relativePath === "string") {
+    id2 += `-${encodeFilename(file.meta.relativePath.toLowerCase())}`;
+  }
+  if (file.data.size !== void 0) {
+    id2 += `-${file.data.size}`;
+  }
+  if (file.data.lastModified !== void 0) {
+    id2 += `-${file.data.lastModified}`;
+  }
+  return id2;
+}
+function hasFileStableId(file) {
+  if (!file.isRemote || !file.remote)
+    return false;
+  const stableIdProviders = /* @__PURE__ */ new Set(["box", "dropbox", "drive", "facebook", "unsplash"]);
+  return stableIdProviders.has(file.remote.provider);
+}
+function getSafeFileId(file) {
+  if (hasFileStableId(file))
+    return file.id;
+  const fileType = getFileType(file);
+  return generateFileID({
+    ...file,
+    type: fileType
+  });
+}
+function supportsUploadProgress(userAgent2) {
+  if (userAgent2 == null && typeof navigator !== "undefined") {
+    userAgent2 = navigator.userAgent;
+  }
+  if (!userAgent2)
+    return true;
+  const m = /Edge\/(\d+\.\d+)/.exec(userAgent2);
+  if (!m)
+    return true;
+  const edgeVersion = m[1];
+  const version2 = edgeVersion.split(".", 2);
+  const major = parseInt(version2[0], 10);
+  const minor = parseInt(version2[1], 10);
+  if (major < 15 || major === 15 && minor < 15063) {
+    return true;
+  }
+  if (major > 18 || major === 18 && minor >= 18218) {
+    return true;
+  }
+  return false;
+}
+function getFileName(fileType, fileDescriptor) {
+  if (fileDescriptor.name) {
+    return fileDescriptor.name;
+  }
+  if (fileType.split("/")[0] === "image") {
+    return `${fileType.split("/")[0]}.${fileType.split("/")[1]}`;
+  }
+  return "noname";
+}
+function pad(number) {
+  return number < 10 ? `0${number}` : number.toString();
+}
+function getTimeStamp() {
+  const date = /* @__PURE__ */ new Date();
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+  return `${hours}:${minutes}:${seconds}`;
+}
+const justErrorsLogger = {
+  debug: () => {
+  },
+  warn: () => {
+  },
+  error: function() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    return console.error(`[Uppy] [${getTimeStamp()}]`, ...args);
+  }
+};
+const debugLogger = {
+  debug: function() {
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+    return console.debug(`[Uppy] [${getTimeStamp()}]`, ...args);
+  },
+  warn: function() {
+    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      args[_key3] = arguments[_key3];
+    }
+    return console.warn(`[Uppy] [${getTimeStamp()}]`, ...args);
+  },
+  error: function() {
+    for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+      args[_key4] = arguments[_key4];
+    }
+    return console.error(`[Uppy] [${getTimeStamp()}]`, ...args);
+  }
+};
+var prettierBytes = function prettierBytes2(num) {
+  if (typeof num !== "number" || Number.isNaN(num)) {
+    throw new TypeError(`Expected a number, got ${typeof num}`);
+  }
+  const neg = num < 0;
+  const units = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  if (neg) {
+    num = -num;
+  }
+  if (num < 1) {
+    return `${(neg ? "-" : "") + num} B`;
+  }
+  const exponent = Math.min(Math.floor(Math.log(num) / Math.log(1024)), units.length - 1);
+  num = Number(num / 1024 ** exponent);
+  const unit = units[exponent];
+  if (num >= 10 || num % 1 === 0) {
+    return `${(neg ? "-" : "") + num.toFixed(0)} ${unit}`;
+  }
+  return `${(neg ? "-" : "") + num.toFixed(1)} ${unit}`;
+};
+const prettierBytes$1 = /* @__PURE__ */ getDefaultExportFromCjs(prettierBytes);
+function WildcardMatcher(text, separator) {
+  this.text = text = text || "";
+  this.hasWild = ~text.indexOf("*");
+  this.separator = separator;
+  this.parts = text.split(separator);
+}
+WildcardMatcher.prototype.match = function(input) {
+  var matches2 = true;
+  var parts = this.parts;
+  var ii;
+  var partsCount = parts.length;
+  var testParts;
+  if (typeof input == "string" || input instanceof String) {
+    if (!this.hasWild && this.text != input) {
+      matches2 = false;
+    } else {
+      testParts = (input || "").split(this.separator);
+      for (ii = 0; matches2 && ii < partsCount; ii++) {
+        if (parts[ii] === "*") {
+          continue;
+        } else if (ii < testParts.length) {
+          matches2 = parts[ii] === testParts[ii];
+        } else {
+          matches2 = false;
+        }
+      }
+      matches2 = matches2 && testParts;
+    }
+  } else if (typeof input.splice == "function") {
+    matches2 = [];
+    for (ii = input.length; ii--; ) {
+      if (this.match(input[ii])) {
+        matches2[matches2.length] = input[ii];
+      }
+    }
+  } else if (typeof input == "object") {
+    matches2 = {};
+    for (var key in input) {
+      if (this.match(key)) {
+        matches2[key] = input[key];
+      }
+    }
+  }
+  return matches2;
+};
+var wildcard$1 = function(text, test, separator) {
+  var matcher = new WildcardMatcher(text, separator || /[\/\.]/);
+  if (typeof test != "undefined") {
+    return matcher.match(test);
+  }
+  return matcher;
+};
+var wildcard = wildcard$1;
+var reMimePartSplit = /[\/\+\.]/;
+var mimeMatch = function(target, pattern) {
+  function test(pattern2) {
+    var result = wildcard(pattern2, target, reMimePartSplit);
+    return result && result.length >= 2;
+  }
+  return pattern ? test(pattern.split(";")[0]) : test;
+};
+const match = /* @__PURE__ */ getDefaultExportFromCjs(mimeMatch);
+const defaultOptions$1 = {
+  maxFileSize: null,
+  minFileSize: null,
+  maxTotalFileSize: null,
+  maxNumberOfFiles: null,
+  minNumberOfFiles: null,
+  allowedFileTypes: null,
+  requiredMetaFields: []
+};
+class RestrictionError extends Error {
+  constructor(message, opts) {
+    var _opts$isUserFacing;
+    super(message);
+    this.isRestriction = true;
+    this.isUserFacing = (_opts$isUserFacing = opts == null ? void 0 : opts.isUserFacing) != null ? _opts$isUserFacing : true;
+    if (opts != null && opts.file) {
+      this.file = opts.file;
+    }
+  }
+}
+class Restricter {
+  constructor(getOpts, i18n) {
+    this.i18n = i18n;
+    this.getOpts = () => {
+      var _opts$restrictions;
+      const opts = getOpts();
+      if (((_opts$restrictions = opts.restrictions) == null ? void 0 : _opts$restrictions.allowedFileTypes) != null && !Array.isArray(opts.restrictions.allowedFileTypes)) {
+        throw new TypeError("`restrictions.allowedFileTypes` must be an array");
+      }
+      return opts;
+    };
+  }
+  // Because these operations are slow, we cannot run them for every file (if we are adding multiple files)
+  validateAggregateRestrictions(existingFiles, addingFiles) {
+    const {
+      maxTotalFileSize,
+      maxNumberOfFiles
+    } = this.getOpts().restrictions;
+    if (maxNumberOfFiles) {
+      const nonGhostFiles = existingFiles.filter((f) => !f.isGhost);
+      if (nonGhostFiles.length + addingFiles.length > maxNumberOfFiles) {
+        throw new RestrictionError(`${this.i18n("youCanOnlyUploadX", {
+          smart_count: maxNumberOfFiles
+        })}`);
+      }
+    }
+    if (maxTotalFileSize) {
+      let totalFilesSize = existingFiles.reduce((total, f) => {
+        var _f$size;
+        return total + ((_f$size = f.size) != null ? _f$size : 0);
+      }, 0);
+      for (const addingFile of addingFiles) {
+        if (addingFile.size != null) {
+          totalFilesSize += addingFile.size;
+          if (totalFilesSize > maxTotalFileSize) {
+            throw new RestrictionError(this.i18n("exceedsSize", {
+              size: prettierBytes$1(maxTotalFileSize),
+              file: addingFile.name
+            }));
+          }
+        }
+      }
+    }
+  }
+  validateSingleFile(file) {
+    const {
+      maxFileSize,
+      minFileSize,
+      allowedFileTypes
+    } = this.getOpts().restrictions;
+    if (allowedFileTypes) {
+      const isCorrectFileType = allowedFileTypes.some((type) => {
+        if (type.includes("/")) {
+          if (!file.type)
+            return false;
+          return match(file.type.replace(/;.*?$/, ""), type);
+        }
+        if (type[0] === "." && file.extension) {
+          return file.extension.toLowerCase() === type.slice(1).toLowerCase();
+        }
+        return false;
+      });
+      if (!isCorrectFileType) {
+        const allowedFileTypesString = allowedFileTypes.join(", ");
+        throw new RestrictionError(this.i18n("youCanOnlyUploadFileTypes", {
+          types: allowedFileTypesString
+        }), {
+          file
+        });
+      }
+    }
+    if (maxFileSize && file.size != null && file.size > maxFileSize) {
+      throw new RestrictionError(this.i18n("exceedsSize", {
+        size: prettierBytes$1(maxFileSize),
+        file: file.name
+      }), {
+        file
+      });
+    }
+    if (minFileSize && file.size != null && file.size < minFileSize) {
+      throw new RestrictionError(this.i18n("inferiorSize", {
+        size: prettierBytes$1(minFileSize)
+      }), {
+        file
+      });
+    }
+  }
+  validate(existingFiles, addingFiles) {
+    addingFiles.forEach((addingFile) => {
+      this.validateSingleFile(addingFile);
+    });
+    this.validateAggregateRestrictions(existingFiles, addingFiles);
+  }
+  validateMinNumberOfFiles(files) {
+    const {
+      minNumberOfFiles
+    } = this.getOpts().restrictions;
+    if (minNumberOfFiles && Object.keys(files).length < minNumberOfFiles) {
+      throw new RestrictionError(this.i18n("youHaveToAtLeastSelectX", {
+        smart_count: minNumberOfFiles
+      }));
+    }
+  }
+  getMissingRequiredMetaFields(file) {
+    const error = new RestrictionError(this.i18n("missingRequiredMetaFieldOnFile", {
+      fileName: file.name
+    }));
+    const {
+      requiredMetaFields
+    } = this.getOpts().restrictions;
+    const missingFields = [];
+    for (const field of requiredMetaFields) {
+      if (!Object.hasOwn(file.meta, field) || file.meta[field] === "") {
+        missingFields.push(field);
+      }
+    }
+    return {
+      missingFields,
+      error
+    };
+  }
+}
+const locale$1 = {
+  strings: {
+    addBulkFilesFailed: {
+      0: "Failed to add %{smart_count} file due to an internal error",
+      1: "Failed to add %{smart_count} files due to internal errors"
+    },
+    youCanOnlyUploadX: {
+      0: "You can only upload %{smart_count} file",
+      1: "You can only upload %{smart_count} files"
+    },
+    youHaveToAtLeastSelectX: {
+      0: "You have to select at least %{smart_count} file",
+      1: "You have to select at least %{smart_count} files"
+    },
+    exceedsSize: "%{file} exceeds maximum allowed size of %{size}",
+    missingRequiredMetaField: "Missing required meta fields",
+    missingRequiredMetaFieldOnFile: "Missing required meta fields in %{fileName}",
+    inferiorSize: "This file is smaller than the allowed size of %{size}",
+    youCanOnlyUploadFileTypes: "You can only upload: %{types}",
+    noMoreFilesAllowed: "Cannot add more files",
+    noDuplicates: "Cannot add the duplicate file '%{fileName}', it already exists",
+    companionError: "Connection with Companion failed",
+    authAborted: "Authentication aborted",
+    companionUnauthorizeHint: "To unauthorize to your %{provider} account, please go to %{url}",
+    failedToUpload: "Failed to upload %{file}",
+    noInternetConnection: "No Internet connection",
+    connectedToInternet: "Connected to the Internet",
+    // Strings for remote providers
+    noFilesFound: "You have no files or folders here",
+    noSearchResults: "Unfortunately, there are no results for this search",
+    selectX: {
+      0: "Select %{smart_count}",
+      1: "Select %{smart_count}"
+    },
+    allFilesFromFolderNamed: "All files from folder %{name}",
+    openFolderNamed: "Open folder %{name}",
+    cancel: "Cancel",
+    logOut: "Log out",
+    filter: "Filter",
+    resetFilter: "Reset filter",
+    loading: "Loading...",
+    loadedXFiles: "Loaded %{numFiles} files",
+    authenticateWithTitle: "Please authenticate with %{pluginName} to select files",
+    authenticateWith: "Connect to %{pluginName}",
+    signInWithGoogle: "Sign in with Google",
+    searchImages: "Search for images",
+    enterTextToSearch: "Enter text to search for images",
+    search: "Search",
+    resetSearch: "Reset search",
+    emptyFolderAdded: "No files were added from empty folder",
+    addedNumFiles: "Added %{numFiles} file(s)",
+    folderAlreadyAdded: 'The folder "%{folder}" was already added',
+    folderAdded: {
+      0: "Added %{smart_count} file from %{folder}",
+      1: "Added %{smart_count} files from %{folder}"
+    },
+    additionalRestrictionsFailed: "%{count} additional restrictions were not fulfilled"
+  }
+};
+let _Symbol$for, _Symbol$for2;
+function _classPrivateFieldLooseBase$4(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$4 = 0;
+function _classPrivateFieldLooseKey$4(name) {
+  return "__private_" + id$4++ + "_" + name;
+}
+const packageJson$2 = {
+  "version": "3.9.3"
+};
+const defaultUploadState = {
+  totalProgress: 0,
+  allowNewUpload: true,
+  error: null,
+  recoveredState: null
+};
+var _plugins$1 = /* @__PURE__ */ _classPrivateFieldLooseKey$4("plugins");
+var _restricter = /* @__PURE__ */ _classPrivateFieldLooseKey$4("restricter");
+var _storeUnsubscribe = /* @__PURE__ */ _classPrivateFieldLooseKey$4("storeUnsubscribe");
+var _emitter = /* @__PURE__ */ _classPrivateFieldLooseKey$4("emitter");
+var _preProcessors = /* @__PURE__ */ _classPrivateFieldLooseKey$4("preProcessors");
+var _uploaders = /* @__PURE__ */ _classPrivateFieldLooseKey$4("uploaders");
+var _postProcessors = /* @__PURE__ */ _classPrivateFieldLooseKey$4("postProcessors");
+var _informAndEmit = /* @__PURE__ */ _classPrivateFieldLooseKey$4("informAndEmit");
+var _checkRequiredMetaFieldsOnFile = /* @__PURE__ */ _classPrivateFieldLooseKey$4("checkRequiredMetaFieldsOnFile");
+var _checkRequiredMetaFields = /* @__PURE__ */ _classPrivateFieldLooseKey$4("checkRequiredMetaFields");
+var _assertNewUploadAllowed = /* @__PURE__ */ _classPrivateFieldLooseKey$4("assertNewUploadAllowed");
+var _transformFile = /* @__PURE__ */ _classPrivateFieldLooseKey$4("transformFile");
+var _startIfAutoProceed = /* @__PURE__ */ _classPrivateFieldLooseKey$4("startIfAutoProceed");
+var _checkAndUpdateFileState = /* @__PURE__ */ _classPrivateFieldLooseKey$4("checkAndUpdateFileState");
+var _addListeners = /* @__PURE__ */ _classPrivateFieldLooseKey$4("addListeners");
+var _updateOnlineStatus = /* @__PURE__ */ _classPrivateFieldLooseKey$4("updateOnlineStatus");
+var _requestClientById = /* @__PURE__ */ _classPrivateFieldLooseKey$4("requestClientById");
+var _createUpload = /* @__PURE__ */ _classPrivateFieldLooseKey$4("createUpload");
+var _getUpload = /* @__PURE__ */ _classPrivateFieldLooseKey$4("getUpload");
+var _removeUpload = /* @__PURE__ */ _classPrivateFieldLooseKey$4("removeUpload");
+var _runUpload = /* @__PURE__ */ _classPrivateFieldLooseKey$4("runUpload");
+_Symbol$for = Symbol.for("uppy test: getPlugins");
+_Symbol$for2 = Symbol.for("uppy test: createUpload");
+class Uppy {
+  /**
+   * Instantiate Uppy
+   */
+  constructor(_opts) {
+    Object.defineProperty(this, _runUpload, {
+      value: _runUpload2
+    });
+    Object.defineProperty(this, _removeUpload, {
+      value: _removeUpload2
+    });
+    Object.defineProperty(this, _getUpload, {
+      value: _getUpload2
+    });
+    Object.defineProperty(this, _createUpload, {
+      value: _createUpload2
+    });
+    Object.defineProperty(this, _addListeners, {
+      value: _addListeners2
+    });
+    Object.defineProperty(this, _checkAndUpdateFileState, {
+      value: _checkAndUpdateFileState2
+    });
+    Object.defineProperty(this, _startIfAutoProceed, {
+      value: _startIfAutoProceed2
+    });
+    Object.defineProperty(this, _transformFile, {
+      value: _transformFile2
+    });
+    Object.defineProperty(this, _assertNewUploadAllowed, {
+      value: _assertNewUploadAllowed2
+    });
+    Object.defineProperty(this, _checkRequiredMetaFields, {
+      value: _checkRequiredMetaFields2
+    });
+    Object.defineProperty(this, _checkRequiredMetaFieldsOnFile, {
+      value: _checkRequiredMetaFieldsOnFile2
+    });
+    Object.defineProperty(this, _informAndEmit, {
+      value: _informAndEmit2
+    });
+    Object.defineProperty(this, _plugins$1, {
+      writable: true,
+      value: /* @__PURE__ */ Object.create(null)
+    });
+    Object.defineProperty(this, _restricter, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _storeUnsubscribe, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _emitter, {
+      writable: true,
+      value: ee()
+    });
+    Object.defineProperty(this, _preProcessors, {
+      writable: true,
+      value: /* @__PURE__ */ new Set()
+    });
+    Object.defineProperty(this, _uploaders, {
+      writable: true,
+      value: /* @__PURE__ */ new Set()
+    });
+    Object.defineProperty(this, _postProcessors, {
+      writable: true,
+      value: /* @__PURE__ */ new Set()
+    });
+    this.scheduledAutoProceed = null;
+    this.wasOffline = false;
+    this.calculateProgress = throttle$1((file, data) => {
+      const fileInState = this.getFile(file == null ? void 0 : file.id);
+      if (file == null || !fileInState) {
+        this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+        return;
+      }
+      if (fileInState.progress.percentage === 100) {
+        this.log(`Not setting progress for a file that has been already uploaded: ${file.id}`);
+        return;
+      }
+      const canHavePercentage = Number.isFinite(data.bytesTotal) && data.bytesTotal > 0;
+      this.setFileState(file.id, {
+        progress: {
+          ...fileInState.progress,
+          bytesUploaded: data.bytesUploaded,
+          bytesTotal: data.bytesTotal,
+          percentage: canHavePercentage ? Math.round(data.bytesUploaded / data.bytesTotal * 100) : 0
+        }
+      });
+      this.calculateTotalProgress();
+    }, 500, {
+      leading: true,
+      trailing: true
+    });
+    Object.defineProperty(this, _updateOnlineStatus, {
+      writable: true,
+      value: this.updateOnlineStatus.bind(this)
+    });
+    Object.defineProperty(this, _requestClientById, {
+      writable: true,
+      value: /* @__PURE__ */ new Map()
+    });
+    this.defaultLocale = locale$1;
+    const defaultOptions2 = {
+      id: "uppy",
+      autoProceed: false,
+      allowMultipleUploadBatches: true,
+      debug: false,
+      restrictions: defaultOptions$1,
+      meta: {},
+      onBeforeFileAdded: (file, files) => !Object.hasOwn(files, file.id),
+      onBeforeUpload: (files) => files,
+      store: new DefaultStore(),
+      logger: justErrorsLogger,
+      infoTimeout: 5e3
+    };
+    const merged = {
+      ...defaultOptions2,
+      ..._opts
+    };
+    this.opts = {
+      ...merged,
+      restrictions: {
+        ...defaultOptions2.restrictions,
+        ..._opts && _opts.restrictions
+      }
+    };
+    if (_opts && _opts.logger && _opts.debug) {
+      this.log("You are using a custom `logger`, but also set `debug: true`, which uses built-in logger to output logs to console. Ignoring `debug: true` and using your custom `logger`.", "warning");
+    } else if (_opts && _opts.debug) {
+      this.opts.logger = debugLogger;
+    }
+    this.log(`Using Core v${Uppy.VERSION}`);
+    this.i18nInit();
+    this.store = this.opts.store;
+    this.setState({
+      ...defaultUploadState,
+      plugins: {},
+      files: {},
+      currentUploads: {},
+      capabilities: {
+        uploadProgress: supportsUploadProgress(),
+        individualCancellation: true,
+        resumableUploads: false
+      },
+      meta: {
+        ...this.opts.meta
+      },
+      info: []
+    });
+    _classPrivateFieldLooseBase$4(this, _restricter)[_restricter] = new Restricter(() => this.opts, this.i18n);
+    _classPrivateFieldLooseBase$4(this, _storeUnsubscribe)[_storeUnsubscribe] = this.store.subscribe(
+      // eslint-disable-next-line
+      // @ts-ignore Store is incorrectly typed
+      (prevState, nextState, patch) => {
+        this.emit("state-update", prevState, nextState, patch);
+        this.updateAll(nextState);
+      }
+    );
+    if (this.opts.debug && typeof window !== "undefined") {
+      window[this.opts.id] = this;
+    }
+    _classPrivateFieldLooseBase$4(this, _addListeners)[_addListeners]();
+  }
+  emit(event) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    _classPrivateFieldLooseBase$4(this, _emitter)[_emitter].emit(event, ...args);
+  }
+  /** @deprecated */
+  on(event, callback) {
+    _classPrivateFieldLooseBase$4(this, _emitter)[_emitter].on(event, callback);
+    return this;
+  }
+  once(event, callback) {
+    _classPrivateFieldLooseBase$4(this, _emitter)[_emitter].once(event, callback);
+    return this;
+  }
+  off(event, callback) {
+    _classPrivateFieldLooseBase$4(this, _emitter)[_emitter].off(event, callback);
+    return this;
+  }
+  /**
+   * Iterate on all plugins and run `update` on them.
+   * Called each time state changes.
+   *
+   */
+  updateAll(state) {
+    this.iteratePlugins((plugin) => {
+      plugin.update(state);
+    });
+  }
+  /**
+   * Updates state with a patch
+   */
+  setState(patch) {
+    this.store.setState(patch);
+  }
+  /**
+   * Returns current state.
+   */
+  getState() {
+    return this.store.getState();
+  }
+  patchFilesState(filesWithNewState) {
+    const existingFilesState = this.getState().files;
+    this.setState({
+      files: {
+        ...existingFilesState,
+        ...Object.fromEntries(Object.entries(filesWithNewState).map((_ref2) => {
+          let [fileID, newFileState] = _ref2;
+          return [fileID, {
+            ...existingFilesState[fileID],
+            ...newFileState
+          }];
+        }))
+      }
+    });
+  }
+  /**
+   * Shorthand to set state for a specific file.
+   */
+  setFileState(fileID, state) {
+    if (!this.getState().files[fileID]) {
+      throw new Error(`Can’t set state for ${fileID} (the file could have been removed)`);
+    }
+    this.patchFilesState({
+      [fileID]: state
+    });
+  }
+  i18nInit() {
+    const onMissingKey = (key) => this.log(`Missing i18n string: ${key}`, "error");
+    const translator = new Translator([this.defaultLocale, this.opts.locale], {
+      onMissingKey
+    });
+    this.i18n = translator.translate.bind(translator);
+    this.i18nArray = translator.translateArray.bind(translator);
+    this.locale = translator.locale;
+  }
+  setOptions(newOpts) {
+    this.opts = {
+      ...this.opts,
+      ...newOpts,
+      restrictions: {
+        ...this.opts.restrictions,
+        ...newOpts == null ? void 0 : newOpts.restrictions
+      }
+    };
+    if (newOpts.meta) {
+      this.setMeta(newOpts.meta);
+    }
+    this.i18nInit();
+    if (newOpts.locale) {
+      this.iteratePlugins((plugin) => {
+        plugin.setOptions(newOpts);
+      });
+    }
+    this.setState(void 0);
+  }
+  // todo next major: remove
+  resetProgress() {
+    const defaultProgress = {
+      percentage: 0,
+      bytesUploaded: 0,
+      uploadComplete: false,
+      uploadStarted: null
+    };
+    const files = {
+      ...this.getState().files
+    };
+    const updatedFiles = {};
+    Object.keys(files).forEach((fileID) => {
+      updatedFiles[fileID] = {
+        ...files[fileID],
+        progress: {
+          ...files[fileID].progress,
+          ...defaultProgress
+        }
+      };
+    });
+    this.setState({
+      files: updatedFiles,
+      ...defaultUploadState
+    });
+    this.emit("reset-progress");
+  }
+  // @todo next major: rename to `clear()`, make it also cancel ongoing uploads
+  // or throw and say you need to cancel manually
+  clearUploadedFiles() {
+    this.setState({
+      ...defaultUploadState,
+      files: {}
+    });
+  }
+  addPreProcessor(fn) {
+    _classPrivateFieldLooseBase$4(this, _preProcessors)[_preProcessors].add(fn);
+  }
+  removePreProcessor(fn) {
+    return _classPrivateFieldLooseBase$4(this, _preProcessors)[_preProcessors].delete(fn);
+  }
+  addPostProcessor(fn) {
+    _classPrivateFieldLooseBase$4(this, _postProcessors)[_postProcessors].add(fn);
+  }
+  removePostProcessor(fn) {
+    return _classPrivateFieldLooseBase$4(this, _postProcessors)[_postProcessors].delete(fn);
+  }
+  addUploader(fn) {
+    _classPrivateFieldLooseBase$4(this, _uploaders)[_uploaders].add(fn);
+  }
+  removeUploader(fn) {
+    return _classPrivateFieldLooseBase$4(this, _uploaders)[_uploaders].delete(fn);
+  }
+  setMeta(data) {
+    const updatedMeta = {
+      ...this.getState().meta,
+      ...data
+    };
+    const updatedFiles = {
+      ...this.getState().files
+    };
+    Object.keys(updatedFiles).forEach((fileID) => {
+      updatedFiles[fileID] = {
+        ...updatedFiles[fileID],
+        meta: {
+          ...updatedFiles[fileID].meta,
+          ...data
+        }
+      };
+    });
+    this.log("Adding metadata:");
+    this.log(data);
+    this.setState({
+      meta: updatedMeta,
+      files: updatedFiles
+    });
+  }
+  setFileMeta(fileID, data) {
+    const updatedFiles = {
+      ...this.getState().files
+    };
+    if (!updatedFiles[fileID]) {
+      this.log("Was trying to set metadata for a file that has been removed: ", fileID);
+      return;
+    }
+    const newMeta = {
+      ...updatedFiles[fileID].meta,
+      ...data
+    };
+    updatedFiles[fileID] = {
+      ...updatedFiles[fileID],
+      meta: newMeta
+    };
+    this.setState({
+      files: updatedFiles
+    });
+  }
+  /**
+   * Get a file object.
+   */
+  getFile(fileID) {
+    return this.getState().files[fileID];
+  }
+  /**
+   * Get all files in an array.
+   */
+  getFiles() {
+    const {
+      files
+    } = this.getState();
+    return Object.values(files);
+  }
+  getFilesByIds(ids) {
+    return ids.map((id2) => this.getFile(id2));
+  }
+  // TODO: remove or refactor this method. It's very inefficient
+  getObjectOfFilesPerState() {
+    const {
+      files: filesObject,
+      totalProgress,
+      error
+    } = this.getState();
+    const files = Object.values(filesObject);
+    const inProgressFiles = files.filter((_ref2) => {
+      let {
+        progress
+      } = _ref2;
+      return !progress.uploadComplete && progress.uploadStarted;
+    });
+    const newFiles = files.filter((file) => !file.progress.uploadStarted);
+    const startedFiles = files.filter((file) => file.progress.uploadStarted || file.progress.preprocess || file.progress.postprocess);
+    const uploadStartedFiles = files.filter((file) => file.progress.uploadStarted);
+    const pausedFiles = files.filter((file) => file.isPaused);
+    const completeFiles = files.filter((file) => file.progress.uploadComplete);
+    const erroredFiles = files.filter((file) => file.error);
+    const inProgressNotPausedFiles = inProgressFiles.filter((file) => !file.isPaused);
+    const processingFiles = files.filter((file) => file.progress.preprocess || file.progress.postprocess);
+    return {
+      newFiles,
+      startedFiles,
+      uploadStartedFiles,
+      pausedFiles,
+      completeFiles,
+      erroredFiles,
+      inProgressFiles,
+      inProgressNotPausedFiles,
+      processingFiles,
+      isUploadStarted: uploadStartedFiles.length > 0,
+      isAllComplete: totalProgress === 100 && completeFiles.length === files.length && processingFiles.length === 0,
+      isAllErrored: !!error && erroredFiles.length === files.length,
+      isAllPaused: inProgressFiles.length !== 0 && pausedFiles.length === inProgressFiles.length,
+      isUploadInProgress: inProgressFiles.length > 0,
+      isSomeGhost: files.some((file) => file.isGhost)
+    };
+  }
+  validateRestrictions(file, files) {
+    if (files === void 0) {
+      files = this.getFiles();
+    }
+    try {
+      _classPrivateFieldLooseBase$4(this, _restricter)[_restricter].validate(files, [file]);
+    } catch (err) {
+      return err;
+    }
+    return null;
+  }
+  checkIfFileAlreadyExists(fileID) {
+    const {
+      files
+    } = this.getState();
+    if (files[fileID] && !files[fileID].isGhost) {
+      return true;
+    }
+    return false;
+  }
+  /**
+   * Add a new file to `state.files`. This will run `onBeforeFileAdded`,
+   * try to guess file type in a clever way, check file against restrictions,
+   * and start an upload if `autoProceed === true`.
+   */
+  addFile(file) {
+    _classPrivateFieldLooseBase$4(this, _assertNewUploadAllowed)[_assertNewUploadAllowed](file);
+    const {
+      nextFilesState,
+      validFilesToAdd,
+      errors
+    } = _classPrivateFieldLooseBase$4(this, _checkAndUpdateFileState)[_checkAndUpdateFileState]([file]);
+    const restrictionErrors = errors.filter((error) => error.isRestriction);
+    _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit](restrictionErrors);
+    if (errors.length > 0)
+      throw errors[0];
+    this.setState({
+      files: nextFilesState
+    });
+    const [firstValidFileToAdd] = validFilesToAdd;
+    this.emit("file-added", firstValidFileToAdd);
+    this.emit("files-added", validFilesToAdd);
+    this.log(`Added file: ${firstValidFileToAdd.name}, ${firstValidFileToAdd.id}, mime type: ${firstValidFileToAdd.type}`);
+    _classPrivateFieldLooseBase$4(this, _startIfAutoProceed)[_startIfAutoProceed]();
+    return firstValidFileToAdd.id;
+  }
+  /**
+   * Add multiple files to `state.files`. See the `addFile()` documentation.
+   *
+   * If an error occurs while adding a file, it is logged and the user is notified.
+   * This is good for UI plugins, but not for programmatic use.
+   * Programmatic users should usually still use `addFile()` on individual files.
+   */
+  addFiles(fileDescriptors) {
+    _classPrivateFieldLooseBase$4(this, _assertNewUploadAllowed)[_assertNewUploadAllowed]();
+    const {
+      nextFilesState,
+      validFilesToAdd,
+      errors
+    } = _classPrivateFieldLooseBase$4(this, _checkAndUpdateFileState)[_checkAndUpdateFileState](fileDescriptors);
+    const restrictionErrors = errors.filter((error) => error.isRestriction);
+    _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit](restrictionErrors);
+    const nonRestrictionErrors = errors.filter((error) => !error.isRestriction);
+    if (nonRestrictionErrors.length > 0) {
+      let message = "Multiple errors occurred while adding files:\n";
+      nonRestrictionErrors.forEach((subError) => {
+        message += `
+ * ${subError.message}`;
+      });
+      this.info({
+        message: this.i18n("addBulkFilesFailed", {
+          smart_count: nonRestrictionErrors.length
+        }),
+        details: message
+      }, "error", this.opts.infoTimeout);
+      if (typeof AggregateError === "function") {
+        throw new AggregateError(nonRestrictionErrors, message);
+      } else {
+        const err = new Error(message);
+        err.errors = nonRestrictionErrors;
+        throw err;
+      }
+    }
+    this.setState({
+      files: nextFilesState
+    });
+    validFilesToAdd.forEach((file) => {
+      this.emit("file-added", file);
+    });
+    this.emit("files-added", validFilesToAdd);
+    if (validFilesToAdd.length > 5) {
+      this.log(`Added batch of ${validFilesToAdd.length} files`);
+    } else {
+      Object.values(validFilesToAdd).forEach((file) => {
+        this.log(`Added file: ${file.name}
+ id: ${file.id}
+ type: ${file.type}`);
+      });
+    }
+    if (validFilesToAdd.length > 0) {
+      _classPrivateFieldLooseBase$4(this, _startIfAutoProceed)[_startIfAutoProceed]();
+    }
+  }
+  removeFiles(fileIDs, reason) {
+    const {
+      files,
+      currentUploads
+    } = this.getState();
+    const updatedFiles = {
+      ...files
+    };
+    const updatedUploads = {
+      ...currentUploads
+    };
+    const removedFiles = /* @__PURE__ */ Object.create(null);
+    fileIDs.forEach((fileID) => {
+      if (files[fileID]) {
+        removedFiles[fileID] = files[fileID];
+        delete updatedFiles[fileID];
+      }
+    });
+    function fileIsNotRemoved(uploadFileID) {
+      return removedFiles[uploadFileID] === void 0;
+    }
+    Object.keys(updatedUploads).forEach((uploadID) => {
+      const newFileIDs = currentUploads[uploadID].fileIDs.filter(fileIsNotRemoved);
+      if (newFileIDs.length === 0) {
+        delete updatedUploads[uploadID];
+        return;
+      }
+      const {
+        capabilities
+      } = this.getState();
+      if (newFileIDs.length !== currentUploads[uploadID].fileIDs.length && !capabilities.individualCancellation) {
+        throw new Error("individualCancellation is disabled");
+      }
+      updatedUploads[uploadID] = {
+        ...currentUploads[uploadID],
+        fileIDs: newFileIDs
+      };
+    });
+    const stateUpdate = {
+      currentUploads: updatedUploads,
+      files: updatedFiles
+    };
+    if (Object.keys(updatedFiles).length === 0) {
+      stateUpdate.allowNewUpload = true;
+      stateUpdate.error = null;
+      stateUpdate.recoveredState = null;
+    }
+    this.setState(stateUpdate);
+    this.calculateTotalProgress();
+    const removedFileIDs = Object.keys(removedFiles);
+    removedFileIDs.forEach((fileID) => {
+      this.emit("file-removed", removedFiles[fileID], reason);
+    });
+    if (removedFileIDs.length > 5) {
+      this.log(`Removed ${removedFileIDs.length} files`);
+    } else {
+      this.log(`Removed files: ${removedFileIDs.join(", ")}`);
+    }
+  }
+  removeFile(fileID, reason) {
+    this.removeFiles([fileID], reason);
+  }
+  pauseResume(fileID) {
+    if (!this.getState().capabilities.resumableUploads || this.getFile(fileID).progress.uploadComplete) {
+      return void 0;
+    }
+    const wasPaused = this.getFile(fileID).isPaused || false;
+    const isPaused = !wasPaused;
+    this.setFileState(fileID, {
+      isPaused
+    });
+    this.emit("upload-pause", fileID, isPaused);
+    return isPaused;
+  }
+  pauseAll() {
+    const updatedFiles = {
+      ...this.getState().files
+    };
+    const inProgressUpdatedFiles = Object.keys(updatedFiles).filter((file) => {
+      return !updatedFiles[file].progress.uploadComplete && updatedFiles[file].progress.uploadStarted;
+    });
+    inProgressUpdatedFiles.forEach((file) => {
+      const updatedFile = {
+        ...updatedFiles[file],
+        isPaused: true
+      };
+      updatedFiles[file] = updatedFile;
+    });
+    this.setState({
+      files: updatedFiles
+    });
+    this.emit("pause-all");
+  }
+  resumeAll() {
+    const updatedFiles = {
+      ...this.getState().files
+    };
+    const inProgressUpdatedFiles = Object.keys(updatedFiles).filter((file) => {
+      return !updatedFiles[file].progress.uploadComplete && updatedFiles[file].progress.uploadStarted;
+    });
+    inProgressUpdatedFiles.forEach((file) => {
+      const updatedFile = {
+        ...updatedFiles[file],
+        isPaused: false,
+        error: null
+      };
+      updatedFiles[file] = updatedFile;
+    });
+    this.setState({
+      files: updatedFiles
+    });
+    this.emit("resume-all");
+  }
+  retryAll() {
+    const updatedFiles = {
+      ...this.getState().files
+    };
+    const filesToRetry = Object.keys(updatedFiles).filter((file) => {
+      return updatedFiles[file].error;
+    });
+    filesToRetry.forEach((file) => {
+      const updatedFile = {
+        ...updatedFiles[file],
+        isPaused: false,
+        error: null
+      };
+      updatedFiles[file] = updatedFile;
+    });
+    this.setState({
+      files: updatedFiles,
+      error: null
+    });
+    this.emit("retry-all", filesToRetry);
+    if (filesToRetry.length === 0) {
+      return Promise.resolve({
+        successful: [],
+        failed: []
+      });
+    }
+    const uploadID = _classPrivateFieldLooseBase$4(this, _createUpload)[_createUpload](filesToRetry, {
+      forceAllowNewUpload: true
+      // create new upload even if allowNewUpload: false
+    });
+    return _classPrivateFieldLooseBase$4(this, _runUpload)[_runUpload](uploadID);
+  }
+  cancelAll(_temp) {
+    let {
+      reason = "user"
+    } = _temp === void 0 ? {} : _temp;
+    this.emit("cancel-all", {
+      reason
+    });
+    if (reason === "user") {
+      const {
+        files
+      } = this.getState();
+      const fileIDs = Object.keys(files);
+      if (fileIDs.length) {
+        this.removeFiles(fileIDs, "cancel-all");
+      }
+      this.setState(defaultUploadState);
+    }
+  }
+  retryUpload(fileID) {
+    this.setFileState(fileID, {
+      error: null,
+      isPaused: false
+    });
+    this.emit("upload-retry", fileID);
+    const uploadID = _classPrivateFieldLooseBase$4(this, _createUpload)[_createUpload]([fileID], {
+      forceAllowNewUpload: true
+      // create new upload even if allowNewUpload: false
+    });
+    return _classPrivateFieldLooseBase$4(this, _runUpload)[_runUpload](uploadID);
+  }
+  logout() {
+    this.iteratePlugins((plugin) => {
+      var _provider;
+      (_provider = plugin.provider) == null || _provider.logout == null || _provider.logout();
+    });
+  }
+  calculateTotalProgress() {
+    const files = this.getFiles();
+    const inProgress = files.filter((file) => {
+      return file.progress.uploadStarted || file.progress.preprocess || file.progress.postprocess;
+    });
+    if (inProgress.length === 0) {
+      this.emit("progress", 0);
+      this.setState({
+        totalProgress: 0
+      });
+      return;
+    }
+    const sizedFiles = inProgress.filter((file) => file.progress.bytesTotal != null);
+    const unsizedFiles = inProgress.filter((file) => file.progress.bytesTotal == null);
+    if (sizedFiles.length === 0) {
+      const progressMax = inProgress.length * 100;
+      const currentProgress = unsizedFiles.reduce((acc, file) => {
+        return acc + file.progress.percentage;
+      }, 0);
+      const totalProgress2 = Math.round(currentProgress / progressMax * 100);
+      this.setState({
+        totalProgress: totalProgress2
+      });
+      return;
+    }
+    let totalSize = sizedFiles.reduce((acc, file) => {
+      var _file$progress$bytesT;
+      return acc + ((_file$progress$bytesT = file.progress.bytesTotal) != null ? _file$progress$bytesT : 0);
+    }, 0);
+    const averageSize = totalSize / sizedFiles.length;
+    totalSize += averageSize * unsizedFiles.length;
+    let uploadedSize = 0;
+    sizedFiles.forEach((file) => {
+      uploadedSize += file.progress.bytesUploaded;
+    });
+    unsizedFiles.forEach((file) => {
+      uploadedSize += averageSize * (file.progress.percentage || 0) / 100;
+    });
+    let totalProgress = totalSize === 0 ? 0 : Math.round(uploadedSize / totalSize * 100);
+    if (totalProgress > 100) {
+      totalProgress = 100;
+    }
+    this.setState({
+      totalProgress
+    });
+    this.emit("progress", totalProgress);
+  }
+  updateOnlineStatus() {
+    var _window$navigator$onL;
+    const online = (_window$navigator$onL = window.navigator.onLine) != null ? _window$navigator$onL : true;
+    if (!online) {
+      this.emit("is-offline");
+      this.info(this.i18n("noInternetConnection"), "error", 0);
+      this.wasOffline = true;
+    } else {
+      this.emit("is-online");
+      if (this.wasOffline) {
+        this.emit("back-online");
+        this.info(this.i18n("connectedToInternet"), "success", 3e3);
+        this.wasOffline = false;
+      }
+    }
+  }
+  getID() {
+    return this.opts.id;
+  }
+  /**
+   * Registers a plugin with Core.
+   */
+  use(Plugin, opts) {
+    if (typeof Plugin !== "function") {
+      const msg = `Expected a plugin class, but got ${Plugin === null ? "null" : typeof Plugin}. Please verify that the plugin was imported and spelled correctly.`;
+      throw new TypeError(msg);
+    }
+    const plugin = new Plugin(this, opts);
+    const pluginId = plugin.id;
+    if (!pluginId) {
+      throw new Error("Your plugin must have an id");
+    }
+    if (!plugin.type) {
+      throw new Error("Your plugin must have a type");
+    }
+    const existsPluginAlready = this.getPlugin(pluginId);
+    if (existsPluginAlready) {
+      const msg = `Already found a plugin named '${existsPluginAlready.id}'. Tried to use: '${pluginId}'.
+Uppy plugins must have unique \`id\` options. See https://uppy.io/docs/plugins/#id.`;
+      throw new Error(msg);
+    }
+    if (Plugin.VERSION) {
+      this.log(`Using ${pluginId} v${Plugin.VERSION}`);
+    }
+    if (plugin.type in _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1]) {
+      _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1][plugin.type].push(plugin);
+    } else {
+      _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1][plugin.type] = [plugin];
+    }
+    plugin.install();
+    this.emit("plugin-added", plugin);
+    return this;
+  }
+  /**
+   * Find one Plugin by name.
+   */
+  getPlugin(id2) {
+    for (const plugins2 of Object.values(_classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1])) {
+      const foundPlugin = plugins2.find((plugin) => plugin.id === id2);
+      if (foundPlugin != null)
+        return foundPlugin;
+    }
+    return void 0;
+  }
+  [_Symbol$for](type) {
+    return _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1][type];
+  }
+  /**
+   * Iterate through all `use`d plugins.
+   *
+   */
+  iteratePlugins(method) {
+    Object.values(_classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1]).flat(1).forEach(method);
+  }
+  /**
+   * Uninstall and remove a plugin.
+   *
+   * @param {object} instance The plugin instance to remove.
+   */
+  removePlugin(instance) {
+    this.log(`Removing plugin ${instance.id}`);
+    this.emit("plugin-remove", instance);
+    if (instance.uninstall) {
+      instance.uninstall();
+    }
+    const list = _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1][instance.type];
+    const index = list.findIndex((item) => item.id === instance.id);
+    if (index !== -1) {
+      list.splice(index, 1);
+    }
+    const state = this.getState();
+    const updatedState = {
+      plugins: {
+        ...state.plugins,
+        [instance.id]: void 0
+      }
+    };
+    this.setState(updatedState);
+  }
+  /**
+   * Uninstall all plugins and close down this Uppy instance.
+   */
+  // @todo next major: rename to `destroy`.
+  // Cancel local uploads, cancel remote uploads, DON'T cancel assemblies
+  // document that if you do want to cancel assemblies, you need to call smth manually.
+  // Potentially remove reason, as it’s confusing, just come up with a default behaviour.
+  close(_temp2) {
+    let {
+      reason
+    } = _temp2 === void 0 ? {} : _temp2;
+    this.log(`Closing Uppy instance ${this.opts.id}: removing all files and uninstalling plugins`);
+    this.cancelAll({
+      reason
+    });
+    _classPrivateFieldLooseBase$4(this, _storeUnsubscribe)[_storeUnsubscribe]();
+    this.iteratePlugins((plugin) => {
+      this.removePlugin(plugin);
+    });
+    if (typeof window !== "undefined" && window.removeEventListener) {
+      window.removeEventListener("online", _classPrivateFieldLooseBase$4(this, _updateOnlineStatus)[_updateOnlineStatus]);
+      window.removeEventListener("offline", _classPrivateFieldLooseBase$4(this, _updateOnlineStatus)[_updateOnlineStatus]);
+    }
+  }
+  hideInfo() {
+    const {
+      info
+    } = this.getState();
+    this.setState({
+      info: info.slice(1)
+    });
+    this.emit("info-hidden");
+  }
+  /**
+   * Set info message in `state.info`, so that UI plugins like `Informer`
+   * can display the message.
+   */
+  info(message, type, duration) {
+    if (type === void 0) {
+      type = "info";
+    }
+    if (duration === void 0) {
+      duration = 3e3;
+    }
+    const isComplexMessage = typeof message === "object";
+    this.setState({
+      info: [...this.getState().info, {
+        type,
+        message: isComplexMessage ? message.message : message,
+        details: isComplexMessage ? message.details : null
+      }]
+    });
+    setTimeout(() => this.hideInfo(), duration);
+    this.emit("info-visible");
+  }
+  /**
+   * Passes messages to a function, provided in `opts.logger`.
+   * If `opts.logger: Uppy.debugLogger` or `opts.debug: true`, logs to the browser console.
+   */
+  log(message, type) {
+    const {
+      logger
+    } = this.opts;
+    switch (type) {
+      case "error":
+        logger.error(message);
+        break;
+      case "warning":
+        logger.warn(message);
+        break;
+      default:
+        logger.debug(message);
+        break;
+    }
+  }
+  registerRequestClient(id2, client) {
+    _classPrivateFieldLooseBase$4(this, _requestClientById)[_requestClientById].set(id2, client);
+  }
+  /** @protected */
+  getRequestClientForFile(file) {
+    if (!file.remote)
+      throw new Error(`Tried to get RequestClient for a non-remote file ${file.id}`);
+    const requestClient = _classPrivateFieldLooseBase$4(this, _requestClientById)[_requestClientById].get(file.remote.requestClientId);
+    if (requestClient == null)
+      throw new Error(`requestClientId "${file.remote.requestClientId}" not registered for file "${file.id}"`);
+    return requestClient;
+  }
+  /**
+   * Restore an upload by its ID.
+   */
+  restore(uploadID) {
+    this.log(`Core: attempting to restore upload "${uploadID}"`);
+    if (!this.getState().currentUploads[uploadID]) {
+      _classPrivateFieldLooseBase$4(this, _removeUpload)[_removeUpload](uploadID);
+      return Promise.reject(new Error("Nonexistent upload"));
+    }
+    return _classPrivateFieldLooseBase$4(this, _runUpload)[_runUpload](uploadID);
+  }
+  [_Symbol$for2]() {
+    return _classPrivateFieldLooseBase$4(this, _createUpload)[_createUpload](...arguments);
+  }
+  /**
+   * Add data to an upload's result object.
+   */
+  addResultData(uploadID, data) {
+    if (!_classPrivateFieldLooseBase$4(this, _getUpload)[_getUpload](uploadID)) {
+      this.log(`Not setting result for an upload that has been removed: ${uploadID}`);
+      return;
+    }
+    const {
+      currentUploads
+    } = this.getState();
+    const currentUpload = {
+      ...currentUploads[uploadID],
+      result: {
+        ...currentUploads[uploadID].result,
+        ...data
+      }
+    };
+    this.setState({
+      currentUploads: {
+        ...currentUploads,
+        [uploadID]: currentUpload
+      }
+    });
+  }
+  /**
+   * Start an upload for all the files that are not currently being uploaded.
+   */
+  upload() {
+    var _classPrivateFieldLoo;
+    if (!((_classPrivateFieldLoo = _classPrivateFieldLooseBase$4(this, _plugins$1)[_plugins$1].uploader) != null && _classPrivateFieldLoo.length)) {
+      this.log("No uploader type plugins are used", "warning");
+    }
+    let {
+      files
+    } = this.getState();
+    const onBeforeUploadResult = this.opts.onBeforeUpload(files);
+    if (onBeforeUploadResult === false) {
+      return Promise.reject(new Error("Not starting the upload because onBeforeUpload returned false"));
+    }
+    if (onBeforeUploadResult && typeof onBeforeUploadResult === "object") {
+      files = onBeforeUploadResult;
+      this.setState({
+        files
+      });
+    }
+    return Promise.resolve().then(() => _classPrivateFieldLooseBase$4(this, _restricter)[_restricter].validateMinNumberOfFiles(files)).catch((err) => {
+      _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit]([err]);
+      throw err;
+    }).then(() => {
+      if (!_classPrivateFieldLooseBase$4(this, _checkRequiredMetaFields)[_checkRequiredMetaFields](files)) {
+        throw new RestrictionError(this.i18n("missingRequiredMetaField"));
+      }
+    }).catch((err) => {
+      throw err;
+    }).then(() => {
+      const {
+        currentUploads
+      } = this.getState();
+      const currentlyUploadingFiles = Object.values(currentUploads).flatMap((curr) => curr.fileIDs);
+      const waitingFileIDs = [];
+      Object.keys(files).forEach((fileID) => {
+        const file = this.getFile(fileID);
+        if (!file.progress.uploadStarted && currentlyUploadingFiles.indexOf(fileID) === -1) {
+          waitingFileIDs.push(file.id);
+        }
+      });
+      const uploadID = _classPrivateFieldLooseBase$4(this, _createUpload)[_createUpload](waitingFileIDs);
+      return _classPrivateFieldLooseBase$4(this, _runUpload)[_runUpload](uploadID);
+    }).catch((err) => {
+      this.emit("error", err);
+      this.log(err, "error");
+      throw err;
+    });
+  }
+}
+function _informAndEmit2(errors) {
+  for (const error of errors) {
+    if (error.isRestriction) {
+      this.emit("restriction-failed", error.file, error);
+    } else {
+      this.emit("error", error, error.file);
+    }
+    this.log(error, "warning");
+  }
+  const userFacingErrors = errors.filter((error) => error.isUserFacing);
+  const maxNumToShow = 4;
+  const firstErrors = userFacingErrors.slice(0, maxNumToShow);
+  const additionalErrors = userFacingErrors.slice(maxNumToShow);
+  firstErrors.forEach((_ref3) => {
+    let {
+      message,
+      details = ""
+    } = _ref3;
+    this.info({
+      message,
+      details
+    }, "error", this.opts.infoTimeout);
+  });
+  if (additionalErrors.length > 0) {
+    this.info({
+      message: this.i18n("additionalRestrictionsFailed", {
+        count: additionalErrors.length
+      })
+    });
+  }
+}
+function _checkRequiredMetaFieldsOnFile2(file) {
+  const {
+    missingFields,
+    error
+  } = _classPrivateFieldLooseBase$4(this, _restricter)[_restricter].getMissingRequiredMetaFields(file);
+  if (missingFields.length > 0) {
+    this.setFileState(file.id, {
+      missingRequiredMetaFields: missingFields
+    });
+    this.log(error.message);
+    this.emit("restriction-failed", file, error);
+    return false;
+  }
+  return true;
+}
+function _checkRequiredMetaFields2(files) {
+  let success = true;
+  for (const file of Object.values(files)) {
+    if (!_classPrivateFieldLooseBase$4(this, _checkRequiredMetaFieldsOnFile)[_checkRequiredMetaFieldsOnFile](file)) {
+      success = false;
+    }
+  }
+  return success;
+}
+function _assertNewUploadAllowed2(file) {
+  const {
+    allowNewUpload
+  } = this.getState();
+  if (allowNewUpload === false) {
+    const error = new RestrictionError(this.i18n("noMoreFilesAllowed"), {
+      file
+    });
+    _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit]([error]);
+    throw error;
+  }
+}
+function _transformFile2(fileDescriptorOrFile) {
+  const file = fileDescriptorOrFile instanceof File ? {
+    name: fileDescriptorOrFile.name,
+    type: fileDescriptorOrFile.type,
+    size: fileDescriptorOrFile.size,
+    data: fileDescriptorOrFile
+  } : fileDescriptorOrFile;
+  const fileType = getFileType(file);
+  const fileName = getFileName(fileType, file);
+  const fileExtension = getFileNameAndExtension(fileName).extension;
+  const id2 = getSafeFileId(file);
+  const meta = file.meta || {};
+  meta.name = fileName;
+  meta.type = fileType;
+  const size2 = Number.isFinite(file.data.size) ? file.data.size : null;
+  return {
+    source: file.source || "",
+    id: id2,
+    name: fileName,
+    extension: fileExtension || "",
+    meta: {
+      ...this.getState().meta,
+      ...meta
+    },
+    type: fileType,
+    data: file.data,
+    progress: {
+      percentage: 0,
+      bytesUploaded: 0,
+      bytesTotal: size2,
+      uploadComplete: false,
+      uploadStarted: null
+    },
+    size: size2,
+    isGhost: false,
+    isRemote: file.isRemote || false,
+    // TODO: this should not be a string
+    // @ts-expect-error wrong
+    remote: file.remote || "",
+    preview: file.preview
+  };
+}
+function _startIfAutoProceed2() {
+  if (this.opts.autoProceed && !this.scheduledAutoProceed) {
+    this.scheduledAutoProceed = setTimeout(() => {
+      this.scheduledAutoProceed = null;
+      this.upload().catch((err) => {
+        if (!err.isRestriction) {
+          this.log(err.stack || err.message || err);
+        }
+      });
+    }, 4);
+  }
+}
+function _checkAndUpdateFileState2(filesToAdd) {
+  const {
+    files: existingFiles
+  } = this.getState();
+  const nextFilesState = {
+    ...existingFiles
+  };
+  const validFilesToAdd = [];
+  const errors = [];
+  for (const fileToAdd of filesToAdd) {
+    try {
+      var _existingFiles$newFil;
+      let newFile = _classPrivateFieldLooseBase$4(this, _transformFile)[_transformFile](fileToAdd);
+      const isGhost = (_existingFiles$newFil = existingFiles[newFile.id]) == null ? void 0 : _existingFiles$newFil.isGhost;
+      if (isGhost) {
+        const existingFileState = existingFiles[newFile.id];
+        newFile = {
+          ...existingFileState,
+          isGhost: false,
+          data: fileToAdd.data
+        };
+        this.log(`Replaced the blob in the restored ghost file: ${newFile.name}, ${newFile.id}`);
+      }
+      const onBeforeFileAddedResult = this.opts.onBeforeFileAdded(newFile, nextFilesState);
+      if (!onBeforeFileAddedResult && this.checkIfFileAlreadyExists(newFile.id)) {
+        throw new RestrictionError(this.i18n("noDuplicates", {
+          fileName: newFile.name
+        }), {
+          file: fileToAdd
+        });
+      }
+      if (onBeforeFileAddedResult === false && !isGhost) {
+        throw new RestrictionError("Cannot add the file because onBeforeFileAdded returned false.", {
+          isUserFacing: false,
+          file: fileToAdd
+        });
+      } else if (typeof onBeforeFileAddedResult === "object" && onBeforeFileAddedResult !== null) {
+        newFile = onBeforeFileAddedResult;
+      }
+      _classPrivateFieldLooseBase$4(this, _restricter)[_restricter].validateSingleFile(newFile);
+      nextFilesState[newFile.id] = newFile;
+      validFilesToAdd.push(newFile);
+    } catch (err) {
+      errors.push(err);
+    }
+  }
+  try {
+    _classPrivateFieldLooseBase$4(this, _restricter)[_restricter].validateAggregateRestrictions(Object.values(existingFiles), validFilesToAdd);
+  } catch (err) {
+    errors.push(err);
+    return {
+      nextFilesState: existingFiles,
+      validFilesToAdd: [],
+      errors
+    };
+  }
+  return {
+    nextFilesState,
+    validFilesToAdd,
+    errors
+  };
+}
+function _addListeners2() {
+  const errorHandler = (error, file, response) => {
+    let errorMsg = error.message || "Unknown error";
+    if (error.details) {
+      errorMsg += ` ${error.details}`;
+    }
+    this.setState({
+      error: errorMsg
+    });
+    if (file != null && file.id in this.getState().files) {
+      this.setFileState(file.id, {
+        error: errorMsg,
+        response
+      });
+    }
+  };
+  this.on("error", errorHandler);
+  this.on("upload-error", (file, error, response) => {
+    errorHandler(error, file, response);
+    if (typeof error === "object" && error.message) {
+      var _file$name;
+      this.log(error.message, "error");
+      const newError = new Error(this.i18n("failedToUpload", {
+        file: (_file$name = file == null ? void 0 : file.name) != null ? _file$name : ""
+      }));
+      newError.isUserFacing = true;
+      newError.details = error.message;
+      if (error.details) {
+        newError.details += ` ${error.details}`;
+      }
+      _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit]([newError]);
+    } else {
+      _classPrivateFieldLooseBase$4(this, _informAndEmit)[_informAndEmit]([error]);
+    }
+  });
+  let uploadStalledWarningRecentlyEmitted = null;
+  this.on("upload-stalled", (error, files) => {
+    const {
+      message
+    } = error;
+    const details = files.map((file) => file.meta.name).join(", ");
+    if (!uploadStalledWarningRecentlyEmitted) {
+      this.info({
+        message,
+        details
+      }, "warning", this.opts.infoTimeout);
+      uploadStalledWarningRecentlyEmitted = setTimeout(() => {
+        uploadStalledWarningRecentlyEmitted = null;
+      }, this.opts.infoTimeout);
+    }
+    this.log(`${message} ${details}`.trim(), "warning");
+  });
+  this.on("upload", () => {
+    this.setState({
+      error: null
+    });
+  });
+  const onUploadStarted = (files) => {
+    const filesFiltered = files.filter((file) => {
+      const exists = file != null && this.getFile(file.id);
+      if (!exists)
+        this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return exists;
+    });
+    const filesState = Object.fromEntries(filesFiltered.map((file) => [file.id, {
+      progress: {
+        uploadStarted: Date.now(),
+        uploadComplete: false,
+        percentage: 0,
+        bytesUploaded: 0,
+        bytesTotal: file.size
+      }
+    }]));
+    this.patchFilesState(filesState);
+  };
+  this.on("upload-start", (files) => {
+    files.forEach((file) => {
+      this.emit("upload-started", file);
+    });
+    onUploadStarted(files);
+  });
+  this.on("upload-progress", this.calculateProgress);
+  this.on("upload-success", (file, uploadResp) => {
+    if (file == null || !this.getFile(file.id)) {
+      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return;
+    }
+    const currentProgress = this.getFile(file.id).progress;
+    this.setFileState(file.id, {
+      progress: {
+        ...currentProgress,
+        postprocess: _classPrivateFieldLooseBase$4(this, _postProcessors)[_postProcessors].size > 0 ? {
+          mode: "indeterminate"
+        } : void 0,
+        uploadComplete: true,
+        percentage: 100,
+        bytesUploaded: currentProgress.bytesTotal
+      },
+      response: uploadResp,
+      uploadURL: uploadResp.uploadURL,
+      isPaused: false
+    });
+    if (file.size == null) {
+      this.setFileState(file.id, {
+        size: uploadResp.bytesUploaded || currentProgress.bytesTotal
+      });
+    }
+    this.calculateTotalProgress();
+  });
+  this.on("preprocess-progress", (file, progress) => {
+    if (file == null || !this.getFile(file.id)) {
+      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return;
+    }
+    this.setFileState(file.id, {
+      progress: {
+        ...this.getFile(file.id).progress,
+        preprocess: progress
+      }
+    });
+  });
+  this.on("preprocess-complete", (file) => {
+    if (file == null || !this.getFile(file.id)) {
+      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return;
+    }
+    const files = {
+      ...this.getState().files
+    };
+    files[file.id] = {
+      ...files[file.id],
+      progress: {
+        ...files[file.id].progress
+      }
+    };
+    delete files[file.id].progress.preprocess;
+    this.setState({
+      files
+    });
+  });
+  this.on("postprocess-progress", (file, progress) => {
+    if (file == null || !this.getFile(file.id)) {
+      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return;
+    }
+    this.setFileState(file.id, {
+      progress: {
+        ...this.getState().files[file.id].progress,
+        postprocess: progress
+      }
+    });
+  });
+  this.on("postprocess-complete", (file) => {
+    if (file == null || !this.getFile(file.id)) {
+      this.log(`Not setting progress for a file that has been removed: ${file == null ? void 0 : file.id}`);
+      return;
+    }
+    const files = {
+      ...this.getState().files
+    };
+    files[file.id] = {
+      ...files[file.id],
+      progress: {
+        ...files[file.id].progress
+      }
+    };
+    delete files[file.id].progress.postprocess;
+    this.setState({
+      files
+    });
+  });
+  this.on("restored", () => {
+    this.calculateTotalProgress();
+  });
+  this.on("dashboard:file-edit-complete", (file) => {
+    if (file) {
+      _classPrivateFieldLooseBase$4(this, _checkRequiredMetaFieldsOnFile)[_checkRequiredMetaFieldsOnFile](file);
+    }
+  });
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("online", _classPrivateFieldLooseBase$4(this, _updateOnlineStatus)[_updateOnlineStatus]);
+    window.addEventListener("offline", _classPrivateFieldLooseBase$4(this, _updateOnlineStatus)[_updateOnlineStatus]);
+    setTimeout(_classPrivateFieldLooseBase$4(this, _updateOnlineStatus)[_updateOnlineStatus], 3e3);
+  }
+}
+function _createUpload2(fileIDs, opts) {
+  if (opts === void 0) {
+    opts = {};
+  }
+  const {
+    forceAllowNewUpload = false
+  } = opts;
+  const {
+    allowNewUpload,
+    currentUploads
+  } = this.getState();
+  if (!allowNewUpload && !forceAllowNewUpload) {
+    throw new Error("Cannot create a new upload: already uploading.");
+  }
+  const uploadID = nanoid$1();
+  this.emit("upload", {
+    id: uploadID,
+    fileIDs
+  });
+  this.setState({
+    allowNewUpload: this.opts.allowMultipleUploadBatches !== false && this.opts.allowMultipleUploads !== false,
+    currentUploads: {
+      ...currentUploads,
+      [uploadID]: {
+        fileIDs,
+        step: 0,
+        result: {}
+      }
+    }
+  });
+  return uploadID;
+}
+function _getUpload2(uploadID) {
+  const {
+    currentUploads
+  } = this.getState();
+  return currentUploads[uploadID];
+}
+function _removeUpload2(uploadID) {
+  const currentUploads = {
+    ...this.getState().currentUploads
+  };
+  delete currentUploads[uploadID];
+  this.setState({
+    currentUploads
+  });
+}
+async function _runUpload2(uploadID) {
+  const getCurrentUpload = () => {
+    const {
+      currentUploads
+    } = this.getState();
+    return currentUploads[uploadID];
+  };
+  let currentUpload = getCurrentUpload();
+  const steps = [..._classPrivateFieldLooseBase$4(this, _preProcessors)[_preProcessors], ..._classPrivateFieldLooseBase$4(this, _uploaders)[_uploaders], ..._classPrivateFieldLooseBase$4(this, _postProcessors)[_postProcessors]];
+  try {
+    for (let step = currentUpload.step || 0; step < steps.length; step++) {
+      if (!currentUpload) {
+        break;
+      }
+      const fn = steps[step];
+      this.setState({
+        currentUploads: {
+          ...this.getState().currentUploads,
+          [uploadID]: {
+            ...currentUpload,
+            step
+          }
+        }
+      });
+      const {
+        fileIDs
+      } = currentUpload;
+      await fn(fileIDs, uploadID);
+      currentUpload = getCurrentUpload();
+    }
+  } catch (err) {
+    _classPrivateFieldLooseBase$4(this, _removeUpload)[_removeUpload](uploadID);
+    throw err;
+  }
+  if (currentUpload) {
+    currentUpload.fileIDs.forEach((fileID) => {
+      const file = this.getFile(fileID);
+      if (file && file.progress.postprocess) {
+        this.emit("postprocess-complete", file);
+      }
+    });
+    const files = currentUpload.fileIDs.map((fileID) => this.getFile(fileID));
+    const successful = files.filter((file) => !file.error);
+    const failed = files.filter((file) => file.error);
+    this.addResultData(uploadID, {
+      successful,
+      failed,
+      uploadID
+    });
+    currentUpload = getCurrentUpload();
+  }
+  let result;
+  if (currentUpload) {
+    result = currentUpload.result;
+    this.emit("complete", result);
+    _classPrivateFieldLooseBase$4(this, _removeUpload)[_removeUpload](uploadID);
+  }
+  if (result == null) {
+    this.log(`Not setting result for an upload that has been removed: ${uploadID}`);
+  }
+  return result;
+}
+Uppy.VERSION = packageJson$2.version;
+class BasePlugin {
+  constructor(uppy, opts) {
+    this.uppy = uppy;
+    this.opts = opts != null ? opts : {};
+  }
+  getPluginState() {
+    const {
+      plugins: plugins2
+    } = this.uppy.getState();
+    return (plugins2 == null ? void 0 : plugins2[this.id]) || {};
+  }
+  setPluginState(update) {
+    if (!update)
+      return;
+    const {
+      plugins: plugins2
+    } = this.uppy.getState();
+    this.uppy.setState({
+      plugins: {
+        ...plugins2,
+        [this.id]: {
+          ...plugins2[this.id],
+          ...update
+        }
+      }
+    });
+  }
+  setOptions(newOpts) {
+    this.opts = {
+      ...this.opts,
+      ...newOpts
+    };
+    this.setPluginState(void 0);
+    this.i18nInit();
+  }
+  i18nInit() {
+    const translator = new Translator([this.defaultLocale, this.uppy.locale, this.opts.locale]);
+    this.i18n = translator.translate.bind(translator);
+    this.i18nArray = translator.translateArray.bind(translator);
+    this.setPluginState(void 0);
+  }
+  /**
+   * Extendable methods
+   * ==================
+   * These methods are here to serve as an overview of the extendable methods as well as
+   * making them not conditional in use, such as `if (this.afterUpdate)`.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  addTarget(plugin) {
+    throw new Error("Extend the addTarget method to add your plugin to another plugin's target");
+  }
+  install() {
+  }
+  uninstall() {
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(state) {
+  }
+  // Called after every state update, after everything's mounted. Debounced.
+  afterUpdate() {
+  }
+}
+function getFilesAndDirectoriesFromDirectory(directoryReader, oldEntries, logDropError, _ref2) {
+  let {
+    onSuccess
+  } = _ref2;
+  directoryReader.readEntries(
+    (entries) => {
+      const newEntries = [...oldEntries, ...entries];
+      if (entries.length) {
+        queueMicrotask(() => {
+          getFilesAndDirectoriesFromDirectory(directoryReader, newEntries, logDropError, {
+            onSuccess
+          });
+        });
+      } else {
+        onSuccess(newEntries);
+      }
+    },
+    // Make sure we resolve on error anyway, it's fine if only one directory couldn't be parsed!
+    (error) => {
+      logDropError(error);
+      onSuccess(oldEntries);
+    }
+  );
+}
+function getAsFileSystemHandleFromEntry(entry, logDropError) {
+  if (entry == null)
+    return entry;
+  return {
+    kind: (
+      // eslint-disable-next-line no-nested-ternary
+      entry.isFile ? "file" : entry.isDirectory ? "directory" : void 0
+    ),
+    name: entry.name,
+    getFile() {
+      return new Promise((resolve2, reject) => entry.file(resolve2, reject));
+    },
+    async *values() {
+      const directoryReader = entry.createReader();
+      const entries = await new Promise((resolve2) => {
+        getFilesAndDirectoriesFromDirectory(directoryReader, [], logDropError, {
+          onSuccess: (dirEntries) => resolve2(dirEntries.map((file) => getAsFileSystemHandleFromEntry(file, logDropError)))
+        });
+      });
+      yield* entries;
+    },
+    isSameEntry: void 0
+  };
+}
+function createPromiseToAddFileOrParseDirectory(entry, relativePath, lastResortFile) {
+  try {
+    if (lastResortFile === void 0) {
+      lastResortFile = void 0;
+    }
+    return async function* () {
+      const getNextRelativePath = () => `${relativePath}/${entry.name}`;
+      if (entry.kind === "file") {
+        const file = await entry.getFile();
+        if (file != null) {
+          ;
+          file.relativePath = relativePath ? getNextRelativePath() : null;
+          yield file;
+        } else if (lastResortFile != null)
+          yield lastResortFile;
+      } else if (entry.kind === "directory") {
+        for await (const handle of entry.values()) {
+          yield* createPromiseToAddFileOrParseDirectory(handle, relativePath ? getNextRelativePath() : entry.name);
+        }
+      } else if (lastResortFile != null)
+        yield lastResortFile;
+    }();
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+async function* getFilesFromDataTransfer(dataTransfer, logDropError) {
+  const fileSystemHandles = await Promise.all(Array.from(dataTransfer.items, async (item) => {
+    var _fileSystemHandle;
+    let fileSystemHandle;
+    const getAsEntry = () => typeof item.getAsEntry === "function" ? item.getAsEntry() : item.webkitGetAsEntry();
+    (_fileSystemHandle = fileSystemHandle) != null ? _fileSystemHandle : fileSystemHandle = getAsFileSystemHandleFromEntry(getAsEntry(), logDropError);
+    return {
+      fileSystemHandle,
+      lastResortFile: item.getAsFile()
+      // can be used as a fallback in case other methods fail
+    };
+  }));
+  for (const {
+    lastResortFile,
+    fileSystemHandle
+  } of fileSystemHandles) {
+    if (fileSystemHandle != null) {
+      try {
+        yield* createPromiseToAddFileOrParseDirectory(fileSystemHandle, "", lastResortFile);
+      } catch (err) {
+        if (lastResortFile != null) {
+          yield lastResortFile;
+        } else {
+          logDropError(err);
+        }
+      }
+    } else if (lastResortFile != null)
+      yield lastResortFile;
+  }
+}
+const toArray$1 = Array.from;
+function fallbackApi(dataTransfer) {
+  const files = toArray$1(dataTransfer.files);
+  return Promise.resolve(files);
+}
+async function getDroppedFiles(dataTransfer, options) {
+  var _options$logDropError;
+  const logDropError = (_options$logDropError = options == null ? void 0 : options.logDropError) != null ? _options$logDropError : Function.prototype;
+  try {
+    const accumulator = [];
+    for await (const file of getFilesFromDataTransfer(dataTransfer, logDropError)) {
+      accumulator.push(file);
+    }
+    return accumulator;
+  } catch {
+    return fallbackApi(dataTransfer);
+  }
+}
+const packageJson$1 = {
+  "version": "2.0.4"
+};
+const defaultOpts = {
+  target: null
+};
+function isFileTransfer(event) {
+  var _event$dataTransfer$t, _event$dataTransfer;
+  return (_event$dataTransfer$t = (_event$dataTransfer = event.dataTransfer) == null || (_event$dataTransfer = _event$dataTransfer.types) == null ? void 0 : _event$dataTransfer.some((type) => type === "Files")) != null ? _event$dataTransfer$t : false;
+}
+class DropTarget extends BasePlugin {
+  constructor(uppy, opts) {
+    super(uppy, {
+      ...defaultOpts,
+      ...opts
+    });
+    this.addFiles = (files) => {
+      const descriptors2 = files.map((file) => ({
+        source: this.id,
+        name: file.name,
+        type: file.type,
+        data: file,
+        meta: {
+          // path of the file relative to the ancestor directory the user selected.
+          // e.g. 'docs/Old Prague/airbnb.pdf'
+          relativePath: file.relativePath || null
+        }
+      }));
+      try {
+        this.uppy.addFiles(descriptors2);
+      } catch (err) {
+        this.uppy.log(err);
+      }
+    };
+    this.handleDrop = async (event) => {
+      var _event$currentTarget, _this$opts$onDrop, _this$opts;
+      if (!isFileTransfer(event)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      clearTimeout(this.removeDragOverClassTimeout);
+      (_event$currentTarget = event.currentTarget) == null || _event$currentTarget.classList.remove("uppy-is-drag-over");
+      this.setPluginState({
+        isDraggingOver: false
+      });
+      this.uppy.iteratePlugins((plugin) => {
+        if (plugin.type === "acquirer") {
+          plugin.handleRootDrop == null || plugin.handleRootDrop(event);
+        }
+      });
+      let executedDropErrorOnce = false;
+      const logDropError = (error) => {
+        this.uppy.log(error, "error");
+        if (!executedDropErrorOnce) {
+          this.uppy.info(error.message, "error");
+          executedDropErrorOnce = true;
+        }
+      };
+      const files = await getDroppedFiles(event.dataTransfer, {
+        logDropError
+      });
+      if (files.length > 0) {
+        this.uppy.log("[DropTarget] Files were dropped");
+        this.addFiles(files);
+      }
+      (_this$opts$onDrop = (_this$opts = this.opts).onDrop) == null || _this$opts$onDrop.call(_this$opts, event);
+    };
+    this.handleDragOver = (event) => {
+      var _this$opts$onDragOver, _this$opts2;
+      if (!isFileTransfer(event)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      event.dataTransfer.dropEffect = "copy";
+      clearTimeout(this.removeDragOverClassTimeout);
+      event.currentTarget.classList.add("uppy-is-drag-over");
+      this.setPluginState({
+        isDraggingOver: true
+      });
+      (_this$opts$onDragOver = (_this$opts2 = this.opts).onDragOver) == null || _this$opts$onDragOver.call(_this$opts2, event);
+    };
+    this.handleDragLeave = (event) => {
+      var _this$opts$onDragLeav, _this$opts3;
+      if (!isFileTransfer(event)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const {
+        currentTarget
+      } = event;
+      clearTimeout(this.removeDragOverClassTimeout);
+      this.removeDragOverClassTimeout = setTimeout(() => {
+        currentTarget.classList.remove("uppy-is-drag-over");
+        this.setPluginState({
+          isDraggingOver: false
+        });
+      }, 50);
+      (_this$opts$onDragLeav = (_this$opts3 = this.opts).onDragLeave) == null || _this$opts$onDragLeav.call(_this$opts3, event);
+    };
+    this.addListeners = () => {
+      const {
+        target
+      } = this.opts;
+      if (target instanceof Element) {
+        this.nodes = [target];
+      } else if (typeof target === "string") {
+        this.nodes = toArray$1(document.querySelectorAll(target));
+      }
+      if (!this.nodes || this.nodes.length === 0) {
+        throw new Error(`"${target}" does not match any HTML elements`);
+      }
+      this.nodes.forEach((node) => {
+        node.addEventListener("dragover", this.handleDragOver, false);
+        node.addEventListener("dragleave", this.handleDragLeave, false);
+        node.addEventListener("drop", this.handleDrop, false);
+      });
+    };
+    this.removeListeners = () => {
+      if (this.nodes) {
+        this.nodes.forEach((node) => {
+          node.removeEventListener("dragover", this.handleDragOver, false);
+          node.removeEventListener("dragleave", this.handleDragLeave, false);
+          node.removeEventListener("drop", this.handleDrop, false);
+        });
+      }
+    };
+    this.type = "acquirer";
+    this.id = this.opts.id || "DropTarget";
+    this.title = "Drop Target";
+  }
+  install() {
+    this.setPluginState({
+      isDraggingOver: false
+    });
+    this.addListeners();
+  }
+  uninstall() {
+    this.removeListeners();
+  }
+}
+DropTarget.VERSION = packageJson$1.version;
+let urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+let nanoid = (size2 = 21) => {
+  let id2 = "";
+  let i = size2;
+  while (i--) {
+    id2 += urlAlphabet[Math.random() * 64 | 0];
+  }
+  return id2;
+};
+function _classPrivateFieldLooseBase$3(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$3 = 0;
+function _classPrivateFieldLooseKey$3(name) {
+  return "__private_" + id$3++ + "_" + name;
+}
+var _uppy = /* @__PURE__ */ _classPrivateFieldLooseKey$3("uppy");
+var _events = /* @__PURE__ */ _classPrivateFieldLooseKey$3("events");
+class EventManager {
+  constructor(uppy) {
+    Object.defineProperty(this, _uppy, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _events, {
+      writable: true,
+      value: []
+    });
+    _classPrivateFieldLooseBase$3(this, _uppy)[_uppy] = uppy;
+  }
+  /** @deprecated */
+  on(event, fn) {
+    _classPrivateFieldLooseBase$3(this, _events)[_events].push([event, fn]);
+    return _classPrivateFieldLooseBase$3(this, _uppy)[_uppy].on(event, fn);
+  }
+  remove() {
+    for (const [event, fn] of _classPrivateFieldLooseBase$3(this, _events)[_events].splice(0)) {
+      _classPrivateFieldLooseBase$3(this, _uppy)[_uppy].off(event, fn);
+    }
+  }
+  onFilePause(fileID, cb) {
+    this.on("upload-pause", (targetFileID, isPaused) => {
+      if (fileID === targetFileID) {
+        cb(isPaused);
+      }
+    });
+  }
+  onFileRemove(fileID, cb) {
+    this.on("file-removed", (file) => {
+      if (fileID === file.id)
+        cb(file.id);
+    });
+  }
+  onPause(fileID, cb) {
+    this.on("upload-pause", (targetFileID, isPaused) => {
+      if (fileID === targetFileID) {
+        cb(isPaused);
+      }
+    });
+  }
+  onRetry(fileID, cb) {
+    this.on("upload-retry", (targetFileID) => {
+      if (fileID === targetFileID) {
+        cb();
+      }
+    });
+  }
+  onRetryAll(fileID, cb) {
+    this.on("retry-all", () => {
+      if (!_classPrivateFieldLooseBase$3(this, _uppy)[_uppy].getFile(fileID))
+        return;
+      cb();
+    });
+  }
+  onPauseAll(fileID, cb) {
+    this.on("pause-all", () => {
+      if (!_classPrivateFieldLooseBase$3(this, _uppy)[_uppy].getFile(fileID))
+        return;
+      cb();
+    });
+  }
+  onCancelAll(fileID, eventHandler) {
+    var _this = this;
+    this.on("cancel-all", function() {
+      if (!_classPrivateFieldLooseBase$3(_this, _uppy)[_uppy].getFile(fileID))
+        return;
+      eventHandler(...arguments);
+    });
+  }
+  onResumeAll(fileID, cb) {
+    this.on("resume-all", () => {
+      if (!_classPrivateFieldLooseBase$3(this, _uppy)[_uppy].getFile(fileID))
+        return;
+      cb();
+    });
+  }
+}
+function _classPrivateFieldLooseBase$2(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$2 = 0;
+function _classPrivateFieldLooseKey$2(name) {
+  return "__private_" + id$2++ + "_" + name;
+}
+var _aliveTimer = /* @__PURE__ */ _classPrivateFieldLooseKey$2("aliveTimer");
+var _isDone = /* @__PURE__ */ _classPrivateFieldLooseKey$2("isDone");
+var _onTimedOut = /* @__PURE__ */ _classPrivateFieldLooseKey$2("onTimedOut");
+var _timeout = /* @__PURE__ */ _classPrivateFieldLooseKey$2("timeout");
+class ProgressTimeout {
+  constructor(timeout, timeoutHandler) {
+    Object.defineProperty(this, _aliveTimer, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _isDone, {
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, _onTimedOut, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _timeout, {
+      writable: true,
+      value: void 0
+    });
+    _classPrivateFieldLooseBase$2(this, _timeout)[_timeout] = timeout;
+    _classPrivateFieldLooseBase$2(this, _onTimedOut)[_onTimedOut] = timeoutHandler;
+  }
+  progress() {
+    if (_classPrivateFieldLooseBase$2(this, _isDone)[_isDone])
+      return;
+    if (_classPrivateFieldLooseBase$2(this, _timeout)[_timeout] > 0) {
+      clearTimeout(_classPrivateFieldLooseBase$2(this, _aliveTimer)[_aliveTimer]);
+      _classPrivateFieldLooseBase$2(this, _aliveTimer)[_aliveTimer] = setTimeout(_classPrivateFieldLooseBase$2(this, _onTimedOut)[_onTimedOut], _classPrivateFieldLooseBase$2(this, _timeout)[_timeout]);
+    }
+  }
+  done() {
+    if (!_classPrivateFieldLooseBase$2(this, _isDone)[_isDone]) {
+      clearTimeout(_classPrivateFieldLooseBase$2(this, _aliveTimer)[_aliveTimer]);
+      _classPrivateFieldLooseBase$2(this, _aliveTimer)[_aliveTimer] = void 0;
+      _classPrivateFieldLooseBase$2(this, _isDone)[_isDone] = true;
+    }
+  }
+}
+function _classPrivateFieldLooseBase$1(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id$1 = 0;
+function _classPrivateFieldLooseKey$1(name) {
+  return "__private_" + id$1++ + "_" + name;
+}
+function createCancelError(cause) {
+  return new Error("Cancelled", {
+    cause
+  });
+}
+function abortOn(signal) {
+  if (signal != null) {
+    var _this$then;
+    const abortPromise = () => this.abort(signal.reason);
+    signal.addEventListener("abort", abortPromise, {
+      once: true
+    });
+    const removeAbortListener = () => {
+      signal.removeEventListener("abort", abortPromise);
+    };
+    (_this$then = this.then) == null || _this$then.call(this, removeAbortListener, removeAbortListener);
+  }
+  return this;
+}
+var _activeRequests = /* @__PURE__ */ _classPrivateFieldLooseKey$1("activeRequests");
+var _queuedHandlers = /* @__PURE__ */ _classPrivateFieldLooseKey$1("queuedHandlers");
+var _paused = /* @__PURE__ */ _classPrivateFieldLooseKey$1("paused");
+var _pauseTimer = /* @__PURE__ */ _classPrivateFieldLooseKey$1("pauseTimer");
+var _downLimit = /* @__PURE__ */ _classPrivateFieldLooseKey$1("downLimit");
+var _upperLimit = /* @__PURE__ */ _classPrivateFieldLooseKey$1("upperLimit");
+var _rateLimitingTimer = /* @__PURE__ */ _classPrivateFieldLooseKey$1("rateLimitingTimer");
+var _call = /* @__PURE__ */ _classPrivateFieldLooseKey$1("call");
+var _queueNext = /* @__PURE__ */ _classPrivateFieldLooseKey$1("queueNext");
+var _next = /* @__PURE__ */ _classPrivateFieldLooseKey$1("next");
+var _queue = /* @__PURE__ */ _classPrivateFieldLooseKey$1("queue");
+var _dequeue = /* @__PURE__ */ _classPrivateFieldLooseKey$1("dequeue");
+var _resume = /* @__PURE__ */ _classPrivateFieldLooseKey$1("resume");
+var _increaseLimit = /* @__PURE__ */ _classPrivateFieldLooseKey$1("increaseLimit");
+class RateLimitedQueue {
+  constructor(limit) {
+    Object.defineProperty(this, _dequeue, {
+      value: _dequeue2
+    });
+    Object.defineProperty(this, _queue, {
+      value: _queue2
+    });
+    Object.defineProperty(this, _next, {
+      value: _next2
+    });
+    Object.defineProperty(this, _queueNext, {
+      value: _queueNext2
+    });
+    Object.defineProperty(this, _call, {
+      value: _call2
+    });
+    Object.defineProperty(this, _activeRequests, {
+      writable: true,
+      value: 0
+    });
+    Object.defineProperty(this, _queuedHandlers, {
+      writable: true,
+      value: []
+    });
+    Object.defineProperty(this, _paused, {
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, _pauseTimer, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _downLimit, {
+      writable: true,
+      value: 1
+    });
+    Object.defineProperty(this, _upperLimit, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _rateLimitingTimer, {
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, _resume, {
+      writable: true,
+      value: () => this.resume()
+    });
+    Object.defineProperty(this, _increaseLimit, {
+      writable: true,
+      value: () => {
+        if (_classPrivateFieldLooseBase$1(this, _paused)[_paused]) {
+          _classPrivateFieldLooseBase$1(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase$1(this, _increaseLimit)[_increaseLimit], 0);
+          return;
+        }
+        _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit] = this.limit;
+        this.limit = Math.ceil((_classPrivateFieldLooseBase$1(this, _upperLimit)[_upperLimit] + _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit]) / 2);
+        for (let i = _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit]; i <= this.limit; i++) {
+          _classPrivateFieldLooseBase$1(this, _queueNext)[_queueNext]();
+        }
+        if (_classPrivateFieldLooseBase$1(this, _upperLimit)[_upperLimit] - _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit] > 3) {
+          _classPrivateFieldLooseBase$1(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase$1(this, _increaseLimit)[_increaseLimit], 2e3);
+        } else {
+          _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit] = Math.floor(_classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit] / 2);
+        }
+      }
+    });
+    if (typeof limit !== "number" || limit === 0) {
+      this.limit = Infinity;
+    } else {
+      this.limit = limit;
+    }
+  }
+  run(fn, queueOptions) {
+    if (!_classPrivateFieldLooseBase$1(this, _paused)[_paused] && _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] < this.limit) {
+      return _classPrivateFieldLooseBase$1(this, _call)[_call](fn);
+    }
+    return _classPrivateFieldLooseBase$1(this, _queue)[_queue](fn, queueOptions);
+  }
+  wrapSyncFunction(fn, queueOptions) {
+    var _this = this;
+    return function() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+      const queuedRequest = _this.run(() => {
+        fn(...args);
+        queueMicrotask(() => queuedRequest.done());
+        return () => {
+        };
+      }, queueOptions);
+      return {
+        abortOn,
+        abort() {
+          queuedRequest.abort();
+        }
+      };
+    };
+  }
+  wrapPromiseFunction(fn, queueOptions) {
+    var _this2 = this;
+    return function() {
+      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+      let queuedRequest;
+      const outerPromise = new Promise((resolve2, reject) => {
+        queuedRequest = _this2.run(() => {
+          let cancelError;
+          let innerPromise;
+          try {
+            innerPromise = Promise.resolve(fn(...args));
+          } catch (err) {
+            innerPromise = Promise.reject(err);
+          }
+          innerPromise.then((result) => {
+            if (cancelError) {
+              reject(cancelError);
+            } else {
+              queuedRequest.done();
+              resolve2(result);
+            }
+          }, (err) => {
+            if (cancelError) {
+              reject(cancelError);
+            } else {
+              queuedRequest.done();
+              reject(err);
+            }
+          });
+          return (cause) => {
+            cancelError = createCancelError(cause);
+          };
+        }, queueOptions);
+      });
+      outerPromise.abort = (cause) => {
+        queuedRequest.abort(cause);
+      };
+      outerPromise.abortOn = abortOn;
+      return outerPromise;
+    };
+  }
+  resume() {
+    _classPrivateFieldLooseBase$1(this, _paused)[_paused] = false;
+    clearTimeout(_classPrivateFieldLooseBase$1(this, _pauseTimer)[_pauseTimer]);
+    for (let i = 0; i < this.limit; i++) {
+      _classPrivateFieldLooseBase$1(this, _queueNext)[_queueNext]();
+    }
+  }
+  /**
+   * Freezes the queue for a while or indefinitely.
+   *
+   * @param {number | null } [duration] Duration for the pause to happen, in milliseconds.
+   *                                    If omitted, the queue won't resume automatically.
+   */
+  pause(duration) {
+    if (duration === void 0) {
+      duration = null;
+    }
+    _classPrivateFieldLooseBase$1(this, _paused)[_paused] = true;
+    clearTimeout(_classPrivateFieldLooseBase$1(this, _pauseTimer)[_pauseTimer]);
+    if (duration != null) {
+      _classPrivateFieldLooseBase$1(this, _pauseTimer)[_pauseTimer] = setTimeout(_classPrivateFieldLooseBase$1(this, _resume)[_resume], duration);
+    }
+  }
+  /**
+   * Pauses the queue for a duration, and lower the limit of concurrent requests
+   * when the queue resumes. When the queue resumes, it tries to progressively
+   * increase the limit in `this.#increaseLimit` until another call is made to
+   * `this.rateLimit`.
+   * Call this function when using the RateLimitedQueue for network requests and
+   * the remote server responds with 429 HTTP code.
+   *
+   * @param {number} duration in milliseconds.
+   */
+  rateLimit(duration) {
+    clearTimeout(_classPrivateFieldLooseBase$1(this, _rateLimitingTimer)[_rateLimitingTimer]);
+    this.pause(duration);
+    if (this.limit > 1 && Number.isFinite(this.limit)) {
+      _classPrivateFieldLooseBase$1(this, _upperLimit)[_upperLimit] = this.limit - 1;
+      this.limit = _classPrivateFieldLooseBase$1(this, _downLimit)[_downLimit];
+      _classPrivateFieldLooseBase$1(this, _rateLimitingTimer)[_rateLimitingTimer] = setTimeout(_classPrivateFieldLooseBase$1(this, _increaseLimit)[_increaseLimit], duration);
+    }
+  }
+  get isPaused() {
+    return _classPrivateFieldLooseBase$1(this, _paused)[_paused];
+  }
+}
+function _call2(fn) {
+  _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] += 1;
+  let done = false;
+  let cancelActive;
+  try {
+    cancelActive = fn();
+  } catch (err) {
+    _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] -= 1;
+    throw err;
+  }
+  return {
+    abort: (cause) => {
+      if (done)
+        return;
+      done = true;
+      _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] -= 1;
+      cancelActive == null || cancelActive(cause);
+      _classPrivateFieldLooseBase$1(this, _queueNext)[_queueNext]();
+    },
+    done: () => {
+      if (done)
+        return;
+      done = true;
+      _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] -= 1;
+      _classPrivateFieldLooseBase$1(this, _queueNext)[_queueNext]();
+    }
+  };
+}
+function _queueNext2() {
+  queueMicrotask(() => _classPrivateFieldLooseBase$1(this, _next)[_next]());
+}
+function _next2() {
+  if (_classPrivateFieldLooseBase$1(this, _paused)[_paused] || _classPrivateFieldLooseBase$1(this, _activeRequests)[_activeRequests] >= this.limit) {
+    return;
+  }
+  if (_classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].length === 0) {
+    return;
+  }
+  const next = _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].shift();
+  const handler = _classPrivateFieldLooseBase$1(this, _call)[_call](next.fn);
+  next.abort = handler.abort;
+  next.done = handler.done;
+}
+function _queue2(fn, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  const handler = {
+    fn,
+    priority: options.priority || 0,
+    abort: () => {
+      _classPrivateFieldLooseBase$1(this, _dequeue)[_dequeue](handler);
+    },
+    done: () => {
+      throw new Error("Cannot mark a queued request as done: this indicates a bug");
+    }
+  };
+  const index = _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].findIndex((other) => {
+    return handler.priority > other.priority;
+  });
+  if (index === -1) {
+    _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].push(handler);
+  } else {
+    _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].splice(index, 0, handler);
+  }
+  return handler;
+}
+function _dequeue2(handler) {
+  const index = _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].indexOf(handler);
+  if (index !== -1) {
+    _classPrivateFieldLooseBase$1(this, _queuedHandlers)[_queuedHandlers].splice(index, 1);
+  }
+}
+const internalRateLimitedQueue = Symbol("__queue");
+class NetworkError extends Error {
+  constructor(error, xhr) {
+    if (xhr === void 0) {
+      xhr = null;
+    }
+    super(`This looks like a network error, the endpoint might be blocked by an internet provider or a firewall.`);
+    this.cause = error;
+    this.isNetworkError = true;
+    this.request = xhr;
+  }
+}
+function isNetworkError(xhr) {
+  if (!xhr) {
+    return false;
+  }
+  return xhr.readyState !== 0 && xhr.readyState !== 4 || xhr.status === 0;
+}
+function filterNonFailedFiles(files) {
+  const hasError = (file) => "error" in file && !!file.error;
+  return files.filter((file) => !hasError(file));
+}
+function filterFilesToEmitUploadStarted(files) {
+  return files.filter((file) => {
+    var _file$progress;
+    return !((_file$progress = file.progress) != null && _file$progress.uploadStarted) || !file.isRestored;
+  });
+}
+const locale = {
+  strings: {
+    // Shown in the Informer if an upload is being canceled because it stalled for too long.
+    uploadStalled: "Upload has not made any progress for %{seconds} seconds. You may want to retry it."
+  }
+};
+function _classPrivateFieldLooseBase(receiver, privateKey) {
+  if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+    throw new TypeError("attempted to use private field on non-instance");
+  }
+  return receiver;
+}
+var id = 0;
+function _classPrivateFieldLooseKey(name) {
+  return "__private_" + id++ + "_" + name;
+}
+const packageJson = {
+  "version": "3.6.4"
+};
+function buildResponseError(xhr, err) {
+  let error = err;
+  if (!error)
+    error = new Error("Upload error");
+  if (typeof error === "string")
+    error = new Error(error);
+  if (!(error instanceof Error)) {
+    error = Object.assign(new Error("Upload error"), {
+      data: error
+    });
+  }
+  if (isNetworkError(xhr)) {
+    error = new NetworkError(error, xhr);
+    return error;
+  }
+  error.request = xhr;
+  return error;
+}
+function setTypeInBlob(file) {
+  const dataWithUpdatedType = file.data.slice(0, file.data.size, file.meta.type);
+  return dataWithUpdatedType;
+}
+const defaultOptions = {
+  formData: true,
+  fieldName: "file",
+  method: "post",
+  allowedMetaFields: null,
+  responseUrlFieldName: "url",
+  bundle: false,
+  headers: {},
+  timeout: 30 * 1e3,
+  limit: 5,
+  withCredentials: false,
+  responseType: "",
+  getResponseData(responseText) {
+    let parsedResponse = {};
+    try {
+      parsedResponse = JSON.parse(responseText);
+    } catch {
+    }
+    return parsedResponse;
+  },
+  getResponseError(_, response) {
+    let error = new Error("Upload error");
+    if (isNetworkError(response)) {
+      error = new NetworkError(error, response);
+    }
+    return error;
+  },
+  validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+var _uploadLocalFile = /* @__PURE__ */ _classPrivateFieldLooseKey("uploadLocalFile");
+var _uploadBundle = /* @__PURE__ */ _classPrivateFieldLooseKey("uploadBundle");
+var _getCompanionClientArgs = /* @__PURE__ */ _classPrivateFieldLooseKey("getCompanionClientArgs");
+var _uploadFiles = /* @__PURE__ */ _classPrivateFieldLooseKey("uploadFiles");
+var _handleUpload = /* @__PURE__ */ _classPrivateFieldLooseKey("handleUpload");
+class XHRUpload extends BasePlugin {
+  constructor(uppy, _opts) {
+    super(uppy, {
+      ...defaultOptions,
+      fieldName: _opts.bundle ? "files[]" : "file",
+      ..._opts
+    });
+    Object.defineProperty(this, _uploadFiles, {
+      value: _uploadFiles2
+    });
+    Object.defineProperty(this, _getCompanionClientArgs, {
+      value: _getCompanionClientArgs2
+    });
+    Object.defineProperty(this, _uploadBundle, {
+      value: _uploadBundle2
+    });
+    Object.defineProperty(this, _uploadLocalFile, {
+      value: _uploadLocalFile2
+    });
+    Object.defineProperty(this, _handleUpload, {
+      writable: true,
+      value: async (fileIDs) => {
+        if (fileIDs.length === 0) {
+          this.uppy.log("[XHRUpload] No files to upload!");
+          return;
+        }
+        if (this.opts.limit === 0 && !this.opts[internalRateLimitedQueue]) {
+          this.uppy.log("[XHRUpload] When uploading multiple files at once, consider setting the `limit` option (to `10` for example), to limit the number of concurrent uploads, which helps prevent memory and network issues: https://uppy.io/docs/xhr-upload/#limit-0", "warning");
+        }
+        this.uppy.log("[XHRUpload] Uploading...");
+        const files = this.uppy.getFilesByIds(fileIDs);
+        const filesFiltered = filterNonFailedFiles(files);
+        const filesToEmit = filterFilesToEmitUploadStarted(filesFiltered);
+        this.uppy.emit("upload-start", filesToEmit);
+        if (this.opts.bundle) {
+          const isSomeFileRemote = filesFiltered.some((file) => file.isRemote);
+          if (isSomeFileRemote) {
+            throw new Error("Can’t upload remote files when the `bundle: true` option is set");
+          }
+          if (typeof this.opts.headers === "function") {
+            throw new TypeError("`headers` may not be a function when the `bundle: true` option is set");
+          }
+          await _classPrivateFieldLooseBase(this, _uploadBundle)[_uploadBundle](filesFiltered);
+        } else {
+          await _classPrivateFieldLooseBase(this, _uploadFiles)[_uploadFiles](filesFiltered);
+        }
+      }
+    });
+    this.type = "uploader";
+    this.id = this.opts.id || "XHRUpload";
+    this.defaultLocale = locale;
+    this.i18nInit();
+    if (internalRateLimitedQueue in this.opts) {
+      this.requests = this.opts[internalRateLimitedQueue];
+    } else {
+      this.requests = new RateLimitedQueue(this.opts.limit);
+    }
+    if (this.opts.bundle && !this.opts.formData) {
+      throw new Error("`opts.formData` must be true when `opts.bundle` is enabled.");
+    }
+    if (this.opts.bundle && typeof this.opts.headers === "function") {
+      throw new Error("`opts.headers` can not be a function when the `bundle: true` option is set.");
+    }
+    if ((_opts == null ? void 0 : _opts.allowedMetaFields) === void 0 && "metaFields" in this.opts) {
+      throw new Error("The `metaFields` option has been renamed to `allowedMetaFields`.");
+    }
+    this.uploaderEvents = /* @__PURE__ */ Object.create(null);
+  }
+  getOptions(file) {
+    const overrides = this.uppy.getState().xhrUpload;
+    const {
+      headers
+    } = this.opts;
+    const opts = {
+      ...this.opts,
+      ...overrides || {},
+      ...file.xhrUpload || {},
+      headers: {}
+    };
+    if (typeof headers === "function") {
+      opts.headers = headers(file);
+    } else {
+      Object.assign(opts.headers, this.opts.headers);
+    }
+    if (overrides) {
+      Object.assign(opts.headers, overrides.headers);
+    }
+    if (file.xhrUpload) {
+      Object.assign(opts.headers, file.xhrUpload.headers);
+    }
+    return opts;
+  }
+  // eslint-disable-next-line class-methods-use-this
+  addMetadata(formData, meta, opts) {
+    const allowedMetaFields = Array.isArray(opts.allowedMetaFields) ? opts.allowedMetaFields : Object.keys(meta);
+    allowedMetaFields.forEach((item) => {
+      const value = meta[item];
+      if (Array.isArray(value)) {
+        value.forEach((subItem) => formData.append(item, subItem));
+      } else {
+        formData.append(item, value);
+      }
+    });
+  }
+  createFormDataUpload(file, opts) {
+    const formPost = new FormData();
+    this.addMetadata(formPost, file.meta, opts);
+    const dataWithUpdatedType = setTypeInBlob(file);
+    if (file.name) {
+      formPost.append(opts.fieldName, dataWithUpdatedType, file.meta.name);
+    } else {
+      formPost.append(opts.fieldName, dataWithUpdatedType);
+    }
+    return formPost;
+  }
+  createBundledUpload(files, opts) {
+    const formPost = new FormData();
+    const {
+      meta
+    } = this.uppy.getState();
+    this.addMetadata(formPost, meta, opts);
+    files.forEach((file) => {
+      const options = this.getOptions(file);
+      const dataWithUpdatedType = setTypeInBlob(file);
+      if (file.name) {
+        formPost.append(options.fieldName, dataWithUpdatedType, file.name);
+      } else {
+        formPost.append(options.fieldName, dataWithUpdatedType);
+      }
+    });
+    return formPost;
+  }
+  install() {
+    if (this.opts.bundle) {
+      const {
+        capabilities
+      } = this.uppy.getState();
+      this.uppy.setState({
+        capabilities: {
+          ...capabilities,
+          individualCancellation: false
+        }
+      });
+    }
+    this.uppy.addUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
+  }
+  uninstall() {
+    if (this.opts.bundle) {
+      const {
+        capabilities
+      } = this.uppy.getState();
+      this.uppy.setState({
+        capabilities: {
+          ...capabilities,
+          individualCancellation: true
+        }
+      });
+    }
+    this.uppy.removeUploader(_classPrivateFieldLooseBase(this, _handleUpload)[_handleUpload]);
+  }
+}
+async function _uploadLocalFile2(file, current, total) {
+  const opts = this.getOptions(file);
+  const uploadStarted = Date.now();
+  this.uppy.log(`uploading ${current} of ${total}`);
+  return new Promise((resolve2, reject) => {
+    const data = opts.formData ? this.createFormDataUpload(file, opts) : file.data;
+    const xhr = new XMLHttpRequest();
+    const eventManager = new EventManager(this.uppy);
+    this.uploaderEvents[file.id] = eventManager;
+    let queuedRequest;
+    const timer = new ProgressTimeout(opts.timeout, () => {
+      const error = new Error(this.i18n("uploadStalled", {
+        seconds: Math.ceil(opts.timeout / 1e3)
+      }));
+      this.uppy.emit("upload-stalled", error, [file]);
+    });
+    const id2 = nanoid();
+    xhr.upload.addEventListener("loadstart", () => {
+      this.uppy.log(`[XHRUpload] ${id2} started`);
+    });
+    xhr.upload.addEventListener("progress", (ev) => {
+      this.uppy.log(`[XHRUpload] ${id2} progress: ${ev.loaded} / ${ev.total}`);
+      timer.progress();
+      if (ev.lengthComputable) {
+        this.uppy.emit("upload-progress", this.uppy.getFile(file.id), {
+          // TODO: do not send `uploader` in next major
+          // @ts-expect-error we can't type this and we should remove it
+          uploader: this,
+          uploadStarted,
+          bytesUploaded: ev.loaded,
+          bytesTotal: ev.total
+        });
+      }
+    });
+    xhr.addEventListener("load", () => {
+      this.uppy.log(`[XHRUpload] ${id2} finished`);
+      timer.done();
+      queuedRequest.done();
+      if (this.uploaderEvents[file.id]) {
+        this.uploaderEvents[file.id].remove();
+        this.uploaderEvents[file.id] = null;
+      }
+      if (opts.validateStatus(xhr.status, xhr.responseText, xhr)) {
+        const body2 = opts.getResponseData(xhr.responseText, xhr);
+        const uploadURL = body2 == null ? void 0 : body2[opts.responseUrlFieldName];
+        const uploadResp = {
+          status: xhr.status,
+          body: body2,
+          uploadURL
+        };
+        this.uppy.emit("upload-success", this.uppy.getFile(file.id), uploadResp);
+        if (uploadURL) {
+          this.uppy.log(`Download ${file.name} from ${uploadURL}`);
+        }
+        return resolve2(file);
+      }
+      const body = opts.getResponseData(xhr.responseText, xhr);
+      const error = buildResponseError(xhr, opts.getResponseError(xhr.responseText, xhr));
+      const response = {
+        status: xhr.status,
+        body
+      };
+      this.uppy.emit("upload-error", file, error, response);
+      return reject(error);
+    });
+    xhr.addEventListener("error", () => {
+      this.uppy.log(`[XHRUpload] ${id2} errored`);
+      timer.done();
+      queuedRequest.done();
+      if (this.uploaderEvents[file.id]) {
+        this.uploaderEvents[file.id].remove();
+        this.uploaderEvents[file.id] = null;
+      }
+      const error = buildResponseError(xhr, opts.getResponseError(xhr.responseText, xhr));
+      this.uppy.emit("upload-error", file, error);
+      return reject(error);
+    });
+    xhr.open(opts.method.toUpperCase(), opts.endpoint, true);
+    xhr.withCredentials = opts.withCredentials;
+    if (opts.responseType !== "") {
+      xhr.responseType = opts.responseType;
+    }
+    queuedRequest = this.requests.run(() => {
+      const currentOpts = this.getOptions(file);
+      Object.keys(currentOpts.headers).forEach((header) => {
+        xhr.setRequestHeader(header, currentOpts.headers[header]);
+      });
+      xhr.send(data);
+      return () => {
+        timer.done();
+        xhr.abort();
+      };
+    });
+    eventManager.onFileRemove(file.id, () => {
+      queuedRequest.abort();
+      reject(new Error("File removed"));
+    });
+    eventManager.onCancelAll(file.id, (_ref2) => {
+      let {
+        reason
+      } = _ref2;
+      if (reason === "user") {
+        queuedRequest.abort();
+      }
+      reject(new Error("Upload cancelled"));
+    });
+  });
+}
+function _uploadBundle2(files) {
+  return new Promise((resolve2, reject) => {
+    const {
+      endpoint
+    } = this.opts;
+    const {
+      method
+    } = this.opts;
+    const uploadStarted = Date.now();
+    const optsFromState = this.uppy.getState().xhrUpload;
+    const formData = this.createBundledUpload(files, {
+      ...this.opts,
+      ...optsFromState || {}
+    });
+    const xhr = new XMLHttpRequest();
+    const emitError2 = (error) => {
+      files.forEach((file) => {
+        this.uppy.emit("upload-error", file, error);
+      });
+    };
+    const timer = new ProgressTimeout(this.opts.timeout, () => {
+      const error = new Error(this.i18n("uploadStalled", {
+        seconds: Math.ceil(this.opts.timeout / 1e3)
+      }));
+      this.uppy.emit("upload-stalled", error, files);
+    });
+    xhr.upload.addEventListener("loadstart", () => {
+      this.uppy.log("[XHRUpload] started uploading bundle");
+      timer.progress();
+    });
+    xhr.upload.addEventListener("progress", (ev) => {
+      timer.progress();
+      if (!ev.lengthComputable)
+        return;
+      files.forEach((file) => {
+        this.uppy.emit("upload-progress", this.uppy.getFile(file.id), {
+          // TODO: do not send `uploader` in next major
+          // @ts-expect-error we can't type this and we should remove it
+          uploader: this,
+          uploadStarted,
+          bytesUploaded: ev.loaded / ev.total * file.size,
+          bytesTotal: file.size
+        });
+      });
+    });
+    xhr.addEventListener("load", () => {
+      timer.done();
+      if (this.opts.validateStatus(xhr.status, xhr.responseText, xhr)) {
+        const body = this.opts.getResponseData(xhr.responseText, xhr);
+        const uploadResp = {
+          status: xhr.status,
+          body
+        };
+        files.forEach((file) => {
+          this.uppy.emit("upload-success", this.uppy.getFile(file.id), uploadResp);
+        });
+        return resolve2();
+      }
+      const error = this.opts.getResponseError(xhr.responseText, xhr) || new NetworkError("Upload error", xhr);
+      emitError2(error);
+      return reject(error);
+    });
+    xhr.addEventListener("error", () => {
+      timer.done();
+      const error = this.opts.getResponseError(xhr.responseText, xhr) || new Error("Upload error");
+      emitError2(error);
+      return reject(error);
+    });
+    this.uppy.on("cancel-all", function(_temp) {
+      let {
+        reason
+      } = _temp === void 0 ? {} : _temp;
+      if (reason !== "user")
+        return;
+      timer.done();
+      xhr.abort();
+    });
+    xhr.open(method.toUpperCase(), endpoint, true);
+    xhr.withCredentials = this.opts.withCredentials;
+    if (this.opts.responseType !== "") {
+      xhr.responseType = this.opts.responseType;
+    }
+    const headers = this.opts.headers;
+    Object.keys(headers).forEach((header) => {
+      xhr.setRequestHeader(header, headers[header]);
+    });
+    xhr.send(formData);
+  });
+}
+function _getCompanionClientArgs2(file) {
+  var _file$remote;
+  const opts = this.getOptions(file);
+  const allowedMetaFields = Array.isArray(opts.allowedMetaFields) ? opts.allowedMetaFields : Object.keys(file.meta);
+  return {
+    ...(_file$remote = file.remote) == null ? void 0 : _file$remote.body,
+    protocol: "multipart",
+    endpoint: opts.endpoint,
+    size: file.data.size,
+    fieldname: opts.fieldName,
+    metadata: Object.fromEntries(allowedMetaFields.map((name) => [name, file.meta[name]])),
+    httpMethod: opts.method,
+    useFormData: opts.formData,
+    headers: opts.headers
+  };
+}
+async function _uploadFiles2(files) {
+  await Promise.allSettled(files.map((file, i) => {
+    const current = i + 1;
+    const total = files.length;
+    if (file.isRemote) {
+      const getQueue = () => this.requests;
+      const controller = new AbortController();
+      const removedHandler = (removedFile) => {
+        if (removedFile.id === file.id)
+          controller.abort();
+      };
+      this.uppy.on("file-removed", removedHandler);
+      const uploadPromise = this.uppy.getRequestClientForFile(file).uploadRemoteFile(file, _classPrivateFieldLooseBase(this, _getCompanionClientArgs)[_getCompanionClientArgs](file), {
+        signal: controller.signal,
+        getQueue
+      });
+      this.requests.wrapSyncFunction(() => {
+        this.uppy.off("file-removed", removedHandler);
+      }, {
+        priority: -1
+      })();
+      return uploadPromise;
+    }
+    return _classPrivateFieldLooseBase(this, _uploadLocalFile)[_uploadLocalFile](file, current, total);
+  }));
+}
+XHRUpload.VERSION = packageJson.version;
 const debug = dbg("aptix:file-app");
 ref(null);
 ref(null);
@@ -21737,7 +25455,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       me.selectedFolder = this.rootFolder;
       return;
     }
-    const fileApplicationPrefs = localStorage.getItem("FileLibraryPrefs-" + this.$props.siteId);
+    const fileApplicationPrefs = localStorage.getItem(
+      "FileLibraryPrefs-" + this.$props.siteId
+    );
     if (fileApplicationPrefs != null) {
       me.currentPrefs = JSON.parse(fileApplicationPrefs);
     }
@@ -21814,7 +25534,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   },
   watch: {
     currentPrefs: function(newPrefs) {
-      localStorage.setItem("FileLibraryPrefs-" + this.$props.siteId, JSON.stringify(newPrefs));
+      localStorage.setItem(
+        "FileLibraryPrefs-" + this.$props.siteId,
+        JSON.stringify(newPrefs)
+      );
     },
     selectedFolder: function(newFolder) {
       this.fileFilter = "";
@@ -21824,14 +25547,38 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   },
   mounted: function() {
     const me = this;
+    let uploadUrl = me.baseHost ? me.baseHost + me.uploadFilesUrl : me.uploadFilesUrl;
+    const uppy = new Uppy({ logger: debugLogger });
+    uppy.use(XHRUpload, {
+      endpoint: uploadUrl,
+      limit: 6,
+      bundle: true
+    });
+    uppy.use(DropTarget, {
+      target: document.body,
+      onDragLeave: (event) => {
+        event.stopPropagation();
+      }
+    });
+    window.uppy = uppy;
+    uppy.on("complete", (result) => {
+      if (result.failed.length === 0) {
+        console.log("Upload successful!");
+      } else {
+        console.warn("Upload failed!");
+      }
+      console.log("successful files:", result.successful);
+      console.log("failed files:", result.failed);
+    });
     if (me.currentPrefs.selectedFolder != null) {
-      me.$refs.baseFolder.selectFolder(me.currentPrefs.selectedFolder);
+      me.$refs.baseFolder.selectFolder(
+        me.currentPrefs.selectedFolder
+      );
     } else {
       me.$refs.baseFolder.select();
     }
     let chunkedFileUploadId = crypto.randomUUID();
     let fileInput = $("#fileupload");
-    let uploadUrl = me.baseHost ? me.baseHost + me.uploadFilesUrl : me.uploadFilesUrl;
     fileInput.fileupload({
       dropZone: $("#fileApp"),
       limitConcurrentUploads: 20,
@@ -21840,11 +25587,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       maxChunkSize: me.maxUploadChunkSize,
       singleFileUploads: false,
       formData: function() {
-        var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+        var antiForgeryToken = $(
+          "input[name=__RequestVerificationToken]"
+        ).val();
         return [
           { name: "path", value: me.selectedFolder.path },
-          { name: "__RequestVerificationToken", value: antiForgeryToken },
-          { name: "__chunkedFileUploadId", value: chunkedFileUploadId }
+          {
+            name: "__RequestVerificationToken",
+            value: antiForgeryToken
+          },
+          {
+            name: "__chunkedFileUploadId",
+            value: chunkedFileUploadId
+          }
         ];
       },
       done: async function(e, data) {
@@ -21909,7 +25664,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         ).then((res) => {
           me.emitter.emit("fileListMoved");
         }).catch(async (error) => {
-          notify({ summary: me.t.ErrorMovingFile, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+          notify({
+            summary: me.t.ErrorMovingFile,
+            detail: await tryGetErrorMessage(error),
+            severity: SeverityLevel.Error
+          });
         });
       }
     },
@@ -21927,7 +25686,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         me.sortBy = "";
         me.sortAsc = true;
       }).catch(async (error) => {
-        notify({ summary: me.t.ErrorLoadingFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        notify({
+          summary: me.t.ErrorLoadingFolder,
+          detail: await tryGetErrorMessage(error),
+          severity: SeverityLevel.Error
+        });
         me.selectRootFolder();
       });
     },
@@ -21980,7 +25743,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       apiClient.deleteFolder(folder.path).then((response) => {
         me.emitter.emit("deleteFolder", folder);
       }).catch(async (error) => {
-        notify({ summary: me.t.ErrorDeleteFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        notify({
+          summary: me.t.ErrorDeleteFolder,
+          detail: await tryGetErrorMessage(error),
+          severity: SeverityLevel.Error
+        });
       });
     },
     createFolder: function(folder) {
@@ -21990,12 +25757,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (folder.name === "") {
         return;
       }
-      debug("selected folder before create new one", me.selectedFolder.path);
+      debug(
+        "selected folder before create new one",
+        me.selectedFolder.path
+      );
       const apiClient = new MediaApiClient(me.baseUrl);
       apiClient.createFolder(me.selectedFolder.path, folder.name).then((response) => {
-        me.emitter.emit("addFolder", { selectedFolder: me.selectedFolder, data: response });
+        me.emitter.emit("addFolder", {
+          selectedFolder: me.selectedFolder,
+          data: response
+        });
       }).catch(async (error) => {
-        notify({ summary: me.t.ErrorCreateFolder, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        notify({
+          summary: me.t.ErrorCreateFolder,
+          detail: await tryGetErrorMessage(error),
+          severity: SeverityLevel.Error
+        });
       });
     },
     renameFile: function(element) {
@@ -22007,11 +25784,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const newPath = oldPath.replace(file.name, newName);
       const apiClient = new MediaApiClient(me.baseUrl);
       apiClient.moveMedia(oldPath, newPath).then((response) => {
-        me.emitter.emit("fileRenamed", { newName, newPath, oldPath });
+        me.emitter.emit("fileRenamed", {
+          newName,
+          newPath,
+          oldPath
+        });
       }).catch(async (error) => {
         error.response.text().then((text) => {
           const error2 = JSON.parse(text);
-          notify({ summary: me.t.ErrorRenamingFile, detail: error2.detail, severity: SeverityLevel.Error });
+          notify({
+            summary: me.t.ErrorRenamingFile,
+            detail: error2.detail,
+            severity: SeverityLevel.Error
+          });
         });
       });
     },
@@ -22037,7 +25822,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         me.selectedFiles = [];
         me.isSelectedAll = false;
       }).catch(async (error) => {
-        notify({ summary: me.t.ErrorDeleteFile, detail: await tryGetErrorMessage(error), severity: SeverityLevel.Error });
+        notify({
+          summary: me.t.ErrorDeleteFile,
+          detail: await tryGetErrorMessage(error),
+          severity: SeverityLevel.Error
+        });
       });
     },
     deleteFileItem: function(file) {
@@ -22056,7 +25845,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       }).catch(async (error) => {
         tryGetErrorMessage(error).then((message) => {
-          notify({ summary: me.t.ErrorDeleteFile, detail: message, severity: SeverityLevel.Error });
+          notify({
+            summary: me.t.ErrorDeleteFile,
+            detail: message,
+            severity: SeverityLevel.Error
+          });
         });
       });
     },
@@ -22069,8 +25862,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         fileNames.push(element.file.name);
         this.selectedFiles.push(element.file);
       }
-      element.e.dataTransfer.setData("fileNames", JSON.stringify(fileNames));
-      element.e.dataTransfer.setData("sourceFolder", this.selectedFolder.path);
+      element.e.dataTransfer.setData(
+        "fileNames",
+        JSON.stringify(fileNames)
+      );
+      element.e.dataTransfer.setData(
+        "sourceFolder",
+        this.selectedFolder.path
+      );
       element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
       element.e.dataTransfer.effectAllowed = "move";
     },
@@ -22095,7 +25894,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     }
   }
 });
-const App_vue_vue_type_style_index_0_lang = "";
 const _hoisted_1 = {
   key: 0,
   class: "alert alert-danger message-warning"
@@ -22255,7 +26053,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.parents, (folder, i) => {
                 return openBlock(), createElementBlock("span", {
                   key: folder.path,
-                  class: normalizeClass(["breadcrumb-item", { active: _ctx.parents.length - i == 1, "no-breadcrumb-divider": i == 0 }])
+                  class: normalizeClass(["breadcrumb-item", {
+                    active: _ctx.parents.length - i == 1,
+                    "no-breadcrumb-divider": i == 0
+                  }])
                 }, [
                   createBaseVNode("a", {
                     href: _ctx.parents.length - i == 1 ? "javascript:void(0)" : "#",
@@ -22293,7 +26094,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 onClick: _cache[3] || (_cache[3] = () => _ctx.openModal("deleteAll"))
               }, [
                 createVNode(_component_fa_icon, { icon: "fa-solid fa-trash" }),
-                withDirectives(createBaseVNode("span", { class: "badge rounded-pill ml-1" }, toDisplayString(_ctx.selectedFiles.length), 513), [
+                withDirectives(createBaseVNode("span", { class: "badge rounded-pill ms-1" }, toDisplayString(_ctx.selectedFiles.length), 513), [
                   [vShow, _ctx.selectedFiles.length > 0]
                 ]),
                 createVNode(_component_ModalConfirm, {
@@ -22361,7 +26162,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("div", _hoisted_28, toDisplayString(_ctx.t.FolderFilterEmpty), 1)
             ])
           ], 512), [
-            [vShow, _ctx.fileItems.length > 0 && _ctx.filteredFileItems.length < 1]
+            [
+              vShow,
+              _ctx.fileItems.length > 0 && _ctx.filteredFileItems.length < 1
+            ]
           ]),
           withDirectives(createBaseVNode("div", _hoisted_29, [
             createBaseVNode("div", _hoisted_30, [
@@ -22577,7 +26381,7 @@ var FAMILY_SHARP = "sharp";
 var FAMILIES = [FAMILY_CLASSIC, FAMILY_SHARP];
 function familyProxy(obj) {
   return new Proxy(obj, {
-    get: function get3(target, prop) {
+    get: function get22(target, prop) {
       return prop in target ? target[prop] : target[FAMILY_CLASSIC];
     }
   });
@@ -22736,13 +26540,13 @@ var config = {};
 Object.keys(_default).forEach(function(key) {
   Object.defineProperty(config, key, {
     enumerable: true,
-    set: function set3(val) {
+    set: function set22(val) {
       _config[key] = val;
       _onChangeCb.forEach(function(cb) {
         return cb(config);
       });
     },
-    get: function get3() {
+    get: function get22() {
       return _config[key];
     }
   });
@@ -22798,11 +26602,11 @@ function insertCss(css2) {
 var idPool = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function nextUniqueId() {
   var size2 = 12;
-  var id = "";
+  var id2 = "";
   while (size2-- > 0) {
-    id += idPool[Math.random() * 62 | 0];
+    id2 += idPool[Math.random() * 62 | 0];
   }
-  return id;
+  return id2;
 }
 function toArray(obj) {
   var array = [];
@@ -22980,17 +26784,17 @@ var reduce = function fastReduceObject(subject, fn, initialValue, thisContext) {
 };
 function ucs2decode(string) {
   var output = [];
-  var counter = 0;
+  var counter2 = 0;
   var length = string.length;
-  while (counter < length) {
-    var value = string.charCodeAt(counter++);
-    if (value >= 55296 && value <= 56319 && counter < length) {
-      var extra = string.charCodeAt(counter++);
+  while (counter2 < length) {
+    var value = string.charCodeAt(counter2++);
+    if (value >= 55296 && value <= 56319 && counter2 < length) {
+      var extra = string.charCodeAt(counter2++);
       if ((extra & 64512) == 56320) {
         output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
       } else {
         output.push(value);
-        counter--;
+        counter2--;
       }
     } else {
       output.push(value);
@@ -23469,14 +27273,14 @@ function domVariants(val, abstractCreator) {
     get: abstractCreator
   });
   Object.defineProperty(val, "html", {
-    get: function get3() {
+    get: function get22() {
       return val.abstract.map(function(a) {
         return toHtml(a);
       });
     }
   });
   Object.defineProperty(val, "node", {
-    get: function get3() {
+    get: function get22() {
       if (!IS_DOM)
         return;
       var container = DOCUMENT.createElement("div");
@@ -23506,7 +27310,7 @@ function asIcon(_ref2) {
 }
 function asSymbol(_ref2) {
   var prefix = _ref2.prefix, iconName = _ref2.iconName, children = _ref2.children, attributes = _ref2.attributes, symbol = _ref2.symbol;
-  var id = symbol === true ? "".concat(prefix, "-").concat(config.cssPrefix, "-").concat(iconName) : symbol;
+  var id2 = symbol === true ? "".concat(prefix, "-").concat(config.cssPrefix, "-").concat(iconName) : symbol;
   return [{
     tag: "svg",
     attributes: {
@@ -23515,7 +27319,7 @@ function asSymbol(_ref2) {
     children: [{
       tag: "symbol",
       attributes: _objectSpread2$1(_objectSpread2$1({}, attributes), {}, {
-        id
+        id: id2
       }),
       children
     }]
@@ -24054,7 +27858,7 @@ FAMILIES.map(function(family) {
 Object.keys(PREFIX_TO_STYLE[FAMILY_CLASSIC]).map(knownPrefixes.add.bind(knownPrefixes));
 Object.keys(PREFIX_TO_STYLE[FAMILY_SHARP]).map(knownPrefixes.add.bind(knownPrefixes));
 knownPrefixes = _toConsumableArray(knownPrefixes);
-function onTree(root) {
+function onTree(root2) {
   var callback = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
   if (!IS_DOM)
     return Promise.resolve();
@@ -24079,7 +27883,7 @@ function onTree(root) {
   }
   var candidates = [];
   try {
-    candidates = toArray(root.querySelectorAll(prefixesDomQuery));
+    candidates = toArray(root2.querySelectorAll(prefixesDomQuery));
   } catch (e) {
   }
   if (candidates.length > 0) {
@@ -24263,7 +28067,7 @@ var ReplaceElements = {
 var Layers = {
   mixout: function mixout3() {
     return {
-      layer: function layer(assembler) {
+      layer: function layer2(assembler) {
         var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         var _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes;
         return domVariants({
@@ -24294,7 +28098,7 @@ var Layers = {
 var LayersCounter = {
   mixout: function mixout4() {
     return {
-      counter: function counter(content) {
+      counter: function counter2(content) {
         var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         var _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles2 = _params$styles === void 0 ? {} : _params$styles;
         return domVariants({
@@ -24322,7 +28126,7 @@ var LayersCounter = {
 var LayersText = {
   mixout: function mixout5() {
     return {
-      text: function text(content) {
+      text: function text2(content) {
         var params = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
         var _params$transform = params.transform, transform2 = _params$transform === void 0 ? meaninglessTransform : _params$transform, _params$title = params.title, title = _params$title === void 0 ? null : _params$title, _params$classes = params.classes, classes = _params$classes === void 0 ? [] : _params$classes, _params$attributes = params.attributes, attributes = _params$attributes === void 0 ? {} : _params$attributes, _params$styles = params.styles, styles2 = _params$styles === void 0 ? {} : _params$styles;
         return domVariants({
@@ -24462,11 +28266,11 @@ function replace2(node) {
 function processable(node) {
   return node.parentNode !== document.head && !~TAGNAMES_TO_SKIP_FOR_PSEUDOELEMENTS.indexOf(node.tagName.toUpperCase()) && !node.getAttribute(DATA_FA_PSEUDO_ELEMENT) && (!node.parentNode || node.parentNode.tagName !== "svg");
 }
-function searchPseudoElements(root) {
+function searchPseudoElements(root2) {
   if (!IS_DOM)
     return;
   return new Promise(function(resolve2, reject) {
-    var operations = toArray(root.querySelectorAll("*")).filter(processable).map(replace2);
+    var operations = toArray(root2.querySelectorAll("*")).filter(processable).map(replace2);
     var end3 = perf.begin("searchPseudoElements");
     disableObservation();
     Promise.all(operations).then(function() {
@@ -24518,7 +28322,7 @@ var MutationObserver$1 = {
       noAuto: function noAuto3() {
         disconnect();
       },
-      watch: function watch3(params) {
+      watch: function watch22(params) {
         var observeMutationsRoot = params.observeMutationsRoot;
         if (_unwatched) {
           enableObservation();
@@ -24983,7 +28787,7 @@ var humps$1 = { exports: {} };
       if (_isNumerical(string)) {
         return string;
       }
-      string = string.replace(/[\-_\s]+(.)?/g, function(match, chr) {
+      string = string.replace(/[\-_\s]+(.)?/g, function(match2, chr) {
         return chr ? chr.toUpperCase() : "";
       });
       return string.substr(0, 1).toLowerCase() + string.substr(1);
@@ -25140,29 +28944,29 @@ function classList(props) {
     return key;
   });
 }
-function normalizeIconArgs(icon3) {
-  if (icon3 && _typeof(icon3) === "object" && icon3.prefix && icon3.iconName && icon3.icon) {
-    return icon3;
+function normalizeIconArgs(icon22) {
+  if (icon22 && _typeof(icon22) === "object" && icon22.prefix && icon22.iconName && icon22.icon) {
+    return icon22;
   }
   if (parse$1.icon) {
-    return parse$1.icon(icon3);
+    return parse$1.icon(icon22);
   }
-  if (icon3 === null) {
+  if (icon22 === null) {
     return null;
   }
-  if (_typeof(icon3) === "object" && icon3.prefix && icon3.iconName) {
-    return icon3;
+  if (_typeof(icon22) === "object" && icon22.prefix && icon22.iconName) {
+    return icon22;
   }
-  if (Array.isArray(icon3) && icon3.length === 2) {
+  if (Array.isArray(icon22) && icon22.length === 2) {
     return {
-      prefix: icon3[0],
-      iconName: icon3[1]
+      prefix: icon22[0],
+      iconName: icon22[1]
     };
   }
-  if (typeof icon3 === "string") {
+  if (typeof icon22 === "string") {
     return {
       prefix: "fas",
-      iconName: icon3
+      iconName: icon22
     };
   }
 }
@@ -25203,7 +29007,7 @@ var FontAwesomeIcon = /* @__PURE__ */ defineComponent({
     pull: {
       type: String,
       default: null,
-      validator: function validator3(value) {
+      validator: function validator22(value) {
         return ["right", "left"].indexOf(value) > -1;
       }
     },
@@ -25214,7 +29018,7 @@ var FontAwesomeIcon = /* @__PURE__ */ defineComponent({
     rotation: {
       type: [String, Number],
       default: null,
-      validator: function validator4(value) {
+      validator: function validator3(value) {
         return [90, 180, 270].indexOf(Number.parseInt(value, 10)) > -1;
       }
     },
@@ -25225,7 +29029,7 @@ var FontAwesomeIcon = /* @__PURE__ */ defineComponent({
     size: {
       type: String,
       default: null,
-      validator: function validator5(value) {
+      validator: function validator4(value) {
         return ["2xs", "xs", "sm", "lg", "xl", "2xl", "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x", "9x", "10x"].indexOf(value) > -1;
       }
     },

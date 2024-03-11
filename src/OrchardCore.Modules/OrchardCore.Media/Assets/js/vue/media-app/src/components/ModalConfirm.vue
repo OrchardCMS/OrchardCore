@@ -41,7 +41,7 @@ const emit = defineEmits<{
       <button class="btn btn-secondary" @click="showModal = false">
         {{ t.Cancel }}
       </button>
-      <button class="ml-2 btn btn-primary" @click="emit('confirm')">
+      <button class="ms-2 btn btn-primary" @click="emit('confirm')">
         {{ actionName }}
       </button>
     </div>
