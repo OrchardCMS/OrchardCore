@@ -11,6 +11,7 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Core.Json;
 using System.Text.Json;
+using OrchardCore.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,6 +61,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<JsonSerializerOptions>(options =>
             {
                 options.Converters.Add(new LoginInfoJsonConverter());
+            });
+
+            services.Configure<ContentSerializerJsonOptions>(options =>
+            {
+                options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
             });
 
             return services;
