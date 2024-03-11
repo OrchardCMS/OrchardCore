@@ -46,7 +46,7 @@
     "postcss": "8.4.28",
     "postcss-rtl": "^2.0.0",
     "rtlcss": "4.1.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.2",
     "source-map": "^0.7.4"
   }
 }
