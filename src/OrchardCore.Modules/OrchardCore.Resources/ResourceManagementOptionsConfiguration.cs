@@ -36,7 +36,7 @@ namespace OrchardCore.Resources
                 .DefineScript("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.min.js", "~/OrchardCore.Resources/Scripts/jquery.js")
                 .SetCdn("https://code.jquery.com/jquery-3.7.1.min.js", "https://code.jquery.com/jquery-3.7.1.js")
-                .SetCdnIntegrity("sha384-1H217gwSVyLSIfZLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs", "sha384-wsqsSADZR1YRBEZ4/kKHNSmU+aX8ojbnKUMN4RyD3jDkxw5mHtoe2z/T/n4l56U/")
+                .SetCdnIntegrity("sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs", "sha384-wsqsSADZR1YRBEZ4/kKHaSmU+aX8ojbnKUMN4RyD3jDkxw5mHtoe2z/T/n4l56U/")
                 .SetVersion("3.7.1");
 
             manifest
