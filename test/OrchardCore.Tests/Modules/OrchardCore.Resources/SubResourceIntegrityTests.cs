@@ -59,11 +59,16 @@ public class SubResourceIntegrityTests
 
     private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url)
     {
-        var data = await httpClient.GetByteArrayAsync(url);
-
-        using var memoryStream = new MemoryStream(data);
-        var hash = await SHA384.HashDataAsync(memoryStream);
-
-        return "sha384-" + Convert.ToBase64String(hash);
+        try
+        {
+            var data = await httpClient.GetByteArrayAsync(url);
+            using var memoryStream = new MemoryStream(data);
+            var hash = await SHA384.HashDataAsync(memoryStream);
+            return "sha384-" + Convert.ToBase64String(hash);
+        }
+        catch
+        {
+            throw new Exception($"Could not find file with url: {url}");
+        }
     }
 }
