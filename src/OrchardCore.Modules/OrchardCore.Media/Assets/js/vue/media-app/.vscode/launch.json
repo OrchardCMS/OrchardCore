@@ -2,19 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      //"preLaunchTask": "dev",
-      "name": "chrome",
       "type": "chrome",
       "request": "launch",
+      "name": "Debug Vite App",
       "url": "http://localhost:5173",
-      "enableContentValidation": false,
       "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      },
       "sourceMaps": true,
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/src/**",
-        "!**/node_modules/**"
-      ],
-      "pathMapping": { "url": "/src/", "path": "${webRoot}/" }
+      "runtimeArgs": ["--remote-debugging-port=9222"]
     }
   ]
 }
