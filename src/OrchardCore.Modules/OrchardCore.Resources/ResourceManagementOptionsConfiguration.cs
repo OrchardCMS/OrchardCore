@@ -124,7 +124,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.fileupload.min.js", "~/OrchardCore.Resources/Scripts/jquery.fileupload.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.min.js", "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.js")
-                .SetCdnIntegrity("sha512-P7EUiLYW7QUrhYrLgaJ++ok2j2I7Pu0UgGnrpLowujPZicu7mIR0V/Trq+7kl/0nEkp6yNGh8eFJY1JUv3dkPA==", "sha384-0kYSikha8p8NUXBb9/ZzkbnyTJ+q6uIYLDupH60G0s8ve9jFqDlCJGdOwEXOw9AF")
+                .SetCdnIntegrity("sha384-t/a/G59hRbkwY9q4QtKeC8BJaq/iCa/XLqbU6//JWAIxECygr80ecZk1W/soXL1d", "sha384-0kYSikha8p8NUXBb9/ZzkbnyTJ+q6uIYLDupH60G0s8ve9jFqDlCJGdOwEXOw9AF")
                 .SetVersion("10.32.0");
 
             manifest
