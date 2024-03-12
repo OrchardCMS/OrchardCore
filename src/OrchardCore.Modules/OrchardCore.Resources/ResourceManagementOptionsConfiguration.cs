@@ -195,7 +195,7 @@ namespace OrchardCore.Resources
                 .DefineScript("bootstrap")
                 .SetDependencies("popperjs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.jsss", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.jszzz")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.js")
                 .SetCdnIntegrity("sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy", "sha384-jYoAmFjufJZfBzwTARyz2gk7Jj9mQb2cLeP9n5PcgLCVVd+8QfjY1+qFj+rBkViV")
                 .SetVersion("5.3.3");
 
