@@ -48,12 +48,12 @@ public class SubResourceIntegrityTests
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
                         var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
-                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdn, resourceDefinition.CdnDebugIntegrity, resourceIntegrity));
+                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdn, resourceDefinition.CdnIntegrity, resourceIntegrity));
                     }
                 }
             }
 
-            Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item4), $"The {expectation.Item1} {expectation.Item2} has invalid SRI hash, please use '{expectation.Item4}' instead."));
+            Assert.All(expectations, expectation => Assert.True(expectation.Item4.Equals(expectation.Item3), $"The {expectation.Item1} {expectation.Item2} has invalid SRI hash, please use '{expectation.Item4}' instead."));
         }
     }
 
