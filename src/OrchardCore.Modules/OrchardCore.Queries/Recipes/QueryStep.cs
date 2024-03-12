@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -24,12 +25,12 @@ namespace OrchardCore.Queries.Recipes
         public QueryStep(
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             ILogger<QueryStep> logger)
         {
             _queryManager = queryManager;
             _querySources = querySources;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _logger = logger;
         }
 

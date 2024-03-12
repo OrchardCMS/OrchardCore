@@ -3,8 +3,6 @@
 @using System.Text.Json.Nodes
 @using System.Globalization
 
-<p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
 @{
     // ['fr-FR', 'en-US']
     var supportedCultures = JConvert.SerializeObject(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray());

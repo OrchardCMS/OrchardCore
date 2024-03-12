@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Recipes.Models;
@@ -30,13 +31,13 @@ namespace OrchardCore.Layers.Recipes
             IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<JsonSerializerOptions> serializationOptions)
+            IOptions<ContentSerializerJsonOptions> serializationOptions)
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
-            _serializationOptions = serializationOptions.Value;
+            _serializationOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
