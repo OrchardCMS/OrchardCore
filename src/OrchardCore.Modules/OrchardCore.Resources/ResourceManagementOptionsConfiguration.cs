@@ -120,16 +120,8 @@ namespace OrchardCore.Resources
                 .SetVersion("1.7.2");
 
             manifest
-                .DefineScript("jQuery-ui-widget")
-                .SetDependencies("jQuery")
-                .SetUrl("~/OrchardCore.Resources/Scripts/jquery.ui.widget.min.js", "~/OrchardCore.Resources/Scripts/jquery.ui.widget.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.min.js", "https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.js")
-                .SetCdnIntegrity("sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18=", "sha384-fPINeHSiqXb7zVDlJOaWe9ZYpUHQpeTNhJxVXskdRVb6j8OB/glqs/Ajcy3s3Sv3")
-                .SetVersion("1.10.3");
-
-            manifest
                 .DefineScript("jQuery-fileupload")
-                .SetDependencies("jQuery-ui-widget")
+                .SetDependencies("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.fileupload.min.js", "~/OrchardCore.Resources/Scripts/jquery.fileupload.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.min.js", "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.js")
                 .SetCdnIntegrity("sha512-P7EUiLYW7QUrhYrLgaJ++ok2j2I7Pu0UgGnrpLowujPZicu7mIR0V/Trq+7kl/0nEkp6yNGh8eFJY1JUv3dkPA==", "sha512-X+Ab9AN6kvFJHPWW080jVlkLisGgGEUle6vdSzrcL48M43WzWGYqwjSOOvEa0cJtgvOMb0HP2Psh5lVXd4z73A==")
