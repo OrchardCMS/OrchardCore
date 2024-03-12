@@ -58,10 +58,9 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
     {
         var viewModel = new UserLocalizationViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            section.Culture = viewModel.SelectedCulture;
-        }
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        section.Culture = viewModel.SelectedCulture;
 
         return await EditAsync(section, context);
     }

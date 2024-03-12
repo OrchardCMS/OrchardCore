@@ -37,22 +37,21 @@ namespace OrchardCore.ContentTypes.Editors
         {
             var model = new ContentTypeSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.Creatable(model.Creatable);
+            context.Builder.Listable(model.Listable);
+            context.Builder.Draftable(model.Draftable);
+            context.Builder.Versionable(model.Versionable);
+            context.Builder.Securable(model.Securable);
+            context.Builder.WithDescription(model.Description);
+
+            var stereotype = model.Stereotype?.Trim();
+            context.Builder.Stereotype(stereotype);
+
+            if (!IsAlphaNumericOrEmpty(stereotype))
             {
-                context.Builder.Creatable(model.Creatable);
-                context.Builder.Listable(model.Listable);
-                context.Builder.Draftable(model.Draftable);
-                context.Builder.Versionable(model.Versionable);
-                context.Builder.Securable(model.Securable);
-                context.Builder.WithDescription(model.Description);
-
-                var stereotype = model.Stereotype?.Trim();
-                context.Builder.Stereotype(stereotype);
-
-                if (!IsAlphaNumericOrEmpty(stereotype))
-                {
-                    context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
-                }
+                context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
             }
 
             return Edit(contentTypeDefinition);

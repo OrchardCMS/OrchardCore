@@ -43,13 +43,12 @@ namespace OrchardCore.Demo.Drivers
 
             var model = new EditUserProfileViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                profile.Age = model.Age;
-                profile.FirstName = model.FirstName;
-                profile.LastName = model.LastName;
-                profile.UpdatedAt = DateTime.UtcNow;
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            profile.Age = model.Age;
+            profile.FirstName = model.FirstName;
+            profile.LastName = model.LastName;
+            profile.UpdatedAt = DateTime.UtcNow;
 
             return Edit(profile, context);
         }

@@ -27,10 +27,8 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            await UpdateActivityAsync(viewModel, model);
-        }
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+        await UpdateActivityAsync(viewModel, model);
 
         return Edit(model);
     }

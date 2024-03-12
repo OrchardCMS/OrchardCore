@@ -28,13 +28,12 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
             var viewModel = new AuditTrailPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
+
+            context.Builder.WithSettings(new AuditTrailPartSettings
             {
-                context.Builder.WithSettings(new AuditTrailPartSettings
-                {
-                    ShowCommentInput = viewModel.ShowCommentInput
-                });
-            }
+                ShowCommentInput = viewModel.ShowCommentInput
+            });
 
             return Edit(model, context.Updater);
         }

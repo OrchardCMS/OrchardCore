@@ -37,20 +37,19 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new SelectPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
+            await updater.TryUpdateModelAsync(viewModel, Prefix)l
+
                 part.DefaultValue = viewModel.DefaultValue;
-                try
-                {
-                    part.Editor = viewModel.Editor;
-                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
-                        ? []
-                        : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
-                }
-                catch
-                {
-                    updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
-                }
+            try
+            {
+                part.Editor = viewModel.Editor;
+                part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
+                    ? []
+                    : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
+            }
+            catch
+            {
+                updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
             }
 
             return Edit(part);
