@@ -33,7 +33,7 @@ public class SubResourceIntegrityTests
 
         async Task ValidateSubResourceIntegrityAsync(string resourceType)
         {
-            var expectations = new List<Tuple<string, string, string, string>>();
+            var expectations = new List<Tuple<string, string, string>>();
 
             foreach (var resource in resourceManifest.GetResources(resourceType))
             {
@@ -42,18 +42,18 @@ public class SubResourceIntegrityTests
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
                         var resourceIntegrityDebug = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
-                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrityDebug));
+                        expectations.Add(new Tuple<string, string, string>(resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrityDebug));
                     }
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
                         var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
-                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdn, resourceDefinition.CdnIntegrity, resourceIntegrity));
+                        expectations.Add(new Tuple<string, string, string>(resourceDefinition.UrlCdn, resourceDefinition.CdnIntegrity, resourceIntegrity));
                     }
                 }
             }
 
-            Assert.All(expectations, expectation => Assert.True(expectation.Item4.Equals(expectation.Item3), $"The {expectation.Item1} {expectation.Item2} has invalid SRI hash, please use '{expectation.Item4}' instead."));
+            Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item2), $"The {resourceType} {expectation.Item1} has invalid SRI hash, please use '{expectation.Item3}' instead."));
         }
     }
 
