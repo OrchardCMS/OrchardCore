@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      //"preLaunchTask": "dev",
+      "name": "chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "enableContentValidation": false,
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/src/**",
+        "!**/node_modules/**"
+      ],
+      "pathMapping": { "url": "/src/", "path": "${webRoot}/" }
+    }
+  ]
+}
