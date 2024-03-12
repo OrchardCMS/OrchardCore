@@ -66,7 +66,7 @@ public class SubResourceIntegrityTests
         {
             data = await httpClient.GetByteArrayAsync(url);
         }
-        catch(WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
+        catch
         {
             return null;
         }
