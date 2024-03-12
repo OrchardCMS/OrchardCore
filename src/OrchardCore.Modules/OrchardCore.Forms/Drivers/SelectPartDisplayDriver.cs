@@ -36,10 +36,9 @@ namespace OrchardCore.Forms.Drivers
         public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
         {
             var viewModel = new SelectPartEditViewModel();
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            part.DefaultValue = viewModel.DefaultValue;
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix)l
-
-                part.DefaultValue = viewModel.DefaultValue;
             try
             {
                 part.Editor = viewModel.Editor;
