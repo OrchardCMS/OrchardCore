@@ -124,7 +124,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.ui.widget.min.js", "~/OrchardCore.Resources/Scripts/jquery.ui.widget.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.js", "https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.js")
-                .SetCdnIntegrity("sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18=", "sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18=")
+                .SetCdnIntegrity("sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18=", "sha384-fPINeHSiqXb7zVDlJOaWe9ZYpUHQpeTNhJxVXskdRVb6j8OB/glqs/Ajcy3s3Sv3")
                 .SetVersion("1.10.3");
 
             manifest
