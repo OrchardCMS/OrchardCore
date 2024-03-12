@@ -99,14 +99,14 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("jQuery-ui")
                 .SetDependencies("jQuery")
-                .SetUrl("~/OrchardCore.Resources/Scripts/jquery-ui.min.js", "~/OrchardCore.Resources/Scripts/jquery-ui.js")
+                .SetUrl("~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui.min.js", "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui.js")
                 .SetCdn("https://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
                 .SetCdnIntegrity("sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX", "sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5")
                 .SetVersion("1.12.1");
 
             manifest
                 .DefineStyle("jQuery-ui")
-                .SetUrl("~/OrchardCore.Resources/Styles/jquery-ui.min.css", "~/OrchardCore.Resources/Styles/jquery-ui.css")
+                .SetUrl("~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/Styles/jquery-ui.min.css", "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/Styles/jquery-ui.css")
                 .SetCdn("https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css", "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
                 .SetCdnIntegrity("sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6", "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D")
                 .SetVersion("1.12.1");
@@ -118,6 +118,22 @@ namespace OrchardCore.Resources
                 .SetCdn("https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js", "https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js")
                 .SetCdnIntegrity("sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd", "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd")
                 .SetVersion("1.7.2");
+
+            manifest
+                .DefineScript("jQuery-fileupload")
+                .SetDependencies("jQuery-ui")
+                .SetUrl("~/OrchardCore.Resources/Scripts/jquery.fileupload.min.js", "~/OrchardCore.Resources/Scripts/jquery.fileupload.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.min.js", "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.js")
+                .SetCdnIntegrity("sha384-t/a/G59hRbkwY9q4QtKeC8BJaq/iCa/XLqbU6//JWAIxECygr80ecZk1W/soXL1d", "sha384-0kYSikha8p8NUXBb9/ZzkbnyTJ+q6uIYLDupH60G0s8ve9jFqDlCJGdOwEXOw9AF")
+                .SetVersion("10.32.0");
+
+            manifest
+                .DefineScript("jQuery-iframe-transport")
+                .SetDependencies("jQuery-fileupload")
+                .SetUrl("~/OrchardCore.Resources/Scripts/jquery.iframe-transport.min.js", "~/OrchardCore.Resources/Scripts/jquery.iframe-transport.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.min.js", "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.js")
+                .SetCdnIntegrity("sha384-RVSdJCLiwGZtzkZOWdlpY6AyDhmZHVAAx3bAbBlRxBIp1dD/MkkMOcbgWP9SgR8E", "sha384-KcPleywUX7NFvy4q5aDI6viwF9nSWwDfABktBjWRuDEZA0TmoyNcwimFmKgNtXlC")
+                .SetVersion("10.32.0");
 
             manifest
                 .DefineScript("bootstrap")
@@ -214,7 +230,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("bootstrap-select")
-                .SetDependencies("jQuery")
+                .SetDependencies("jQuery", "bootstrap")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.js")
                 .SetCdnIntegrity("sha384-0O3sg2SQIGn4393xwamQISjphC8DIXjCzlhj1gPAMC5xGg+2perF5Mehr5njv0fZ", "sha384-2b0aLFg/Ejp4OF57nW0BUqNzm259RHYYMf/mpKClBijsEH2P+4ea2oWAq0twd8L0")
@@ -222,7 +238,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("nouislider")
-                .SetUrl("~/OrchardCore.Resources/Styles/nouislider.min.css", "~/OrchardCore.Resources/Styles/nouislider.css")
+                .SetUrl("~/OrchardCore.Resources/Scripts/nouislider/nouislider.min.css", "~/OrchardCore.Resources/Scripts/nouislider/nouislider.css")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.css")
                 .SetCdnIntegrity("sha384-PSZaVsyG9jDu8hFaSJev5s/9poIJlX7cuxSGdqCgXRHpo2DzIaZAyCd2rG/DJJmV", "sha384-SW0/EWtnMakMnwC9RHA27DeNtNCLsJ0l+oZrXlFbb2123lhLdZIbiDiwRPogNY8T")
                 .SetVersion("15.7.0");
@@ -445,25 +461,47 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuejs")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vue.min.js", "~/OrchardCore.Resources/Scripts/vue.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js")
-                .SetCdnIntegrity("sha384-ULpZhk1pvhc/UK5ktA9kwb2guy9ovNSTyxPNHANnA35YjBQgdwI+AhLkixDvdlw4", "sha384-t1tHLsbM7bYMJCXlhr0//00jSs7ZhsAhxgm191xFsyzvieTMCbUWKMhFg9I6ci8q")
-                .SetVersion("2.6.14");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.min.js", "~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js")
+                .SetCdnIntegrity("sha256-1gHyKSR7Jh0YGBmI9zN7P2UhZRh/PCKhCYIaUOqWoPk=", "sha256-ogKWlwEM30Qu6hELJMlzX9rPqSGYYK1u2IizINEC5gk=")
+                .SetVersion("2.7.14");
+
+            manifest
+                .DefineScript("vuejs")
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue.global.prod.js", "~/OrchardCore.Resources/Scripts/vue.global.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.js")
+                .SetCdnIntegrity("sha256-4yDa4p89hBgm4cwPC4fx7t8+QOEjjKFWYp9jpIsCsgM=", "sha256-PKohudZy73A99AyDWctqMmBXpTCuJ9RIboh4ZyILtCM=")
+                .SetVersion("3.4.19");
 
             manifest
                 .DefineScript("vue-multiselect")
-                .SetDependencies("vuejs")
+                .SetDependencies("vuejs:2")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js")
                 .SetCdnIntegrity("sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU", "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU")
                 .SetVersion("2.1.6");
 
             manifest
+                .DefineScript("vue-multiselect")
+                .SetDependencies("vuejs:3")
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.umd.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.js")
+                .SetCdnIntegrity("sha256-BG2jF5avrBI525b65+XV3oBDf4aMwv0Gmby5+PR3YUc=", "sha256-XB6NElpLwfeswT2RqMxDyIXKP83r37JQoZaiSWXEFnA=")
+                .SetVersion("3.0.0");
+
+            //TODO add vendor folder
+            manifest
                 .DefineStyle("vue-multiselect")
-                .SetUrl("~/OrchardCore.Resources/Styles/vue-multiselect.min.css", "~/OrchardCore.Resources/Styles/vue-multiselect.min.css")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css")
                 .SetCdnIntegrity("sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM", "sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM")
                 .SetVersion("2.1.6");
+
+            manifest
+                .DefineStyle("vue-multiselect")
+                .SetUrl("~/OrchardCore.Resources/Styles/vue-multiselect.min.css", "~/OrchardCore.Resources/Styles/vue-multiselect.min.css")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css")
+                .SetCdnIntegrity("sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww=", "sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww=")
+                .SetVersion("3.0.0");
 
             manifest
                 .DefineScript("Sortable")
@@ -474,11 +512,18 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuedraggable")
-                .SetDependencies("vuejs", "Sortable")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
+                .SetDependencies("vuejs:2", "Sortable")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.js")
                 .SetCdnIntegrity("sha384-qUA1xXJiX23E4GOeW/XHtsBkV9MUcHLSjhi3FzO08mv8+W8bv5AQ1cwqLskycOTs", "sha384-+jB9vXc/EaIJTlNiZG2tv+TUpKm6GR9HCRZb3VkI3lscZWqrCYDbX2ZXffNJldL9")
                 .SetVersion("2.24.3");
+
+            manifest
+                .DefineScript("vuedraggable")
+                .SetDependencies("vuejs:3", "Sortable")
+                .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.js")
+                .SetCdnIntegrity("sha256-FjxpX3VAkThN5LyMBcYXWG07S53R7zenPcuYdGsHM5I=", "sha256-WmIsBn89Zsqc1mnbARPrEIskG1iJLpZaMM91oA8QLDI=")
+                .SetVersion("4.1.0");
 
             manifest
                 .DefineScript("js-cookie")
