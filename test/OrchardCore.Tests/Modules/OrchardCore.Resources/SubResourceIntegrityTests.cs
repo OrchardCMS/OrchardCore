@@ -33,37 +33,42 @@ public class SubResourceIntegrityTests
 
         async Task ValidateSubResourceIntegrityAsync(string resourceType)
         {
+            var expectations = new List<Tuple<string, string, string, string>>();
+
             foreach (var resource in resourceManifest.GetResources(resourceType))
             {
                 foreach (var resourceDefinition in resource.Value)
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
-
-                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity),
-                            $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
+                        var resourceIntegrityDebug = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
+                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrityDebug));
                     }
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                     {
                         var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
-
-                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity),
-                            $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
+                        expectations.Add(new Tuple<string, string, string, string>(resourceType, resourceDefinition.UrlCdn, resourceDefinition.CdnDebugIntegrity, resourceIntegrity));
                     }
                 }
             }
+
+            Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item4), $"The {expectation.Item1} {expectation.Item2} has invalid SRI hash, please use '{expectation.Item4}' instead."));
         }
     }
 
     private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url)
     {
-        var data = await httpClient.GetByteArrayAsync(url);
-
-        using var memoryStream = new MemoryStream(data);
-        var hash = await SHA384.HashDataAsync(memoryStream);
-
-        return "sha384-" + Convert.ToBase64String(hash);
+        try
+        {
+            var data = await httpClient.GetByteArrayAsync(url);
+            using var memoryStream = new MemoryStream(data);
+            var hash = await SHA384.HashDataAsync(memoryStream);
+            return "sha384-" + Convert.ToBase64String(hash);
+        }
+        catch
+        {
+            throw new Exception($"Could not find file with url: {url}");
+        }
     }
 }
