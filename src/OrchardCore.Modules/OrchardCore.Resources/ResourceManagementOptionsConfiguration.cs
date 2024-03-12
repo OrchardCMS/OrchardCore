@@ -132,7 +132,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("jQuery-fileupload")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.iframe-transport.min.js", "~/OrchardCore.Resources/Scripts/jquery.iframe-transport.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.min.js", "https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.js")
-                .SetCdnIntegrity("sha512-LUdOz2V2MwwP3u+2C68TrHWk7kLyhftqOD3Ay/HRqYXPQh4skWvRSlef4mAJHuRj0vxDD5WqHWCOvgCqCcxUjA==", "sha384-KcPleywUX7NFvy4q5aDI6viwF9nSWwDfABktBjWRuDEZA0TmoyNcwimFmKgNtXlC")
+                .SetCdnIntegrity("sha384-RVSdJCLiwGZtzkZOWdlpY6AyDhmZHVAAx3bAbBlRxBIp1dD/MkkMOcbgWP9SgR8E", "sha384-KcPleywUX7NFvy4q5aDI6viwF9nSWwDfABktBjWRuDEZA0TmoyNcwimFmKgNtXlC")
                 .SetVersion("10.32.0");
 
             manifest
