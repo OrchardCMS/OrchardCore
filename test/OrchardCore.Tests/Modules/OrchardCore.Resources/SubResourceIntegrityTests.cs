@@ -41,8 +41,8 @@ public class SubResourceIntegrityTests
                 {
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnDebugIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
-                        var resourceIntegrityDebug = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
-                        expectations.Add(new Tuple<string, string, string>(resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrityDebug));
+                        var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
+                        expectations.Add(new Tuple<string, string, string>(resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrity));
                     }
 
                     if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
@@ -53,22 +53,26 @@ public class SubResourceIntegrityTests
                 }
             }
 
+            Assert.All(expectations, expectation => Assert.True(!string.IsNullOrEmpty(expectation.Item3), $"The {resourceType} {expectation.Item1} was not found (404 error). It is a non-valid url."));
             Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item2), $"The {resourceType} {expectation.Item1} has invalid SRI hash, please use '{expectation.Item3}' instead."));
         }
     }
 
     private static async Task<string> GetSubResourceIntegrityAsync(HttpClient httpClient, string url)
     {
+        byte[] data;
+
         try
         {
-            var data = await httpClient.GetByteArrayAsync(url);
-            using var memoryStream = new MemoryStream(data);
-            var hash = await SHA384.HashDataAsync(memoryStream);
-            return "sha384-" + Convert.ToBase64String(hash);
+            data = await httpClient.GetByteArrayAsync(url);
         }
-        catch
+        catch(WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
         {
-            throw new Exception($"Could not find file with url: {url}");
+            return null;
         }
+
+        using var memoryStream = new MemoryStream(data);
+        var hash = await SHA384.HashDataAsync(memoryStream);
+        return "sha384-" + Convert.ToBase64String(hash);
     }
 }
