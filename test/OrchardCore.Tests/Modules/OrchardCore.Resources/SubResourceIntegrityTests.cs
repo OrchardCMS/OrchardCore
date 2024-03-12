@@ -39,7 +39,7 @@ public class SubResourceIntegrityTests
             {
                 foreach (var resourceDefinition in resource.Value)
                 {
-                    if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
+                    if (!string.IsNullOrEmpty(resourceDefinition.CdnDebugIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                     {
                         var resourceIntegrityDebug = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
                         expectations.Add(new Tuple<string, string, string>(resourceDefinition.UrlCdnDebug, resourceDefinition.CdnDebugIntegrity, resourceIntegrityDebug));
