@@ -116,7 +116,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery-ui-i18n.min.js", "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.js")
                 .SetCdn("https://code.jquery.com/ui/1.7.2/jquery-ui.min.js", "https://code.jquery.com/ui/1.7.2/jquery-ui.js")
-                .SetCdnIntegrity("sha256-4h4SHCCUAKFl7xWF9JeZp9tnU8lmM5bt6G3kNK6E4ek=", "sha384-USLHWIjRr+yQpObysKxzTNgyQDBY0+RNmkwvW8vWvNYOIw4ohc6rY2LBcv9reuM2")
+                .SetCdnIntegrity("sha384-2D6EexcShEOLfvy3lq92Q9FzaaNZ2tOBzfDwYj64i2k97MdEiGmUROV6Q1ATOwl2", "sha384-USLHWIjRr+yQpObysKxzTNgyQDBY0+RNmkwvW8vWvNYOIw4ohc6rY2LBcv9reuM2")
                 .SetVersion("1.7.2");
 
             manifest
