@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.Contents.AdminNodes

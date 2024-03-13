@@ -2,13 +2,14 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyEntryConverter : JsonConverter
+    public class NotifyEntryConverter : JsonConverter<NotifyEntry>
     {
         private readonly HtmlEncoder _htmlEncoder;
 
@@ -22,18 +23,16 @@ namespace OrchardCore.DisplayManagement.Notify
             return typeof(NotifyEntry).IsAssignableFrom(objectType);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override NotifyEntry Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var jo = JObject.Load(reader);
-
-            NotifyType type;
+            var jo = JObject.Load(ref reader);
 
             var notifyEntry = new NotifyEntry
             {
                 Message = new HtmlString(jo.Value<string>("Message")),
             };
 
-            if (Enum.TryParse(jo.Value<string>("Type"), out type))
+            if (Enum.TryParse<NotifyType>(jo.Value<string>("Type"), out var type))
             {
                 notifyEntry.Type = type;
             }
@@ -41,15 +40,15 @@ namespace OrchardCore.DisplayManagement.Notify
             return notifyEntry;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, NotifyEntry value, JsonSerializerOptions options)
         {
-            var notifyEntry = value as NotifyEntry;
+            var notifyEntry = value;
             if (notifyEntry == null)
             {
                 return;
             }
 
-            var o = new JObject();
+            var o = new JsonObject();
 
             // Serialize the message as it's an IHtmlContent
             var stringBuilder = new StringBuilder();
@@ -59,8 +58,8 @@ namespace OrchardCore.DisplayManagement.Notify
             }
 
             // Write all well-known properties
-            o.Add(new JProperty(nameof(NotifyEntry.Type), notifyEntry.Type.ToString()));
-            o.Add(new JProperty(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder)));
+            o.Add(nameof(NotifyEntry.Type), notifyEntry.Type.ToString());
+            o.Add(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder));
 
             o.WriteTo(writer);
         }

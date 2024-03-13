@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Configuration.Internal;
@@ -86,7 +86,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            var configurationString = await configData.ToJObject().ToStringAsync(Formatting.None);
+            var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);

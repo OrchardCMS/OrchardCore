@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid;
@@ -16,7 +15,9 @@ namespace OrchardCore.Contents.Liquid
         private readonly IContentManager _contentManager;
         private readonly IContentItemRecursionHelper<FullTextFilter> _fullTextRecursionHelper;
 
-        public FullTextFilter(IContentManager contentManager, IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper)
+        public FullTextFilter(
+            IContentManager contentManager,
+            IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper)
         {
             _contentManager = contentManager;
             _fullTextRecursionHelper = fullTextRecursionHelper;
@@ -39,7 +40,7 @@ namespace OrchardCore.Contents.Liquid
                     }
                 }
 
-                if (!contentItems.Any())
+                if (contentItems.Count == 0)
                 {
                     return NilValue.Instance;
                 }
@@ -78,7 +79,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 contentItem = null;
 
-                if (obj is JObject jObject)
+                if (obj is JsonObject jObject)
                 {
                     contentItem = jObject.ToObject<ContentItem>();
                     // If input is a 'JObject' but which not represents a 'ContentItem',

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Widgets.Settings
 {
     public class WidgetsListPartSettings

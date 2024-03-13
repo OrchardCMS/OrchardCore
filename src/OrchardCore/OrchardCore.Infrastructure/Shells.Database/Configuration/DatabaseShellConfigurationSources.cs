@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
@@ -42,7 +42,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            JObject configurations = null;
+            JsonObject configurations = null;
 
             await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
             await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
@@ -50,7 +50,6 @@ namespace OrchardCore.Shells.Database.Configuration
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
-
                 if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
@@ -74,10 +73,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
             });
 
-            var configuration = configurations.GetValue(tenant) as JObject;
+            var configuration = configurations[tenant] as JsonObject;
             if (configuration is not null)
             {
-                var configurationString = await configuration.ToStringAsync(Formatting.None);
+                var configurationString = configuration.ToJsonString(JOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
@@ -91,7 +90,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
-                JObject configurations;
+                JsonObject configurations;
                 if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
@@ -102,10 +101,7 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = [];
                 }
 
-                var configData = await (configurations
-                    .GetValue(tenant) as JObject)
-                    .ToConfigurationDataAsync();
-
+                var configData = await (configurations[tenant] as JsonObject).ToConfigurationDataAsync();
                 foreach (var key in data.Keys)
                 {
                     if (data[key] is not null)
@@ -118,7 +114,7 @@ namespace OrchardCore.Shells.Database.Configuration
                     }
                 }
 
-                configurations[tenant] = configData.ToJObject();
+                configurations[tenant] = configData.ToJsonObject();
                 document.ShellConfigurations = configurations;
 
                 await session.SaveAsync(document, checkConcurrency: true);
@@ -141,7 +137,7 @@ namespace OrchardCore.Shells.Database.Configuration
             });
         }
 
-        private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)
+        private async Task<bool> TryMigrateFromFileAsync(string tenant, JsonObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
@@ -151,12 +147,12 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using var file = File.OpenText(appsettings);
-            var configuration = await file.ReadToEndAsync();
+            using var stream = File.OpenRead(appsettings);
 
-            if (configuration is not null)
+            var configuration = await JObject.LoadAsync(stream);
+            if (configuration is JsonObject jsonObject)
             {
-                configurations[tenant] = JObject.Parse(configuration);
+                configurations[tenant] = jsonObject;
             }
 
             return true;

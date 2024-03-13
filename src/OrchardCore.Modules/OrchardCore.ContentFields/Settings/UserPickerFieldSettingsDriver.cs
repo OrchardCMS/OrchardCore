@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
                 var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                    .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
                     .Select(roleName => new RoleEntry
                     {
                         Role = roleName,

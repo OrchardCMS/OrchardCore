@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -18,9 +19,9 @@ namespace OrchardCore.Search.Lucene
             _queryProviders = queryProviders;
         }
 
-        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JsonObject queryObj)
         {
-            var queryProp = queryObj["query"] as JObject
+            var queryProp = queryObj["query"].AsObject()
                 ?? throw new ArgumentException("Query DSL requires a [query] property");
 
             var query = CreateQueryFragment(context, queryProp);
@@ -29,28 +30,28 @@ namespace OrchardCore.Search.Lucene
             var fromProperty = queryObj["from"];
             var sizeProperty = queryObj["size"];
 
-            var size = sizeProperty?.Value<int>() ?? 10;
-            var from = fromProperty?.Value<int>() ?? 0;
+            var size = sizeProperty.ValueOrDefault<int>(10);
+            var from = fromProperty.ValueOrDefault<int>(0);
 
             string sortField = null;
             string sortOrder = null;
 
             var sortFields = new List<SortField>();
 
-            if (sortProperty != null)
+            if (sortProperty is not null)
             {
                 string sortType;
 
-                if (sortProperty.Type == JTokenType.String)
+                if (sortProperty.GetValueKind() == JsonValueKind.String)
                 {
                     sortField = sortProperty.ToString();
                     sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
                 }
-                else if (sortProperty.Type == JTokenType.Object)
+                else if (sortProperty is JsonObject jsonObject)
                 {
-                    sortField = ((JProperty)sortProperty.First).Name;
-                    sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
-                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                    sortField = jsonObject.First().Key;
+                    sortOrder = jsonObject.First().Value["order"].ToString();
+                    sortType = jsonObject.First().Value["type"]?.ToString();
                     var sortFieldType = SortFieldType.STRING;
 
                     if (sortType != null)
@@ -60,13 +61,13 @@ namespace OrchardCore.Search.Lucene
 
                     sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
                 }
-                else if (sortProperty.Type == JTokenType.Array)
+                else if (sortProperty is JsonArray jsonArray)
                 {
-                    foreach (var item in sortProperty.Children())
+                    foreach (var item in jsonArray)
                     {
-                        sortField = ((JProperty)item.First).Name;
-                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
-                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
+                        sortField = item.AsObject().First().Key;
+                        sortOrder = item.AsObject().First().Value["order"].ToString();
+                        sortType = item.AsObject().First().Value["type"]?.ToString();
                         var sortFieldType = SortFieldType.STRING;
 
                         if (sortType != null)
@@ -103,15 +104,15 @@ namespace OrchardCore.Search.Lucene
             return Task.FromResult(result);
         }
 
-        public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
+        public Query CreateQueryFragment(LuceneQueryContext context, JsonObject queryObj)
         {
-            var first = queryObj.Properties().First();
+            var first = queryObj.First();
 
             Query query = null;
 
             foreach (var queryProvider in _queryProviders)
             {
-                query = queryProvider.CreateQuery(this, context, first.Name, (JObject)first.Value);
+                query = queryProvider.CreateQuery(this, context, first.Key, first.Value.AsObject());
 
                 if (query != null)
                 {
