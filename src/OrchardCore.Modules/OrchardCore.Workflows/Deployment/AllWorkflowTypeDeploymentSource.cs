@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Deployment
@@ -14,10 +15,10 @@ namespace OrchardCore.Workflows.Deployment
 
         public AllWorkflowTypeDeploymentSource(
             IWorkflowTypeStore workflowTypeStore,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
         {
             _workflowTypeStore = workflowTypeStore;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
