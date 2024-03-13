@@ -8,7 +8,7 @@ Orchard Core allows you to add Parts to a content type.
 | --- | --- |
 | [`TitlePart`](../../modules/Title/README.md) | Allows you to add a title. |
 | [`AutoroutePart`](../../modules/Autoroute/README.md) | Allows you to add a permalink. |
-| `CommonPart` | Allows you to edit the creation date and the owner of the content. |
+| [`CommonPart`](../../modules/Contents/README.md) | Allows you to edit the creation date and the owner of the content. |
 | [`AliasPart`](../../modules/Alias/README.md) | Allows you to add an alias. |
 | [`HtmlBodyPart`](../../modules/Html/README.md) | Allows you to add an HTML body. |
 | [`MarkdownPart`](../../modules/Markdown/README.md) | Allows you to add a Markdown body. |

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -16,9 +17,9 @@ namespace OrchardCore.Markdown
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("MarkdownBodyPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("MarkdownBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Markdown formatted body for your content item."));
 
@@ -28,21 +29,22 @@ namespace OrchardCore.Markdown
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigrateFieldSettings<MarkdownField, MarkdownFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>();
+
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
-            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+            foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "MarkdownBodyPart"))
                 {
-                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
                     {
                         part.MergeSettings<MarkdownBodyPartSettings>(x => x.SanitizeHtml = false);
                     }));
@@ -53,15 +55,15 @@ namespace OrchardCore.Markdown
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
             foreach (var partDefinition in partDefinitions)
             {
                 if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "MarkdownField"))
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "MarkdownField"))
                         {

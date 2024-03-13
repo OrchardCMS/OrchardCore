@@ -39,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 return ShapeTypeExecuteAsync(name, parameters);
             }
@@ -70,6 +70,12 @@ namespace OrchardCore.DisplayManagement.Implementation
             if (shape.IsNullOrEmpty())
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
+            }
+
+            // Check if the shape is wrapper, return underlying IHtmlContent
+            if( shape is PositionWrapper wrapper)
+            {
+                return Task.FromResult(PositionWrapper.UnWrap(wrapper));
             }
 
             // Check if the shape is pre-rendered.

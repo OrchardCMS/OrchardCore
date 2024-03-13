@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class LuceneIndexInitializerService : IModularTenantEvents
+    public class LuceneIndexInitializerService : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
 
@@ -16,9 +15,9 @@ namespace OrchardCore.Search.Lucene
             _shellSettings = shellSettings;
         }
 
-        public Task ActivatedAsync()
+        public override Task ActivatedAsync()
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 ShellScope.AddDeferredTask(async scope =>
                 {
@@ -39,21 +38,6 @@ namespace OrchardCore.Search.Lucene
                 });
             }
 
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
             return Task.CompletedTask;
         }
     }

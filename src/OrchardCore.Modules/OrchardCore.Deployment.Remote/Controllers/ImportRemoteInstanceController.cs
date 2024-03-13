@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -23,8 +22,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public ImportRemoteInstanceController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager,
-            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
+            IDeploymentManager deploymentManager)
         {
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;

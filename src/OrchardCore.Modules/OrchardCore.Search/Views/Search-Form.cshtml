@@ -1,10 +1,15 @@
 @model SearchFormViewModel
+@{
+    var placeholder = Model.Placeholder;
 
-<form action="@Url.Action("Search", "Search")" method="get">
-    <h3>@T["Search Module"]</h3>
+    if (string.IsNullOrWhiteSpace(placeholder))
+    {
+        placeholder = T["Enter your search term(s)"].Value;
+    }
+}
+<form asp-action="Search" asp-controller="Search" asp-area="OrchardCore.Search" asp-route-index="@Model.Index" method="get">
     <div class="input-group mb-3 mt-5">
-        <input name="Index" type="hidden" value="@Model.Index" />
-        <input name="Terms" type="text" value="@Model.Terms" class="form-control form-control-lg" placeholder="@T["Enter your search term(s)"]" autofocus />
+        <input name="Terms" type="text" value="@Model.Terms" class="form-control form-control-lg" placeholder="@placeholder" autofocus />
         <button type="submit" class="btn btn-primary btn-sm">@T["Search"]</button>
     </div>
 </form>

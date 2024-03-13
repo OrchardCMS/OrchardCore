@@ -5,7 +5,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class LinkEntry
     {
-        private readonly TagBuilder _builder = new TagBuilder("link");
+        private readonly TagBuilder _builder = new("link");
 
         public string Condition { get; set; }
 

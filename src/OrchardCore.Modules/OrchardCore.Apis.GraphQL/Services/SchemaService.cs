@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GraphQL;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +14,8 @@ namespace OrchardCore.Apis.GraphQL.Services
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _serviceProvider;
-        private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
-        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
+        private readonly SemaphoreSlim _schemaGenerationSemaphore = new(1, 1);
+        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new();
 
         private ISchema _schema;
 
@@ -87,8 +85,8 @@ namespace OrchardCore.Apis.GraphQL.Services
                 {
                     var identifier = await builder.GetIdentifierAsync();
 
-                    // null being a valid value not yet updated.
-                    if (identifier != String.Empty)
+                    // Null being a valid value not yet updated.
+                    if (identifier != string.Empty)
                     {
                         _identifiers[builder] = identifier;
                     }
@@ -96,21 +94,21 @@ namespace OrchardCore.Apis.GraphQL.Services
                     await builder.BuildAsync(schema);
                 }
 
-        
+
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 
-                if (!schema.Query.Fields.Any())
+                if (schema.Query.Fields.Count == 0)
                 {
                     schema.Query = null;
                 }
 
-                if (!schema.Mutation.Fields.Any())
+                if (schema.Mutation.Fields.Count == 0)
                 {
                     schema.Mutation = null;
                 }
 
-                if (!schema.Subscription.Fields.Any())
+                if (schema.Subscription.Fields.Count == 0)
                 {
                     schema.Subscription = null;
                 }

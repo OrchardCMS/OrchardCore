@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
@@ -23,8 +21,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly AuditTrailAdminListOptions _adminListOptions;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStringLocalizer S;
-        private readonly ILogger _logger;
+        protected readonly IStringLocalizer S;
 
         public DefaultAuditTrailAdminListQueryService(
             IAuditTrailManager auditTrailManager,
@@ -32,8 +29,7 @@ namespace OrchardCore.AuditTrail.Services
             IOptions<AuditTrailAdminListOptions> adminListOptions,
             ISession session,
             IServiceProvider serviceProvider,
-            IStringLocalizer<DefaultAuditTrailAdminListQueryService> stringLocalizer,
-            ILogger<DefaultAuditTrailAdminListQueryService> logger)
+            IStringLocalizer<DefaultAuditTrailAdminListQueryService> stringLocalizer)
         {
             _auditTrailManager = auditTrailManager;
             _localClock = localClock;
@@ -41,7 +37,6 @@ namespace OrchardCore.AuditTrail.Services
             _session = session;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
-            _logger = logger;
         }
 
         public async Task<AuditTrailEventQueryResult> QueryAsync(int page, int pageSize, AuditTrailIndexOptions options)
@@ -79,7 +74,7 @@ namespace OrchardCore.AuditTrail.Services
                 .Select(category => new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category))
                 .ToList();
 
-            options.Categories.Insert(0, new SelectListItem(S["All categories"], String.Empty, String.IsNullOrEmpty(options.Category)));
+            options.Categories.Insert(0, new SelectListItem(S["All categories"], string.Empty, string.IsNullOrEmpty(options.Category)));
 
             if (options.CorrelationIdFromRoute)
             {
@@ -97,10 +92,11 @@ namespace OrchardCore.AuditTrail.Services
 
             var localNow = await _localClock.LocalNowAsync;
             var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
-            options.AuditTrailDates = new List<SelectListItem>()
-            {
-                new SelectListItem(S["Any date"], String.Empty, options.Date == String.Empty),
-            };
+
+            options.AuditTrailDates =
+            [
+                new(S["Any date"], string.Empty, options.Date == string.Empty),
+            ];
 
             var dateTimeValue = ">@now-1";
             options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], dateTimeValue, options.Date == dateTimeValue));
@@ -126,10 +122,10 @@ namespace OrchardCore.AuditTrail.Services
             options.AuditTrailDates.Add(new SelectListItem(S["Last month"], dateTimeValue, options.Date == dateTimeValue));
             options.AuditTrailDates.Add(new SelectListItem(S["Custom date range"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = $">{localNow.AddHours(-1).ToString("o")}";
+            dateTimeValue = $">{localNow.AddHours(-1):o}";
             options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}";
+            dateTimeValue = $"{localNow.AddHours(-2):o}..{localNow.AddHours(-1):o}";
             options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
             options.AuditTrailDates.Add(new SelectListItem(S["Custom time range"], dateTimeValue, options.Date == dateTimeValue));
 
@@ -141,7 +137,7 @@ namespace OrchardCore.AuditTrail.Services
     {
         public static DateTimeOffset StartOfWeek(this DateTimeOffset dt, DayOfWeek startOfWeek)
         {
-            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            var diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
             return dt.AddDays(-1 * diff).Date;
         }
     }

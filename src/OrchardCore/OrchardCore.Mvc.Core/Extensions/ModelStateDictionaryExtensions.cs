@@ -9,30 +9,18 @@ namespace OrchardCore.Mvc.ModelBinding
     {
         public static void AddModelError(this ModelStateDictionary modelState, ModelError error)
         {
-            if (modelState is null)
-            {
-                throw new ArgumentNullException(nameof(modelState));
-            }
+            ArgumentNullException.ThrowIfNull(modelState);
 
-            if (error is null)
-            {
-                throw new ArgumentNullException(nameof(error));
-            }
+            ArgumentNullException.ThrowIfNull(error);
 
             modelState.AddModelError(error.Key, error.Message);
         }
 
         public static void AddModelErrors(this ModelStateDictionary modelState, IEnumerable<ModelError> errors)
         {
-            if (modelState is null)
-            {
-                throw new ArgumentNullException(nameof(modelState));
-            }
+            ArgumentNullException.ThrowIfNull(modelState);
 
-            if (errors is null)
-            {
-                throw new ArgumentNullException(nameof(errors));
-            }
+            ArgumentNullException.ThrowIfNull(errors);
 
             if (errors.Any())
             {

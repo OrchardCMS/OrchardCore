@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 
@@ -21,7 +20,10 @@ namespace OrchardCore.OpenId.Drivers
             => _shellHost = shellHost;
 
         public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
-            => Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
+        {
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
+            return Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.MetadataAddress = settings.MetadataAddress?.AbsoluteUri;
@@ -31,8 +33,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 var availableTenants = new List<string>();
 
-                foreach (var shellSettings in _shellHost.GetAllSettings()
-                    .Where(s => s.State == TenantState.Running))
+                foreach (var shellSettings in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
                 {
                     var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
@@ -49,6 +50,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 model.AvailableTenants = availableTenants;
             }).Location("Content:2"));
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
         {

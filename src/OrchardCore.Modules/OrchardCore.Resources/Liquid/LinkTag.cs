@@ -12,7 +12,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class LinkTag
     {
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -36,7 +36,7 @@ namespace OrchardCore.Resources.Liquid
                     case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 

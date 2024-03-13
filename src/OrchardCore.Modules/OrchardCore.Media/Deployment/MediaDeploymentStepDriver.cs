@@ -41,8 +41,8 @@ namespace OrchardCore.Media.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, IUpdateModel updater)
         {
-            step.FilePaths = Array.Empty<string>();
-            step.DirectoryPaths = Array.Empty<string>();
+            step.FilePaths = [];
+            step.DirectoryPaths = [];
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
@@ -53,8 +53,8 @@ namespace OrchardCore.Media.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.FilePaths = Array.Empty<string>();
-                step.DirectoryPaths = Array.Empty<string>();
+                step.FilePaths = [];
+                step.DirectoryPaths = [];
             }
 
             return Edit(step);

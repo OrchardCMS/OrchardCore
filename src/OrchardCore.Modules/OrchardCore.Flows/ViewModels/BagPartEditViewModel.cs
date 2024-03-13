@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -10,9 +9,9 @@ namespace OrchardCore.Flows.ViewModels
 {
     public class BagPartEditViewModel
     {
-        public string[] Prefixes { get; set; } = Array.Empty<string>();
-        public string[] ContentTypes { get; set; } = Array.Empty<string>();
-        public string[] ContentItems { get; set; } = Array.Empty<string>();
+        public string[] Prefixes { get; set; } = [];
+        public string[] ContentTypes { get; set; } = [];
+        public string[] ContentItems { get; set; } = [];
 
         [BindNever]
         public BagPart BagPart { get; set; }

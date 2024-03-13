@@ -1,0 +1,9 @@
+@model ActivityViewModel<WorkflowFaultEvent>
+@using OrchardCore.Workflows.Events
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Workflows.ViewModels
+
+<header>
+    <h4><i class="fa fa-exclamation-circle"></i>@Model.Activity.GetTitleOrDefault(() => T["Workflow Fault Event"])</h4>
+</header>
+<em>&quot;@Model.Activity.ErrorFilter&quot;</em>

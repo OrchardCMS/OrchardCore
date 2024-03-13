@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -44,7 +43,7 @@ namespace OrchardCore.Media.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(AssetHref))
+            if (string.IsNullOrEmpty(AssetHref))
             {
                 return;
             }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -33,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var argument = argumentsList[i];
                 // check common case
-                if (String.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
+                if (string.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
                 {
                     name = literalExpression.Value.ToStringValue();
                     continue;

@@ -9,8 +9,6 @@ namespace OrchardCore.Environment.Shell
 {
     public class RunningShellTable : IRunningShellTable
     {
-        private static readonly char[] HostSeparators = new[] { ',', ' ' };
-
         private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
         private ShellSettings _default;
         private bool _hasStarMapping = false;
@@ -50,7 +48,7 @@ namespace OrchardCore.Environment.Shell
                 _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
             }
 
-            if (_default == settings)
+            if (settings.IsDefaultShell())
             {
                 _default = null;
             }
@@ -145,7 +143,7 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private string GetHostAndPrefix(StringSegment host, StringSegment path)
+        private static string GetHostAndPrefix(StringSegment host, StringSegment path)
         {
             // The request path starts with a leading '/'
             var firstSegmentIndex = path.Length > 0 ? path.IndexOf('/', 1) : -1;
@@ -159,18 +157,17 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        private string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
+        private static string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
         {
             // For each host entry return HOST/PREFIX
 
             if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
-                return new string[] { "/" + shellSettings.RequestUrlPrefix };
+                return ["/" + shellSettings.RequestUrlPrefix];
             }
 
             return shellSettings
-                .RequestUrlHost
-                .Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
+                .RequestUrlHosts
                 .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
                 .ToArray();
         }
