@@ -20,8 +20,8 @@ public class ScriptFunctionsTest
                     const string jsonData = """
                     {
                         "age":33,
-                        "booleanValue":false,
-                        "booleanValue1":true,
+                        "falseValue":false,
+                        "trueValue":true,
                         "stringValue":"stringTest",
                         "employees": {
                             "type": "array",
@@ -56,31 +56,32 @@ public class ScriptFunctionsTest
                     return jobj.stringValue == ""stringTest"";
                 ");
             Assert.True(result);
+            result = (bool)scriptingEngine.Evaluate(scriptingScope,
+                        @"var jobj = tryAccessJsonObject();
+                            return jobj.employees.type == ""array"" &&
+                                    jobj.employees.value[0].firstName == ""John"";
+                        ");
+            Assert.True(result);
+
 
             var result1 = scriptingEngine.Evaluate(scriptingScope,
                   @"var jobj = tryAccessJsonObject();
                 var steps = [];
-                
-                if(!jobj.booleanValue) steps.push(1);
+                if(!jobj.falseValue) steps.push(1);
+                if(jobj.trueValue) steps.push(2);
 
-                // booleanValue should be false 
-                if(jobj.booleanValue == false) steps.push(2);
-                if(jobj.booleanValue1 == true) steps.push(3);
-                if(!jobj.booleanValue) steps.push(4);
-                if(!!jobj.booleanValue1) steps.push(5);
-                steps.push(jobj.booleanValue);
-                steps.push(jobj.booleanValue.toString());
+                // falseValue should be false 
+                if(jobj.falseValue == false) steps.push(3);
+                if(jobj.trueValue == true) steps.push(4);
+                if(!!jobj.trueValue) steps.push(5);
+                steps.push(jobj.falseValue);
+                steps.push(jobj.falseValue.toString());
 
              return steps.join(',')
             ");
             Assert.Equal("1,2,3,4,5,false,false", result1);
 
-            result = (bool)scriptingEngine.Evaluate(scriptingScope,
-            @"var jobj = tryAccessJsonObject();
-                            return jobj.employees.type == ""array"" &&
-                                    jobj.employees.value[0].firstName == ""John"";
-                        ");
-            Assert.True(result);
+
             return Task.CompletedTask;
         });
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using Jint;
+using Jint.Native;
 using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -25,18 +26,33 @@ namespace OrchardCore.Scripting.JavaScript
             var engine = new Engine(options =>
             {
                 // Make JsonArray behave like JS array.
-                options.Interop.WrapObjectHandler = static (e, target, type) =>
+                options.SetWrapObjectHandler(static (e, target, type) =>
                 {
-                    var wrapped = new ObjectWrapper(e, target);
                     if (target is JsonArray)
                     {
-                        wrapped.Prototype = e.Intrinsics.Array.PrototypeObject;
+                        var wrapped = new ObjectWrapper(e, target)
+                        {
+                            Prototype = e.Intrinsics.Array.PrototypeObject
+                        };
+                        return wrapped;
                     }
-                    return wrapped;
-                };
+                    if (target is JsonValue jsonValue)
+                    {
+                        if (jsonValue.TryGetValue<bool>(out var boolValue))
+                        {
+                            return e.Construct("Boolean", boolValue ? JsBoolean.True : JsBoolean.False);
+                        }
+                        if (jsonValue.TryGetValue<double>(out var doubleValue))
+                        {
+                            return e.Construct("Number", JsNumber.Create(doubleValue));
+                        }
+                        return e.Construct("String", (JsString)jsonValue.ToString());
+                    }
+                    return new ObjectWrapper(e, target);
+                });
 
                 // We cannot access this[string] with anything else than JsonObject, otherwise itw will throw.
-                options.Interop.TypeResolver = new TypeResolver
+                options.SetTypeResolver(new TypeResolver
                 {
                     MemberFilter = static info =>
                     {
@@ -48,7 +64,7 @@ namespace OrchardCore.Scripting.JavaScript
 
                         return true;
                     }
-                };
+                });
             });
 
             foreach (var method in methods)
