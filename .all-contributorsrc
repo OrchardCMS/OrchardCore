@@ -1805,10 +1805,10 @@
       ]
     },
     {
-      "login": "DAud-IcI",
-      "name": "El-Saig Dávid",
+      "login": "sarahelsaig",
+      "name": "Sára El-Saig",
       "avatar_url": "https://avatars1.githubusercontent.com/u/4007293?v=4",
-      "profile": "https://github.com/DAud-IcI",
+      "profile": "https://github.com/sarahelsaig",
       "contributions": [
         "code"
       ]
@@ -2822,6 +2822,15 @@
       "name": "Simon Cropp",
       "avatar_url": "https://avatars.githubusercontent.com/u/122666?v=4",
       "profile": "https://github.com/SimonCropp",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "w-ko",
+      "name": "Holerö",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126988022?v=4",
+      "profile": "https://github.com/w-ko",
       "contributions": [
         "code"
       ]

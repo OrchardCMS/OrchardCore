@@ -9,8 +9,6 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceDefinition
     {
-        private string _basePath;
-
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
         {
             Manifest = manifest;
@@ -32,6 +30,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceManifest Manifest { get; private set; }
 
+        public string BasePath { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
         public string Version { get; private set; }
@@ -59,7 +58,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetBasePath(string basePath)
         {
-            _basePath = basePath;
+            BasePath = basePath;
             return this;
         }
 
@@ -216,9 +215,9 @@ namespace OrchardCore.ResourceManagement
 
             if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!string.IsNullOrEmpty(_basePath))
+                if (!string.IsNullOrEmpty(BasePath))
                 {
-                    url = string.Concat(_basePath, url.AsSpan(1));
+                    url = string.Concat(BasePath, url.AsSpan(1));
                 }
                 else
                 {

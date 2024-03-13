@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -22,11 +23,11 @@ namespace OrchardCore.Deployment.Recipes
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _deploymentPlanService = deploymentPlanService;
         }
 
