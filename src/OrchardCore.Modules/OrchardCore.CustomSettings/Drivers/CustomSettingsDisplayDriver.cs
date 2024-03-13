@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
@@ -42,7 +42,7 @@ namespace OrchardCore.CustomSettings.Drivers
             var isNew = false;
             var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
 
-            var shape = Initialize<CustomSettingsEditViewModel>("CustomSettings", async ctx =>
+            var shape = Initialize<CustomSettingsEditViewModel>(CustomSettingsConstants.Stereotype, async ctx =>
             {
                 ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
             }).Location("Content:3").OnGroup(contentTypeDefinition.Name);

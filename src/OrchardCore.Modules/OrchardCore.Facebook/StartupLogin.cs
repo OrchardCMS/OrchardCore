@@ -48,9 +48,7 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, FacebookLoginDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>();
+            services.AddDeployment<FacebookLoginDeploymentSource, FacebookLoginDeploymentStep, FacebookLoginDeploymentStepDriver>();
         }
     }
 }

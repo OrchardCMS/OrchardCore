@@ -1,26 +1,28 @@
 @model AuditTrailListViewModel
 
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-<style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head" depends-on="admin"></style>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
+<style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head"></style>
 
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
-  
 
-<div class="card mb-3 position-sticky action-bar">
-    <div class="card-body bg-primary p-3">
-        <div class="mb-n1">
-            @await DisplayAsync(Model.Header.Search)
+<div class="card mb-3 text-bg-theme position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Search)
+            </div>
         </div>
     </div>
 </div>
+
 <ul class="list-group with-checkbox">
-    <li class="list-group-item bg-primary">
-        <div class="row">
+    <li class="list-group-item text-bg-theme">
+        <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Summary)
             </div>
-            <div class="col d-flex justify-content-start flex-row-reverse">
+            <div class="col col-md-auto text-end">
                 @await DisplayAsync(Model.Header.Actions)
             </div>
         </div>
@@ -29,7 +31,7 @@
     {
         @foreach (var shape in Model.Events)
         {
-            <li class="list-group-item">
+            <li class="list-group-item list-group-item-action">
                 @await DisplayAsync(shape)
             </li>
         }

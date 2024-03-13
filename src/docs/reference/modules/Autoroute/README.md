@@ -153,6 +153,3 @@ When selected forces the route from relative to absolute.
 
 !!! note
     When you configure _container routing_ for a `BagPart` you will want to change the default display type of the part to `Summary` and create `Summary` and `Detail` templates, for use when the item is displayed within its _container_ and when it is displayed in detail via a route.
-
-
-

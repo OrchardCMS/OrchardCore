@@ -1,29 +1,30 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
     public class ShellConfigurationSources : IShellConfigurationSources
     {
         private readonly string _container;
+        private readonly ILogger _logger;
 
-        public ShellConfigurationSources(IOptions<ShellOptions> shellOptions)
+        public ShellConfigurationSources(IOptions<ShellOptions> shellOptions, ILogger<ShellConfigurationSources> logger)
         {
             // e.g., App_Data/Sites
             _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
             Directory.CreateDirectory(_container);
+            _logger = logger;
         }
 
         public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            builder
-                .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
-
+            builder.AddTenantJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
             return Task.CompletedTask;
         }
 
@@ -32,43 +33,58 @@ namespace OrchardCore.Environment.Shell.Configuration
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
-            JObject config;
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+            IDictionary<string, string> configData;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
             if (File.Exists(appsettings))
             {
-                using (var file = File.OpenText(appsettings))
-                {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        config = await JObject.LoadAsync(reader);
-                    }
-                }
+                using var streamReader = File.OpenRead(appsettings);
+                configData = await JsonConfigurationParser.ParseAsync(streamReader);
             }
             else
             {
-                config = new JObject();
+                configData = new Dictionary<string, string>();
             }
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
-                    config[key] = data[key];
+                    configData[key] = data[key];
                 }
                 else
                 {
-                    config.Remove(key);
+                    configData.Remove(key);
                 }
             }
 
             Directory.CreateDirectory(tenantFolder);
 
-            using (var file = File.CreateText(appsettings))
+            using var streamWriter = File.Create(appsettings);
+            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
+        }
+
+        public Task RemoveAsync(string tenant)
+        {
+            var tenantFolder = Path.Combine(_container, tenant);
+            var appsettings = Path.Combine(tenantFolder, "appsettings.json");
+
+            if (File.Exists(appsettings))
             {
-                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
+                try
                 {
-                    await config.WriteToAsync(writer);
+                    File.Delete(appsettings);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error while deleting the '{AppSettings}' file of tenant '{TenantName}'", appsettings, tenant);
                 }
             }
+
+            return Task.CompletedTask;
         }
     }
 }

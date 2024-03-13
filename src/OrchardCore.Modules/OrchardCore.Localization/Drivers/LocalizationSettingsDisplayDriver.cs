@@ -1,12 +1,12 @@
 using System;
-using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
@@ -24,13 +25,16 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly CultureOptions _cultureOptions;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
@@ -38,8 +42,9 @@ namespace OrchardCore.Localization.Drivers
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
-            IStringLocalizer<LocalizationSettingsDisplayDriver> s
+            IOptions<CultureOptions> cultureOptions,
+            IHtmlLocalizer<LocalizationSettingsDisplayDriver> htmlLocalizer,
+            IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
         )
         {
             _notifier = notifier;
@@ -47,13 +52,19 @@ namespace OrchardCore.Localization.Drivers
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            H = h;
-            S = s;
+            _cultureOptions = cultureOptions.Value;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         /// <inheritdocs />
         public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
@@ -61,24 +72,26 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
-                {
-                    model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                        .Select(cultureInfo =>
-                        {
-                            return new CultureEntry
-                            {
-                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
-                                CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
-                            };
-                        }).ToArray();
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
-                    if (!model.Cultures.Any(x => x.IsDefault))
+            return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
+            {
+                model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+                    .Select(cultureInfo =>
                     {
-                        model.Cultures[0].IsDefault = true;
-                    }
-                }).Location("Content:2").OnGroup(GroupId);
+                        return new CultureEntry
+                        {
+                            Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                            CultureInfo = cultureInfo,
+                            IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                        };
+                    }).ToArray();
+
+                if (!model.Cultures.Any(x => x.IsDefault))
+                {
+                    model.Cultures[0].IsDefault = true;
+                }
+            }).Location("Content:2").OnGroup(GroupId);
         }
 
         /// <inheritdocs />
@@ -91,15 +104,14 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new LocalizationSettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
-
-                if (!supportedCulture.Any())
+                var supportedCulture = JConvert.DeserializeObject<string[]>(model.SupportedCultures);
+                if (supportedCulture.Length == 0)
                 {
                     context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
                 }
@@ -115,11 +127,11 @@ namespace OrchardCore.Localization.Drivers
                         section.DefaultCulture = section.SupportedCultures[0];
                     }
 
-                    // We always release the tenant for the default culture and also supported cultures to take effect
+                    // We always release the tenant for the default culture and also supported cultures to take effect.
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                    using (CultureScope.Create(section.DefaultCulture))
+                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
+                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
                     {
                         await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                     }

@@ -14,8 +14,8 @@ namespace OrchardCore.Modules
             }
             else
             {
-                ModuleAssetPath = asset.Substring(0, index);
-                ProjectAssetPath = asset.Substring(index + 1);
+                ModuleAssetPath = asset[..index];
+                ProjectAssetPath = asset[(index + 1)..];
             }
         }
 

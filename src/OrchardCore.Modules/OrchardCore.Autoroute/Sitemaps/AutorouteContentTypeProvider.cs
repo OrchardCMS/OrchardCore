@@ -27,8 +27,7 @@ namespace OrchardCore.Autoroute.Sitemaps
 
         public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
         {
-            var ctd = ListRoutableTypeDefinitions()?
-                .FirstOrDefault(rctd => rctd.Name == contentItem.ContentType);
+            var ctd = (await ListRoutableTypeDefinitionsAsync())?.FirstOrDefault(ctd => ctd.Name == contentItem.ContentType);
 
             if (ctd != null)
             {
@@ -36,16 +35,16 @@ namespace OrchardCore.Autoroute.Sitemaps
                 var routes = contentItemMetadata.DisplayRouteValues;
 
                 // UrlHelper.Action includes BasePath automatically if present.
-                // If content item is assigned as home route, Urlhelper resolves as site root.
+                // If content item is assigned as home route, UrlHelper resolves as site root.
                 return context.HostPrefix + context.UrlHelper.Action(routes["Action"].ToString(), routes);
             }
 
             return null;
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            return _contentDefinitionManager.ListTypeDefinitions()
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
         }
     }

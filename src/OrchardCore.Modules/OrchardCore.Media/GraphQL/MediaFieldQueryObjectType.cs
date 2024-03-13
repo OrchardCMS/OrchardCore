@@ -14,8 +14,7 @@ namespace OrchardCore.Media.GraphQL
         {
             Name = nameof(MediaField);
 
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
-                .Name("paths")
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("paths")
                 .Description("the media paths")
                 .PagingArguments()
                 .Resolve(x =>
@@ -27,8 +26,20 @@ namespace OrchardCore.Media.GraphQL
                     return x.Page(x.Source.Paths);
                 });
 
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
-                .Name("urls")
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
+                .Description("the media fileNames")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    var fileNames = x.Page(x.Source.GetAttachedFileNames());
+                    if (fileNames is null)
+                    {
+                        return Array.Empty<string>();
+                    }
+                    return fileNames;
+                });
+
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("urls")
                 .Description("the absolute urls of the media items")
                 .PagingArguments()
                 .Resolve(x =>
@@ -38,8 +49,7 @@ namespace OrchardCore.Media.GraphQL
                         return Array.Empty<string>();
                     }
                     var paths = x.Page(x.Source.Paths);
-                    var context = (GraphQLContext)x.UserContext;
-                    var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
         }

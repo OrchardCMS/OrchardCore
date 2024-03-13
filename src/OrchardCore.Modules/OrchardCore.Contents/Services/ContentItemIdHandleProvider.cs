@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Services
         {
             if (handle.StartsWith("contentitemid:", System.StringComparison.OrdinalIgnoreCase))
             {
-                string contentItemId = handle.Substring(14);
+                var contentItemId = handle[14..];
 
                 return Task.FromResult(contentItemId);
             }

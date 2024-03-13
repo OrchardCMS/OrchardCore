@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -52,14 +51,14 @@ namespace OrchardCore.Media.Liquid
 
                     default:
 
-                        customAttributes ??= new Dictionary<string, string>();
+                        customAttributes ??= [];
                         customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
 
                         break;
                 }
             }
 
-            if (String.IsNullOrEmpty(assetHref))
+            if (string.IsNullOrEmpty(assetHref))
             {
                 return Completion.Normal;
             }

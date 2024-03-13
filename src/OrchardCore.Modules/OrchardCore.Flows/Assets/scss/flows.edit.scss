@@ -1,23 +1,25 @@
 /* Flow uses common Widget CSS from Widget Module  - Define any additional Flow or Bag specific CSS here*/
-.widget-editor-body > div > .edit-container{
-    
+.widget-editor-body > div > .edit-container {
+
     div.form-group:only-of-type > label {
         display: none;
     }
+
     div.form-group:only-of-type > .trumbowyg-box:not(.trumbowyg-fullscreen) {
         margin-top: -12px !important;
         width: calc(100% + 33px );
         margin-left: -17px !important;
-        border-top:none;
-        border-right:none;
+        border-top: none;
+        border-right: none;
     }
+
     div.form-group:only-of-type > .CodeMirror {
         margin-top: -12px !important;
         width: calc(100% + 33px );
         margin-left: -17px !important;
-        border-top:none;
-        border-right:none;
-    } 
+        border-top: none;
+        border-right: none;
+    }
 }
 
 .btn-widget-add-below, .btn-widget-metadata, .btn-bag-add {
@@ -42,6 +44,7 @@
     border-color: #007bff;
     border-style: dotted;
 }
+
 .btn-widget-metadata {
     margin: 0 auto;
     left: 0;
@@ -51,47 +54,54 @@
     height: 1px;
     white-space: nowrap;
     text-align: center;
-    transition: 0.3s visibility;   
+    transition: 0.3s visibility;
+
     > .btn-group {
         top: -20px;
     }
 }
-.widget-editor-header{
-    &.card-header{
+
+.widget-editor-header {
+    &.card-header {
         &:hover {
             > .btn-widget-metadata {
-                visibility:visible;                
-            } 
+                visibility: visible;
+            }
         }
     }
 }
+
 .btn-widget-add-below-wrapper {
     min-height: 5px;
+
     &:hover {
         > .btn-widget-add-below {
             border-width: 5px;
             opacity: 1;
         }
-    }     
+    }
 }
+
 .btn-widget-add-below {
     height: 1px;
     position: relative;
     opacity: 0.5;
     transition: 0.3s opacity;
-    > .btn-group {        
+
+    > .btn-group {
         margin: 0 auto;
         bottom: 17px;
     }
 }
+
 [dir="ltr"] .btn-widget-add-below {
-    >  .btn-group {
+    > .btn-group {
         left: calc(-14px + 50%);
     }
 }
 
 [dir="rtl"] .btn-widget-add-below {
-    >  .btn-group {
+    > .btn-group {
         right: calc(-14px + 50%);
     }
 }

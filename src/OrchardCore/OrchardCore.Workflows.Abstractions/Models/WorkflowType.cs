@@ -1,17 +1,22 @@
 using System.Collections.Generic;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Workflows.Models
 {
     /// <summary>
     /// Represents a workflow type.
     /// </summary>
-    public class WorkflowType
+    public class WorkflowType : Entity
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
+
+        /// <summary>
+        /// A unique identifier for this workflow type.
+        /// </summary>
         public string WorkflowTypeId { get; set; }
 
         /// <summary>
-        /// The name of this workflow.
+        /// The name of this workflow type.
         /// </summary>
         public string Name { get; set; }
 
@@ -43,11 +48,11 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A complete list of all activities that are part of this workflow.
         /// </summary>
-        public IList<ActivityRecord> Activities { get; set; } = new List<ActivityRecord>();
+        public IList<ActivityRecord> Activities { get; set; } = [];
 
         /// <summary>
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
-        public IList<Transition> Transitions { get; set; } = new List<Transition>();
+        public IList<Transition> Transitions { get; set; } = [];
     }
 }

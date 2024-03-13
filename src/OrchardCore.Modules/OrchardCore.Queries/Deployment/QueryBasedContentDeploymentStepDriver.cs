@@ -1,21 +1,21 @@
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
-using OrchardCore.Queries.ViewModels;
+using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using OrchardCore.ContentManagement;
+using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
         private readonly IQueryManager _queryManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public QueryBasedContentDeploymentStepDriver(
             IQueryManager queryManager,
@@ -60,7 +60,7 @@ namespace OrchardCore.Queries.Deployment
                 {
                     try
                     {
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
+                        var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
                         if (parameters == null)
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);

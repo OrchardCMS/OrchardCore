@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
@@ -22,7 +23,7 @@ namespace OrchardCore.Media.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

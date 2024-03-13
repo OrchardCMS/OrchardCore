@@ -1,13 +1,7 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -19,28 +13,18 @@ using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.AuditTrail
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             // Add ILookupNormalizer as Singleton because it is needed by Users
@@ -55,8 +39,8 @@ namespace OrchardCore.AuditTrail
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
+            services.AddDataMigration<Migrations>();
+            services.AddIndexProvider<AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -93,7 +77,7 @@ namespace OrchardCore.AuditTrail
                 options
                     .ForSort("time-desc", b => b
                         .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == String.Empty))
+                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == string.Empty))
                         .AsDefault())
 
                     .ForSort("time-asc", b => b
@@ -136,25 +120,6 @@ namespace OrchardCore.AuditTrail
                     .ForSort("user-desc-time-asc", b => b
                         .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc)));
             });
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "AuditTrailIndex",
-                areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/{correlationId?}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AuditTrailDisplay",
-                areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Display/{auditTrailEventId}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
-            );
         }
     }
 

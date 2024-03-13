@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Mvc</RootNamespace>
+    <RootNamespace>OrchardCore.DisplayManagement</RootNamespace>
 
     <!-- NuGet properties-->
     <Title>OrchardCore DisplayManagement Abstractions</Title>

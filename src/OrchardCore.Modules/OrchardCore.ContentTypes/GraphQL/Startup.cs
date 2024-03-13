@@ -10,6 +10,7 @@ namespace OrchardCore.ContentTypes.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IContentTypeDefinitionDisplayDriver, GraphQLContentTypeSettingsDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, GraphQLContentTypePartSettingsDriver>();
         }
     }

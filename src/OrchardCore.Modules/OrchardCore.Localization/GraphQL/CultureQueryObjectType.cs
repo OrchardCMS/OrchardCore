@@ -14,8 +14,8 @@ namespace OrchardCore.Localization.GraphQL
         {
             Name = "SiteCulture";
 
-            Field<StringGraphType>("culture", "The culture code.", resolve: context => context.Source.Culture);
-            Field<BooleanGraphType>("default", "Whether this is the default culture.", resolve: context => context.Source.IsDefault);
+            Field<StringGraphType>("culture").Description("The culture code.").Resolve(context => context.Source.Culture);
+            Field<BooleanGraphType>("default").Description("Whether this is the default culture.").Resolve(context => context.Source.IsDefault);
         }
     }
 }

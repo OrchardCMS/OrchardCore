@@ -1,10 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -15,6 +17,7 @@ using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Configuration;
 using OrchardCore.Twitter.Signin.Drivers;
 using OrchardCore.Twitter.Signin.Services;
@@ -22,7 +25,7 @@ using Polly;
 
 namespace OrchardCore.Twitter
 {
-    public class ModuleStartup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -42,10 +45,23 @@ namespace OrchardCore.Twitter
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
+            services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()
-                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
+                .AddResilienceHandler("oc-handler", builder => builder
+                    .AddRetry(new HttpRetryStrategyOptions
+                    {
+                        Name = "oc-retry",
+                        MaxRetryAttempts = 3,
+                        OnRetry = attempt =>
+                        {
+                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+
+                            return ValueTask.CompletedTask;
+                        }
+                    })
+                );
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

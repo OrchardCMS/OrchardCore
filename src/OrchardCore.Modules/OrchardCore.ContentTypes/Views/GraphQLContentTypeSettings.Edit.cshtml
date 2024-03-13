@@ -1,0 +1,22 @@
+@using OrchardCore.ContentTypes.GraphQL.ViewModels
+@model GraphQLContentTypeSettingsViewModel
+
+@{
+    var hiddenByDefault = Model.Options.IsHiddenByDefault(Model.Definition.Name);
+    var hidden = hiddenByDefault ? true : Model.Settings.Hidden;
+}
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Settings.Hidden" checked="@hidden" asp-is-disabled="@hiddenByDefault" />
+        <label class="form-check-label" asp-for="Settings.Hidden">@T["Hide"]</label>
+        @if (hiddenByDefault)
+        {
+            <span class="hint">@T["Setting is hidden by default, and cannot be overwritten."]</span>
+        }
+        else
+        {
+            <span class="hint">@T["Check to hide type from the GraphQL schema."]</span>
+        }
+    </div>
+</div>

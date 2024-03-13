@@ -1,45 +1,44 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-
+@using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();
-    var selectedValue = String.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
+    var selectedValue = string.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
 
     foreach (var option in listSettings.Options)
     {
         var isSelected = option.Value == selectedValue
-            || (String.IsNullOrEmpty(option.Value) && String.IsNullOrEmpty(selectedValue));
+            || (string.IsNullOrEmpty(option.Value) && string.IsNullOrEmpty(selectedValue));
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
 }
 
-<div class="mb-3">
-
-    @if (listSettings.Editor == EditorOption.Radio)
-    {
-        var i = 0;
-        <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-        @foreach (var option in options)
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        @if (listSettings.Editor == EditorOption.Radio)
         {
-            <div class="form-check" asp-for="Text">
-                @Html.RadioButton("Text", option.Value, option.Selected, new { @class = "form-check-input content-preview-text", id = Html.IdFor(m => m.Text) + "_" + i })
-                <label class="form-check-label" for="@(Html.IdFor(m => m.Text) + "_" + i)">@option.Text</label>
-            </div>
-            i++;
+            var i = 0;
+            @foreach (var option in options)
+            {
+                <div class="form-check" asp-for="Text">
+                    @Html.RadioButton("Text", option.Value, option.Selected, new { @class = "form-check-input content-preview-text", id = Html.IdFor(m => m.Text) + "_" + i })
+                    <label class="form-check-label" for="@(Html.IdFor(m => m.Text) + "_" + i)">@option.Text</label>
+                </div>
+                i++;
+            }
         }
-    }
+        else
+        {
+            <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
+        }
 
-    @if (listSettings.Editor == EditorOption.Dropdown)
-    {
-        <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-        <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
-    }
-
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
 </div>

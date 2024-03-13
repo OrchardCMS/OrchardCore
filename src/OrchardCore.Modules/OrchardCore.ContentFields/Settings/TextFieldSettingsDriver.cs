@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -10,8 +11,14 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Content");
+            return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<TextFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.DefaultValue = settings.DefaultValue;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -26,7 +26,7 @@ namespace OrchardCore.ContentPreview
             services.AddContentPart<PreviewPart>()
                 .AddHandler<PreviewPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
         }
