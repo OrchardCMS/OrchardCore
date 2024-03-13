@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
@@ -12,8 +11,8 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Extensions;
 using OrchardCore.Json;
-using OrchardCore.Json.Serialization;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -39,14 +38,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _prefix = "tp";
             _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
-            var jsonDerivedTypesOptions = new JsonDerivedTypesOptions();
+            var derivedOptions = new Mock<IOptions<JsonDerivedTypesOptions>>();
+            derivedOptions.Setup(x => x.Value)
+                .Returns(new JsonDerivedTypesOptions());
 
-            var jsonOptions = new JsonSerializerOptions(JOptions.Base);
-            jsonOptions.TypeInfoResolverChain.Add(new System.Text.Json.Serialization.PolymorphicJsonTypeInfoResolver(jsonDerivedTypesOptions));
-            jsonOptions.Converters.Add(DynamicJsonConverter.Instance);
-            jsonOptions.Converters.Add(PathStringJsonConverter.Instance);
+            var configuration = new ContentSerializerJsonOptionsConfiguration(derivedOptions.Object);
 
-            var jsonSerializerOptions = new Mock<IOptions<JsonSerializerOptions>>();
+            var jsonOptions = new ContentSerializerJsonOptions();
+            configuration.Configure(jsonOptions);
+
+            var jsonSerializerOptions = new Mock<IOptions<ContentSerializerJsonOptions>>();
             jsonSerializerOptions.Setup(x => x.Value)
                 .Returns(jsonOptions);
 

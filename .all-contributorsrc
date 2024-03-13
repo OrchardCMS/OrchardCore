@@ -2825,6 +2825,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "w-ko",
+      "name": "Holerö",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126988022?v=4",
+      "profile": "https://github.com/w-ko",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
