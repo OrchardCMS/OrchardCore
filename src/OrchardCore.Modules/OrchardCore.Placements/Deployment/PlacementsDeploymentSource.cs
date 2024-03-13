@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 using OrchardCore.Placements.Services;
 
 namespace OrchardCore.Placements.Deployment
@@ -14,10 +15,10 @@ namespace OrchardCore.Placements.Deployment
 
         public PlacementsDeploymentSource(
             PlacementsManager placementsManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
         {
             _placementsManager = placementsManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
