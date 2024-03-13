@@ -86,8 +86,11 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-sm-12 float-end">
-                            <div class="float-end">
-                                @await DisplayAsync(await New.TenantActionButtons(ShellSettingsEntry: entry))
+                            <div class="float-end dropdown">
+                                <a id="tenantDropdownMenuButton" class="text-secondary" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="fa fa-ellipsis-v"></i></a>
+                                <ul class="dropdown-menu" aria-labelledby="tenantDropdownMenuButton">
+                                    @await DisplayAsync(await New.TenantActionButtons(ShellSettingsEntry: entry))
+                                </ul>
                             </div>
                         </div>
                     </div>
