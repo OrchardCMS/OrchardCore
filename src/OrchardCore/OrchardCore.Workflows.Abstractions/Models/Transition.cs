@@ -8,17 +8,17 @@ namespace OrchardCore.Workflows.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// The source <see cref="ActivityRecord.ActivityId"/>
+        /// The source <see cref="ActivityRecord.ActivityId"/>.
         /// </summary>
         public string SourceActivityId { get; set; }
 
         /// <summary>
-        /// The name of the outcome on the source <see cref="ActivityRecord"/>
+        /// The name of the outcome on the source <see cref="ActivityRecord"/>.
         /// </summary>
         public string SourceOutcomeName { get; set; }
 
         /// <summary>
-        /// The destination <see cref="ActivityRecord.ActivityId"/>
+        /// The destination <see cref="ActivityRecord.ActivityId"/>.
         /// </summary>
         public string DestinationActivityId { get; set; }
     }

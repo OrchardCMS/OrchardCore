@@ -40,7 +40,7 @@ namespace OrchardCore.Workflows.Services
 
         public IActivity GetActivityByName(string name)
         {
-            return ActivityDictionary.ContainsKey(name) ? ActivityDictionary[name] : null;
+            return ActivityDictionary.TryGetValue(name, out var activity) ? activity : null;
         }
 
         public IActivity InstantiateActivity(string name)

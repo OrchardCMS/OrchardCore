@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.Security.Services;
@@ -9,13 +8,13 @@ namespace OrchardCore.Security.Options
     {
         public SecurityHeadersOptions()
         {
-            HeaderPolicyProviders = new List<IHeaderPolicyProvider>
-            {
+            HeaderPolicyProviders =
+            [
                 new ContentSecurityPolicyHeaderPolicyProvider { Options = this },
                 new ContentTypeOptionsHeaderPolicyProvider { Options = this },
                 new PermissionsHeaderPolicyProvider { Options = this },
                 new ReferrerHeaderPolicyProvider { Options = this }
-            };
+            ];
         }
 
         public string[] ContentSecurityPolicy { get; set; } = SecurityHeaderDefaults.ContentSecurityPolicy;
@@ -34,7 +33,7 @@ namespace OrchardCore.Security.Options
                 .Where(kvp => kvp.Value != null ||
                     kvp.Key == ContentSecurityPolicyValue.Sandbox ||
                     kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
-                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : String.Empty))
+                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : string.Empty))
                 .ToArray();
 
             return this;

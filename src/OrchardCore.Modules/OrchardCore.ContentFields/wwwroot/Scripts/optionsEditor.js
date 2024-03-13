@@ -15,7 +15,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('add option triggered');
       }
-
       ;
       this.state.options.push({
         name: '',
@@ -26,7 +25,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('remove option triggered with', index);
       }
-
       ;
       this.state.options.splice(index, 1);
     },
@@ -34,7 +32,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       if (this.debug) {
         console.log('getOptionsFormattedList triggered');
       }
-
       ;
       return JSON.stringify(this.state.options.filter(function (x) {
         return !IsNullOrWhiteSpace(x.name);
@@ -100,7 +97,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
     }
   });
 }
-
 function IsNullOrWhiteSpace(str) {
   return str === null || str.match(/^ *$/) !== null;
 }

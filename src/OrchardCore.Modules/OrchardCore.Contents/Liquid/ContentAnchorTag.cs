@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
             ContentItem createFor = null;
 
             Dictionary<string, string> routeValues = null;
-            Dictionary<string, string> customAttributes = new Dictionary<string, string>();
+            Dictionary<string, string> customAttributes = [];
 
             foreach (var argument in argumentsList)
             {
@@ -67,7 +67,7 @@ namespace OrchardCore.Contents.Liquid
 
                         if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
                         {
-                            routeValues ??= new Dictionary<string, string>();
+                            routeValues ??= [];
                             routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                         else
@@ -88,7 +88,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -109,11 +109,14 @@ namespace OrchardCore.Contents.Liquid
                 {
                     var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
 
-                    if (metadata.DisplayRouteValues != null && routeValues != null)
+                    if (metadata.DisplayRouteValues != null)
                     {
-                        foreach (var attribute in routeValues)
+                        if (routeValues != null)
                         {
-                            metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
+                            foreach (var attribute in routeValues)
+                            {
+                                metadata.DisplayRouteValues.Add(attribute.Key, attribute.Value);
+                            }
                         }
 
                         customAttributes["href"] = urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues);
@@ -124,11 +127,14 @@ namespace OrchardCore.Contents.Liquid
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(editFor);
 
-                if (metadata.EditorRouteValues != null && routeValues != null)
+                if (metadata.EditorRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
@@ -138,11 +144,14 @@ namespace OrchardCore.Contents.Liquid
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor);
 
-                if (metadata.AdminRouteValues != null && routeValues != null)
+                if (metadata.AdminRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.AdminRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.AdminRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues);
@@ -152,11 +161,14 @@ namespace OrchardCore.Contents.Liquid
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor);
 
-                if (metadata.RemoveRouteValues != null && routeValues != null)
+                if (metadata.RemoveRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.RemoveRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.RemoveRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues);
@@ -166,11 +178,14 @@ namespace OrchardCore.Contents.Liquid
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(createFor);
 
-                if (metadata.CreateRouteValues != null && routeValues != null)
+                if (metadata.CreateRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.CreateRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.CreateRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues);
@@ -200,14 +215,14 @@ namespace OrchardCore.Contents.Liquid
                     return completion;
                 }
             }
-            else if (!String.IsNullOrEmpty(contentItem.DisplayText))
+            else if (!string.IsNullOrEmpty(contentItem.DisplayText))
             {
                 writer.Write(encoder.Encode(contentItem.DisplayText));
             }
             else
             {
                 var contentDefinitionManager = services.GetRequiredService<IContentDefinitionManager>();
-                var typeDefinition = contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 writer.Write(encoder.Encode(typeDefinition.ToString()));
             }
 

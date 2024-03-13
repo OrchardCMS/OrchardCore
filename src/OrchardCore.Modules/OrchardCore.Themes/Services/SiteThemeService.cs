@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
@@ -20,8 +19,8 @@ namespace OrchardCore.Themes.Services
 
         public async Task<IExtensionInfo> GetSiteThemeAsync()
         {
-            string currentThemeName = await GetCurrentThemeNameAsync();
-            if (String.IsNullOrEmpty(currentThemeName))
+            var currentThemeName = await GetSiteThemeNameAsync();
+            if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;
             }
@@ -36,9 +35,10 @@ namespace OrchardCore.Themes.Services
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
-        public async Task<string> GetCurrentThemeNameAsync()
+        public async Task<string> GetSiteThemeNameAsync()
         {
             var site = await _siteService.GetSiteSettingsAsync();
+
             return (string)site.Properties["CurrentThemeName"];
         }
     }

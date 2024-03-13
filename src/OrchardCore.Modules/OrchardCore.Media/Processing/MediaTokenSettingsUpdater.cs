@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Media.Processing
     /// Generates a random key for media token hashing.
     /// To regenerate the key disabled and enable the feature.
     /// </summary>
-    public class MediaTokenSettingsUpdater : ModularTenantEvents, IFeatureEventHandler
+    public class MediaTokenSettingsUpdater : FeatureEventHandler, IModularTenantEvents
     {
         private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
@@ -24,10 +24,9 @@ namespace OrchardCore.Media.Processing
             _shellSettings = shellSettings;
         }
 
-        public override async Task ActivatedAsync()
+        public async Task ActivatedAsync()
         {
-
-            if (_shellSettings.State == TenantState.Uninitialized)
+            if (_shellSettings.IsUninitialized())
             {
                 // If the tenant is 'Uninitialized' there is no registered 'ISession' and then 'ISiteService' can't be used.
                 return;
@@ -49,21 +48,12 @@ namespace OrchardCore.Media.Processing
             }
         }
 
-        Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
+        public Task ActivatingAsync() => Task.CompletedTask;
+        public Task RemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
+        public Task TerminatedAsync() => Task.CompletedTask;
+        public Task TerminatingAsync() => Task.CompletedTask;
 
-        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => SetMediaTokenSettingsAsync(feature);
-
-        Task IFeatureEventHandler.DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
+        public override Task EnabledAsync(IFeatureInfo feature) => SetMediaTokenSettingsAsync(feature);
 
         private async Task SetMediaTokenSettingsAsync(IFeatureInfo feature)
         {

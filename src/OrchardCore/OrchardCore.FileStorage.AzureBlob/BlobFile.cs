@@ -15,13 +15,14 @@ namespace OrchardCore.FileStorage.AzureBlob
             _path = path;
             _name = System.IO.Path.GetFileName(_path);
 
-            if (_name == _path) // file is in root Directory
+            // File is in root Directory.
+            if (_name == _path)
             {
                 _directoryPath = "";
             }
             else
             {
-                _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
+                _directoryPath = _path[..^(_name.Length + 1)];
             }
 
             _length = length;

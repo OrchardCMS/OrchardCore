@@ -7,9 +7,9 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class JoinTask : TaskActivity
+    public class JoinTask : TaskActivity<JoinTask>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public enum JoinMode
         {
@@ -21,8 +21,6 @@ namespace OrchardCore.Workflows.Activities
         {
             S = localizer;
         }
-
-        public override string Name => nameof(JoinTask);
 
         public override LocalizedString DisplayText => S["Join Task"];
 
@@ -104,7 +102,7 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        private string GetTransitionKey(Transition transition)
+        private static string GetTransitionKey(Transition transition)
         {
             var sourceActivityId = transition.SourceActivityId;
             var sourceOutcomeName = transition.SourceOutcomeName;

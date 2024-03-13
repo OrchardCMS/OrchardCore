@@ -3,9 +3,7 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -14,6 +12,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Feeds;
@@ -30,21 +29,11 @@ using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
-using YesSql.Indexes;
 
 namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -55,7 +44,7 @@ namespace OrchardCore.Lists
             .AddLiquidFilter<ListItemsFilter>("list_items")
             .AddLiquidFilter<ContainerFilter>("container");
 
-            services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
+            services.AddIndexProvider<ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
@@ -68,19 +57,9 @@ namespace OrchardCore.Lists
                 .AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ListOrder",
-                areaName: "OrchardCore.Lists",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lists/Order/{containerId?}",
-                defaults: new { controller = "Order", action = "UpdateContentItemOrders" }
-            );
         }
     }
 
@@ -89,9 +68,7 @@ namespace OrchardCore.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ListsAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ListsAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
+            services.AddAdminNode<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
         }
     }
 

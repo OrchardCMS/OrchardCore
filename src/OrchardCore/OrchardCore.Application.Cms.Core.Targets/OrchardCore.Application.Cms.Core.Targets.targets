@@ -28,9 +28,7 @@
 
   <Target
     Name="CopyPackageTranslationFiles"
-    Condition="'$(IsCrossTargetingBuild)' != 'true' and ('$(IsCrossTargetedBuild)' != 'true' or '$(TargetFrameworks' == '' or '$(TargetFrameworks.IndexOf($(TargetFramework)))' == '0')"
     AfterTargets="Build">
-
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
     <CopyTranslationFilesTask SourceFile="%(PackageTranslationFiles.FullPath)" DestinationFolder="Localization\%(RecursiveDir)" />
   </Target>

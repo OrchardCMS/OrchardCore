@@ -1,6 +1,6 @@
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentTypes.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is ReplaceContentDefinitionDeploymentStep replaceContentDefinitionStep))
+            if (step is not ReplaceContentDefinitionDeploymentStep replaceContentDefinitionStep)
             {
                 return;
             }
@@ -34,11 +34,12 @@ namespace OrchardCore.ContentTypes.Deployment
                 : contentTypeDefinitionRecord.ContentPartDefinitionRecords
                         .Where(x => replaceContentDefinitionStep.ContentParts.Contains(x.Name));
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "ReplaceContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
-                new JProperty("ContentParts", JArray.FromObject(contentParts))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "ReplaceContentDefinition",
+                ["ContentTypes"] = JArray.FromObject(contentTypes),
+                ["ContentParts"] = JArray.FromObject(contentParts),
+            });
         }
     }
 }

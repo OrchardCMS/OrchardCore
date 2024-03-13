@@ -29,7 +29,7 @@ public class Startup : StartupBase
             .AddContentPart<ArchiveLaterPart>()
             .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
 
-        services.AddScoped<IDataMigration, Migrations>();
+        services.AddDataMigration<Migrations>();
 
         services.AddScoped<ArchiveLaterPartIndexProvider>();
         services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<ArchiveLaterPartIndexProvider>());

@@ -5,15 +5,17 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -27,6 +29,9 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+        private readonly INotifier _notifier;
+        protected readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(
@@ -34,6 +39,9 @@ namespace OrchardCore.Flows.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
+            ILogger<BagPartDisplayDriver> logger,
+            INotifier notifier,
+            IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
             IAuthorizationService authorizationService
             )
         {
@@ -41,12 +49,15 @@ namespace OrchardCore.Flows.Drivers
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+            _notifier = notifier;
+            H = htmlLocalizer;
             _authorizationService = authorizationService;
         }
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
-            var hasItems = bagPart.ContentItems.Any();
+            var hasItems = bagPart.ContentItems.Count > 0;
 
             return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
             {
@@ -54,8 +65,8 @@ namespace OrchardCore.Flows.Drivers
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
-            .Location("Detail", "Content:5")
-            .Location("Summary", "Content:5");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
@@ -66,7 +77,7 @@ namespace OrchardCore.Flows.Drivers
 
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(contentDefinitionManager, context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             });
         }
@@ -91,7 +102,7 @@ namespace OrchardCore.Flows.Drivers
                 contentItem.Owner = GetCurrentOwner();
 
                 // Try to match the requested id with an existing id
-                var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+                var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
                 if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
                 {
@@ -136,7 +147,7 @@ namespace OrchardCore.Flows.Drivers
                 if (await AuthorizeAsync(contentDefinitionManager, CommonPermissions.DeleteContent, existingContentItem))
                 {
                     // at this point the user has permission to delete a securable item or the type isn't securable
-                    // if the existsing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
+                    // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
                     if (!model.ContentItems.Contains(existingContentItem.ContentItemId))
                     {
                         continue;
@@ -167,7 +178,18 @@ namespace OrchardCore.Flows.Drivers
                     Deletable = true,
                 };
 
-                if (IsSecurable(contentDefinitionManager, contentItem.ContentType, out var contentTypeDefinition))
+                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+                if (contentTypeDefinition == null)
+                {
+                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
+
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+
+                    continue;
+                }
+
+                if (contentTypeDefinition.IsSecurable())
                 {
                     widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
                     widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
@@ -187,7 +209,9 @@ namespace OrchardCore.Flows.Drivers
 
         private async Task<bool> AuthorizeAsync(IContentDefinitionManager contentDefinitionManager, Permission permission, ContentItem contentItem)
         {
-            if (!IsSecurable(contentDefinitionManager, contentItem.ContentType, out _))
+            var contentType = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (contentType?.IsSecurable() ?? false)
             {
                 return true;
             }
@@ -195,46 +219,45 @@ namespace OrchardCore.Flows.Drivers
             return await AuthorizeAsync(permission, contentItem);
         }
 
-        private async Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
-        {
-            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
-        }
+        private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
+            => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
 
-
-        private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType, out ContentTypeDefinition contentTypeDefinition)
-        {
-            contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
-
-            var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-
-            return settings.Securable;
-        }
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
-                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotypeOrDefault(), StringComparer.OrdinalIgnoreCase));
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {
-                contentTypes = settings.ContainedContentTypes
-                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                    .Where(contentType => contentType != null);
+                var definitions = new List<ContentTypeDefinition>();
+
+                foreach (var contentType in settings.ContainedContentTypes)
+                {
+                    var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                    if (definition == null)
+                    {
+                        continue;
+                    }
+
+                    definitions.Add(definition);
+                }
+
+                contentTypes = definitions;
             }
+
+            var user = _httpContextAccessor.HttpContext.User;
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();
 
             foreach (var contentType in contentTypes)
             {
-                var dummyContent = await _contentManager.NewAsync(contentType.Name);
-                dummyContent.Owner = GetCurrentOwner();
-
-                if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
+                if (contentType.IsSecurable() && !await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.EditContent, contentType, GetCurrentOwner()))
                 {
                     continue;
                 }

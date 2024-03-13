@@ -1,0 +1,72 @@
+@using Microsoft.Extensions.Options
+
+@model AzureAISearchDefaultSettingsViewModel
+
+@{
+    var apiKeyWrapperHtmlId = @Html.IdFor(x => x.ApiKey) + "_Wrapper";
+    var identityClientIdWrapperHtmlId = @Html.IdFor(x => x.IdentityClientId) + "_Wrapper";
+
+    if (Model.ConfigurationsAreOptional)
+    {
+        <div class="alert alert-warning" role="alert">
+            @T["Azure AI Search has been set up and configured. Feel free to utilize the provided settings below to customize your connection preferences if needed."]
+        </div>
+
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="UseCustomConfiguration" checked="@Model.UseCustomConfiguration" role="button" data-bs-toggle="collapse" data-bs-target="#Custom_AzureAI_Settings" aria-expanded="false" aria-controls="Custom_AzureAI_Settings" />
+                <label class="form-check-label" asp-for="UseCustomConfiguration">@T["Use custom Azure Search AI settings"]</label>
+                <span class="hint dashed">@T["Check to configure a custom Azure Search AI instance."]</span>
+            </div>
+        </div>
+    }
+}
+
+<div id="Custom_AzureAI_Settings" class="@(Model.ConfigurationsAreOptional ? (Model.UseCustomConfiguration ? " collapse show" : " collapse") : string.Empty)">
+    <div class="mb-3" asp-validation-class-for="Endpoint">
+        <label asp-for="Endpoint" class="form-label">@T["Endpoint"]</label>
+        <input type="url" asp-for="Endpoint" class="form-control" placeholder="https://[search service name].search.windows.net" />
+        <span asp-validation-for="Endpoint"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AuthenticationType">
+        <label asp-for="AuthenticationType" class="form-label">@T["Authentication Type"]</label>
+        <select asp-for="AuthenticationType" class="form-select" asp-items="Model.AuthenticationTypes"></select>
+        <span asp-validation-for="AuthenticationType"></span>
+    </div>
+
+    <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
+        <label asp-for="ApiKey" class="form-label">@T["Api Key"]</label>
+        <input type="text" asp-for="ApiKey" class="form-control" placeholder="@(Model.ApiKeyExists ? T["API key stored. Leave blank for current key or enter a new one"] : T["Provide an authentication key"])" />
+        <span asp-validation-for="ApiKey"></span>
+    </div>
+
+    <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity ? string.Empty : " d-none")" asp-validation-class-for="IdentityClientId" id="@identityClientIdWrapperHtmlId">
+        <label asp-for="IdentityClientId" class="form-label">@T["Identity Client Id"]</label>
+        <input type="text" asp-for="IdentityClientId" class="form-control" />
+        <span asp-validation-for="IdentityClientId"></span>
+        <span class="hint">@T["Leaving identity client id blank will use system."]</span>
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        const typeMenu = document.getElementById('@Html.IdFor(m => m.AuthenticationType)');
+        const keyWrapper = document.getElementById('@apiKeyWrapperHtmlId');
+        const identityWrapper = document.getElementById('@identityClientIdWrapperHtmlId');
+
+        typeMenu.addEventListener('change', e => {
+
+            if (e.target.value == '@nameof(AzureAIAuthenticationType.ApiKey)') {
+                keyWrapper.classList.remove('d-none');
+                identityWrapper.classList.add('d-none');
+            } else if (e.target.value == '@nameof(AzureAIAuthenticationType.ManagedIdentity)') {
+                keyWrapper.classList.add('d-none');
+                identityWrapper.classList.remove('d-none');
+            } else {
+                keyWrapper.classList.add('d-none');
+                identityWrapper.classList.add('d-none');
+            }
+        });
+    });
+</script>

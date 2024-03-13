@@ -17,13 +17,10 @@ namespace OrchardCore.Media.Processing
         /// </summary>
         public const string TokenCommand = "token";
 
-        private static readonly IEnumerable<string> TokenCommands = new[] { TokenCommand };
+        private static readonly IEnumerable<string> _tokenCommands = new[] { TokenCommand };
 
         public IEnumerable<string> Commands
-            => TokenCommands;
-
-        public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
-            => image;
+            => _tokenCommands;
 
         public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture)
             => image;

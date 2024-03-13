@@ -39,7 +39,6 @@ namespace OrchardCore.BackgroundTasks
             }
 
             var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
-
             if (now >= nextStartTime)
             {
                 if (Settings.Enable && !Released && Updated)
