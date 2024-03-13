@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services;
@@ -31,16 +31,13 @@ public abstract class OAuthSettingsService<TAuthenticationSettings> where TAuthe
 
     public async Task UpdateSettingsAsync(TAuthenticationSettings settings)
     {
-        if (settings == null)
-        {
-            throw new ArgumentNullException(nameof(settings));
-        }
+        ArgumentNullException.ThrowIfNull(settings);
 
-        var oldSettings = await _siteService.LoadSiteSettingsAsync();
+        var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
-        oldSettings.Put(nameof(TAuthenticationSettings), settings);
+        siteSettings.Properties[typeof(TAuthenticationSettings).Name] = JObject.FromObject(settings);
 
-        await _siteService.UpdateSiteSettingsAsync(oldSettings);
+        await _siteService.UpdateSiteSettingsAsync(siteSettings);
     }
 
     public abstract IEnumerable<ValidationResult> ValidateSettings(TAuthenticationSettings settings);
