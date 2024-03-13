@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -26,17 +25,17 @@ namespace OrchardCore.CustomSettings.Recipes
                 return;
             }
 
-            var model = context.Step;
-
-            var customSettingsList = (from property in model.Properties()
-                                      where property.Name != "name"
-                                      select property).ToArray();
-
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (var customSettings in customSettingsList)
+            var model = context.Step;
+            foreach (var customSettings in model)
             {
-                siteSettings.Properties[customSettings.Name] = customSettings.Value;
+                if (customSettings.Key == "name")
+                {
+                    continue;
+                }
+
+                siteSettings.Properties[customSettings.Key] = customSettings.Value.DeepClone();
             }
 
             await _siteService.UpdateSiteSettingsAsync(siteSettings);

@@ -1,6 +1,6 @@
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -37,18 +37,16 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
             if (contentStep != null)
             {
-                var data = contentStep["data"] as JArray;
+                var data = contentStep["data"] as JsonArray;
                 data.Add(jContentItem);
             }
             else
             {
-                result.Steps.Add(new JObject(
-                    new JProperty("name", "Content"),
-                    new JProperty("data", new JArray()
-                    {
-                        jContentItem
-                    })
-                ));
+                result.Steps.Add(new JsonObject
+                {
+                    ["name"] = "Content",
+                    ["data"] = new JsonArray(jContentItem),
+                });
             }
         }
     }

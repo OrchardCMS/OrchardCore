@@ -36,10 +36,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
         public async Task UpdateSettingsAsync(MicrosoftAccountSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
@@ -54,10 +51,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(MicrosoftAccountSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {

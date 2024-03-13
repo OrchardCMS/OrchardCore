@@ -23,7 +23,8 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Admin, Feature(OpenIdConstants.Features.Management)]
+    [Feature(OpenIdConstants.Features.Management)]
+    [Admin("OpenId/Application/{action}/{id?}", "OpenIdApplication{action}")]
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -59,6 +60,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellDescriptor = shellDescriptor;
         }
 
+        [Admin("OpenId/Application", "OpenIdApplication")]
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))

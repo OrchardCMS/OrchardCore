@@ -21,7 +21,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/RemoteClient/{action}/{id?}", "DeploymentRemoteClient{action}")]
     public class RemoteClientController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -253,7 +253,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote clients successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

@@ -1,10 +1,9 @@
-using System;
 using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.AuditTrail.Services
 {
     /// <summary>
-    /// Provides a correlation id node is used when a filter has not been selected
+    /// Provides a correlation id node is used when a filter has not been selected.
     /// </summary>
     public class CorrelationIdFilterNode : TermOperationNode
     {

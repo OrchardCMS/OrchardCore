@@ -36,5 +36,4 @@ public class AzureAISearchIndexSettings
     public Dictionary<string, IEnumerable<AzureAISearchIndexMap>> GetMaps()
         => IndexMappings.GroupBy(group => group.IndexingKey)
         .ToDictionary(group => group.Key, group => group.Select(map => map));
-
 }

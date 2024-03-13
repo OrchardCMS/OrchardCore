@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -26,6 +27,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Controllers;
 
+[Admin("azure-search/{action}/{indexName?}", "AzureAISearch.{action}")]
 public class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
@@ -493,7 +495,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private IActionResult NotConfigured()
+    private ViewResult NotConfigured()
         => View("NotConfigured");
 
     private static Task AsyncContentItemsAsync(string indexName)

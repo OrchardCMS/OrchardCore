@@ -31,10 +31,7 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         public static AuditTrailAdminListOptions ForSort(this AuditTrailAdminListOptions options, string value, Action<AuditTrailAdminListOptionBuilder> builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
             if (!options.SortOptionBuilders.TryGetValue(value, out var auditTrailAdminListOptionBuilder))
             {
                 auditTrailAdminListOptionBuilder = new AuditTrailAdminListOptionBuilder(value);

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -10,8 +9,6 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceDefinition
     {
-        private string _basePath;
-
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
         {
             Manifest = manifest;
@@ -33,6 +30,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceManifest Manifest { get; private set; }
 
+        public string BasePath { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
         public string Version { get; private set; }
@@ -52,7 +50,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
-            Attributes ??= new AttributeDictionary();
+            Attributes ??= [];
 
             Attributes[name] = value;
             return this;
@@ -60,7 +58,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetBasePath(string basePath)
         {
-            _basePath = basePath;
+            BasePath = basePath;
             return this;
         }
 
@@ -71,10 +69,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetUrl(string url, string urlDebug)
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                ThrowArgumentNullException(nameof(url));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(url);
+
             Url = url;
             if (urlDebug != null)
             {
@@ -100,10 +96,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
         {
-            if (string.IsNullOrEmpty(cdnIntegrity))
-            {
-                ThrowArgumentNullException(nameof(cdnIntegrity));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(cdnIntegrity);
+
             CdnIntegrity = cdnIntegrity;
             if (cdnDebugIntegrity != null)
             {
@@ -114,10 +108,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool? cdnSupportsSsl)
         {
-            if (string.IsNullOrEmpty(cdnUrl))
-            {
-                ThrowArgumentNullException(nameof(cdnUrl));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(cdnUrl);
+
             UrlCdn = cdnUrl;
             if (cdnUrlDebug != null)
             {
@@ -133,7 +125,7 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Sets the version of the resource.
         /// </summary>
-        /// <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
+        /// <param name="version">The version to set, in the form of. <code>major.minor[.build[.revision]]</code></param>
         public ResourceDefinition SetVersion(string version)
         {
             if (!System.Version.TryParse(version, out _))
@@ -164,7 +156,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            Dependencies ??= new List<string>();
+            Dependencies ??= [];
 
             Dependencies.AddRange(dependencies);
 
@@ -223,9 +215,9 @@ namespace OrchardCore.ResourceManagement
 
             if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!string.IsNullOrEmpty(_basePath))
+                if (!string.IsNullOrEmpty(BasePath))
                 {
-                    url = string.Concat(_basePath, url.AsSpan(1));
+                    url = string.Concat(BasePath, url.AsSpan(1));
                 }
                 else
                 {
@@ -374,12 +366,6 @@ namespace OrchardCore.ResourceManagement
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, Type);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowArgumentNullException(string paramName)
-        {
-            throw new ArgumentNullException(paramName);
         }
     }
 }

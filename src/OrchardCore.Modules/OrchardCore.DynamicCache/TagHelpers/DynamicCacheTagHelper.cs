@@ -21,7 +21,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
         private const string ExpiresSlidingAttributeName = "expires-sliding";
         private const string EnabledAttributeName = "enabled";
 
-        private static readonly char[] _splitChars = new[] { ',', ' ' };
+        private static readonly char[] _splitChars = [',', ' '];
 
         /// <summary>
         /// The default duration, from the time the cache entry was added, when it should be evicted.
@@ -104,15 +104,9 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// <inheritdoc />
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            ArgumentNullException.ThrowIfNull(output);
 
             IHtmlContent content;
 
