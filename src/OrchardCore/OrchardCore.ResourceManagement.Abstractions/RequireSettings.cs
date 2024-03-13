@@ -26,7 +26,7 @@ namespace OrchardCore.ResourceManagement
 
         public Dictionary<string, string> Attributes
         {
-            get => _attributes ??= new Dictionary<string, string>();
+            get => _attributes ??= [];
             private set { _attributes = value; }
         }
 
@@ -43,13 +43,25 @@ namespace OrchardCore.ResourceManagement
             AppendVersion = options.AppendVersion;
         }
 
-        public bool HasAttributes
+        public RequireSettings(ResourceManagementOptions options, ResourceDefinition resource)
+            : this(options)
         {
-            get { return _attributes != null && _attributes.Any(a => a.Value != null); }
+            Name = resource.Name;
+            Type = resource.Type;
+            BasePath = resource.BasePath;
+            Version = resource.Version;
+            Position = resource.Position;
+
+            if (resource.Attributes != null)
+            {
+                _attributes = new Dictionary<string, string>(resource.Attributes);
+            }
         }
 
+        public bool HasAttributes => _attributes != null && _attributes.Any(a => a.Value != null);
+
         /// <summary>
-        /// The resource will be displayed in the head of the page
+        /// The resource will be displayed in the head of the page.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtHead()
@@ -58,7 +70,7 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the foot of the page
+        /// The resource will be displayed at the foot of the page.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,9 +80,9 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the specified location
+        /// The resource will be displayed at the specified location.
         /// </summary>
-        /// <param name="location">The location where the resource should be displayed</param>
+        /// <param name="location">The location where the resource should be displayed.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtLocation(ResourceLocation location)
         {
@@ -156,7 +168,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings SetDependencies(params string[] dependencies)
         {
-            Dependencies ??= new List<string>();
+            Dependencies ??= [];
 
             Dependencies.AddRange(dependencies);
 
@@ -186,7 +198,7 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings SetAttribute(string name, string value)
         {
-            _attributes ??= new Dictionary<string, string>();
+            _attributes ??= [];
             _attributes[name] = value;
             return this;
         }
@@ -194,7 +206,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, string> MergeAttributes(RequireSettings other)
         {
             // efficiently merge the two dictionaries, taking into account that one or both may not exist
-            // and that attributes in 'other' should overridde attributes in this, even if the value is null.
+            // and that attributes in 'other' should override attributes in this, even if the value is null.
             if (_attributes == null)
             {
                 return other._attributes == null ? null : new Dictionary<string, string>(other._attributes);
@@ -246,18 +258,17 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings NewAndCombine(RequireSettings other)
-        {
-            return new RequireSettings
+        public RequireSettings New() =>
+            new()
             {
                 Name = Name,
                 Type = Type,
                 Location = Location,
                 Position = Position
-            }
-                .Combine(other)
-                ;
-        }
+            };
+
+        public RequireSettings NewAndCombine(RequireSettings other) =>
+            New().Combine(other);
 
         public RequireSettings Combine(RequireSettings other)
         {

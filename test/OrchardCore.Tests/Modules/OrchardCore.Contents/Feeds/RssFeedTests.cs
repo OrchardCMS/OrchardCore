@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
             {
-                DisplayRouteValues = new RouteValueDictionary()
+                DisplayRouteValues = []
             }));
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect
@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
             {
-                DisplayRouteValues = new RouteValueDictionary()
+                DisplayRouteValues = []
             }));
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect

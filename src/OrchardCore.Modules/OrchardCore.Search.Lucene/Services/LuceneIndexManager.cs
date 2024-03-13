@@ -354,7 +354,7 @@ namespace OrchardCore.Search.Lucene
             return doc;
         }
 
-        private BaseDirectory CreateDirectory(string indexName)
+        private FSDirectory CreateDirectory(string indexName)
         {
             lock (this)
             {

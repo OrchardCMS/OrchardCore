@@ -28,7 +28,7 @@ public class AdminMenu(
                 .Id("azureaiservice")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                     .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", new { area = "OrchardCore.Search.AzureAI" })
+                        .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
                         .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
                         .LocalNav()
                     )

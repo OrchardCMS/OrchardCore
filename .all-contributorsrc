@@ -2816,6 +2816,15 @@
       "contributions": [
         "eventOrganizing"
       ]
+    },
+    {
+      "login": "SimonCropp",
+      "name": "Simon Cropp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/122666?v=4",
+      "profile": "https://github.com/SimonCropp",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

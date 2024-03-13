@@ -11,7 +11,7 @@ public class AzureAISearchIndexRebuildContext
 
     public AzureAISearchIndexRebuildContext(AzureAISearchIndexSettings settings, string indexFullName)
     {
-        ArgumentNullException.ThrowIfNull(nameof(settings));
+        ArgumentNullException.ThrowIfNull(settings);
 
         Settings = settings;
         IndexFullName = indexFullName;

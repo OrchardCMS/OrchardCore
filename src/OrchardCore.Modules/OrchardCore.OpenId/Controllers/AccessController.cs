@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,7 +46,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellSettings = shellSettings;
         }
 
-        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+        [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
         public async Task<IActionResult> Authorize()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
@@ -92,7 +93,7 @@ namespace OrchardCore.OpenId.Controllers
 
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
-                case ConsentTypes.External when !authorizations.Any():
+                case ConsentTypes.External when authorizations.Count == 0:
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
@@ -101,8 +102,8 @@ namespace OrchardCore.OpenId.Controllers
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 case ConsentTypes.Implicit:
-                case ConsentTypes.External when authorizations.Any():
-                case ConsentTypes.Explicit when authorizations.Any() && !request.HasPrompt(Prompts.Consent):
+                case ConsentTypes.External when authorizations.Count > 0:
+                case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPrompt(Prompts.Consent):
                     var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                     identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
@@ -182,7 +183,7 @@ namespace OrchardCore.OpenId.Controllers
             }
         }
 
-        [ActionName(nameof(Authorize))]
+        [ActionName(nameof(Authorize)), DisableCors]
         [FormValueRequired("submit.Accept"), HttpPost]
         public async Task<IActionResult> AuthorizeAccept()
         {
@@ -222,7 +223,7 @@ namespace OrchardCore.OpenId.Controllers
             // force it to return a valid response without the external authorization.
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
-                case ConsentTypes.External when !authorizations.Any():
+                case ConsentTypes.External when authorizations.Count == 0:
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
@@ -266,7 +267,7 @@ namespace OrchardCore.OpenId.Controllers
             }
         }
 
-        [ActionName(nameof(Authorize))]
+        [ActionName(nameof(Authorize)), DisableCors]
         [FormValueRequired("submit.Deny"), HttpPost]
         public IActionResult AuthorizeDeny()
         {
@@ -289,7 +290,7 @@ namespace OrchardCore.OpenId.Controllers
             return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+        [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
         public async Task<IActionResult> Logout()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
@@ -325,7 +326,7 @@ namespace OrchardCore.OpenId.Controllers
             });
         }
 
-        [ActionName(nameof(Logout)), AllowAnonymous]
+        [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
         [FormValueRequired("submit.Accept"), HttpPost]
         public async Task<IActionResult> LogoutAccept()
         {
@@ -362,7 +363,7 @@ namespace OrchardCore.OpenId.Controllers
             return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [ActionName(nameof(Logout)), AllowAnonymous]
+        [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
         [FormValueRequired("submit.Deny"), HttpPost]
         public IActionResult LogoutDeny()
         {
@@ -518,7 +519,7 @@ namespace OrchardCore.OpenId.Controllers
             // reject the request if no existing authorization can be found.
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
-                case ConsentTypes.External when !authorizations.Any():
+                case ConsentTypes.External when authorizations.Count == 0:
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
@@ -633,7 +634,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 // Never include the security stamp in the access and identity tokens, as it's a secret value.
                 case "AspNet.Identity.SecurityStamp":
-                    return Enumerable.Empty<string>();
+                    return [];
 
                 // Only add the claim to the id_token if the corresponding scope was granted.
                 // The other claims will only be added to the access_token.
@@ -656,7 +657,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the current tenant name is always added as a valid resource/audience,
             // which allows the end user to use the corresponding tokens with the APIs
             // located in the current tenant without having to explicitly register a scope.
-            var resources = new List<string>(1)
+            var resources = new List<string>()
             {
                 OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
             };

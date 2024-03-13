@@ -1,4 +1,4 @@
-﻿root = true
+root = true
 
 [*]
 end_of_line = crlf
@@ -34,7 +34,13 @@ csharp_prefer_braces = true
 csharp_prefer_simple_using_statement                       = true
 csharp_style_namespace_declarations                        = file_scoped:suggestion
 
-# Avoid "this." if not necessary
+# Range operator
+csharp_style_prefer_range_operator                         = false:warning
+csharp_style_prefer_index_operator                         = false:warning
+dotnet_diagnostic.IDE0057.severity                         = warning
+dotnet_diagnostic.IDE0056.severity                         = warning
+
+# Avoid "this." if not necessary 
 dotnet_style_qualification_for_field                       = false : suggestion
 dotnet_style_qualification_for_property                    = false : suggestion
 dotnet_style_qualification_for_method                      = false : suggestion
@@ -197,7 +203,7 @@ dotnet_diagnostic.SA1314.severity = none            # Type parameter names shoul
 
 # StyleCop: Maintainability Rules
 dotnet_diagnostic.SA1400.severity = none            # Access modifier should be declared.
-dotnet_diagnostic.SA1401.severity = none            # Fields should be privat.
+dotnet_diagnostic.SA1401.severity = none            # Fields should be private.
 dotnet_diagnostic.SA1402.severity = none            # File may only contain a single type.
 dotnet_diagnostic.SA1403.severity = none            # File may only contain a single namespace.
 dotnet_diagnostic.SA1404.severity = none            # Code analysis suppression should have justification.

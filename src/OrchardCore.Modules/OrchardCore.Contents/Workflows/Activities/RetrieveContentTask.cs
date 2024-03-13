@@ -13,7 +13,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class RetrieveContentTask : ContentTask
     {
-        public RetrieveContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public RetrieveContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<RetrieveContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

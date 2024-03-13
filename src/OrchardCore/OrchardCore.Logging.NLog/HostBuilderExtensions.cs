@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Web;
+using OrchardCore.Abstractions.Setup;
 
 namespace OrchardCore.Logging;
 
@@ -16,7 +17,9 @@ public static class HostBuilderExtensions
             .ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
-                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+                var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
+                var configDir = string.IsNullOrWhiteSpace(appData) ? $"{environment.ContentRootPath}/{ShellOptionConstants.DefaultAppDataPath}" : appData;
+                LogManager.Configuration.Variables["configDir"] = configDir;
             });
     }
 }

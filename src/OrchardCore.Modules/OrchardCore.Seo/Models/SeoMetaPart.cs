@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using OrchardCore.ContentManagement;
 using OrchardCore.Media.Fields;
@@ -21,7 +20,7 @@ namespace OrchardCore.Seo.Models
         public string Canonical { get; set; }
 
         public string MetaRobots { get; set; }
-        public MetaEntry[] CustomMetaTags { get; set; } = Array.Empty<MetaEntry>();
+        public MetaEntry[] CustomMetaTags { get; set; } = [];
 
 
         public MediaField DefaultSocialImage { get; set; }

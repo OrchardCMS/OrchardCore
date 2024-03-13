@@ -21,7 +21,7 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    [Admin]
+    [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
     public class SitemapIndexController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -357,7 +357,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
