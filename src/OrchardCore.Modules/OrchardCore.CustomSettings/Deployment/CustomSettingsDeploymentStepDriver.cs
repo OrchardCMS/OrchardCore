@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.CustomSettings.Services;
@@ -30,17 +29,17 @@ namespace OrchardCore.CustomSettings.Deployment
 
         public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
         {
-            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
                 model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = _customSettingsService.GetAllSettingsTypeNames().ToArray();
+                model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
         {
-            step.SettingsTypeNames = Array.Empty<string>();
+            step.SettingsTypeNames = [];
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
@@ -50,7 +49,7 @@ namespace OrchardCore.CustomSettings.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.SettingsTypeNames = Array.Empty<string>();
+                step.SettingsTypeNames = [];
             }
 
             return Edit(step);

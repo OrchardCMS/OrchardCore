@@ -55,6 +55,7 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
+            services.AddScoped<IDisplayDriver<Navbar>, VisitSiteNavbarDisplayDriver>();
 
             services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
         }

@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
 
@@ -28,8 +28,8 @@ namespace OrchardCore.Templates.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            ShellSettings shellSettings,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentManager = contentManager;
             _contentHandleManager = contentHandleManager;
@@ -37,7 +37,7 @@ namespace OrchardCore.Templates.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
-            _homeUrl = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/') + '/';
+            _homeUrl = httpContextAccessor.HttpContext.Request.PathBase.Add("/");
         }
 
         public IActionResult Index()
@@ -76,7 +76,10 @@ namespace OrchardCore.Templates.Controllers
             else
             {
                 var index = handle.IndexOf(_homeUrl, StringComparison.Ordinal);
-                handle = (index < 0) ? handle : handle.Substring(_homeUrl.Length);
+
+                handle = (index < 0 ? handle : handle[_homeUrl.Length..])
+                    .ToUriComponents(UriFormat.SafeUnescaped);
+
                 contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
             }
 
@@ -86,8 +89,7 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
-
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

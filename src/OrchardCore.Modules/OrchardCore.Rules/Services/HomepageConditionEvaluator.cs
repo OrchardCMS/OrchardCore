@@ -18,7 +18,7 @@ namespace OrchardCore.Rules.Services
         {
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
 
-            var result = String.Equals("/", requestPath, StringComparison.Ordinal) || String.IsNullOrEmpty(requestPath);
+            var result = string.Equals("/", requestPath, StringComparison.Ordinal) || string.IsNullOrEmpty(requestPath);
 
             if (!condition.Value)
             {

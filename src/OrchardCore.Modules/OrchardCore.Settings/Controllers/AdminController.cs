@@ -1,7 +1,10 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -17,7 +20,8 @@ namespace OrchardCore.Settings.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
+        private readonly CultureOptions _cultureOptions;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteService siteService,
@@ -25,6 +29,7 @@ namespace OrchardCore.Settings.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
+            IOptions<CultureOptions> cultureOptions,
             IUpdateModelAccessor updateModelAccessor)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -32,9 +37,11 @@ namespace OrchardCore.Settings.Controllers
             _notifier = notifier;
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
+            _cultureOptions = cultureOptions.Value;
             H = h;
         }
 
+        [Admin("Settings/{groupId}", "AdminSettings")]
         public async Task<IActionResult> Index(string groupId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
@@ -47,7 +54,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId)
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
             };
 
             return View(viewModel);
@@ -67,7 +74,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId)
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
             };
 
             if (ModelState.IsValid)
@@ -75,13 +82,13 @@ namespace OrchardCore.Settings.Controllers
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 string culture = null;
-                if (site.Properties.TryGetValue("LocalizationSettings", out var settings))
+                if (site.Properties.TryGetPropertyValue("LocalizationSettings", out var settings))
                 {
                     culture = settings.Value<string>("DefaultCulture");
                 }
 
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (culture != null ? CultureScope.Create(culture) : null)
+                using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }

@@ -10,7 +10,7 @@ namespace OrchardCore.Layers.ViewModels
         public string[] Zones { get; set; }
 
         [BindNever]
-        public Dictionary<string, List<dynamic>> Widgets { get; set; } = new Dictionary<string, List<dynamic>>();
+        public Dictionary<string, List<dynamic>> Widgets { get; set; } = [];
 
         [BindNever]
         public List<Layer> Layers { get; set; }

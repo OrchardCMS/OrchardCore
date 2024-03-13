@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -30,7 +29,7 @@ namespace OrchardCore.Users.Liquid
                     var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
                     var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
 
-                    if (!String.IsNullOrEmpty(permissionName) &&
+                    if (!string.IsNullOrEmpty(permissionName) &&
                         await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
                     {
                         return BooleanValue.True;

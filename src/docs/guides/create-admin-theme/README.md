@@ -4,11 +4,9 @@ A custom Admin Theme may be created for Orchard Core.
 
 The default admin theme for Orchard Core is called `TheAdmin`
 
-
 ## What you will build
 
 You will build a custom theme which uses `TheAdmin` as a base theme.
-
 
 ## What you will need
 
@@ -47,7 +45,7 @@ will search both `TheAdmin` theme and `MyAdminTheme` for template alternates whe
 
 Views in `MyAdminTheme` will override views in `TheAdmin`.
 
-## Enabling your custom admin theme.
+## Enabling your custom admin theme
 
 From the root of the folder containing both projects, run this command:
 

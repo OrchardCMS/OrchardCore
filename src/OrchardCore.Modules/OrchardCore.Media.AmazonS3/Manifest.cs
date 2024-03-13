@@ -11,9 +11,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media.AmazonS3",
     Name = "Amazon Media Storage",
     Description = "Enables support for storing media files in Amazon S3 Bucket.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Media.Cache"
-    },
+    ],
     Category = "Hosting"
 )]

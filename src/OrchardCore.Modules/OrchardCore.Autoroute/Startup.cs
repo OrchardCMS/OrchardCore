@@ -4,12 +4,13 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Autoroute.Core.Indexes;
+using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
@@ -17,7 +18,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
@@ -82,7 +82,7 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 

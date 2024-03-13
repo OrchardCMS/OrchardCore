@@ -24,12 +24,8 @@ namespace OrchardCore.ContentLocalization.Liquid
         {
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var request = _httpContextAccessor.HttpContext?.Request;
-
-            if (request == null)
-            {
-                throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
-            }
+            var request = _httpContextAccessor.HttpContext?.Request
+                ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
 
             var targetCulture = input.ToStringValue();
 
@@ -37,9 +33,9 @@ namespace OrchardCore.ContentLocalization.Liquid
                 new
                 {
                     area = "OrchardCore.ContentLocalization",
-                    targetCulture = targetCulture,
+                    targetCulture,
                     contentItemUrl = request.Path.Value,
-                    queryStringValue = request.QueryString.Value
+                    queryStringValue = request.QueryString.Value,
                 });
             return new ValueTask<FluidValue>(FluidValue.Create(url, context.Options));
         }

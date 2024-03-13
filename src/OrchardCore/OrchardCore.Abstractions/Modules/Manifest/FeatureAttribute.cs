@@ -6,8 +6,6 @@ namespace OrchardCore.Modules.Manifest
 {
     using static StringSplitOptions;
 
-#pragma warning disable IDE0049 // Use framework type
-    // #pragma warning restore IDE0049
     /// <summary>
     /// Defines a Feature in a Module, can be used multiple times.
     /// If at least one Feature is defined, the Module default feature is ignored.
@@ -15,39 +13,18 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     public class FeatureAttribute : Attribute
     {
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultName = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultDescription = "";
 
-        /// <summary>
-        /// &quot;Uncategorized&quot;
-        /// </summary>
         protected internal const string Uncategorized = nameof(Uncategorized);
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultCategory = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultFeatureDependencies = "";
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultDefaultTenantOnly = false;
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultAlwaysEnabled = false;
 
         /// <summary>
@@ -68,21 +45,25 @@ namespace OrchardCore.Modules.Manifest
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , default
-            , default
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            default,
+            default,
+            default,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -100,22 +81,26 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string name
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , default
-            , default
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            default,
+            default,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -135,15 +120,18 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string name
-            , string category
-            , string priority
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string category,
+            string priority,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         )
         {
             Id = id;
@@ -158,6 +146,7 @@ namespace OrchardCore.Modules.Manifest
 
             DefaultTenantOnly = ToBoolean(defaultTenant);
             IsAlwaysEnabled = ToBoolean(alwaysEnabled);
+            EnabledByDependencyOnly = ToBoolean(enabledByDependencyOnly);
         }
 
         /// <summary>
@@ -180,7 +169,7 @@ namespace OrchardCore.Modules.Manifest
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
-                        Data = {{nameof(value), value}}
+                        Data = { { nameof(value), value } }
                     };
                 }
 
@@ -278,9 +267,6 @@ namespace OrchardCore.Modules.Manifest
             set => _dependencies = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
         }
 
-        /// <summary>
-        /// 0
-        /// </summary>
         protected internal const int DefaultPriority = 0;
 
         /// <summary>
@@ -350,5 +336,10 @@ namespace OrchardCore.Modules.Manifest
         /// Once enabled, check whether the feature cannot be disabled. Defaults to <c>false</c>.
         /// </summary>
         public virtual bool IsAlwaysEnabled { get; set; } = false;
+
+        /// <summary>
+        /// Set to <c>true</c> to make the feature available by dependency only.
+        /// </summary>
+        public virtual bool EnabledByDependencyOnly { get; set; }
     }
 }

@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Queries.Controllers
 {
@@ -43,9 +46,15 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var queryParameters = parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : new Dictionary<string, object>();
+            if (Request.Method == HttpMethods.Post && string.IsNullOrEmpty(parameters))
+            {
+                using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+                parameters = await reader.ReadToEndAsync();
+            }
+
+            var queryParameters = !string.IsNullOrEmpty(parameters) ?
+                JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : [];
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
             return new ObjectResult(result);

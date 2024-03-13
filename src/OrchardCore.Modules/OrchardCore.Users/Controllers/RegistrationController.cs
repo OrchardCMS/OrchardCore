@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -23,8 +22,8 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -70,7 +69,12 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (TryValidateModel(model))
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                ModelState.AddModelError("Email", S["Email is required."]);
+            }
+
+            if (ModelState.IsValid)
             {
                 // Check if user with same email already exists
                 var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -147,7 +151,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }
@@ -163,16 +167,14 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private RedirectResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return Redirect("~/");
-            }
+
+            return Redirect("~/");
         }
     }
 }

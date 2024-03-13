@@ -10,7 +10,7 @@ namespace OrchardCore.Sitemaps.Services
 
     public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory where TSitemapSource : SitemapSource, new()
     {
-        private static readonly string TypeName = typeof(TSitemapSource).Name;
+        private static readonly string _typeName = typeof(TSitemapSource).Name;
 
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
 
@@ -19,7 +19,7 @@ namespace OrchardCore.Sitemaps.Services
             _sitemapIdGenerator = sitemapIdGenerator;
         }
 
-        public string Name => TypeName;
+        public string Name => _typeName;
 
         public SitemapSource Create()
         {

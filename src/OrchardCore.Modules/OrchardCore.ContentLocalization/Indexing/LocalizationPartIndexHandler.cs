@@ -8,7 +8,7 @@ namespace OrchardCore.ContentLocalization.Indexing
     {
         public override Task BuildIndexAsync(LocalizationPart part, BuildPartIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             foreach (var key in context.Keys)
             {

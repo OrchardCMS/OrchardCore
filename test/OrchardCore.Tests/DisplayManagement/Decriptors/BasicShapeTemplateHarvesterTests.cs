@@ -1,6 +1,4 @@
-using System.Linq;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {

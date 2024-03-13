@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 namespace OrchardCore.DisplayManagement.Notify
 {
     /// <summary>
-    /// Notification manager for UI notifications
+    /// Notification manager for UI notifications.
     /// </summary>
     /// <remarks>
     /// Where such notifications are displayed depends on the theme used. Default themes contain a
@@ -15,11 +15,11 @@ namespace OrchardCore.DisplayManagement.Notify
     public interface INotifier
     {
         /// <summary>
-        /// Adds a new UI notification
+        /// Adds a new UI notification.
         /// </summary>
         /// <param name="type">
-        /// The type of the notification (notifications with different types can be displayed differently)</param>
-        /// <param name="message">A localized message to display</param>
+        /// The type of the notification (notifications with different types can be displayed differently).</param>
+        /// <param name="message">A localized message to display.</param>
         [Obsolete("This method will be removed in a later version. Use AddAsync()")]
         void Add(NotifyType type, LocalizedHtmlString message);
 
@@ -27,8 +27,8 @@ namespace OrchardCore.DisplayManagement.Notify
         /// Adds a new UI notification asynchronously.
         /// </summary>
         /// <param name="type">
-        /// The type of the notification (notifications with different types can be displayed differently)</param>
-        /// <param name="message">A localized message to display</param>
+        /// The type of the notification (notifications with different types can be displayed differently).</param>
+        /// <param name="message">A localized message to display.</param>
         /// <remarks>
         /// Added with a default interface implementation for backwards compatability.
         /// </remarks>
@@ -42,7 +42,7 @@ namespace OrchardCore.DisplayManagement.Notify
         }
 
         /// <summary>
-        /// Get all notifications added
+        /// Get all notifications added.
         /// </summary>
         IList<NotifyEntry> List();
     }

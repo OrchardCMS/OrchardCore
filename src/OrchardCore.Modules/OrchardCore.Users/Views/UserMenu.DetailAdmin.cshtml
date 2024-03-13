@@ -1,0 +1,19 @@
+@if(Model.Header == null && Model.Content == null)
+{
+    return;
+}
+
+<div class="dropdown">
+    <button type="button" class="dropdown-toggle nav-link" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+        @if (Model.Header != null)
+        {
+            @await DisplayAsync(Model.Header)
+        }
+    </button>
+    @if (Model.Content != null)
+    {
+        <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="navbarDropdown">
+            @await DisplayAsync(Model.Content)
+        </ul>
+    }
+</div>

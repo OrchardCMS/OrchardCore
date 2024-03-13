@@ -25,7 +25,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ServerConfigurationController(
             IAuthorizationService authorizationService,
@@ -47,6 +47,7 @@ namespace OrchardCore.OpenId.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
+        [Admin("OpenId/ServerConfiguration", "OpenIdServerConfiguration")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
@@ -55,7 +56,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _serverSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             return View(shape);
         }
@@ -70,7 +71,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _serverService.GetSettingsAsync();
-            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _serverSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (!ModelState.IsValid)
             {

@@ -9,7 +9,9 @@ namespace OrchardCore.DynamicCache
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent CachedShapeWrapper(IShape Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
             // No need to optimize this code as it will be used for debugging purpose
 
@@ -19,8 +21,8 @@ namespace OrchardCore.DynamicCache
 
             contentBuilder.AppendLine();
             contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            contentBuilder.AppendHtmlLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
+            contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cache.Contexts)}");
+            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cache.Tags)}");
             contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cache.ExpiresOn}");
             contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
             contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");

@@ -40,7 +40,7 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
         };
         this.onSplitChange = this.onSplitChange.bind(this);
     }
-  
+
     onSplitChange(event) {
         const split = event.target.value === "split" ? true : false
         this.setState({
@@ -50,17 +50,17 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
     }
 
     componentDidMount() {
-        const darkMode = document.documentElement.getAttribute('data-theme');
         const mountId = document.getElementById('diffapp');
         const oldText = mountId.getAttribute('data-old-text') + ' - ' + mountId.getAttribute('data-old-time');
-        
+        const theme = document.documentElement.getAttribute('data-bs-theme');
+
         this.setState({
             old: mountId.getAttribute('data-old'),
             new: mountId.getAttribute('data-new'),
             oldText: oldText,
             leftText: oldText,
             newText: mountId.getAttribute('data-new-text') + ' - ' + mountId.getAttribute('data-new-time'),
-            useDarkMode: document.documentElement.getAttribute('data-theme').toLowerCase() === 'darkmode' ? true : false,
+            useDarkMode: theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches),
             splitText: mountId.getAttribute('data-split'),
             unifiedText: mountId.getAttribute('data-unified'),
         });
@@ -100,15 +100,15 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
                 <div className="diff-header d-flex justify-content-end my-2" >
                     <div className="btn-group btn-group-toggle" data-toggle="buttons" >
                         <label className="btn btn-secondary active" >
-                            <input type="radio" name="options" value="split" 
+                            <input type="radio" name="options" value="split"
                                 checked={this.state.split === true}
-                                onChange={this.onSplitChange}/>{this.state.splitText}
+                                onChange={this.onSplitChange} />{this.state.splitText}
                         </label>
 
                         <label className="btn btn-secondary">
                             <input className="btn btn-secondary" type="radio" name="options" value="unified"
                                 checked={this.state.split === false}
-                                onChange={this.onSplitChange}/>{this.state.unifiedText}
+                                onChange={this.onSplitChange} />{this.state.unifiedText}
                         </label>
                     </div>
                 </div>

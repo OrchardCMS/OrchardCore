@@ -20,8 +20,8 @@ namespace OrchardCore.Modules.Manifest
     public abstract class FeatureAttributeTests<TAttribute>
         where TAttribute : FeatureAttribute
     {
-        // TODO: TBD: in addition to ctors... should be able to still set properties in the same way...
-        // TODO: TBD: in effect the ctors are 'sugar' after a sort that provide some shorthand
+        // TODO: TBD: in addition to constructors... should be able to still set properties in the same way...
+        // TODO: TBD: in effect the constructors are 'sugar' after a sort that provide some shorthand
 
         /// <summary>
         /// Gets the OutputHelper for the tests.
@@ -95,7 +95,7 @@ namespace OrchardCore.Modules.Manifest
         {
             static Type ParameterlessCtorClassifier(int index, object arg) => typeof(object);
 
-            if (!args.Any() || classifier == null)
+            if (args.Length == 0 || classifier == null)
             {
                 classifier ??= ParameterlessCtorClassifier;
             }
@@ -108,16 +108,13 @@ namespace OrchardCore.Modules.Manifest
             // Identify the Ctor with the Parameters aligned to the Classified Arguments.
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
-                Callback = ctor
-                , Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                Callback = ctor,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(),
             }).ToArray();
 
-            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback;
-
-            if (attributeCtor == null)
-            {
-                throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
-            }
+            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))
+                ?.Callback
+                ?? throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
 
             var feature = attributeCtor.Invoke(args);
 
@@ -126,46 +123,46 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString3Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString3Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                3 or 4 => typeof(object),
+                3 or 4 or 5 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString4Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString4Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                4 or 5 => typeof(object),
+                4 or 5 or 6 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString6Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString6Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                6 or 7 => typeof(object),
+                6 or 7 or 8 => typeof(object),
                 _ => typeof(string),
             };
 
@@ -176,9 +173,9 @@ namespace OrchardCore.Modules.Manifest
         /// <returns></returns>
         private static TAttribute DefaultFactory()
         {
-            var paramlessCtor = typeof(TAttribute).GetConstructor(CtorFlags, Array.Empty<Type>());
+            var paramlessCtor = typeof(TAttribute).GetConstructor(CtorFlags, []);
             Assert.NotNull(paramlessCtor);
-            var instance = paramlessCtor.Invoke(Array.Empty<object>());
+            var instance = paramlessCtor.Invoke([]);
             var feature = Assert.IsType<TAttribute>(instance);
             return feature;
         }
@@ -226,7 +223,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Provides a Pair that may be rendered to <see cref="string"/>.
         /// </summary>
-        protected struct RenderKeyValuePair
+        protected readonly struct RenderKeyValuePair
         {
             /// <summary>
             /// Pair instance supporting the Render.
@@ -248,7 +245,7 @@ namespace OrchardCore.Modules.Manifest
             /// </summary>
             /// <param name="_"></param>
             /// <returns></returns>
-            /// <remarks>Given value may be Null, Nullable, Sring, or Boolean. Otherwise,
+            /// <remarks>Given value may be Null, Nullable, String, or Boolean. Otherwise,
             /// makes a best effort to convert directly to string.</remarks>
             private static string DefaultRender(object _)
             {
@@ -344,7 +341,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="feature"></param>
         protected virtual void VerifyDefault(TAttribute feature)
         {
-            Assert.False(feature.Dependencies.Any());
+            Assert.False(feature.Dependencies.Length > 0);
             Assert.False(feature.DefaultTenantOnly);
             Assert.False(feature.IsAlwaysEnabled);
             Assert.False(feature.Exists);
