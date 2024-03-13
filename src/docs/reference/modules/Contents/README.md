@@ -129,6 +129,38 @@ Well known properties include
     To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
     This will allow the shape to execute, and populate the alternates for any child shapes.
 
+## Contents Module API Controller
+
+The `OrchardCore.Contents` module provides an `ApiController.cs` featuring endpoints to manage _content items_ created in the Orchard Core "Admin" backoffice. These endpoints allow for operations such as retrieving, creating, updating, and deleting content items instances. Access to these endpoints requires authentication and appropriate user role permissions.
+
+### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
+
+To utilize the Orchard Core ApiController endpoints, user accounts must authenticate using the OAuth 2 standard. This requires activating the "OpenId Authorization Server" feature and configuring it (detailed information can be found in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server)). Furthermore, the "OpenId Token Validation" feature needs to be activated, which provides a token to authenticated users for future API calls (more details are available in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation)). Upon activating these features, the administration area's "Security" section will display a new menu option "OpenID Connect," enabling the OAuth 2 server configuration through the creation of "Scopes" and "Applications".
+
+It is usually better to create a dedicated user for performing API calls, to maintain control over user rights, and to easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles > Edit (User)":
+
+- View and edit the OpenID Connect client settings
+- View and edit the OpenID Connect server settings
+- View and edit the OpenID Connect validation settings
+- View, add, edit, and remove the OpenID Connect applications
+- View, add, edit, and remove the OpenID Connect scopes.
+
+### Contents API Controller Endpoints
+
+TODO
+
+## Contents module Api Controller
+
+`OrchardCore.Contents` module exposes an `ApiController.cs` with [endpoints](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs) to get, create, update, and delete _content items_ created in the "Admin" backoffice. To be able to call those endpoints you must be authenticated and have the right user role permissions.
+
+### Activating the "OpenId Authorization Server" and "OpenId Token Validation" features
+
+To perform calls against Orchard Core ApiController endpoints the user account that does this must be authenticated using the OAuth 2 standard. To do this, in Orchard Core you need to activate the feature "OpendId Authorization Server", and configure it - more details are available in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) -, and also activating the "OpenId Token Validation" feature, to release a token to the authenticated user that will perform future calls - more details are available in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation) -. Once activated those two feautres, you will see in the administration area under "Security", a new voice menu called "OpenID Connect", where you can configure the OAuth 2 server creating "Scopes" and "Applications".
+
+### Contents Api Controller endpoints
+
+TODO
+
 ## GraphQL
 
 The contents module provides a feature to provide GraphQL queries for content items.
