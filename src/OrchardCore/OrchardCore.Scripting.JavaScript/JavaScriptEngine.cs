@@ -36,20 +36,11 @@ namespace OrchardCore.Scripting.JavaScript
                         };
                         return wrapped;
                     }
-                    if (target is JsonValue jsonValue)
-                    {
-                        if (jsonValue.TryGetValue<bool>(out var boolValue))
-                        {
-                            return e.Construct("Boolean", boolValue ? JsBoolean.True : JsBoolean.False);
-                        }
-                        if (jsonValue.TryGetValue<double>(out var doubleValue))
-                        {
-                            return e.Construct("Number", JsNumber.Create(doubleValue));
-                        }
-                        return e.Construct("String", (JsString)jsonValue.ToString());
-                    }
+
                     return new ObjectWrapper(e, target);
                 });
+
+                options.AddObjectConverter<JsonValueConverter>();
 
                 // We cannot access this[string] with anything else than JsonObject, otherwise itw will throw.
                 options.SetTypeResolver(new TypeResolver
