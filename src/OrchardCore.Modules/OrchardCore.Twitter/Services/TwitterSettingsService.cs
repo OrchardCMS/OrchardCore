@@ -22,22 +22,22 @@ namespace OrchardCore.Twitter.Services
 
             if (string.IsNullOrWhiteSpace(settings.ConsumerKey))
             {
-                yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
+                yield return new ValidationResult(S["ConsumerKey is required"], [nameof(settings.ConsumerKey)]);
             }
 
             if (string.IsNullOrWhiteSpace(settings.ConsumerSecret))
             {
-                yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
+                yield return new ValidationResult(S["ConsumerSecret is required"], [nameof(settings.ConsumerSecret)]);
             }
 
             if (string.IsNullOrWhiteSpace(settings.AccessToken))
             {
-                yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
+                yield return new ValidationResult(S["Access Token is required"], [nameof(settings.AccessToken)]);
             }
 
             if (string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
             {
-                yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
+                yield return new ValidationResult(S["Access Token Secret is required"], [nameof(settings.AccessTokenSecret)]);
             }
         }
     }

@@ -22,17 +22,17 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
             if (string.IsNullOrWhiteSpace(settings.DisplayName))
             {
-                yield return new ValidationResult(S["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
+                yield return new ValidationResult(S["DisplayName is required"], [nameof(settings.DisplayName)]);
             }
 
             if (string.IsNullOrWhiteSpace(settings.AppId))
             {
-                yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
+                yield return new ValidationResult(S["AppId is required"], [nameof(settings.AppId)]);
             }
 
             if (string.IsNullOrWhiteSpace(settings.TenantId))
             {
-                yield return new ValidationResult(S["TenantId is required"], new string[] { nameof(settings.TenantId) });
+                yield return new ValidationResult(S["TenantId is required"], [nameof(settings.TenantId)]);
             }
         }
     }
