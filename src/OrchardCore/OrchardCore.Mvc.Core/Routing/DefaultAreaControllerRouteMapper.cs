@@ -6,7 +6,7 @@ namespace OrchardCore.Mvc.Routing
 {
     public class DefaultAreaControllerRouteMapper : IAreaControllerRouteMapper
     {
-        private const string _defaultAreaPattern = "/{area}/{controller}/{action}/{id?}";
+        private const string DefaultAreaPattern = "/{area}/{controller}/{action}/{id?}";
 
         public int Order => 1000;
 
@@ -15,7 +15,7 @@ namespace OrchardCore.Mvc.Routing
             routes.MapAreaControllerRoute(
                name: descriptor.DisplayName,
                areaName: descriptor.RouteValues["area"],
-               pattern: _defaultAreaPattern.Replace("{action}", descriptor.ActionName),
+               pattern: DefaultAreaPattern.Replace("{action}", descriptor.ActionName),
                defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
             );
 

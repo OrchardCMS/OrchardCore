@@ -33,13 +33,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new HomepageCondition
                     {
                         Value = isHomepage
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
@@ -66,10 +66,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new BooleanCondition { Value = boolean }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
@@ -90,17 +90,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new AnyConditionGroup
                     {
-                        Conditions = new List<Condition>
-                        {
+                        Conditions =
+                        [
                             new BooleanCondition { Value = first },
                             new BooleanCondition { Value = second }
-                        }
+                        ]
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
@@ -121,14 +121,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new UrlCondition
                     {
                         Value = path,
                         Operation = new StringEqualsOperator()
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
@@ -155,13 +155,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new JavascriptCondition
                     {
                         Script = script
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()

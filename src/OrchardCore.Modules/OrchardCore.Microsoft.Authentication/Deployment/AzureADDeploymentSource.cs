@@ -1,7 +1,9 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment
 {
@@ -16,19 +18,18 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var azureADStep = step as AzureADDeploymentStep;
-
-            if (azureADStep == null)
+            if (step is not AzureADDeploymentStep azureADStep)
             {
                 return;
             }
 
             var settings = await _azureADService.GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AzureAD"),
-                new JProperty("AzureAD", JObject.FromObject(settings))
-            ));
+            var obj = new JsonObject { ["name"] = nameof(AzureADSettings) };
+
+            obj.Merge(JObject.FromObject(settings, JOptions.Default));
+
+            result.Steps.Add(obj);
         }
     }
 }

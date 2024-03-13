@@ -4,7 +4,7 @@ namespace OrchardCore.Deployment.Indexes
 {
     public class DeploymentPlanIndex : MapIndex
     {
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
 
         public string Name { get; set; }
     }

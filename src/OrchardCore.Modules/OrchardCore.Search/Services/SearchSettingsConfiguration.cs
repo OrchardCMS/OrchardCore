@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Configuration
@@ -20,7 +19,7 @@ namespace OrchardCore.Search.Configuration
                 .GetAwaiter().GetResult()
                 .As<SearchSettings>();
 
-            options.SearchProviderAreaName = settings.SearchProviderAreaName;
+            options.ProviderName = settings.ProviderName;
         }
     }
 }

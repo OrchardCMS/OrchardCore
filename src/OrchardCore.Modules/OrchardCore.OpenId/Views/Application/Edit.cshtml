@@ -12,17 +12,17 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="Id" />
     <div class="mb-3" asp-validation-class-for="ClientId">
-        <label asp-for="ClientId">@T["Client Id"]</label>
+        <label asp-for="ClientId" class="form-label">@T["Client Id"]</label>
         <input asp-for="ClientId" class="form-control" autofocus />
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="mb-3" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" autofocus />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
     <div class="mb-3" asp-validation-class-for="Type">
-        <label asp-for="Type">@T["Type"]</label>
+        <label asp-for="Type" class="form-label">@T["Type"]</label>
         <select asp-for="Type" class="form-select">
             <option value="@OpenIddictConstants.ClientTypes.Confidential">@T["Confidential client"]</option>
             <option value="@OpenIddictConstants.ClientTypes.Public">@T["Public client"]</option>
@@ -30,7 +30,7 @@
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
     <div class="mb-3" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret">@T["Client Secret"] (@T["enter a new value to replace the existing secret"])</label>
+        <label asp-for="ClientSecret" class="form-label">@T["Client Secret"] (@T["enter a new value to replace the existing secret"])</label>
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
@@ -104,7 +104,7 @@
 
     <div id="RedirectSection" class="mb-3 collapse">
         <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
+            <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
             <input asp-for="RedirectUris" class="form-control" autofocus />
             <span asp-validation-for="RedirectUris" class="text-danger"></span>
         </div>
@@ -130,19 +130,19 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3" >
-             <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
-                    <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
-                </div>
-                <div class="hint">
-                    @T["Ensure that the client/client library supports PKCE before enabling this option."]
-                </div>
+
+         <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
+                <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+            </div>
+            <div class="hint">
+                @T["Ensure that the client/client library supports PKCE before enabling this option."]
             </div>
         </div>
+        
         <div class="mb-3" asp-validation-class-for="ConsentType">
-            <label asp-for="ConsentType">@T["Consent type"]</label>
+            <label asp-for="ConsentType" class="form-label">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-select">
                 <option value="@OpenIddictConstants.ConsentTypes.Explicit">@T["Explicit consent"]</option>
                 <option value="@OpenIddictConstants.ConsentTypes.Implicit">@T["Implicit consent"]</option>
@@ -207,7 +207,6 @@
                     $("#AllowRefreshTokenFlowFieldSet").collapse("show");
                     $("#AllowLogoutEndpointFieldSet").collapse("show");
                 </text>
-
             }
             else
             {

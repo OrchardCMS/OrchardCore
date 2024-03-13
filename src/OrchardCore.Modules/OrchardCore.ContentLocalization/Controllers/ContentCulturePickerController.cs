@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
-using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -68,7 +67,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 if (localizationEntries.Any())
                 {
-                    var localization = localizationEntries.SingleOrDefault(e => String.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+                    var localization = localizationEntries.SingleOrDefault(e => string.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
                     if (localization != null)
                     {

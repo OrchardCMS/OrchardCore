@@ -16,22 +16,16 @@ namespace OrchardCore.Users.Services
 
         public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
+            ArgumentNullException.ThrowIfNull(claims);
 
             // Todo: In a future version the base implementation will generate the email claim if the user store is an 'IUserEmailStore',
             // so we will not have to add it here, and everywhere we are using the hardcoded "email" claim type, we will have to use the
             // new 'IdentityOptions.ClaimsIdentity.EmailClaimType' or at least its default value which is 'ClaimTypes.Email'.
 
             var email = await _userManager.GetEmailAsync(user);
-            if (!String.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email))
             {
                 claims.AddClaim(new Claim("email", email));
 

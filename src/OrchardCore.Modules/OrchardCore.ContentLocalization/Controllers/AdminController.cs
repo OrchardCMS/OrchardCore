@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
@@ -17,7 +18,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentManager contentManager,
@@ -34,10 +35,11 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpPost]
+        [Admin("ContentLocalization", "ContentLocalization.Localize")]
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             // Invariant culture name is empty so a null value is bound.
-            targetCulture = targetCulture ?? "";
+            targetCulture ??= string.Empty;
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -73,7 +75,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (alreadyLocalizedContent != null)
             {
                 await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
-                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId });
             }
 
             try

@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class LayoutTag
     {
-        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
 

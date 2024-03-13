@@ -21,7 +21,7 @@ public class RoleService : IRoleService
 
     public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
     {
-        if (String.IsNullOrEmpty(role))
+        if (string.IsNullOrEmpty(role))
         {
             throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
         }

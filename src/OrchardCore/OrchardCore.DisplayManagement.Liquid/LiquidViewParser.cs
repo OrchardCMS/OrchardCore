@@ -73,8 +73,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             public ParserBlockStatement(T value, List<Statement> statements, Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> render) : base(statements)
             {
+                ArgumentNullException.ThrowIfNull(render);
+
                 Value = value;
-                _render = render ?? throw new ArgumentNullException(nameof(render));
+                _render = render;
             }
 
             public T Value { get; }

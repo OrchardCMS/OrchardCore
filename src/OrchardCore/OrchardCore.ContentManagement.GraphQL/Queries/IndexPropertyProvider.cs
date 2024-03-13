@@ -7,8 +7,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public class IndexPropertyProvider<T> : IIndexPropertyProvider where T : MapIndex
     {
-        private static Dictionary<string, string> _indexProperties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private static string _indexName;
+        private static readonly Dictionary<string, string> _indexProperties = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly string _indexName;
 
         static IndexPropertyProvider()
         {

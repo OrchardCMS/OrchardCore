@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Liquid
 {
     public class ContentItemTag
     {
-        private static readonly FilterArgument _typeArgument = new FilterArgument("type", new LiteralExpression(StringValue.Create("contentitem")));
+        private static readonly FilterArgument _typeArgument = new("type", new LiteralExpression(StringValue.Create("contentitem")));
 
         public static ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {

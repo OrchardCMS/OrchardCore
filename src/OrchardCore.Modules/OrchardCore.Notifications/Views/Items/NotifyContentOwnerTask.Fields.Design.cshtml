@@ -5,6 +5,6 @@
 @model ActivityViewModel<NotifyContentOwnerTask>
 
 <header>
-    <h4><i class="fa fa-envelope" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Notify user"])</h4>
+    <h4><i class="fa-solid fa-envelope" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Notify Content Owner"])</h4>
 </header>
 <em>&quot;@Model.Activity.Subject&quot;</em>

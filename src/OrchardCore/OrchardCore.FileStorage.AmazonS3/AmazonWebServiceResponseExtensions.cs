@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Amazon.Runtime;
 
 namespace OrchardCore.FileStorage.AmazonS3;

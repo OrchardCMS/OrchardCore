@@ -61,13 +61,13 @@ namespace OrchardCore.Localization.PortableObject
                 index += "Areas.".Length;
             }
 
-            var relativeName = baseName.Substring(index);
+            var relativeName = baseName[index..];
 
             return new PortableObjectStringLocalizer(relativeName, _localizationManager, _fallBackToParentCulture, _logger);
         }
 
-        // The context within inner class
-        private string TryFixInnerClassPath(string context)
+        // The context within inner class.
+        private static string TryFixInnerClassPath(string context)
         {
             const char innerClassSeparator = '+';
             var path = context;

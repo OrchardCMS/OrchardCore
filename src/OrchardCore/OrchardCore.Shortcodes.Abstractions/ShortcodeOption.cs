@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Shortcodes
 {
     public class ShortcodeOption
@@ -18,7 +16,7 @@ namespace OrchardCore.Shortcodes
         {
             get
             {
-                if (String.IsNullOrEmpty(_defaultValue))
+                if (string.IsNullOrEmpty(_defaultValue))
                 {
                     return '[' + Name + ']';
                 }
