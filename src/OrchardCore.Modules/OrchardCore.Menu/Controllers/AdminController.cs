@@ -281,7 +281,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             var menuItems = menuContentAsJson[nameof(MenuItemsListPart)]?[nameof(MenuItemsListPart.MenuItems)] as JsonArray;
-            menuItems.Remove(menuItem);
+            menuItems?.Remove(menuItem);
 
             await _contentManager.SaveDraftAsync(menu);
 
