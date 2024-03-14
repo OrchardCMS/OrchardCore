@@ -160,6 +160,8 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
+***
+
 #### <span style="color:blue">GET /api/queries/{name} </span>
 ##### Parameters
 
@@ -177,18 +179,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
-#### <span style="color:red">DELETE /api/content/{contentItemId}</span>
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path |  | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Success |
+***
 
 #### <span style="color:green">POST /api/content </span>
 ##### Parameters
@@ -223,6 +214,8 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
+***
+
 #### <span style="color:green">POST /api/queries/{name} </span>
 ##### Parameters
 
@@ -233,6 +226,21 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ---------- | ----------- | -------- | ---- |
 | name | path |  | Yes | string |
 | parameters | query |  | No | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### <span style="color:red">DELETE /api/content/{contentItemId}</span>
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path |  | Yes | string |
 
 ##### Responses
 
