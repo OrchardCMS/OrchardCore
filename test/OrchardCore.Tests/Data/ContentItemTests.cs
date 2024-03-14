@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Data
@@ -100,6 +101,27 @@ namespace OrchardCore.Tests.Data
             var json = JConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
+        }
+
+        [Fact]
+        public void ContentShouldCanCallRemoveMethod()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            Assert.Equal("test", contentItem.As<MyPart>().Text);
+            Assert.True(contentItem.Content.Remove("MyPart"));
+        }
+
+        [Fact]
+        public void ContentShouldCanCallSelectNodeMethod()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            Assert.Equal("test", contentItem.As<MyPart>().Text);
+            var node = (JsonNode)contentItem.Content.SelectNode("MyPart");
+            Assert.NotNull(node);
         }
     }
 
