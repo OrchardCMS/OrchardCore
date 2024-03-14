@@ -43,10 +43,22 @@ namespace OrchardCore.ResourceManagement
             AppendVersion = options.AppendVersion;
         }
 
-        public bool HasAttributes
+        public RequireSettings(ResourceManagementOptions options, ResourceDefinition resource)
+            : this(options)
         {
-            get { return _attributes != null && _attributes.Any(a => a.Value != null); }
+            Name = resource.Name;
+            Type = resource.Type;
+            BasePath = resource.BasePath;
+            Version = resource.Version;
+            Position = resource.Position;
+
+            if (resource.Attributes != null)
+            {
+                _attributes = new Dictionary<string, string>(resource.Attributes);
+            }
         }
+
+        public bool HasAttributes => _attributes != null && _attributes.Any(a => a.Value != null);
 
         /// <summary>
         /// The resource will be displayed in the head of the page.
@@ -194,7 +206,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, string> MergeAttributes(RequireSettings other)
         {
             // efficiently merge the two dictionaries, taking into account that one or both may not exist
-            // and that attributes in 'other' should overridde attributes in this, even if the value is null.
+            // and that attributes in 'other' should override attributes in this, even if the value is null.
             if (_attributes == null)
             {
                 return other._attributes == null ? null : new Dictionary<string, string>(other._attributes);
@@ -246,18 +258,17 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings NewAndCombine(RequireSettings other)
-        {
-            return new RequireSettings
+        public RequireSettings New() =>
+            new()
             {
                 Name = Name,
                 Type = Type,
                 Location = Location,
                 Position = Position
-            }
-                .Combine(other)
-                ;
-        }
+            };
+
+        public RequireSettings NewAndCombine(RequireSettings other) =>
+            New().Combine(other);
 
         public RequireSettings Combine(RequireSettings other)
         {
