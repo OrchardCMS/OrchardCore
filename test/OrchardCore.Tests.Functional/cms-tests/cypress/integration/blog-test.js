@@ -19,6 +19,6 @@ describe('Blog Tests', function () {
     it('Blog admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
-        cy.get('.ta-content').should('contain.text', 'Welcome to Orchard');
+        cy.get('.menu-admin').should('have.id', 'adminMenu')
     })
 });

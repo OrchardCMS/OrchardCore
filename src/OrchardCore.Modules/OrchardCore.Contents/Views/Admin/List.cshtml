@@ -1,5 +1,5 @@
 @model ListContentsViewModel
-@using OrchardCore.Contents.ViewModels;
+@using OrchardCore.Contents.ViewModels
 
 @{
     var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;

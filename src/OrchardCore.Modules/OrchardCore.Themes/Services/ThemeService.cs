@@ -16,7 +16,7 @@ namespace OrchardCore.Themes.Services
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,
@@ -50,7 +50,7 @@ namespace OrchardCore.Themes.Services
                     : null;
             }
 
-            var currentTheme = await _siteThemeService.GetCurrentThemeNameAsync();
+            var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
 
             while (themes.Count > 0)
             {
@@ -73,11 +73,11 @@ namespace OrchardCore.Themes.Services
                     throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
                 themes.Push(themeName);
 
+                // TODO: MWP: probably follow on issue: should this be recursive? maybe with a depth limit? i.e. base3->base2->base1 ...
                 var extensionInfo = _extensionManager.GetExtension(themeName);
                 var theme = new ThemeExtensionInfo(extensionInfo);
-                themeName = !string.IsNullOrWhiteSpace(theme.BaseTheme)
-                    ? theme.BaseTheme
-                    : null;
+                // Along similar lines as with ModuleAttribute, internal safety checks handled within the attribute itself
+                themeName = theme.BaseTheme;
             }
 
             while (themes.Count > 0)

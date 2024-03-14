@@ -2,7 +2,7 @@ namespace OrchardCore.Data
 {
     /// <summary>
     /// Sqlite-specific configuration for the Orchard Core database. 
-    /// See <see href="https://docs.orchardcore.net/en/latest/docs/reference/core/Data/#sqlite" />
+    /// See <see href="https://docs.orchardcore.net/en/latest/docs/reference/core/Data/#sqlite" />.
     /// </summary>
     public class SqliteOptions
     {
@@ -12,8 +12,8 @@ namespace OrchardCore.Data
         /// If the lock is preventing tasks like backups, this functionality can be disabled.</para>
         /// 
         /// <para>There may be a performance penalty associated with disabling connection pooling.</para>
-        /// <see href="https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling" />
+        /// <see href="https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling" />.
         /// </summary>
-        public bool UseConnectionPooling { get; set; }
+        public bool UseConnectionPooling { get; set; } = true;
     }
 }

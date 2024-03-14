@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +36,7 @@ namespace OrchardCore.Admin.Drivers
 
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
             {
-                model.DisplayDarkMode = settings.DisplayDarkMode;
+                model.DisplayThemeToggler = settings.DisplayThemeToggler;
                 model.DisplayMenuFilter = settings.DisplayMenuFilter;
                 model.DisplayNewMenu = settings.DisplayNewMenu;
                 model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
@@ -51,13 +52,13 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new AdminSettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.DisplayDarkMode = model.DisplayDarkMode;
+                settings.DisplayThemeToggler = model.DisplayThemeToggler;
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
                 settings.DisplayNewMenu = model.DisplayNewMenu;
                 settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;

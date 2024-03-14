@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -47,6 +47,8 @@ namespace OrchardCore.OpenId.Deployment
                 EnableLogoutEndpoint = !string.IsNullOrWhiteSpace(settings.LogoutEndpointPath),
                 EnableTokenEndpoint = !string.IsNullOrWhiteSpace(settings.TokenEndpointPath),
                 EnableUserInfoEndpoint = !string.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
+                EnableIntrospectionEndpoint = !string.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
+                EnableRevocationEndpoint = !string.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
 
                 AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow,
@@ -58,14 +60,15 @@ namespace OrchardCore.OpenId.Deployment
                 DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption,
                 DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens,
                 UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
+                RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
             };
 
             // Use nameof(OpenIdServerSettings) as name,
             // to match the recipe step.
-            var obj = new JObject(
-                new JProperty(
-                    "name",
-                    nameof(OpenIdServerSettings)));
+            var obj = new JsonObject
+            {
+                ["name"] = nameof(OpenIdServerSettings),
+            };
 
             obj.Merge(JObject.FromObject(settingsModel));
 

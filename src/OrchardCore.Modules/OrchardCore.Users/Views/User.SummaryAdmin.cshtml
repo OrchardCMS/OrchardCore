@@ -1,25 +1,34 @@
-<div class="properties">
+<div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex flex-column">
+        <div>
+            @if (Model.Header != null)
+            {
+                <div class="header">@await DisplayAsync(Model.Header)</div>
+            }
+
+            @if (Model.Meta != null)
+            {
+                <div class="metadata">
+                    @await DisplayAsync(Model.Meta)
+                </div>
+            }
+
+            @if (Model.Content != null)
+            {
+                <div class="primary">@await DisplayAsync(Model.Content)</div>
+            }
+        </div>
+
+        @if (Model.Description != null)
+        {
+            <div>@await DisplayAsync(Model.Description)</div>
+        }
+    </div>
+
     @if (Model.Actions != null)
     {
-        <div class="related float-right">
+        <div>
             @await DisplayAsync(Model.Actions)
         </div>
     }
-
-    @if (Model.Header != null)
-    {
-        <div class="header">@await DisplayAsync(Model.Header)</div>
-    }
-
-    @if (Model.Meta != null)
-    {
-        <div class="metadata">
-            @await DisplayAsync(Model.Meta)
-        </div>
-    }
 </div>
-
-@if (Model.Content != null)
-{
-    <div class="primary">@await DisplayAsync(Model.Content)</div>
-}

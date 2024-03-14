@@ -19,8 +19,50 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 ```json
 {
     "OrchardCore_Data_Sqlite": {
-        "PoolConnections": false
+        "UseConnectionPooling": false
     }
+}
+```
+
+## Configuring YesSql
+
+OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
+
+| Setting | Description |
+| --- | --- |
+| `CommandsPageSize` | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
+| `QueryGatingEnabled` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
+| `IdGenerator` | You can provide your own implementation for generating ids. |
+| `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
+| `VersionAccessorFactory` | You can provide your own version accessor factory. |
+| `ContentSerializer` | You can provide your own content serializer. |
+
+For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
+
+```C#
+services.Configure<YesSqlOptions>(options =>
+{
+    options.CommandsPageSize = 1000;
+});
+```
+
+## Database table
+
+The following database table settings, only used as presets before a given tenant is setup, can be provided from any configuration source.
+
+| Setting | Description |
+| --- | --- |
+| `DefaultDocumentTable` | Document table name, defaults to 'Document'. |
+| `DefaultTableNameSeparator` | Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'. |
+| `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'. |
+
+##### `appsettings.json`
+
+```json
+  "OrchardCore_Data_TableOptions": {
+    "DefaultDocumentTable": "Document",
+    "DefaultTableNameSeparator": "_",
+    "DefaultIdentityColumnSize": "Int64"
 }
 ```
 
@@ -37,7 +79,7 @@ This service provides methods to build SQL queries that can will be use the synt
 
 ### Handling prefixed tables
 
-Each tenant in an Orchard Core application can have a table prefix. When building custom queries it 
+Each tenant in an Orchard Core application can have a table prefix. When building custom queries it
 is necessary to take it into account. It is available by resolving `ShellSettings` and accessing the `TablePrefix` setting.
 It is available from the `OrchardCore.Environment.Shell` namespace in the `OrchardCore.Abstractions` package.
 
@@ -63,24 +105,63 @@ public class AdminController : Controller
         _tablePrefix = settings["TablePrefix"];
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Query()
     {
-       using (var connection = _dbAccessor.CreateConnection())
+       await using (var connection = _dbAccessor.CreateConnection())
        {
-           using(var transaction = connection.BeginTransaction())
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            var model = await connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable};");
+
+            return View(model);
+        }
+    }
+
+    public async Task<ActionResult> DeleteUsingTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+           using (var transaction = await connection.BeginTransactionAsync())
            {
-                var dialect = _store.Configuration.SqlDialect;
-                var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+               try 
+               {
+                    var dialect = _store.Configuration.SqlDialect;
+                    var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+                    var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
 
-                var selectCommand = $"SELECT * FROM {customTable}";
+                    var command1 = $"DELETE FROM {customTable1};";
+                    var command2 = $"DELETE FROM {customTable2};";
 
-                var model = connection.QueryAsync<CustomTable>(selectCommand);
+                    await connection.ExecuteAsync(command1);
+                    await connection.ExecuteAsync(command2);
+                    
+                    await transaction.CommitAsync();
+                } 
+                catch 
+                {
+                    // If an exception occurs the transaction is rollbacked
+                    await transaction.RollbackAsync();
+                }
 
-                // If an exception occurs the transaction is disposed and rollbacked
-                transaction.Commit();
-
-                return View(model);
+                return Content("Done!");
             }
+        }
+    }
+
+    public async Task<ActionResult> DeleteNoTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+            var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
+
+            var command = $"DELETE FROM {customTable1}; DELETE FROM {customTable2};";
+
+            await connection.ExecuteAsync(command);
+
+            return Content("Done!");
         }
     }
 }

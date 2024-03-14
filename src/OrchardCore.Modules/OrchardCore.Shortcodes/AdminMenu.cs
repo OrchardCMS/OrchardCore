@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -7,7 +6,7 @@ namespace OrchardCore.Shortcodes
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,7 +15,7 @@ namespace OrchardCore.Shortcodes
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -24,7 +23,7 @@ namespace OrchardCore.Shortcodes
             builder
                 .Add(S["Design"], design => design
                     .Add(S["Shortcodes"], S["Shortcodes"].PrefixPosition(), import => import
-                        .Action("Index", "Admin", new { area = "OrchardCore.Shortcodes" })
+                        .Action("Index", "Admin", "OrchardCore.Shortcodes")
                         .Permission(Permissions.ManageShortcodeTemplates)
                         .LocalNav()
                     )

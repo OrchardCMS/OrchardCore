@@ -12,7 +12,7 @@ namespace OrchardCore.Contents.Settings
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,
@@ -47,7 +47,10 @@ namespace OrchardCore.Contents.Settings
 
             if (!string.IsNullOrEmpty(model.FullTextTemplate) && !_templateManager.Validate(model.FullTextTemplate, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.FullTextTemplate), S["Full-text doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(
+                    nameof(model.FullTextTemplate),
+                    S["Full-text doesn't contain a valid Liquid expression. Details: {0}",
+                    string.Join(' ', errors)]);
             }
             else
             {

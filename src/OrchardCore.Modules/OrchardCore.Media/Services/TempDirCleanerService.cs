@@ -2,12 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services
 {
-    public class TempDirCleanerService : IModularTenantEvents
+    public class TempDirCleanerService : ModularTenantEvents
     {
         private readonly IMediaFileStore _fileStore;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
@@ -25,9 +24,9 @@ namespace OrchardCore.Media.Services
             _logger = logger;
         }
 
-        public async Task ActivatedAsync()
+        public override async Task ActivatedAsync()
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 try
                 {
@@ -55,21 +54,6 @@ namespace OrchardCore.Media.Services
                     _logger.LogError(e, "An error occurred while cleaning temporary media folder.");
                 }
             }
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

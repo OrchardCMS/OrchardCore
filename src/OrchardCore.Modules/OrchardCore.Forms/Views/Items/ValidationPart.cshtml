@@ -3,7 +3,7 @@
 @{
     // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = string.Empty;
 
     @Html.ValidationMessage(Model.Value.For)
 

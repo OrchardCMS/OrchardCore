@@ -31,8 +31,9 @@ jQuery.fn.extend({
   }
 });
 var shortcodeWrapperTemplate = "\n<div class=\"shortcode-modal-wrapper\"></div>\n";
-var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n    <span class=\"icon-shortcode\"></span>\n</button>\n"; // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
+var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n    <span class=\"icon-shortcode\"></span>\n</button>\n";
 
+// Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
 $(function () {
   $('.shortcode-modal-input').each(function () {
     $(this).wrap(shortcodeWrapperTemplate);
@@ -46,7 +47,6 @@ $(function () {
   });
 });
 var shortcodesApp;
-
 function initializeShortcodesApp(element) {
   if (element && !shortcodesApp) {
     var elementId = element.id;
@@ -60,14 +60,14 @@ function initializeShortcodesApp(element) {
           allShortcodes: shortcodes,
           filteredShortcodes: shortcodes,
           categories: categories,
-          defaultValue: ''
+          defaultValue: '',
+          modal: null
         };
       },
       watch: {
         filter: function filter(_filter) {
           if (_filter) {
             var lower = _filter.toLowerCase();
-
             this.filteredShortcodes = this.allShortcodes.filter(function (s) {
               return s.name.startsWith(lower);
             });
@@ -81,9 +81,9 @@ function initializeShortcodesApp(element) {
           if (onClose) {
             this.onClose = onClose;
           }
-
           this.selectedValue = '';
-          $(this.$el).modal('show');
+          this.modal = new bootstrap.Modal(this.$el);
+          this.modal.show();
           var self = this;
           $(this.$el).on('shown.bs.modal', function (e) {
             self.$refs.filter.focus();
@@ -102,7 +102,6 @@ function initializeShortcodesApp(element) {
           } else {
             this.filteredShortcodes = this.allShortcodes;
           }
-
           this.filter = '';
         },
         isVisible: function isVisible(name) {
@@ -112,16 +111,16 @@ function initializeShortcodesApp(element) {
         },
         insertShortcode: function insertShortcode(event) {
           this.defaultValue = event.target.dataset.defaultValue;
-          $(this.$el).modal('hide');
+          this.modal.hide();
           this.onClose(this.defaultValue);
         }
       }
     });
     return shortcodesApp;
   }
-} // initializes a code mirror editor with a shortcode modal.
+}
 
-
+// initializes a code mirror editor with a shortcode modal.
 function initializeCodeMirrorShortcodeWrapper(editor) {
   var codemirrorWrapper = editor.display.wrapper;
   $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);

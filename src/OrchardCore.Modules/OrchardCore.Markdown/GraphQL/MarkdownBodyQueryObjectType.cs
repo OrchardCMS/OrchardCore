@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -28,25 +29,24 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML representation of the markdown content"])
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
+        private static async ValueTask<object> ToHtml(IResolveFieldContext<MarkdownBodyPart> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {
                 return ctx.Source.Markdown;
             }
 
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
@@ -54,7 +54,7 @@ namespace OrchardCore.Markdown.GraphQL
             // so filters must be run after the markdown has been processed.
             var html = markdownService.ToHtml(ctx.Source.Markdown);
 
-            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();

@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Environment.Shell.Descriptor.Models
 {

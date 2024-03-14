@@ -17,7 +17,6 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
       }
     });
   }
-
   if (usageElement) {
     var editor = CodeMirror.fromTextArea(usageElement, {
       autoCloseTags: true,
@@ -30,7 +29,6 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
         name: "htmlmixed"
       }
     });
-
     if (previewElement) {
       editor.on('change', function (e) {
         $(previewElement).show();
@@ -38,21 +36,18 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
       });
     }
   }
-
   if (nameElement && previewElement) {
     $(nameElement).on('keyup paste', function () {
       $(previewElement).show();
       $(previewElement).find('.shortcode-name').html($(this).val());
     });
   }
-
   if (hintElement && previewElement) {
     $(hintElement).on('keyup paste', function () {
       $(previewElement).show();
       $(previewElement).find('.shortcode-hint').html($(this).val());
     });
   }
-
   if (categoriesElement) {
     var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect["default"]);
     var vm = new Vue({

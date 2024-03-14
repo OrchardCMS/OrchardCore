@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -10,28 +9,28 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities
 {
-    public class EmailTask : TaskActivity
+    public class EmailTask : TaskActivity<EmailTask>
     {
-        private readonly ISmtpService _smtpService;
+        private readonly IEmailService _emailService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
-            ISmtpService smtpService,
+            IEmailService emailService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer,
             HtmlEncoder htmlEncoder
         )
         {
-            _smtpService = smtpService;
+            _emailService = emailService;
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
 
-        public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
+
         public override LocalizedString Category => S["Messaging"];
 
         public WorkflowExpression<string> Author
@@ -83,19 +82,7 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> BodyText
-        {
-            get => GetProperty(() => new WorkflowExpression<string>());
-            set => SetProperty(value);
-        }
-
-        public bool IsBodyHtml
-        {
-            get => GetProperty(() => true);
-            set => SetProperty(value);
-        }
-
-        public bool IsBodyText
+        public bool IsHtmlBody
         {
             get => GetProperty(() => true);
             set => SetProperty(value);
@@ -115,8 +102,7 @@ namespace OrchardCore.Email.Workflows.Activities
             var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
             var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder);
-            var bodyText = await _expressionEvaluator.EvaluateAsync(BodyText, workflowContext, null);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, IsHtmlBody ? _htmlEncoder : null);
 
             var message = new MailMessage
             {
@@ -127,19 +113,17 @@ namespace OrchardCore.Email.Workflows.Activities
                 Bcc = bcc?.Trim(),
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
-                Subject = subject.Trim(),
+                Subject = subject?.Trim(),
                 Body = body?.Trim(),
-                BodyText = bodyText?.Trim(),
-                IsBodyHtml = IsBodyHtml,
-                IsBodyText = IsBodyText
+                IsHtmlBody = IsHtmlBody
             };
 
-            if (!String.IsNullOrWhiteSpace(sender))
+            if (!string.IsNullOrWhiteSpace(sender))
             {
                 message.Sender = sender.Trim();
             }
 
-            var result = await _smtpService.SendAsync(message);
+            var result = await _emailService.SendAsync(message);
             workflowContext.LastResult = result;
 
             if (!result.Succeeded)

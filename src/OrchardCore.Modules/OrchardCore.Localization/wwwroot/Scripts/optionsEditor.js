@@ -23,15 +23,12 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
           var selectedCulture = this.allCultures.filter(function (ele) {
             return ele.Name == culture;
           });
-
           if (selectedCulture.length > 0) {
             selectedCulture[0].Supported = true;
           }
-
           var allUnsupportedCultures = this.allCultures.filter(function (ele) {
             return ele.Supported == false;
           });
-
           if (allUnsupportedCultures.length > 0) {
             this.selectedCulture = allUnsupportedCultures[0].Name;
           }
@@ -42,16 +39,13 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
         cultureRemoved = this.list.filter(function (ele) {
           return ele.Name == selectedCulture;
         });
-
         if (cultureRemoved.length > 0) {
           cultureRemoved[0].Supported = false;
         }
-
         this.data.splice(index, 1);
         var allUnsupportedCultures = this.allCultures.filter(function (ele) {
           return ele.Supported == false;
         });
-
         if (allUnsupportedCultures.length > 0) {
           this.selectedCulture = allUnsupportedCultures[0].Name;
         }
@@ -61,11 +55,9 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
       },
       getDefaultCulture: function getDefaultCulture() {
         var result = defaultValue;
-
         if (this.defaultCulture != null) {
           result = this.defaultCulture;
         }
-
         return result;
       },
       getAllCultures: function getAllCultures() {

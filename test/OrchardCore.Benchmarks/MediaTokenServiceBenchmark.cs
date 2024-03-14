@@ -33,7 +33,7 @@ namespace OrchardCore.Benchmark
                 new ResizeWebProcessor(),
                 new FormatWebProcessor(Options.Create(new ImageSharpMiddlewareOptions())),
                 new BackgroundColorWebProcessor(),
-                new JpegQualityWebProcessor(),
+                new QualityWebProcessor(),
                 new ImageVersionProcessor(),
                 new TokenCommandProcessor()
             };
@@ -43,6 +43,7 @@ namespace OrchardCore.Benchmark
         }
 
         [Benchmark]
+#pragma warning disable CA1822 // Mark members as static
         public string AddTokenToPath()
         {
             return _mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=600&height=480&rmode=stretch");
@@ -65,9 +66,10 @@ namespace OrchardCore.Benchmark
         {
             return _mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 
-    public class NullCache : IMemoryCache
+    public sealed class NullCache : IMemoryCache
     {
         public ICacheEntry CreateEntry(object key)
         {

@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Steps
 {
@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment.Steps
     {
         public Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            if (!(deploymentStep is JsonRecipeDeploymentStep jsonRecipeStep))
+            if (deploymentStep is not JsonRecipeDeploymentStep jsonRecipeStep)
             {
                 return Task.CompletedTask;
             }

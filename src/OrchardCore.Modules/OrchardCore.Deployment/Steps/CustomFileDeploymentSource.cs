@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Steps
@@ -7,9 +7,7 @@ namespace OrchardCore.Deployment.Steps
     {
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var customFile = step as CustomFileDeploymentStep;
-
-            if (customFile == null)
+            if (step is not CustomFileDeploymentStep customFile)
             {
                 return Task.CompletedTask;
             }

@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Workflows.Abstractions.Converters
 {
@@ -8,24 +10,14 @@ namespace OrchardCore.Workflows.Abstractions.Converters
     /// <summary>
     /// Serializes the <see cref="LocalizedString"/> to a simple string using the translated text.
     /// </summary>
-    public class LocalizedStringConverter : JsonConverter
+    public class LocalizedStringConverter : JsonConverter<LocalizedString>
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(LocalizedString);
-        }
-
-        public override bool CanRead => false;
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override LocalizedString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var localizedString = (LocalizedString)value;
-            writer.WriteValue(localizedString.Value);
-        }
+        public override void Write(Utf8JsonWriter writer, LocalizedString value, JsonSerializerOptions options)
+            => JsonValue.Create(value.Value).WriteTo(writer, options);
     }
 }

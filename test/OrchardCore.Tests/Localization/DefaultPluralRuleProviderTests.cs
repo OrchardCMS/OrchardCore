@@ -1,6 +1,4 @@
-using System.Globalization;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -19,7 +17,7 @@ namespace OrchardCore.Tests.Localization
             var expectedCulture = CultureInfo.GetCultureInfo(expected);
             var testCulture = CultureInfo.GetCultureInfo(culture);
 
-            IPluralRuleProvider pluralProvider = new DefaultPluralRuleProvider();
+            var pluralProvider = new DefaultPluralRuleProvider();
             pluralProvider.TryGetRule(expectedCulture, out var expectedPlural);
             pluralProvider.TryGetRule(testCulture, out var testPlural);
 
