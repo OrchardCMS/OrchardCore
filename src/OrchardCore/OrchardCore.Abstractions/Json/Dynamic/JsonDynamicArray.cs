@@ -41,6 +41,10 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
         }
     }
 
+    public bool Remove(JsonNode? item) => _jsonArray.Remove(item);
+
+    public void RemoveAt(int index) => _jsonArray.RemoveAt(index);
+
     public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)
     {
         var value = GetValue((int)indexes[0]);
