@@ -159,6 +159,7 @@ The following JavaScript functions are available by default to any activity that
 | `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
+| `setCorrelationId` | Set the correlation value of the workflow instance. | `setCorrelationId(id:string): void` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
 
 #### JavaScript Functions in HTTP activities
