@@ -131,7 +131,7 @@ Well known properties include
 
 ## Contents Module API Controller
 
-The `OrchardCore.Contents` module provides an `ApiController.cs` ([source file](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs)) featuring endpoints to manage _content items_ created in the Orchard Core "Admin" backoffice. These endpoints allow for operations such as retrieving, creating, updating, and deleting content items instances. Access to these endpoints requires authentication and appropriate user role permissions.
+The `OrchardCore.Contents` module provides an `ApiController.cs` (here the ApiController [source file](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs)) featuring endpoints to manage _content items_ created in the Orchard Core "Admin" backoffice. These endpoints allow for operations such as retrieving, creating, updating, and deleting content items instances. Access to these endpoints requires authentication and appropriate user role permissions.
 
 ### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
 
