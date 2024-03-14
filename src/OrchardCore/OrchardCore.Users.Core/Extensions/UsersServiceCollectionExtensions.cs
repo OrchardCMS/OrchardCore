@@ -63,11 +63,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
             });
 
-            services.Configure<ContentSerializerJsonOptions>(options =>
-            {
-                options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
-            });
-
             return services;
         }
     }
