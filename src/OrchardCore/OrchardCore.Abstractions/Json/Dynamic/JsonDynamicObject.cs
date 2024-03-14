@@ -80,14 +80,9 @@ public class JsonDynamicObject : DynamicObject
         return true;
     }
 
-    public bool Remove(string key)
-    {
-        return _jsonObject.Remove(key);
-    }
-    public JsonNode? SelectNode(string? path)
-    {
-        return _jsonObject.SelectNode(path);
-    }
+    public bool Remove(string key) => _jsonObject.Remove(key);
+
+    public JsonNode? SelectNode(string? path) => _jsonObject.SelectNode(path);
 
     [Obsolete("Please use the SelectNode method", error: true)]
     public JsonNode? SelectToken(string? path)
