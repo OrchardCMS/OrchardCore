@@ -147,7 +147,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ### Contents API Controller Endpoints
 
-#### GET /api/content/{contentItemId}
+#### <span style="color:blue">GET /api/content/{contentItemId} </span>
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
@@ -160,7 +160,24 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
-#### DELETE
+#### <span style="color:blue">GET /api/queries/{name} </span>
+##### Parameters
+
+!!! note
+    This endpoint can only be used when the GraphQL feature is active
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| name | path |  | Yes | string |
+| parameters | query |  | No | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+#### <span style="color:red">DELETE /api/content/{contentItemId}</span>
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
@@ -173,7 +190,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
-#### POST /api/content
+#### <span style="color:green">POST /api/content </span>
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
@@ -206,22 +223,11 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | ---- | ----------- |
 | 200 | Success |
 
-#### POST /api/queries/{name}
+#### <span style="color:green">POST /api/queries/{name} </span>
 ##### Parameters
 
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| name | path |  | Yes | string |
-| parameters | query |  | No | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Success |
-
-#### GET
-##### Parameters
+!!! note
+    This endpoint can only be used when the GraphQL feature is active
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
