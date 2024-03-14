@@ -40,7 +40,7 @@
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.2" />
     <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="8.3.0" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.17.1" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.17.2" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.4.0" />
