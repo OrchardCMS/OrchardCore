@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     {
         private string _name;
         private string _displayName;
-        private readonly IList<ContentTypePartDefinition> _parts;
+        private readonly List<ContentTypePartDefinition> _parts;
         private readonly JsonObject _settings;
 
         public ContentTypeDefinition Current { get; }
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _parts = new List<ContentTypePartDefinition>();
+                _parts = [];
                 _settings = [];
             }
             else
@@ -160,6 +160,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
             => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
+            => WithPart(typeof(TPart).Name, configuration);
 
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
             => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);

@@ -11,7 +11,8 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using YesSql;
+using OrchardCore.Extensions;
+using OrchardCore.Json;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
@@ -37,8 +38,23 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _prefix = "tp";
             _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
-            _store.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
-            _prefixedStore.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
+            var derivedOptions = new Mock<IOptions<JsonDerivedTypesOptions>>();
+            derivedOptions.Setup(x => x.Value)
+                .Returns(new JsonDerivedTypesOptions());
+
+            var configuration = new ContentSerializerJsonOptionsConfiguration(derivedOptions.Object);
+
+            var jsonOptions = new ContentSerializerJsonOptions();
+            configuration.Configure(jsonOptions);
+
+            var jsonSerializerOptions = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            jsonSerializerOptions.Setup(x => x.Value)
+                .Returns(jsonOptions);
+
+            var contentSerializer = new DefaultJsonContentSerializer(jsonSerializerOptions.Object);
+
+            _store.Configuration.ContentSerializer = contentSerializer;
+            _prefixedStore.Configuration.ContentSerializer = contentSerializer;
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -139,8 +155,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
+                            .ResolveAsync(context) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -174,8 +192,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -207,9 +226,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
-            var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal",
+                new Schema(services),
+                Options.Create(new GraphQLContentOptions()),
+                Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse($"{{\"{fieldName}\" : {{ \"name\": \"doug\" }} }}"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -240,14 +263,15 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"cats\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
-            var cats = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var cats = await ResolveContentItems(type, context);
 
             Assert.Single(cats);
             Assert.Equal("doug", cats.First().As<Animal>().Name);
 
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"dogs\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<Animal>().Name);
@@ -290,8 +314,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animals\": { \"name\": \"doug\", \"isScary\": true } }"), ArgumentSource.Variable);
-            var animals = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var animals = await ResolveContentItems(type, context);
 
             Assert.Single(animals);
             Assert.Equal("doug", animals.First().As<Animal>().Name);
@@ -324,8 +349,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animal\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -356,14 +382,18 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"name\": \"doug\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
 
-
+        private static async Task<IEnumerable<ContentItem>> ResolveContentItems(ContentItemsFieldType type, ResolveFieldContext context)
+        {
+            return (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
+        }
         private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
         {
             IGraphType where;

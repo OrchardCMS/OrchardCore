@@ -32,8 +32,8 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(searchText);
 
         var client = GetSearchClient(indexName);
 

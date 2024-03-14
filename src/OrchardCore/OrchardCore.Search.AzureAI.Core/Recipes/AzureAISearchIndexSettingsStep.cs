@@ -1,6 +1,6 @@
 using System;
-using System.Text.Json.Nodes;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,19 +13,26 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexSettingsStep(
-    AzureAISearchIndexManager indexManager,
-    AzureAIIndexDocumentManager azureAIIndexDocumentManager,
-    AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
-    ILogger<AzureAISearchIndexSettingsStep> logger
-        ) : IRecipeStepHandler
+public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
-    private readonly AzureAISearchIndexManager _indexManager = indexManager;
-    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
-    private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
-    private readonly ILogger _logger = logger;
+    private readonly AzureAISearchIndexManager _indexManager;
+    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
+    private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
+    private readonly ILogger _logger;
+
+    public AzureAISearchIndexSettingsStep(
+        AzureAISearchIndexManager indexManager,
+        AzureAIIndexDocumentManager azureAIIndexDocumentManager,
+        AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
+        ILogger<AzureAISearchIndexSettingsStep> logger)
+    {
+        _indexManager = indexManager;
+        _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
+        _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
+        _logger = logger;
+    }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {

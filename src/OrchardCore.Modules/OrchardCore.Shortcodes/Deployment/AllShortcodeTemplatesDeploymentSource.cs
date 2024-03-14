@@ -16,9 +16,7 @@ namespace OrchardCore.Shortcodes.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allTemplatesStep = step as AllShortcodeTemplatesDeploymentStep;
-
-            if (allTemplatesStep == null)
+            if (step is not AllShortcodeTemplatesDeploymentStep)
             {
                 return;
             }

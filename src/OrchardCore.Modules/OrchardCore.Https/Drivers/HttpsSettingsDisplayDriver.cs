@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https.Drivers
@@ -41,11 +43,18 @@ namespace OrchardCore.Https.Drivers
 
         public override async Task<IDisplayResult> EditAsync(HttpsSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
             {
@@ -62,12 +71,13 @@ namespace OrchardCore.Https.Drivers
                                 (isHttpsRequest && !settings.RequireHttps
                                     ? _httpContextAccessor.HttpContext.Request.Host.Port
                                     : null);
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2")
+            .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var user = _httpContextAccessor.HttpContext?.User;
                 if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))

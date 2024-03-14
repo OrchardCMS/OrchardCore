@@ -18,7 +18,7 @@ using YesSql;
 namespace OrchardCore.Contents.AuditTrail.Controllers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    [Admin]
+    [Admin("AuditTrail/Content/{action}/{auditTrailEventId}", "{action}AuditTrailContent")]
     public class AuditTrailContentController : Controller
     {
         private readonly ISession _session;

@@ -29,7 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Workflows.Controllers
 {
-    [Admin]
+    [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
     public class WorkflowTypeController : Controller
     {
         private readonly PagerOptions _pagerOptions;
@@ -81,6 +81,7 @@ namespace OrchardCore.Workflows.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("Workflows/Types", "WorkflowTypes")]
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -120,7 +121,8 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            using var connection = await _session.CreateConnectionAsync();
+            // The existing session's connection is returned, don't dispose it
+            var connection = await _session.CreateConnectionAsync();
 
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
@@ -204,7 +206,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

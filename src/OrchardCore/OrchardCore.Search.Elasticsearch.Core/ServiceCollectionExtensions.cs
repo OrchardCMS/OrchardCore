@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
 
         // Allows to serialize 'ElasticQuery' from its base type.
         services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
-      
+
         return services;
     }
 }

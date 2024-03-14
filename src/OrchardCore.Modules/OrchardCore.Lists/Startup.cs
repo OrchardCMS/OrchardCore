@@ -3,10 +3,7 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -32,20 +29,11 @@ using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -72,18 +60,6 @@ namespace OrchardCore.Lists
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-
-            services.AddAdminNode<ListsAdminNode>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ListOrder",
-                areaName: "OrchardCore.Lists",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lists/Order/{containerId?}",
-                defaults: new { controller = "Order", action = "UpdateContentItemOrders" }
-            );
         }
     }
 
@@ -92,9 +68,7 @@ namespace OrchardCore.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ListsAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ListsAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
+            services.AddAdminNode<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
         }
     }
 

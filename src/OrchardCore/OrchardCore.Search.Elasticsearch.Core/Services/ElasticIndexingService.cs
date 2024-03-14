@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Settings;
+using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
@@ -32,6 +34,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ElasticConnectionOptions _elasticConnectionOptions;
         private readonly ISiteService _siteService;
+        private readonly IContentManager _contentManager;
+        private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+        private readonly IStore _store;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger _logger;
 
@@ -43,6 +48,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             IIndexingTaskManager indexingTaskManager,
             IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             ISiteService siteService,
+            IContentManager contentManager,
+            IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+            IStore store,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ElasticIndexingService> logger)
         {
@@ -53,193 +61,172 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _indexingTaskManager = indexingTaskManager;
             _elasticConnectionOptions = elasticConnectionOptions.Value;
             _siteService = siteService;
+            _contentManager = contentManager;
+            _contentItemIndexHandlers = contentItemIndexHandlers;
+            _store = store;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
         }
 
-        public async Task ProcessContentItemsAsync(string indexName = default)
+        public async Task ProcessContentItemsAsync(params string[] indexNames)
         {
             if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return;
             }
 
-            var allIndices = new Dictionary<string, long>();
-            var lastTaskId = long.MaxValue;
-            IEnumerable<ElasticIndexSettings> indexSettingsList = null;
+            var indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 
-            if (string.IsNullOrEmpty(indexName))
+            if (indexNames != null && indexNames.Length > 0)
             {
-                indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
-
-                if (!indexSettingsList.Any())
-                {
-                    return;
-                }
-
-                // Find the lowest task id to process.
-                foreach (var indexSetting in indexSettingsList)
-                {
-                    var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
-                    lastTaskId = Math.Min(lastTaskId, taskId);
-                    allIndices.Add(indexSetting.IndexName, taskId);
-                }
-            }
-            else
-            {
-                var settings = await _elasticIndexSettingsService.GetSettingsAsync(indexName);
-
-                if (settings == null)
-                {
-                    return;
-                }
-
-                indexSettingsList = new ElasticIndexSettings[1] { settings }.AsEnumerable();
-
-                var taskId = await _indexManager.GetLastTaskId(indexName);
-                lastTaskId = Math.Min(lastTaskId, taskId);
-                allIndices.Add(indexName, taskId);
+                indexSettingsList = indexSettingsList
+                    .Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
             }
 
-            if (allIndices.Count == 0)
+            if (!indexSettingsList.Any())
             {
                 return;
             }
 
-            var batch = Array.Empty<IndexingTask>();
+            var allIndices = new Dictionary<string, long>();
+            var lastTaskId = long.MaxValue;
 
-            do
+            // Find the lowest task id to process.
+            foreach (var indexSetting in indexSettingsList)
             {
-                // Create a scope for the content manager.
-                var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
+                var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
+                lastTaskId = Math.Min(lastTaskId, taskId);
+                allIndices.Add(indexSetting.IndexName, taskId);
+            }
 
-                await shellScope.UsingAsync(async scope =>
+            IEnumerable<IndexingTask> tasks = [];
+            var allContentTypes = indexSettingsList.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToArray();
+            var readOnlySession = _store.CreateSession(withTracking: false);
+
+            while (true)
+            {
+                // Load the next batch of tasks.
+                tasks = await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize);
+
+                if (!tasks.Any())
                 {
-                    // Load the next batch of tasks.
-                    batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
+                    break;
+                }
 
-                    if (batch.Length == 0)
+                var updatedContentItemIds = tasks
+                    .Where(x => x.Type == IndexingTaskTypes.Update)
+                    .Select(x => x.ContentItemId)
+                    .ToList();
+
+                Dictionary<string, ContentItem> allPublished = null;
+                Dictionary<string, ContentItem> allLatest = null;
+
+                var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName);
+
+                if (indexSettingsList.Any(x => !x.IndexLatest))
+                {
+                    var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                    allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
+                    .ToDictionary(k => k.ContentItemId);
+                }
+
+                if (indexSettingsList.Any(x => x.IndexLatest))
+                {
+                    var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                    allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
+                }
+
+                // Group all DocumentIndex by index to batch update them.
+                var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
+
+                foreach (var index in allIndices)
+                {
+                    updatedDocumentsByIndex[index.Key] = [];
+                }
+
+                var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
+
+                foreach (var task in tasks)
+                {
+                    if (task.Type != IndexingTaskTypes.Update)
                     {
-                        return;
+                        continue;
                     }
 
-                    var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                    var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+                    BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
 
-                    // Pre-load all content items to prevent SELECT N+1.
-                    var updatedContentItemIds = batch
-                        .Where(x => x.Type == IndexingTaskTypes.Update)
-                        .Select(x => x.ContentItemId)
-                        .ToArray();
+                    if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
+                    {
+                        publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticContentIndexSettings());
+                        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
+                    }
 
-                    var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
-                    var allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
-                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Latest);
-                    var allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId);
+                    if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
+                    {
+                        latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticContentIndexSettings());
+                        await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
+                    }
 
-                    // Group all DocumentIndex by index to batch update them.
-                    var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
+                    if (publishedIndexContext == null && latestIndexContext == null)
+                    {
+                        continue;
+                    }
 
+                    // Update the document from the index if its lastIndexId is smaller than the current task id.
                     foreach (var index in allIndices)
                     {
-                        updatedDocumentsByIndex[index.Key] = [];
-                    }
-
-                    if (indexName != null)
-                    {
-                        indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
-                    }
-
-                    var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
-                    var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
-                    var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
-
-                    foreach (var task in batch)
-                    {
-                        if (task.Type == IndexingTaskTypes.Update)
+                        if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
                         {
-                            BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
-
-                            if (needPublished)
-                            {
-                                allPublished.TryGetValue(task.ContentItemId, out var contentItem);
-
-                                if (contentItem != null)
-                                {
-                                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ElasticContentIndexSettings());
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
-                                }
-                            }
-
-                            if (needLatest)
-                            {
-                                allLatest.TryGetValue(task.ContentItemId, out var contentItem);
-
-                                if (contentItem != null)
-                                {
-                                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ElasticContentIndexSettings());
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
-                                }
-                            }
-
-                            // Update the document from the index if its lastIndexId is smaller than the current task id.
-                            foreach (var index in allIndices)
-                            {
-                                if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
-                                {
-                                    continue;
-                                }
-
-                                var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
-
-                                // We index only if we actually found a content item in the database.
-                                if (context == null)
-                                {
-                                    // TODO purge these content items from IndexingTask table.
-                                    continue;
-                                }
-
-                                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
-                                var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
-
-                                // Ignore if the content item content type or culture is not indexed in this index.
-                                if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
-                                {
-                                    continue;
-                                }
-
-                                updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
-                            }
+                            continue;
                         }
-                    }
 
-                    // Delete all the existing documents.
-                    foreach (var index in updatedDocumentsByIndex)
-                    {
-                        var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
-                        await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
-                    }
+                        var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
-                    // Submits all the new documents to the index.
-                    foreach (var index in updatedDocumentsByIndex)
-                    {
-                        await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
-                    }
-
-                    // Update task ids.
-                    lastTaskId = batch.Last().Id;
-
-                    foreach (var indexStatus in allIndices)
-                    {
-                        if (indexStatus.Value < lastTaskId)
+                        // We index only if we actually found a content item in the database.
+                        if (context == null)
                         {
-                            await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
+                            // TODO purge these content items from IndexingTask table.
+                            continue;
                         }
-                    }
 
-                }, activateShell: false);
-            } while (batch.Length == BatchSize);
+                        var cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
+                        var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
+                        var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
+
+                        // Ignore if the content item content type or culture is not indexed in this index.
+                        if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                        {
+                            continue;
+                        }
+
+                        updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
+                    }
+                }
+
+                // Delete all the existing documents.
+                foreach (var index in updatedDocumentsByIndex)
+                {
+                    var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
+                    await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
+                }
+
+                // Submits all the new documents to the index.
+                foreach (var index in updatedDocumentsByIndex)
+                {
+                    await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
+                }
+
+                // Update task ids.
+                lastTaskId = tasks.Last().Id;
+
+                foreach (var indexStatus in allIndices)
+                {
+                    if (indexStatus.Value < lastTaskId)
+                    {
+                        await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
+                    }
+                }
+            }
         }
 
         /// <summary>

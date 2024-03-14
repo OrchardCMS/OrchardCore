@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             Wrappers = [];
             Alternates = [];
-            BindingSources = new List<string>();
+            BindingSources = [];
             Displaying = [];
             Displayed = [];
             ProcessingAsync = [];

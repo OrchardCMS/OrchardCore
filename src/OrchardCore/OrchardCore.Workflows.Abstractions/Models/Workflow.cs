@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Models
         /// List of activities the current workflow instance is waiting on
         /// for continuing its process.
         /// </summary>
-        public IList<BlockingActivity> BlockingActivities { get; init; } = new List<BlockingActivity>();
+        public IList<BlockingActivity> BlockingActivities { get; init; } = [];
 
         public DateTime CreatedUtc { get; set; }
 

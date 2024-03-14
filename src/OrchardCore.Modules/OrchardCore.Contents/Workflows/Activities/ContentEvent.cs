@@ -11,13 +11,17 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentEvent : ContentActivity, IEvent
     {
-        protected ContentEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(contentManager, scriptEvaluator, localizer)
+        protected ContentEvent(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
         public IList<string> ContentTypeFilter
         {
-            get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
+            get => GetProperty<IList<string>>(defaultValue: () => []);
             set => SetProperty(value);
         }
 
@@ -33,7 +37,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
             // "" means 'any'.
-            return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
+            return contentTypes.Count == 0 || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
