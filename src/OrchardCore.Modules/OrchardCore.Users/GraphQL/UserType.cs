@@ -30,25 +30,27 @@ public class UserType : ObjectGraphType<User>
     internal void AddField(ISchema schema, ContentTypeDefinition typeDefinition)
     {
         var contentItemType = schema.AdditionalTypeInstances.SingleOrDefault(t => t.Name == typeDefinition.Name);
+        
         if (contentItemType == null)
         {
             // This error would indicate that this graph type is build too early.
             throw new InvalidOperationException("ContentTypeDefinition has not been registered in GraphQL");
         }
 
-        this.FieldAsync(typeDefinition.Name, contentItemType, S["Custom user settings of {0}.", typeDefinition.DisplayName], resolve: async context =>
-        {
-            // We don't want to create an empty content item if it does not exist.
-            if (context.Source is User user &&
-                user.Properties.ContainsKey(context.FieldDefinition.ResolvedType.Name))
-            {
-                var customUserSettingsService = context.RequestServices!.GetRequiredService<CustomUserSettingsService>();
-                var settingsType = await customUserSettingsService.GetSettingsTypeAsync(context.FieldDefinition.ResolvedType.Name);
+        var field = Field(typeDefinition.Name, contentItemType.GetType())
+            .Description(S["Custom user settings of {0}.", typeDefinition.DisplayName])
+            .ResolveAsync(static async context => {
+                // We don't want to create an empty content item if it does not exist.
+                if (context.Source is User user &&
+                    user.Properties.ContainsKey(context.FieldDefinition.ResolvedType.Name))
+                {
+                    var customUserSettingsService = context.RequestServices!.GetRequiredService<CustomUserSettingsService>();
+                    var settingsType = await customUserSettingsService.GetSettingsTypeAsync(context.FieldDefinition.ResolvedType.Name);
 
-                return await customUserSettingsService.GetSettingsAsync(user, settingsType);
-            }
+                    return await customUserSettingsService.GetSettingsAsync(user, settingsType);
+                }
 
-            return null;
-        });
+                return null;
+            });
     }
 }

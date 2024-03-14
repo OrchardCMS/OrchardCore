@@ -48,8 +48,8 @@ namespace OrchardCore.Queries.Controllers
 
             if (Request.Method == HttpMethods.Post && string.IsNullOrEmpty(parameters))
             {
-                  using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-                  parameters = await reader.ReadToEndAsync();
+                using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+                parameters = await reader.ReadToEndAsync();
             }
 
             var queryParameters = !string.IsNullOrEmpty(parameters) ?

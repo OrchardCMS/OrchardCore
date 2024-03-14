@@ -16,6 +16,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
+
         protected readonly IStringLocalizer S;
 
         protected ContentActivity(

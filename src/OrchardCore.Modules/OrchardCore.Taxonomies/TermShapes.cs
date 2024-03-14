@@ -250,7 +250,7 @@ namespace OrchardCore.Taxonomies
             return ValueTask.CompletedTask;
         }
 
-        private int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private static int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
             foreach (var term in termsArray.Cast<JsonObject>())
             {

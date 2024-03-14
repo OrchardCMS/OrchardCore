@@ -5,7 +5,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using OrchardCore.Entities;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
 
@@ -14,6 +13,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientService(

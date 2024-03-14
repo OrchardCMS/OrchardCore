@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -19,6 +20,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Controllers
 {
+    [Admin("Roles/{action}/{id?}", "Roles{action}")]
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;
@@ -282,7 +284,7 @@ namespace OrchardCore.Roles.Controllers
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
             var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null);
+                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
 
             // Add role claims
             fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));

@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     public interface IPlacementNodeFilterProvider

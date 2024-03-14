@@ -17,7 +17,7 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllUsersDeploymentStep allRolesStep)
+        if (step is not AllUsersDeploymentStep)
         {
             return;
         }

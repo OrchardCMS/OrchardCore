@@ -62,8 +62,8 @@ public static class JOptions
 
         Document = new JsonDocumentOptions
         {
-            CommentHandling = Default.ReadCommentHandling,
-            AllowTrailingCommas = Default.AllowTrailingCommas,
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
         };
     }
 }

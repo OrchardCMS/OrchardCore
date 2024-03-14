@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly ILogger _logger;
 
         public readonly JsonSerializerOptions _settings;
-        private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
+        private NotifyEntry[] _existingEntries = [];
         private bool _shouldDeleteCookie;
 
         public NotifyFilter(
@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
             _logger = logger;
 
-            _settings = new(System.Text.Json.JOptions.Default);
+            _settings = new(JOptions.Default);
             _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 

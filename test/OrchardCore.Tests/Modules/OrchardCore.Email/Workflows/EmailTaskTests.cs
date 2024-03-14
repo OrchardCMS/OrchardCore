@@ -1,5 +1,6 @@
 using OrchardCore.Email;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -11,12 +12,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
 
         [Fact]
-        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
+        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFail()
         {
             // Arrange
-            var smtpService = CreateSmtpService(new SmtpSettings());
+            var emailService = CreateSmtpService(new SmtpOptions()
+            {
+                IsEnabled = true,
+            });
+
             var task = new EmailTask(
-                smtpService,
+                emailService,
                 new SimpleWorkflowExpressionEvaluator(),
                 Mock.Of<IStringLocalizer<EmailTask>>(),
                 HtmlEncoder.Default)
@@ -43,16 +48,35 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             Assert.Equal("Failed", result.Outcomes.First());
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static DefaultEmailService CreateSmtpService(SmtpOptions smtpOptions)
         {
-            var options = new Mock<IOptions<SmtpSettings>>();
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var options = new Mock<IOptions<SmtpOptions>>();
+            var logger = new Mock<ILogger<SmtpEmailProvider>>();
+            var logger2 = new Mock<ILogger<DefaultEmailService>>();
 
-            options.Setup(o => o.Value).Returns(settings);
+            var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
+            var emailServiceLocalizer = new Mock<IStringLocalizer<DefaultEmailService>>();
+            var emailValidator = new Mock<IEmailAddressValidator>();
 
-            return smtp;
+            emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
+                .Returns(true);
+
+            options.Setup(o => o.Value)
+                .Returns(smtpOptions);
+
+            var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
+
+            var resolver = new Mock<IEmailProviderResolver>();
+            resolver.Setup(x => x.GetAsync(It.IsAny<string>()))
+                .ReturnsAsync(smtp);
+
+            var emailService = new Mock<IEmailService>();
+
+            return new DefaultEmailService(
+                resolver.Object,
+                [],
+                logger2.Object,
+                emailServiceLocalizer.Object);
         }
 
         private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
