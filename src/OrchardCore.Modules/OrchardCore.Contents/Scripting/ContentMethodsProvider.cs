@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Scripting;
 
@@ -26,7 +27,7 @@ namespace OrchardCore.Contents.Scripting
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
 
                     return contentItem;
-                })
+                }),
             };
 
             _createContentItemMethod = new GlobalMethod
@@ -46,7 +47,7 @@ namespace OrchardCore.Contents.Scripting
                     {
                         throw new ValidationException(string.Join(", ", result.Errors));
                     }
-                })
+                }),
             };
 
             _updateContentItemMethod = new GlobalMethod
@@ -62,7 +63,7 @@ namespace OrchardCore.Contents.Scripting
                     {
                         throw new ValidationException(string.Join(", ", result.Errors));
                     }
-                })
+                }),
             };
 
             _deleteContentItemMethod = new GlobalMethod
@@ -72,7 +73,7 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     contentManager.RemoveAsync(contentItem).GetAwaiter().GetResult();
-                })
+                }),
             };
         }
 

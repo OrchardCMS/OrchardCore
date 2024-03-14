@@ -65,8 +65,33 @@
       "name": "Roles",
       "Roles": [
         {
-          "Name": "AUTHENTICATED",
-          "Description": null,
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
           "Permissions": [
             "ViewContent",
             "ExecuteGraphQL",
@@ -74,8 +99,8 @@
           ]
         },
         {
-          "Name": "ANONYMOUS",
-          "Description": null,
+          "Name": "Anonymous",
+          "Description": "Anonymous",
           "Permissions": []
         }
       ]

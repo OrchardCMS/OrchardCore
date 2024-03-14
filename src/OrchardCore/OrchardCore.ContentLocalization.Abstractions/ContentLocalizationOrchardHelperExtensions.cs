@@ -8,7 +8,9 @@ using OrchardCore.ContentManagement;
 /// <summary>
 /// Provides an extension methods for <see cref="IOrchardHelper"/>.
 /// </summary>
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ContentLocalizationOrchardHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Gets the culture for a given <see cref="ContentItem"/>.

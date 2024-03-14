@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "user.roles", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => string.Equals(ctx, "user.roles", StringComparison.OrdinalIgnoreCase)))
             {
                 var user = _httpContextAccessor.HttpContext.User;
                 if (user.Identity.IsAuthenticated)

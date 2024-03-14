@@ -13,7 +13,6 @@ namespace OrchardCore.Users.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<RegisterUserTask, RegisterUserTaskDisplayDriver>();
             services.AddActivity<UserCreatedEvent, UserCreatedEventDisplayDriver>();
             services.AddActivity<UserDeletedEvent, UserDeletedEventDisplayDriver>();
             services.AddActivity<UserEnabledEvent, UserEnabledEventDisplayDriver>();
@@ -23,6 +22,15 @@ namespace OrchardCore.Users.Workflows
             services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplayDriver>();
             services.AddActivity<ValidateUserTask, ValidateUserTaskDisplayDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Email")]
+    public class EmailWorkflowStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<RegisterUserTask, RegisterUserTaskDisplayDriver>();
         }
     }
 }

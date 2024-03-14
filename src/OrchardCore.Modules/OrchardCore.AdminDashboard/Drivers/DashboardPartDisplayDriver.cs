@@ -26,7 +26,7 @@ namespace OrchardCore.AdminDashboard.Drivers
             return Edit(model, context);
         }
 
-        private void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
+        private static void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
         {
             model.Position = part.Position;
             model.Width = part.Width;

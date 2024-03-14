@@ -30,7 +30,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SetupController(
             IClock clock,
@@ -69,15 +69,21 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token
+                Secret = token,
             };
 
             CopyShellSettingsValues(model);
 
-            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
+            if (!string.IsNullOrEmpty(_shellSettings["TablePrefix"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
+            }
+
+            if (!string.IsNullOrEmpty(_shellSettings["Schema"]))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.Schema = _shellSettings["Schema"];
             }
 
             return View(model);
@@ -94,7 +100,7 @@ namespace OrchardCore.Setup.Controllers
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
-            if (String.IsNullOrEmpty(model.Password))
+            if (string.IsNullOrEmpty(model.Password))
             {
                 ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
             }
@@ -105,7 +111,7 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
+            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
@@ -113,18 +119,18 @@ namespace OrchardCore.Setup.Controllers
                     ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
                 }
             }
-            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
 
             // Only add additional errors if attribute validation has passed.
-            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
             }
 
-            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
             {
                 ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
             }
@@ -151,24 +157,26 @@ namespace OrchardCore.Setup.Controllers
                 }
             };
 
-            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.DatabaseSchema] = _shellSettings["Schema"];
             }
             else
             {
                 setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
                 setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
                 setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseSchema] = model.Schema;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
             // Check if any Setup component failed (e.g., database connection validation)
-            if (setupContext.Errors.Any())
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {
@@ -183,19 +191,19 @@ namespace OrchardCore.Setup.Controllers
 
         private void CopyShellSettingsValues(SetupViewModel model)
         {
-            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.ConnectionString = _shellSettings["ConnectionString"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
+            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 model.RecipeNamePreset = true;
                 model.RecipeName = _shellSettings["RecipeName"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
+            if (!string.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.DatabaseProvider = _shellSettings["DatabaseProvider"];
@@ -204,18 +212,13 @@ namespace OrchardCore.Setup.Controllers
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
             }
-
-            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
-            {
-                model.Description = _shellSettings["Description"];
-            }
         }
 
         private async Task<bool> ShouldProceedWithTokenAsync(string token)
         {
-            if (!String.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
-                if (String.IsNullOrEmpty(token) || !await IsTokenValid(token))
+                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
                     _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
 
@@ -228,11 +231,10 @@ namespace OrchardCore.Setup.Controllers
 
         private async Task<bool> IsTokenValid(string token)
         {
+            var result = false;
             try
             {
-                var result = false;
-
-                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellScope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
                 {
@@ -251,15 +253,13 @@ namespace OrchardCore.Setup.Controllers
 
                     return Task.CompletedTask;
                 });
-
-                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in decrypting the token");
             }
 
-            return false;
+            return result;
         }
     }
 }

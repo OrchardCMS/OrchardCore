@@ -35,7 +35,7 @@ namespace OrchardCore.Workflows.Http.Liquid
 
             var workflowContext = (WorkflowExecutionContext)workflowContextValue.ToObjectValue();
             var signalName = input.ToStringValue();
-            var payload = String.IsNullOrWhiteSpace(workflowContext.CorrelationId)
+            var payload = string.IsNullOrWhiteSpace(workflowContext.CorrelationId)
                 ? SignalPayload.ForWorkflow(signalName, workflowContext.WorkflowId)
                 : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 

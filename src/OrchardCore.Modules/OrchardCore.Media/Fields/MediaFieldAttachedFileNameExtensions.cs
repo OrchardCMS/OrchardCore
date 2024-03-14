@@ -1,5 +1,4 @@
-using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Media.Fields
 {
@@ -10,9 +9,11 @@ namespace OrchardCore.Media.Fields
         /// </summary>
         public static string[] GetAttachedFileNames(this MediaField mediaField)
         {
-            var filenames = mediaField.Content["AttachedFileNames"] as JArray;
+            var filenames = (JsonArray)mediaField.Content["AttachedFileNames"];
 
-            return filenames != null ? filenames.ToObject<string[]>() : Array.Empty<string>(); ;
+            return filenames != null
+                ? filenames.ToObject<string[]>()
+                : [];
         }
 
         /// <summary>

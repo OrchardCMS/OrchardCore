@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
@@ -23,7 +22,7 @@ namespace OrchardCore.Cors.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,
@@ -43,6 +42,7 @@ namespace OrchardCore.Cors.Controllers
         }
 
         [HttpGet]
+        [Admin("Cors", "CorsIndex")]
         public async Task<ActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
@@ -94,9 +94,12 @@ namespace OrchardCore.Cors.Controllers
 
             var model = new CorsSettingsViewModel();
             var configJson = Request.Form["CorsSettings"].First();
-            model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+            model.Policies = JConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
 
             var corsPolicies = new List<CorsPolicySetting>();
+
+            // If "allow origin" and "allow credentials" are both true, issue a warning about CORS functionality. Inform the user.
+            var policyWarnings = new List<string>();
 
             foreach (var settingViewModel in model.Policies)
             {
@@ -111,10 +114,13 @@ namespace OrchardCore.Cors.Controllers
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
                     IsDefaultPolicy = settingViewModel.IsDefaultPolicy
-
                 });
+                
+                if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
+                {
+                    policyWarnings.Add(settingViewModel.Name);
+                }
             }
-
             var corsSettings = new CorsSettings()
             {
                 Policies = corsPolicies
@@ -125,6 +131,11 @@ namespace OrchardCore.Cors.Controllers
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
+
+            if (policyWarnings.Count > 0)
+            {
+                await _notifier.WarningAsync(H["Specifying {0} and {1} is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {2} </strong><br />Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>",  "AllowAnyOrigin", "AllowCredentias", string.Join(", ", policyWarnings) ]);
+            }
 
             return View(model);
         }

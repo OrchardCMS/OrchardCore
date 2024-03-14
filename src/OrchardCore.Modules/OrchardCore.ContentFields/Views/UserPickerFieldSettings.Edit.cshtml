@@ -19,7 +19,7 @@
 </div>
 
 <div id="userRolesVue" class="mb-3" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
-    <label asp-for="Roles">@T["Roles"]</label>
+    <label asp-for="Roles" class="form-label">@T["Roles"]</label>
     <span class="hint">@T["The roles that a user must belong to. Choose at least one."]</span>
 
     <div class="form-check">
@@ -44,7 +44,7 @@
 
 <div class="mb-3">
     <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.ContentTypes.ViewModels
 {
@@ -6,7 +6,7 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         public AddPartsViewModel()
         {
-            PartSelections = new List<PartSelectionViewModel>();
+            PartSelections = [];
         }
 
         public EditTypeViewModel Type { get; set; }
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         public AddReusablePartViewModel()
         {
-            PartSelections = new List<PartSelectionViewModel>();
+            PartSelections = [];
         }
 
         public EditTypeViewModel Type { get; set; }

@@ -22,7 +22,7 @@
 
 <div id="indexPreviewUrl" style="display:none" data-value="@Url.Action("Index", "Preview" , new { area="OrchardCore.Templates" })"></div>
 <div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview" , new { area="OrchardCore.Templates" })"></div>
-<div id="contentPreviewUrl" style="display:none" data-value="@Url.Content("~/")"></div>
+<div id="contentPreviewUrl" style="display:none" data-value="@Url.Content("~/").ToUriComponents()"></div>
 
 <resources type="Footer" />
 

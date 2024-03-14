@@ -1,54 +1,59 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
 
-namespace OrchardCore.Features.Controllers 
+namespace OrchardCore.Features.Controllers
 {
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly INotifier _notifier;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        private readonly AdminOptions _adminOptions;
+        private readonly INotifier _notifier;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IExtensionManager extensionManager,
-            IHtmlLocalizer<AdminController> localizer,
-            IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            IExtensionManager extensionManager,
+            IShellFeaturesManager shellFeaturesManager,
+            IOptions<AdminOptions> adminOptions,
             INotifier notifier,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _notifier = notifier;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
-            H = localizer;
+            _adminOptions = adminOptions.Value;
+            _notifier = notifier;
             S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
+        [Admin("Features/{tenant?}", "Features")]
         public async Task<ActionResult> Features(string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
@@ -58,11 +63,16 @@ namespace OrchardCore.Features.Controllers
 
             var viewModel = new FeaturesViewModel();
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
-                // if the user provide an invalid tenant value, we'll set it to null so it's not available on the next request
-                tenant = settings?.Name;
-                viewModel.Name = settings?.Name;
+                // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
+                if (isProxy)
+                {
+                    viewModel.IsProxy = true;
+                    tenant = settings.Name;
+                    viewModel.Name = settings.Name;
+                }
+
                 viewModel.Features = await featureService.GetModuleFeaturesAsync();
             });
 
@@ -78,14 +88,14 @@ namespace OrchardCore.Features.Controllers
                 return Forbid();
             }
 
-            if (model.FeatureIds == null || !model.FeatureIds.Any())
+            if (model.FeatureIds == null || model.FeatureIds.Length == 0)
             {
                 ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
             }
 
             if (ModelState.IsValid)
             {
-                await ExecuteAsync(tenant, async (featureService, settings) =>
+                await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
                 {
                     var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
@@ -97,6 +107,7 @@ namespace OrchardCore.Features.Controllers
         }
 
         [HttpPost]
+        [Admin("Features/{id}/Disable/{tenant?}", "FeaturesDisable")]
         public async Task<IActionResult> Disable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
@@ -106,13 +117,22 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
-                if (feature != null)
+                if (feature == null)
                 {
-                    found = true;
+                    return;
+                }
+
+                found = true;
+
+                if (!isProxy && id == FeaturesConstants.FeatureId)
+                {
+                    await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
+
+                    return;
                 }
 
                 await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
@@ -123,10 +143,11 @@ namespace OrchardCore.Features.Controllers
                 return NotFound();
             }
 
-            return Redirect(GetNextUrl(tenant));
+            return Redirect(GetNextUrl(tenant, id));
         }
 
         [HttpPost]
+        [Admin("Features/{id}/Enable/{tenant?}", "FeaturesEnable")]
         public async Task<IActionResult> Enable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
@@ -136,14 +157,16 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings) =>
+            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
-                if (feature != null)
+                if (feature == null)
                 {
-                    found = true;
+                    return;
                 }
+
+                found = true;
 
                 await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
             });
@@ -153,20 +176,20 @@ namespace OrchardCore.Features.Controllers
                 return NotFound();
             }
 
-            return Redirect(GetNextUrl(tenant));
+            return Redirect(GetNextUrl(tenant, id));
         }
 
-        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, Task> action)
+        private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
-            if (_shellSettings.IsDefaultShell()
-                && !String.IsNullOrWhiteSpace(tenant)
-                && _shellHost.TryGetSettings(tenant, out var settings)
-                && !settings.IsDefaultShell()
-                && settings.State == TenantState.Running)
+            if (_shellSettings.IsDefaultShell() &&
+                !string.IsNullOrWhiteSpace(tenant) &&
+                _shellHost.TryGetSettings(tenant, out var settings) &&
+                !settings.IsDefaultShell() &&
+                settings.IsRunning())
             {
-                // At this point we know that this request is being executed from the host.
-                // Also, we were able to find a matching running tenant that isn't a default shell
-                // we are safe to create a scope for the given tenant
+                // At this point, we know that this request is being executed from the Default tenant.
+                // Also, we were able to find a matching and running tenant that isn't the Default one.
+                // Therefore, it is safe to create a scope for the given tenant.
                 var shellScope = await _shellHost.GetScopeAsync(settings);
 
                 await shellScope.UsingAsync(async scope =>
@@ -174,26 +197,38 @@ namespace OrchardCore.Features.Controllers
                     var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                     var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
-                    // at this point we apply the action on the given tenant
-                    await action(new FeatureService(shellFeatureManager, extensionManager), settings);
+                    // At this point we apply the action on the given tenant.
+                    await action(new FeatureService(shellFeatureManager, extensionManager), scope.ShellContext.Settings, true);
                 });
 
                 return;
             }
 
-            // at this point we apply the action on the current tenant
-            await action(new FeatureService(_shellFeaturesManager, _extensionManager), null);
+            // At this point we apply the action on the current tenant.
+            await action(new FeatureService(_shellFeaturesManager, _extensionManager), _shellSettings, false);
         }
 
-        private string GetNextUrl(string tenant)
+        private string GetNextUrl(string tenant, string featureId)
         {
             // Generating routes can fail while the tenant is recycled as routes can use services.
             // It could be fixed by waiting for the next request or the end of the current one
             // to actually release the tenant. Right now we render the url before recycling the tenant.
 
-            if (!String.IsNullOrWhiteSpace(tenant))
+            ShellSettings settings = null;
+
+            if (!string.IsNullOrWhiteSpace(tenant))
+            {
+                _shellHost.TryGetSettings(tenant, out settings);
+            }
+
+            if (settings != null && settings.Name != _shellSettings.Name)
             {
                 return Url.Action(nameof(Features), new { tenant });
+            }
+
+            if (!settings.IsDefaultShell() && featureId == FeaturesConstants.FeatureId)
+            {
+                return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }
 
             return Url.Action(nameof(Features));

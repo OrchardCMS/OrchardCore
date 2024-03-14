@@ -1,0 +1,46 @@
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery AntiforgeryService
+@{
+    var tokenSet = AntiforgeryService.GetAndStoreTokens(ViewContext.HttpContext);
+}
+<h5 class="text-center mb-3">@T["Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via SMS."]</h5>
+
+<div class="text-center alert d-none"
+     id="RequestCodeFeedback"
+     data-token-field-name="@tokenSet.FormFieldName"
+     data-token-endpoint="@Url.ActionLink("SendCode", "SmsAuthenticator")"
+     data-antiforgery-token="@tokenSet.RequestToken">
+</div>
+
+<form id="RequestCodeForm" method="post" asp-action="SendCode" asp-controller="SmsAuthenticator" class="d-none">
+</form>
+
+<script at="Head" asp-name="RequestVerificationCodeViaSms">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const box = document.getElementById('RequestCodeFeedback');
+        const btn = document.getElementById('RequestCode');
+        const form = document.getElementById('RequestCodeForm');
+
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            box.classList.add('d-none')
+
+            fetch(form.getAttribute('action'), {
+                method: form.getAttribute('method'),
+                body: new FormData(form)
+            }).then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        box.classList.add('alert-success');
+                        box.classList.remove('alert-danger');
+                    } else {
+                        box.classList.add('alert-danger');
+                        box.classList.remove('alert-success');
+                    }
+                    box.innerText = result.message;
+                    box.classList.remove('d-none')
+                }).catch(error => console.log(error));
+        });
+    });
+</script>

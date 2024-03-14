@@ -1,12 +1,13 @@
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using YesSql;
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Modules;
+using YesSql;
+
 namespace OrchardCore.Demo.Pages
 {
     [Feature("OrchardCore.Demo.Foo")]
@@ -76,7 +77,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             var updater = _updateModelAccessor.ModelUpdater;
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
+            _ = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
 
             if (!ModelState.IsValid)
             {
@@ -85,7 +86,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             contentItem.Content.TestContentPartA.Line = Text;
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             return RedirectToPage("/Foo/List");
         }

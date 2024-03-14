@@ -24,7 +24,7 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
-        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
+        private const string DefaultMarkdownExtensions = "nohtml+advanced";
 
         private readonly IShellConfiguration _shellConfiguration;
 

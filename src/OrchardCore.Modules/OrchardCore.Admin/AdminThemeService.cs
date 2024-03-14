@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
@@ -20,8 +19,8 @@ namespace OrchardCore.Admin
 
         public async Task<IExtensionInfo> GetAdminThemeAsync()
         {
-            string currentThemeName = await GetAdminThemeNameAsync();
-            if (String.IsNullOrEmpty(currentThemeName))
+            var currentThemeName = await GetAdminThemeNameAsync();
+            if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;
             }

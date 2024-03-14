@@ -2,12 +2,12 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap"])</h1></zone>
 
-@if (String.IsNullOrEmpty(Site.BaseUrl))
+@if (string.IsNullOrEmpty(Site.BaseUrl))
 {
     <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
 }
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
+<div class="card text-bg-theme mb-3">
+    <div class="card-body">
         <div class="float-end">
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSources">

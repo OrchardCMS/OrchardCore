@@ -18,7 +18,7 @@ namespace OrchardCore.Localization.GraphQL
     /// </summary>
     public class SiteCulturesQuery : ISchemaBuilder
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
         /// <summary>
@@ -35,12 +35,12 @@ namespace OrchardCore.Localization.GraphQL
             _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         /// <inheritdocs/>
         public Task BuildAsync(ISchema schema)
         {
-            if (_graphQLContentOptions.ShouldSkipContentType("SiteCultures"))
+            if (_graphQLContentOptions.IsHiddenByDefault("SiteCultures"))
             {
                 return Task.CompletedTask;
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Localization.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Localization.GraphQL
                new SiteCulture
                {
                    Culture = culture,
-                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
+                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
                }
            );
 

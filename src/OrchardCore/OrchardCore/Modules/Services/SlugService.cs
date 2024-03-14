@@ -17,7 +17,7 @@ namespace OrchardCore.Modules.Services
 
         public string Slugify(string text)
         {
-            if (String.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
             {
                 return text;
             }
@@ -29,14 +29,14 @@ namespace OrchardCore.Modules.Services
 
             for (var i = 0; i < normalizedText.Length; i++)
             {
-                var currentChar = Char.ToLowerInvariant(normalizedText[i]);
+                var currentChar = char.ToLowerInvariant(normalizedText[i]);
 
                 if (CharUnicodeInfo.GetUnicodeCategory(currentChar) == UnicodeCategory.NonSpacingMark)
                 {
                     continue;
                 }
 
-                if (Char.IsLetterOrDigit(currentChar))
+                if (char.IsLetterOrDigit(currentChar))
                 {
                     slug.Append(currentChar);
 

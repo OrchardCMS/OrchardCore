@@ -8,7 +8,7 @@
 <form asp-controller="ChangeEmail" asp-action="Index" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>
+        <label asp-for="Email" class="col-md-3 form-label">@T["Email"]</label>
         <div class="col-md-9">
             <input asp-for="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>

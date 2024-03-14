@@ -20,17 +20,20 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
-    [Admin]
+    [Admin("AdminMenu/{action}/{id?}", "AdminMenu{action}")]
     public class MenuController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;
         private readonly PagerOptions _pagerOptions;
+        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
         private readonly ILogger _logger;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public MenuController(
             IAuthorizationService authorizationService,
@@ -45,7 +48,7 @@ namespace OrchardCore.AdminMenu.Controllers
             _authorizationService = authorizationService;
             _adminMenuService = adminMenuService;
             _pagerOptions = pagerOptions.Value;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -68,13 +71,11 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = adminMenuList.Count();
-
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
-            IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
+            IEnumerable<Models.AdminMenu> results = [];
 
-            //todo: handle the case where there is a deserialization exception on some of the presets.
+            // todo: handle the case where there is a deserialization exception on some of the presets.
             // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
@@ -89,34 +90,38 @@ namespace OrchardCore.AdminMenu.Controllers
                 await _notifier.ErrorAsync(H["Error when retrieving the list of admin menus."]);
             }
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, adminMenuList.Count, routeData);
 
             var model = new AdminMenuListViewModel
             {
                 AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("List")]
+        [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
-        {
-            return RedirectToAction(nameof(List), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(List), new RouteValueDictionary
+            {
+                {_optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -235,9 +240,9 @@ namespace OrchardCore.AdminMenu.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        [HttpPost, ActionName("List")]
+        [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
@@ -255,13 +260,13 @@ namespace OrchardCore.AdminMenu.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
+                            var adminMenu = adminMenuList.FirstOrDefault(x => string.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
                             await _adminMenuService.DeleteAsync(adminMenu);
                         }
                         await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 
