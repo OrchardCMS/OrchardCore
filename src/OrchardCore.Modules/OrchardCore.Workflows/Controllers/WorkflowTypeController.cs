@@ -121,7 +121,8 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            using var connection = await _session.CreateConnectionAsync();
+            // The existing session's connection is returned, don't dispose it
+            var connection = await _session.CreateConnectionAsync();
 
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);

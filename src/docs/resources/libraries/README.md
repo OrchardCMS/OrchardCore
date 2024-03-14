@@ -15,7 +15,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.3.2/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage. | 1.3.3 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 5.1.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [DocumentFormat.OpenXML](https://github.com/dotnet/Open-XML-SDK) | The Open XML SDK provides tools for working with Office Word, Excel, and PowerPoint documents | 3.0.1 | [MIT](https://github.com/dotnet/Open-XML-SDK/blob/main/LICENSE) |
-| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.5.0 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
+| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.6.0 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 7.8.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.1.844-beta | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 3.1.1 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
@@ -27,6 +27,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.4.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.35.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
+| [Microsoft.Extensions.Http.Resilience](https://github.com/dotnet/extensions/tree/main/src/Libraries/Microsoft.Extensions.Http.Resilience) | Resilience mechanisms for HttpClient built on the Polly framework. | 8.3.0 | [MIT](https://github.com/dotnet/extensions/blob/main/LICENSE) |
 | [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.17.1 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 8.0.0 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.4.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
@@ -43,7 +44,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.8 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 8.0.1 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
-| [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.7.27 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
+| [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.7.33 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 5.0.0-beta-0002 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.1 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
 
