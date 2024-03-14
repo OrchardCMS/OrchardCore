@@ -8,7 +8,8 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services;
 
-public abstract class OAuthSettingsService<TAuthenticationSettings> where TAuthenticationSettings : OAuthSettings, new()
+public abstract class OAuthSettingsService<TAuthenticationSettings> : IOAuthSettingsService<TAuthenticationSettings>
+    where TAuthenticationSettings : OAuthSettings, new()
 {
     private readonly ISiteService _siteService;
 

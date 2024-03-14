@@ -12,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub
@@ -29,7 +30,7 @@ namespace OrchardCore.GitHub
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<GitHubAuthenticationService>();
+            services.AddSingleton<IOAuthSettingsService<GitHubAuthenticationSettings>, GitHubAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
             services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();

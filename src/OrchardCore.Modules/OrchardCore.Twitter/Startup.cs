@@ -13,6 +13,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
@@ -40,7 +41,7 @@ namespace OrchardCore.Twitter
         {
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddSingleton<TwitterSettingsService>();
+            services.AddSingleton<IOAuthSettingsService<TwitterSettings>, TwitterSettingsService>();
 
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
