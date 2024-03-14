@@ -31,8 +31,8 @@ namespace OrchardCore.Lists.Handlers
                 if (listContentItem != null)
                 {
                     var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-                    var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(listContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
+                    var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(listContentItem.ContentType);
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart"));
                     var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                     if (settings.EnableOrdering)
                     {

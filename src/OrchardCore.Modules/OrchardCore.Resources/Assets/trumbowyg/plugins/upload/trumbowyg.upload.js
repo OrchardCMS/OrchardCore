@@ -53,10 +53,20 @@
                 file: 'File',
                 uploadError: 'Error'
             },
+            az: {
+                upload: 'Yüklə',
+                file: 'Fayl',
+                uploadError: 'Xəta'
+            },
             by: {
                 upload: 'Загрузка',
                 file: 'Файл',
                 uploadError: 'Памылка'
+            },
+            ca: {
+                upload: 'Pujar fitxer',
+                file: 'Fitxer',
+                uploadError: 'Error'
             },
             cs: {
                 upload: 'Nahrát obrázek',
@@ -72,6 +82,11 @@
                 upload: 'Hochladen',
                 file: 'Datei',
                 uploadError: 'Fehler'
+            },
+            es: {
+                upload: 'Subir archivo',
+                file: 'Archivo',
+                uploadError: 'Error'
             },
             et: {
                 upload: 'Lae üles',
@@ -107,6 +122,11 @@
                 upload: 'Загрузка',
                 file: 'Файл',
                 uploadError: 'Ошибка'
+            },
+            sl: {
+                upload: 'Naloži datoteko',
+                file: 'Datoteka',
+                uploadError: 'Napaka'
             },
             sk: {
                 upload: 'Nahrať',

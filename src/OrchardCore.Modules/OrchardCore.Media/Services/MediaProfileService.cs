@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Media.Processing;
@@ -7,7 +6,7 @@ namespace OrchardCore.Media.Services
 {
     public class MediaProfileService : IMediaProfileService
     {
-        private static IDictionary<string, string> NullProfile = new Dictionary<string, string>();
+        private static readonly IDictionary<string, string> _nullProfile = new Dictionary<string, string>();
         private readonly MediaProfilesManager _mediaProfilesManager;
 
         public MediaProfileService(MediaProfilesManager mediaProfilesManager)
@@ -36,17 +35,18 @@ namespace OrchardCore.Media.Services
                 {
                     commands["rmode"] = mediaProfile.Mode.ToString().ToLower();
                 }
-                if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
-                {
-                    commands["quality"] = mediaProfile.Quality.ToString();
-                }
 
                 if (mediaProfile.Format != Format.Undefined)
                 {
                     commands["format"] = mediaProfile.Format.ToString().ToLower();
                 }
 
-                if (!String.IsNullOrEmpty(mediaProfile.BackgroundColor))
+                if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
+                {
+                    commands["quality"] = mediaProfile.Quality.ToString();
+                }
+
+                if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
                 {
                     commands["bgcolor"] = mediaProfile.BackgroundColor;
                 }
@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Services
             }
             else
             {
-                return NullProfile;
+                return _nullProfile;
 
             }
         }

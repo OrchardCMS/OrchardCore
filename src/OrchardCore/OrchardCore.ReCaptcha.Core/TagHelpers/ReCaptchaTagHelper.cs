@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
@@ -18,7 +18,7 @@ using OrchardCore.ResourceManagement;
 namespace OrchardCore.ReCaptcha.TagHelpers
 {
     [HtmlTargetElement("captcha", TagStructure = TagStructure.WithoutEndTag)]
-    [HtmlTargetElement("captcha", Attributes = "mode,language", TagStructure = TagStructure.WithoutEndTag)]
+    [HtmlTargetElement("captcha", Attributes = "mode,language,onload", TagStructure = TagStructure.WithoutEndTag)]
     public class ReCaptchaTagHelper : TagHelper
     {
         private readonly IResourceManager _resourceManager;
@@ -26,28 +26,37 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
+        public ReCaptchaTagHelper(
+            IOptions<ReCaptchaSettings> optionsAccessor,
+            IResourceManager resourceManager,
+            ILocalizationService localizationService,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ReCaptchaTagHelper> logger)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
-            _logger = logger;
             _localizationService = localizationService;
-            S = localizer;
+            _logger = logger;
         }
 
         [HtmlAttributeName("mode")]
         public ReCaptchaMode Mode { get; set; }
 
         /// <summary>
-        /// The two letter ISO code of the language the captcha should be displayed in
-        /// When left blank it will fall back to the default OrchardCore language
+        /// The two letter ISO code of the language the captcha should be displayed in.
+        /// When left blank it will fall back to the default OrchardCore language.
         /// </summary>
         [HtmlAttributeName("language")]
         public string Language { get; set; }
+
+        /// <summary>
+        /// The name of the JavaScript callback method to be called when the reCAPTCHA loads.
+        /// </summary>
+        [HtmlAttributeName("onload")]
+        public string OnLoad { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
@@ -74,12 +83,31 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             var builder = new TagBuilder("script");
-            var cultureInfo = await GetCultureAsync();
+            builder.Attributes.Add("src", await GetReCaptchaScriptUrlAsync());
 
-            var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
-
-            builder.Attributes.Add("src", settingsUrl);
             _resourceManager.RegisterFootScript(builder);
+        }
+
+        private async Task<string> GetReCaptchaScriptUrlAsync()
+        {
+            var query = new QueryString();
+            var cultureInfo = await GetCultureAsync();
+            if (cultureInfo != null)
+            {
+                query = query.Add("hl", cultureInfo.TwoLetterISOLanguageName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(OnLoad))
+            {
+                query = query.Add("onload", OnLoad);
+            }
+
+            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri)
+            {
+                Query = query.ToString()
+            };
+
+            return settingsUrl.ToString();
         }
 
         private async Task<CultureInfo> GetCultureAsync()
@@ -88,7 +116,9 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             CultureInfo culture = null;
 
             if (string.IsNullOrWhiteSpace(language))
+            {
                 language = await _localizationService.GetDefaultCultureAsync();
+            }
 
             try
             {
@@ -96,7 +126,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             }
             catch (CultureNotFoundException)
             {
-                _logger.LogWarning(S["Language with name {0} not found", language]);
+                _logger.LogWarning("Language with name {LanguageName} not found.", language);
             }
 
             return culture;

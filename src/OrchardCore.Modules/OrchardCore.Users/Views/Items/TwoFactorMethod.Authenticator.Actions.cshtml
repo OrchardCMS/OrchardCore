@@ -1,0 +1,13 @@
+@using OrchardCore.Users.Models
+
+@model TwoFactorMethod
+
+@if (Model.IsEnabled)
+{
+    <a asp-action="Index" asp-controller="AuthenticatorApp" class="btn btn-sm btn-primary me-1">@T["Set"]</a>
+    <a asp-action="Reset" asp-controller="AuthenticatorApp" class="btn btn-sm btn-danger">@T["Reset"]</a>
+}
+else
+{
+    <a asp-action="Index" asp-controller="AuthenticatorApp" class="btn btn-sm btn-success">@T["Add"]</a>
+}

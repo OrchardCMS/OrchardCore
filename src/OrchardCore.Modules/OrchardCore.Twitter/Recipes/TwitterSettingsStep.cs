@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -21,7 +22,7 @@ namespace OrchardCore.Twitter.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(TwitterSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(TwitterSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

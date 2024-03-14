@@ -1,0 +1,18 @@
+@using OrchardCore.Users.Models
+@using OrchardCore.Entities
+
+@model TwoFactorMethod
+
+@if (!Model.IsEnabled)
+{
+    <a asp-action="Index" asp-controller="SmsAuthenticator" class="btn btn-sm btn-primary me-1">@T["Verify Phone Number"]</a>
+}
+else
+{
+    <div class="btn btn-sm btn-success disabled me-1">@T["Verified"]</div>
+
+    @if (Site.As<LoginSettings>().AllowChangingPhoneNumber)
+    {
+        <a asp-action="Index" asp-controller="SmsAuthenticator" class="btn btn-sm btn-primary me-1">@T["Edit"]</a>
+    }
+}

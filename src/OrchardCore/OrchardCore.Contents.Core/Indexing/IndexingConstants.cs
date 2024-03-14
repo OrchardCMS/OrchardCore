@@ -23,5 +23,6 @@ namespace OrchardCore.Contents.Indexing
         public const string IdsKey = ".Ids";
         public const string OrderKey = ".Order";
         public const string SourceKey = "_source.";
+        public const string NullValue = "NULL";
     }
 }

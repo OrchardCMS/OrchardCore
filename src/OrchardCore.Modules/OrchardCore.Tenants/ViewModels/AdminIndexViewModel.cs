@@ -7,7 +7,7 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class AdminIndexViewModel
     {
-        public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
+        public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = [];
 
         public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
 
@@ -24,7 +24,8 @@ namespace OrchardCore.Tenants.ViewModels
     public enum BulkAction
     {
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public class ShellSettingsEntry
@@ -79,7 +80,8 @@ namespace OrchardCore.Tenants.ViewModels
     {
         None,
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public enum TenantsOrder

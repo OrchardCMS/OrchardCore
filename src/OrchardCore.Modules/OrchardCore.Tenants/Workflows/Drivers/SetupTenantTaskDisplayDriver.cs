@@ -16,6 +16,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             model.DatabaseProviderExpression = activity.DatabaseProvider.Expression;
             model.DatabaseConnectionStringExpression = activity.DatabaseConnectionString.Expression;
             model.DatabaseTablePrefixExpression = activity.DatabaseTablePrefix.Expression;
+            model.DatabaseSchemaExpression = activity.DatabaseSchema.Expression;
             model.RecipeNameExpression = activity.RecipeName.Expression;
         }
 
@@ -29,6 +30,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             activity.DatabaseProvider = new WorkflowExpression<string>(model.DatabaseProviderExpression);
             activity.DatabaseConnectionString = new WorkflowExpression<string>(model.DatabaseConnectionStringExpression);
             activity.DatabaseTablePrefix = new WorkflowExpression<string>(model.DatabaseTablePrefixExpression);
+            activity.DatabaseSchema = new WorkflowExpression<string>(model.DatabaseSchemaExpression);
             activity.RecipeName = new WorkflowExpression<string>(model.RecipeNameExpression);
         }
     }

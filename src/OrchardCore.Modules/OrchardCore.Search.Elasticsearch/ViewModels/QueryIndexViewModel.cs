@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Search.Elasticsearch.ViewModels
@@ -14,6 +13,6 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels
         public TimeSpan Duration { get; set; }
 
         [BindNever]
-        public IEnumerable<Dictionary<string, object>> Documents { get; set; } = Enumerable.Empty<Dictionary<string, object>>();
+        public IEnumerable<Dictionary<string, object>> Documents { get; set; } = [];
     }
 }

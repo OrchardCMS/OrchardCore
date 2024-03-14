@@ -1,0 +1,11 @@
+/* Include main */
+@import "main/layout";
+
+/* Include modules */
+@import "modules/pager";
+@import "modules/taxonomy";
+@import "modules/widgets";
+
+/* Include themes */
+@import 'themes/light/index';
+@import 'themes/dark/index';

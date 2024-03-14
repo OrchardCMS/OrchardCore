@@ -29,7 +29,7 @@ public class FeatureService
 
     public async Task<IFeatureInfo> GetAvailableFeature(string id)
     {
-        if (String.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(id))
         {
             return null;
         }
@@ -41,7 +41,7 @@ public class FeatureService
     {
         if (ids == null || ids.Length == 0)
         {
-            return Enumerable.Empty<IFeatureInfo>();
+            return [];
         }
 
         return (await GetAvailableFeatures()).Where(feature => ids.Contains(feature.Id));
@@ -63,6 +63,7 @@ public class FeatureService
             {
                 Descriptor = moduleFeatureInfo,
                 IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
+                EnabledByDependencyOnly = moduleFeatureInfo.EnabledByDependencyOnly,
                 IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                 EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
                 FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()

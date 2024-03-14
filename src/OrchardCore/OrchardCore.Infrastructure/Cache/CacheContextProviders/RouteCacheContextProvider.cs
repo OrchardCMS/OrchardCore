@@ -17,7 +17,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "route", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => string.Equals(ctx, "route", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
                 entries.Add(new CacheContextEntry("route", httpContext.Request.Path.Value.ToLowerInvariant()));

@@ -5,7 +5,7 @@ namespace OrchardCore.OpenId;
 
 public class UrlAttribute : ValidationAttribute
 {
-    private static readonly char[] _urlSeparators = new[] { ' ', ',' };
+    private static readonly char[] _urlSeparators = [' ', ','];
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {

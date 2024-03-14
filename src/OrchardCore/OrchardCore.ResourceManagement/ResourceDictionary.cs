@@ -6,7 +6,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceDictionary : OrderedDictionary
     {
-        private readonly Stack<ResourceDefinition> _expanding = new Stack<ResourceDefinition>();
+        private readonly Stack<ResourceDefinition> _expanding = new();
 
         public int FirstCount { get; private set; }
         public int LastCount { get; private set; }

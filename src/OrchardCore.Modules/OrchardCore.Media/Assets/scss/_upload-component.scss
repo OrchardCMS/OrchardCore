@@ -1,5 +1,5 @@
 .upload {
-    background-color: rgba(0,0,0,0.05);
+    background-color: var(--bs-body-bg, #ccc);
     border-radius: 2px;
     border: 1px solid #ccc;
     height: 60px;
@@ -34,7 +34,7 @@
         display: block;
         margin-top: 15px;
         height: 3px;
-        background-color: #007bff;
+        background-color: var(--bs-progress-bar-bg, #007bff);
     }
 
     .error-message {
@@ -47,7 +47,7 @@
 }
 
 .upload-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #856404;
+    color: var(--bs-warning-text-emphasis);
+    background-color: var(--bs-warning-bg-subtle);
+    border-color: var(--bs-warning-border-subtle);
 }

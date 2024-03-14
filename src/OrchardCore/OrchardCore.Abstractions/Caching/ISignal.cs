@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Cache
         /// <summary>
         /// Adds a Signal (if not already present) to be sent at the end of the shell scope.
         /// </summary>
-        public static void DeferredSignalToken(this ISignal signal, string key)
+        public static void DeferredSignalToken(this ISignal _, string key)
         {
             ShellScope.AddDeferredSignal(key);
         }

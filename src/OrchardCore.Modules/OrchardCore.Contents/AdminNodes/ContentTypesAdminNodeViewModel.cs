@@ -4,7 +4,7 @@ namespace OrchardCore.Contents.AdminNodes
     {
         public bool ShowAll { get; set; }
         public string IconClass { get; set; }
-        public ContentTypeEntryViewModel[] ContentTypes { get; set; } = new ContentTypeEntryViewModel[] { };
+        public ContentTypeEntryViewModel[] ContentTypes { get; set; } = [];
     }
 
     public class ContentTypeEntryViewModel

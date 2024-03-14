@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -35,7 +32,7 @@ namespace OrchardCore.Tests.Localization
         public void IndexerReturnNullIfKeyDoesntExist()
         {
             var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
-            var key = new CultureDictionaryRecordKey("ball");
+            var key = new CultureDictionaryRecordKey { MessageId = "ball" };
             var translation = dictionary[key];
 
             Assert.Null(translation);
@@ -51,7 +48,7 @@ namespace OrchardCore.Tests.Localization
 
             Assert.Throws<PluralFormNotFoundException>(() =>
             {
-                var key = new CultureDictionaryRecordKey("ball");
+                var key = new CultureDictionaryRecordKey { MessageId = "ball" };
 
                 return dictionary[key, 5];
             });
@@ -62,11 +59,11 @@ namespace OrchardCore.Tests.Localization
         {
             // Arrange
             var dictionary = new CultureDictionary("ar", PluralizationRule.Arabic);
-            dictionary.MergeTranslations(new List<CultureDictionaryRecord>
-            {
-                new CultureDictionaryRecord("Hello", "مرحبا"),
-                new CultureDictionaryRecord("Bye", "مع السلامة")
-            });
+            dictionary.MergeTranslations(
+            [
+                new("Hello", "مرحبا"),
+                new("Bye", "مع السلامة")
+            ]);
 
             // Act & Assert
             Assert.NotEmpty(dictionary);

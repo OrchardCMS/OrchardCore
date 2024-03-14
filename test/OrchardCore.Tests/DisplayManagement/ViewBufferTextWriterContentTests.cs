@@ -1,21 +1,15 @@
-using System;
-using System.IO;
-using System.Text.Encodings.Web;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
     public class ViewBufferTextWriterContentTests
     {
-        private string Serialize(ViewBufferTextWriterContent buffer)
+        private static string Serialize(ViewBufferTextWriterContent buffer)
         {
-            using (var sw = new StringWriter())
-            {
-                buffer.WriteTo(sw, HtmlEncoder.Default);
-                return sw.ToString();
-            }
+            using var sw = new StringWriter();
+            buffer.WriteTo(sw, HtmlEncoder.Default);
+            return sw.ToString();
         }
 
         [Fact]
@@ -97,7 +91,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var buffer = new ViewBufferTextWriterContent();
 
             var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
-            var page = new String('x', capacity);
+            var page = new string('x', capacity);
 
             buffer.Write(page);
             buffer.Write(page);
@@ -113,7 +107,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
 
-            buffer.Write(new String('x', capacity - 1));
+            buffer.Write(new string('x', capacity - 1));
             buffer.Write('x');
             buffer.Write('x');
             var result = Serialize(buffer);
@@ -128,8 +122,8 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var capacity = StringBuilderPool.GetInstance().Builder.Capacity;
 
-            buffer.Write(new String('x', capacity - 1).ToCharArray());
-            buffer.Write(new String('x', 11).ToCharArray(), 1, 3);
+            buffer.Write(new string('x', capacity - 1).ToCharArray());
+            buffer.Write(new string('x', 11).ToCharArray(), 1, 3);
             var result = Serialize(buffer);
 
             Assert.Equal(capacity + 2, result.Length);

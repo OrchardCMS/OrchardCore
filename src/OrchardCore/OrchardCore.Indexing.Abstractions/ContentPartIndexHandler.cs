@@ -20,8 +20,11 @@ namespace OrchardCore.Indexing
                 return Task.CompletedTask;
             }
 
-            var keys = new List<string>();
-            keys.Add(typePartDefinition.Name);
+            var keys = new List<string>
+            {
+                typePartDefinition.Name,
+            };
+
             foreach (var key in context.Keys)
             {
                 keys.Add($"{key}.{typePartDefinition.Name}");

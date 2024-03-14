@@ -1,6 +1,6 @@
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
@@ -18,14 +18,12 @@ namespace OrchardCore.Templates.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allTemplatesStep = step as AllAdminTemplatesDeploymentStep;
-
-            if (allTemplatesStep == null)
+            if (step is not AllAdminTemplatesDeploymentStep allTemplatesStep)
             {
                 return;
             }
 
-            var templateObjects = new JObject();
+            var templateObjects = new JsonObject();
             var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
             if (allTemplatesStep.ExportAsFiles)
@@ -46,10 +44,11 @@ namespace OrchardCore.Templates.Deployment
                 }
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AdminTemplates"),
-                new JProperty("AdminTemplates", templateObjects)
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "AdminTemplates",
+                ["AdminTemplates"] = templateObjects,
+            });
         }
     }
 }

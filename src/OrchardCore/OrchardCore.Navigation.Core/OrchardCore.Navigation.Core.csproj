@@ -3,9 +3,11 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore Navigation Core</Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>
+      $(OCFrameworkDescription)
 
-    Core Implementation for OrchardCore Navigation.</Description>
+      Core Implementation for OrchardCore Navigation.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
@@ -14,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
 

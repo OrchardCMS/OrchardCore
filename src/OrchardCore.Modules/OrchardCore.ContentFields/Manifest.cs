@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Fields",
     Category = "Content Management",
     Description = "Content Fields module adds common content fields to be used with your custom types.",
-    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Shortcodes" }
+    Dependencies = ["OrchardCore.ContentTypes", "OrchardCore.Shortcodes"]
 )]
 
 [assembly: Feature(
@@ -21,7 +21,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Fields Indexing (SQL)",
     Category = "Content Management",
     Description = "Content Fields Indexing module adds database indexing for content fields.",
-    Dependencies = new[] { "OrchardCore.ContentFields" }
+    Dependencies = ["OrchardCore.ContentFields"]
 )]
 
 [assembly: Feature(
@@ -29,5 +29,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Fields Indexing (SQL) - User Picker",
     Category = "Content Management",
     Description = "User Picker Content Fields Indexing module adds database indexing for user picker fields.",
-    Dependencies = new[] { "OrchardCore.ContentFields", "OrchardCore.Users" }
+    Dependencies = ["OrchardCore.ContentFields", "OrchardCore.Users"]
 )]

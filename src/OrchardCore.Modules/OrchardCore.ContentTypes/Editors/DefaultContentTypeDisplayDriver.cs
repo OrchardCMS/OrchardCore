@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -9,7 +8,7 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public DefaultContentTypeDisplayDriver(IStringLocalizer<DefaultContentTypeDisplayDriver> localizer)
         {
@@ -33,7 +32,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             context.Builder.DisplayedAs(model.DisplayName);
 
-            if (String.IsNullOrWhiteSpace(model.DisplayName))
+            if (string.IsNullOrWhiteSpace(model.DisplayName))
             {
                 context.Updater.ModelState.AddModelError("DisplayName", S["The Content Type name can't be empty."]);
             }
