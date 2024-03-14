@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Moq;
-
 namespace OrchardCore.Tests.OrchardCore.Users
 {
     public static class UsersMockHelper
@@ -24,8 +19,11 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public static Mock<RoleManager<TRole>> MockRoleManager<TRole>() where TRole : class
         {
             var store = new Mock<IRoleStore<TRole>>().Object;
-            var roles = new List<IRoleValidator<TRole>>();
-            roles.Add(new RoleValidator<TRole>());
+
+            var roles = new List<IRoleValidator<TRole>>
+            {
+                new RoleValidator<TRole>(),
+            };
 
             return new Mock<RoleManager<TRole>>(store, roles, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);
         }

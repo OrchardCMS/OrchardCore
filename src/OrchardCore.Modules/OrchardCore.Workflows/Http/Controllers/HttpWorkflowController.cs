@@ -53,7 +53,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
         [HttpPost]
         [Admin]
-        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
+        public async Task<IActionResult> GenerateUrl(long workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             }
 
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
-            var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
+            var url = Url.Action("Invoke", "HttpWorkflow", new { token });
 
             return Ok(url);
         }
@@ -227,7 +227,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             var input = new Dictionary<string, object> { { "Signal", payload.SignalName } };
 
             // If a specific workflow was provided, then resume that workflow.
-            if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
+            if (!string.IsNullOrWhiteSpace(payload.WorkflowId))
             {
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
@@ -274,6 +274,11 @@ namespace OrchardCore.Workflows.Http.Controllers
             if (HttpContext.Items.ContainsKey(WorkflowHttpResult.Instance))
             {
                 return new EmptyResult();
+            }
+
+            if (HttpContext.Items.TryGetValue(WorkflowConstants.FormOriginatedLocationItemsKey, out var value))
+            {
+                return Redirect(value.ToString().ToUriComponents());
             }
 
             return Accepted();

@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.Deployment
                 return;
             }
 
-            var data = new JArray();
+            var data = new JsonArray();
 
             foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentStep.ContentTypes)).ListAsync())
             {
@@ -47,15 +47,16 @@ namespace OrchardCore.Contents.Deployment
                     objectData.Remove(nameof(ContentItem.ModifiedUtc));
                     objectData.Remove(nameof(ContentItem.PublishedUtc));
                 }
+
                 data.Add(objectData);
             }
 
-            if (data.HasValues)
+            if (data.HasValues())
             {
-                var jobj = new JObject
+                var jobj = new JsonObject
                 {
                     ["name"] = "content",
-                    ["data"] = data
+                    ["data"] = data,
                 };
 
                 result.Steps.Add(jobj);

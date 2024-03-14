@@ -34,13 +34,9 @@ namespace OrchardCore.Localization.PortableObject
         {
             if (fileInfo.Exists && !fileInfo.IsDirectory)
             {
-                using (var stream = fileInfo.CreateReadStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        dictionary.MergeTranslations(_parser.Parse(reader));
-                    }
-                }
+                using var stream = fileInfo.CreateReadStream();
+                using var reader = new StreamReader(stream);
+                dictionary.MergeTranslations(_parser.Parse(reader));
             }
         }
     }

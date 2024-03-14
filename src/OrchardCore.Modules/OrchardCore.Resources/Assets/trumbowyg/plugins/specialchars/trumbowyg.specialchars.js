@@ -28,6 +28,9 @@
             en: {
                 specialChars: 'Special characters'
             },
+            az: {
+                specialChars: 'Xüsusi simvollar'
+            },
             by: {
                 specialChars: 'Спецыяльныя сімвалы'
             },
@@ -45,6 +48,9 @@
             },
             ru: {
                 specialChars: 'Специальные символы'
+            },
+            sl: {
+                specialChars: 'Posebni znaki'
             },
             tr: {
                 specialChars: 'Özel karakterler'

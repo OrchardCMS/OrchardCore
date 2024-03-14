@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
-using GraphQL.Language.AST;
 using GraphQL.Types;
+using GraphQLParser.AST;
 
 namespace OrchardCore.ContentFields.GraphQL.Types
 {
@@ -26,13 +26,14 @@ namespace OrchardCore.ContentFields.GraphQL.Types
                 : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
         }
 
-        public override object ParseLiteral(IValue value)
+        public override object ParseLiteral(GraphQLValue value)
         {
-            var str = value as StringValue;
+            var str = value as GraphQLStringValue;
             if (str != null)
             {
                 return ParseValue(str.Value);
             }
+
             return null;
         }
     }
@@ -43,8 +44,9 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         {
             if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
             {
-                return value.Substring(1, value.Length - 2);
+                return value[1..^1];
             }
+
             return value;
         }
     }

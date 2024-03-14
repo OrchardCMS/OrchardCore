@@ -6,12 +6,10 @@
 formElementLabelManager = function () {
   var initilize = function initilize(wrapper) {
     var selectMenus = wrapper.getElementsByClassName('field-label-option-select-menu');
-
     for (var i = 0; i < selectMenus.length; i++) {
       var selectMenu = selectMenus[i];
       selectMenu.addEventListener('change', function (e) {
         var labelTextContainer = wrapper.querySelector('.label-text-container');
-
         if (e.target.value == 'None') {
           labelTextContainer.classList.add('d-none');
         } else {
@@ -21,12 +19,10 @@ formElementLabelManager = function () {
       selectMenu.dispatchEvent(new Event('change'));
     }
   };
-
   return {
     initilize: initilize
   };
 }();
-
 document.addEventListener('DOMContentLoaded', function () {
   formElementLabelManager.initilize(document);
 });

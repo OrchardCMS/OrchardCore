@@ -3,9 +3,8 @@
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
 <h3>@T["Endpoints"]</h3>
+
 <div class="mb-3" asp-validation-class-for="EnableTokenEndpoint">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
@@ -108,11 +107,11 @@
 <div class="mb-3" asp-validation-class-for="RequireProofKeyForCodeExchange">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
-        <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>        
+        <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
     </div>
     <div class="hint">
-                @T["Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' option is set on the individual client application."]
-            </div>
+        @T["Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' option is set on the individual client application."]
+    </div>
 </div>
 
 <h3>@T["Advanced options"]</h3>
@@ -120,14 +119,14 @@
 <p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
 
 <div class="mb-3" asp-validation-class-for="Authority">
-    <label asp-for="Authority">@T["Authority"]</label>
+    <label asp-for="Authority" class="form-label">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
     <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
-    <label asp-for="EncryptionCertificateStoreLocation">@T["Encryption Certificate Store Location"]</label>
+    <label asp-for="EncryptionCertificateStoreLocation" class="form-label">@T["Encryption Certificate Store Location"]</label>
     <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -141,7 +140,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreName">
-    <label asp-for="EncryptionCertificateStoreName">@T["Encryption Certificate Store Name"]</label>
+    <label asp-for="EncryptionCertificateStoreName" class="form-label">@T["Encryption Certificate Store Name"]</label>
     <select asp-for="EncryptionCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -157,15 +156,15 @@
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-        <label asp-for="EncryptionCertificateThumbprint">@T["Encryption Certificate"]</label>
+        <label asp-for="EncryptionCertificateThumbprint" class="form-label">@T["Encryption Certificate"]</label>
         <select asp-for="EncryptionCertificateThumbprint" class="form-select">
             <option value="">@T["None"]</option>
 
             @foreach (var certificate in Model.AvailableCertificates)
             {
                 var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
-                                            && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
-                                            && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
+                && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
+                && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
                 if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
@@ -191,7 +190,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SigningCertificateStoreLocation">
-    <label asp-for="SigningCertificateStoreLocation">@T["Signing Certificate Store Location"]</label>
+    <label asp-for="SigningCertificateStoreLocation" class="form-label">@T["Signing Certificate Store Location"]</label>
     <select asp-for="SigningCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -205,7 +204,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SigningCertificateStoreName">
-    <label asp-for="SigningCertificateStoreName">@T["Signing Certificate Store Name"]</label>
+    <label asp-for="SigningCertificateStoreName" class="form-label">@T["Signing Certificate Store Name"]</label>
     <select asp-for="SigningCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -221,15 +220,15 @@
 <div class="mb-3" asp-validation-class-for="SigningCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-        <label asp-for="SigningCertificateThumbprint">@T["Signing Certificate"]</label>
+        <label asp-for="SigningCertificateThumbprint" class="form-label">@T["Signing Certificate"]</label>
         <select asp-for="SigningCertificateThumbprint" class="form-select">
             <option value="">@T["None"]</option>
 
             @foreach (var certificate in Model.AvailableCertificates)
             {
                 var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
-                                            && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
-                                            && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
+                && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
+                && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
                 if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
@@ -263,7 +262,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="AccessTokenFormat">
-    <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
+    <label asp-for="AccessTokenFormat" class="form-label">@T["Token Format"]</label>
     <select asp-for="AccessTokenFormat" class="form-select">
         <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
             @T["ASP.NET Core Data Protection"]
@@ -292,7 +291,7 @@
 </div>
 
 <script at="Foot">
-////<![CDATA[
+    ////<![CDATA[
     window.onload = function () {
         refreshEncryptionCertificates();
         refreshSigningCertificates();
@@ -440,5 +439,5 @@
             }
         }
     };
-//]]>
+    //]]>
 </script>

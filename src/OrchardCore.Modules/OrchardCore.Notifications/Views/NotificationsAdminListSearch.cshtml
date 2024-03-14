@@ -1,0 +1,10 @@
+@using OrchardCore.Localization
+@model ListNotificationOptions
+@inject IDisplayManager<ListNotificationOptions> DisplayManager
+
+<div class="has-search">
+    <input asp-for="OriginalSearchText" type="hidden" />
+    <label asp-for="SearchText" class="sr-only">@T["Search"]</label>
+    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+    <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
+</div>

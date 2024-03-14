@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Processing
         public Task<IImageResolver> GetAsync(HttpContext context)
         {
             // Remove assets request path.
-            var path = context.Request.Path.Value.Substring(_assetsRequestPath.Value.Length);
+            var path = context.Request.Path.Value[_assetsRequestPath.Value.Length..];
 
             var fileInfo = _mediaFileProvider.GetFileInfo(path);
 

@@ -1,3 +1,8 @@
+@using OrchardCore
+@using OrchardCore.Html.Settings
+@using System.Globalization
+@using OrchardCore.Html.ViewModels
+@using OrchardCore.Localization
 @model HtmlBodyPartViewModel
 
 @{
@@ -11,24 +16,25 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="mb-3">
-    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    @if (culture.IsRightToLeft())
-    {
-        <div style="text-align:right">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        @if (culture.IsRightToLeft())
+        {
+            <div style="text-align:right">
+                <textarea asp-for="Html"></textarea>
+            </div>
+        }
+        else
+        {
             <textarea asp-for="Html"></textarea>
-        </div>
-    }
-    else
-    {
-        <textarea asp-for="Html"></textarea>
-    }
-    <span class="hint">@T["The body of the content item."]</span>
+        }
+        <span class="hint">@T["The body of the content item."]</span>
+    </div>
 </div>
 
-
 <script at="Foot">
-    $(function() {
+    $(function () {
     @* set dir while keeping trumbowg translations dictionary intact *@
     @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
@@ -56,7 +62,7 @@
             semantic: false
         }
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function() {
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });

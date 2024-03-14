@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
         private static Instant CurrentInstant => SystemClock.Instance.GetCurrentInstant();
 
         /// <summary>
-        /// Returns a Datetime Kind.Utc that is "Now"
+        /// Returns a Datetime Kind.Utc that is "Now".
         /// </summary>
         /// <inheritdoc />
         public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();
@@ -36,7 +36,7 @@ namespace OrchardCore.Modules
 
         public ITimeZone GetTimeZone(string timeZoneId)
         {
-            if (String.IsNullOrEmpty(timeZoneId))
+            if (string.IsNullOrEmpty(timeZoneId))
             {
                 return GetSystemTimeZone();
             }
@@ -49,11 +49,11 @@ namespace OrchardCore.Modules
         public ITimeZone GetSystemTimeZone()
         {
             var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-            if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.ContainsKey(timezone.Id))
+            if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.TryGetValue(timezone.Id, out var canonicalTimeZoneId))
             {
-                var canonicalTimeZoneId = TzdbDateTimeZoneSource.Default.CanonicalIdMap[timezone.Id];
                 timezone = GetDateTimeZone(canonicalTimeZoneId);
             }
+
             return CreateTimeZone(timezone);
         }
 
@@ -65,7 +65,7 @@ namespace OrchardCore.Modules
 
         internal static DateTimeZone GetDateTimeZone(string timeZone)
         {
-            if (!String.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
+            if (!string.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
             {
                 return DateTimeZoneProviders.Tzdb[timeZone];
             }
@@ -73,12 +73,9 @@ namespace OrchardCore.Modules
             return DateTimeZoneProviders.Tzdb.GetSystemDefault();
         }
 
-        private ITimeZone CreateTimeZone(DateTimeZone dateTimeZone)
+        private static TimeZone CreateTimeZone(DateTimeZone dateTimeZone)
         {
-            if (dateTimeZone == null)
-            {
-                throw new ArgumentException(nameof(DateTimeZone));
-            }
+            ArgumentNullException.ThrowIfNull(dateTimeZone);
 
             var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
 

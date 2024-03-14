@@ -13,9 +13,10 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             _path = path;
             _lastModifiedUtc = lastModifiedUtc;
-            // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimiter
+
+            // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimiter.
             _name = System.IO.Path.GetFileName(path);
-            _directoryPath = _path.Length > _name.Length ? _path.Substring(0, _path.Length - _name.Length - 1) : "";
+            _directoryPath = _path.Length > _name.Length ? _path[..^(_name.Length + 1)] : "";
         }
 
         public string Path => _path;

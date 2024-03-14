@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.ViewModels

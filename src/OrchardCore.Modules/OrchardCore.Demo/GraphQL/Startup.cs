@@ -21,7 +21,7 @@ namespace OrchardCore.Demo.GraphQL
                             Hidden = false,
                             PartOptions = new GraphQLContentPartOption[] {
                                 // Content Part options attached to Content Type
-                                new GraphQLContentPartOption("TestContentPartA")
+                                new("TestContentPartA")
                                 {
                                     Collapse = false,
                                     Hidden = false

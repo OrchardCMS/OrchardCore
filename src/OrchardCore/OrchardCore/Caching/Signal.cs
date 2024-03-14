@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Cache
             return Task.CompletedTask;
         }
 
-        private struct ChangeTokenInfo
+        private readonly struct ChangeTokenInfo
         {
             public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
             {

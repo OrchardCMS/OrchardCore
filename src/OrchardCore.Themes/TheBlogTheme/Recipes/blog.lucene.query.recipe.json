@@ -14,7 +14,6 @@
       "name": "recipes",
       "Values": [
         {
-          "executionid": "Blog",
           "name": "Blog.Lucene.Search"
         }
       ]

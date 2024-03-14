@@ -1,5 +1,4 @@
-using System;
-using GraphQL;
+using System.Linq;
 using GraphQL.Conversion;
 using GraphQL.Types;
 
@@ -7,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class OrchardFieldNameConverter : INameConverter
     {
-        private readonly INameConverter _defaultConverter = new CamelCaseNameConverter();
+        private readonly CamelCaseNameConverter _defaultConverter = new();
 
         // todo: custom argument name?
         public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)
@@ -15,14 +14,14 @@ namespace OrchardCore.Apis.GraphQL
             return _defaultConverter.NameForArgument(argumentName, parentGraphType, field);
         }
 
-        // TODO: check functionality
+        // TODO: check functionality.
         public string NameForField(string fieldName, IComplexGraphType parentGraphType)
         {
             var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
 
             if (attributes != null)
             {
-                foreach (GraphQLFieldNameAttribute attribute in attributes)
+                foreach (var attribute in attributes.Cast<GraphQLFieldNameAttribute>())
                 {
                     if (attribute.Field == fieldName)
                     {

@@ -1,0 +1,20 @@
+@using System.Security.Claims
+
+@inject IAuthorizationService AuthorizationService
+
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+{
+    <li>
+        <a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Edit" asp-controller="Admin" asp-route-returnUrl="@FullRequestPath">
+            <i class="far fa-address-card" aria-hidden="true"></i> @T["Profile"]
+        </a>
+    </li>
+}
+else if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers))
+{
+    <li>
+        <a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Display" asp-controller="Admin" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)" asp-route-returnUrl="@FullRequestPath">
+            <i class="far fa-address-card" aria-hidden="true"></i> @T["Profile"]
+        </a>
+    </li>
+}
