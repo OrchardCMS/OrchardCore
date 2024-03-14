@@ -2,7 +2,13 @@ namespace OrchardCore;
 
 public class OrchardCoreConstants
 {
-    public const string TenantsFileName = "tenants.json";
+    public class Shell
+    {
+        public const string TenantsFileName = "tenants.json";
+    }
 
-    public const string ApplicationSettingsFileName = "appsettings.json";
+    public class Configuration
+    {
+        public const string ApplicationSettingsFileName = "appsettings.json";
+    }
 }

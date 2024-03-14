@@ -12,7 +12,7 @@ namespace OrchardCore.Shells.Azure.Configuration
     public class BlobShellsConfigurationSources : IShellsConfigurationSources
     {
         private static readonly string _appSettings =
-            Path.GetFileNameWithoutExtension(OrchardCoreConstants.ApplicationSettingsFileName);
+            Path.GetFileNameWithoutExtension(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
         private readonly IShellsFileStore _shellsFileStore;
         private readonly BlobShellStorageOptions _blobOptions;
@@ -35,19 +35,19 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.ApplicationSettingsFileName);
+            var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
             if (appSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
             {
-                if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.ApplicationSettingsFileName))
+                if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.Configuration.ApplicationSettingsFileName))
                 {
-                    appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.ApplicationSettingsFileName);
+                    appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
                 }
             }
 
             if (appSettingsFileInfo != null)
             {
-                var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.ApplicationSettingsFileName);
+                var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
                 builder.AddTenantJsonStream(stream);
             }
 
