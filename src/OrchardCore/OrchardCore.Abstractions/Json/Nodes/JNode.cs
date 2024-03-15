@@ -1,3 +1,4 @@
+using Json.Path;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -172,25 +173,10 @@ public static class JNode
     /// <summary>
     /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
     /// </summary>
-    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path)
-    {
-        if (jsonNode is null || path is null)
-        {
-            return null;
-        }
-
-        if (jsonNode is JsonObject jsonObject)
-        {
-            return jsonObject.SelectNode(path);
-        }
-
-        if (jsonNode is JsonArray jsonArray)
-        {
-            return jsonArray.SelectNode(path);
-        }
-
-        return null;
-    }
+    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null) =>
+        path != null && JsonPath.TryParse(path, out var jsonPath, options)
+            ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value
+            : null;
 
     /// <summary>
     /// Merge the specified content into this <see cref="JsonNode"/> using <see cref="JsonMergeSettings"/>.
