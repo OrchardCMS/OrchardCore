@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -10,14 +11,15 @@ namespace OrchardCore.ContentManagement.Records
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
@@ -31,7 +33,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
@@ -40,7 +42,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
@@ -51,7 +53,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
                     "Owner",
@@ -59,7 +61,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
                     "Author",
@@ -67,7 +69,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
                     "DisplayText",
@@ -79,18 +81,18 @@ namespace OrchardCore.ContentManagement.Records
             return 6;
         }
 
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
             );
 
             return 2;
         }
 
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
@@ -184,9 +186,9 @@ namespace OrchardCore.ContentManagement.Records
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom5()
+        public async Task<int> UpdateFrom5Async()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
@@ -195,7 +197,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
@@ -206,7 +208,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
                     "Owner",
@@ -214,7 +216,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
                     "Author",
@@ -222,7 +224,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
                     "DisplayText",

@@ -20,11 +20,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.DisplayText, nullable: true);
             Field(ci => ci.Published);
             Field(ci => ci.Latest);
-            Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc);
-            Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc);
-            Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc);
-            Field(ci => ci.Owner);
-            Field(ci => ci.Author);
+            Field(ci => ci.ModifiedUtc, nullable: true);
+            Field(ci => ci.PublishedUtc, nullable: true);
+            Field(ci => ci.CreatedUtc, nullable: true);
+            Field(ci => ci.Owner, nullable: true);
+            Field(ci => ci.Author, nullable: true);
         }
 
         public override FieldType AddField(FieldType fieldType)

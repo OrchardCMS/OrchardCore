@@ -52,7 +52,7 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             var template = _fluidParser.Parse(options.ContainerName);
 
             // Container name must be lowercase.
-            var containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
+            var containerName = (await template.RenderAsync(templateContext, NullEncoder.Default)).ToLower();
             options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
         catch (Exception e)

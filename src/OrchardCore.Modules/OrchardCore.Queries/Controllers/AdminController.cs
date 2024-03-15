@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,8 +19,11 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Admin("Queries/{action}/{id?}", "Queries{action}")]
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
@@ -27,9 +31,10 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -49,7 +54,7 @@ namespace OrchardCore.Queries.Controllers
             _queryManager = queryManager;
             _querySources = querySources;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -77,17 +82,19 @@ namespace OrchardCore.Queries.Controllers
                 .Take(pager.PageSize)
                 .ToList();
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(queries.Count()).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
 
             var model = new QueriesIndexViewModel
             {
-                Queries = new List<QueryEntry>(),
+                Queries = [],
                 Options = options,
-                Pager = pagerShape,
+                Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()
             };
 
@@ -100,21 +107,21 @@ namespace OrchardCore.Queries.Controllers
                 });
             }
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create(string id)
         {
@@ -195,7 +202,7 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         public async Task<IActionResult> EditPost(QueriesEditViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
@@ -203,14 +210,14 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = (await _queryManager.LoadQueryAsync(model.Name));
+            var query = await _queryManager.LoadQueryAsync(model.Name);
 
             if (query == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {
@@ -248,9 +255,9 @@ namespace OrchardCore.Queries.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
@@ -273,7 +280,7 @@ namespace OrchardCore.Queries.Controllers
                         await _notifier.SuccessAsync(H["Queries successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 

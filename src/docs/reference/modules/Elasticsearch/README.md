@@ -43,7 +43,7 @@ You should get this result in Docker Desktop app:
 
 ### Set up Elasticsearch in Orchard Core
 
-- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web appsettings.json file). [See Elasticsearch Configurations](#elasticsearch-configuration).
+- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web `appsettings.json` file). [See Elasticsearch Configurations](#elasticsearch-configuration).
 
 - Start an Orchard Core instance with VS Code debugger
 - Go to Orchard Core features, Enable Elasticsearch.
@@ -90,7 +90,8 @@ Here is an example for setting default search settings:
         "DefaultSearchFields":[
           "Content.ContentItem.FullText"
         ],
-        "AllowElasticQueryStringQueryInSearch":false,
+        "SearchType": "", // Use 'custom' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
+        "DefaultQuery": null,
         "SyncWithLucene":true // Allows to sync content index settings.
       }
     }
@@ -108,7 +109,7 @@ It doesn't delete existing entries from the index.
 {
   "steps":[
     {
-      "name":"lucene-index-reset",
+      "name":"elastic-index-reset",
       "Indices":[
         "IndexName1",
         "IndexName2"
@@ -124,7 +125,7 @@ To reset all indices:
 {
   "steps":[
     {
-      "name":"lucene-index-reset",
+      "name":"elastic-index-reset",
       "IncludeAll":true
     }
   ]
@@ -140,7 +141,7 @@ Deletes and recreates the full index content.
 {
   "steps":[
     {
-      "name":"lucene-index-rebuild",
+      "name":"elastic-index-rebuild",
       "Indices":[
         "IndexName1",
         "IndexName2"
@@ -156,7 +157,7 @@ To rebuild all indices:
 {
   "steps":[
     {
-      "name":"lucene-index-rebuild",
+      "name":"elastic-index-rebuild",
       "IncludeAll":true
     }
   ]
@@ -169,11 +170,14 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
 
 ```json
 {
-  "Source": "Elasticsearch",
-  "Name": "RecentBlogPosts",
-  "Index": "Search",
-  "Template": "...", // json encoded query template
-  "ReturnContentItems": true
+  "steps":[
+    {
+        "Source": "Elasticsearch",
+        "Name": "RecentBlogPosts",
+        "Index": "Search",
+        "Template": "...", // json encoded query template
+        "ReturnContentItems": true
+    }
 }
 ```
 
@@ -210,7 +214,7 @@ See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.
 
 ## Elasticsearch configuration
 
-The Elasticsearch module connection configuration can be set globally in the appsettings.json file or per tenant.
+The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or per tenant.
 
 ```json
 "OrchardCore_Elasticsearch": {

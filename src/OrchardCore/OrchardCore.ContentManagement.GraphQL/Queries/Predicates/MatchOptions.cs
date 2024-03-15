@@ -6,22 +6,22 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
     public abstract class MatchOptions
     {
         /// <summary>
-        /// Match the start of the string to the pattern
+        /// Match the start of the string to the pattern.
         /// </summary>
         public static readonly MatchOptions StartsWith = new StartsWithMatchOptions();
 
         /// <summary>
-        /// Match the end of the string to the pattern
+        /// Match the end of the string to the pattern.
         /// </summary>
         public static readonly MatchOptions EndsWith = new EndsWithMatchOptions();
 
         /// <summary>
-        /// Match when the string contains the pattern
+        /// Match when the string contains the pattern.
         /// </summary>
         public static readonly MatchOptions Contains = new ContainsMatchOptions();
 
         /// <summary>
-        /// Convert the pattern, by appending/prepending "%"
+        /// Convert the pattern, by appending/prepending "%".
         /// </summary>
         /// <param name="pattern">The string to convert to the appropriate match pattern.</param>
         /// <returns>

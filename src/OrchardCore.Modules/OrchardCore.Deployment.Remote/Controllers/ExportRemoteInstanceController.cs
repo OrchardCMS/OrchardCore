@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -18,16 +17,15 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/ExportRemoteInstance/{action}/{id?}", "DeploymentExportRemoteInstance{action}")]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new();
-
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+        private readonly IHttpClientFactory _httpClientFactory;
         protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
@@ -36,6 +34,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
+            IHttpClientFactory httpClientFactory,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _authorizationService = authorizationService;
@@ -43,6 +42,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _session = session;
             _service = service;
             _notifier = notifier;
+            _httpClientFactory = httpClientFactory;
             H = localizer;
         }
 
@@ -100,7 +100,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
 
-                    response = await _httpClient.PostAsync(remoteInstance.Url, requestContent);
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    response = await httpClient.PostAsync(remoteInstance.Url, requestContent);
                 }
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)

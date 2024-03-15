@@ -105,24 +105,63 @@ public class AdminController : Controller
         _tablePrefix = settings["TablePrefix"];
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Query()
     {
-       using (var connection = _dbAccessor.CreateConnection())
+       await using (var connection = _dbAccessor.CreateConnection())
        {
-           using(var transaction = connection.BeginTransaction())
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            var model = await connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable};");
+
+            return View(model);
+        }
+    }
+
+    public async Task<ActionResult> DeleteUsingTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+           using (var transaction = await connection.BeginTransactionAsync())
            {
-                var dialect = _store.Configuration.SqlDialect;
-                var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+               try 
+               {
+                    var dialect = _store.Configuration.SqlDialect;
+                    var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+                    var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
 
-                var selectCommand = $"SELECT * FROM {customTable}";
+                    var command1 = $"DELETE FROM {customTable1};";
+                    var command2 = $"DELETE FROM {customTable2};";
 
-                var model = connection.QueryAsync<CustomTable>(selectCommand);
+                    await connection.ExecuteAsync(command1);
+                    await connection.ExecuteAsync(command2);
+                    
+                    await transaction.CommitAsync();
+                } 
+                catch 
+                {
+                    // If an exception occurs the transaction is rollbacked
+                    await transaction.RollbackAsync();
+                }
 
-                // If an exception occurs the transaction is disposed and rollbacked
-                transaction.Commit();
-
-                return View(model);
+                return Content("Done!");
             }
+        }
+    }
+
+    public async Task<ActionResult> DeleteNoTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+            var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
+
+            var command = $"DELETE FROM {customTable1}; DELETE FROM {customTable2};";
+
+            await connection.ExecuteAsync(command);
+
+            return Content("Done!");
         }
     }
 }

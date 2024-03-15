@@ -163,7 +163,7 @@ namespace OrchardCore.Environment.Shell
 
             if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
-                return new string[] { "/" + shellSettings.RequestUrlPrefix };
+                return ["/" + shellSettings.RequestUrlPrefix];
             }
 
             return shellSettings

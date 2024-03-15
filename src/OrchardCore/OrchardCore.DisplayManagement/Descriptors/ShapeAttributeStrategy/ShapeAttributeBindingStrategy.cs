@@ -16,7 +16,7 @@ using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
-    public class ShapeAttributeBindingStrategy : IShapeTableHarvester
+    public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarvester
     {
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             _shapeProviders = shapeProviders;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             var shapeAttributeOccurrences = new List<ShapeAttributeOccurrence>();
 
@@ -57,6 +57,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
                         CreateDelegate(occurrence));
             }
+
+            return ValueTask.CompletedTask;
         }
 
         [DebuggerStepThrough]
@@ -150,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             return (Func<object, object[], object>)lambda;
         }
 
-        private static void CreateParamsExpressions(MethodBase method, out ParameterExpression argsExp, out Expression[] paramsExps)
+        private static void CreateParamsExpressions(MethodInfo method, out ParameterExpression argsExp, out Expression[] paramsExps)
         {
             var parameters = method.GetParameters().Select(x => x.ParameterType).ToArray();
 

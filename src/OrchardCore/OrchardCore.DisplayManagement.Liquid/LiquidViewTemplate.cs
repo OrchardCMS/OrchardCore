@@ -86,24 +86,22 @@ namespace OrchardCore.DisplayManagement.Liquid
                     entry.ExpirationTokens.Add(fileProvider.Watch(path));
                 }
 
-                using var stream = fileInfo.CreateReadStream();
+                await using var stream = fileInfo.CreateReadStream();
                 using var sr = new StreamReader(stream);
 
                 if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                 {
                     return new LiquidViewTemplate(template);
                 }
-                else
-                {
-                    throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
-                }
+
+                throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
             });
         }
     }
 
-    internal class ShapeAccessor : DelegateAccessor
+    internal class ShapeAccessor : DelegateAccessor<object, object>
     {
-        public ShapeAccessor() : base(_getter)
+        public ShapeAccessor() : base((obj, name, ctx) => _getter(obj, name))
         {
         }
 

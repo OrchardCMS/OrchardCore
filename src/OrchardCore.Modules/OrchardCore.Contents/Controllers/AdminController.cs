@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -30,61 +30,47 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
-        private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly PagerOptions _pagerOptions;
-        private readonly ISession _session;
-        private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IContentManager _contentManager;
+        private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
-        private readonly IContentsAdminListQueryService _contentsAdminListQueryService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly ILogger _logger;
+        private readonly ISession _session;
+        private readonly INotifier _notifier;
 
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
-        protected readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            IOptions<PagerOptions> pagerOptions,
-            INotifier notifier,
-            ISession session,
-            IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
-            IContentsAdminListQueryService contentsAdminListQueryService,
-            ILogger<AdminController> logger,
+            ISession session,
+            INotifier notifier,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _authorizationService = authorizationService;
-            _notifier = notifier;
-            _contentItemDisplayManager = contentItemDisplayManager;
-            _session = session;
-            _pagerOptions = pagerOptions.Value;
             _contentManager = contentManager;
+            _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _updateModelAccessor = updateModelAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
-            _contentsAdminListQueryService = contentsAdminListQueryService;
-            _shapeFactory = shapeFactory;
-            _logger = logger;
+            _session = session;
+            _notifier = notifier;
 
             H = htmlLocalizer;
             S = stringLocalizer;
-            New = shapeFactory;
         }
 
-        [HttpGet]
+        [Admin("Contents/ContentItems/{contentTypeId?}", "ListContentItems")]
         public async Task<IActionResult> List(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
             [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
             ContentOptionsViewModel options,
             PagerParameters pagerParameters,
@@ -93,7 +79,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .OrderBy(ctd => ctd.DisplayName)
-                .ToList();
+                .ToArray();
 
             if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, contentTypeDefinitions, _contentManager))
             {
@@ -153,33 +139,33 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // We populate the remaining SelectLists.
-            options.ContentStatuses = new List<SelectListItem>()
-            {
-                new SelectListItem(S["Latest"], nameof(ContentsStatus.Latest), options.ContentsStatus == ContentsStatus.Latest),
-                new SelectListItem(S["Published"], nameof(ContentsStatus.Published), options.ContentsStatus == ContentsStatus.Published),
-                new SelectListItem(S["Unpublished"], nameof(ContentsStatus.Draft), options.ContentsStatus == ContentsStatus.Draft),
-                new SelectListItem(S["All versions"], nameof(ContentsStatus.AllVersions), options.ContentsStatus == ContentsStatus.AllVersions),
-            };
+            options.ContentStatuses =
+            [
+                new SelectListItem(S["Latest"], nameof(ContentsStatus.Latest)),
+                new SelectListItem(S["Published"], nameof(ContentsStatus.Published)),
+                new SelectListItem(S["Unpublished"], nameof(ContentsStatus.Draft)),
+                new SelectListItem(S["All versions"], nameof(ContentsStatus.AllVersions)),
+            ];
 
             if (await IsAuthorizedAsync(Permissions.ListContent))
             {
-                options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
+                options.ContentStatuses.Insert(1, new SelectListItem(S["Owned by me"], nameof(ContentsStatus.Owner)));
             }
 
-            options.ContentSorts = new List<SelectListItem>()
-            {
-                new SelectListItem(S["Recently created"], nameof(ContentsOrder.Created), options.OrderBy == ContentsOrder.Created),
-                new SelectListItem(S["Recently modified"], nameof(ContentsOrder.Modified),options.OrderBy == ContentsOrder.Modified ),
-                new SelectListItem(S["Recently published"], nameof(ContentsOrder.Published), options.OrderBy == ContentsOrder.Published),
-                new SelectListItem(S["Title"], nameof(ContentsOrder.Title), options.OrderBy == ContentsOrder.Title),
-            };
+            options.ContentSorts =
+            [
+                new SelectListItem(S["Recently created"], nameof(ContentsOrder.Created)),
+                new SelectListItem(S["Recently modified"], nameof(ContentsOrder.Modified)),
+                new SelectListItem(S["Recently published"], nameof(ContentsOrder.Published)),
+                new SelectListItem(S["Title"], nameof(ContentsOrder.Title)),
+            ];
 
-            options.ContentsBulkAction = new List<SelectListItem>()
-            {
+            options.ContentsBulkAction =
+            [
                 new SelectListItem(S["Publish Now"], nameof(ContentsBulkAction.PublishNow)),
                 new SelectListItem(S["Unpublish"], nameof(ContentsBulkAction.Unpublish)),
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            };
+            ];
 
             if (options.ContentTypeOptions == null
                 && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
@@ -188,10 +174,10 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // If ContentTypeOptions is not initialized by query string or by the code above, initialize it.
-            options.ContentTypeOptions ??= new List<SelectListItem>();
+            options.ContentTypeOptions ??= [];
 
             // With the populated options, filter the query allowing the filters to alter the options.
-            var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
+            var query = await contentsAdminListQueryService.QueryAsync(options, this);
 
             // The search text is provided back to the UI.
             options.SearchText = options.FilterResult.ToString();
@@ -200,18 +186,24 @@ namespace OrchardCore.Contents.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            var routeData = new RouteData(options.RouteValues);
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(_pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync()).RouteData(routeData);
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+
+            var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
+                ? pagerOptions.Value.MaxPagedCount
+                : await query.CountAsync();
+
+            dynamic pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
 
             // Load items so that loading handlers are invoked.
-            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex())
+                .Take(pager.PageSize)
+                .ListAsync(_contentManager);
 
             // We prepare the content items SummaryAdmin shape.
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
             {
-                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
             // Populate options pager summary values.
@@ -221,9 +213,9 @@ namespace OrchardCore.Contents.Controllers
             options.ContentItemsCount = contentItemSummaries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-            var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
+            var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
                 viewModel.ContentItems = contentItemSummaries;
                 viewModel.Pager = pagerShape;
@@ -234,18 +226,22 @@ namespace OrchardCore.Contents.Controllers
             return View(shapeViewModel);
         }
 
-        [HttpPost, ActionName(nameof(List))]
+        [HttpPost]
+        [ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> ListFilterPOST(ContentOptionsViewModel options)
         {
             // When the user has typed something into the search input no further evaluation of the form post is required.
             if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
+                return RedirectToAction(nameof(List), new RouteValueDictionary
+                {
+                    { "q", options.SearchText },
+                });
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            await _contentOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -253,14 +249,18 @@ namespace OrchardCore.Contents.Controllers
             return RedirectToAction(nameof(List), options.RouteValues);
         }
 
-        [HttpPost, ActionName(nameof(List))]
+        [HttpPost]
+        [ActionName(nameof(List))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, IEnumerable<long> itemIds)
+        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, long[] itemIds)
         {
-            if (itemIds?.Count() > 0)
+            if (itemIds.Length > 0)
             {
                 // Load items so that loading handlers are invoked.
-                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ListAsync(_contentManager);
+                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.DocumentId.IsIn(itemIds) && x.Latest)
+                    .ListAsync(_contentManager);
+
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:
@@ -308,13 +308,14 @@ namespace OrchardCore.Contents.Controllers
                         await _notifier.SuccessAsync(H["Content removed successfully."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
             return RedirectToAction(nameof(List));
         }
 
+        [Admin("Contents/ContentTypes/{id}/Create", "CreateContentItem")]
         public async Task<IActionResult> Create(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -329,14 +330,18 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
 
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Create))]
+        [HttpPost]
+        [ActionName(nameof(Create))]
         [FormValueRequired("submit.Save")]
-        public Task<IActionResult> CreatePOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
+        public Task<IActionResult> CreatePOST(
+            string id,
+            [Bind(Prefix = "submit.Save")] string submitSave,
+            string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
             return CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
@@ -351,9 +356,13 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        [HttpPost, ActionName(nameof(Create))]
+        [HttpPost]
+        [ActionName(nameof(Create))]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> CreateAndPublishPOST(string id, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
+        public async Task<IActionResult> CreateAndPublishPOST(
+            string id,
+            [Bind(Prefix = "submit.Publish")] string submitPublish,
+            string returnUrl)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -379,6 +388,7 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
+        [Admin("Contents/ContentItems/{contentItemId}/Display", "AdminContentItem")]
         public async Task<IActionResult> Display(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -393,11 +403,12 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "DetailAdmin");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
 
             return View(model);
         }
 
+        [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
         public async Task<IActionResult> Edit(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -412,14 +423,18 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost]
+        [ActionName(nameof(Edit))]
         [FormValueRequired("submit.Save")]
-        public Task<IActionResult> EditPOST(string contentItemId, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
+        public Task<IActionResult> EditPOST(
+            string contentItemId,
+            [Bind(Prefix = "submit.Save")] string submitSave,
+            string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
             return EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
@@ -434,9 +449,13 @@ namespace OrchardCore.Contents.Controllers
             });
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost]
+        [ActionName(nameof(Edit))]
         [FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
+        public async Task<IActionResult> EditAndPublishPOST(
+            string contentItemId,
+            [Bind(Prefix = "submit.Publish")] string submitPublish,
+            string returnUrl)
         {
             var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
 
@@ -465,6 +484,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Clone", "AdminCloneContentItem")]
         public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -486,15 +506,20 @@ namespace OrchardCore.Contents.Controllers
             catch (InvalidOperationException)
             {
                 await _notifier.WarningAsync(H["Could not clone the content item."]);
-                return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+                return Url.IsLocalUrl(returnUrl)
+                    ? this.LocalRedirect(returnUrl, true)
+                    : RedirectToAction(nameof(List));
             }
 
             await _notifier.InformationAsync(H["Successfully cloned. The clone was saved as a draft."]);
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl)
+                ? this.LocalRedirect(returnUrl, true)
+                : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/DiscardDraft", "AdminDiscardDraftContentItem")]
         public async Task<IActionResult> DiscardDraft(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -520,10 +545,13 @@ namespace OrchardCore.Contents.Controllers
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl)
+                ? this.LocalRedirect(returnUrl, true)
+                : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Delete", "AdminDeleteContentItem")]
         public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -544,10 +572,13 @@ namespace OrchardCore.Contents.Controllers
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl)
+                ? this.LocalRedirect(returnUrl, true)
+                : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Publish", "AdminPublishContentItem")]
         public async Task<IActionResult> Publish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -574,10 +605,13 @@ namespace OrchardCore.Contents.Controllers
                 await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl)
+                ? this.LocalRedirect(returnUrl, true)
+                : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Unpublish", "AdminUnpublishContentItem")]
         public async Task<IActionResult> Unpublish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -604,10 +638,16 @@ namespace OrchardCore.Contents.Controllers
                 await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl)
+                ? this.LocalRedirect(returnUrl, true)
+                : RedirectToAction(nameof(List));
         }
 
-        private async Task<IActionResult> CreatePOST(string id, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> CreatePOST(
+            string id,
+            string returnUrl,
+            bool stayOnSamePage,
+            Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await CreateContentItemOwnedByCurrentUserAsync(id);
 
@@ -616,7 +656,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (ModelState.IsValid)
             {
@@ -646,7 +686,11 @@ namespace OrchardCore.Contents.Controllers
             return RedirectToRoute(adminRouteValues);
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, bool stayOnSamePage, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> EditPOST(
+            string contentItemId,
+            string returnUrl,
+            bool stayOnSamePage,
+            Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
@@ -660,7 +704,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
             if (!ModelState.IsValid)
             {
@@ -672,18 +716,27 @@ namespace OrchardCore.Contents.Controllers
 
             if (returnUrl == null)
             {
-                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary
+                {
+                    { "ContentItemId", contentItem.ContentItemId },
+                });
             }
 
             if (stayOnSamePage)
             {
-                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary
+                {
+                    { "ContentItemId", contentItem.ContentItemId },
+                    { "returnUrl", returnUrl },
+                });
             }
 
             return this.LocalRedirect(returnUrl, true);
         }
 
-        private async Task<List<SelectListItem>> GetCreatableTypeOptionsAsync(bool canCreateSelectedContentType, params ContentTypeDefinition[] contentTypeDefinitions)
+        private async Task<List<SelectListItem>> GetCreatableTypeOptionsAsync(
+            bool canCreateSelectedContentType,
+            params ContentTypeDefinition[] contentTypeDefinitions)
         {
             var options = new List<SelectListItem>();
 
@@ -702,7 +755,10 @@ namespace OrchardCore.Contents.Controllers
             return options;
         }
 
-        private async Task<List<SelectListItem>> GetListableContentTypeOptionsAsync(IEnumerable<ContentTypeDefinition> definitions, string selectedContentType, bool showSelectAll = true)
+        private async Task<List<SelectListItem>> GetListableContentTypeOptionsAsync(
+            IEnumerable<ContentTypeDefinition> definitions,
+            string selectedContentType,
+            bool showSelectAll = true)
         {
             var currentUserId = CurrentUserId();
 

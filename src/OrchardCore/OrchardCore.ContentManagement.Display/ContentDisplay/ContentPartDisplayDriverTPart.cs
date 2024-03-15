@@ -66,11 +66,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                     if (editorPartType == shapeType)
                     {
-                        displayTypes = new[] { "_" + ctx.Shape.Metadata.DisplayType };
+                        displayTypes = ["_" + ctx.Shape.Metadata.DisplayType];
                     }
                     else
                     {
-                        displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
+                        displayTypes = ["", "_" + ctx.Shape.Metadata.DisplayType];
 
                         if (!isDisplayModeShapeType)
                         {
@@ -343,7 +343,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         }
 
         /// <summary>
-        /// Restores the previous prefix automatically
+        /// Restores the previous prefix automatically.
         /// </summary>
         private class TempPrefix : IDisposable
         {

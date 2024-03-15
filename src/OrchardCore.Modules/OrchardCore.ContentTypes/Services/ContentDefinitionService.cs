@@ -97,7 +97,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {
-                throw new ArgumentException("The 'displayName' can't be null or empty.", nameof(displayName));
+                throw new ArgumentException($"The '{nameof(displayName)}' can't be null or empty.", nameof(displayName));
             }
 
             if (string.IsNullOrWhiteSpace(name))
@@ -193,7 +193,7 @@ namespace OrchardCore.ContentTypes.Services
 
             // Code-defined parts.
             var codeDefinedParts = metadataPartsOnly
-                ? Enumerable.Empty<EditPartViewModel>()
+                ? []
                 : _contentPartTypes
                         .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
                         .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException("The '{fieldName}' can't be null or empty.", nameof(fieldName));
+                throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.", nameof(fieldName));
             }
 
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
@@ -398,7 +398,7 @@ namespace OrchardCore.ContentTypes.Services
                 for (var i = 0; i < partNames.Length; i++)
                 {
                     var partDefinition = typeDefinition.Parts?.FirstOrDefault(x => x.Name == partNames[i]);
-                    
+
                     if (partDefinition == null)
                     {
                         continue;

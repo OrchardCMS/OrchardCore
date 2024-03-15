@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Tenants.Services;
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Tenants.Deployment
                 return;
             }
 
-            var featureProfileObjects = new JObject();
+            var featureProfileObjects = new JsonObject();
             var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
             foreach (var featureProfile in featureProfiles.FeatureProfiles)
@@ -29,10 +29,11 @@ namespace OrchardCore.Tenants.Deployment
                 featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "FeatureProfiles"),
-                new JProperty("FeatureProfiles", featureProfileObjects)
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "FeatureProfiles",
+                ["FeatureProfiles"] = featureProfileObjects,
+            });
         }
     }
 }

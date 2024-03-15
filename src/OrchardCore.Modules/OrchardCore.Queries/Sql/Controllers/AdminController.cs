@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using OrchardCore.Admin;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
@@ -42,6 +43,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _templateOptions = templateOptions.Value;
         }
 
+        [Admin("Queries/Sql/Query", "QueriesRunSql")]
         public Task<IActionResult> Query(string query)
         {
             query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
@@ -75,25 +77,22 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
-                model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
+                model.Parameters = JConvert.SerializeObject(parameters, JOptions.Indented);
 
                 try
                 {
-                    using (connection)
-                    {
-                        await connection.OpenAsync();
-                        model.Documents = await connection.QueryAsync(rawQuery, parameters);
-                    }
+                    await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+                    await connection.OpenAsync();
+                    model.Documents = await connection.QueryAsync(rawQuery, parameters);
                 }
                 catch (Exception e)
                 {

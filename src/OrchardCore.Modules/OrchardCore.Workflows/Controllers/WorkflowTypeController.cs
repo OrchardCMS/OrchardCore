@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +12,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -30,7 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Workflows.Controllers
 {
-    [Admin]
+    [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
     public class WorkflowTypeController : Controller
     {
         private readonly PagerOptions _pagerOptions;
@@ -44,8 +43,8 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
 
-        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -62,8 +61,8 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             ISecurityTokenService securityTokenService,
-            IStringLocalizer<WorkflowTypeController> s,
-            IHtmlLocalizer<WorkflowTypeController> h,
+            IStringLocalizer<WorkflowTypeController> stringLocalizer,
+            IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _pagerOptions = pagerOptions.Value;
@@ -77,12 +76,12 @@ namespace OrchardCore.Workflows.Controllers
             _notifier = notifier;
             _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
-
-            New = shapeFactory;
-            S = s;
-            H = h;
+            _shapeFactory = shapeFactory;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
+        [Admin("Workflows/Types", "WorkflowTypes")]
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -122,6 +121,7 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
+            // The existing session's connection is returned, don't dispose it
             var connection = await _session.CreateConnectionAsync();
 
             var dialect = _session.Store.Configuration.SqlDialect;
@@ -136,10 +136,13 @@ namespace OrchardCore.Workflows.Controllers
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
-            routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd("Options.Search", options.Search);
+            }
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
             var model = new WorkflowTypeIndexViewModel
             {
                 WorkflowTypes = workflowTypes
@@ -155,28 +158,21 @@ namespace OrchardCore.Workflows.Controllers
                 Pager = pagerShape,
             };
 
-            model.Options.WorkflowTypesBulkAction = new List<SelectListItem>()
-            {
-                new SelectListItem()
-                {
-                    Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete),
-                },
-            };
+            model.Options.WorkflowTypesBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
             {
-                {
-                    "Options.Search", model.Options.Search
-                },
+                { "Options.Search", model.Options.Search },
             });
-        }
 
         [HttpPost]
         [ActionName(nameof(Index))]
@@ -210,7 +206,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
@@ -422,13 +418,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowTypeViewModel
             {
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(
-                    workflowTypeData,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    }),
+                WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
@@ -449,9 +439,11 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(model.Id);
-            dynamic state = JObject.Parse(model.State);
+            var state = JObject.Parse(model.State);
             var currentActivities = workflowType.Activities.ToDictionary(x => x.ActivityId);
-            var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (string)x.id);
+            var activities = state["activities"] as JsonArray;
+
+            var postedActivities = JArray.FromObject(activities).ToDictionary(x => x["id"]?.ToString());
             var removedActivityIdsQuery =
                 from activityId in currentActivities.Keys
                 where !postedActivities.ContainsKey(activityId)
@@ -467,23 +459,26 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             // Update activities.
-            foreach (var activityState in state.activities)
+            foreach (var activityState in activities)
             {
-                var activity = currentActivities[(string)activityState.id];
-                activity.X = activityState.x;
-                activity.Y = activityState.y;
-                activity.IsStart = activityState.isStart;
+                var activity = currentActivities[activityState["id"].ToString()];
+                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString());
+                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString());
+                activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 
             // Update transitions.
             workflowType.Transitions.Clear();
-            foreach (var transitionState in state.transitions)
+
+            var transitions = state["transitions"] as JsonArray;
+
+            foreach (var transitionState in transitions)
             {
                 workflowType.Transitions.Add(new Transition
                 {
-                    SourceActivityId = transitionState.sourceActivityId,
-                    DestinationActivityId = transitionState.destinationActivityId,
-                    SourceOutcomeName = transitionState.sourceOutcomeName,
+                    SourceActivityId = transitionState["sourceActivityId"]?.ToString(),
+                    DestinationActivityId = transitionState["destinationActivityId"]?.ToString(),
+                    SourceOutcomeName = transitionState["sourceOutcomeName"]?.ToString(),
                 });
             }
 

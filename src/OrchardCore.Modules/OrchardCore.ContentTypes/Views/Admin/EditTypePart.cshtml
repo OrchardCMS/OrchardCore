@@ -8,7 +8,7 @@
 @{
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }

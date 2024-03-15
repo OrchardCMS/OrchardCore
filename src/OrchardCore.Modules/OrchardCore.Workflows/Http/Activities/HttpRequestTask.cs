@@ -16,6 +16,8 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity<HttpRequestTask>
     {
+        private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+
         private static readonly Dictionary<int, string> _httpStatusCodeDictionary = new()
         {
             { 100, "Continue" },
@@ -83,20 +85,23 @@ namespace OrchardCore.Workflows.Http.Activities
             { 599, "Network Connect Timeout Error" }
         };
 
-        private static readonly HttpClient _httpClient = new();
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        protected readonly IStringLocalizer S;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly UrlEncoder _urlEncoder;
 
+        protected readonly IStringLocalizer S;
+
         public HttpRequestTask(
-            IStringLocalizer<HttpRequestTask> localizer,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            UrlEncoder urlEncoder
+            UrlEncoder urlEncoder,
+            IHttpClientFactory httpClientFactory,
+            IStringLocalizer<HttpRequestTask> localizer
         )
         {
-            S = localizer;
             _expressionEvaluator = expressionEvaluator;
             _urlEncoder = urlEncoder;
+            _httpClientFactory = httpClientFactory;
+            S = localizer;
         }
 
         public override LocalizedString DisplayText => S["Http Request Task"];
@@ -153,7 +158,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                     return new Outcome(status.ToString(), new LocalizedString(description, description));
                 }).ToList()
-                : new List<Outcome>();
+                : [];
             outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
             return outcomes;
@@ -179,8 +184,12 @@ namespace OrchardCore.Workflows.Http.Activities
                 request.Content = new StringContent(body, Encoding.UTF8, contentType);
             }
 
-            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+
             var responseCodes = ParseResponseCodes(HttpResponseCodes);
+
             var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
             workflowContext.LastResult = new
@@ -198,10 +207,12 @@ namespace OrchardCore.Workflows.Http.Activities
         private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, string>>();
+            {
+                return [];
+            }
 
             return
-                from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+                from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
                 let pair = header.Split(':', 2)
                 where pair.Length == 2
                 select new KeyValuePair<string, string>(pair[0], pair[1]);

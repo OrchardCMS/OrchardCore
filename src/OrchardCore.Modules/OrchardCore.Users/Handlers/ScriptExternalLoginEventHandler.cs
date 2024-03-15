@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using OrchardCore.Entities;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -18,11 +16,6 @@ namespace OrchardCore.Users.Handlers
         private readonly ILogger _logger;
         private readonly IScriptingManager _scriptingManager;
         private readonly ISiteService _siteService;
-
-        private static readonly JsonSerializerSettings _jsonSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        };
 
         public ScriptExternalLoginEventHandler(
             ISiteService siteService,
@@ -43,7 +36,7 @@ namespace OrchardCore.Users.Handlers
             {
                 var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
 
-                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonConvert.SerializeObject(context, _jsonSettings)};\ngenerateUsername(context);\nreturn context;";
+                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 if (evaluationResult?.userName != null)
@@ -59,20 +52,24 @@ namespace OrchardCore.Users.Handlers
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
             {
-                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JsonConvert.SerializeObject(context, _jsonSettings)};\nsyncRoles(context);\nreturn context;";
+                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
                 if (evaluationResult.propertiesToUpdate != null)
                 {
+                    var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
                     if (context.PropertiesToUpdate != null)
                     {
-
-                        context.PropertiesToUpdate.Merge(evaluationResult.propertiesToUpdate,new JsonMergeSettings { MergeArrayHandling= MergeArrayHandling.Replace});
+                        context.PropertiesToUpdate.Merge(result, new JsonMergeSettings
+                        {
+                            MergeArrayHandling = MergeArrayHandling.Replace,
+                            MergeNullValueHandling = MergeNullValueHandling.Merge
+                        });
                     }
                     else
                     {
-                        context.PropertiesToUpdate = JObject.FromObject(evaluationResult.propertiesToUpdate);
+                        context.PropertiesToUpdate = result;
                     }
                 }
             }

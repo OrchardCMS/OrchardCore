@@ -106,7 +106,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "small",  new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -123,7 +123,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "big", new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "big", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -248,7 +248,7 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }
@@ -261,13 +261,13 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("en", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("míč", "ball", "{0} balls")
+                new("míč", "ball", "{0} balls")
             }, PluralizationRule.English);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }
@@ -280,7 +280,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("ar", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("hello", "مرحبا")
+                new("hello", "مرحبا")
             }, PluralizationRule.Arabic);
 
             SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>(), PluralizationRule.Arabic);
@@ -301,16 +301,16 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("ar", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("Blog", "مدونة"),
-                new CultureDictionaryRecord("Menu", "قائمة"),
-                new CultureDictionaryRecord("Page", "صفحة"),
-                new CultureDictionaryRecord("Article", "مقالة")
+                new("Blog", "مدونة"),
+                new("Menu", "قائمة"),
+                new("Page", "صفحة"),
+                new("Article", "مقالة")
             }, PluralizationRule.Arabic);
 
             SetupDictionary("ar-YE", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("Blog", "مدونة"),
-                new CultureDictionaryRecord("Product", "منتج")
+                new("Blog", "مدونة"),
+                new("Product", "منتج")
             }, PluralizationRule.Arabic);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);
