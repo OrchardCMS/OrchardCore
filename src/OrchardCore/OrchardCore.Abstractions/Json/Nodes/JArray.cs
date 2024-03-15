@@ -1,3 +1,4 @@
+using Json.Path;
 using System.IO;
 using System.Text.Json.Settings;
 using System.Threading;
@@ -104,57 +105,6 @@ public static class JArray
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonArray"/> using a JSON path.
-    /// </summary>
-    public static JsonNode? SelectNode(this JsonArray? jsonArray, string? path)
-    {
-        path = path.GetNormalizedPath();
-        if (jsonArray is null || path is null)
-        {
-            return null;
-        }
-
-        foreach (var item in jsonArray)
-        {
-            if (item is null)
-            {
-                continue;
-            }
-
-            var itemPath = item.GetNormalizedPath();
-            if (itemPath == path)
-            {
-                return item;
-            }
-
-            if (itemPath is null || !path.Contains(itemPath))
-            {
-                continue;
-            }
-
-            if (item is JsonObject jObject)
-            {
-                var node = jObject.SelectNode(path);
-                if (node is not null)
-                {
-                    return node;
-                }
-            }
-
-            if (item is JsonArray jArray)
-            {
-                var node = jArray.SelectNode(path);
-                if (node is not null)
-                {
-                    return node;
-                }
-            }
-        }
-
-        return null;
     }
 
     /// <summary>
