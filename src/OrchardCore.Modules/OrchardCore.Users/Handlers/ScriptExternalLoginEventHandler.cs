@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Handlers
                 var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
-                context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+                context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString())); 
                 if (evaluationResult.propertiesToUpdate != null)
                 {
                     var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
@@ -63,7 +63,8 @@ namespace OrchardCore.Users.Handlers
                     {
                         context.PropertiesToUpdate.Merge(result, new JsonMergeSettings
                         {
-                            MergeArrayHandling = MergeArrayHandling.Replace,
+                            // Perhaps other provider will fill some values. we should keep exists value.
+                            MergeArrayHandling = MergeArrayHandling.Union,
                             MergeNullValueHandling = MergeNullValueHandling.Merge
                         });
                     }

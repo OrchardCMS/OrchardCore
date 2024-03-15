@@ -49,6 +49,16 @@ namespace OrchardCore.Users.Handlers
         public List<string> RolesToRemove { get; } = [];
 
         /// <summary>
+        /// Gets the claims to be added from the user claims.
+        /// </summary>
+        public IDictionary<string, string> ClaimsToAdd { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gets the claims to be removed from the user claims.
+        /// </summary>
+        public IDictionary<string, string> ClaimsToRemove { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Gets the user properties to update the user
         /// </summary>
         public JsonObject PropertiesToUpdate { get; set; }
