@@ -90,18 +90,19 @@ namespace OrchardCore.Apis.GraphQL
                     if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                     {
 
+                        using var sr = new StreamReader(context.Request.Body);
+                        var bodyText = await sr.ReadToEndAsync();
                         if (mediaType.IsSubsetOf(_graphQlMediaType))
                         {
-                            using var sr = new StreamReader(context.Request.Body);
 
                             request = new GraphQLNamedQueryRequest
                             {
-                                Query = await sr.ReadToEndAsync()
+                                Query = bodyText
                             };
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, JOptions.CamelCase);
+                            request = JsonSerializer.Deserialize<GraphQLNamedQueryRequest>(bodyText, JOptions.CamelCase);
                         }
                     }
                     else
