@@ -140,7 +140,7 @@ namespace OrchardCore.Shells.Database.Configuration
         private async Task<bool> TryMigrateFromFileAsync(string tenant, JsonObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);
-            var appsettings = Path.Combine(tenantFolder, "appsettings.json");
+            var appsettings = Path.Combine(tenantFolder, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
             if (!File.Exists(appsettings))
             {

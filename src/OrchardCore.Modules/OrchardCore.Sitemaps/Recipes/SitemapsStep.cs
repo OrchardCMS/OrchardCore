@@ -16,7 +16,8 @@ namespace OrchardCore.Sitemaps.Recipes
     {
         private readonly ISitemapManager _sitemapManager;
 
-        public SitemapsStep(ISitemapManager sitemapManager)
+        public SitemapsStep(
+            ISitemapManager sitemapManager)
         {
             _sitemapManager = sitemapManager;
         }

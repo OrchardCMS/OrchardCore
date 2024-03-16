@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,6 +30,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
@@ -65,7 +67,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
-                return settings.ToObject<OpenIdServerSettings>();
+                return settings.ToObject<OpenIdServerSettings>(JOptions.Default);
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
@@ -89,7 +91,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
