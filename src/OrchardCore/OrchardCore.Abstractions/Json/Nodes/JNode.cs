@@ -171,8 +171,15 @@ public static class JNode
     public static string? GetNormalizedPath(this JsonNode jsonNode) => jsonNode.GetPath().GetNormalizedPath();
 
     /// <summary>
-    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
+    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using JSONPath.
     /// </summary>
+    /// <param name="path">The JSONPath query where <c>$</c> is <paramref name="jsonNode"/>.</param>
+    /// <param name="options">Optional settings to configure the JSONPath parser.</param>
+    /// <remarks>
+    /// This method uses JsonPath.Net to evaluate the <paramref name="path"/>. For more information on JSONPath, see the
+    /// specification at https://www.rfc-editor.org/rfc/rfc9535.html or the JsonPath.Net documentation at
+    /// https://docs.json-everything.net/path/basics/.
+    /// </remarks>
     public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null)
     {
         path = path?.Trim();
