@@ -173,6 +173,7 @@ public static class JNode
     /// <summary>
     /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using JSONPath.
     /// </summary>
+    /// <param name="jsonNode">The JSON node which serves as the root of the current search..</param>
     /// <param name="path">The JSONPath query where <c>$</c> is <paramref name="jsonNode"/>.</param>
     /// <param name="options">Optional settings to configure the JSONPath parser.</param>
     /// <remarks>
