@@ -252,18 +252,10 @@ namespace OrchardCore.Menu.Controllers
                 return Forbid();
             }
 
-            ContentItem menu;
-
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
-            }
+            var menu = !contentTypeDefinition.IsDraftable()
+                ? await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest)
+                : await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
 
             if (menu == null)
             {
