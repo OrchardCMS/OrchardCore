@@ -46,9 +46,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldUpdateContent()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -61,9 +59,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldAlterPart()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -76,9 +72,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldOnlyContainParts()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -88,9 +82,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldStoreFields()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithPart();
             contentItem.Alter<MyPart>(x =>
             {
                 x.GetOrCreate<MyField>("myField");
@@ -100,6 +92,14 @@ namespace OrchardCore.Tests.Data
             var json = JConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
+        }
+
+        private static ContentItem CreateContentItemWithPart(string text = "test")
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = text);
+            return contentItem;
         }
     }
 
