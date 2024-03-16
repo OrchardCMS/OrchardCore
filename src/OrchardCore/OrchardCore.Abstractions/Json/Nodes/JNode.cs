@@ -173,10 +173,16 @@ public static class JNode
     /// <summary>
     /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
     /// </summary>
-    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null) =>
-        path != null && JsonPath.TryParse(path, out var jsonPath, options)
+    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null)
+    {
+        path = path?.Trim();
+        if (string.IsNullOrEmpty(path)) return jsonNode;
+        if (path[0] != '$') path = "$." + path;
+
+        return path != null && JsonPath.TryParse(path, out var jsonPath, options)
             ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value
             : null;
+    }
 
     /// <summary>
     /// Merge the specified content into this <see cref="JsonNode"/> using <see cref="JsonMergeSettings"/>.
