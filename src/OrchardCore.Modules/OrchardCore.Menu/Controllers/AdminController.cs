@@ -271,7 +271,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            menu.Content.Remove(menuItemId);
+            menuItem.Parent!.AsArray().Remove(menuItem);
 
             await _contentManager.SaveDraftAsync(menu);
 
