@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Handlers
                 FaultMessage = workflowContext.Workflow.FaultMessage,
                 ActivityId = activityContext.ActivityRecord.ActivityId,
                 ActivityTypeName = activityContext.Activity.Name,
-                ActivityDisplayName = activityContext.ActivityRecord.Properties["ActivityMetadata"]?["Title"].ToString(),
+                ActivityDisplayName = activityContext.ActivityRecord.Properties["ActivityMetadata"]?["Title"]?.ToString(),
                 ExceptionDetails = exception?.ToString(),
                 ErrorMessage = exception.Message,
             };

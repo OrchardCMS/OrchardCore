@@ -46,13 +46,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
-                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                existingJObject = ToJsonObject(new T());
                 _settings[typeof(T).Name] = existingJObject;
             }
 
             var settingsToMerge = existingJObject.ToObject<T>();
             setting(settingsToMerge);
-            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            _settings[typeof(T).Name] = ToJsonObject(settingsToMerge);
             return this;
         }
 
@@ -60,8 +60,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             ArgumentNullException.ThrowIfNull(settings);
 
-            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-            _settings[typeof(T).Name] = jObject;
+            _settings[typeof(T).Name] = ToJsonObject(settings);
+
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder WithSettings<T>() where T : class, new()
+        {
+            _settings[typeof(T).Name] = ToJsonObject(new T());
 
             return this;
         }
@@ -69,5 +75,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public abstract ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition);
         public abstract ContentPartFieldDefinitionBuilder OfType(string fieldType);
         public abstract ContentPartFieldDefinition Build();
+
+        private static JsonObject ToJsonObject(object obj)
+            => JObject.FromObject(obj, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
     }
 }

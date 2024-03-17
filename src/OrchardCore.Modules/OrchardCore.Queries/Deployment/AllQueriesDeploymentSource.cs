@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 
 namespace OrchardCore.Queries.Deployment
 {
@@ -13,10 +14,10 @@ namespace OrchardCore.Queries.Deployment
 
         public AllQueriesDeploymentSource(
             IQueryManager queryManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
         {
             _queryManager = queryManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
