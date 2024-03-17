@@ -107,7 +107,7 @@ namespace OrchardCore.Admin
         {
             services.Configure<TemplateOptions>(o =>
             {
-                o.Scope.SetValue("Navbar", new ObjectValue(new NavbarAccessor()));
+                o.Scope.SetValue(nameof(Navbar), new ObjectValue(new NavbarAccessor()));
                 o.MemberAccessStrategy.Register<NavbarAccessor, FluidValue>(async (obj, name, ctx) =>
                 {
                     if (ctx is LiquidTemplateContext context)
@@ -121,6 +121,15 @@ namespace OrchardCore.Admin
                     }
 
                     return NilValue.Instance;
+                });
+
+                o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
+                {
+                    return name switch
+                    {
+                        nameof(Navbar.Properties) => new ObjectValue(navbar.Properties),
+                        _ => NilValue.Instance
+                    };
                 });
             });
         }
