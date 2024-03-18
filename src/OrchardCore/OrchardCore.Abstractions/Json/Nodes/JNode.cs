@@ -191,8 +191,12 @@ public static class JNode
         {
             return jsonNode;
         }
-        
-        if (path[0] != '$') 
+
+        // Without this JSONPath parsing fails (JsonPath.Parse throws "PathParseException: Path must start with '$'").
+        // Since the path always has to start with "$.", this alteration won't cause any problems. It's also necessary
+        // to maintain backwards compatibility with JSONPaths written for Newtonsoft and for simple direct child
+        // property access too (e.g. when the path is "property" instead of "$.property").
+        if (path[0] != '$')
         {
             path = "$." + path;
         }
