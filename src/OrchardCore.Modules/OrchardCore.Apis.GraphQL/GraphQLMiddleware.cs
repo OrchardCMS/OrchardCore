@@ -106,12 +106,12 @@ namespace OrchardCore.Apis.GraphQL
                     }
                     else
                     {
-                        request = CreateRequestFromQueryStringAsync(context);
+                        request = CreateRequestFromQueryString(context);
                     }
                 }
                 else if (HttpMethods.IsGet(context.Request.Method))
                 {
-                    request = CreateRequestFromQueryStringAsync(context, true);
+                    request = CreateRequestFromQueryString(context, true);
                 }
 
                 if (request == null)
@@ -171,7 +171,7 @@ namespace OrchardCore.Apis.GraphQL
             await _serializer.WriteAsync(context.Response.Body, result);
         }
 
-        private GraphQLNamedQueryRequest CreateRequestFromQueryStringAsync(HttpContext context, bool validateQueryKey = false)
+        private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {
