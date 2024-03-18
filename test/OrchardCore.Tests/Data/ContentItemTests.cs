@@ -47,7 +47,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldUpdateContent()
         {
-            var contentItem = CreateContentItemWithPart();
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldAlterPart()
         {
-            var contentItem = CreateContentItemWithPart();
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -73,7 +73,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldOnlyContainParts()
         {
-            var contentItem = CreateContentItemWithPart();
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -83,7 +83,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldStoreFields()
         {
-            var contentItem = CreateContentItemWithPart();
+            var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x =>
             {
                 x.GetOrCreate<MyField>("myField");
@@ -98,7 +98,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldBeJsonPathQueryable()
         {
-            var contentItem = CreateContentItemWithPart();
+            var contentItem = CreateContentItemWithMyPart();
             JsonNode contentItemJson = contentItem.Content;
             JsonNode contentPartJson = contentItem.As<MyPart>().Content;
 
@@ -117,7 +117,7 @@ namespace OrchardCore.Tests.Data
             AssertJsonEqual(textPropertyNode, contentItemJson.SelectNode("$..Text"));
         }
 
-        private static ContentItem CreateContentItemWithPart(string text = "test")
+        private static ContentItem CreateContentItemWithMyPart(string text = "test")
         {
             var contentItem = new ContentItem();
             contentItem.GetOrCreate<MyPart>();
