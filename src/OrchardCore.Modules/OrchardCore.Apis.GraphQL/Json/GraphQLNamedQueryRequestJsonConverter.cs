@@ -6,7 +6,8 @@ using GraphQL;
 namespace OrchardCore.Apis.GraphQL.Json;
 public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQueryRequest>
 {
-    public static GraphQLNamedQueryRequestJsonConverter Instance = new();
+    public static readonly GraphQLNamedQueryRequestJsonConverter Instance = new();
+    
     /// <summary>
     /// Name for the operation name parameter.
     /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
