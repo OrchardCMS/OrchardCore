@@ -15,37 +15,15 @@ namespace OrchardCore.Localization.PortableObject
         /// Creates a new instance of <see cref="PortableObjectHtmlLocalizerFactory"/>.
         /// </summary>
         /// <param name="stringLocalizerFactory">The <see cref="IStringLocalizerFactory"/>.</param>
-        public PortableObjectHtmlLocalizerFactory(IStringLocalizerFactory stringLocalizerFactory)
-        {
+        public PortableObjectHtmlLocalizerFactory(IStringLocalizerFactory stringLocalizerFactory) =>
             _stringLocalizerFactory = stringLocalizerFactory;
-        }
 
         /// <inheritdocs />
-        public IHtmlLocalizer Create(Type resourceSource)
-        {
-            return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(resourceSource));
-        }
+        public IHtmlLocalizer Create(Type resourceSource) =>
+            new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(resourceSource));
 
         /// <inheritdocs />
-        public IHtmlLocalizer Create(string baseName, string location)
-        {
-            var index = 0;
-            if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
-            {
-                index = location.Length;
-            }
-
-            if (baseName.Length > index && baseName[index] == '.')
-            {
-                index += 1;
-            }
-
-            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
-            {
-                index += "Areas.".Length;
-            }
-
-            return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
-        }
+        public IHtmlLocalizer Create(string baseName, string location) =>
+            new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
     }
 }

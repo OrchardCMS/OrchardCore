@@ -67,7 +67,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                 shellDescriptor = new ShellDescriptor
                 {
                     SerialNumber = shellDescriptor.SerialNumber,
-                    Installed = new List<ShellFeature>(shellDescriptor.Installed),
+                    Installed = new List<InstalledShellFeature>(shellDescriptor.Installed),
                 };
             }
 
@@ -109,8 +109,22 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             }
 
             shellDescriptor.SerialNumber++;
+
             shellDescriptor.Features = _alwaysEnabledFeatures.Union(enabledFeatures).ToList();
-            shellDescriptor.Installed = shellDescriptor.Installed.Union(shellDescriptor.Features).ToList();
+            foreach (var feature in shellDescriptor.Features)
+            {
+                if (shellDescriptor.Installed.Contains(feature))
+                {
+                    continue;
+                }
+
+                var installed = new InstalledShellFeature(feature)
+                {
+                    SerialNumber = shellDescriptor.SerialNumber
+                };
+
+                shellDescriptor.Installed.Add(installed);
+            }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -128,7 +142,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         private class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = Array.Empty<string>();
+            public string[] Features { get; set; } = [];
         }
     }
 }

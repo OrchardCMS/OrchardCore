@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Elasticsearch
     [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
     public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ElasticContentPickerShapeProvider(IStringLocalizer<ElasticContentPickerShapeProvider> stringLocalizer)
         {
@@ -25,6 +25,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 return new HtmlString($"<option value=\"Elasticsearch\" selected=\"selected\">{S["Elasticsearch"]}</option>");
             }
+
             return new HtmlString($"<option value=\"Elasticsearch\">{S["Elasticsearch"]}</option>");
         }
     }

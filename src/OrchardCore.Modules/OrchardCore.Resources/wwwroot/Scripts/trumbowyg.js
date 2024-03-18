@@ -3,12 +3,12 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /**
- * Trumbowyg v2.26.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
- * @link http://alex-d.github.io/Trumbowyg
+ * @link https://alex-d.github.io/Trumbowyg/
  * @license MIT
  * @author Alexandre Demode (Alex-D)
  *         Twitter : @AlexandreDemode
@@ -430,7 +430,8 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
     },
     init: function init() {
       var t = this;
-      t.height = t.$ta.height();
+      t.height = t.$ta.outerHeight() - 39; // Remove button pane height
+
       t.initPlugins();
       try {
         // Disable image resize, try-catch for old IE
@@ -468,14 +469,17 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       t.$box = $('<div/>', {
         "class": prefix + 'box ' + prefix + 'editor-visible ' + prefix + t.o.lang + ' trumbowyg'
       });
+      t.$edBox = $('<div/>', {
+        "class": prefix + 'editor-box'
+      });
 
       // $ta = Textarea
       // $ed = Editor
       t.isTextarea = t.$ta.is('textarea');
       if (t.isTextarea) {
         html = t.$ta.val();
-        t.$ed = $('<div/>');
-        t.$box.insertAfter(t.$ta).append(t.$ed, t.$ta);
+        t.$ed = $('<div/>').appendTo(t.$edBox);
+        t.$box.insertAfter(t.$ta).append(t.$edBox, t.$ta);
       } else {
         t.$ed = t.$ta;
         html = t.$ed.html();
@@ -483,7 +487,8 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
           name: t.$ta.attr('id'),
           height: t.height
         }).val(html);
-        t.$box.insertAfter(t.$ed).append(t.$ta, t.$ed);
+        t.$box.insertAfter(t.$ed).append(t.$ta, t.$edBox);
+        t.$edBox.append(t.$ed);
         t.syncCode();
       }
       t.$ta.addClass(prefix + 'textarea').attr('tabindex', -1);
@@ -502,11 +507,6 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       }
       if (t.o.resetCss) {
         t.$ed.addClass(prefix + 'reset-css');
-      }
-      if (!t.o.autogrow) {
-        t.$ta.add(t.$ed).css({
-          height: t.height
-        });
       }
       t.semanticCode();
       if (t.o.autogrowOnEnter) {
@@ -560,7 +560,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         if ((e.ctrlKey || e.metaKey) && (keyCode === 89 || keyCode === 90)) {
           t.semanticCode(false, true);
           t.$c.trigger('tbwchange');
-        } else if (!ctrl && keyCode !== 17) {
+        } else if (!ctrl && keyCode !== 16 && keyCode !== 17) {
           var compositionEndIE = t.isIE ? e.type === 'compositionend' : true;
           t.semanticCode(false, compositionEndIE && keyCode === 13);
           t.$c.trigger('tbwchange');
@@ -570,6 +570,12 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         setTimeout(function () {
           ctrl = false;
         }, 50);
+      }).on('input', function (e) {
+        // Trigger change event when spelling fixes applied
+        var event = e.originalEvent;
+        if (_typeof(event) === 'object' && (event.inputType === 'insertReplacementText' || event.inputType === 'insertText' && event.data === null)) {
+          t.$c.trigger('tbwchange');
+        }
       }).on('mouseup keydown keyup', function (e) {
         if (!e.ctrlKey && !e.metaKey || e.altKey) {
           setTimeout(function () {
@@ -594,8 +600,8 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
             t.autogrowOnEnterWasFocused = true;
             t.autogrowEditorOnEnter();
           } else if (!t.o.autogrow) {
-            t.$ed.css({
-              height: t.$ed.css('min-height')
+            t.$edBox.css({
+              height: t.$edBox.css('min-height')
             });
             t.$c.trigger('tbwresize');
           }
@@ -665,13 +671,13 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       var t = this;
       t.$ed.removeClass('autogrow-on-enter');
       var oldHeight = t.$ed[0].clientHeight;
-      t.$ed.height('auto');
+      t.$edBox.height('auto');
       var totalHeight = t.$ed[0].scrollHeight;
       t.$ed.addClass('autogrow-on-enter');
       if (oldHeight !== totalHeight) {
-        t.$ed.height(oldHeight);
+        t.$edBox.height(oldHeight);
         setTimeout(function () {
-          t.$ed.css({
+          t.$edBox.css({
             height: totalHeight
           });
           t.$c.trigger('tbwresize');
@@ -686,7 +692,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         "class": prefix + 'button-pane'
       });
       $.each(t.o.btns, function (i, btnGrp) {
-        if (!$.isArray(btnGrp)) {
+        if (!Array.isArray(btnGrp)) {
           btnGrp = [btnGrp];
         }
         var $btnGroup = $('<div/>', {
@@ -886,7 +892,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
           height: ''
         }).val(t.html()).removeClass(prefix + 'textarea').show());
       } else {
-        t.$box.after(t.$ed.css({
+        t.$box.after(t.$edBox.css({
           height: ''
         }).removeClass(prefix + 'editor').removeAttr('contenteditable').removeAttr('dir').html(t.html()).show());
       }
@@ -901,6 +907,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
     },
     // Empty the editor
     empty: function empty() {
+      this.doc.execCommand('insertHTML', false, '');
       this.$ta.val('');
       this.syncCode(true);
     },
@@ -998,7 +1005,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         t.$ed.html(safe.contents().html());
       }
       if (t.o.autogrow) {
-        t.height = t.$ed.height();
+        t.height = t.$edBox.height();
         if (t.height !== t.$ta.css('height')) {
           t.$ta.css({
             height: t.height
@@ -1007,10 +1014,10 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         }
       }
       if (t.o.autogrowOnEnter) {
-        t.$ed.height('auto');
-        var totalHeight = t.autogrowOnEnterWasFocused ? t.$ed[0].scrollHeight : t.$ed.css('min-height');
+        t.$edBox.height('auto');
+        var totalHeight = t.autogrowOnEnterWasFocused ? t.$edBox[0].scrollHeight : t.$edBox.css('min-height');
         if (totalHeight !== t.$ta.css('height')) {
-          t.$ed.css({
+          t.$edBox.css({
             height: totalHeight
           });
           t.$c.trigger('tbwresize');
@@ -1663,7 +1670,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         prefix = t.o.prefix,
         activeClasses = prefix + 'active-button ' + prefix + 'active',
         originalIconClass = prefix + 'original-icon',
-        tags = t.getTagsRecursive(t.doc.getSelection().focusNode);
+        tags = t.getTagsRecursive(t.doc.getSelection().anchorNode);
       t.clearButtonPaneStatus();
       $.each(tags, function (i, tag) {
         var btnName = t.tagToButton[tag.toLowerCase()],
@@ -1697,7 +1704,9 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       var t = this;
       tags = tags || (element && element.tagName ? [element.tagName] : []);
       if (element && element.parentNode) {
-        element = element.parentNode;
+        if (element.nodeType !== Node.ELEMENT_NODE) {
+          element = element.parentNode;
+        }
       } else {
         return tags;
       }
@@ -1712,7 +1721,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         tags = tags.concat(tagHandler(element, t));
       });
       tags.push(tag);
-      return t.getTagsRecursive(element, tags).filter(function (tag) {
+      return t.getTagsRecursive(element.parentNode, tags).filter(function (tag) {
         return tag != null;
       });
     },

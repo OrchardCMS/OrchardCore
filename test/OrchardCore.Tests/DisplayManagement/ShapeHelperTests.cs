@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeHelperTests
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         public ShapeHelperTests()
         {

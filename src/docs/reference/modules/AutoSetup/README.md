@@ -5,6 +5,7 @@ The auto-setup module allows to automatically install the application/tenants on
 ## JSON Configuration Parameters
 
 Auto-Setup parameters are defined in appsettings.json. Example excerpt:
+
 ```json
 "OrchardCore": {
     "OrchardCore_AutoSetup": {
@@ -139,6 +140,7 @@ You should enable the Redis Lock feature in the startup file.
             .AddSetupFeatures("OrchardCore.Redis.Lock", "OrchardCore.AutoSetup");
     }
 ```
+
 Make sure you set the Redis configuration string via an environment variable or a configuration file.
 
 ```
@@ -160,6 +162,7 @@ Lock configuration parameters are optional and can be set via environment variab
 ```
 
 ## Additional information
+
 Please refer to separate sections for additional information on setup:
 
 - [OrchardCore.Setup - setting up an empty site](../Setup/README.md)

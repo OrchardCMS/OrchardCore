@@ -6,16 +6,16 @@ namespace System.IO
 {
     public class PathExtensions
     {
-        public static readonly char[] PathSeparators = new[] { '/', '\\' };
+        public static readonly char[] PathSeparators = ['/', '\\'];
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";
 
         /// <summary>
-        /// Combines two path parts
+        /// Combines two path parts.
         /// </summary>
         public static string Combine(string path, string other = null)
         {
-            if (String.IsNullOrWhiteSpace(other))
+            if (string.IsNullOrWhiteSpace(other))
             {
                 return path;
             }
@@ -37,18 +37,18 @@ namespace System.IO
             }
             else
             {
-                result = path.Substring(0, index + 1) + other;
+                result = string.Concat(path.AsSpan(0, index + 1), other);
             }
 
             return result;
         }
 
         /// <summary>
-        /// Combines multiple path parts
+        /// Combines multiple path parts.
         /// </summary>
         public static string Combine(string path, params string[] others)
         {
-            string result = path;
+            var result = path;
 
             for (var i = 0; i < others.Length; i++)
             {
@@ -59,7 +59,7 @@ namespace System.IO
         }
 
         /// <summary>
-        /// Resolves relative segments in a path
+        /// Resolves relative segments in a path.
         /// </summary>
         public static string ResolvePath(string path)
         {

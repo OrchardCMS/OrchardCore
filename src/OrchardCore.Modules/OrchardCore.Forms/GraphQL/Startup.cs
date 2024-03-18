@@ -20,7 +20,7 @@ namespace OrchardCore.Forms.GraphQL
             services.AddObjectGraphType<ValidationPart, ValidationPartQueryObjectType>();
 
             // Broken
-            //services.AddGraphQLQueryType<ValidationSummaryPart, ValidationSummaryPartQueryObjectType>();
+            // services.AddGraphQLQueryType<ValidationSummaryPart, ValidationSummaryPartQueryObjectType>();
         }
     }
 }

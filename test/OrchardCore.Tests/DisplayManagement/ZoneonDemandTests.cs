@@ -71,11 +71,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Composite zoneComposite1 = zoneOnDemand, zoneComposite2 = zoneOnDemand;
             object zoneObject1 = zoneOnDemand, zoneObject2 = zoneOnDemand;
 
-#pragma warning disable 252,253
-            // Intended reference comparison
+            // Intended reference comparison.
             Assert.True(zoneShape1 == zoneShape2);
             Assert.True(zoneComposite1 == zoneComposite2);
-#pragma warning restore 252,253
             Assert.True(zoneObject1 == zoneObject2);
         }
 
@@ -104,9 +102,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(someZone is ZoneOnDemand);
             Assert.True(someZone == null);
 
-            Assert.True(Object.ReferenceEquals(zoneHolding.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
 
             var dynamicZone = zoneHolding["SomeZone"];
             Assert.True(dynamicZone is ZoneOnDemand);
@@ -126,7 +124,7 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(zoneOnDemand is ZoneOnDemand);
             Assert.True(zoneOnDemand == null);
 
-            Assert.False(Object.ReferenceEquals(zoneHolding.Zones.SomeZone, zoneOnDemand));
+            Assert.False(object.ReferenceEquals(zoneHolding.Zones.SomeZone, zoneOnDemand));
 
             var someZone = zoneHolding["SomeZone"];
 
@@ -149,11 +147,11 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(someZone is Shape);
             Assert.False(someZone == null);
 
-            Assert.True(Object.ReferenceEquals(zoneHolding.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding.Zones.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding.Zones["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.Zones.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.Zones["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
         }
 
         [Fact]
@@ -187,9 +185,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True((string)zoneOnDemand == null);
         }
 
-        private static ZoneHolding CreateZoneHolding() => new ZoneHolding(() => new ValueTask<IShape>(new Shape()));
+        private static ZoneHolding CreateZoneHolding() => new(() => new ValueTask<IShape>(new Shape()));
 
         private static ZoneOnDemand CreateZoneOnDemand(string name, ZoneHolding zoneHolding = null) =>
-            new ZoneOnDemand(() => new ValueTask<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
+            new(() => new ValueTask<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
     }
 }

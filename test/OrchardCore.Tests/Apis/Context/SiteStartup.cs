@@ -6,14 +6,16 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
-        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
+        public static readonly ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
 
         static SiteStartup()
         {
             PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
         {
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
@@ -36,7 +38,9 @@ namespace OrchardCore.Tests.Apis.Context
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
+#pragma warning disable CA1822 // Mark members as static
+        public void Configure(IApplicationBuilder app)
+#pragma warning restore CA1822 // Mark members as static
         {
             app.UseOrchardCore();
         }

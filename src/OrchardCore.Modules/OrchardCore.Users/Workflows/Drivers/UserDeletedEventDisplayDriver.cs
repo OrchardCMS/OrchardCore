@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.Views;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.ViewModels;
@@ -25,8 +25,10 @@ namespace OrchardCore.Users.Workflows.Drivers
                 Shape("UserDeletedEvent_Fields_Thumbnail", new UserDeletedEventViewModel(activity)).Location("Thumbnail", "Content"),
                 Factory("UserDeletedEvent_Fields_Design", ctx =>
                 {
-                    var shape = new UserDeletedEventViewModel();
-                    shape.Activity = activity;
+                    var shape = new UserDeletedEventViewModel
+                    {
+                        Activity = activity,
+                    };
 
                     return shape;
                 }).Location("Design", "Content")

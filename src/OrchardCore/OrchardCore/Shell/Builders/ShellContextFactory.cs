@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,15 +38,16 @@ namespace OrchardCore.Environment.Shell.Builders
             var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
             ShellDescriptor currentDescriptor = null;
-            await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
             });
 
-            if (currentDescriptor != null)
+            if (currentDescriptor is not null)
             {
-                describedContext.Dispose();
+                // Mark as using shared setting that should not be disposed.
+                await describedContext.WithSharedSettings().DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
@@ -71,23 +73,32 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
-            await settings.EnsureConfigurationAsync();
-
-            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
-
-            var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
-            foreach (var initializeAsync in options.Initializers)
+            // Prevent settings from being disposed when an intermediate container is disposed.
+            Interlocked.Increment(ref settings._shellCreating);
+            try
             {
-                await initializeAsync(provider);
+                await settings.EnsureConfigurationAsync();
+
+                var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
+                var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+
+                var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
+                foreach (var initializeAsync in options.Initializers)
+                {
+                    await initializeAsync(provider);
+                }
+
+                return new ShellContext
+                {
+                    Settings = settings,
+                    Blueprint = blueprint,
+                    ServiceProvider = provider
+                };
             }
-
-            return new ShellContext
+            finally
             {
-                Settings = settings,
-                Blueprint = blueprint,
-                ServiceProvider = provider
-            };
+                Interlocked.Decrement(ref settings._shellCreating);
+            }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Widgets.Settings
+namespace OrchardCore.Widgets.Settings
 {
     public class WidgetsListPartSettingsViewModel
     {

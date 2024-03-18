@@ -16,8 +16,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public DateTimeShapes(
             IClock clock,
@@ -33,47 +33,82 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
+        public IHtmlContent TimeSpan(DateTime? Utc, DateTime? Origin)
         {
-            Utc = Utc ?? _clock.UtcNow;
-            Origin = Origin ?? _clock.UtcNow;
+            Utc ??= _clock.UtcNow;
+            Origin ??= _clock.UtcNow;
 
-            var time = _clock.UtcNow - Utc.Value;
+            var time = Origin.Value - Utc.Value;
 
             if (time.TotalYears() > 1)
+            {
                 return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
+            }
+
             if (time.TotalYears() < -1)
+            {
                 return H.Plural(-time.TotalYears(), "in 1 year", "in {0} years");
+            }
 
             if (time.TotalMonths() > 1)
+            {
                 return H.Plural(time.TotalMonths(), "1 month ago", "{0} months ago");
+            }
+
             if (time.TotalMonths() < -1)
+            {
                 return H.Plural(-time.TotalMonths(), "in 1 month", "in {0} months");
+            }
 
             if (time.TotalWeeks() > 1)
+            {
                 return H.Plural(time.TotalWeeks(), "1 week ago", "{0} weeks ago");
+            }
+
             if (time.TotalWeeks() < -1)
+            {
                 return H.Plural(-time.TotalWeeks(), "in 1 week", "in {0} weeks");
+            }
 
             if (time.TotalHours > 24)
+            {
                 return H.Plural(time.Days, "1 day ago", "{0} days ago");
+            }
+
             if (time.TotalHours < -24)
+            {
                 return H.Plural(-time.Days, "in 1 day", "in {0} days");
+            }
 
             if (time.TotalMinutes > 60)
+            {
                 return H.Plural(time.Hours, "1 hour ago", "{0} hours ago");
+            }
+
             if (time.TotalMinutes < -60)
+            {
                 return H.Plural(-time.Hours, "in 1 hour", "in {0} hours");
+            }
 
             if (time.TotalSeconds > 60)
+            {
                 return H.Plural(time.Minutes, "1 minute ago", "{0} minutes ago");
+            }
+
             if (time.TotalSeconds < -60)
+            {
                 return H.Plural(-time.Minutes, "in 1 minute", "in {0} minutes");
+            }
 
             if (time.TotalSeconds > 10)
-                return H.Plural(time.Seconds, "1 second ago", "{0} seconds ago"); //aware that the singular won't be used
+            {
+                return H.Plural(time.Seconds, "1 second ago", "{0} seconds ago"); // Aware that the singular won't be used.
+            }
+
             if (time.TotalSeconds < -10)
+            {
                 return H.Plural(-time.Seconds, "in 1 second", "in {0} seconds");
+            }
 
             return time.TotalMilliseconds > 0
                        ? H["a moment ago"]
@@ -83,13 +118,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         [Shape]
         public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
-            Utc = Utc ?? _clock.UtcNow;
+            Utc ??= _clock.UtcNow;
             var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
-
-            if (Format == null)
-            {
-                Format = S[LongDateTimeFormat].Value;
-            }
+            Format ??= S[LongDateTimeFormat].Value;
 
             return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
         }

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Shortcodes
 {
     public class ShortcodeDescriptor
@@ -18,7 +16,7 @@ namespace OrchardCore.Shortcodes
         {
             get
             {
-                if (String.IsNullOrEmpty(_defaultValue))
+                if (string.IsNullOrEmpty(_defaultValue))
                 {
                     return '[' + Name + ']';
                 }
@@ -46,6 +44,6 @@ namespace OrchardCore.Shortcodes
         /// <summary>
         /// The categories for the shortcode.
         /// </summary>
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
     }
 }

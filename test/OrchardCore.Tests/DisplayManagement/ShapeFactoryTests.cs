@@ -10,8 +10,8 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeFactoryTests
     {
-        private IServiceProvider _serviceProvider;
-        private ShapeTable _shapeTable;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ShapeTable _shapeTable;
 
         public ShapeFactoryTests()
         {
@@ -62,6 +62,15 @@ namespace OrchardCore.Tests.DisplayManagement
         }
 
         [Fact]
+        public async Task CallSyntaxAsync()
+        {
+            dynamic factory = _serviceProvider.GetService<IShapeFactory>();
+            var foo = await factory.FooAsync();
+            ShapeMetadata metadata = foo.Metadata;
+            Assert.Equal("Foo", metadata.Type);
+        }
+
+        [Fact]
         public async Task CallInitializer()
         {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
@@ -75,14 +84,16 @@ namespace OrchardCore.Tests.DisplayManagement
         [Fact]
         public async Task ShapeFactoryUsesCustomShapeType()
         {
-            var descriptor = new ShapeDescriptor();
-            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
+            var descriptor = new ShapeDescriptor
             {
-                (ctx) =>
+                CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
                 {
-                    ctx.Create = () => new SubShape();
-                    return Task.CompletedTask;
-                }
+                    (ctx) =>
+                    {
+                        ctx.Create = () => new SubShape();
+                        return Task.CompletedTask;
+                    },
+                },
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);
@@ -95,14 +106,16 @@ namespace OrchardCore.Tests.DisplayManagement
         [Fact]
         public async Task ShapeFactoryWithCustomShapeTypeAppliesArguments()
         {
-            var descriptor = new ShapeDescriptor();
-            descriptor.CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
+            var descriptor = new ShapeDescriptor
             {
-                (ctx) =>
+                CreatingAsync = new List<Func<ShapeCreatingContext, Task>>()
                 {
-                    ctx.Create = () => new SubShape();
-                    return Task.CompletedTask;
-                }
+                    (ctx) =>
+                    {
+                        ctx.Create = () => new SubShape();
+                        return Task.CompletedTask;
+                    },
+                },
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);

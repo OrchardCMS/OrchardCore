@@ -1,15 +1,15 @@
 @using OrchardCore.Facebook.Login.ViewModels
 @model FacebookLoginSettingsViewModel
 
-<p class="alert alert-warning">
-    @T["The current tenant will be reloaded when the settings are saved."]
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#facebook-login" target="_blank">@T["See documentation"]</a>
 </p>
 
 <h3>@T["Login Settings"]</h3>
 
 <div class="mb-3" asp-validation-class-for="CallbackPath">
-    <label>@T["CallbackPath"]</label>
+    <label asp-for="CallbackPath" class="form-label">@T["CallbackPath"]</label>
     <input asp-for="CallbackPath" class="form-control" placeholder="/signin-facebook" />
     <span asp-validation-for="CallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
@@ -18,11 +18,11 @@
 <div class="mb-3" asp-validation-class-for="SaveTokens">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
-        <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+        <label class="form-check-label" class="form-label" asp-for="SaveTokens">@T["Store tokens"]</label>
         <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
     </div>
 </div>
 
-<div class="mb-3">    
-    <span class="hint">@T["<a href=\"{0}\">Facebook Integration settings</a> must be configured in order to use the Login Feature",@Url.RouteUrl(new { area = "OrchardCore.Settings", controller = "Admin", groupId = OrchardCore.Facebook.FacebookConstants.Features.Core })]</span>
+<div class="mb-3">
+    <span class="hint">@T["<a href=\"{0}\">Meta Integration settings</a> must be configured in order to use the Login Feature", @Url.RouteUrl(new { area = "OrchardCore.Settings", controller = "Admin", groupId = OrchardCore.Facebook.FacebookConstants.Features.Core })]</span>
 </div>

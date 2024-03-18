@@ -37,7 +37,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             {
                 return null;
             }
-            return Initialize<AzureADSettingsViewModel>("AzureADSettings_Edit", model =>
+            return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
                 model.AppId = settings.AppId;

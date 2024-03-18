@@ -72,12 +72,12 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
                 return;
             }
 
-            var roleNames = user.RoleNames ?? Enumerable.Empty<string>();
+            var roleNames = user.RoleNames ?? [];
 
             if (!roleNames.Any())
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
-                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
+                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName)).ToList();
             }
 
             // Check every role to see if the current user has permission to at least one role.
@@ -95,7 +95,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         }
     }
 
-    private Permission GetPermissionVariation(Permission permission, string roleName)
+    private static Permission GetPermissionVariation(Permission permission, string roleName)
     {
         if (permission.Name == CommonPermissions.ListUsers.Name)
         {

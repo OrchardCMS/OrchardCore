@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Lucene
     [Feature("OrchardCore.Search.Lucene.ContentPicker")]
     public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LuceneContentPickerShapeProvider(IStringLocalizer<LuceneContentPickerShapeProvider> stringLocalizer)
         {

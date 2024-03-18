@@ -13,13 +13,13 @@
                     '2.0': 'Extra large'
                 }
             },
-            sl: {
-                lineheight: 'Višina vrstice',
+            az: {
+                lineheight: 'Sətir yüksəkliyi',
                 lineheights: {
-                    '0.9': 'Majhna',
-                    'normal': 'Navadna',
-                    '1.5': 'Velika',
-                    '2.0': 'Ekstra velika'
+                    '0.9': 'Kiçik',
+                    'normal': 'Normal',
+                    '1.5': 'Böyük',
+                    '2.0': 'Daha böyük'
                 }
             },
             by: {
@@ -110,6 +110,15 @@
                     'normal': 'Обычный',
                     '1.5': 'Большой',
                     '2.0': 'Очень большой'
+                }
+            },
+            sl: {
+                lineheight: 'Višina vrstice',
+                lineheights: {
+                    '0.9': 'Majhna',
+                    'normal': 'Navadna',
+                    '1.5': 'Velika',
+                    '2.0': 'Ekstra velika'
                 }
             },
             tr: {

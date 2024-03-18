@@ -1,18 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -24,10 +24,7 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
+        private static readonly char[] _separator = [' ', ','];
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -35,7 +32,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -57,11 +54,18 @@ namespace OrchardCore.OpenId.Drivers
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
@@ -101,7 +105,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonSerializerSettings);
+                model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -113,16 +117,16 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var previousClientSecret = settings.ClientSecret;
                 var model = new OpenIdClientSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                model.Scopes = model.Scopes ?? string.Empty;
+                model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
-                settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
@@ -131,7 +135,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.ResponseMode = model.ResponseMode;
                 settings.StoreExternalTokens = model.StoreExternalTokens;
 
-                bool useClientSecret = true;
+                var useClientSecret = true;
 
                 if (model.UseCodeFlow)
                 {
@@ -168,8 +172,8 @@ namespace OrchardCore.OpenId.Drivers
                 try
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? Array.Empty<ParameterSetting>()
-                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                        ? []
+                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {

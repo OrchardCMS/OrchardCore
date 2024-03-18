@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {
@@ -50,7 +50,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
             return Outcomes(action);
         }
 
-        private string GetProvidedAction(WorkflowExecutionContext workflowContext)
+        private static string GetProvidedAction(WorkflowExecutionContext workflowContext)
         {
             return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
         }

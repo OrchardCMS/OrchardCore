@@ -19,8 +19,8 @@ namespace OrchardCore.Liquid
     {
         private readonly RequestDelegate _next;
 
-        byte[] bytes = null;
-        string etag;
+        byte[] _bytes = null;
+        string _etag;
 
         public ScriptsMiddleware(RequestDelegate next)
         {
@@ -35,7 +35,7 @@ namespace OrchardCore.Liquid
                 {
                     if (httpContext.Request.Headers.TryGetValue(HeaderNames.IfNoneMatch, out var v))
                     {
-                        if (v.Contains(etag))
+                        if (v.Contains(_etag))
                         {
                             httpContext.Response.StatusCode = StatusCodes.Status304NotModified;
                             return;
@@ -43,7 +43,7 @@ namespace OrchardCore.Liquid
                     }
 
                     var cacheControl = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
-                    if (bytes == null)
+                    if (_bytes == null)
                     {
                         var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
                         var liquidViewParser = httpContext.RequestServices.GetRequiredService<LiquidViewParser>();
@@ -56,14 +56,14 @@ namespace OrchardCore.Liquid
                         var script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
                                 [{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
 
-                        etag = Guid.NewGuid().ToString("n");
-                        bytes = Encoding.UTF8.GetBytes(script);
+                        _etag = Guid.NewGuid().ToString("n");
+                        _bytes = Encoding.UTF8.GetBytes(script);
                     }
 
                     httpContext.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                     httpContext.Response.Headers[HeaderNames.ContentType] = "application/javascript";
-                    httpContext.Response.Headers[HeaderNames.ETag] = etag;
-                    await httpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length, httpContext?.RequestAborted ?? CancellationToken.None);
+                    httpContext.Response.Headers[HeaderNames.ETag] = _etag;
+                    await httpContext.Response.Body.WriteAsync(_bytes, httpContext?.RequestAborted ?? CancellationToken.None);
                     return;
                 }
             }
@@ -71,4 +71,3 @@ namespace OrchardCore.Liquid
         }
     }
 }
-

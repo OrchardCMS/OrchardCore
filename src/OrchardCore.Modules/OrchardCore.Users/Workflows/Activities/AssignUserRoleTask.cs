@@ -11,22 +11,24 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class AssignUserRoleTask : TaskActivity
+    public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
+        public AssignUserRoleTask(
+            UserManager<IUser> userManager,
+            IUserService userService,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<AssignUserRoleTask> localizer)
         {
             _userManager = userManager;
             _userService = userService;
-            _expressionEvaluator = expressionvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(AssignUserRoleTask);
 
         public override LocalizedString DisplayText => S["Assign User Role Task"];
 
@@ -54,7 +56,7 @@ namespace OrchardCore.Users.Workflows.Activities
             var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
             var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
-            User user = (User)await _userService.GetUserAsync(userName);
+            var user = (User)await _userService.GetUserAsync(userName);
 
             if (user != null)
             {
