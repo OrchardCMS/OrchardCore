@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using GraphQL;
 
 namespace OrchardCore.Apis.GraphQL.Json;
+
 public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQueryRequest>
 {
     public static readonly GraphQLNamedQueryRequestJsonConverter Instance = new();
