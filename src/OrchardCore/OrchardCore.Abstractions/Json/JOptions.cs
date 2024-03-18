@@ -13,8 +13,7 @@ public static class JOptions
     public static readonly JsonSerializerOptions Base = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-        ReferenceHandler = null, // Needed by JsonObjectCreationHandling.Populate.
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
