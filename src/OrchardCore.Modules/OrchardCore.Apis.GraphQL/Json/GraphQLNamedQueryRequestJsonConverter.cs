@@ -13,27 +13,27 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
     /// Name for the operation name parameter.
     /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
     /// </summary>
-    private const string OPERATION_NAME_KEY = "operationName";
+    private const string OperationNameKey = "operationName";
 
     /// <summary>
     /// Name for the query parameter.
     /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
     /// </summary>
-    private const string QUERY_KEY = "query";
+    private const string QueryKey = "query";
 
     /// <summary>
     /// Name for the variables parameter.
     /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
     /// </summary>
-    private const string VARIABLES_KEY = "variables";
+    private const string VariablesKey = "variables";
 
     /// <summary>
     /// Name for the extensions parameter.
     /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
     /// </summary>
-    private const string EXTENSIONS_KEY = "extensions";
+    private const string ExtensionsKey = "extensions";
 
-    private const string NAMEDQUERY_KEY = "namedQuery";
+    private const string NamedQueryKey = "namedQuery";
 
 
     public override void Write(Utf8JsonWriter writer, GraphQLNamedQueryRequest value, JsonSerializerOptions options)
@@ -41,27 +41,27 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
         writer.WriteStartObject();
         if (value.Query != null)
         {
-            writer.WritePropertyName(QUERY_KEY);
+            writer.WritePropertyName(QueryKey);
             writer.WriteStringValue(value.Query);
         }
         if (value.OperationName != null)
         {
-            writer.WritePropertyName(OPERATION_NAME_KEY);
+            writer.WritePropertyName(OperationNameKey);
             writer.WriteStringValue(value.OperationName);
         }
         if (value.Variables != null)
         {
-            writer.WritePropertyName(VARIABLES_KEY);
+            writer.WritePropertyName(VariablesKey);
             JsonSerializer.Serialize(writer, value.Variables, options);
         }
         if (value.Extensions != null)
         {
-            writer.WritePropertyName(EXTENSIONS_KEY);
+            writer.WritePropertyName(ExtensionsKey);
             JsonSerializer.Serialize(writer, value.Extensions, options);
         }
         if (value.NamedQuery != null)
         {
-            writer.WritePropertyName(NAMEDQUERY_KEY);
+            writer.WritePropertyName(NamedQueryKey);
             JsonSerializer.Serialize(writer, value.NamedQuery, options);
         }
         writer.WriteEndObject();
@@ -77,10 +77,14 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndObject)
+            {
                 return request;
+            }
 
             if (reader.TokenType != JsonTokenType.PropertyName)
+            {
                 throw new JsonException();
+            }
 
             string key = reader.GetString()!;
 
@@ -90,19 +94,19 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
 
             switch (key)
             {
-                case QUERY_KEY:
+                case QueryKey:
                     request.Query = reader.GetString()!;
                     break;
-                case OPERATION_NAME_KEY:
+                case OperationNameKey:
                     request.OperationName = reader.GetString()!;
                     break;
-                case NAMEDQUERY_KEY:
+                case NamedQueryKey:
                     request.NamedQuery = reader.GetString();
                     break;
-                case VARIABLES_KEY:
+                case VariablesKey:
                     request.Variables = JsonSerializer.Deserialize<Inputs>(ref reader, options);
                     break;
-                case EXTENSIONS_KEY:
+                case ExtensionsKey:
                     request.Extensions = JsonSerializer.Deserialize<Inputs>(ref reader, options);
                     break;
                 default:

@@ -13,6 +13,7 @@ using OrchardCore.Apis.GraphQL.Json;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -47,6 +48,10 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
             services.AddSingleton<GraphQLMiddleware>();
+            services.Configure<ContentSerializerJsonOptionsConfiguration>(options =>
+            {
+
+            });
 
             services.AddGraphQL(builder => builder.AddSystemTextJson(options =>
             {
