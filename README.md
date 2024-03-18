@@ -10,12 +10,6 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-## Local Communities
-
-中文资源
-
-[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
-
 ## Build Status
 
 Stable (release/1.8.2): 
@@ -56,6 +50,18 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 - Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
 - Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
+
+## Get in Touch
+
+- [X (Twitter)](https://twitter.com/orchardcms)
+- [LinkedIn](https://www.linkedin.com/groups/13605669/)
+- [Meta (Facebook)](https://www.facebook.com/groups/244928199422062/user/100063629920864)
+
+## Local Communities
+
+中文资源
+
+[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
 
 ## Contributing
 
