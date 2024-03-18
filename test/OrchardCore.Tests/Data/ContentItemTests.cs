@@ -122,6 +122,7 @@ namespace OrchardCore.Tests.Data
             var contentItem = new ContentItem();
             contentItem.GetOrCreate<MyPart>();
             contentItem.Alter<MyPart>(x => x.Text = text);
+            
             return contentItem;
         }
 

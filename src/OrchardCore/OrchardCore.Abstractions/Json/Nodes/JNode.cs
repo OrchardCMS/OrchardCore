@@ -184,8 +184,15 @@ public static class JNode
     public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null)
     {
         path = path?.Trim();
-        if (string.IsNullOrEmpty(path)) return jsonNode;
-        if (path[0] != '$') path = "$." + path;
+        if (string.IsNullOrEmpty(path)) 
+        {
+            return jsonNode;
+        }
+        
+        if (path[0] != '$') 
+        {
+            path = "$." + path;
+        }
 
         return path != null && JsonPath.TryParse(path, out var jsonPath, options)
             ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value

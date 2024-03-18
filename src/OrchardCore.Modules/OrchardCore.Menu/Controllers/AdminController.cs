@@ -253,9 +253,9 @@ namespace OrchardCore.Menu.Controllers
             }
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
-            var menu = !contentTypeDefinition.IsDraftable()
-                ? await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest)
-                : await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+            var menu = contentTypeDefinition.IsDraftable()
+                ? await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired)
+                : await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
             if (menu == null)
             {
