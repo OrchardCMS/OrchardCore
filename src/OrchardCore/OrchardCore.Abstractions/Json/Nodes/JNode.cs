@@ -181,9 +181,12 @@ public static class JNode
     /// specification at https://www.rfc-editor.org/rfc/rfc9535.html or the JsonPath.Net documentation at
     /// https://docs.json-everything.net/path/basics/.
     /// </remarks>
-    public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path, PathParsingOptions? options = null)
+    public static JsonNode? SelectNode(this JsonNode jsonNode, string path, PathParsingOptions? options = null)
     {
-        path = path?.Trim();
+        ArgumentNullException.ThrowIfNull(jsonNode);
+        ArgumentNullException.ThrowIfNull(path);
+
+        path = path.Trim();
         if (string.IsNullOrEmpty(path)) 
         {
             return jsonNode;
@@ -194,7 +197,7 @@ public static class JNode
             path = "$." + path;
         }
 
-        return path != null && JsonPath.TryParse(path, out var jsonPath, options)
+        return JsonPath.TryParse(path, out var jsonPath, options)
             ? jsonPath.Evaluate(jsonNode).Matches?.FirstOrDefault()?.Value
             : null;
     }
