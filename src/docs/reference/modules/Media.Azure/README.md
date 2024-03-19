@@ -1,6 +1,6 @@
-# Microsoft Azure Media (`OrchardCore.Media.Azure`)
+# Azure Media (`OrchardCore.Media.Azure`)
 
-The Microsoft Azure Media module enables support for storing assets in Microsoft Azure Blob Storage.
+The Azure Media module enables support for storing assets in Microsoft Azure Blob Storage.
 
 ## Azure Media Storage (`OrchardCore.Media.Azure.Storage`)
 

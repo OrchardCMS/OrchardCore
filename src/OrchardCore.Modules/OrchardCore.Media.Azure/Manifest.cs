@@ -1,7 +1,7 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Microsoft Azure Media",
+    Name = "Azure Media",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion
