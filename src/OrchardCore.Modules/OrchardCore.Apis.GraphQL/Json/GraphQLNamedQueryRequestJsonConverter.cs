@@ -38,7 +38,6 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
     /// </summary>
     private const string _namedQueryKey = "namedQuery";
 
-
     public override void Write(Utf8JsonWriter writer, GraphQLNamedQueryRequest value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
