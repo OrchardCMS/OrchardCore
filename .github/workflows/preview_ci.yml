@@ -25,6 +25,6 @@ jobs:
         Write-Output "Count of new commits found in the last 24 hours: $commitCount."
         "commit-count=$commitCount" >> $Env:GITHUB_OUTPUT
     - uses: actions/setup-node@v3
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.commit-count > 10
       with:
         node-version: "15"
