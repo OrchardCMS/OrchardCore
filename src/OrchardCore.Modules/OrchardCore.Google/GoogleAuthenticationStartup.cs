@@ -20,7 +20,6 @@ using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
@@ -32,7 +31,7 @@ namespace OrchardCore.Google
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
-            services.AddSingleton<IOAuthSettingsService<GoogleAuthenticationSettings>, GoogleAuthenticationService>();
+            services.AddSingleton<IGoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
             // Register the options initializers required by the Google Handler.

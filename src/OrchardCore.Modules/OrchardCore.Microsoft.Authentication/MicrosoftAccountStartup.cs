@@ -29,7 +29,7 @@ namespace OrchardCore.Microsoft.Authentication
         {
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
-            services.AddSingleton<IOAuthSettingsService<MicrosoftAccountSettings>, MicrosoftAccountService>();
+            services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
             services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
@@ -55,7 +55,7 @@ namespace OrchardCore.Microsoft.Authentication
         {
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
-            services.AddSingleton<IOAuthSettingsService<AzureADSettings>, AzureADService>();
+            services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
 
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
