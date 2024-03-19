@@ -34,9 +34,7 @@ internal class ImageSharpImageCacheTenantEvents : ModularTenantEvents
     public override async Task ActivatingAsync()
     {
         // Only create container if options are valid.
-        if (_shellSettings.IsUninitialized() ||
-            !_options.IsValid() ||
-            !_options.CreateContainer)
+        if (_shellSettings.IsUninitialized() || !_options.IsValid() || !_options.CreateContainer)
         {
             return;
         }
@@ -59,8 +57,7 @@ internal class ImageSharpImageCacheTenantEvents : ModularTenantEvents
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
         // Only remove container if options are valid.
-        if (!_options.RemoveContainer ||
-            !_options.IsValid())
+        if (!_options.RemoveContainer || !_options.IsValid())
         {
             return;
         }
