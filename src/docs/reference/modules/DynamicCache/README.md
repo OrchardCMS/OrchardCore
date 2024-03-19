@@ -226,3 +226,7 @@ Each item that is displayed by the query will now add its own cache dependency t
 
 !!! note
     This has been renamed from `<cache>` to `<dynamic-cache>` to prevent collisions with the ASP.NET Core cache tag helper.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Fx2e-Sy9FF8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
