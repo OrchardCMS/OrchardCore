@@ -50,10 +50,6 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
             services.AddSingleton<GraphQLMiddleware>();
-            services.Configure<ContentSerializerJsonOptionsConfiguration>(options =>
-            {
-
-            });
 
             services.AddGraphQL(builder => builder.AddSystemTextJson((options, sp) =>
             {
