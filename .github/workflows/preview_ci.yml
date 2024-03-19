@@ -21,6 +21,7 @@ jobs:
       shell: pwsh
       run: |
         $commitCount = (git log --oneline --since '24 hours ago' | Measure-Object -Line).Lines
+        Write-Output "Count of new commits found in the last 24 hours: $commitCount."
         "commit-count=$commitCount" >> $Env:GITHUB_OUTPUT
     - uses: actions/setup-node@v3
       if: steps.check-commits.outputs.commit-count > 0
