@@ -33,6 +33,9 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
     /// </summary>
     private const string _extensionsKey = "extensions";
 
+    /// <summary>
+    /// Name for the namedQuery parameter.
+    /// </summary>
     private const string _namedQueryKey = "namedQuery";
 
 
@@ -44,26 +47,31 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
             writer.WritePropertyName(_queryKey);
             writer.WriteStringValue(value.Query);
         }
+
         if (value.OperationName != null)
         {
             writer.WritePropertyName(_operationNameKey);
             writer.WriteStringValue(value.OperationName);
         }
+
         if (value.Variables != null)
         {
             writer.WritePropertyName(_variablesKey);
             JsonSerializer.Serialize(writer, value.Variables, options);
         }
+
         if (value.Extensions != null)
         {
             writer.WritePropertyName(_extensionsKey);
             JsonSerializer.Serialize(writer, value.Extensions, options);
         }
+
         if (value.NamedQuery != null)
         {
             writer.WritePropertyName(_namedQueryKey);
             JsonSerializer.Serialize(writer, value.NamedQuery, options);
         }
+
         writer.WriteEndObject();
     }
 
@@ -86,7 +94,7 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
                 throw new JsonException();
             }
 
-            string key = reader.GetString()!;
+            var key = reader.GetString()!;
 
             //unexpected end of data
             if (!reader.Read())
