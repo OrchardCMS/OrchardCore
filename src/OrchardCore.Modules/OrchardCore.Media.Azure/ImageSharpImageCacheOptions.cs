@@ -13,7 +13,7 @@ public class ImageSharpImageCacheOptions
     public string ContainerName { get; set; }
 
     /// <summary>
-    /// Create blob container on startup if it does not exist.
+    /// Create Blob container on startup if one does not exist.
     /// </summary>
     public bool CreateContainer { get; set; } = true;
 
@@ -23,7 +23,7 @@ public class ImageSharpImageCacheOptions
     public string BasePath { get; set; } = "";
 
     /// <summary>
-    /// Remove blob container on tenant removal if it exists.
+    /// Remove Blob container on tenant removal if it exists.
     /// </summary>
     public bool RemoveContainer { get; set; }
 

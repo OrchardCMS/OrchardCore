@@ -5,12 +5,12 @@ namespace OrchardCore.Media.Azure;
 public class MediaBlobStorageOptions : BlobStorageOptions
 {
     /// <summary>
-    /// Create blob container on startup if it does not exist.
+    /// Create a Blob container on startup if one does not exist.
     /// </summary>
     public bool CreateContainer { get; set; } = true;
 
     /// <summary>
-    /// Remove blob container on tenant removal if it exists.
+    /// Remove Blob container on tenant removal if it exists.
     /// </summary>
     public bool RemoveContainer { get; set; }
 }
