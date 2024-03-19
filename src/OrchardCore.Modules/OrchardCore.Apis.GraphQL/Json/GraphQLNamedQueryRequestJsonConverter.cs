@@ -97,7 +97,7 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
 
             var key = reader.GetString()!;
 
-            //unexpected end of data
+            // Unexpected end of data.
             if (!reader.Read())
                 throw new JsonException();
 
