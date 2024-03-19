@@ -105,3 +105,13 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 ## Showcasing Orchard Core CMS
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Preview Package Feed
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
+
+NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com).
+
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store and share packages in any format, to any place, with total
+confidence.
