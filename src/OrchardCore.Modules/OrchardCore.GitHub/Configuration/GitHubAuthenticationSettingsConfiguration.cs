@@ -11,12 +11,12 @@ namespace OrchardCore.GitHub.Configuration;
 
 public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
 {
-    private readonly GitHubAuthenticationService _gitHubAuthenticationService;
+    private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationSettingsConfiguration(
-        GitHubAuthenticationService gitHubAuthenticationService,
+        IGitHubAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
         ILogger<GitHubAuthenticationSettingsConfiguration> logger)
     {

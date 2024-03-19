@@ -7,9 +7,9 @@ namespace OrchardCore.Facebook.Deployment
 {
     public class FacebookLoginDeploymentSource : IDeploymentSource
     {
-        private readonly FacebookService _facebookService;
+        private readonly IFacebookService _facebookService;
 
-        public FacebookLoginDeploymentSource(FacebookService facebookService)
+        public FacebookLoginDeploymentSource(IFacebookService facebookService)
         {
             _facebookService = facebookService;
         }

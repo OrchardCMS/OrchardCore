@@ -13,9 +13,9 @@ namespace OrchardCore.GitHub.Recipes
     /// </summary>
     public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
-        private readonly GitHubAuthenticationService _githubAuthenticationService;
+        private readonly IGitHubAuthenticationService _githubAuthenticationService;
 
-        public GitHubAuthenticationSettingsStep(GitHubAuthenticationService githubLoginService)
+        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
         {
             _githubAuthenticationService = githubLoginService;
         }

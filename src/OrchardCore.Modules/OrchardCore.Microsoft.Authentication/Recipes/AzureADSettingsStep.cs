@@ -13,9 +13,9 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// </summary>
     public class AzureADSettingsStep : IRecipeStepHandler
     {
-        private readonly AzureADService _azureADService;
+        private readonly IAzureADService _azureADService;
 
-        public AzureADSettingsStep(AzureADService azureADService)
+        public AzureADSettingsStep(IAzureADService azureADService)
         {
             _azureADService = azureADService;
         }

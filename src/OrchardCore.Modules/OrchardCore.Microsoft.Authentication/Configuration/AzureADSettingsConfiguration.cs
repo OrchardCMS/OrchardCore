@@ -11,12 +11,12 @@ namespace OrchardCore.Microsoft.Authentication.Configuration;
 
 public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 {
-    private readonly AzureADService _azureADService;
+    private readonly IAzureADService _azureADService;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public AzureADSettingsConfiguration(
-        AzureADService azureADService,
+        IAzureADService azureADService,
         ShellSettings shellSettings,
         ILogger<AzureADSettingsConfiguration> logger)
     {

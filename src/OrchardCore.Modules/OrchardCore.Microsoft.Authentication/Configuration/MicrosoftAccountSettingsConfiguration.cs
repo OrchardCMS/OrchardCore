@@ -11,12 +11,12 @@ namespace OrchardCore.Microsoft.Authentication.Configuration;
 
 public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<MicrosoftAccountSettings>
 {
-    private readonly MicrosoftAccountService _microsoftAccountService;
+    private readonly IMicrosoftAccountService _microsoftAccountService;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public MicrosoftAccountSettingsConfiguration(
-        MicrosoftAccountService microsoftAccountService,
+        IMicrosoftAccountService microsoftAccountService,
         ShellSettings shellSettings,
         ILogger<MicrosoftAccountSettingsConfiguration> logger)
     {
