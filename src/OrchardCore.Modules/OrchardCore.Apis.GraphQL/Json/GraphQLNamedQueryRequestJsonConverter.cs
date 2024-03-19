@@ -78,7 +78,9 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
     public override GraphQLNamedQueryRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
+        {
             throw new JsonException();
+        }
 
         var request = new GraphQLNamedQueryRequest();
 
