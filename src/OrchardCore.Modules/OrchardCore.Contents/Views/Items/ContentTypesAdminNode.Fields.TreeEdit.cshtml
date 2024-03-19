@@ -4,7 +4,7 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
 
 <h5>@T["Content Types"]</h5>
 
@@ -24,7 +24,7 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label asp-for="IconClass">@T["Default Icon"]</label>
+                    <label asp-for="IconClass" class="form-label">@T["Default Icon"]</label>
 
                     <div class="input-group mb-3">
                         <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">

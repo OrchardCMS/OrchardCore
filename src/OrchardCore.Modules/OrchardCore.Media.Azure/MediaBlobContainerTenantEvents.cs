@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
@@ -36,8 +35,8 @@ namespace OrchardCore.Media.Azure
         {
             // Only create container if options are valid.
             if (_shellSettings.IsUninitialized() ||
-                String.IsNullOrEmpty(_options.ConnectionString) ||
-                String.IsNullOrEmpty(_options.ContainerName) ||
+                string.IsNullOrEmpty(_options.ConnectionString) ||
+                string.IsNullOrEmpty(_options.ContainerName) ||
                 !_options.CreateContainer
                 )
             {
@@ -63,8 +62,8 @@ namespace OrchardCore.Media.Azure
         {
             // Only remove container if options are valid.
             if (!_options.RemoveContainer ||
-                String.IsNullOrEmpty(_options.ConnectionString) ||
-                String.IsNullOrEmpty(_options.ContainerName))
+                string.IsNullOrEmpty(_options.ConnectionString) ||
+                string.IsNullOrEmpty(_options.ContainerName))
             {
                 return;
             }

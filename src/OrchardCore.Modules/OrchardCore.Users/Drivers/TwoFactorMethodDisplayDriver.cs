@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,7 +9,7 @@ public class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
     public override Task<IDisplayResult> DisplayAsync(TwoFactorMethod model, BuildDisplayContext context)
     {
-        if (String.IsNullOrEmpty(model.Provider))
+        if (string.IsNullOrEmpty(model.Provider))
         {
             return Task.FromResult<IDisplayResult>(null);
         }

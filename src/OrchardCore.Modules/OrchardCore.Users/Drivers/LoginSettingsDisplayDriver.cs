@@ -36,6 +36,7 @@ namespace OrchardCore.Users.Drivers
                 model.SyncRolesScript = settings.SyncRolesScript;
                 model.AllowChangingEmail = settings.AllowChangingEmail;
                 model.AllowChangingUsername = settings.AllowChangingUsername;
+                model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
             }).Location("Content:5#General")
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
             .OnGroup(GroupId);

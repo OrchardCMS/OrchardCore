@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
@@ -33,7 +32,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
@@ -44,7 +43,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
@@ -55,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
@@ -67,7 +66,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
         {
             var clonedPart = context.CloneContentItem.As<LocalizationPart>();
-            clonedPart.LocalizationSet = String.Empty;
+            clonedPart.LocalizationSet = string.Empty;
             clonedPart.Apply();
             return Task.CompletedTask;
         }

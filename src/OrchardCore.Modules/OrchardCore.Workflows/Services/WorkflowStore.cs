@@ -120,7 +120,7 @@ namespace OrchardCore.Workflows.Services
         public async Task SaveAsync(Workflow workflow)
         {
             var isNew = workflow.Id == 0;
-            _session.Save(workflow);
+            await _session.SaveAsync(workflow);
 
             if (isNew)
             {

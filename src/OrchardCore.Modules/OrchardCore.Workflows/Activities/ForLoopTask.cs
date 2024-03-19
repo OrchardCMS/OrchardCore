@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -8,7 +7,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ForLoopTask : TaskActivity
+    public class ForLoopTask : TaskActivity<ForLoopTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         protected readonly IStringLocalizer S;
@@ -18,8 +17,6 @@ namespace OrchardCore.Workflows.Activities
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(ForLoopTask);
 
         public override LocalizedString DisplayText => S["For Loop Task"];
 
@@ -77,17 +74,17 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (!Double.TryParse(From.Expression, out var from))
+            if (!double.TryParse(From.Expression, out var from))
             {
                 from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
             }
 
-            if (!Double.TryParse(To.Expression, out var to))
+            if (!double.TryParse(To.Expression, out var to))
             {
                 to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if (!Double.TryParse(Step.Expression, out var step))
+            if (!double.TryParse(Step.Expression, out var step))
             {
                 step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
             }

@@ -2,14 +2,14 @@
 @model SetOutputTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="OutputName">
-    <label asp-for="OutputName">@T["Name"]</label>
+    <label asp-for="OutputName" class="form-label">@T["Name"]</label>
     <input asp-for="OutputName" class="form-control" autofocus="autofocus" />
     <span asp-validation-for="OutputName"></span>
     <span class="hint">@T["The name to output to."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Value">
-    <label asp-for="Value">@T["Value"]</label>
+    <label asp-for="Value" class="form-label">@T["Value"]</label>
     <input type="text" asp-for="Value" class="form-control code" />
     <span asp-validation-for="Value"></span>
     <span class="hint">@T["The value to store in the specified output variable. With JavaScript support."]</span>

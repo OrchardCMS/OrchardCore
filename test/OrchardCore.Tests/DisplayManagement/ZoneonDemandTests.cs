@@ -102,9 +102,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(someZone is ZoneOnDemand);
             Assert.True(someZone == null);
 
-            Assert.True(Object.ReferenceEquals(zoneHolding.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
 
             var dynamicZone = zoneHolding["SomeZone"];
             Assert.True(dynamicZone is ZoneOnDemand);
@@ -124,7 +124,7 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(zoneOnDemand is ZoneOnDemand);
             Assert.True(zoneOnDemand == null);
 
-            Assert.False(Object.ReferenceEquals(zoneHolding.Zones.SomeZone, zoneOnDemand));
+            Assert.False(object.ReferenceEquals(zoneHolding.Zones.SomeZone, zoneOnDemand));
 
             var someZone = zoneHolding["SomeZone"];
 
@@ -147,11 +147,11 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(someZone is Shape);
             Assert.False(someZone == null);
 
-            Assert.True(Object.ReferenceEquals(zoneHolding.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding.Zones.SomeZone, someZone));
-            Assert.True(Object.ReferenceEquals(zoneHolding.Zones["SomeZone"], someZone));
-            Assert.True(Object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.Zones.SomeZone, someZone));
+            Assert.True(object.ReferenceEquals(zoneHolding.Zones["SomeZone"], someZone));
+            Assert.True(object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
         }
 
         [Fact]

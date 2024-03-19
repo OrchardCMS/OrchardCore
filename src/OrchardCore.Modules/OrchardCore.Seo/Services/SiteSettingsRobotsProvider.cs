@@ -1,9 +1,7 @@
-using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Services;
@@ -37,7 +35,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
             content.AppendLine($"Disallow: /{_adminOptions.AdminUrlPrefix}");
         }
 
-        if (!String.IsNullOrEmpty(settings.AdditionalRules))
+        if (!string.IsNullOrEmpty(settings.AdditionalRules))
         {
             content.AppendLine(settings.AdditionalRules.Trim());
         }

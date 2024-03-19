@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.OpenId.Services;
@@ -16,11 +17,13 @@ namespace OrchardCore.OpenId.Recipes
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdServerSettingsStep(IOpenIdServerService serverService)
-            => _serverService = serverService;
+        {
+            _serverService = serverService;
+        }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -29,7 +32,7 @@ namespace OrchardCore.OpenId.Recipes
             var settings = await _serverService.LoadSettingsAsync();
 
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
             settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;

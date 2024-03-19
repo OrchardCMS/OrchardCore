@@ -14,7 +14,7 @@
 </span>
 
 
-@if (!String.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
+@if (!string.IsNullOrEmpty(Model.AuditTrailEvent.ClientIpAddress))
 {
     <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Client IP Address"]">
         <i class="fa-solid fa-wifi text-secondary me-1" aria-hidden="true"></i>@Model.AuditTrailEvent.ClientIpAddress

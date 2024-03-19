@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Extensions.Features
             {
                 foreach (var feature in features)
                 {
-                    if (String.IsNullOrWhiteSpace(feature.Id))
+                    if (string.IsNullOrWhiteSpace(feature.Id))
                     {
                         throw new ArgumentException(
                             $"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");

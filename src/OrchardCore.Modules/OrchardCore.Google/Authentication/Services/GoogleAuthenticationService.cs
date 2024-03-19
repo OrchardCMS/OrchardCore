@@ -36,10 +36,7 @@ namespace OrchardCore.Google.Authentication.Services
 
         public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
@@ -54,14 +51,11 @@ namespace OrchardCore.Google.Authentication.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = new List<ValidationResult>();
 
-            if (String.IsNullOrEmpty(settings.ClientID))
+            if (string.IsNullOrEmpty(settings.ClientID))
             {
                 results.Add(new ValidationResult(S["The Client ID is required."], new[]
                 {
@@ -69,7 +63,7 @@ namespace OrchardCore.Google.Authentication.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.ClientSecret))
+            if (string.IsNullOrEmpty(settings.ClientSecret))
             {
                 results.Add(new ValidationResult(S["The Client Secret is required."], new[]
                 {

@@ -38,7 +38,7 @@ public class AutoroutePart : ContentPart
 }
 ```
 
-This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create a GraphQL representation of this class;
+This is the part that is attached to your content item. GraphQL doesn't know what this is, so we now need to create a GraphQL representation of this class;
 
 ```csharp
 public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
@@ -100,7 +100,6 @@ public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 }
 ```
 
-
 Update Startup class like below.
 
 ```csharp
@@ -151,7 +150,9 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path).All());
+            // Do not use commands that are terminating query, e.g. All() in here. Query needs to be editable, because ContentItemsFieldType that calls PreQueryAsync might need to work with it (e.g. insert another where conditions).
+
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
         }
 
         return Task.FromResult(query);

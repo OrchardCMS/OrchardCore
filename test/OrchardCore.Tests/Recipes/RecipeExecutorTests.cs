@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
@@ -18,9 +19,9 @@ namespace OrchardCore.Recipes
         [InlineData("recipe3", "js: valiables('now')")]
         [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
         [InlineData("recipe5", "[sc text='some : text'/]")]
-        public Task ShouldTrimValidScriptExpression(string recipeName, string expected)
+        public async Task ShouldTrimValidScriptExpression(string recipeName, string expected)
         {
-            return CreateShellContext().CreateScope().UsingAsync(async scope =>
+            await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
             {
                 // Arrange
                 var shellHostMock = new Mock<IShellHost>();
@@ -30,6 +31,7 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
@@ -43,11 +45,12 @@ namespace OrchardCore.Recipes
 
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
-                Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
+
+                Assert.Equal(expected, recipeStep.SelectNode("data[0].TitlePart.Title").ToString());
             });
         }
 
-        private static Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
+        private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
         private static ShellContext CreateShellContext() => new()
         {
@@ -55,7 +58,7 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+        private static ServiceProvider CreateServiceProvider() => new ServiceCollection()
             .AddScripting()
             .AddSingleton<IDistributedLock, LocalLock>()
             .AddLogging()
@@ -75,7 +78,7 @@ namespace OrchardCore.Recipes
 
             public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
-                if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
                 {
                     Context = context;
                 }

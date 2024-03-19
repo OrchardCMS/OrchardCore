@@ -19,18 +19,20 @@ using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Admin, Feature(OpenIdConstants.Features.Management)]
+    [Feature(OpenIdConstants.Features.Management)]
+    [Admin("OpenId/Scope/{action}/{id?}", "OpenIdScope{action}")]
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        protected readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        protected readonly dynamic New;
+
+        protected readonly IStringLocalizer S;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -44,7 +46,7 @@ namespace OrchardCore.OpenId.Controllers
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             _authorizationService = authorizationService;
@@ -54,6 +56,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellHost = shellHost;
         }
 
+        [Admin("OpenId/Scope", "OpenIdScope")]
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
@@ -66,7 +69,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
@@ -97,7 +100,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = String.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name
                 });
             }
@@ -134,7 +137,7 @@ namespace OrchardCore.OpenId.Controllers
                 Name = model.Name
             };
 
-            if (!String.IsNullOrEmpty(model.Resources))
+            if (!string.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
@@ -145,7 +148,7 @@ namespace OrchardCore.OpenId.Controllers
 
             await _scopeManager.CreateAsync(descriptor);
 
-            if (String.IsNullOrEmpty(returnUrl))
+            if (string.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }
@@ -178,14 +181,14 @@ namespace OrchardCore.OpenId.Controllers
 
             model.Resources = String.Join(' ',
                 from resource in resources
-                where !String.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
+                where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
             foreach (var tenant in AccessibleTenants())
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = String.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
@@ -213,7 +216,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !String.Equals(
+                if (other != null && !string.Equals(
                     await _scopeManager.GetIdAsync(other),
                     await _scopeManager.GetIdAsync(scope)))
                 {
@@ -237,7 +240,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.Clear();
 
-            if (!String.IsNullOrEmpty(model.Resources))
+            if (!string.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
@@ -248,7 +251,7 @@ namespace OrchardCore.OpenId.Controllers
 
             await _scopeManager.UpdateAsync(scope, descriptor);
 
-            if (String.IsNullOrEmpty(returnUrl))
+            if (string.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }

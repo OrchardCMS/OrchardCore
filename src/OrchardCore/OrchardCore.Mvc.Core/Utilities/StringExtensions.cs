@@ -4,10 +4,11 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Cysharp.Text;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -16,7 +17,7 @@ namespace OrchardCore.Mvc.Utilities
         public static string CamelFriendly(this string camel)
         {
             // Optimize common cases.
-            if (String.IsNullOrWhiteSpace(camel))
+            if (string.IsNullOrWhiteSpace(camel))
             {
                 return "";
             }
@@ -25,7 +26,7 @@ namespace OrchardCore.Mvc.Utilities
             for (var i = 0; i < camel.Length; ++i)
             {
                 var c = camel[i];
-                if (i != 0 && Char.IsUpper(c))
+                if (i != 0 && char.IsUpper(c))
                 {
                     sb.Append(' ');
                 }
@@ -42,7 +43,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return "";
             }
@@ -75,7 +76,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string HtmlClassify(this string text)
         {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return "";
             }
@@ -89,14 +90,14 @@ namespace OrchardCore.Mvc.Utilities
             for (var i = 0; i < friendlier.Length; i++)
             {
                 var current = friendlier[i];
-                if (IsLetter(current) || (Char.IsDigit(current) && cursor > 0))
+                if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
                 {
                     if (previousIsNotLetter && i != 0 && cursor > 0)
                     {
                         result[cursor++] = '-';
                     }
 
-                    result[cursor++] = Char.ToLowerInvariant(current);
+                    result[cursor++] = char.ToLowerInvariant(current);
                     previousIsNotLetter = false;
                 }
                 else
@@ -110,16 +111,16 @@ namespace OrchardCore.Mvc.Utilities
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
-            return String.IsNullOrEmpty(text)
+            return string.IsNullOrEmpty(text)
                 ? defaultValue
                 : new LocalizedString(null, text);
         }
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var result = new char[html.Length];
@@ -159,12 +160,12 @@ namespace OrchardCore.Mvc.Utilities
         // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
-            return String.IsNullOrWhiteSpace(text)
-                       ? String.Empty
+            return string.IsNullOrWhiteSpace(text)
+                       ? string.Empty
                        : text
                              .Replace("\r\n", "\r\r")
-                             .Replace("\n", String.Format(replacement, "\r\n"))
-                             .Replace("\r\r", String.Format(replacement, "\r\n"));
+                             .Replace("\n", string.Format(replacement, "\r\n"))
+                             .Replace("\r\r", string.Format(replacement, "\r\n"));
         }
 
         private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
@@ -192,15 +193,15 @@ namespace OrchardCore.Mvc.Utilities
         /// </remarks>
         public static string ToSafeName(this string name)
         {
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
                 !c.IsLetter()
-                && !Char.IsDigit(c)
+                && !char.IsDigit(c)
                 );
 
             name = name.Trim();
@@ -273,7 +274,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string Strip(this string subject, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(subject))
+            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -312,7 +313,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static bool Any(this string subject, params char[] chars)
         {
-            if (String.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
             {
                 return false;
             }
@@ -331,7 +332,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static bool All(this string subject, params char[] chars)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 return true;
             }
@@ -355,20 +356,14 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string Translate(this string subject, char[] from, char[] to)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 return subject;
             }
 
-            if (from == null)
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
+            ArgumentNullException.ThrowIfNull(from);
 
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
-            }
+            ArgumentNullException.ThrowIfNull(to);
 
             if (from.Length != to.Length)
             {
@@ -386,9 +381,9 @@ namespace OrchardCore.Mvc.Utilities
             for (var i = 0; i < subject.Length; i++)
             {
                 var current = subject[i];
-                if (map.ContainsKey(current))
+                if (map.TryGetValue(current, out var value))
                 {
-                    result[i] = map[current];
+                    result[i] = value;
                 }
                 else
                 {
@@ -401,7 +396,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements)
         {
-            var pattern = $"{String.Join("|", replacements.Keys)}";
+            var pattern = $"{string.Join("|", replacements.Keys)}";
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 
@@ -427,7 +422,7 @@ namespace OrchardCore.Mvc.Utilities
         private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
 
         /// <summary>
-        /// Converts a liquid attribute to pascal case
+        /// Converts a liquid attribute to pascal case.
         /// </summary>
         public static string ToPascalCaseUnderscore(this string attribute)
         {
@@ -471,7 +466,7 @@ namespace OrchardCore.Mvc.Utilities
                 }
             }
 
-            var result = String.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
+            var result = string.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
             {
                 var nextIsUpper = true;
                 var k = 0;
@@ -488,7 +483,7 @@ namespace OrchardCore.Mvc.Utilities
 
                     if (nextIsUpper)
                     {
-                        buffer[k] = Char.ToUpperInvariant(c);
+                        buffer[k] = char.ToUpperInvariant(c);
                     }
                     else
                     {
@@ -507,11 +502,11 @@ namespace OrchardCore.Mvc.Utilities
         /// <summary>
         /// Tests if a string is valid json.
         /// </summary>
-        public static bool IsJson(this string json)
+        public static bool IsJson(this string json, JsonDocumentOptions jsonDocumentOptions = default)
         {
             try
             {
-                JToken.Parse(json);
+                JsonNode.Parse(json, null, jsonDocumentOptions);
                 return true;
             }
             catch

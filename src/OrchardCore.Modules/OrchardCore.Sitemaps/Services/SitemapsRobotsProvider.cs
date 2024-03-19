@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Seo;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Models;
@@ -27,7 +25,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
     {
         var site = await _siteService.GetSiteSettingsAsync();
 
-        if (String.IsNullOrEmpty(site.BaseUrl))
+        if (string.IsNullOrEmpty(site.BaseUrl))
         {
             // Can't create sitemap links if there is not set base-url.
 

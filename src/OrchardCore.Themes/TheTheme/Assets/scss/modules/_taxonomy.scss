@@ -5,7 +5,7 @@
 
     .bg-secondary {
         &:hover {
-            background-color: $primary;
+            background-color: var(--bs-primary);
         }
     }
 }

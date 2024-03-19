@@ -35,7 +35,7 @@ namespace OrchardCore.Environment.Shell
         {
             var profileNames = _shellSettings["FeatureProfile"];
 
-            if (String.IsNullOrWhiteSpace(profileNames))
+            if (string.IsNullOrWhiteSpace(profileNames))
             {
                 return true;
             }

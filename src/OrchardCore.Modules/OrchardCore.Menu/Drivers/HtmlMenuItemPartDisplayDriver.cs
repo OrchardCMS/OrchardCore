@@ -84,7 +84,7 @@ namespace OrchardCore.Menu.Drivers
 
                 var urlToValidate = part.Url;
 
-                if (!String.IsNullOrEmpty(urlToValidate))
+                if (!string.IsNullOrEmpty(urlToValidate))
                 {
                     urlToValidate = urlToValidate.Split('#', 2)[0];
 
@@ -104,7 +104,7 @@ namespace OrchardCore.Menu.Drivers
                     {
                         var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
 
-                        if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                        if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                         {
                             updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                         }

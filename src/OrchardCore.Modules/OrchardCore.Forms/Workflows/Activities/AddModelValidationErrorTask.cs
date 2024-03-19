@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class AddModelValidationErrorTask : TaskActivity
+    public class AddModelValidationErrorTask : TaskActivity<AddModelValidationErrorTask>
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IStringLocalizer S;
@@ -21,8 +21,6 @@ namespace OrchardCore.Forms.Workflows.Activities
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
-
-        public override string Name => nameof(AddModelValidationErrorTask);
 
         public override LocalizedString DisplayText => S["Add Model Validation Error Task"];
 

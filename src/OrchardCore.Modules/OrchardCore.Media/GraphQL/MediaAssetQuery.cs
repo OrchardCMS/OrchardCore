@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace OrchardCore.Media.GraphQL
             _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         public Task BuildAsync(ISchema schema)
         {
@@ -61,11 +60,11 @@ namespace OrchardCore.Media.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 
-            var path = resolveContext.GetArgument("path", String.Empty);
+            var path = resolveContext.GetArgument("path", string.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
             var allFiles = mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);

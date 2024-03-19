@@ -60,7 +60,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            if (!String.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
+            if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
             {
                 return extension.ExtensionInfo;
             }
@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return [];
                 }
 
                 var feature = entry.FeatureInfo;
@@ -144,7 +144,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return [];
                 }
 
                 var feature = entry.FeatureInfo;
@@ -357,7 +357,7 @@ namespace OrchardCore.Environment.Extensions
                         }
                         else
                         {
-                            featureTypes = Array.Empty<Type>();
+                            featureTypes = [];
                         }
 
                         loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));

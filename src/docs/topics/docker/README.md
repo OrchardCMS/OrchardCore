@@ -6,10 +6,10 @@ Our source code repository includes a `Dockerfile` which will allow you to creat
 
 ## What you will need
 
-For Windows users : 
-https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers
+For Windows users :
+<https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers>
 
-For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
+For Ubuntu/Linux users : <https://docs.docker.com/engine/install/ubuntu/>
 
 ## What you will build
 
@@ -57,7 +57,7 @@ ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
 
 ## Docker
 
-First example is a simple one. Use Docker to build an image and run it (inside a container). 
+First example is a simple one. Use Docker to build an image and run it (inside a container).
 
 ```cmd
 REM Folder where the Dockerfile stands
@@ -72,7 +72,7 @@ docker run -p 80:80 oc
 
 ## Prune intermediate images
 
-### When using `docker` command : 
+### When using `docker` command
 
 ```cmd
 REM Prunes intermediate containers created while building by using --rm
@@ -85,7 +85,7 @@ REM Creates a container, runs it and expose its service on port 80
 docker run -p 80:80 oc
 ```
 
-Using these commands should get you a fully functional Docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though, we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
+Using these commands should get you a fully functional Docker container running on port 80 so that you can access it with your browser by simply going to <http://localhost>. Though, we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
 
 ## Docker compose
 
@@ -142,9 +142,10 @@ volumes:
     postgresql-data:
 
 ```
+
 ## Prune intermediate images
 
-### When using `docker-compose` command : 
+### When using `docker-compose` command
 
 ```cmd
 REM Builds images if they are not already built
@@ -190,14 +191,14 @@ Github Actions is the Continuous Integration tool we use to build and test the d
 
 You need to use at least Docker version 19.03 to be able to use Docker Buildkit so that it can parse your different .dockerignore files.
 
-See : 
+See :
 
 [Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)  
 [What is Docker BuildKit and What can I use it for?](https://brianchristner.io/what-is-docker-buildkit/#:~:text=Docker%20BuildKit%20is%20a%20little,and%20increase%20productivity%20for%20free.)  
 
 Github Actions currently supports Buildkit under Linux only.  
 
-See : 
+See :
 
-https://github.com/docker/setup-buildx-action#limitation  
-https://github.com/OrchardCMS/OrchardCore/issues/7651  
+<https://github.com/docker/setup-buildx-action#limitation>  
+<https://github.com/OrchardCMS/OrchardCore/issues/7651>  

@@ -6,11 +6,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
-    public interface IApplicationContext
-    {
-        Application Application { get; }
-    }
-
     public class ModularApplicationContext : IApplicationContext
     {
         private readonly IHostEnvironment _environment;
@@ -44,11 +39,11 @@ namespace OrchardCore.Modules
             }
         }
 
-        private IEnumerable<Module> GetModules()
+        private ConcurrentBag<Module> GetModules()
         {
             var modules = new ConcurrentBag<Module>
             {
-                new Module(_environment.ApplicationName, true),
+                new(_environment.ApplicationName, true),
             };
 
             var names = _moduleNamesProviders

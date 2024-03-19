@@ -32,9 +32,9 @@ namespace OrchardCore.Media.Azure
         {
             var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure");
 
-            options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
-            options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
-            options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
+            options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
+            options.ContainerName = section.GetValue(nameof(options.ContainerName), string.Empty);
+            options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
             options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
@@ -57,7 +57,7 @@ namespace OrchardCore.Media.Azure
 
                 // container name must be lowercase
                 options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                options.ContainerName = options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.ContainerName = options.ContainerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {
@@ -73,7 +73,7 @@ namespace OrchardCore.Media.Azure
                 var template = _fluidParser.Parse(options.BasePath);
 
                 options.BasePath = template.Render(templateContext, NullEncoder.Default);
-                options.BasePath = options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.BasePath = options.BasePath.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {

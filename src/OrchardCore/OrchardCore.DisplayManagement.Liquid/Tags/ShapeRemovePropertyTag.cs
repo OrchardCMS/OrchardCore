@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var propName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
 
-                if (!String.IsNullOrEmpty(propName))
+                if (!string.IsNullOrEmpty(propName))
                 {
                     shape.Properties.Remove(propName.ToPascalCaseUnderscore());
                 }

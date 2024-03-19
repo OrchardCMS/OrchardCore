@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -94,7 +93,7 @@ namespace OrchardCore.Users.Drivers
 
             if (context.IsNew)
             {
-                if (String.IsNullOrWhiteSpace(model.Password))
+                if (string.IsNullOrWhiteSpace(model.Password))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["A password is required"]);
                 }

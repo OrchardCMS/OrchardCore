@@ -145,8 +145,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
-            contextAttributes = new TagHelperAttributeList();
-            outputAttributes = new TagHelperAttributeList();
+            contextAttributes = [];
+            outputAttributes = [];
 
             ITagHelper tagHelper;
 
@@ -167,8 +167,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
-                var dictionaryName = String.Empty;
-                var dictionaryKey = String.Empty;
+                var dictionaryName = string.Empty;
+                var dictionaryKey = string.Empty;
 
                 if (!_setters.TryGetValue(propertyName, out var setter))
                 {

@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Roles
@@ -15,8 +14,8 @@ namespace OrchardCore.Roles
 
         public static Permission CreatePermissionForAssignRole(string name) =>
             new(
-                String.Format(_assignRole.Name, name),
-                String.Format(_assignRole.Description, name),
+                string.Format(_assignRole.Name, name),
+                string.Format(_assignRole.Description, name),
                 _assignRole.ImpliedBy
             );
     }

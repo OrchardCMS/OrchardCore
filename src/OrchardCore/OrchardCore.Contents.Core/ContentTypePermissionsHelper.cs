@@ -45,10 +45,10 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.EditContentOwner.Name, _editContentOwner },
         };
 
-        private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = new();
+        private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
 
         /// <summary>
-        /// Returns a dynamic permission for a content type, based on a global content permission template
+        /// Returns a dynamic permission for a content type, based on a global content permission template.
         /// </summary>
         public static Permission ConvertToDynamicPermission(Permission permission)
         {
@@ -61,18 +61,15 @@ namespace OrchardCore.Contents.Security
         }
 
         /// <summary>
-        /// Generates a permission dynamically for a content type
+        /// Generates a permission dynamically for a content type.
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             return new Permission(
-                String.Format(template.Name, typeDefinition.Name),
-                String.Format(template.Description, typeDefinition.DisplayName),
+                string.Format(template.Name, typeDefinition.Name),
+                string.Format(template.Description, typeDefinition.DisplayName),
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Where(t => t != null).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
@@ -81,14 +78,11 @@ namespace OrchardCore.Contents.Security
         }
 
         /// <summary>
-        /// Generates a permission dynamically for a content type, without a display name or category
+        /// Generates a permission dynamically for a content type, without a display name or category.
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, string contentType)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             var key = new ValueTuple<string, string>(template.Name, contentType);
 
@@ -98,8 +92,8 @@ namespace OrchardCore.Contents.Security
             }
 
             permission = new Permission(
-                String.Format(template.Name, contentType),
-                String.Format(template.Description, contentType),
+                string.Format(template.Name, contentType),
+                string.Format(template.Description, contentType),
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, contentType))
             );
 

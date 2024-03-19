@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Recipes
     {
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.Recipes
             }
 
             // Otherwise, the import of content items is deferred after all migrations are completed,
-            // this prevents e.g. a content handler to trigger a workflow before worflows migrations.
+            // this prevents e.g. a content handler to trigger a workflow before workflows migrations.
             ShellScope.AddDeferredTask(scope =>
             {
                 var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
@@ -45,6 +45,6 @@ namespace OrchardCore.Contents.Recipes
 
     public class ContentStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }

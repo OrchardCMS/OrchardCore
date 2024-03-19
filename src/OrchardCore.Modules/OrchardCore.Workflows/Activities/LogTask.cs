@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class LogTask : TaskActivity
+    public class LogTask : TaskActivity<LogTask>
     {
         private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -20,7 +20,6 @@ namespace OrchardCore.Workflows.Activities
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
-        public override string Name => nameof(LogTask);
 
         public override LocalizedString DisplayText => S["Log Task"];
 

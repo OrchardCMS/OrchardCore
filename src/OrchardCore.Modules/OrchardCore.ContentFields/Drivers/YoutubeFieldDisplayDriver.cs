@@ -54,7 +54,7 @@ namespace OrchardCore.ContentFields.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
+                if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
@@ -65,7 +65,7 @@ namespace OrchardCore.ContentFields.Drivers
                         var uri = new Uri(model.RawAddress);
 
                         // If it is a url with QueryString.
-                        if (!String.IsNullOrWhiteSpace(uri.Query))
+                        if (!string.IsNullOrWhiteSpace(uri.Query))
                         {
                             var query = QueryHelpers.ParseQuery(uri.Query);
                             if (query.TryGetValue("v", out var values))

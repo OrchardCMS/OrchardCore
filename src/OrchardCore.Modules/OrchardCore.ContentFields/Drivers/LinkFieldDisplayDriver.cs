@@ -74,7 +74,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 var urlToValidate = field.Url;
-                if (!String.IsNullOrEmpty(urlToValidate))
+                if (!string.IsNullOrEmpty(urlToValidate))
                 {
                     var indexAnchor = urlToValidate.IndexOf('#');
                     if (indexAnchor > -1)
@@ -92,11 +92,11 @@ namespace OrchardCore.ContentFields.Drivers
                 }
 
                 // Validate Url
-                if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
+                if (settings.Required && string.IsNullOrWhiteSpace(field.Url))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (!String.IsNullOrWhiteSpace(field.Url))
+                else if (!string.IsNullOrWhiteSpace(field.Url))
                 {
                     if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                     {
@@ -106,7 +106,7 @@ namespace OrchardCore.ContentFields.Drivers
                     {
                         var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
 
-                        if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                        if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                         }
@@ -114,11 +114,11 @@ namespace OrchardCore.ContentFields.Drivers
                 }
 
                 // Validate Text
-                if (settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(field.Text))
+                if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (settings.LinkTextMode == LinkTextMode.Static && String.IsNullOrWhiteSpace(settings.DefaultText))
+                else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }

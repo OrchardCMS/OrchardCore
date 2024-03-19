@@ -32,19 +32,19 @@ namespace OrchardCore.Security.Extensions.Tests
             var context = new DefaultHttpContext();
             var options = new SecurityHeadersOptions
             {
-                ContentSecurityPolicy = new[]
-                {
+                ContentSecurityPolicy =
+                [
                     $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.None}",
                     $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com",
                     $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.Any}",
-                },
+                ],
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
-                PermissionsPolicy = new[]
-                {
+                PermissionsPolicy =
+                [
                     $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}",
                     $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}",
                     $"{PermissionsPolicyValue.SpeakerSelection}={PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com"
-                },
+                ],
                 ReferrerPolicy = ReferrerPolicyValue.Origin
             };
             var applicationBuilder = CreateApplicationBuilder();

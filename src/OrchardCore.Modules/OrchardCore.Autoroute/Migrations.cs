@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,13 +17,13 @@ namespace OrchardCore.Autoroute
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("AutoroutePart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("AutoroutePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a custom url for your content item."));
 
-            SchemaBuilder.CreateMapIndexTable<AutoroutePartIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<AutoroutePartIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContainedContentItemId", c => c.WithLength(26))
                 .Column<string>("JsonPath", c => c.Unlimited())
@@ -37,9 +38,9 @@ namespace OrchardCore.Autoroute
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>();
 
             return 2;
         }
@@ -53,17 +54,17 @@ namespace OrchardCore.Autoroute
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
                 .AddColumn<string>("ContainedContentItemId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
                 .AddColumn<string>("JsonPath", c => c.Unlimited())
             );
 
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 

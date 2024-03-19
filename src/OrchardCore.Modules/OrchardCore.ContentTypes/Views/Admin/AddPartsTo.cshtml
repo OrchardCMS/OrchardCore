@@ -12,7 +12,7 @@
         <ul class="list-group">
             @foreach (var partSelection in Model.PartSelections)
             {
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-action">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
                         <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>

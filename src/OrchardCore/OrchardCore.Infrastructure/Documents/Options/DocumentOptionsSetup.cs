@@ -17,7 +17,7 @@ namespace OrchardCore.Documents.Options
             _shellConfiguration = shellConfiguration;
         }
 
-        public void Configure(DocumentOptions options) => Configure(String.Empty, options);
+        public void Configure(DocumentOptions options) => Configure(string.Empty, options);
 
         public void Configure(string name, DocumentOptions options)
         {

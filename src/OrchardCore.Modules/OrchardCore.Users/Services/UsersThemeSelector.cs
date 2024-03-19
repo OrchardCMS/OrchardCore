@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -62,7 +61,7 @@ namespace OrchardCore.Users.Services
 
                 var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
-                if (String.IsNullOrEmpty(adminThemeName))
+                if (string.IsNullOrEmpty(adminThemeName))
                 {
                     return null;
                 }

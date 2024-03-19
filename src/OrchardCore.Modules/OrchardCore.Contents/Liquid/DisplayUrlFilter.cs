@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -32,7 +31,7 @@ namespace OrchardCore.Contents.Liquid
 
             if (contentItem == null)
             {
-                if (String.IsNullOrEmpty(input.ToStringValue()))
+                if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
                     return StringValue.Empty;
                 }

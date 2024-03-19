@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
@@ -34,7 +33,7 @@ namespace OrchardCore.Taxonomies.Services
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
                     // Show all items categorized by the taxonomy
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                         {

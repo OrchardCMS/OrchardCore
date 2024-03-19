@@ -9,7 +9,7 @@ namespace OrchardCore.Shortcodes.Providers
     {
         public const string ShortCodeIdentifier = "locale";
 
-        private static ValueTask<string> Empty => new(String.Empty);
+        private static ValueTask<string> Empty => new(string.Empty);
         private static ValueTask<string> Null => new((string)null);
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)

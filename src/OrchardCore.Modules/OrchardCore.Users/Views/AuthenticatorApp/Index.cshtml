@@ -20,7 +20,7 @@
         </li>
         <li>
             <p>
-                @T["Scan the QR Code below, or enter this key {0} into your two-factor authenticator app. You may ignore spaces and casing.", $"<kbd>{Model.SharedKey}</kbd>"]
+                @T["Scan the QR Code below, or enter the key <kbd>{0}</kbd> into your two-factor authenticator app. You may ignore spaces and casing.", Model.SharedKey]
             </p>
             <div id="qrCode" class="mb-3"></div>
             <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
@@ -36,7 +36,7 @@
                     <form id="send-code" method="post">
                         <div class="form-floating mb-3">
                             <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />
-                            <label asp-for="Code" class="control-label form-label">@T["Verification code"]</label>
+                            <label asp-for="Code" class="form-label form-label">@T["Verification code"]</label>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Verify"]</button>

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -24,7 +23,7 @@ namespace OrchardCore.Title.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (!settings.RenderTitle || String.IsNullOrWhiteSpace(titlePart.Title))
+            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
             {
                 return null;
             }
@@ -35,9 +34,8 @@ namespace OrchardCore.Title.Drivers
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
             })
-            .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
-
+            .Location("Detail", "Header")
+            .Location("Summary", "Header");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
@@ -56,7 +54,7 @@ namespace OrchardCore.Title.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
+                if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
                 }

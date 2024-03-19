@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -37,7 +36,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (String.IsNullOrEmpty(tenantName))
+            if (string.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }

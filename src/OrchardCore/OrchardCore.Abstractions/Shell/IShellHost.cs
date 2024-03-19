@@ -33,9 +33,7 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true);
 
         /// <summary>
@@ -43,15 +41,13 @@ namespace OrchardCore.Environment.Shell
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true);
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.
         /// A shell might have been released or not yet built, if so 'shell.Released' is true and
-        /// 'shell.CreateScope()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
+        /// 'shell.CreateScopeAsync()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
         /// </summary>
         IEnumerable<ShellContext> ListShellContexts();
 

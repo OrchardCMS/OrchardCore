@@ -5,26 +5,33 @@
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-@if (Model.Header != null && Model.Header.Search != null)
+@if (Model.Header?.Search != null || Model.Header?.ActionBarButtons)
 {
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
-                <div class="col">
-                    @await DisplayAsync(Model.Header.Search)
-                </div>
-                <div class="col-auto">
-                    @await DisplayAsync(Model.Header.ActionBarButtons)
-                </div>
+                @if (Model.Header.Search != null)
+                {
+                    <div class="col">
+                        @await DisplayAsync(Model.Header.Search)
+                    </div>
+                }
+
+                @if (Model.Header.ActionBarButtons != null)
+                {
+                    <div class="col-auto">
+                        @await DisplayAsync(Model.Header.ActionBarButtons)
+                    </div>
+                }
             </div>
         </div>
     </div>
 }
 
 <div class="list-group with-checkbox notification-container">
-    @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
+    @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
     {
-        <div class="list-group-item bg-primary">
+        <div class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 @if (Model.Header.Summary != null)
                 {
@@ -60,7 +67,8 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
+<script at="Foot" depends-on="jQuery">
     $(function () {
         var actions = $("#actions");
         var items = $("#items");

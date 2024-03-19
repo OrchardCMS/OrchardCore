@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +46,7 @@ namespace OrchardCore.Contents.Drivers
             {
                 return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
                 {
-                    if (!String.IsNullOrEmpty(part.ContentItem.Owner))
+                    if (!string.IsNullOrEmpty(part.ContentItem.Owner))
                     {
                         // TODO Move this editor to a user picker.
                         var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
@@ -77,7 +76,7 @@ namespace OrchardCore.Contents.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (String.IsNullOrWhiteSpace(model.OwnerName))
+                if (string.IsNullOrWhiteSpace(model.OwnerName))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["A value is required for Owner."]);
                 }

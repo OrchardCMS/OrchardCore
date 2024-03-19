@@ -42,10 +42,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypeDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
             dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
             contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
@@ -69,10 +66,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypeDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
             dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
             contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
@@ -101,10 +95,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> BuildPartEditorAsync(ContentPartDefinition contentPartDefinition, IUpdateModel updater, string groupId)
         {
-            if (contentPartDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentPartDefinition);
 
             var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
 
@@ -127,10 +118,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> UpdatePartEditorAsync(ContentPartDefinition contentPartDefinition, IUpdateModel updater, string groupId)
         {
-            if (contentPartDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentPartDefinition);
 
             var contentPartDefinitionShape = await CreateContentShapeAsync("ContentPartDefinition_Edit");
 
@@ -159,10 +147,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> BuildTypePartEditorAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater, string groupId = "")
         {
-            if (contentTypePartDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypePartDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
             dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             typePartDefinitionShape.ContentPart = contentTypePartDefinition;
@@ -186,10 +171,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> UpdateTypePartEditorAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater, string groupId = "")
         {
-            if (contentTypePartDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypePartDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
             dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             var layout = await _layoutAccessor.GetLayoutAsync();
@@ -221,10 +203,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> BuildPartFieldEditorAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater, string groupId = "")
         {
-            if (contentPartFieldDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartFieldDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
             dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
             partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
@@ -248,10 +227,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         public async Task<dynamic> UpdatePartFieldEditorAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater, string groupId = "")
         {
-            if (contentPartFieldDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartFieldDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
             var contentPartDefinition = contentPartFieldDefinition.PartDefinition;
             dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");

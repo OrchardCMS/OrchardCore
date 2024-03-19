@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +13,7 @@ namespace OrchardCore.Routing
         {
         }
 
-        public override int Order => Int32.MinValue + 100;
+        public override int Order => int.MinValue + 100;
 
         public bool AppliesToEndpoints(IReadOnlyList<Endpoint> endpoints)
         {
@@ -60,7 +59,7 @@ namespace OrchardCore.Routing
 
                 var value = httpContext.Request.Form[required.FormKey];
 
-                candidates.SetValidity(i, !String.IsNullOrEmpty(value));
+                candidates.SetValidity(i, !string.IsNullOrEmpty(value));
             }
 
             return Task.CompletedTask;
