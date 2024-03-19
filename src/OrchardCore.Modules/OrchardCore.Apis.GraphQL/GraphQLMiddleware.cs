@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -122,7 +123,7 @@ namespace OrchardCore.Apis.GraphQL
             catch (Exception e)
             {
                 await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
-                return;
+                throw;
             }
 
             var queryToExecute = request.Query;
