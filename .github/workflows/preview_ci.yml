@@ -4,6 +4,7 @@ on:
   schedule:
     # 4:19 AM UTC every day. A random time to avoid peak times of GitHub Actions.
     - cron: '19 4 * * *'
+  push:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
