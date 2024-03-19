@@ -11,20 +11,10 @@ namespace OrchardCore.Twitter.Services;
 
 public class TwitterSettingsService : OAuthSettingsService<TwitterSettings>, ITwitterSettingsService
 {
-    private readonly ISiteService _siteService;
-
     public TwitterSettingsService(
         ISiteService siteService,
         IStringLocalizer<OAuthSettingsService<TwitterSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        _siteService = siteService;
-    }
-
-    public async Task<TwitterSettings> LoadSettingsAsync()
-    {
-        var container = await _siteService.LoadSiteSettingsAsync();
-
-        return container.As<TwitterSettings>();
     }
 
     public override IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)

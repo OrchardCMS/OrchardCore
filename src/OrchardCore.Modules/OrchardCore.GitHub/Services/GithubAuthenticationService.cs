@@ -11,20 +11,10 @@ namespace OrchardCore.GitHub.Services;
 
 public class GitHubAuthenticationService : OAuthSettingsService<GitHubAuthenticationSettings>, IGitHubAuthenticationService
 {
-    private readonly ISiteService _siteService;
-
     public GitHubAuthenticationService(
         ISiteService siteService,
         IStringLocalizer<OAuthSettingsService<GitHubAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        _siteService = siteService;
-    }
-
-    public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
-    {
-        var container = await _siteService.LoadSiteSettingsAsync();
-
-        return container.As<GitHubAuthenticationSettings>();
     }
 
     public override IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)

@@ -11,20 +11,10 @@ namespace OrchardCore.Microsoft.Authentication.Services;
 
 public class AzureADService : OAuthSettingsService<AzureADSettings>, IAzureADService
 {
-    private readonly ISiteService _siteService;
-
     public AzureADService(
         ISiteService siteService,
         IStringLocalizer<OAuthSettingsService<AzureADSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        _siteService = siteService;
-    }
-
-    public async Task<AzureADSettings> LoadSettingsAsync()
-    {
-        var container = await _siteService.LoadSiteSettingsAsync();
-
-        return container.As<AzureADSettings>();
     }
 
     public override IEnumerable<ValidationResult> ValidateSettings(AzureADSettings settings)

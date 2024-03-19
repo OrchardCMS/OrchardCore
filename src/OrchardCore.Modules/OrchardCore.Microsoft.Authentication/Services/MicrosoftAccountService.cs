@@ -11,20 +11,10 @@ namespace OrchardCore.Microsoft.Authentication.Services;
 
 public class MicrosoftAccountService : OAuthSettingsService<MicrosoftAccountSettings>, IMicrosoftAccountService
 {
-    private readonly ISiteService _siteService;
-
     public MicrosoftAccountService(
         ISiteService siteService,
         IStringLocalizer<OAuthSettingsService<MicrosoftAccountSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        _siteService = siteService;
-    }
-
-    public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
-    {
-        var container = await _siteService.LoadSiteSettingsAsync();
-
-        return container.As<MicrosoftAccountSettings>();
     }
 
     public override IEnumerable<ValidationResult> ValidateSettings(MicrosoftAccountSettings settings)

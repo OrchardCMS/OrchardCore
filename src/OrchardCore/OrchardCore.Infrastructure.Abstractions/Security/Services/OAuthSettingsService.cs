@@ -30,6 +30,13 @@ public abstract class OAuthSettingsService<TAuthenticationSettings>
         return settings.As<TAuthenticationSettings>();
     }
 
+    public async Task<TAuthenticationSettings> LoadSettingsAsync()
+    {
+        var settings = await _siteService.LoadSiteSettingsAsync();
+
+        return settings.As<TAuthenticationSettings>();
+    }
+
     public async Task UpdateSettingsAsync(TAuthenticationSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
