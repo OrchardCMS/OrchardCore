@@ -50,6 +50,7 @@ jobs:
         npm run cms:test
         npm run mvc:test
     - uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: Functional Test failure
         path: |
