@@ -89,7 +89,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com).
 
 Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
-enables your organization to create, store and share packages in any format, to any place, with total
+enables your organization to create, store, and share packages in any format, to any place, with total
 confidence.
 
 ## Code of Conduct
