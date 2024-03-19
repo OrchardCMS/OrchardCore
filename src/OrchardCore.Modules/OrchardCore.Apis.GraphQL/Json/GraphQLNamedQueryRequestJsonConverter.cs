@@ -115,7 +115,7 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
             }
         }
 
-        //unexpected end of data
+        // Unexpected end of data.
         throw new JsonException();
     }
 }
