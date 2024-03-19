@@ -38,3 +38,10 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
+    - uses: actions/upload-artifact@v2
+      if: matrix.os == 'ubuntu-latest' && failure()
+      with:
+        name: Functional Test failure
+        path: |
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
