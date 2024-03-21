@@ -37,14 +37,14 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var leader = "";
             if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")
             {
-                leader = String.Concat(subPath.AsSpan("Views/".Length), "_");
+                leader = string.Concat(subPath.AsSpan("Views/".Length), "_");
             }
 
             // canonical shape type names must not have - or . to be compatible
             // with display and shape api calls)))
             var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
 
-            if (String.IsNullOrEmpty(displayType))
+            if (string.IsNullOrEmpty(displayType))
             {
                 return shapeType.ToLowerInvariant();
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 return (shapeType + "_" + displayType).ToLowerInvariant();
             }
 
-            return String.Concat(
+            return string.Concat(
                 shapeType.AsSpan(0, firstBreakingSeparator), "_", displayType, shapeType.AsSpan(firstBreakingSeparator))
                 .ToLowerInvariant();
         }

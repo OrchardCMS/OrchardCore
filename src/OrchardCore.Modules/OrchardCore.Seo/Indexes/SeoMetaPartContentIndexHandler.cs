@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Indexing;
 using OrchardCore.Seo.Models;

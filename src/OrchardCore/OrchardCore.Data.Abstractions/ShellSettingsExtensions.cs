@@ -11,7 +11,7 @@ public static class ShellSettingsExtensions
     private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
     private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
+    private readonly static string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -40,7 +40,7 @@ public static class ShellSettingsExtensions
             : shellSettings["DocumentTable"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(documentTable))
+        if (string.IsNullOrEmpty(documentTable))
         {
             documentTable = "Document";
         }
@@ -55,13 +55,13 @@ public static class ShellSettingsExtensions
             : shellSettings["TableNameSeparator"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(tableNameSeparator))
+        if (string.IsNullOrEmpty(tableNameSeparator))
         {
             tableNameSeparator = "_";
         }
         else if (tableNameSeparator == "NULL")
         {
-            tableNameSeparator = String.Empty;
+            tableNameSeparator = string.Empty;
         }
         else if (tableNameSeparator.Any(c => c != '_'))
         {
@@ -78,7 +78,7 @@ public static class ShellSettingsExtensions
             : shellSettings["IdentityColumnSize"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(identityColumnSize))
+        if (string.IsNullOrEmpty(identityColumnSize))
         {
             identityColumnSize = !shellSettings.IsInitialized() ? nameof(Int64) : nameof(Int32);
         }

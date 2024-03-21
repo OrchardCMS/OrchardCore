@@ -2,18 +2,18 @@
 @using OrchardCore.Forms.Workflows.ViewModels
 @model AddModelValidationErrorTaskViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Key">
-    <label asp-for="Key" class="@Orchard.GetLabelCssClasses()">@T["Key"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Key">
+    <label asp-for="Key" class="@Orchard.GetLabelClasses()">@T["Key"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input type="text" asp-for="Key" class="form-control" />
         <span asp-validation-for="Key"></span>
         <span class="hint">@T["The name of the form field that has an invalid value."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="ErrorMessage">
-    <label asp-for="ErrorMessage" class="@Orchard.GetLabelCssClasses()">@T["Error Message"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ErrorMessage">
+    <label asp-for="ErrorMessage" class="@Orchard.GetLabelClasses()">@T["Error Message"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input type="text" asp-for="ErrorMessage" class="form-control" />
         <span asp-validation-for="ErrorMessage"></span>
         <span class="hint">@T["The validation error message to display."]</span>

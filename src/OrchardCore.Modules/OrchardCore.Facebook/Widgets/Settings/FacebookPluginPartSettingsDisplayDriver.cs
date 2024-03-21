@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -37,9 +36,9 @@ namespace OrchardCore.Facebook.Widgets.Settings
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Liquid);
 
-            if (!String.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
+            if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
             else
             {

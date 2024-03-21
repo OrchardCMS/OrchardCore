@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
 
-                if (!String.IsNullOrEmpty(itemKey))
+                if (!string.IsNullOrEmpty(itemKey))
                 {
                     httpContext.Items.Remove(itemKey);
                 }

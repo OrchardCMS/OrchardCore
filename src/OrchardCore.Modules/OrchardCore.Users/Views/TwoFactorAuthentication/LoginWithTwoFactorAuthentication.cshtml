@@ -26,9 +26,9 @@
             </div>
         }
 
-        @if (!String.IsNullOrEmpty(Model.CurrentProvider))
+        @if (!string.IsNullOrEmpty(Model.CurrentProvider))
         {
-            var shape = await DisplayManager.BuildEditorAsync(new TwoFactorMethod(), UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider, String.Empty);
+            var shape = await DisplayManager.BuildEditorAsync<TwoFactorMethod>(UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider);
 
             @await DisplayAsync(shape)
         }
@@ -40,7 +40,7 @@
 
                 <div class="form-floating mb-3">
                     <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
-                    <label asp-for="VerificationCode">@T["Verification code"]</label>
+                    <label asp-for="VerificationCode" class="form-label">@T["Verification code"]</label>
                     <span asp-validation-for="VerificationCode" class="text-danger"></span>
                 </div>
                 @if (Model.AllowRememberDevice)

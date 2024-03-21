@@ -22,7 +22,7 @@ namespace OrchardCore.ContentPreview
 
                     var previewPath = previewPathObject.ToString();
 
-                    if (!String.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
+                    if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
                     {
                         var originalPath = context.Request.Path;
                         var originalQueryString = context.Request.QueryString;

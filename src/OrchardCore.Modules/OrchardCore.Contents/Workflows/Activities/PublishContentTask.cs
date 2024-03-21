@@ -12,7 +12,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class PublishContentTask : ContentTask
     {
-        public PublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<PublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public PublishContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<PublishContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
@@ -32,7 +36,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var content = (await GetContentAsync(workflowContext))
                 ?? throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
 
-            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }

@@ -15,7 +15,7 @@ namespace OrchardCore.Contents.Services;
 
 public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
 {
-    private readonly static string[] _operators = new[] { "OR", "AND", "||", "&&" };
+    private readonly static string[] _operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -87,7 +87,7 @@ public class DefaultContentsAdminListQueryService : IContentsAdminListQueryServi
 
     private static string GetSelectedContentType(ContentOptionsViewModel model)
     {
-        if (String.IsNullOrEmpty(model.SelectedContentType))
+        if (string.IsNullOrEmpty(model.SelectedContentType))
         {
             var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
             if (typeTermNode is not null)

@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
@@ -33,6 +32,14 @@ namespace OrchardCore.GitHub.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
+                string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
+            {
+                _logger.LogWarning("The Github login provider is enabled but not configured.");
+
+                return;
+            }
+
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
             {
@@ -44,7 +51,7 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!String.Equals(name, GitHubDefaults.AuthenticationScheme))
+            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
             {
                 return;
             }

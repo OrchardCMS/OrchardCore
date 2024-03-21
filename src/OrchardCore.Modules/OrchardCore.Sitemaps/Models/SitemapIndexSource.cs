@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Sitemaps.Models
 {
     // This is a single use Sitemap Index Source.
@@ -10,6 +8,6 @@ namespace OrchardCore.Sitemaps.Models
 
     public class SitemapIndexSource : SitemapSource
     {
-        public string[] ContainedSitemapIds { get; set; } = Array.Empty<string>();
+        public string[] ContainedSitemapIds { get; set; } = [];
     }
 }

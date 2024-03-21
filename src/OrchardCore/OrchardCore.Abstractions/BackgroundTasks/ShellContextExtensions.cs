@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell;
@@ -33,7 +32,7 @@ public static class ShellContextExtensions
         context.Request.Host = new HostString(urlHost ?? Localhost);
 
         context.Request.PathBase = PathString.Empty;
-        if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
+        if (!string.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
         {
             context.Request.PathBase = $"/{settings.RequestUrlPrefix}";
         }

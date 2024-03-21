@@ -96,16 +96,14 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            var model = new EditUserRoleViewModel();
-
             // The current user cannot alter their own roles. This prevents them removing access to the site for themselves.
             if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
                 && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
             {
-                await _notifier.WarningAsync(H["Cannot update your own roles."]);
-
-                return Edit(user);
+                return null;
             }
+
+            var model = new EditUserRoleViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -142,7 +140,7 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
                             var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
                                 .Cast<User>()

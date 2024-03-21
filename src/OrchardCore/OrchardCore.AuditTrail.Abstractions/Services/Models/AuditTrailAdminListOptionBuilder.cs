@@ -43,7 +43,7 @@ namespace OrchardCore.AuditTrail.Services.Models
         }
 
         /// <summary>
-        /// Optionally adds a select list item to the option
+        /// Optionally adds a select list item to the option.
         /// </summary>
         public AuditTrailAdminListOptionBuilder WithSelectListItem<TLocalizer>(Func<IStringLocalizer, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem) where TLocalizer : class
         {

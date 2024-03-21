@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
@@ -31,7 +30,7 @@ namespace OrchardCore.Contents.Deployment
         public override async Task<IDisplayResult> UpdateAsync(ContentDeploymentStep step, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            step.ContentTypes = Array.Empty<string>();
+            step.ContentTypes = [];
 
             await updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe);
 

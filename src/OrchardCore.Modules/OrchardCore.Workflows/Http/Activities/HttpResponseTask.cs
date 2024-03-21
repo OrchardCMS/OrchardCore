@@ -13,8 +13,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
-    public class HttpResponseTask : TaskActivity
+    public class HttpResponseTask : TaskActivity<HttpResponseTask>
     {
+        private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
@@ -32,8 +34,6 @@ namespace OrchardCore.Workflows.Http.Activities
             _expressionEvaluator = expressionEvaluator;
             _urlEncoder = urlEncoder;
         }
-
-        public override string Name => nameof(HttpResponseTask);
 
         public override LocalizedString DisplayText => S["Http Response Task"];
 
@@ -83,12 +83,12 @@ namespace OrchardCore.Workflows.Http.Activities
                 response.Headers.Append(header.Key, header.Value);
             }
 
-            if (!String.IsNullOrWhiteSpace(contentType))
+            if (!string.IsNullOrWhiteSpace(contentType))
             {
                 response.ContentType = contentType;
             }
 
-            if (!String.IsNullOrWhiteSpace(content))
+            if (!string.IsNullOrWhiteSpace(content))
             {
                 await response.WriteAsync(content);
             }
@@ -99,11 +99,13 @@ namespace OrchardCore.Workflows.Http.Activities
 
         private static IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
         {
-            if (String.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, StringValues>>();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return [];
+            }
 
             return
-                from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+                from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
                 let pair = header.Split(':')
                 where pair.Length == 2
                 select new KeyValuePair<string, StringValues>(pair[0], pair[1]);

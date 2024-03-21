@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -69,10 +68,10 @@ namespace OrchardCore.Markdown.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
-                if (!String.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, String.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {

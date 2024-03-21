@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ContentTypesAdminNode).Name;
+        public string Name => nameof(ContentTypesAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -54,7 +54,7 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, String.Empty, new
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
                     {
                         area = "OrchardCore.Contents",
                         controller = "Admin",
@@ -76,7 +76,7 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 try
                 {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
                     await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)
@@ -88,13 +88,13 @@ namespace OrchardCore.Contents.AdminNodes
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(ContentTypesAdminNode node)
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                if (!node.ShowAll && !node.ContentTypes.Any(entry => String.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
+                if (!node.ShowAll && !node.ContentTypes.Any(entry => string.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
@@ -119,8 +119,7 @@ namespace OrchardCore.Contents.AdminNodes
             else
             {
                 var typeEntry = node.ContentTypes
-                                .Where(x => String.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
-                                .FirstOrDefault();
+                    .FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
 
                 return AddPrefixToClasses(typeEntry.IconClass);
             }
@@ -132,7 +131,7 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
-                ?? new List<string>();
+                ?? [];
         }
     }
 }

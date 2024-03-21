@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -21,7 +22,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -34,12 +35,12 @@ namespace OrchardCore.Recipes.RecipeSteps
             var innerRecipes = new List<RecipeDescriptor>();
             foreach (var recipe in step.Values)
             {
-                if (!recipes.ContainsKey(recipe.Name))
+                if (!recipes.TryGetValue(recipe.Name, out var value))
                 {
                     throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
                 }
 
-                innerRecipes.Add(recipes[recipe.Name]);
+                innerRecipes.Add(value);
             }
 
             context.InnerRecipes = innerRecipes;

@@ -8,7 +8,7 @@
 <div>
     <p>@T["Your user account has been created but has to be approved before it can be used."]</p>
 
-    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
     {
         <a href="@returnUrl">@T["Previous Page"]</a>
     }

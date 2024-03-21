@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -9,9 +9,9 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents
 {
-    public class Shapes : IShapeTableProvider
+    public class Shapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
@@ -53,11 +53,11 @@ namespace OrchardCore.Contents
                     var displayType = content.GetProperty<string>("DisplayType");
                     var alternate = content.GetProperty<string>("Alternate");
 
-                    if (String.IsNullOrEmpty(handle))
+                    if (string.IsNullOrEmpty(handle))
                     {
                         // This code is provided for backwards compatibility and can be removed in a future version.
                         handle = content.GetProperty<string>("Alias");
-                        if (String.IsNullOrEmpty(handle))
+                        if (string.IsNullOrEmpty(handle))
                         {
                             return;
                         }
@@ -70,7 +70,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (String.IsNullOrEmpty(contentItemId))
+                    if (string.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
@@ -86,13 +86,15 @@ namespace OrchardCore.Contents
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
-                    if (!String.IsNullOrEmpty(alternate))
+                    if (!string.IsNullOrEmpty(alternate))
                     {
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    await context.Shape.AddAsync(displayShape, "");
+                    await context.Shape.AddAsync(displayShape, string.Empty);
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

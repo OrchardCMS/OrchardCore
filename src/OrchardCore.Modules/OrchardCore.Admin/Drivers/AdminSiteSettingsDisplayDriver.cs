@@ -36,7 +36,7 @@ namespace OrchardCore.Admin.Drivers
 
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
             {
-                model.DisplayDarkMode = settings.DisplayDarkMode;
+                model.DisplayThemeToggler = settings.DisplayThemeToggler;
                 model.DisplayMenuFilter = settings.DisplayMenuFilter;
                 model.DisplayNewMenu = settings.DisplayNewMenu;
                 model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
@@ -58,7 +58,7 @@ namespace OrchardCore.Admin.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.DisplayDarkMode = model.DisplayDarkMode;
+                settings.DisplayThemeToggler = model.DisplayThemeToggler;
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
                 settings.DisplayNewMenu = model.DisplayNewMenu;
                 settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;

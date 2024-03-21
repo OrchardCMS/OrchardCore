@@ -60,7 +60,7 @@ class WorkflowEditor extends WorkflowCanvas {
                     }
                 }
 
-                activityElements.each((index, activityElement) => {
+                activityElements.each((_, activityElement) => {
                     const $activityElement = $(activityElement);
                     const activityId = $activityElement.data('activity-id');
                     const isDeleted = this.workflowType.removedActivities.indexOf(activityId) > -1;
@@ -139,49 +139,50 @@ class WorkflowEditor extends WorkflowCanvas {
             });
 
             // Initialize popovers.
-            activityElements.popover({
-                trigger: 'manual',
-                html: true,
-                content: function () {
-                    const activityElement = $(this);
-                    const $content: JQuery<Element> = activityElement.find('.activity-commands').clone().show();
-                    const startButton = $content.find('.activity-start-action');
-                    const isStart = activityElement.data('activity-start') === true;
-                    const activityId: number = activityElement.data('activity-id');
+            activityElements.each((_, item) => {
+                var activityElement = $(item);
+                activityElement.popover({
+                    trigger: 'manual',
+                    html: true,
+                    content: () => {
+                        const $content: JQuery<Element> = activityElement.find('.activity-commands').clone();
+                        const startButton = $content.find('.activity-start-action');
+                        const isStart = activityElement.data('activity-start') === true;
+                        const activityId: number = activityElement.data('activity-id');
+                        startButton.attr('aria-pressed', activityElement.data('activity-start'));
+                        startButton.toggleClass('active', isStart);
 
-                    startButton.attr('aria-pressed', activityElement.data('activity-start'));
-                    startButton.toggleClass('active', isStart);
+                        $content.on('click', '.activity-start-action', e => {
+                            e.preventDefault();
+                            const button = $(e.currentTarget);
 
-                    $content.on('click', '.activity-start-action', e => {
-                        e.preventDefault();
-                        const button = $(e.currentTarget);
+                            const isStart = button.is('.active');
+                            activityElement.data('activity-start', isStart);
+                            activityElement.toggleClass('activity-start', isStart);
+                        });
 
-                        const isStart = button.is('.active');
-                        activityElement.data('activity-start', isStart);
-                        activityElement.toggleClass('activity-start', isStart);
-                    });
+                        $content.on('click', '.activity-delete-action', e => {
+                            e.preventDefault();
 
-                    $content.on('click', '.activity-delete-action', e => {
-                        e.preventDefault();
+                            // TODO: The prompts are really annoying. Consider showing some sort of small message balloon somewhere to undo the action instead.
+                            //if (!confirm(self.deleteActivityPrompt)) {
+                            //    return;
+                            //}
 
-                        // TODO: The prompts are really annoying. Consider showing some sort of small message balloon somewhere to undo the action instead.
-                        //if (!confirm(self.deleteActivityPrompt)) {
-                        //    return;
-                        //}
+                            self.workflowType.removedActivities.push(activityId);
+                            plumber.remove(activityElement);
+                            activityElement.popover('dispose');
+                        });
 
-                        self.workflowType.removedActivities.push(activityId);
-                        plumber.remove(activityElement);
-                        activityElement.popover('dispose');
-                    });
+                        $content.on('click', '[data-persist-workflow]', e => {
+                            self.saveLocalState();
+                        });
 
-                    $content.on('click', '[data-persist-workflow]', e => {
-                        self.saveLocalState();
-                    });
-
-                    return $content.get(0);
-                }
+                        return $content.get(0);
+                    }
+                });
             });
-
+           
             $(container).on('click', '.activity', e => {
                 if (this.hasDragged) {
                     this.hasDragged = false;

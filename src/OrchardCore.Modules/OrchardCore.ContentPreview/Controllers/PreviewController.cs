@@ -97,7 +97,7 @@ namespace OrchardCore.ContentPreview.Controllers
 
             var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
 
-            if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+            if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
             {
                 // The PreviewPart is configured, we need to set the fake content item.
                 _contentManagerSession.Store(contentItem);
@@ -124,13 +124,13 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             Debug.Assert(modelError != null);
 
-            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }
 
             // Default in the ValidationSummary case is no error message.
-            return String.Empty;
+            return string.Empty;
         }
 
         public static string GetModelErrorMessageOrDefault(
@@ -142,7 +142,7 @@ namespace OrchardCore.ContentPreview.Controllers
             Debug.Assert(containingEntry != null);
             Debug.Assert(modelExplorer != null);
 
-            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }

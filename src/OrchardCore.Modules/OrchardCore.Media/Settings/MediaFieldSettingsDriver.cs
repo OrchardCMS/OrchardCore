@@ -95,7 +95,7 @@ namespace OrchardCore.Media.Settings
 
                     if (selectedExtensions.Length == 0)
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, String.Empty, S["Please select at least one extension."]);
+                        context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
                     }
 
                     settings.AllowedExtensions = selectedExtensions;

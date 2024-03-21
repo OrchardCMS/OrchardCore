@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -64,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
+        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             };
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -90,7 +90,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             var baseTheme = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
@@ -98,8 +98,8 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -121,9 +121,9 @@ namespace OrchardCore.DisplayManagement.Manifest
             Assert.Equal(id, theme.Name);
             Assert.Equal(baseTheme, theme.BaseTheme);
 
-            Assert.Equal(String.Empty, theme.Category);
+            Assert.Equal(string.Empty, theme.Category);
             Assert.Null(theme.InternalPriority);
-            Assert.Equal(String.Empty, theme.Priority);
+            Assert.Equal(string.Empty, theme.Priority);
 
             Assert.Equal(description, theme.Description);
 
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -157,7 +157,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             var baseTheme = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
@@ -165,8 +165,8 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -189,9 +189,9 @@ namespace OrchardCore.DisplayManagement.Manifest
             Assert.Equal(name, theme.Name);
             Assert.Equal(baseTheme, theme.BaseTheme);
 
-            Assert.Equal(String.Empty, theme.Category);
+            Assert.Equal(string.Empty, theme.Category);
             Assert.Null(theme.InternalPriority);
-            Assert.Equal(String.Empty, theme.Priority);
+            Assert.Equal(string.Empty, theme.Priority);
 
             Assert.Equal(description, theme.Description);
 
@@ -213,7 +213,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -227,7 +227,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var deps = LoremWords(5).Split(' ');
             var website = LoremWebsiteUrl();
             var tags = LoremWords(5).Split(' ');
@@ -235,8 +235,8 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
@@ -293,7 +293,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         {
             var id = "one";
             var baseTheme = "two";
-            var category = String.Empty;
+            var category = string.Empty;
             var description = "three";
             var author = "four";
             var semVer = "5.6.7";
@@ -304,9 +304,9 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool alwaysEnabled = true;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Charlie.Root);
@@ -370,7 +370,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             var id = "one";
             var name = "two";
             var baseTheme = "three";
-            var category = String.Empty;
+            var category = string.Empty;
             var description = "four";
             var author = "five";
             var semVer = "6.7.8";
@@ -381,9 +381,9 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool alwaysEnabled = true;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Bravo.Root);
@@ -461,8 +461,8 @@ namespace OrchardCore.DisplayManagement.Manifest
             const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             // Would inject via Theory but for issues xUnit failing to discover the cases
             var rootType = typeof(Examples.Themes.AssyAttrib.Alpha.Root);

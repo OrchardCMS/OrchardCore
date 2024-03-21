@@ -1,6 +1,5 @@
-using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment
@@ -20,13 +19,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToReset = elasticIndexResetStep.IncludeAll ? Array.Empty<string>() : elasticIndexResetStep.Indices;
+            var indicesToReset = elasticIndexResetStep.IncludeAll ? [] : elasticIndexResetStep.Indices;
 
-            result.Steps.Add(new JObject(
-            new JProperty("name", "lucene-index-reset"),
-                new JProperty("includeAll", elasticIndexResetStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToReset))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "lucene-index-reset",
+                ["includeAll"] = elasticIndexResetStep.IncludeAll,
+                ["Indices"] = JArray.FromObject(indicesToReset),
+            });
 
             return Task.CompletedTask;
         }

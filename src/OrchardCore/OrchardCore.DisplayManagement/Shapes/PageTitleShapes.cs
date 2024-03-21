@@ -1,4 +1,3 @@
-using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -25,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
 
             // We must return a page title so if the format setting is blank just use the current title unformatted
-            if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
+            if (string.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {
                 return Title.GenerateTitle(null);
             }

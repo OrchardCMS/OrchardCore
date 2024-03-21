@@ -56,10 +56,10 @@ namespace OrchardCore.Search.Lucene
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndices = new Dictionary<string, long>();
-            var lastTaskId = Int64.MaxValue;
+            var lastTaskId = long.MaxValue;
             IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 indexSettingsList = await _luceneIndexSettingsService.GetSettingsAsync();
 
@@ -109,7 +109,7 @@ namespace OrchardCore.Search.Lucene
                     // Load the next batch of tasks.
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    if (!batch.Any())
+                    if (batch.Length == 0)
                     {
                         return;
                     }
@@ -136,7 +136,7 @@ namespace OrchardCore.Search.Lucene
 
                     foreach (var index in allIndices)
                     {
-                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                        updatedDocumentsByIndex[index.Key] = [];
                     }
 
                     if (indexName != null)

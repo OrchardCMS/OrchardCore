@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -131,10 +130,10 @@ namespace OrchardCore.FileStorage
             var normalizedParts =
                 paths
                     .Select(x => fileStore.NormalizePath(x))
-                    .Where(x => !String.IsNullOrEmpty(x))
+                    .Where(x => !string.IsNullOrEmpty(x))
                     .ToArray();
 
-            var combined = String.Join("/", normalizedParts);
+            var combined = string.Join("/", normalizedParts);
 
             // Preserve the initial '/' if it's present.
             if (paths[0]?.StartsWith('/') == true)

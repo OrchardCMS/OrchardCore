@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -10,28 +9,28 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities
 {
-    public class EmailTask : TaskActivity
+    public class EmailTask : TaskActivity<EmailTask>
     {
-        private readonly ISmtpService _smtpService;
+        private readonly IEmailService _emailService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
-            ISmtpService smtpService,
+            IEmailService emailService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer,
             HtmlEncoder htmlEncoder
         )
         {
-            _smtpService = smtpService;
+            _emailService = emailService;
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
 
-        public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
+
         public override LocalizedString Category => S["Messaging"];
 
         public WorkflowExpression<string> Author
@@ -89,7 +88,6 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"], S["Failed"]);
@@ -115,17 +113,17 @@ namespace OrchardCore.Email.Workflows.Activities
                 Bcc = bcc?.Trim(),
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
-                Subject = subject.Trim(),
+                Subject = subject?.Trim(),
                 Body = body?.Trim(),
                 IsHtmlBody = IsHtmlBody
             };
 
-            if (!String.IsNullOrWhiteSpace(sender))
+            if (!string.IsNullOrWhiteSpace(sender))
             {
                 message.Sender = sender.Trim();
             }
 
-            var result = await _smtpService.SendAsync(message);
+            var result = await _emailService.SendAsync(message);
             workflowContext.LastResult = result;
 
             if (!result.Succeeded)

@@ -12,7 +12,7 @@ namespace OrchardCore.Redis.Services;
 /// </summary>
 public class RedisCacheWrapper : IDistributedCache
 {
-    private readonly RedisCache _cache; 
+    private readonly RedisCache _cache;
 
     public RedisCacheWrapper(IOptions<RedisCacheOptions> optionsAccessor) => _cache = new RedisCache(optionsAccessor);
 

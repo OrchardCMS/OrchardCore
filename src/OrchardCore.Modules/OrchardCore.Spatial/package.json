@@ -2,6 +2,6 @@
   "name": "orchardcore.spatial",
   "version": "1.0.0",
   "dependencies": {
-    "leaflet": "1.9.3"
+    "leaflet": "1.9.4"
   }
 }

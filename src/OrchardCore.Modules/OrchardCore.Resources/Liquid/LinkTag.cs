@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -37,33 +36,33 @@ namespace OrchardCore.Resources.Liquid
                     case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 
             var linkEntry = new LinkEntry();
 
-            if (!String.IsNullOrEmpty(src))
+            if (!string.IsNullOrEmpty(src))
             {
                 linkEntry.Href = src;
             }
 
-            if (!String.IsNullOrEmpty(rel))
+            if (!string.IsNullOrEmpty(rel))
             {
                 linkEntry.Rel = rel;
             }
 
-            if (!String.IsNullOrEmpty(condition))
+            if (!string.IsNullOrEmpty(condition))
             {
                 linkEntry.Condition = condition;
             }
 
-            if (!String.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(title))
             {
                 linkEntry.Title = title;
             }
 
-            if (!String.IsNullOrEmpty(type))
+            if (!string.IsNullOrEmpty(type))
             {
                 linkEntry.Type = type;
             }

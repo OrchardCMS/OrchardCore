@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,6 +47,7 @@ namespace OrchardCore.OpenId.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
+        [Admin("OpenId/ValidationConfiguration", "OpenIdValidationConfiguration")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
@@ -82,7 +82,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 if (result != ValidationResult.Success)
                 {
-                    var key = result.MemberNames.FirstOrDefault() ?? String.Empty;
+                    var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
                     ModelState.AddModelError(key, result.ErrorMessage);
                 }
             }

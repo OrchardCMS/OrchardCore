@@ -8,9 +8,9 @@ namespace OrchardCore.Apis.GraphQL.Client
     public class ContentTypeQueryResourceBuilder
     {
         private readonly string _contentType;
-        private readonly List<string> _keys = new();
-        private readonly Dictionary<string, object> _queries = new();
-        private readonly List<ContentTypeQueryResourceBuilder> _nested = new();
+        private readonly List<string> _keys = [];
+        private readonly Dictionary<string, object> _queries = [];
+        private readonly List<ContentTypeQueryResourceBuilder> _nested = [];
 
         public ContentTypeQueryResourceBuilder(string contentType)
         {

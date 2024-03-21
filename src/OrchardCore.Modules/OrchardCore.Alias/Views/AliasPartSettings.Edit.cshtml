@@ -1,7 +1,7 @@
 @model OrchardCore.Alias.Settings.AliasPartSettingsViewModel
 @using OrchardCore.Alias.Settings
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -12,7 +12,7 @@
 
 <div class="mb-3 row">
     <div class="col-sm-6">
-        <label asp-for="Options">@T["Options"]</label>
+        <label asp-for="Options" class="form-label">@T["Options"]</label>
         <select asp-for="Options" class="form-select">
             <option value="@AliasPartOptions.Editable" selected="@(Model.Options == AliasPartOptions.Editable)">@T["Alias is editable"]</option>
             <option value="@AliasPartOptions.GeneratedDisabled" selected="@(Model.Options == AliasPartOptions.GeneratedDisabled)">@T["Alias is generated and input is disabled"]</option>
@@ -20,8 +20,8 @@
     </div>
 </div>
 <div class="mb-3 row">
-    <div class="col-large">
-        <label asp-for="Pattern">@T["Pattern"]</label>
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
     </div>

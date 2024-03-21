@@ -15,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
-                return !String.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
+                return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
             };
 
             return false;
@@ -25,7 +25,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
-                return !String.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
+                return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
             };
 
             return false;
@@ -34,9 +34,9 @@ namespace OrchardCore.Apis.GraphQL
         public static FieldBuilder<TArgumentGraphType, TArgumentType> PagingArguments<TArgumentGraphType, TArgumentType>(this FieldBuilder<TArgumentGraphType, TArgumentType> field)
         {
             return field
-                .Argument<IntGraphType, int>("first", "the first n elements", 0)
-                .Argument<IntGraphType, int>("last", "the last n elements", 0)
-                .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0);
+                .Argument<IntGraphType>("first", "the first n elements")
+                .Argument<IntGraphType>("last", "the last n elements")
+                .Argument<IntGraphType>("skip", "the number of elements to skip");
         }
 
         public static IEnumerable<TSource> Page<T, TSource>(this IResolveFieldContext<T> context, IEnumerable<TSource> source)

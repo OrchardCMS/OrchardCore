@@ -12,7 +12,7 @@
     var enableOrdering =
         Model.EnableOrdering &&
         Model.ContentItems.Count() > 1 &&
-        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && String.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
 
 
     if (enableOrdering)
@@ -51,7 +51,7 @@
 else
 {
     <form>
-        <div class="card bg-primary mb-3 position-sticky action-bar">
+        <div class="card text-bg-theme mb-3 position-sticky action-bar">
             <div class="card-body">
                 <div class="row gx-3">
                     <div class="col">
@@ -59,7 +59,7 @@ else
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
                             </button>
-                            <div class="@String.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+                            <div class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
                                 @* Latest not surfaced here to be consistent with the main content items list filter. *@
                                 <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
                                 <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
@@ -85,7 +85,7 @@ else
                 {
                     await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-action">
                     @await DisplayAsync(contentItemSummary)
                 </li>
             }

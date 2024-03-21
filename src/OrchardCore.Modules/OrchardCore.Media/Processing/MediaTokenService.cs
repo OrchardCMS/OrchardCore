@@ -122,7 +122,7 @@ namespace OrchardCore.Media.Processing
             // Store a hash of the valid query string commands.
             var queryStringToken = GetHash(queryStringTokenKey);
 
-            if (String.Equals(queryStringToken, token, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(queryStringToken, token, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.Media.Processing
         }
 
         /// <summary>
-        /// Custom version of <see cref="QueryHelpers.AddQueryString(String,String,String)"/> that takes our pre-built
+        /// Custom version of <see cref="QueryHelpers.AddQueryString(string,string,string)"/> that takes our pre-built
         /// dictionary, uri as ReadOnlySpan&lt;char&gt; and uses ZString. Otherwise same logic.
         /// </summary>
         private static string AddQueryString(

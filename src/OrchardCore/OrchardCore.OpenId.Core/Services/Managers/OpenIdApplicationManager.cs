@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -61,10 +60,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return Store is IOpenIdApplicationStore<TApplication> store ?
                 store.GetPhysicalIdAsync(application, cancellationToken) :
@@ -74,10 +70,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (Store is IOpenIdApplicationStore<TApplication> store)
             {
@@ -98,14 +91,14 @@ namespace OrchardCore.OpenId.Services.Managers
                     return builder.ToImmutable();
                 }
 
-                return ImmutableArray.Create<string>();
+                return [];
             }
         }
 
         public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(
             string role, CancellationToken cancellationToken = default)
         {
-            if (String.IsNullOrEmpty(role))
+            if (string.IsNullOrEmpty(role))
             {
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
@@ -136,12 +129,9 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask SetRolesAsync(TApplication application,
             ImmutableArray<string> roles, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
-            if (roles.Any(role => String.IsNullOrEmpty(role)))
+            if (roles.Any(role => string.IsNullOrEmpty(role)))
             {
                 throw new ArgumentException("Role names cannot be null or empty.", nameof(roles));
             }
@@ -154,10 +144,7 @@ namespace OrchardCore.OpenId.Services.Managers
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                 properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                    JsonSerializer.SerializeToElement(roles, new JsonSerializerOptions
-                    {
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    }));
+                    JsonSerializer.SerializeToElement(roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                 await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
@@ -168,15 +155,9 @@ namespace OrchardCore.OpenId.Services.Managers
         public override async ValueTask PopulateAsync(TApplication application,
             OpenIddictApplicationDescriptor descriptor, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
 
             // Note: this method MUST be called first before applying any change to the untyped
             // properties bag to ensure the base method doesn't override the added properties.
@@ -194,10 +175,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                     properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                        JsonSerializer.SerializeToElement(model.Roles, new JsonSerializerOptions
-                        {
-                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                        }));
+                        JsonSerializer.SerializeToElement(model.Roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                     await Store.SetPropertiesAsync(application, properties, cancellationToken);
                 }
@@ -207,15 +185,9 @@ namespace OrchardCore.OpenId.Services.Managers
         public override async ValueTask PopulateAsync(OpenIddictApplicationDescriptor descriptor,
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
 
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             await base.PopulateAsync(descriptor, application, cancellationToken);
 
@@ -228,10 +200,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public override IAsyncEnumerable<ValidationResult> ValidateAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return ExecuteAsync();
 
@@ -244,7 +213,7 @@ namespace OrchardCore.OpenId.Services.Managers
 
                 foreach (var role in await GetRolesAsync(application, cancellationToken))
                 {
-                    if (String.IsNullOrEmpty(role))
+                    if (string.IsNullOrEmpty(role))
                     {
                         yield return new ValidationResult("Roles cannot be null or empty.");
 

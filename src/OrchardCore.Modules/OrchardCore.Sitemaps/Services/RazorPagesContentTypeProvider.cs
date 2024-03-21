@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ namespace OrchardCore.Sitemaps.Services
             var option = _options.ContentTypeOptions.FirstOrDefault(o => o.ContentType == contentItem.ContentType);
             if (option != null && option.RouteValues != null)
             {
-                var pageName = String.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
+                var pageName = string.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
 
                 // When used from outside a razor page name must start with a /
                 if (!pageName.StartsWith('/'))
@@ -45,11 +44,11 @@ namespace OrchardCore.Sitemaps.Services
             return Task.FromResult<string>(null);
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            var ctds = _contentDefinitionManager.ListTypeDefinitions();
-            var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
-            return rctds;
+            var definitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            return definitions.Where(definition => _options.ContentTypeOptions.Any(o => o.ContentType == definition.Name));
         }
     }
 }

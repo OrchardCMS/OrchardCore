@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -88,14 +87,14 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html))
             {
-                if (!String.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
                     context.Updater.ModelState.AddModelError(
                         Prefix,
                         nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}",
                         fieldName,
-                        String.Join(' ', errors)]);
+                        string.Join(' ', errors)]);
                 }
                 else
                 {

@@ -6,7 +6,7 @@ namespace System
     {
         public static string ToUriComponents(this string url, UriFormat uriFormat = UriFormat.UriEscaped)
         {
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 return url;
             }
@@ -18,7 +18,7 @@ namespace System
 
         public static string ToSnakeCase(this string str)
         {
-            return String.Concat(str.Select((x, i) => i > 0 && Char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
+            return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,9 +38,9 @@ namespace OrchardCore.ContentLocalization.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LocalizationPart localizationPart)
+        public override IDisplayResult Edit(LocalizationPart localizationPart, BuildPartEditorContext context)
         {
-            return Initialize<LocalizationPartViewModel>("LocalizationPart_Edit", m => BuildViewModelAsync(m, localizationPart));
+            return Initialize<LocalizationPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, localizationPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, IUpdateModel updater, UpdatePartEditorContext context)
@@ -53,7 +52,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.Culture = viewModel.Culture ?? "";
 
             // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
-            if (String.IsNullOrEmpty(model.LocalizationSet))
+            if (string.IsNullOrEmpty(model.LocalizationSet))
             {
                 model.LocalizationSet = _idGenerator.GenerateUniqueId();
             }

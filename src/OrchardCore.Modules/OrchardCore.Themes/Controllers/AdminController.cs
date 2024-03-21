@@ -16,6 +16,7 @@ using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Controllers
 {
+    [Admin("Themes/{action}/{id?}", "Themes.{action}")]
     public class AdminController : Controller
     {
         private readonly ISiteThemeService _siteThemeService;
@@ -42,6 +43,7 @@ namespace OrchardCore.Themes.Controllers
             H = localizer;
         }
 
+        [Admin("Themes", "Themes.Index")]
         public async Task<ActionResult> Index()
         {
             var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
@@ -66,7 +68,7 @@ namespace OrchardCore.Themes.Controllers
                     }
 
                     var tags = f.Extension.Manifest.Tags.ToArray();
-                    var isHidden = tags.Any(t => String.Equals(t, "hidden", StringComparison.OrdinalIgnoreCase));
+                    var isHidden = tags.Any(t => string.Equals(t, "hidden", StringComparison.OrdinalIgnoreCase));
                     if (isHidden)
                     {
                         return false;
@@ -110,7 +112,7 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 // Don't use any theme on the front-end
             }
@@ -231,7 +233,7 @@ namespace OrchardCore.Themes.Controllers
 
         private static bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => String.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

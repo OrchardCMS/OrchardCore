@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -17,13 +18,13 @@ namespace OrchardCore.Contents.ViewComponents
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public IViewComponentResult Invoke(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
+        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
         {
             selectedContentTypes ??= Array.Empty<string>();
 
-            var contentTypes = ContentTypeSelection.Build(_contentDefinitionManager, selectedContentTypes);
+            var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes);
 
-            if (!String.IsNullOrEmpty(stereotype))
+            if (!string.IsNullOrEmpty(stereotype))
             {
                 contentTypes = contentTypes
                     .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)

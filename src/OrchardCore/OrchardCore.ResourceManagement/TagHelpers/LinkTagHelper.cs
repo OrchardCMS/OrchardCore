@@ -34,27 +34,27 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             var linkEntry = new LinkEntry();
 
-            if (!String.IsNullOrEmpty(Src))
+            if (!string.IsNullOrEmpty(Src))
             {
                 linkEntry.Href = Src;
             }
 
-            if (!String.IsNullOrEmpty(Rel))
+            if (!string.IsNullOrEmpty(Rel))
             {
                 linkEntry.Rel = Rel;
             }
 
-            if (!String.IsNullOrEmpty(Condition))
+            if (!string.IsNullOrEmpty(Condition))
             {
                 linkEntry.Condition = Condition;
             }
 
-            if (!String.IsNullOrEmpty(Title))
+            if (!string.IsNullOrEmpty(Title))
             {
                 linkEntry.Title = Title;
             }
 
-            if (!String.IsNullOrEmpty(Type))
+            if (!string.IsNullOrEmpty(Type))
             {
                 linkEntry.Type = Type;
             }
@@ -66,7 +66,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             foreach (var attribute in output.Attributes)
             {
-                if (String.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

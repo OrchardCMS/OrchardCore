@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,9 +49,9 @@ namespace OrchardCore.Workflows.Http.Services
 
             return document.Entries.Values.SelectMany(x => x).Where(x =>
                 x.HttpMethod == httpMethod &&
-                (x.ControllerName == controllerName || String.IsNullOrWhiteSpace(x.ControllerName)) &&
-                (x.ActionName == actionName || String.IsNullOrWhiteSpace(x.ActionName)) &&
-                (x.AreaName == areaName || String.IsNullOrWhiteSpace(x.AreaName)))
+                (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName)) &&
+                (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName)) &&
+                (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)))
                 .ToArray();
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
@@ -34,10 +35,11 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpPost]
+        [Admin("ContentLocalization", "ContentLocalization.Localize")]
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             // Invariant culture name is empty so a null value is bound.
-            targetCulture ??= String.Empty;
+            targetCulture ??= string.Empty;
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 

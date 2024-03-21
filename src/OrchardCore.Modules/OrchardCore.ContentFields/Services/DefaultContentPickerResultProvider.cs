@@ -8,12 +8,9 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
-using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
 
@@ -41,8 +38,7 @@ namespace OrchardCore.ContentFields.Services
             var contentTypes = searchContext.ContentTypes;
             if (searchContext.DisplayAllContentTypes)
             {
-                contentTypes = _contentDefinitionManager
-                    .ListTypeDefinitions()
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(x => !x.HasStereotype())
                     .Select(x => x.Name)
                     .AsEnumerable();

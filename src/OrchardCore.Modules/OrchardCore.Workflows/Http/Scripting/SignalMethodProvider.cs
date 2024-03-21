@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "signalUrl",
                 Method = serviceProvider => (Func<string, string>)((signal) =>
                 {
-                    var payload = !String.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
+                    var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
                     var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
                     var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();

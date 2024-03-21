@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -117,7 +116,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return next(context);
                 });
             },
-            order: Int32.MinValue);
+            order: int.MinValue);
 
             return builder;
         }

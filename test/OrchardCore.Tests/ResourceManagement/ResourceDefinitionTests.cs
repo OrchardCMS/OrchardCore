@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.ResourceManagement
                 .SetBasePath(basePath);
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
-            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, String.Empty, StubFileVersionProvider.Instance);
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, string.Empty, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal($"{basePath}/foo.js", tagBuilder.Attributes["src"]);

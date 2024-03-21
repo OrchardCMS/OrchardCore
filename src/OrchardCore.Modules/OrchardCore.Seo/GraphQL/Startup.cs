@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;

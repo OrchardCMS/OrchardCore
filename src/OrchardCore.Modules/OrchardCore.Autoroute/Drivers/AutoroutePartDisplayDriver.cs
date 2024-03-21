@@ -60,12 +60,12 @@ namespace OrchardCore.Autoroute.Drivers
 
                 if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
                 {
-                    if (String.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         model.IsHomepage = true;
                     }
                 }
-                else if (String.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }
@@ -114,7 +114,7 @@ namespace OrchardCore.Autoroute.Drivers
                 updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
 
                 // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
-                if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
+                if (!string.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
                     var path = model.Path.Trim('/');
                     var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };

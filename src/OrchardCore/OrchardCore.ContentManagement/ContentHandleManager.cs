@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace OrchardCore.ContentManagement
             {
                 var result = await provider.GetContentItemIdAsync(handle);
 
-                if (!String.IsNullOrEmpty(result))
+                if (!string.IsNullOrEmpty(result))
                 {
                     return result;
                 }

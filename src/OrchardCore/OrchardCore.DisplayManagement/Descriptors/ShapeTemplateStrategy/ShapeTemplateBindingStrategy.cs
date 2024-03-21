@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
@@ -12,7 +13,7 @@ using OrchardCore.Mvc.FileProviders;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    public class ShapeTemplateBindingStrategy : IShapeTableHarvester
+    public class ShapeTemplateBindingStrategy : ShapeTableProvider, IShapeTableHarvester
     {
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
@@ -38,32 +39,27 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         public bool DisableMonitoring { get; set; }
 
-        private static IEnumerable<IExtensionInfo> Once(IEnumerable<IFeatureInfo> featureDescriptors)
+        public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            var once = new ConcurrentDictionary<string, object>();
-            return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
-        }
-
-        public void Discover(ShapeTableBuilder builder)
-        {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Start discovering shapes");
-            }
+            _logger.LogInformation("Start discovering shapes");
 
             var harvesterInfos = _harvesters
-                .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
+                .Select(harvester => new
+                {
+                    harvester,
+                    subPaths = harvester.SubPaths()
+                })
                 .ToList();
 
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult();
-            var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
+            var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToList();
 
             // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.
             var activeExtensions = Once(enabledFeatures)
                 .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id)))
                 .ToArray();
 
-            if (!_viewEnginesByExtension.Any())
+            if (_viewEnginesByExtension.Count == 0)
             {
                 foreach (var viewEngine in _shapeTemplateViewEngines)
                 {
@@ -79,10 +75,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             var hits = activeExtensions.Select(extensionDescriptor =>
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Start discovering candidate views filenames");
-                }
+                _logger.LogInformation("Start discovering candidate views filenames");
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
@@ -95,10 +88,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 }))
                 .ToList();
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Done discovering candidate views filenames");
-                }
+                _logger.LogInformation("Done discovering candidate views filenames");
 
                 var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
                 {
@@ -157,10 +147,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         });
             }
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Done discovering shapes");
-            }
+            _logger.LogInformation("Done discovering shapes");
+        }
+
+        private static IExtensionInfo[] Once(IEnumerable<IFeatureInfo> featureDescriptors)
+        {
+            var once = new ConcurrentDictionary<string, object>();
+            return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToArray();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -9,9 +8,9 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             var displayName = partField.GetSettings<ContentPartFieldSettings>().DisplayName;
 
-            if (String.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
-                displayName = partField.FieldDefinition.Name;
+                displayName = partField.FieldDefinition?.Name;
             }
 
             return displayName;

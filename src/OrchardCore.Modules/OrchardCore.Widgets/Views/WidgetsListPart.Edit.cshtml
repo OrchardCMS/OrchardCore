@@ -12,7 +12,7 @@
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+    var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
@@ -170,7 +170,7 @@
         }
 
         <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
-            debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
+            debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="jQuery"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
