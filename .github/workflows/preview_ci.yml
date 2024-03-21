@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Check for new commits
-      if: ${{ github.event_name == 'schedule' }}
+      if: ${{ github.event_name == 'pull_request' }}
       id: check-commits
       shell: pwsh
       run: |
