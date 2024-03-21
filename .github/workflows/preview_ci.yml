@@ -13,9 +13,6 @@ jobs:
     name: Build, Test, Deploy
     steps:
     - uses: actions/checkout@v4
-      with:
-        # Necessary to count commits below. We assume that no more than 50 commits are pushed in a day to main.
-        fetch-depth: 50
     - name: Check for new commits
       id: check-commits
       shell: pwsh
