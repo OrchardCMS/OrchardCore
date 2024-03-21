@@ -28,7 +28,9 @@ public static class CssOrchardHelperExtensions
         var additionalClassesList = additionalClasses.ToList();
 
         if (inputRequired)
+        {
             additionalClassesList.Add(themeOptions.LabelRequiredClasses);
+        }
 
         return GetHtmlContentBuilder(themeOptions.LabelClasses, additionalClassesList);
     }
