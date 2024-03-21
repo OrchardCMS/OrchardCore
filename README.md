@@ -82,6 +82,16 @@ First, clone the repository using the command `git clone https://github.com/Orch
 2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
 3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
 
+## Preview Package Feed
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
+
+NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com).
+
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store, and share packages in any format, to any place, with total
+confidence.
+
 ## Code of Conduct
 
 See [our Code of Conduct](./CODE-OF-CONDUCT.md).
