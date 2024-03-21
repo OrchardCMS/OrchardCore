@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Media.Deployment
@@ -31,9 +30,9 @@ namespace OrchardCore.Media.Deployment
             }
             else
             {
-                paths = new List<string>(mediaStep.FilePaths ?? Array.Empty<string>()).ToAsyncEnumerable();
+                paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
 
-                foreach (var directoryPath in mediaStep.DirectoryPaths ?? Array.Empty<string>())
+                foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
                 {
                     paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
                 }
@@ -51,10 +50,11 @@ namespace OrchardCore.Media.Deployment
             }
 
             // Adding media files
-            result.Steps.Add(new JObject(
-                new JProperty("name", "media"),
-                new JProperty("Files", JArray.FromObject(output))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "media",
+                ["Files"] = JArray.FromObject(output),
+            });
         }
 
         private class MediaDeploymentStepModel

@@ -1,4 +1,4 @@
-function confirmDialog({callback, ...options}) {
+function confirmDialog({ callback, ...options }) {
     const defaultOptions = $('#confirmRemoveModalMetadata').data();
     const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
 
@@ -10,7 +10,7 @@ function confirmDialog({callback, ...options}) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
                 </div>\
                 <div class="modal-body">\
-                    <p>' + message +'</p>\
+                    <p>' + message + '</p>\
                 </div>\
                 <div class="modal-footer">\
                     <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
@@ -43,24 +43,29 @@ function confirmDialog({callback, ...options}) {
     });
 }
 
-// Prevents page flickering while downloading css
-$(window).on('load', function() {
-    $('body').removeClass('preload');
-});
+(function () {
+
+    // Prevents page flickering while downloading css
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.remove('preload');
+    });
+
+})();
+
 
 $(function () {
     $('body').on('click', '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {
         var _this = $(this);
-        if(_this.filter('a[itemprop~="UnsafeUrl"]').length == 1)
-        {
+        if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
             console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
         }
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
         if (_this.filter('[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]').length == 1) {
             return false;
         }
-        confirmDialog({..._this.data(),
-             callback: function(resp) {
+        confirmDialog({
+            ..._this.data(),
+            callback: function (resp) {
                 if (resp) {
                     var url = _this.attr('href');
                     if (url == undefined) {
@@ -73,7 +78,8 @@ $(function () {
                         window.location = url;
                     }
                 }
-            }});
+            }
+        });
 
         return false;
     });
@@ -84,8 +90,7 @@ $(function () {
     if (magicToken) {
         $('body').on('click', 'a[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]', function () {
             var _this = $(this);
-            if(_this.filter('a[itemprop~="UnsafeUrl"]').length == 1)
-            {
+            if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
                 console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
             }
             var hrefParts = _this.attr("href").split("?");
@@ -105,8 +110,9 @@ $(function () {
             var unsafeUrlPrompt = _this.data('unsafe-url');
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                confirmDialog({..._this.data(),
-                    callback: function(resp) {
+                confirmDialog({
+                    ..._this.data(),
+                    callback: function (resp) {
                         if (resp) {
                             form.submit();
                         }
@@ -117,8 +123,9 @@ $(function () {
             }
 
             if (_this.filter('[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]').length == 1) {
-                confirmDialog({..._this.data(), 
-                    callback: function(resp) {
+                confirmDialog({
+                    ..._this.data(),
+                    callback: function (resp) {
                         if (resp) {
                             form.submit();
                         }
@@ -134,57 +141,13 @@ $(function () {
     }
 });
 
-$(function () {
-    $('input[data-bs-toggle="collapse"]').each(function () {
-        // Prevent bootstrap from altering its behavior
-        // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr('data-bs-toggle');
-
-        // Expand the section if necessary
-        var target = $($(this).data('bs-target'));
-        if ($(this).prop('checked')) {
-            target.addClass('visible');
-        }
-
-        $(this).on('change', function (e) {
-            // During a double-click, ignore state changes while the element is collapsing
-            if (target.hasClass('collapsing')) {
-                $(this).prop('checked', !$(this).prop('checked'));
-            }
-            target.collapse($(this).prop('checked') ? 'show' : 'hide');
-        });
-    });
-});
-
-$(function () {
-    $('input[data-bs-toggle="collapse active"]').each(function () {
-        // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
-        // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr("data-bs-toggle");
-
-        // Expand the section if necessary
-        var target = $($(this).data('bs-target'));
-        if (!$(this).prop('checked')) {
-            target.addClass('show');
-        }
-
-        $(this).on('change', function (e) {
-            // During a double-click, ignore state changes while the element is collapsing
-            if (target.hasClass('collapsing')) {
-                console.log('collapsing');
-                $(this).prop('checked', !$(this).prop('checked'));
-            }
-            target.collapse($(this).prop('checked') ? 'hide' : 'show');
-        });
-    });
-
+(function () {
     // Tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
+        return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-
-});
+})();
 
 function getTechnicalName(name) {
     var result = '', c;

@@ -7,23 +7,20 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Contents.Controllers
 {
-    public class ItemController : Controller
+    public class ItemController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ItemController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IAuthorizationService authorizationService,
-            IUpdateModelAccessor updateModelAccessor)
+            IAuthorizationService authorizationService)
         {
-            _authorizationService = authorizationService;
-            _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
-            _updateModelAccessor = updateModelAccessor;
+            _contentItemDisplayManager = contentItemDisplayManager;
+            _authorizationService = authorizationService;
         }
 
         public async Task<IActionResult> Display(string contentItemId, string jsonPath)
@@ -40,7 +37,7 @@ namespace OrchardCore.Contents.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
             return View(model);
         }
@@ -66,7 +63,7 @@ namespace OrchardCore.Contents.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
             return View(model);
         }

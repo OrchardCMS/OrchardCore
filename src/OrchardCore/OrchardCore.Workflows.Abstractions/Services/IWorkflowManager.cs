@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
@@ -23,7 +25,7 @@ namespace OrchardCore.Workflows.Services
         /// </summary>
         /// <param name="activityRecord"></param>
         /// <param name="properties"></param>
-        Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties);
+        Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties);
 
         /// <summary>
         /// Triggers a specific <see cref="OrchardCore.Workflows.Activities.IEvent"/>.
@@ -37,7 +39,7 @@ namespace OrchardCore.Workflows.Services
         /// <param name="isAlwaysCorrelated">
         /// If true, to be correlated a workflow instance only needs to be halted on an event activity of the related type, regardless the 'correlationId'. False by default.
         /// </param>
-        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false);
+        Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.
@@ -48,6 +50,15 @@ namespace OrchardCore.Workflows.Services
         /// <param name="correlationId">Optionally specify an application-specific value to associate the workflow instance with. For example, a content item ID.</param>
         /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
         Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
+
+        /// <summary>
+        /// Starts a new workflow using the specified workflow definition.
+        /// </summary>
+        /// <param name="workflowType">The workflow definition to start.</param>
+        /// <param name="input">Optionally specify any inputs to be used by the workflow.</param>
+        /// <param name="correlationId">Optionally specify an application-specific value to associate the workflow instance with. For example, a content item ID.</param>
+        /// <returns>Returns the created workflow context. Can be used for further inspection of the workflow state.</returns>
+        Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null);
 
         /// <summary>
         /// Resumes the specified workflow instance at the specified activity.
@@ -62,9 +73,20 @@ namespace OrchardCore.Workflows.Services
 
     public static class WorkflowManagerExtensions
     {
-        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
+        public static Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
         {
             return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
+        }
+
+        public static Task<WorkflowExecutionContext> RestartWorkflowAsync(this IWorkflowManager workflowManager, Workflow workflow, WorkflowType workflowType, JsonSerializerOptions jsonSerializerOptions = null)
+        {
+            ArgumentNullException.ThrowIfNull(workflow);
+
+            ArgumentNullException.ThrowIfNull(workflowType);
+
+            var state = workflow.State.ToObject<WorkflowState>(jsonSerializerOptions);
+
+            return workflowManager.RestartWorkflowAsync(workflowType, state.Input, workflow.CorrelationId);
         }
     }
 }

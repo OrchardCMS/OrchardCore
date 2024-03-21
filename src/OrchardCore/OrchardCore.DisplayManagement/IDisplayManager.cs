@@ -10,11 +10,11 @@ namespace OrchardCore.DisplayManagement
         Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId, string htmlPrefix);
         Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId, string htmlPrefix);
 
-        [Obsolete]
+        [Obsolete("This method will be removed in a future version", false)]
         Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId = "")
             => BuildEditorAsync(model, updater, isNew, groupId, "");
 
-        [Obsolete]
+        [Obsolete("This method will be removed in a future version", false)]
         Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string groupId = "")
             => UpdateEditorAsync(model, updater, isNew, groupId, "");
     }

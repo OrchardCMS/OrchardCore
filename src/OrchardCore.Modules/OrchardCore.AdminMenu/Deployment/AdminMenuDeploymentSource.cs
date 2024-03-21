@@ -1,18 +1,23 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 
 namespace OrchardCore.AdminMenu.Deployment
 {
     public class AdminMenuDeploymentSource : IDeploymentSource
     {
         private readonly IAdminMenuService _adminMenuService;
+        private readonly JsonSerializerOptions _serializationOptions;
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService,
+            IOptions<ContentSerializerJsonOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
+            _serializationOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -24,18 +29,16 @@ namespace OrchardCore.AdminMenu.Deployment
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AdminMenu"),
-                new JProperty("data", data)
-            ));
-
-            // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
-            var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "AdminMenu",
+                ["data"] = data,
+            });
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
-                var objectData = JObject.FromObject(adminMenu, serializer);
+                var objectData = JObject.FromObject(adminMenu, _serializationOptions);
                 data.Add(objectData);
             }
 

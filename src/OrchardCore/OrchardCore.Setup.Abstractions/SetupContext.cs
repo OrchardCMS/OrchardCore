@@ -32,6 +32,6 @@ namespace OrchardCore.Setup.Services
         /// <summary>
         /// Gets additional key/value info.
         /// </summary>
-        public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Properties { get; set; } = [];
     }
 }

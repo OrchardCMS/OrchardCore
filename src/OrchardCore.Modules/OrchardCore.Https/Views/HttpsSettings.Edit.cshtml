@@ -1,7 +1,5 @@
 @model HttpsSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
 <div class="mb-3" asp-validation-class-for="RequireHttps">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="RequireHttps" asp-is-disabled="@(!Model.IsHttpsRequest)" />
@@ -29,7 +27,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SslPort">
-    <label asp-for="SslPort">@T["SSL Port"]</label>
+    <label asp-for="SslPort" class="form-label">@T["SSL Port"]</label>
     <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)" />
     <span asp-validation-for="SslPort"></span>
     <span class="hint">@T["The SSL Port Number, leave empty to let the middleware try to determinate it."]</span>

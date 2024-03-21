@@ -75,12 +75,12 @@ This template is called when a widget is rendered on a page.
 
 ## Content Part templates
 
-Each driver is free to return a shape type of its choosing, but the usage is 
+Each driver is free to return a shape type of its choosing, but the usage is
 to render a content part using a shape with a name that matches the type name.
 For instance the `HtmlBodyPart` content part will return a single shape of type `HtmlBodyPart`, but the `ListPart` returns many
 shapes, one among them being `ListPart`.
 
-As a consequence the following list of templates use the `[ShapeType]` term where 
+As a consequence the following list of templates use the `[ShapeType]` term where
 most of the time it will be equal to the name of the content part. The examples use
 common content part names for this reason.
 
@@ -170,7 +170,6 @@ This template is called when a content part is rendered for a given content part
 | --------- | ------------ |
 | `TitlePart_Summary__CustomMode_Display` | `TitlePart-CustomMode.Display.Summary.cshtml` |
 
-
 ### `[ContentType]_Display__[PartType]__[DisplayMode]`
 
 This template is called when a content part is rendered for a given content type, with given display mode, without a display type.
@@ -221,7 +220,6 @@ This template is called when a shape type is rendered in a given content part ty
 | --------- | ------------ |
 | `Blog_Display__ListPart__ListPartFeed__CustomMode` | `Blog-ListPart-ListPartFeed-CustomMode.Display.cshtml` |
 
-
 ### `[ContentType]_[DisplayType]__[PartType]__[ShapeType]__[DisplayMode]_Display`
 
 This template is called when a shape type is rendered in a given content part type for a given content type, for given display mode with a given display type.
@@ -252,8 +250,6 @@ This template is called when a shape type is rendered in a given content part na
 | --------- | ------------ |
 | `Blog_Summary__Services__ListPartFeed__CustomMode_Display` | `Blog-Services-ListPartFeed-CustomMode.Display.Summary.cshtml` |
 
-
-
 ### Widget parts / Stereotype parts
 
 Content Part attached to Content type of the stereotype (e.g. `Widget`, `Menu`) also has following alternates. This applies to any stereotype other than `Content`.
@@ -267,7 +263,7 @@ This template is called when a content part is rendered for a given stereo type,
 | Template | Filename|
 | --------- | ------------ |
 | `Widget__HtmlBodyPart` | `Widget-HtmlBodyPart.cshtml` |
-| `Widget_Summary__HtmlBodyPart` | `Widget-HtmlBodyPart.Summary.cshtml` 
+| `Widget_Summary__HtmlBodyPart` | `Widget-HtmlBodyPart.Summary.cshtml`
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
 
@@ -313,7 +309,6 @@ This template is called when a content part is rendered for a given stereo type,
 | Template | Filename|
 | --------- | ------------ |
 | `Widget_Display__TitlePart__CustomMode` | `Widget-TitlePart-CustomMode.Display.cshtml` |
-
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[DisplayMode]_Display`
 
@@ -387,8 +382,8 @@ This template is called when a shape type is rendered in a given content part na
 
 ## Content Field templates
 
-Each driver is free to return a shape type of its choosing but the usage is 
-to render a content field using a shape with the same type name. 
+Each driver is free to return a shape type of its choosing but the usage is
+to render a content field using a shape with the same type name.
 For instance the `TextField` content field will return a single shape of type `TextField`,
 but other fields might return many shapes.
 
@@ -616,3 +611,11 @@ Views/Shared/{0}.cshtml
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
 option under the `Configuration->Login` page in the admin.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Hm9HeZMsDA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bwFH-C18rrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

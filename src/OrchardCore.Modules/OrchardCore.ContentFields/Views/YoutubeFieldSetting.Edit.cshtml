@@ -1,11 +1,5 @@
-@model OrchardCore.ContentFields.Settings.YoutubeFieldSettings
-@using OrchardCore.ContentFields.Settings
+@model YoutubeFieldSettings
 
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
-@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
-@{
-
-}
 <div class="mb-3">
     <div class="form-check">
         <input asp-for="Required" type="checkbox" class="form-check-input">
@@ -16,7 +10,7 @@
 
 <div class="mb-3">
     <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
@@ -24,7 +18,7 @@
 
 <div class="mb-3">
     <div class="w-sm-50 pe-md-3">
-        <label asp-for="Width">@T["Width"]</label>
+        <label asp-for="Width" class="form-label">@T["Width"]</label>
         <input type="number" asp-for="Width" class="form-control" />
     </div>
     <span class="hint">@T["The width of the Videobox"]</span>
@@ -32,7 +26,7 @@
 
 <div class="mb-3">
     <div class="w-sm-50 pe-md-3">
-        <label asp-for="Height">@T["Height"]</label>
+        <label asp-for="Height" class="form-label">@T["Height"]</label>
         <input type="number" asp-for="Height" class="form-control" />
     </div>
     <span class="hint">@T["The height of the Videobox"]</span>

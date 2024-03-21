@@ -18,5 +18,11 @@
       "Assets/js/audittrail-disabledcontent.js"
     ],
     "output": "wwwroot/Scripts/audittrail-disabledcontent.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/content-type-check-all.js"
+    ],
+    "output": "wwwroot/Scripts/content-type-check-all.js"
   }
 ]

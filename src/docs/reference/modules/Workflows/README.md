@@ -14,7 +14,7 @@ A Task activity typically performs an action, such as publishing a content item,
 
 In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*.  
 Only Event activities can be marked as the start of a workflow.  
-An example of such an event activity is _Content Created_, which executes whenever a content item is created.  
+An example of such an event activity is *Content Created*, which executes whenever a content item is created.  
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.  
@@ -82,7 +82,7 @@ Each activity has zero or more outcomes. When an activity has executed, it yield
 The workflow manager uses this list of outcomes to determine which activities to execute next.
 
 Although many activities support multiple outcomes, they typically return only one of them when done executing.  
-For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".  
+For example, the *Send Email* activity has two possible outcomes: "Done" and "Failed".  
 When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
 ### Transition
@@ -101,8 +101,8 @@ Each activity has access to this execution context.
 
 ### Correlation
 
-Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything.  
-For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.  
+Correlation is the act of associating a workflow instance with one or more *identifiers*. These identifiers can be anything.  
+For example, when a workflow has the *Content Created* event as its starting point, the workflow instance will be associated, or rather *correlated* to the content item ID that was just created.  
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
 ### Input
@@ -130,11 +130,11 @@ Workflows can be **short-running** as well as **long-running**.
 
 ### Short-running workflows
 
-When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as _Signal_), the workflow will run to completion in one go.
+When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as *Signal*), the workflow will run to completion in one go.
 
 ### Long-running workflows
 
-When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will _halt_ execution and persist the workflow instance to the underlying persistence layer.  
+When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will *halt* execution and persist the workflow instance to the underlying persistence layer.  
 When the appropriate event is triggered (which could happen seconds, days, weeks or even years from now), the workflow manager will load the workflow instance from storage and resume execution.
 
 ## Scripts and Expressions
@@ -443,3 +443,7 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

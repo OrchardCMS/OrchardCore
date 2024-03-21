@@ -20,7 +20,7 @@
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
     </button>
-    <ul class="@String.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+    <ul class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
         @foreach (var category in categories)
         {
             <li><a class="dropdown-item" href="?q=category:@category.Name">@category.LocalizedName(Context.RequestServices)</a></li>
@@ -136,7 +136,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4>@T["Current filter"]</h4>
-                            @if (!String.IsNullOrEmpty(Model.FilterResult.ToString()))
+                            @if (!string.IsNullOrEmpty(Model.FilterResult.ToString()))
                             {
                                 <pre>@Model.FilterResult.ToString()</pre>
                                 <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>

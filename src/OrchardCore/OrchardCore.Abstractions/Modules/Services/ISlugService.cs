@@ -14,7 +14,7 @@ namespace OrchardCore.Modules.Services
         /// Allows you to use a specified separator char.
         /// </summary>
         /// <param name="text">The text to transform.</param>
-        /// <param name="separator">The separator char</param>
+        /// <param name="separator">The separator char.</param>
         /// <returns>The slug created from the input text.</returns>
         string Slugify(string text, char separator);
     }

@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Security
         public async Task GrantsClaimsPermissions(string required, bool success)
         {
             // Arrange
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), new[] { "Allowed" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), ["Allowed"], true);
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Security
         public async Task DontRevokeExistingGrants()
         {
             // Arrange
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
             var permissionHandler = CreatePermissionHandler();
 
             await context.SuccessAsync("Required");
@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.Security
         public async Task DontHandleNonAuthenticated()
         {
             // Arrange
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), new[] { "Allowed" });
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), ["Allowed"]);
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.Security
             var level1 = new Permission("Implicit1", "Foo", new[] { level2 });
             var required = new Permission("Required", "Foo", new[] { level1 });
 
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "Implicit2" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, ["Implicit2"], true);
             var permissionHandler = CreatePermissionHandler();
 
             // Act
@@ -76,7 +76,7 @@ namespace OrchardCore.Tests.Security
             // Arrange
             var required = new Permission("required");
 
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "ReQuIrEd" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, ["ReQuIrEd"], true);
             var permissionHandler = CreatePermissionHandler();
 
             // Act

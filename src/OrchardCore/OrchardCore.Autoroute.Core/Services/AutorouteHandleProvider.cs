@@ -8,10 +8,7 @@ namespace OrchardCore.Autoroute.Core.Services
     {
         private readonly IAutorouteEntries _autorouteEntries;
 
-        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
-        {
-            _autorouteEntries = autorouteEntries;
-        }
+        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries) => _autorouteEntries = autorouteEntries;
 
         public int Order => 10;
 
@@ -19,7 +16,7 @@ namespace OrchardCore.Autoroute.Core.Services
         {
             if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
-                handle = handle.Substring(5);
+                handle = handle[5..];
 
                 if (!handle.StartsWith('/'))
                 {

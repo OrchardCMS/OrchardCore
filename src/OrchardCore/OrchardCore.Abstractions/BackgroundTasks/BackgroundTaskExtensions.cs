@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -17,12 +16,13 @@ namespace OrchardCore.BackgroundTasks
                 return new BackgroundTaskSettings
                 {
                     Name = technicalName,
-                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
+                    Title = !string.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
                     Description = attribute.Description,
                     LockTimeout = attribute.LockTimeout,
                     LockExpiration = attribute.LockExpiration,
+                    UsePipeline = attribute.UsePipeline,
                 };
             }
 

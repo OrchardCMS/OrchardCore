@@ -51,7 +51,7 @@ public class DefaultNotificationsAdminListFilterProvider : INotificationAdminLis
                         return (true, model.Status.ToString());
                     }
 
-                    return (false, String.Empty);
+                    return (false, string.Empty);
                 })
                 .AlwaysRun()
              )
@@ -79,7 +79,7 @@ public class DefaultNotificationsAdminListFilterProvider : INotificationAdminLis
                         return (true, model.OrderBy.ToString());
                     }
 
-                    return (false, String.Empty);
+                    return (false, string.Empty);
                 })
                 .AlwaysRun()
             )

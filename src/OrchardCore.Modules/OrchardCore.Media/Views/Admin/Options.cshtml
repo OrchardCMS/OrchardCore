@@ -51,6 +51,22 @@
 </div>
 
 <div class="mb-3 row">
+    <label asp-for="MaxUploadChunkSize" class="col-sm-2 col-form-label">@T["Max upload chunk size"]</label>
+    <div class="col-sm-10">
+        <code><input asp-for="MaxUploadChunkSize" type="text" class="form-control-plaintext" readonly /></code>
+        <span class="hint">@T["The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="TemporaryFileLifetime" class="col-sm-2 col-form-label">@T["Temporary file lifetime"]</label>
+    <div class="col-sm-10">
+        <code><input asp-for="TemporaryFileLifetime" type="text" class="form-control-plaintext" readonly /></code>
+        <span class="hint">@T["The lifetime of temporary files created during upload."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
     <label asp-for="CdnBaseUrl" class="col-sm-2 col-form-label">@T["Cdn base url"]</label>
     <div class="col-sm-10">
         <code><input asp-for="CdnBaseUrl" type="text" class="form-control-plaintext" readonly /></code>

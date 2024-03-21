@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Workflows.Activities;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
@@ -40,7 +42,7 @@ namespace OrchardCore.Users.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(UserUpdatedEvent), (User)context.User);
         }
 
-        private Task TriggerWorkflowEventAsync(string name, User user)
+        private Task<IEnumerable<WorkflowExecutionContext>> TriggerWorkflowEventAsync(string name, User user)
         {
             return _workflowManager.TriggerEventAsync(name,
                 input: new { User = user },

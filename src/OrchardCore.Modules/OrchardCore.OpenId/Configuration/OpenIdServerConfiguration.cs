@@ -11,7 +11,6 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -121,6 +120,7 @@ namespace OrchardCore.OpenId.Configuration
             // configurable and are inferred from the selected flows.
             if (settings.AllowAuthorizationCodeFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
@@ -139,6 +139,7 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.AllowHybridFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
@@ -229,14 +230,23 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync()
         {
             var settings = await _serverService.GetSettingsAsync();
-            if ((await _serverService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
 
-                return null;
+            var result = await _serverService.ValidateSettingsAsync(settings);
+
+            if (result.Any(result => result != ValidationResult.Success))
+            {
+                if (_shellSettings.IsRunning())
+                {
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success)
+                            .Select(x => x.ErrorMessage);
+
+                        _logger.LogWarning("The OpenID server settings are invalid: {Errors}", string.Join(System.Environment.NewLine, errors));
+                    }
+
+                    return null;
+                }
             }
 
             return settings;

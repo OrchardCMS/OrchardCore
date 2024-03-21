@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Lucene.Net.QueryParsers.Simple;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene.QueryProviders
 {
     public class SimpleQueryStringQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
             if (type != "simple_query_string")
             {
@@ -25,7 +25,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             {
                 var fieldWeightArray = field.Split('^', 2);
 
-                if (fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
+                if (fieldWeightArray.Length > 1 && float.TryParse(fieldWeightArray[1], out weight))
                 {
                     weights.Remove(field);
                     weights.Add(fieldWeightArray[0], weight);

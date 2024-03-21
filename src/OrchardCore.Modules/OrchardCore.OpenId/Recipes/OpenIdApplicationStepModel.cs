@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.OpenId.Recipes
 {
     public class OpenIdApplicationStepModel
@@ -11,8 +9,8 @@ namespace OrchardCore.OpenId.Recipes
         public string Type { get; set; }
         public string ConsentType { get; set; }
         public string ClientSecret { get; set; }
-        public RoleEntry[] RoleEntries { get; set; } = Array.Empty<RoleEntry>();
-        public ScopeEntry[] ScopeEntries { get; set; } = Array.Empty<ScopeEntry>();
+        public RoleEntry[] RoleEntries { get; set; } = [];
+        public ScopeEntry[] ScopeEntries { get; set; } = [];
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

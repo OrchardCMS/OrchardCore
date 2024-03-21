@@ -2,9 +2,6 @@
 @using Microsoft.IdentityModel.Protocols.OpenIdConnect
 @model OpenIdClientSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
-
 <script asp-src="~/OrchardCore.OpenId/Scripts/parametersEditor.min.js" debug-src="~/OrchardCore.OpenId/Scripts/parametersEditor.js" asp-name="parametersEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.OpenId/Styles/parametersEditor.min.css" debug-src="~/OrchardCore.OpenId/Styles/parametersEditor.css"></style>
 
@@ -13,35 +10,35 @@
 </script>
 
 <div class="mb-3" asp-validation-class-for="DisplayName">
-    <label>@T["Display Name"]</label>
+    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
     <input asp-for="DisplayName" class="form-control" />
     <span asp-validation-for="DisplayName"></span>
     <span class="hint">@T["Display name of the IdP"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Authority">
-    <label>@T["Authority"]</label>
+    <label asp-for="Authority" class="form-label">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
     <span class="hint">@T["Authority to use when making OpenIdConnect calls"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ClientId">
-    <label>@T["ClientId"]</label>
+    <label asp-for="ClientId" class="form-label">@T["ClientId"]</label>
     <input asp-for="ClientId" class="form-control" />
     <span asp-validation-for="ClientId"></span>
     <span class="hint">@T["the 'client_id'"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="CallbackPath">
-    <label>@T["CallbackPath"]</label>
+    <label asp-for="CallbackPath" class="form-label">@T["CallbackPath"]</label>
     <input asp-for="CallbackPath" placeholder="/signin-oidc" class="form-control" />
     <span asp-validation-for="CallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="SignedOutCallbackPath">
-    <label>@T["SignedOut CallbackPath"]</label>
+    <label asp-for="SignedOutCallbackPath" class="form-label">@T["SignedOut CallbackPath"]</label>
     <input asp-for="SignedOutCallbackPath" placeholder="/signout-callback-oidc" class="form-control" />
     <span asp-validation-for="SignedOutCallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user agent will be returned after sign out from the identity provider."]</span>
@@ -49,14 +46,14 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SignedOutRedirectUri">
-    <label>@T["SignedOut Redirect Uri"]</label>
+    <label asp-for="SignedOutRedirectUri" class="form-label">@T["SignedOut Redirect Uri"]</label>
     <input asp-for="SignedOutRedirectUri" placeholder="/" class="form-control" />
     <span asp-validation-for="SignedOutRedirectUri"></span>
     <span class="hint">@T["The uri where the user agent will be redirected to after application is signed out from the identity provider. The redirect will happen after the SignedOutCallbackPath is invoked."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Scopes">
-    <label asp-for="Scopes">@T["Scopes"]</label>
+    <label asp-for="Scopes" class="form-label">@T["Scopes"]</label>
     <input asp-for="Scopes" class="form-control" />
     <span asp-validation-for="Scopes"></span>
     <span class="hint">@T["extra scopes except openid and profile"]</span>
@@ -103,18 +100,24 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseCodeTokenFlow">
         <label class="form-check-label" asp-for="UseCodeTokenFlow">@T["Use 'code token' response type"]</label>
-        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample</a></span>
+        <span class="hint dashed">
+            <a href="http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample</a>
+        </span>
     </div>
 </div>
 
 <h3>@T["Implicit Authentication Flow"]</h3>
-<h5 class="mb-3"><a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest" target="_blank">@T["see: "]http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest</a></h5>
+<h5 class="mb-3">
+    <a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest" target="_blank">@T["see: "]http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest</a>
+</h5>
 
 <div class="mb-3" asp-validation-class-for="UseIdTokenFlow">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseIdTokenFlow">
         <label class="form-check-label" asp-for="UseIdTokenFlow">@T["Use 'id_token' response type"]</label>
-        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample</a></span>
+        <span class="hint dashed">
+            <a href="http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample</a>
+        </span>
     </div>
 </div>
 
@@ -122,12 +125,14 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseIdTokenTokenFlow">
         <label class="form-check-label" asp-for="UseIdTokenTokenFlow">@T["Use 'id_token token' response type"]</label>
-        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample</a></span>
+        <span class="hint dashed">
+            <a href="http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample</a>
+        </span>
     </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ResponseMode">
-    <label>@T["Response Mode"]</label>
+    <label asp-for="ResponseMode" class="form-label">@T["Response Mode"]</label>
     <select asp-for="ResponseMode" class="form-select">
         <option id="@OpenIdConnectResponseMode.FormPost" value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
         @*<option id="@OpenIdConnectResponseMode.Fragment" value="@OpenIdConnectResponseMode.Fragment">@T[OpenIdConnectResponseMode.Fragment]</option>*@
@@ -138,7 +143,7 @@
 </div>
 
 <div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
-    <label>@T["Client Secret"]</label>
+    <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
     <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
     <span asp-validation-for="ClientSecret"></span>
     <span class="hint">@T["set client secret."]</span>
@@ -189,7 +194,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="parameters-textarea">@T["Parameters"]</label>
+                        <label for="parameters-textarea" class="form-label">@T["Parameters"]</label>
                         <textarea id="parameters-textarea" name="parameters-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.parameters)" v-on:input="data.parameters = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"]</span>
                     </div>
@@ -206,7 +211,7 @@
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-parameters">
     <div class="row mb-3">
         <div class="col-12 col-lg-6">
-            <label asp-for="Parameters">@T["Advanced Parameters"]</label>
+            <label asp-for="Parameters" class="form-label">@T["Advanced Parameters"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
             <parameters-table :data="sharedState"></parameters-table>
             <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>
@@ -216,12 +221,12 @@
 </div>
 
 <script at="Foot">
-////<![CDATA[
+    ////<![CDATA[
     window.onload = function () {
         refreshFlows();
 
         $("#@Html.IdFor(m => m.ResponseMode), #@Html.IdFor(m => m.UseCodeFlow), #@Html.IdFor(m => m.UseCodeIdTokenFlow),#@Html.IdFor(m => m.UseCodeTokenFlow), #@Html.IdFor(m => m.UseCodeIdTokenTokenFlow), #@Html.IdFor(m => m.UseIdTokenFlow),#@Html.IdFor(m => m.UseIdTokenTokenFlow)").change(function () {
-            if (this !=@Html.IdFor(m => m.ResponseMode)) {
+            if (this != @Html.IdFor(m => m.ResponseMode)) {
                 $('input[type="checkbox"]').not(this).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
             } else {
                 $('input[type="checkbox"]').not(@Html.IdFor(m => m.UseCodeFlow)).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
@@ -259,5 +264,5 @@
 
         }
     };
-//]]>
+    //]]>
 </script>

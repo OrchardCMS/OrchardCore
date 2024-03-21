@@ -7,7 +7,7 @@ namespace OrchardCore.Modules
     {
         [Theory]
         [InlineData(new byte[0], "")]
-        [InlineData(new byte[]{ 10, 20, 30 }, "0A141E")]
+        [InlineData(new byte[] { 10, 20, 30 }, "0A141E")]
         public void ToHexString_ReturnsCorrectHexString(byte[] bytes, string expected)
         {
             // Arrange
@@ -41,7 +41,7 @@ namespace OrchardCore.Modules
             var hex = "41424";
 
             // Act & Assert
-            Assert.Throws<FormatException>(() => hex.ToByteArray());
+            Assert.Throws<ArgumentOutOfRangeException>(() => hex.ToByteArray());
         }
 
         [Fact]

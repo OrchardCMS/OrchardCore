@@ -8,6 +8,14 @@
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "generateRTL": false,
+    "generateSourceMaps": false,
+    "inputs": [
+      "node_modules/bootstrap/dist/css/bootstrap.rtl.css"
+    ],
+    "output": "wwwroot/Styles/bootstrap.rtl.css"
+  },
+  {
     "inputs": [
       "node_modules/bootstrap/dist/js/bootstrap.js"
     ],

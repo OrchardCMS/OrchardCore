@@ -5,20 +5,20 @@
 <div asp-validation-summary="All"></div>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
-       @Html.EditorForModel()
+    @Html.EditorForModel()
 </form>
 
 <script at="Foot" asp-name="profile-editor" depends-on="monaco, admin">
-    $(document).ready(function() {
-        require(['vs/editor/editor.main'], function() {
+    $(document).ready(function () {
+        require(['vs/editor/editor.main'], function () {
 
-            var html = document.getElementsByTagName("html")[0];
+            var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')
@@ -46,7 +46,7 @@
                 model: model
             });
 
-            window.addEventListener("submit", function() {
+            window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
         });

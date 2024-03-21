@@ -4,7 +4,7 @@ namespace OrchardCore.Tests.Html
 {
     public class HtmlSanitizerTests
     {
-        private static readonly HtmlSanitizerService _sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
+        private static readonly HtmlSanitizerService _sanitizer = new(Options.Create(new HtmlSanitizerOptions()));
 
         [Theory]
         [InlineData("<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>", "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>")]

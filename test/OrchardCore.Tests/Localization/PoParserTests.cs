@@ -201,18 +201,14 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
         }
 
-        private CultureDictionaryRecord[] ParseText(string resourceName)
+        private static CultureDictionaryRecord[] ParseText(string resourceName)
         {
             var parser = new PoParser();
 
             var testAssembly = typeof(PoParserTests).Assembly;
-            using (var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po"))
-            {
-                using (var reader = new StreamReader(resource))
-                {
-                    return parser.Parse(reader).ToArray();
-                }
-            }
+            using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
+            using var reader = new StreamReader(resource);
+            return parser.Parse(reader).ToArray();
         }
     }
 }

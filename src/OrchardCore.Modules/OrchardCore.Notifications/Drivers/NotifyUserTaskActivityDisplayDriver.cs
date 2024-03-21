@@ -14,7 +14,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
-    protected virtual string EditShapeType => $"{typeof(NotifyUserTaskActivity).Name}_Fields_Edit";
+    protected virtual string EditShapeType => $"{nameof(NotifyUserTaskActivity)}_Fields_Edit";
 
     public override IDisplayResult Edit(TActivity model)
     {
@@ -80,8 +80,10 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     public override IDisplayResult Display(TActivity activity)
     {
         return Combine(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+                .Location("Thumbnail", "Content"),
+            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+                .Location("Design", "Content")
         );
     }
 }

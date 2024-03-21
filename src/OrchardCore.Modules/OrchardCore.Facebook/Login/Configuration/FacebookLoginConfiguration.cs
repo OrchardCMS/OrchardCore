@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Settings;
@@ -24,20 +22,17 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings,
             ILogger<FacebookLoginConfiguration> logger)
         {
             _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -45,6 +40,13 @@ namespace OrchardCore.Facebook.Login.Configuration
         {
             if (_facebookSettings == null)
             {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+            {
+                _logger.LogWarning("The Facebook login provider is enabled but not configured.");
+
                 return;
             }
 
@@ -65,7 +67,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         public void Configure(string name, FacebookOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!String.Equals(name, FacebookDefaults.AuthenticationScheme))
+            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme))
             {
                 return;
             }
