@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Workflows.Http.Activities;
@@ -29,13 +30,13 @@ namespace OrchardCore.Workflows.Recipes
             ISecurityTokenService securityTokenService,
             IActionContextAccessor actionContextAccessor,
             IUrlHelperFactory urlHelperFactory,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
         {
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;
             _actionContextAccessor = actionContextAccessor;
             _urlHelperFactory = urlHelperFactory;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)

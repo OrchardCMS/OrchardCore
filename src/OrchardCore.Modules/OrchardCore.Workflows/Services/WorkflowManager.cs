@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -50,7 +51,7 @@ namespace OrchardCore.Workflows.Services
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IClock clock)
         {
             _activityLibrary = activityLibrary;
@@ -63,7 +64,7 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _clock = clock;
         }
 
