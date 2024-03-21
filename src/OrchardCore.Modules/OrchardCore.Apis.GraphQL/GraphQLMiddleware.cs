@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -26,6 +27,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class GraphQLMiddleware : IMiddleware
     {
+        private readonly ILogger _logger;
         private readonly GraphQLSettings _settings;
         private readonly IGraphQLTextSerializer _graphQLTextSerializer;
         private readonly IGraphQLSerializer _serializer;
@@ -38,12 +40,14 @@ namespace OrchardCore.Apis.GraphQL
             IOptions<GraphQLSettings> settingsOption,
             IDocumentExecuter executer,
             IGraphQLSerializer serializer,
-            IGraphQLTextSerializer graphQLTextSerializer)
+            IGraphQLTextSerializer graphQLTextSerializer,
+            ILogger<GraphQLMiddleware> logger)
         {
             _settings = settingsOption.Value;
             _executer = executer;
             _serializer = serializer;
             _graphQLTextSerializer = graphQLTextSerializer;
+            _logger = logger;
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -122,6 +126,8 @@ namespace OrchardCore.Apis.GraphQL
             catch (Exception e)
             {
                 await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                _logger.LogError(e, "An error occurred while processing the GraphQL query.");
+
                 return;
             }
 
