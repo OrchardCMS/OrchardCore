@@ -126,9 +126,10 @@ namespace OrchardCore.Apis.GraphQL
             catch (Exception e)
             {
                 await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+
                 _logger.LogError(e, "An error occurred while processing the GraphQL query.");
 
-                return;
+                await Task.CompletedTask;
             }
 
             var queryToExecute = request.Query;
