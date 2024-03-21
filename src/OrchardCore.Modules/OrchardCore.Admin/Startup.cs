@@ -120,7 +120,7 @@ namespace OrchardCore.Admin
 
                     return NilValue.Instance;
                 }));
-                /*
+
                 o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
                 {
                     return name switch
@@ -129,7 +129,6 @@ namespace OrchardCore.Admin
                         _ => NilValue.Instance
                     };
                 });
-                */
             });
         }
     }

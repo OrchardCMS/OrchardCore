@@ -7,7 +7,7 @@
 
 @if (Model.Content == null)
 {
-    dynamic shape = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
+    dynamic shape = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType));
 
     if (shape.Content == null)
     {

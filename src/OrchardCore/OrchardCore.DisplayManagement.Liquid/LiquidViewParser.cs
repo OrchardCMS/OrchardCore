@@ -64,7 +64,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 configuration(this);
             }
-
         }
 
         public Parser<List<FilterArgument>> ArgumentsListParser => ArgumentsList;

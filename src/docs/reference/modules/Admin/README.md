@@ -61,10 +61,10 @@ The navigation bar shape is available in two display types `Detail` for the fron
 
     ``` liquid
     // Construct the shape at the beginning of the layout.liquid file to enable navbar items to potentially contribute to the resources output as necessary.
-    {% assign navbarShape = Navbar() | shape_render %}
+    {% assign navbar = Navbar() | shape_render %}
     
     // Subsequently in the layout.liquid file, invoke the shape at the location where you want to display it.
-    {{ navbarShape }}
+    {{ navbar }}
     ```
 
 === "Razor"
