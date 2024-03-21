@@ -46,7 +46,7 @@ namespace OrchardCore.Tests.Localization
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
-            var key = new CultureDictionaryRecordKey("ball");
+            var key = new CultureDictionaryRecordKey { MessageId = "ball" };
 
             dictionary.Translations.TryGetValue(key, out var translations);
 
