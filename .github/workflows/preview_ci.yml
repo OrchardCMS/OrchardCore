@@ -14,33 +14,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Check for new commits
+      if: ${{ github.event_name == 'schedule' }}
       id: check-commits
       shell: pwsh
       run: |
-        $commitCount = (git log --oneline --since '24 hours ago' | Measure-Object -Line).Lines
-        Write-Output "Count of new commits found in the last 24 hours: $commitCount."
-        "commit-count=$commitCount" >> $Env:GITHUB_OUTPUT
+        $hasCommitFromLastDay = ![string]::IsNullOrEmpty((git log --oneline --since '24 hours ago'))
+        Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
+        "should-publish=$($hasCommitFromLastDay ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
     - uses: actions/setup-node@v3
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       with:
         node-version: "15"
     - uses: actions/setup-dotnet@v3
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       with:
         dotnet-version: '8.0.x'
     - name: Set build number
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
     - name: Build
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       run: |
         dotnet build -c Release
     - name: Unit Tests
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
@@ -54,21 +55,21 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: Deploy preview NuGet packages
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       run: |
         dotnet pack -c Release --no-build
         dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       uses: docker/setup-buildx-action@v3
     - name: Login to DockerHub
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy preview Docker images
-      if: steps.check-commits.outputs.commit-count > 0
+      if: steps.check-commits.outputs.should-publish
       shell: pwsh
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
