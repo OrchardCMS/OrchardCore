@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -30,6 +29,7 @@ namespace OrchardCore.Apis.GraphQL
     {
         private readonly ILogger _logger;
         private readonly GraphQLSettings _settings;
+        private readonly IGraphQLTextSerializer _graphQLTextSerializer;
         private readonly IGraphQLSerializer _serializer;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
@@ -40,11 +40,13 @@ namespace OrchardCore.Apis.GraphQL
             IOptions<GraphQLSettings> settingsOption,
             IDocumentExecuter executer,
             IGraphQLSerializer serializer,
+            IGraphQLTextSerializer graphQLTextSerializer,
             ILogger<GraphQLMiddleware> logger)
         {
             _settings = settingsOption.Value;
             _executer = executer;
             _serializer = serializer;
+            _graphQLTextSerializer = graphQLTextSerializer;
             _logger = logger;
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -93,11 +95,9 @@ namespace OrchardCore.Apis.GraphQL
 
                     if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                     {
-
+                        using var sr = new StreamReader(context.Request.Body);
                         if (mediaType.IsSubsetOf(_graphQlMediaType))
                         {
-                            using var sr = new StreamReader(context.Request.Body);
-
                             request = new GraphQLNamedQueryRequest
                             {
                                 Query = await sr.ReadToEndAsync()
@@ -105,7 +105,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, JOptions.CamelCase);
+                            request = _graphQLTextSerializer.Deserialize<GraphQLNamedQueryRequest>(await sr.ReadToEndAsync());
                         }
                     }
                     else
@@ -177,7 +177,7 @@ namespace OrchardCore.Apis.GraphQL
             await _serializer.WriteAsync(context.Response.Body, result);
         }
 
-        private static GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {
@@ -196,7 +196,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonSerializer.Deserialize<Inputs>(context.Request.Query["variables"], JOptions.CamelCase);
+                request.Variables = _graphQLTextSerializer.Deserialize<Inputs>(context.Request.Query["variables"]);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))
