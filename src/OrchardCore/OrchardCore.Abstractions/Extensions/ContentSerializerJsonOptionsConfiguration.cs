@@ -17,10 +17,8 @@ public class ContentSerializerJsonOptionsConfiguration : IConfigureOptions<Conte
 
     public void Configure(ContentSerializerJsonOptions options)
     {
-        options.SerializerOptions.PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate;
-        options.SerializerOptions.ReferenceHandler = null; // Needed by JsonObjectCreationHandling.Populate.
-
         options.SerializerOptions.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
+        options.SerializerOptions.ReferenceHandler = JOptions.Base.ReferenceHandler;
         options.SerializerOptions.ReadCommentHandling = JOptions.Base.ReadCommentHandling;
         options.SerializerOptions.PropertyNameCaseInsensitive = JOptions.Base.PropertyNameCaseInsensitive;
         options.SerializerOptions.AllowTrailingCommas = JOptions.Base.AllowTrailingCommas;
