@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.ViewModels;
@@ -20,7 +21,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 var children = Array.Empty<ContentItem>();
 
-                if (contentItem.Content.Terms is JArray termsArray)
+                if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
                     children = termsArray.ToObject<ContentItem[]>();
                 }

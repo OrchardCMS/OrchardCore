@@ -51,7 +51,7 @@
 else
 {
     <form>
-        <div class="card bg-primary mb-3 position-sticky action-bar">
+        <div class="card text-bg-theme mb-3 position-sticky action-bar">
             <div class="card-body">
                 <div class="row gx-3">
                     <div class="col">
@@ -85,7 +85,7 @@ else
                 {
                     await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
-                <li class="list-group-item">
+                <li class="list-group-item list-group-item-action">
                     @await DisplayAsync(contentItemSummary)
                 </li>
             }

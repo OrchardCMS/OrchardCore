@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -11,7 +10,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
             if (string.IsNullOrEmpty(displayName))
             {
-                displayName = partField.FieldDefinition.Name;
+                displayName = partField.FieldDefinition?.Name;
             }
 
             return displayName;

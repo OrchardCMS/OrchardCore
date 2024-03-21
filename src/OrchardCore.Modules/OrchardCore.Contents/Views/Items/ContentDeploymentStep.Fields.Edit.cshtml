@@ -17,9 +17,9 @@
     <div class="alert alert-warning">@T["If checked, you will have to manually declare variables for the Content Picker fields, Taxonomy fields, Tags fields and List item ids and replace them where needed in the recipe. Any reference to these content items will be lost."]</div>
 </div>
 
-<div class="mb-3 w-md-50">
+<div class="mb-3 w-lg-75 w-xl-50">
     <ul class="list-group">
-        @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions().OrderBy(i => i.Name))
+        @foreach (var contentTypeDefinition in (await ContentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(i => i.Name))
         {
             var name = contentTypeDefinition.Name;
             var checkd = contentTypes?.Contains(name);

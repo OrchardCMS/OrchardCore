@@ -108,7 +108,7 @@ namespace OrchardCore.Queries.Sql
             // In order to determine if an Id is a table name or an alias, we
             // analyze every Alias and store the value.
 
-            _tableAliases = new HashSet<string>();
+            _tableAliases = [];
 
             for (var i = 0; i < tree.Tokens.Count; i++)
             {
@@ -121,7 +121,7 @@ namespace OrchardCore.Queries.Sql
 
         private void PopulateCteNames(ParseTree tree)
         {
-            _ctes = new HashSet<string>();
+            _ctes = [];
 
             for (var i = 0; i < tree.Tokens.Count; i++)
             {

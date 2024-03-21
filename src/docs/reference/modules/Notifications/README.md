@@ -24,7 +24,8 @@ The `SMS Notifications` feature offers a means to inform users by dispatching no
 When using `Email SMS` feature, you must also configure the [SMS Provider](../Sms/README.md).
 
 ## Adding Custom Notification Provider
-To add a new notification method like `Web Push`, `Mobile Push` or `SMS`, you can simply implement the `INotificationMethodProvider` interface. Then, register your new implementation. For example, in the `Email Notifications` feature we register the email notification provider like this 
+
+To add a new notification method like `Web Push`, `Mobile Push` or `SMS`, you can simply implement the `INotificationMethodProvider` interface. Then, register your new implementation. For example, in the `Email Notifications` feature we register the email notification provider like this
 
 ```csharp
 [Feature("OrchardCore.Notifications.Email")]
@@ -42,9 +43,11 @@ public class EmailNotificationsStartup : StartupBase
 You can send notification to a user via code by injecting `INotificationService` then calling the `SendAsync(...)` method. Alternatively, you can use workflows to notify a user about an event that took place.
 
 ## Workflow Activities
+
 When `OrchardCore.Workflows` feature is enabled, you'll see new activities that would allow you to notify users using workflows. Here are some of the available workflow tasks
- - Notify Content's Owner Task
- - Notify User Task
+
+- Notify Content's Owner Task
+- Notify User Task
 
 ## Videos
 
@@ -53,3 +56,7 @@ When `OrchardCore.Workflows` feature is enabled, you'll see new activities that 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Lj2g-bBy-I0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_3pTgV4oTxU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/lGEsdPzHcog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

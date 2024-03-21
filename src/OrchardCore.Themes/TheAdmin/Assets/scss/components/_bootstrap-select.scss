@@ -1,0 +1,32 @@
+@import "../../../node_modules/bootstrap-select/sass/bootstrap-select";
+
+.multiselect__content-wrapper ul {
+    padding-left: unset;
+}
+
+// needs to be fixed in bootstrap-select repository
+html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
+    border-width: 0 0.26em 0.26em 0 !important;
+    transform: rotate(45deg) !important;
+}
+
+.bootstrap-select .popover-header {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0;
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.bootstrap-select {
+    .popover-header {
+        .close {
+            border: 0;
+            background: none;
+            box-shadow: none;
+            border-radius: 0;
+            float: right !important;
+            padding-top: 0px;
+            padding-right: 0px;
+            background: unset;
+        }
+    }
+}

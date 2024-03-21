@@ -12,6 +12,7 @@ In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. D
 To add a reference to the package, right-click on the project and click on `Manage NuGet packages...`, check `Include prerelease` if required. If you added the preview source above, select this from the `Package Source` selection in the top right.  In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
 
 ### Getting Started with `Program.cs` Only Using .NET 6 Framework?
+
 !!! tip
     When starting a new project using `.NET 6` framework, you'll notice that the created project does not have a `Startup` class as it did in previous versions of the .NET framework.
 
@@ -21,7 +22,7 @@ Open `Program.cs` file. Remove the following line "if exists"
 builder.Services.AddRazorPages();
 ```
 
-Add the following line 
+Add the following line
 
 ```csharp
 builder.Services.AddOrchardCms();
@@ -35,6 +36,7 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapRazorPages();
 ```
+
 Lastly, add the following line to the request pipeline
 
 ```csharp

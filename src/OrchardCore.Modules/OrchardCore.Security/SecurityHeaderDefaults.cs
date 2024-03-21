@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security
@@ -6,8 +5,8 @@ namespace OrchardCore.Security
     public static class SecurityHeaderDefaults
     {
         internal static readonly char PoliciesSeparator = ',';
-        internal static readonly string[] ContentSecurityPolicyNames = new[]
-        {
+        internal static readonly string[] ContentSecurityPolicyNames =
+        [
             ContentSecurityPolicyValue.BaseUri,
             ContentSecurityPolicyValue.ChildSource,
             ContentSecurityPolicyValue.ConnectSource,
@@ -23,9 +22,9 @@ namespace OrchardCore.Security
             ContentSecurityPolicyValue.ScriptSource,
             ContentSecurityPolicyValue.StyleSource,
             ContentSecurityPolicyValue.Sandbox
-        };
-        internal static readonly string[] PermissionsPolicyNames = new[]
-        {
+        ];
+        internal static readonly string[] PermissionsPolicyNames =
+        [
             PermissionsPolicyValue.Accelerometer,
             PermissionsPolicyValue.AmbientLightSensor,
             PermissionsPolicyValue.Autoplay,
@@ -55,13 +54,13 @@ namespace OrchardCore.Security
             PermissionsPolicyValue.Usb,
             PermissionsPolicyValue.WebShare,
             PermissionsPolicyValue.WebXR
-        };
+        ];
 
-        public static readonly string[] ContentSecurityPolicy = Array.Empty<string>();
+        public static readonly string[] ContentSecurityPolicy = [];
 
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
-        public static readonly string[] PermissionsPolicy = Array.Empty<string>();
+        public static readonly string[] PermissionsPolicy = [];
 
         public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
     }

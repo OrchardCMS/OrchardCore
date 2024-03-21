@@ -1,4 +1,4 @@
-<div class="card h-100 @string.Join(" ", Model.Classes.ToArray())">
+<div class="card h-100 @string.Join(' ', Model.Classes.ToArray())">
     @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
     {
         <div class="card-header">
@@ -17,14 +17,14 @@
             }
         </div>
     }
-    @if (Model.Tags != null || Model.Meta != null)
-    {
-        <div class="dashboard-meta">
-            @await DisplayAsync(Model.Meta)
-            @await DisplayAsync(Model.Tags)
-        </div>
-    }
-    <div class="card-body p-0">
+    <div class="dashboard-body-container card-body p-0 h-100">
+        @if (Model.Tags != null || Model.Meta != null)
+        {
+            <div class="dashboard-meta">
+                @await DisplayAsync(Model.Meta)
+                @await DisplayAsync(Model.Tags)
+            </div>
+        }
         @await DisplayAsync(Model.Content)
     </div>
     @if (Model.Footer != null)

@@ -6,19 +6,19 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"]</label>
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
@@ -37,7 +37,7 @@
     </div>
 
     <div class="mb-3" asp-validation-class-for="Resources">
-        <label asp-for="Resources">@T["Additional resources (API audiences)"]</label>
+        <label asp-for="Resources" class="form-label">@T["Additional resources (API audiences)"]</label>
         <input asp-for="Resources" class="form-control" />
         <span asp-validation-for="Resources" class="text-danger"></span>
     </div>

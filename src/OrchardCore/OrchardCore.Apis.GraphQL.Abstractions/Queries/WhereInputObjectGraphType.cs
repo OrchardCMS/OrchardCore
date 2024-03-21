@@ -96,7 +96,12 @@ namespace OrchardCore.Apis.GraphQL.Queries
         {
             foreach (var filter in filters)
             {
-                Field(graphType, fieldName + filter.Key, $"{description} {filter.Value}");
+                AddField(new FieldType
+                {
+                    Name = fieldName + filter.Key,
+                    Description = $"{description} {filter.Value}",
+                    Type = graphType
+                });
             }
         }
     }

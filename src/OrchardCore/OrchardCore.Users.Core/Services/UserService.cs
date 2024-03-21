@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -292,7 +291,9 @@ namespace OrchardCore.Users.Services
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
-
+                    case "InvalidToken":
+                        reportError(string.Empty, S["The reset token is invalid. Please request a new token."]);
+                        break;
                     default:
                         reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;

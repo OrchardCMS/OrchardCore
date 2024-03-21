@@ -13,7 +13,7 @@ namespace OrchardCore.Search.Lucene
         /// <param name="indexName"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <returns><see cref="IList{String}">IList&lt;string&gt;</see></returns>
+        /// <returns><see cref="IList{String}">IList&lt;string&gt;</see>.</returns>
         Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start = 0, int end = 20);
     }
 }

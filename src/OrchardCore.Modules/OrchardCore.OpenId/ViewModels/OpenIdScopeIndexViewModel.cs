@@ -4,7 +4,7 @@ namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdScopeIndexViewModel
     {
-        public IList<OpenIdScopeEntry> Scopes { get; } = new List<OpenIdScopeEntry>();
+        public IList<OpenIdScopeEntry> Scopes { get; } = [];
         public dynamic Pager { get; set; }
     }
 

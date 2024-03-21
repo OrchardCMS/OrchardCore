@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +19,7 @@ public class AccountBaseController : Controller
             var input = new Dictionary<string, object>
             {
                 ["UserName"] = user.UserName,
-                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? Enumerable.Empty<SerializableClaim>(),
+                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? [],
                 ["Roles"] = u.RoleNames,
                 ["Provider"] = info?.LoginProvider
             };

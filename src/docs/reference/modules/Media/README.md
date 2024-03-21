@@ -464,7 +464,7 @@ The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a giv
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
 
-This prevents prevent malicious clients from creating too many variations of the same image. 
+This prevents prevent malicious clients from creating too many variations of the same image.
 
 If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
 
@@ -503,6 +503,10 @@ To set up indexing for Media do the following:
 
 ## Videos
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/monQap7FuiU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Media Indexing
 
 The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
@@ -518,4 +522,4 @@ The `Media Indexing` feature extends the media indexing capability to also encom
 ## Credits
 
 To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
-To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK ](https://github.com/dotnet/Open-XML-SDK) is used.
+To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK](https://github.com/dotnet/Open-XML-SDK) is used.

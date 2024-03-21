@@ -30,7 +30,7 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions.GoogleAuthentication>();
+            services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
@@ -41,7 +41,7 @@ namespace OrchardCore.Google
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>(),
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions,GoogleHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>()
             });
 
             services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
@@ -53,14 +53,14 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
+            services.AddScoped<IPermissionProvider, GoogleAnalyticsPermissionsProvider>();
             services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(GoogleAnalyticsFilter));
+                options.Filters.Add<GoogleAnalyticsFilter>();
             });
         }
     }
@@ -70,14 +70,14 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions.GoogleTagManager>();
+            services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
             services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(GoogleTagManagerFilter));
+                options.Filters.Add<GoogleTagManagerFilter>();
             });
         }
     }

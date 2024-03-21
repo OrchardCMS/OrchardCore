@@ -1,0 +1,21 @@
+.iconpicker-popover.popover {
+    background: transparent !important;
+}
+
+.iconpicker-popover.popover .popover-title {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    background-color: var(--bs-body-bg) !important;
+}
+
+.iconpicker .iconpicker-items {
+    background-color: var(--bs-body-bg) !important;
+}
+
+.iconpicker .iconpicker-item {
+    color: var(--bs-body-color) !important;
+    box-shadow: 0 0 0 1px var(--bs-border-color);
+}
+
+.iconpicker .iconpicker-item:hover {
+    background-color: var(--bs-tertiary-color) !important;
+}

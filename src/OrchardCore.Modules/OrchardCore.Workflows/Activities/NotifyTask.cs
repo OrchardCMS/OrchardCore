@@ -10,7 +10,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class NotifyTask : TaskActivity
+    public class NotifyTask : TaskActivity<NotifyTask>
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -19,17 +19,15 @@ namespace OrchardCore.Workflows.Activities
 
         public NotifyTask(
             INotifier notifier,
-            IWorkflowExpressionEvaluator expressionvaluator,
+            IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<NotifyTask> localizer,
             HtmlEncoder htmlEncoder)
         {
             _notifier = notifier;
-            _expressionEvaluator = expressionvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        public override string Name => nameof(NotifyTask);
 
         public override LocalizedString DisplayText => S["Notify Task"];
 

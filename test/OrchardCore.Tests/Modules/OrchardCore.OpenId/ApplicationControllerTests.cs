@@ -1,4 +1,3 @@
-using OpenIddict.Abstractions;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;

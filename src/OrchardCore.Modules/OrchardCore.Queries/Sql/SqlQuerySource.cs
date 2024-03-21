@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
+using OrchardCore.Json;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -19,17 +21,20 @@ namespace OrchardCore.Queries.Sql
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly TemplateOptions _templateOptions;
 
         public SqlQuerySource(
             ILiquidTemplateManager liquidTemplateManager,
             IDbConnectionAccessor dbConnectionAccessor,
             ISession session,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _templateOptions = templateOptions.Value;
         }
 
@@ -48,46 +53,41 @@ namespace OrchardCore.Queries.Sql
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-            var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;
 
             if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 sqlQueryResults.Items = Array.Empty<object>();
-                connection.Dispose();
+
                 return sqlQueryResults;
             }
+
+            await using var connection = _dbConnectionAccessor.CreateConnection();
+
+            await connection.OpenAsync();
 
             if (sqlQuery.ReturnDocuments)
             {
                 IEnumerable<long> documentIds;
-                using (connection)
-                {
-                    await connection.OpenAsync();
 
-                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
-                    documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
-                }
+                using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
+                documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+
                 return sqlQueryResults;
             }
             else
             {
                 IEnumerable<dynamic> queryResults;
-                using (connection)
-                {
-                    await connection.OpenAsync();
 
-                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
-                    queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-                }
+                using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
+                queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
-                var results = new List<JObject>();
-
+                var results = new List<JsonObject>();
                 foreach (var document in queryResults)
                 {
-                    results.Add(JObject.FromObject(document));
+                    results.Add(JObject.FromObject(document, _jsonSerializerOptions));
                 }
 
                 sqlQueryResults.Items = results;

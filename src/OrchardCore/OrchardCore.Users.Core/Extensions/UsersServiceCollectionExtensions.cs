@@ -9,6 +9,9 @@ using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.Core.Json;
+using System.Text.Json;
+using OrchardCore.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -54,6 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
             services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
+
+            services.Configure<ContentSerializerJsonOptions>(options =>
+            {
+                options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
+            });
 
             return services;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -48,15 +49,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
         }
 
         public ShapeTable GetShapeTable(string themeId)
+            => GetShapeTableAsync(themeId).GetAwaiter().GetResult();
+
+        public async Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
             var cacheKey = $"ShapeTable:{themeId}";
 
             if (!_memoryCache.TryGetValue(cacheKey, out ShapeTable shapeTable))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Start building shape table");
-                }
+                _logger.LogInformation("Start building shape table");
 
                 HashSet<string> excludedFeatures;
 
@@ -73,7 +74,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     var strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-                    bindingStrategy.Discover(builder);
+                    await bindingStrategy.DiscoverAsync(builder);
                     var builtAlterations = builder.BuildAlterations();
 
                     BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
@@ -88,10 +89,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     }
                 }
 
-                var enabledAndOrderedFeatureIds = _shellFeaturesManager
-                    .GetEnabledFeaturesAsync()
-                    .GetAwaiter()
-                    .GetResult()
+                var enabledAndOrderedFeatureIds = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
                     .Select(f => f.Id)
                     .ToList();
 
@@ -120,10 +118,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     bindings: descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 );
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Done building shape table");
-                }
+                _logger.LogInformation("Done building shape table");
 
                 _memoryCache.Set(cacheKey, shapeTable, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
             }

@@ -1,9 +1,9 @@
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
-using OrchardCore.Entities;
+using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Settings;
@@ -12,43 +12,43 @@ namespace OrchardCore.Layers.Deployment
 {
     public class AllLayersDeploymentSource : IDeploymentSource
     {
-        private readonly static JsonSerializer _jsonSerializer = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto
-        };
-
         private readonly ILayerService _layerService;
         private readonly ISiteService _siteService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AllLayersDeploymentSource(ILayerService layerService, ISiteService siteService)
+        public AllLayersDeploymentSource(
+            ILayerService layerService,
+            ISiteService siteService,
+            IOptions<ContentSerializerJsonOptions> serializationOptions)
         {
             _layerService = layerService;
             _siteService = siteService;
+            _jsonSerializerOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allLayersStep = step as AllLayersDeploymentStep;
-
-            if (allLayersStep == null)
+            if (step is not AllLayersDeploymentStep)
             {
                 return;
             }
 
             var layers = await _layerService.GetLayersAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Layers"),
-                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, _jsonSerializer)))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Layers",
+                ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
+            });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // Adding Layer settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Settings",
+                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()),
+            });
         }
     }
 }

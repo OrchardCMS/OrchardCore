@@ -1,4 +1,3 @@
-using Markdig;
 using OrchardCore.Markdown.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Markdown

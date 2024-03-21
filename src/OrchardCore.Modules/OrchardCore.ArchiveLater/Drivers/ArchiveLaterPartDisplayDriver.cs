@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +36,7 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
     public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
         => Initialize<ArchiveLaterPartViewModel>(
             GetEditorShapeType(context),
-            model => PopulateViewModel(part, model)).Location("Actions:10");
+            model => PopulateViewModel(part, model)).Location("Actions:10.5");
 
     public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
@@ -68,6 +67,6 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
         viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
         viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
             ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
-            : (DateTime?)null;
+            : null;
     }
 }

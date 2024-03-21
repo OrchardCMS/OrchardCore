@@ -119,9 +119,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
     }
 
-    public class CoreShapesTableProvider : IShapeTableProvider
+    public class CoreShapesTableProvider : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("List")
                 .OnCreated(created =>
@@ -133,6 +133,8 @@ namespace OrchardCore.DisplayManagement.Shapes
                     list.ItemClasses = new List<string>();
                     list.ItemAttributes = new Dictionary<string, string>();
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

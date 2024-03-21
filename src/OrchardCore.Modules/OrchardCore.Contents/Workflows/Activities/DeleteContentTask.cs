@@ -12,7 +12,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public DeleteContentTask(IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<DeleteContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

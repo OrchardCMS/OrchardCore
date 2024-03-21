@@ -10,7 +10,7 @@
 
 <div class="mb-3">
     <div class="row col-sm-6">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
@@ -75,12 +75,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="options-textarea">@T["Options"]</label>
+                        <label for="options-textarea" class="form-label">@T["Options"]</label>
                         <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
                     </div>
                     <div class="mb-3">
-                        <label for="options-defaultvalue">@T["Default value"]</label>
+                        <label for="options-defaultvalue" class="form-label">@T["Default value"]</label>
                         <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
                         <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
                     </div>
@@ -97,7 +97,7 @@
 <div id="@Html.IdFor(m => m)">
     <div class="row">
         <div class="col-sm-6">
-            <label asp-for="Options">@T["Options"]</label>
+            <label asp-for="Options" class="form-label">@T["Options"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>

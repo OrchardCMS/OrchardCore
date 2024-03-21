@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -17,16 +16,18 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
 {
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+
     protected readonly IStringLocalizer S;
 
     public SmsTaskDisplayDriver(
         IPhoneFormatValidator phoneFormatValidator,
-        IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer,
-        ILiquidTemplateManager liquidTemplateManager)
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer
+        )
     {
         _phoneFormatValidator = phoneFormatValidator;
-        S = stringLocalizer;
         _liquidTemplateManager = liquidTemplateManager;
+        S = stringLocalizer;
     }
 
     protected override void EditActivity(SmsTask activity, SmsTaskViewModel model)

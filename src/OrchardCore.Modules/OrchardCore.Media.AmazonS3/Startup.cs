@@ -42,7 +42,7 @@ public class Startup : Modules.StartupBase
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
-        if (validationErrors.Any())
+        if (validationErrors.Count > 0)
         {
             foreach (var error in validationErrors)
             {

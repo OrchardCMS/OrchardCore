@@ -32,8 +32,18 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
+        /// The time before a stale item is removed from the resized media cache, if not provided there is no cleanup.
+        /// </summary>
+        public TimeSpan? ResizedCacheMaxStale { get; set; }
+
+        /// <summary>
+        /// The time before a stale remote media item is removed from the cache, if not provided there is no cleanup.
+        /// </summary>
+        public TimeSpan? RemoteCacheMaxStale { get; set; }
+
+        /// <summary>
         /// The maximum size of an uploaded file in bytes.
-        /// NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+        /// NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/).
         /// </summary>
         public int MaxFileSize { get; set; }
 

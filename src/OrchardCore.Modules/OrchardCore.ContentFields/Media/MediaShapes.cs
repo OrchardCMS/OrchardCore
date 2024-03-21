@@ -1,18 +1,18 @@
-using OrchardCore.DisplayManagement;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Media
 {
     [RequireFeatures("OrchardCore.Media")]
-    public class MediaShapes : IShapeTableProvider
+    public class MediaShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("HtmlField_Edit")
                 .OnDisplaying(displaying =>
                 {
-                    IShape editor = displaying.Shape;
+                    var editor = displaying.Shape;
 
                     if (editor.Metadata.Type == "HtmlField_Edit__Wysiwyg")
                     {
@@ -24,6 +24,8 @@ namespace OrchardCore.ContentFields.Media
                         editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlField");
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

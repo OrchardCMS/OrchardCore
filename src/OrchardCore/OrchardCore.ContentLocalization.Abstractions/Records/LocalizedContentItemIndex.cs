@@ -25,8 +25,8 @@ namespace OrchardCore.ContentLocalization.Records
     public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = new();
-        private readonly HashSet<string> _partRemoved = new();
+        private readonly HashSet<ContentItem> _itemRemoved = [];
+        private readonly HashSet<string> _partRemoved = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
@@ -49,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Records
             return Task.CompletedTask;
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
+        public override async Task PublishedAsync(PublishContentContext context)
         {
             var part = context.ContentItem.As<LocalizationPart>();
 
@@ -61,15 +61,13 @@ namespace OrchardCore.ContentLocalization.Records
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for this part.
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(LocalizationPart)))
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+                if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(LocalizationPart)))
                 {
                     context.ContentItem.Remove<LocalizationPart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public string CollectionName { get; set; }

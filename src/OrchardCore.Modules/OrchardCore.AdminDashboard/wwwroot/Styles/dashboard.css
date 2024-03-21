@@ -48,28 +48,21 @@
 }
 .dashboard-container .dashboard-wrapper.ui-resizable {
   overflow-y: hidden;
+  overflow-x: hidden;
+}
+.dashboard-container .dashboard-wrapper:not(.ui-resizable) {
+  scrollbar-width: thin;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.dashboard-body-container {
+  scrollbar-width: thin;
+  overflow-y: auto;
 }
 
 .dashboard-meta {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-.dashboard-meta:first-child {
-  padding-top: 12px;
-}
-
-:root[data-theme=default] .dashboard-wrapper .card .card-header {
-  background-color: #fff !important;
-}
-:root[data-theme=default] .dashboard-wrapper .card .card-footer {
-  background-color: #fff !important;
-}
-
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
-  background-color: rgb(24, 26, 27) !important;
-}
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
-  background-color: rgb(24, 26, 27) !important;
+  padding: 0.5rem !important;
 }
 
 .dashboard-handle {

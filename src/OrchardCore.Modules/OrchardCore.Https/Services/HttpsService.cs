@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Https.Settings;
 using OrchardCore.Settings;
 

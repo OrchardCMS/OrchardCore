@@ -16,9 +16,10 @@ namespace OrchardCore.GitHub.Configuration
 {
     public class GitHubHandler : OAuthHandler<GitHubOptions>
     {
-        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        { }
+        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+            : base(options, logger, encoder)
+        {
+        }
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
@@ -43,7 +44,7 @@ namespace OrchardCore.GitHub.Configuration
         /// <summary>
         /// This code was copied from the aspnetcore repository . We should keep it in sync with it.
         /// https://github.com/dotnet/aspnetcore/blob/fcd4ed7c46083cc408417763867637f232928f9b/src/Security/Authentication/OAuth/src/OAuthHandler.cs#L193
-        /// This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved
+        /// This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved.
         /// </summary>
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
         {

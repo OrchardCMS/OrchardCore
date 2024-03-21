@@ -21,9 +21,11 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    [Admin]
+    [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
     public class SitemapIndexController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
@@ -31,9 +33,10 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public SitemapIndexController(
             ISitemapHelperService sitemapService,
@@ -54,7 +57,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _pagerOptions = pagerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -83,11 +86,15 @@ namespace OrchardCore.Sitemaps.Controllers
                 .Take(pager.PageSize)
                 .ToList();
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ListSitemapIndexViewModel
             {
@@ -96,21 +103,22 @@ namespace OrchardCore.Sitemaps.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
+
 
             return View(model);
         }
 
-        [HttpPost, ActionName("List")]
+        [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
-        {
-            return RedirectToAction(nameof(List), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(List), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -349,7 +357,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

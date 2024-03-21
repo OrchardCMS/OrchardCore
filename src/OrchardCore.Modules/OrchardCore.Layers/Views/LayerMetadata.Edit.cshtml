@@ -1,16 +1,16 @@
 @using OrchardCore
 @model OrchardCore.Layers.ViewModels.LayerMetadataEditViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Title">
-    <label asp-for="Title" class="@Orchard.GetLabelCssClasses()">@T["Title"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
+    <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Title" class="form-control" type="text" />
         <span asp-validation-for="Title"></span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="LayerMetadata.RenderTitle" checked="@Model.LayerMetadata.RenderTitle">
             <label class="form-check-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
@@ -19,9 +19,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="LayerMetadata.Layer">
-    <label asp-for="LayerMetadata.Layer" class="@Orchard.GetLabelCssClasses()">@T["The layer the widget should be associated with."]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LayerMetadata.Layer">
+    <label asp-for="LayerMetadata.Layer" class="@Orchard.GetLabelClasses()">@T["The layer the widget should be associated with."]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="LayerMetadata.Layer" class="form-select">
             @foreach (var layer in Model.Layers)
             {

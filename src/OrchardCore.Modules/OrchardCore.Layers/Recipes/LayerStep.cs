@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Recipes
 {
@@ -17,26 +20,24 @@ namespace OrchardCore.Layers.Recipes
     /// </summary>
     public class LayerStep : IRecipeStepHandler
     {
-        private readonly static JsonSerializer _jsonSerializer = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-        };
-
         private readonly ILayerService _layerService;
         private readonly IRuleMigrator _ruleMigrator;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _factories;
+        private readonly JsonSerializerOptions _serializationOptions;
 
         public LayerStep(
             ILayerService layerService,
             IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
-            IEnumerable<IConditionFactory> factories)
+            IEnumerable<IConditionFactory> factories,
+            IOptions<ContentSerializerJsonOptions> serializationOptions)
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
+            _serializationOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -46,7 +47,8 @@ namespace OrchardCore.Layers.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LayersStepModel>();
+            // The recipe step contains polymorphic types which need to be resolved
+            var model = context.Step.ToObject<LayersStepModel>(_serializationOptions);
 
             var allLayers = await _layerService.LoadLayersAsync();
 
@@ -63,7 +65,7 @@ namespace OrchardCore.Layers.Recipes
                     allLayers.Layers.Add(layer);
                 }
 
-                // Backwards compatability check.
+                // Backwards compatibility check.
                 if (layer.LayerRule == null)
                 {
                     layer.LayerRule = new Rule();
@@ -94,7 +96,7 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _jsonSerializer);
+                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _serializationOptions);
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }
@@ -149,6 +151,6 @@ namespace OrchardCore.Layers.Recipes
     {
         public string Name { get; set; }
         public string ConditionId { get; set; }
-        public JArray Conditions { get; set; }
+        public JsonArray Conditions { get; set; }
     }
 }

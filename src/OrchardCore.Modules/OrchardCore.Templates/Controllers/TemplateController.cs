@@ -20,17 +20,20 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Controllers
 {
-    [Admin]
+    [Admin("Templates/{action}/{name?}", "Templates.{action}")]
     public class TemplateController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly TemplatesManager _templatesManager;
         private readonly AdminTemplatesManager _adminTemplatesManager;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -45,7 +48,7 @@ namespace OrchardCore.Templates.Controllers
             _authorizationService = authorizationService;
             _templatesManager = templatesManager;
             _adminTemplatesManager = adminTemplatesManager;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             S = stringLocalizer;
@@ -60,6 +63,7 @@ namespace OrchardCore.Templates.Controllers
             return Index(options, pagerParameters);
         }
 
+        [Admin("Templates", "Templates.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
@@ -91,8 +95,15 @@ namespace OrchardCore.Templates.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
 
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
             var model = new TemplateIndexViewModel
             {
                 Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
@@ -100,23 +111,25 @@ namespace OrchardCore.Templates.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            // The 'Admin' action redirect the user to the 'Index' action.
+            // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.
+            return View(nameof(Index), model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
-        public async Task<IActionResult> Create(bool adminTemplates = false, string returnUrl = null)
+        public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -128,11 +141,17 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
+            var model = new TemplateViewModel
+            {
+                AdminTemplates = adminTemplates,
+                Name = name
+            };
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
+            return View(model);
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(TemplateViewModel model, string submit, string returnUrl = null)
         {
             if (!model.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
@@ -213,12 +232,10 @@ namespace OrchardCore.Templates.Controllers
                 : await _templatesManager.GetTemplatesDocumentAsync()
                 ;
 
-            if (!templatesDocument.Templates.ContainsKey(name))
+            if (!templatesDocument.Templates.TryGetValue(name, out var template))
             {
                 return RedirectToAction(nameof(Create), new { name, returnUrl });
             }
-
-            var template = templatesDocument.Templates[name];
 
             var model = new TemplateViewModel
             {
@@ -361,7 +378,7 @@ namespace OrchardCore.Templates.Controllers
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
