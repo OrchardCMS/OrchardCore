@@ -122,6 +122,22 @@ namespace OrchardCore.Tests.Data
             Assert.Equal("test", contentItem.As<MyPart>().Text);
             var node = (JsonNode)contentItem.Content.SelectNode("MyPart");
             Assert.NotNull(node);
+
+        [Fact]
+        public void ShouldDeserializeListContentPart()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<GetOnlyListPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyField>("myField");
+                x.Alter<MyField>("myField", f => f.Value = 123);
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
         }
     }
 
@@ -133,5 +149,10 @@ namespace OrchardCore.Tests.Data
     public class MyField : ContentField
     {
         public int Value { get; set; }
+    }
+
+    public class GetOnlyListPart : ContentPart
+    {
+        public IList<string> Texts { get; } = new List<string>();
     }
 }
