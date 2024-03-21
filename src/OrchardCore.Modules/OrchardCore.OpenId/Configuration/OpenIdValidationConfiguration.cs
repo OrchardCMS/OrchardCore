@@ -20,6 +20,7 @@ using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Security;
+using SystemEnvironment = System.Environment;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
@@ -258,7 +259,7 @@ namespace OrchardCore.OpenId.Configuration
                         var errors = result.Where(x => x != ValidationResult.Success)
                             .Select(x => x.ErrorMessage);
 
-                        _logger.LogWarning("The OpenID server settings are invalid: {Errors}", string.Join(System.Environment.NewLine, errors));
+                        _logger.LogWarning("The OpenID server settings are invalid: {Errors}", string.Join(SystemEnvironment.NewLine, errors));
                     }
 
                     return null;
@@ -283,7 +284,7 @@ namespace OrchardCore.OpenId.Configuration
                         var errors = result.Where(x => x != ValidationResult.Success)
                             .Select(x => x.ErrorMessage);
 
-                        _logger.LogWarning("The OpenID validation settings are invalid: {Errors}", string.Join("\r\n;", errors));
+                        _logger.LogWarning("The OpenID validation settings are invalid: {Errors}", string.Join(SystemEnvironment.NewLine, errors));
                     }
 
                     return null;
