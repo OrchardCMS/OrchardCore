@@ -595,3 +595,7 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
