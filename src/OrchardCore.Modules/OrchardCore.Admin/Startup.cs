@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
-using OrchardCore.Admin.Liquid;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -107,8 +106,7 @@ namespace OrchardCore.Admin
         {
             services.Configure<TemplateOptions>(o =>
             {
-                o.Scope.SetValue(nameof(Navbar), new ObjectValue(new NavbarAccessor()));
-                o.MemberAccessStrategy.Register<NavbarAccessor, FluidValue>(async (obj, name, ctx) =>
+                o.Scope.SetValue(nameof(Navbar), new FunctionValue(async (args, ctx) =>
                 {
                     if (ctx is LiquidTemplateContext context)
                     {
@@ -121,8 +119,8 @@ namespace OrchardCore.Admin
                     }
 
                     return NilValue.Instance;
-                });
-
+                }));
+                /*
                 o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
                 {
                     return name switch
@@ -131,6 +129,7 @@ namespace OrchardCore.Admin
                         _ => NilValue.Instance
                     };
                 });
+                */
             });
         }
     }
