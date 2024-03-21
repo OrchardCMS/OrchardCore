@@ -28,7 +28,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class GraphQLMiddleware : IMiddleware
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private readonly GraphQLSettings _settings;
         private readonly IGraphQLSerializer _serializer;
         private readonly IDocumentExecuter _executer;
@@ -39,11 +39,13 @@ namespace OrchardCore.Apis.GraphQL
         public GraphQLMiddleware(
             IOptions<GraphQLSettings> settingsOption,
             IDocumentExecuter executer,
-            IGraphQLSerializer serializer)
+            IGraphQLSerializer serializer,
+            ILogger<GraphQLMiddleware> logger)
         {
             _settings = settingsOption.Value;
             _executer = executer;
             _serializer = serializer;
+            _logger = logger;
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -124,7 +126,6 @@ namespace OrchardCore.Apis.GraphQL
             catch (Exception e)
             {
                 await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
-                _logger ??= context.RequestServices.GetRequiredService<ILogger<GraphQLMiddleware>>();
                 _logger.LogError(e, "An error occurred while processing the GraphQL query.");
 
                 return;
