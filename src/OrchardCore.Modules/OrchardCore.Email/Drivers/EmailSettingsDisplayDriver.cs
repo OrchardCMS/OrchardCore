@@ -85,14 +85,13 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
 
         var model = new EmailSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-        {
-            if (settings.DefaultProviderName != model.DefaultProvider)
-            {
-                settings.DefaultProviderName = model.DefaultProvider;
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+        if (settings.DefaultProviderName != model.DefaultProvider)
+        {
+            settings.DefaultProviderName = model.DefaultProvider;
+
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(settings, context);

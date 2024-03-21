@@ -36,21 +36,19 @@ namespace OrchardCore.Forms.Drivers
         public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
         {
             var viewModel = new SelectPartEditViewModel();
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            part.DefaultValue = viewModel.DefaultValue;
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            try
             {
-                part.DefaultValue = viewModel.DefaultValue;
-                try
-                {
-                    part.Editor = viewModel.Editor;
-                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
-                        ? []
-                        : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
-                }
-                catch
-                {
-                    updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
-                }
+                part.Editor = viewModel.Editor;
+                part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
+                    ? []
+                    : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
+            }
+            catch
+            {
+                updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
             }
 
             return Edit(part);

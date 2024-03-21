@@ -72,33 +72,33 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
         var model = new AzureAISearchSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+
+        if (string.IsNullOrEmpty(model.SearchIndex))
         {
-            if (string.IsNullOrEmpty(model.SearchIndex))
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);
+        }
+        else
+        {
+            var indexes = await _indexSettingsService.GetSettingsAsync();
+
+            if (!indexes.Any(index => index.IndexName == model.SearchIndex))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Invalid Search Index value."]);
             }
-            else
+        }
+
+        var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+
+        if (section.SearchIndex != model.SearchIndex || !AreTheSame(section.DefaultSearchFields, fields))
+        {
+            section.SearchIndex = model.SearchIndex;
+            section.DefaultSearchFields = fields;
+
+            if (context.Updater.ModelState.IsValid)
             {
-                var indexes = await _indexSettingsService.GetSettingsAsync();
-
-                if (!indexes.Any(index => index.IndexName == model.SearchIndex))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Invalid Search Index value."]);
-                }
-            }
-
-            var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-
-            if (section.SearchIndex != model.SearchIndex || !AreTheSame(section.DefaultSearchFields, fields))
-            {
-                section.SearchIndex = model.SearchIndex;
-                section.DefaultSearchFields = fields;
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
         }
 

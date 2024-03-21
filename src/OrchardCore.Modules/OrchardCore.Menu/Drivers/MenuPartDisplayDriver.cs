@@ -67,8 +67,9 @@ namespace OrchardCore.Menu.Drivers
         public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
         {
             var model = new MenuPartEditViewModel();
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy);
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !string.IsNullOrWhiteSpace(model.Hierarchy))
+            if (!string.IsNullOrWhiteSpace(model.Hierarchy))
             {
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 

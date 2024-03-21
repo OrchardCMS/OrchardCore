@@ -26,10 +26,9 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new ValidationPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.For = viewModel.For?.Trim();
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.For = viewModel.For?.Trim();
 
             return Edit(part);
         }

@@ -73,12 +73,11 @@ namespace OrchardCore.Search.Drivers
 
             var model = new SearchSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                section.ProviderName = model.ProviderName;
-                section.Placeholder = model.Placeholder;
-                section.PageTitle = model.PageTitle;
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            section.ProviderName = model.ProviderName;
+            section.Placeholder = model.Placeholder;
+            section.PageTitle = model.PageTitle;
 
             return await EditAsync(section, context);
         }

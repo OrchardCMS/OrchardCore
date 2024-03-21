@@ -26,12 +26,11 @@ namespace OrchardCore.Markdown.Settings
             var model = new MarkdownBodyPartSettingsViewModel();
             var settings = new MarkdownBodyPartSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.SanitizeHtml = model.SanitizeHtml;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
-            }
+            settings.SanitizeHtml = model.SanitizeHtml;
+
+            context.Builder.WithSettings(settings);
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

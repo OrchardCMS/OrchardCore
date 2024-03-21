@@ -26,13 +26,12 @@ namespace OrchardCore.Markdown.Settings
             var model = new MarkdownFieldSettingsViewModel();
             var settings = new MarkdownFieldSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.SanitizeHtml = model.SanitizeHtml;
-                settings.Hint = model.Hint;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
-            }
+            settings.SanitizeHtml = model.SanitizeHtml;
+            settings.Hint = model.Hint;
+
+            context.Builder.WithSettings(settings);
 
             return Edit(partFieldDefinition);
         }

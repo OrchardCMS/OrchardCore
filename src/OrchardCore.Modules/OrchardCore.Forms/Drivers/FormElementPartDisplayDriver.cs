@@ -21,10 +21,9 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new FormElementPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.Id = viewModel.Id?.Trim();
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.Id = viewModel.Id?.Trim();
 
             return Edit(part);
         }

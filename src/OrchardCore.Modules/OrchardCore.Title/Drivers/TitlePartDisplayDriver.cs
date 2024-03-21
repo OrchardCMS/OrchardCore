@@ -51,17 +51,16 @@ namespace OrchardCore.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+            var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+
+            if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
             {
-                var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
-                }
-                else
-                {
-                    model.ContentItem.DisplayText = model.Title;
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
+            }
+            else
+            {
+                model.ContentItem.DisplayText = model.Title;
             }
 
             return Edit(model, context);

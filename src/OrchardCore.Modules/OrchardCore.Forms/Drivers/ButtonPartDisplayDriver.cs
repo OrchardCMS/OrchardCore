@@ -27,11 +27,10 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new ButtonPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.Text = viewModel.Text?.Trim();
-                part.Type = viewModel.Type?.Trim();
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.Text = viewModel.Text?.Trim();
+            part.Type = viewModel.Type?.Trim();
 
             return Edit(part);
         }

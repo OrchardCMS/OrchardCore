@@ -70,20 +70,19 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
         var model = new SmsSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-        {
-            if (string.IsNullOrEmpty(model.DefaultProvider))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
-            }
-            else
-            {
-                if (settings.DefaultProviderName != model.DefaultProvider)
-                {
-                    settings.DefaultProviderName = model.DefaultProvider;
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+        if (string.IsNullOrEmpty(model.DefaultProvider))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
+        }
+        else
+        {
+            if (settings.DefaultProviderName != model.DefaultProvider)
+            {
+                settings.DefaultProviderName = model.DefaultProvider;
+
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
         }
 

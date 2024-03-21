@@ -23,10 +23,9 @@ namespace OrchardCore.Workflows.Drivers
         {
             var viewModel = new ActivityMetadataEditViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                section.Title = viewModel.Title?.Trim();
-            }
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            section.Title = viewModel.Title?.Trim();
 
             return await EditAsync(section, context);
         }

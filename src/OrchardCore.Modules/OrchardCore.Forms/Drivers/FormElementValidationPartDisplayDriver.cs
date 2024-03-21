@@ -26,10 +26,9 @@ public class FormElementValidationPartDisplayDriver : ContentPartDisplayDriver<F
     {
         var viewModel = new FormElementValidationPartViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            part.Option = viewModel.ValidationOption;
-        }
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        part.Option = viewModel.ValidationOption;
 
         return Edit(part);
     }

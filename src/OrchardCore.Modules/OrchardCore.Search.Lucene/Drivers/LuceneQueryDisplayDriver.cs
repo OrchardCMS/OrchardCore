@@ -50,12 +50,11 @@ namespace OrchardCore.Search.Lucene.Drivers
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
             var viewModel = new LuceneQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems))
-            {
-                model.Template = viewModel.Query;
-                model.Index = viewModel.Index;
-                model.ReturnContentItems = viewModel.ReturnContentItems;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems);
+
+            model.Template = viewModel.Query;
+            model.Index = viewModel.Index;
+            model.ReturnContentItems = viewModel.ReturnContentItems;
 
             if (string.IsNullOrWhiteSpace(model.Template))
             {

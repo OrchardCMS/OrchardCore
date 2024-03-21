@@ -27,10 +27,9 @@ namespace OrchardCore.Forms.Drivers
         {
             var model = new ValidationSummaryViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                part.ModelOnly = model.ModelOnly;
-            }
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            part.ModelOnly = model.ModelOnly;
 
             return Edit(part);
         }

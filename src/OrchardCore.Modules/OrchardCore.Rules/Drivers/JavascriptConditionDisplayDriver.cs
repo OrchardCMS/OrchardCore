@@ -30,11 +30,10 @@ namespace OrchardCore.Rules.Drivers
         public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, IUpdateModel updater)
         {
             var model = new JavascriptConditionViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                // TODO is empty.
-                condition.Script = model.Script;
-            }
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            // TODO is empty.
+            condition.Script = model.Script;
 
             return Edit(condition);
         }

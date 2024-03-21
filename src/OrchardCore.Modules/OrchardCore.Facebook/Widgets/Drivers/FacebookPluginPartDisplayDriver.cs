@@ -73,16 +73,15 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             var viewModel = new FacebookPluginPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Liquid = viewModel.Liquid;
             }
 
             return Edit(model);
