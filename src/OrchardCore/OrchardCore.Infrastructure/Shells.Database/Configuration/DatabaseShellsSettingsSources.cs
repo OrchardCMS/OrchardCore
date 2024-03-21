@@ -36,7 +36,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
             _shellContextFactory = shellContextFactory;
 
-            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
+            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, OrchardCoreConstants.Shell.TenantsFileName);
         }
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
