@@ -55,7 +55,7 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 - [X (Twitter)](https://twitter.com/orchardcms)
 - [LinkedIn](https://www.linkedin.com/groups/13605669/)
-- [Meta (Facebook)](https://www.facebook.com/groups/244928199422062/user/100063629920864)
+- [Meta (Facebook)](https://www.facebook.com/OrchardCore)
 
 ## Local Communities
 
@@ -81,6 +81,16 @@ First, clone the repository using the command `git clone https://github.com/Orch
 1. Download Visual Studio 2022 (v17.8+) from <https://www.visualstudio.com/downloads>.
 2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
 3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
+
+## Preview Package Feed
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
+
+NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com).
+
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store, and share packages in any format, to any place, with total
+confidence.
 
 ## Code of Conduct
 
