@@ -23,3 +23,7 @@ You can also choose to store placements in a file by enabling 'Placements file s
 Placements are defined by shape name.
 For each shape you can define a set of placements rules.
 Placements rules is a JSON array, similar to a `placement.json` file entry, as defined in the [Placement documentation](../../core/Placement/README.md#format).
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

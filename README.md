@@ -10,12 +10,6 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-## Local Communities
-
-中文资源
-
-[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
-
 ## Build Status
 
 Stable (release/1.8.2): 
@@ -57,6 +51,18 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 - Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
 - Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
 
+## Get in Touch
+
+- [X (Twitter)](https://twitter.com/orchardcms)
+- [LinkedIn](https://www.linkedin.com/groups/13605669/)
+- [Meta (Facebook)](https://www.facebook.com/OrchardCore)
+
+## Local Communities
+
+中文资源
+
+[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
+
 ## Contributing
 
 It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
@@ -75,6 +81,16 @@ First, clone the repository using the command `git clone https://github.com/Orch
 1. Download Visual Studio 2022 (v17.8+) from <https://www.visualstudio.com/downloads>.
 2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
 3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
+
+## Preview Package Feed
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
+
+NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com).
+
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store, and share packages in any format, to any place, with total
+confidence.
 
 ## Code of Conduct
 
