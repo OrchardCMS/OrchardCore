@@ -9,9 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL.Json;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Extensions;
+using OrchardCore.Json;
+using OrchardCore.Json.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -46,7 +50,15 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
             services.AddSingleton<GraphQLMiddleware>();
-            services.AddGraphQL(builder => builder.AddSystemTextJson());
+
+            services.AddGraphQL(builder => builder.AddSystemTextJson((options, sp) =>
+            {
+                // Common types of converters are already configured in the assembly "GraphQL.SystemTextJson".
+                options.Converters.Add(GraphQLNamedQueryRequestJsonConverter.Instance);
+
+                var contentSerializerJsonOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>().Value;
+                options.Merge(contentSerializerJsonOptions.SerializerOptions);
+            }));
 
             services.AddOptions<GraphQLSettings>().Configure<IShellConfiguration>((c, configuration) =>
             {
