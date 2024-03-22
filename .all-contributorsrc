@@ -2834,6 +2834,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "aliamiras",
+      "name": "aliamiras",
+      "avatar_url": "https://avatars.githubusercontent.com/u/107989021?v=4",
+      "profile": "https://github.com/aliamiras",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xtomas",
+      "name": "Tomáš Jákl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10938220?v=4",
+      "profile": "https://github.com/xtomas",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
