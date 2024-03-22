@@ -2852,6 +2852,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "porgabi",
+      "name": "Gábor Pór",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51411356?v=4",
+      "profile": "https://github.com/porgabi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
