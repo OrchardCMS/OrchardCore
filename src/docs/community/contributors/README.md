@@ -420,9 +420,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/aliamiras"><img src="https://avatars.githubusercontent.com/u/107989021?v=4?s=100" width="100px;" alt="aliamiras"/><br /><sub><b>aliamiras</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aliamiras" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="16.66%"><a href="https://github.com/xtomas"><img src="https://avatars.githubusercontent.com/u/10938220?v=4?s=100" width="100px;" alt="Tomáš Jákl"/><br /><sub><b>Tomáš Jákl</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=xtomas" title="Code">💻</a></td>�
-    </tr>
-    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/xtomas"><img src="https://avatars.githubusercontent.com/u/10938220?v=4?s=100" width="100px;" alt="Tomáš Jákl"/><br /><sub><b>Tomáš Jákl</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=xtomas" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/porgabi"><img src="https://avatars.githubusercontent.com/u/51411356?v=4?s=100" width="100px;" alt="Gábor Pór"/><br /><sub><b>Gábor Pór</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=porgabi" title="Code">💻</a></td>
     </tr>
   </tbody>
