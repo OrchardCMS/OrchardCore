@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 
@@ -117,7 +118,20 @@ namespace OrchardCore.Tests.Data
             AssertJsonEqual(textPropertyNode, contentItemJson.SelectNode("$..Text"));
         }
 
+        [Fact]
+        public void RemovingPropertyShouldWork()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
 
+            JsonDynamicObject content = contentItem.Content;
+            Assert.Null(content.GetValue("not real property")); // Properties that don't exist return null.
+            Assert.NotNull(content.GetValue(nameof(MyPart))); // Right now this property exists.
+
+            content.Remove(nameof(MyPart));
+            Assert.Null(content.GetValue(nameof(MyPart)));
+        }
 
         [Fact]
         public void ContentShouldCanCallRemoveMethod()
