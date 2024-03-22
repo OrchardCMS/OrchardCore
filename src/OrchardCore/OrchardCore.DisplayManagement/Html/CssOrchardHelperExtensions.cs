@@ -22,8 +22,18 @@ public static class CssOrchardHelperExtensions
     public static IHtmlContent GetEndClasses(this IOrchardHelper helper, params string[] additionalClasses)
         => GetHtmlContentBuilder(helper.GetThemeOptions().EndClasses, additionalClasses);
 
-    public static IHtmlContent GetLabelClasses(this IOrchardHelper helper, params string[] additionalClasses)
-        => GetHtmlContentBuilder(helper.GetThemeOptions().LabelClasses, additionalClasses);
+    public static IHtmlContent GetLabelClasses(this IOrchardHelper helper, bool inputRequired = false, params string[] additionalClasses)
+    {
+        var themeOptions = helper.GetThemeOptions();
+        var additionalClassesList = additionalClasses.ToList();
+
+        if (inputRequired)
+        {
+            additionalClassesList.Add(themeOptions.LabelRequiredClasses);
+        }
+
+        return GetHtmlContentBuilder(themeOptions.LabelClasses, additionalClassesList);
+    }
 
     public static IHtmlContent GetWrapperClasses(this IOrchardHelper helper, params string[] additionalClasses)
         => GetHtmlContentBuilder(helper.GetThemeOptions().WrapperClasses, additionalClasses);
