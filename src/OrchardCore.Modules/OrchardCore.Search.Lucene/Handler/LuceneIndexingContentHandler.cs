@@ -76,7 +76,6 @@ namespace OrchardCore.Search.Lucene.Handlers
             {
                 // Only process the last context.
                 var context = ContextsById.Last();
-
                 ContentItem published = null;
 
                 if (context is PublishContentContext publishContext)
@@ -85,17 +84,19 @@ namespace OrchardCore.Search.Lucene.Handlers
                     {
                         continue;
                     }
+
                     if (publishContext.PreviousItem != null)
                     {
                         published = publishContext.PreviousItem;
                     }
                 }
+
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
                     var ignoreIndexedCulture = indexSettings.Culture != "any" && culture != indexSettings.Culture;
- 
+
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
                         if (context is RemoveContentContext)
@@ -103,10 +104,12 @@ namespace OrchardCore.Search.Lucene.Handlers
                             await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                             continue;
                         }
-                        var stroeLuceneDocument = async (ContentItem contentItem) =>
+
+                        async Task storeLuceneDocument(ContentItem contentItem)
                         {
                             var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
                             if (!indexSettings.IndexLatest)
                             {
                                 await luceneIndexManager.DeleteDocumentsByVersionIdAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemVersionId });
@@ -115,23 +118,21 @@ namespace OrchardCore.Search.Lucene.Handlers
                             {
                                 await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
                             }
+
                             await luceneIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                        };
+                        }
 
                         if (!indexSettings.IndexLatest)
                         {
-                            if (published is null)
-                            {
-                                published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
-                            }
+                            published ??= await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+
                             if (published is not null)
                             {
-                                await stroeLuceneDocument(published);
+                                await storeLuceneDocument(published);
                             }
                         }
 
-                        await stroeLuceneDocument(context.ContentItem);
-
+                        await storeLuceneDocument(context.ContentItem);
                     }
                 }
             }
