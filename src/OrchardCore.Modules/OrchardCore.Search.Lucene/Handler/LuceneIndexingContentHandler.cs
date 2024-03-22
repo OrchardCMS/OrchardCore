@@ -117,23 +117,43 @@ namespace OrchardCore.Search.Lucene.Handlers
                                     continue;
                                 }
 
-                                ContentItem published = null;
-
-                                // PreviousItem is null when we create a new content item.
-                                if (publishContext.PreviousItem != null)
+                                if (publishContext.IsPublishing == true)
                                 {
-                                    published = publishContext.PreviousItem;
+                                    await storeLuceneDocument(publishContext.PublishingItem);
                                 }
                                 else
                                 {
-                                    published = publishContext.ContentItem;
+                                    await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                                 }
-
-                                await storeLuceneDocument(published);
                             }
                         }
+                        else
+                        {
+                            if (context is PublishContentContext publishContext)
+                            {
+                                if (publishContext.Cancel)
+                                {
+                                    continue;
+                                }
 
-                        await storeLuceneDocument(context.ContentItem);
+                                if (publishContext.IsPublishing == true)
+                                {
+                                    await storeLuceneDocument(publishContext.PublishingItem);
+                                }
+                                else
+                                {
+                                    await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                                }
+                            }
+                            else if (context is UpdateContentContext updateContext)
+                            {
+                                await storeLuceneDocument(updateContext.UpdatingItem);
+                            }
+                            else if(context is CreateContentContext createContext)
+                            {
+                                await storeLuceneDocument(createContext.CreatingItem);
+                            }
+                        }
                     }
                 }
             }

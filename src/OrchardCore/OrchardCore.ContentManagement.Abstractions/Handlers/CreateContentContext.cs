@@ -4,6 +4,9 @@ namespace OrchardCore.ContentManagement.Handlers
     {
         public CreateContentContext(ContentItem contentItem) : base(contentItem)
         {
+            CreatingItem = contentItem;
         }
+
+        public ContentItem CreatingItem { get; private set; }
     }
 }
