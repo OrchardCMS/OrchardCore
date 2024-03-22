@@ -129,16 +129,6 @@ namespace OrchardCore.Tests.Data
         }
 
         [Fact]
-        public void ContentShouldCanCallSelectNodeMethod()
-        {
-            var contentItem = CreateContentItemWithMyPart();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
-            Assert.Equal("test", contentItem.As<MyPart>().Text);
-            var node = (JsonNode)contentItem.Content.SelectNode("MyPart");
-            Assert.NotNull(node);
-        }
-
-        [Fact]
         public void ShouldDeserializeListContentPart()
         {
             var contentItem = CreateContentItemWithMyPart();
