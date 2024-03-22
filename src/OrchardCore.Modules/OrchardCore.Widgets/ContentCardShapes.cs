@@ -5,13 +5,13 @@ namespace OrchardCore.Widgets
 {
     public class ContentCardShapes : ShapeTableProvider
     {
-        //Card Shape
+        // Card Shape
         private const string ContentCardEdit = "ContentCard_Edit";
 
-        //Frame shape
+        // Frame shape
         private const string ContentCardFrame = "ContentCard_Frame";
 
-        //Card Editor Fields
+        // Card Editor Fields
         private const string ContentCardFieldsEdit = "ContentCard_Fields_Edit";
 
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)

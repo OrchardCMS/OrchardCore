@@ -14,7 +14,5 @@ public class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<Deploymen
         );
 
     public override IDisplayResult Edit(AzureAISearchSettingsDeploymentStep step)
-    {
-        return View("AzureAISearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
-    }
+        => View("AzureAISearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
 }

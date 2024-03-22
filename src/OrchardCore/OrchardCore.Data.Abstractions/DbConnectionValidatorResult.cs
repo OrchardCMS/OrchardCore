@@ -38,5 +38,12 @@ public enum DbConnectionValidatorResult
     /// <summary>
     /// Unsupported database provider.
     /// </summary>
-    UnsupportedProvider
+    UnsupportedProvider,
+
+    /// <summary>
+    /// The connection was valid but the SSL certificate is invalid. The certificate 
+    /// is from a non-trusted source (the certificate issuing authority isn't listed as a
+    /// trusted authority in Trusted Root Certification Authorities on the client machine).
+    /// </summary>
+    InvalidCertificate,
 }

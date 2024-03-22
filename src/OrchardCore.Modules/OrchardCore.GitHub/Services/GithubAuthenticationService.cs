@@ -36,10 +36,7 @@ namespace OrchardCore.GitHub.Services
 
         public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
@@ -54,10 +51,7 @@ namespace OrchardCore.GitHub.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             if (string.IsNullOrWhiteSpace(settings.ClientID))
             {

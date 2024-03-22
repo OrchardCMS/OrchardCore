@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -16,6 +16,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
+
         protected readonly IStringLocalizer S;
 
         protected ContentActivity(
@@ -33,7 +34,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>
+        /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>.
         /// </summary>
         protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
 
@@ -78,7 +79,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
             {
-                var contentEventContext = ((JObject)contentEvent).ToObject<ContentEventContext>();
+                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
 
                 if (contentEventContext?.ContentItemVersionId != null)
                 {
@@ -92,7 +93,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
             {
-                var item = ((JObject)contentItemEvent).ToObject<ContentItem>();
+                var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>();
 
                 if (item?.ContentItemId != null)
                 {
@@ -127,8 +128,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 else
                 {
                     // Try to map the result to a content item.
-                    var json = JsonConvert.SerializeObject(result);
-                    content = JsonConvert.DeserializeObject<ContentItem>(json);
+                    var json = JConvert.SerializeObject(result);
+                    content = JConvert.DeserializeObject<ContentItem>(json);
                 }
             }
             else

@@ -12,10 +12,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Controllers
 {
-    [Admin]
+    [Admin("Layers/Rules/{action}", "Layers.Rules.{action}")]
     public class LayerRuleController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -237,6 +238,7 @@ namespace OrchardCore.Layers.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { name });
         }
 
+        [Admin("Layers/Rules/Order", "Layers.Rules.Order")]
         public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -269,7 +271,7 @@ namespace OrchardCore.Layers.Controllers
             return Ok();
         }
 
-        private Condition FindCondition(Condition condition, string conditionId)
+        private static Condition FindCondition(Condition condition, string conditionId)
         {
             if (string.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
             {
@@ -281,7 +283,7 @@ namespace OrchardCore.Layers.Controllers
                 return null;
             }
 
-            if (!conditionGroup.Conditions.Any())
+            if (conditionGroup.Conditions.Count == 0)
             {
                 return null;
             }

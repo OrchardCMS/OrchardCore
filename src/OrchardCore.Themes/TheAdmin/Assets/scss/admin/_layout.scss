@@ -2,8 +2,7 @@
 @import '../mixins/_cursors';
 @import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
-body {
-    margin-bottom: var(--oc-footer-height);
+body, html {
     height: 100%;
 }
 
@@ -11,13 +10,14 @@ body {
 @include cursor-class(pointer);
 
 .ta-wrapper {
+    height: 100%;
 }
 
 .ta-content {
-    padding: 15px;
+    padding: 1rem;
+    min-height: 100%;
     margin-left: var(--oc-start-navigation-width);
-    margin-top: var(--oc-top-nav-height);
-    margin-bottom: var(--oc-footer-height);
+    padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
     transition: margin-left 0.2s ease-in-out;
 
     h1 {

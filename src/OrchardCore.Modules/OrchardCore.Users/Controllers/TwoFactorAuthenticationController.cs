@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -159,6 +158,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [AllowAnonymous]
+    [Admin(nameof(LoginWithRecoveryCode))]
     public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
     {
         // Ensure the user has gone through the username & password screen first
@@ -286,7 +286,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return RedirectToAction(nameof(Index));
     }
 
-    [Admin]
+    [Admin(nameof(GenerateRecoveryCodes))]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -331,7 +331,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
-    [Admin]
+    [Admin(nameof(ShowRecoveryCodes))]
     public async Task<IActionResult> ShowRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -355,7 +355,8 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         });
     }
 
-    [Admin, HttpPost]
+    [HttpPost]
+    [Admin(nameof(EnableTwoFactorAuthentication))]
     public async Task<IActionResult> EnableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -380,7 +381,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return await RedirectToTwoFactorAsync(user);
     }
 
-    [Admin]
+    [Admin(nameof(DisableTwoFactorAuthentication))]
     public async Task<IActionResult> DisableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -438,10 +439,10 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         {
             var model = JsonSerializer.Deserialize<ShowRecoveryCodesViewModel>(data);
 
-            return model?.RecoveryCodes ?? Array.Empty<string>();
+            return model?.RecoveryCodes ?? [];
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     private static string GetProvider(IList<string> providers, IUser user, string provider = null, bool next = false)

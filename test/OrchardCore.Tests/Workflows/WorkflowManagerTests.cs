@@ -1,4 +1,6 @@
+using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -30,24 +32,30 @@ namespace OrchardCore.Tests.Workflows
             {
                 Id = 1,
                 WorkflowTypeId = IdGenerator.GenerateId(),
-                Activities = new List<ActivityRecord>
-                {
-                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                Activities =
+                [
+                    new()
                     {
-                        A = new WorkflowExpression<double>("input(\"A\")"),
-                        B = new WorkflowExpression<double>("input(\"B\")"),
-                    }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
-                },
-                Transitions = new List<Transition>
-                {
-                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
-                    new Transition{ SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
-                }
+                        ActivityId = "1",
+                        IsStart = true,
+                        Name = addTask.Name,
+                        Properties = JObject.FromObject(new
+                        {
+                            A = new WorkflowExpression<double>("input(\"A\")"),
+                            B = new WorkflowExpression<double>("input(\"B\")"),
+                        })
+                    },
+                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                ],
+                Transitions =
+                [
+                    new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
+                    new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
+                ]
             };
 
-            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
+            var workflowManager = CreateWorkflowManager(serviceProvider, [addTask, writeLineTask, setOutputTask], workflowType);
             var a = 10d;
             var b = 22d;
             var expectedSum = a + b;
@@ -106,6 +114,10 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
+            var jsonOptionsMock = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            jsonOptionsMock.Setup(x => x.Value)
+                .Returns(new ContentSerializerJsonOptions());
+
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
@@ -117,6 +129,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
+                jsonOptionsMock.Object,
                 clock.Object
                 );
 

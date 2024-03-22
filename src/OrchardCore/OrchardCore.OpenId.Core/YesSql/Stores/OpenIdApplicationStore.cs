@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
@@ -21,6 +21,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
     public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApplication>
         where TApplication : OpenIdApplication, new()
     {
+        private static readonly JsonSerializerOptions _serializerOptions = new()
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = false
+        };
+
         private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
         private readonly ISession _session;
 
@@ -201,7 +207,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return new ValueTask<JsonWebKeySet>(result: null);
             }
 
-            return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString()));
+            return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString(), JOptions.Default));
         }
 
         /// <inheritdoc/>
@@ -239,7 +245,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
+                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -372,11 +378,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             if (set is not null)
             {
-                application.JsonWebKeySet = JObject.Parse(JsonSerializer.Serialize(set, new JsonSerializerOptions
-                {
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    WriteIndented = false
-                }));
+                application.JsonWebKeySet = JObject.Parse(JsonSerializer.Serialize(set, _serializerOptions));
 
                 return default;
             }
@@ -419,11 +421,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return default;
             }
 
-            application.Properties = JObject.Parse(JsonSerializer.Serialize(properties, new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = false
-            }));
+            application.Properties = JObject.Parse(JConvert.SerializeObject(properties, JOptions.UnsafeRelaxedJsonEscaping));
 
             return default;
         }

@@ -155,6 +155,7 @@ namespace OrchardCore.Lists.Drivers
                 model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
                 model.Context = context;
                 model.Pager = await context.New.PagerSlim(pager);
+                model.ListPart = listPart;
             })
                 .Location("Detail", "Content:10");
         }
@@ -172,7 +173,7 @@ namespace OrchardCore.Lists.Drivers
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
         {
-            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
+            var contentTypes = settings.ContainedContentTypes ?? [];
 
             var definitions = new List<ContentTypeDefinition>();
 

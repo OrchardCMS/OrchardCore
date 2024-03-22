@@ -12,10 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing;
 using OrchardCore.Navigation;
@@ -27,6 +27,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Controllers;
 
+[Admin("azure-search/{action}/{indexName?}", "AzureAISearch.{action}")]
 public class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
@@ -84,7 +85,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -149,7 +150,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -187,7 +188,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -210,7 +211,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -246,12 +247,19 @@ public class AdminController : Controller
                 }
 
                 settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-                await _indexManager.CreateAsync(settings);
-                await _indexSettingsService.UpdateAsync(settings);
-                await AsyncContentItemsAsync(settings.IndexName);
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
-                return RedirectToAction(nameof(Index));
+                if (await _indexManager.CreateAsync(settings))
+                {
+                    await _indexSettingsService.UpdateAsync(settings);
+                    await AsyncContentItemsAsync(settings.IndexName);
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
+                }
             }
             catch (Exception e)
             {
@@ -272,7 +280,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -316,7 +324,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -391,7 +399,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -427,7 +435,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -461,7 +469,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -487,7 +495,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private IActionResult NotConfigured()
+    private ViewResult NotConfigured()
         => View("NotConfigured");
 
     private static Task AsyncContentItemsAsync(string indexName)

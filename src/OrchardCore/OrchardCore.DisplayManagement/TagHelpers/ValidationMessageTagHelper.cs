@@ -45,19 +45,13 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         /// <remarks>Does nothing if <see cref="For"/> is <c>null</c>.</remarks>
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            ArgumentNullException.ThrowIfNull(output);
 
             if (For != null)
             {
-                //contextualize IHtmlHelper
+                // contextualize IHtmlHelper
                 var viewContextAware = _htmlHelper as IViewContextAware;
                 viewContextAware?.Contextualize(ViewContext);
 

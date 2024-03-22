@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var dic1 = new Dictionary<string, string>()
                 {
                     {"name", name},
-                    {"desciption", name},
+                    {"description", name},
                     {"type", "module"},
                 };
 
@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
                     };
 
                 Features = features;
@@ -56,7 +56,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var dic1 = new Dictionary<string, string>()
                 {
                     {"name", name},
-                    {"desciption", name},
+                    {"description", name},
                     {"type", "theme"},
                 };
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
                     };
 
                 Features = features;
@@ -82,7 +82,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var dic1 = new Dictionary<string, string>()
                 {
                     {"name", name},
-                    {"desciption", name},
+                    {"description", name},
                     {"type", "theme"},
                     {"basetheme", baseTheme.Id }
                 };
@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [baseTheme.Id], false, false, false) }
                     };
 
                 Id = name;
@@ -135,13 +135,15 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
+#pragma warning disable CA1861 // Avoid constant arrays as arguments
             TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
             {
-                { TestFeature(), new [] {"Hello"} },
-                { features[1], new [] {"Theme1Shape"} },
-                { features[2], new [] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new [] {"BaseShape", "OverriddenShape"} },
+                { TestFeature(), new[] {"Hello"} },
+                { features[1], new[] {"Theme1Shape"} },
+                { features[2], new[] {"DerivedShape", "OverriddenShape"} },
+                { features[3], new[] {"BaseShape", "OverriddenShape"} },
             });
+#pragma warning restore CA1861 // Avoid constant arrays as arguments
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
             serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
@@ -152,7 +154,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             typeFeatureProvider.TryAdd(typeof(TestShapeProvider), TestFeature());
         }
 
-        private static IFeatureInfo TestFeature()
+        private static FeatureInfo TestFeature()
         {
             return new FeatureInfo("Testing", new TestModuleExtensionInfo("Testing"));
         }

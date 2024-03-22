@@ -21,7 +21,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
         /// <param name="applicationContext"><see cref="IApplicationContext"/> for the application.</param>
         public ShapeTemplateOptionsSetup(IHostEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {
-            _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
+            ArgumentNullException.ThrowIfNull(hostingEnvironment);
+
+            _hostingEnvironment = hostingEnvironment;
             _applicationContext = applicationContext;
         }
 

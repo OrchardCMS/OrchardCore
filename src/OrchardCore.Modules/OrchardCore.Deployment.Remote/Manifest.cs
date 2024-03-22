@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provide the ability to export and import to and from a remote server.",
-    Dependencies = new[] { "OrchardCore.Deployment" },
+    Dependencies = ["OrchardCore.Deployment"],
     Category = "Deployment"
 )]

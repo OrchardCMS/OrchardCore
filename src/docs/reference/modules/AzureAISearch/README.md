@@ -2,14 +2,19 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the server. You can do that by adding the following into `appsettings.json` file
+Before enabling the service, you'll need to configure the connection to the server. By default, you can navigate to `Configurations` >> `Settings` >> `Azure AI Search` and provide the Azure Search AI service info.
+
+Alternatively, you can configure the Azure Search AI service for all your tenants from the `appsettings.json` file by adding the following
 
 ```
 {
   "OrchardCore":{
     "OrchardCore_AzureAISearch":{
       "Endpoint":"https://[search service name].search.windows.net",
-      "IndexesPrefix":"",
+      "IndexesPrefix":"", // Specify value to prefix all indexes. If using the same instance for production and staging, provide the environment name here to prevent naming conflicts.
+      "AuthenticationType":"ApiKey", // Use 'Default' for default authentication, 'ManagedIdentity' for managed-identity authentication, or 'ApiKey' for  key-based authentication.
+      "IdentityClientId":null, // If you do not want to use system-identity, optionally, you may specify a client id to authenticate for a user assigned managed identity.
+      "DisableUIConfiguration":false, // Enabling this option will globally disable per-tenant UI configuration. This implies that all tenants will utilize the settings specified in the appsettings.
       "Credential":{
         "Key":"the server key goes here"
       }
@@ -23,6 +28,40 @@ Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
 ![image](images/management.gif)
 
 ## Recipes 
+
+### Creating Azure AI Search Index Step
+
+The `Create Index Step` create an Azure AI Search index if one does not already exists. It will also index all the content items starting at the beginning. 
+
+```json
+{
+  "steps":[
+    {
+      "name":"azureai-index-create",
+      "Indices":[
+        {
+            "IndexName": "articles",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+                "Article"
+            ],
+            "AnalyzerName":"standard.lucene",
+            "Culture": "any"
+        },
+        {
+            "IndexName": "blogs",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+                "Blog"
+            ],
+            "AnalyzerName":"standard.lucene",
+            "Culture": "any"
+        }
+      ]
+    }
+  ]
+}
+```
 
 ### Reset Azure AI Search Index Step
 
@@ -90,7 +129,7 @@ To rebuild all indices:
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Search` > `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
+To configure the frontend site search settings, navigate to `Search` >> `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)

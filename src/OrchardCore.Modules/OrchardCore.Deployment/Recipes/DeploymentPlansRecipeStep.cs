@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -15,13 +18,16 @@ namespace OrchardCore.Deployment.Recipes
     public class DeploymentPlansRecipeStep : IRecipeStepHandler
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IDeploymentPlanService _deploymentPlanService;
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _deploymentPlanService = deploymentPlanService;
         }
 
@@ -50,7 +56,7 @@ namespace OrchardCore.Deployment.Recipes
                 {
                     if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
                     {
-                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
+                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType(), _jsonSerializerOptions);
 
                         deploymentPlan.DeploymentSteps.Add(deploymentStep);
                     }
@@ -90,7 +96,7 @@ namespace OrchardCore.Deployment.Recipes
         {
             public string Type { get; set; }
 
-            public JObject Step { get; set; }
+            public JsonObject Step { get; set; }
         }
     }
 }
