@@ -126,6 +126,10 @@ namespace OrchardCore.Search.Lucene.Handlers
                                     await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                                 }
                             }
+                            else if (context is UpdateContentContext updateContext)
+                            {
+                                await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            }
                         }
                         else
                         {
@@ -149,7 +153,7 @@ namespace OrchardCore.Search.Lucene.Handlers
                             {
                                 await storeLuceneDocument(updateContext.UpdatingItem);
                             }
-                            else if(context is CreateContentContext createContext)
+                            else if (context is CreateContentContext createContext)
                             {
                                 await storeLuceneDocument(createContext.CreatingItem);
                             }
