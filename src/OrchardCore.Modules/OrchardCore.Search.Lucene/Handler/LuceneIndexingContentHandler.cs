@@ -76,20 +76,6 @@ namespace OrchardCore.Search.Lucene.Handlers
             {
                 // Only process the last context.
                 var context = ContextsById.Last();
-                ContentItem published = null;
-
-                if (context is PublishContentContext publishContext)
-                {
-                    if (publishContext.Cancel)
-                    {
-                        continue;
-                    }
-
-                    if (publishContext.PreviousItem != null)
-                    {
-                        published = publishContext.PreviousItem;
-                    }
-                }
 
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
@@ -124,10 +110,25 @@ namespace OrchardCore.Search.Lucene.Handlers
 
                         if (!indexSettings.IndexLatest)
                         {
-                            published ??= await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
-
-                            if (published is not null)
+                            if (context is PublishContentContext publishContext)
                             {
+                                if (publishContext.Cancel)
+                                {
+                                    continue;
+                                }
+
+                                ContentItem published = null;
+
+                                // PreviousItem is null when we create a new content item.
+                                if (publishContext.PreviousItem != null)
+                                {
+                                    published = publishContext.PreviousItem;
+                                }
+                                else
+                                {
+                                    published = publishContext.ContentItem;
+                                }
+
                                 await storeLuceneDocument(published);
                             }
                         }
@@ -137,8 +138,5 @@ namespace OrchardCore.Search.Lucene.Handlers
                 }
             }
         }
-
-
-
     }
 }
