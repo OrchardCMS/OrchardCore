@@ -91,23 +91,6 @@ namespace OrchardCore.Search.Lucene.Handlers
                             continue;
                         }
 
-                        async Task storeLuceneDocument(ContentItem contentItem)
-                        {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
-                            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
-
-                            if (!indexSettings.IndexLatest)
-                            {
-                                await luceneIndexManager.DeleteDocumentsByVersionIdAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemVersionId });
-                            }
-                            else
-                            {
-                                await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
-                            }
-
-                            await luceneIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
-                        }
-
                         if (!indexSettings.IndexLatest)
                         {
                             if (context is PublishContentContext publishContext)
@@ -119,7 +102,7 @@ namespace OrchardCore.Search.Lucene.Handlers
 
                                 if (publishContext.IsPublishing == true)
                                 {
-                                    await storeLuceneDocument(publishContext.PublishingItem);
+                                    await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, luceneIndexManager, logger, indexSettings);
                                 }
                                 else
                                 {
@@ -142,7 +125,7 @@ namespace OrchardCore.Search.Lucene.Handlers
 
                                 if (publishContext.IsPublishing == true)
                                 {
-                                    await storeLuceneDocument(publishContext.PublishingItem);
+                                    await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, luceneIndexManager, logger, indexSettings);
                                 }
                                 else
                                 {
@@ -151,16 +134,34 @@ namespace OrchardCore.Search.Lucene.Handlers
                             }
                             else if (context is UpdateContentContext updateContext)
                             {
-                                await storeLuceneDocument(updateContext.UpdatingItem);
+                                await StoreLuceneDocument(updateContext.UpdatingItem, contentItemIndexHandlers, luceneIndexManager, logger, indexSettings);
                             }
                             else if (context is CreateContentContext createContext)
                             {
-                                await storeLuceneDocument(createContext.CreatingItem);
+                                await StoreLuceneDocument(createContext.CreatingItem, contentItemIndexHandlers, luceneIndexManager, logger, indexSettings);
                             }
                         }
                     }
                 }
             }
+        }
+
+        private static async Task StoreLuceneDocument(ContentItem contentItem, IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers, LuceneIndexManager luceneIndexManager, ILogger logger, LuceneIndexSettings indexSettings)
+        {
+
+            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
+            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
+            if (!indexSettings.IndexLatest)
+            {
+                await luceneIndexManager.DeleteDocumentsByVersionIdAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemVersionId });
+            }
+            else
+            {
+                await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
+            }
+
+            await luceneIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
         }
     }
 }
