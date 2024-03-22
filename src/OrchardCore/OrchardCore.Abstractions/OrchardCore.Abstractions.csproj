@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="JsonPath.Net" />
     <PackageReference Include="ZString" />
   </ItemGroup>
 

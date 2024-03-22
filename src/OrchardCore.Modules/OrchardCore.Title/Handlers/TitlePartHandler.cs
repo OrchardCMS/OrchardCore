@@ -18,7 +18,7 @@ namespace OrchardCore.Title.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         protected readonly IStringLocalizer S;
-        private readonly HashSet<ContentItem> _contentItems = new();
+        private readonly HashSet<ContentItem> _contentItems = [];
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,

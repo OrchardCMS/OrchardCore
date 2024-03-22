@@ -46,7 +46,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 
 See the `appsettings.json` file for more examples.
 
-### Tenant Preconfiguration
+### Tenant Pre-configuration
 
 To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
 with a `State` value of `Uninitialized`
@@ -66,7 +66,7 @@ with a `State` value of `Uninitialized`
 
 The preconfigured tenant will then appear in the `Tenants` list in the admin, and these values will be used when the tenant is setup.
 
-### Tenant Postconfiguration
+### Tenant Post-configuration
 
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
 without having to provide a state value.
@@ -117,19 +117,22 @@ You can also configure `IOptions` from code in the web project's `Startup` class
 
 A lot of Orchard Core features are configured through the admin UI with site settings stored in the database and/or expose configuration via `IOptions`. If you wish to override the site settings or default settings, you can do this with your own configuration code.
 
-For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin.
+For example, the Resource module allows CDN configuration via the `ResourceOptions` class which by default is populated from the given tenant's site settings, as set on the admin.
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
 ```csharp
 services
     .AddOrchardCms()
     .ConfigureServices(tenantServices =>
-        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            settings.Port = 255;
+            options.UseCdn = true;
         }));
+```
 
-// Or if you want to make use of IShellConfiguration as seen above:
+Or, if you want to make use of `IShellConfiguration` as seen above:
+
+```csharp
 services
     .AddOrchardCms()
     .ConfigureServices((tenantServices, serviceProvider) =>
@@ -140,33 +143,16 @@ services
         // keys it won't have support for all the hierarchical sources 
         // detailed above.
         var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-        var password = shellConfiguration.GetValue<string>("SmtpSettings:Password");
 
-        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            settings.Password = password;
+            options.UseCdn = shellConfiguration.GetValue<bool>("OrchardCore_Resources:UseCdn");
         });
     });
 ```
 
 !!! note
-    Such configuration for `SmtpSettings` is already available via the `ConfigureEmailSettings` extension method, see [Email Configuration](../../modules/Email/README.md).
-
-This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
-
-```json
-{
-  "OrchardCore": {
-    "SmtpSettings": {
-      "Password":  "password"
-    }
-  }
-}
-```
-
-!!! note
-    On the admin there will be no indication that this override happened, and the value displayed there will still be
-    the one configured in site settings, so if you choose to do this you'll need to let your users know.
+    On the admin there will be no indication that this override happened, and the value displayed there will still be the one configured in site settings, so if you choose to do this you'll need to let your users know.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 

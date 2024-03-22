@@ -2,11 +2,11 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -22,6 +22,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdValidationService(
@@ -52,7 +53,7 @@ namespace OrchardCore.OpenId.Services
 
         private OpenIdValidationSettings GetSettingsFromContainer(ISite container)
         {
-            if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
+            if (container.Properties.TryGetPropertyValue(nameof(OpenIdValidationSettings), out var settings))
             {
                 return settings.ToObject<OpenIdValidationSettings>();
             }
@@ -72,10 +73,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task UpdateSettingsAsync(OpenIdValidationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
@@ -84,10 +82,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdValidationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 

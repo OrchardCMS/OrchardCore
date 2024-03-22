@@ -106,7 +106,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "small",  new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -123,7 +123,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "big", new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "big", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -248,7 +248,7 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }
@@ -267,7 +267,7 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }

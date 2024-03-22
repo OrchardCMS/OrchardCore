@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -28,9 +29,13 @@ namespace OrchardCore.Environment.Extensions.Features
             // Calculate a hash of all enabled features' id
             var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
 
-            serial = enabledFeatures
-                .OrderBy(x => x.Id)
-                .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
+            var hashCode = new HashCode();
+            foreach (var feature in enabledFeatures)
+            {
+                hashCode.Add(feature.Id);
+            }
+
+            serial = hashCode.ToHashCode();
 
             _memoryCache.Set(FeatureHashCacheKey, serial);
 

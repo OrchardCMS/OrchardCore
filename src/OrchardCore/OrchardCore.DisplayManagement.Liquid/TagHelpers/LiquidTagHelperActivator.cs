@@ -145,8 +145,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
-            contextAttributes = new TagHelperAttributeList();
-            outputAttributes = new TagHelperAttributeList();
+            contextAttributes = [];
+            outputAttributes = [];
 
             ITagHelper tagHelper;
 

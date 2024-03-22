@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
-@using Newtonsoft.Json
+@using System.Text.Json
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
@@ -13,8 +13,8 @@
         }
     }
 
-    var jSelectedValues = JsonConvert.SerializeObject(selectedValues);
-    var jOptions = JsonConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
+    var jSelectedValues = JConvert.SerializeObject(selectedValues);
+    var jOptions = JConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
@@ -28,7 +28,7 @@
 <style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
             <div class="w-xl-50">

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,14 +75,14 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
                 {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
+                    field.TermContentItemIds = [model.UniqueValue];
                 }
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
+                        S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

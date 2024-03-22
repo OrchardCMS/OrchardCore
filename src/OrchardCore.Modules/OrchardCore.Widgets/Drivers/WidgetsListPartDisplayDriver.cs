@@ -93,7 +93,7 @@ namespace OrchardCore.Widgets.Drivers
             var zonedContentItems = new Dictionary<string, List<ContentItem>>();
 
             // Remove any content or the zones would be merged and not be cleared.
-            part.Content.Widgets.RemoveAll();
+            part.Content.Remove("Widgets");
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
@@ -120,12 +120,13 @@ namespace OrchardCore.Widgets.Drivers
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
 
-                if (!zonedContentItems.ContainsKey(zone))
+                if (!zonedContentItems.TryGetValue(zone, out var value))
                 {
-                    zonedContentItems.Add(zone, new List<ContentItem>());
+                    value = ([]);
+                    zonedContentItems.Add(zone, value);
                 }
 
-                zonedContentItems[zone].Add(contentItem);
+                value.Add(contentItem);
             }
 
             part.Widgets = zonedContentItems;

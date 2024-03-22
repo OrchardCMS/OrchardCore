@@ -1,5 +1,6 @@
 using System;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Lucene.Net.Queries.Function;
 using Lucene.Net.Search;
@@ -7,7 +8,6 @@ using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Spatial.Util;
-using Newtonsoft.Json.Linq;
 using Spatial4n.Context;
 using Spatial4n.Distance;
 using Spatial4n.Shapes;
@@ -15,9 +15,9 @@ using Spatial4n.Util;
 
 namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 {
-    public class GeoDistanceFilterProvider : ILuceneBooleanFilterProvider
+    public partial class GeoDistanceFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
         {
             if (type != "geo_distance")
             {
@@ -29,9 +29,9 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            var queryObj = filter as JObject;
+            var queryObj = filter.AsObject();
 
-            if (queryObj.Properties().Count() != 2)
+            if (queryObj.Count != 2)
             {
                 return null;
             }
@@ -43,18 +43,18 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
             // This can also be constructed from SpatialPrefixTreeFactory.
             SpatialPrefixTree grid = new GeohashPrefixTree(ctx, maxLevels);
 
-            JProperty distanceProperty = null;
-            JProperty geoProperty = null;
+            JsonNode distanceProperty = null;
+            JsonNode geoProperty = null;
 
-            foreach (var jProperty in queryObj.Properties())
+            foreach (var jProperty in queryObj)
             {
-                if (jProperty.Name.Equals("distance", StringComparison.Ordinal))
+                if (jProperty.Key.Equals("distance", StringComparison.Ordinal))
                 {
-                    distanceProperty = jProperty;
+                    distanceProperty = jProperty.Value;
                 }
                 else
                 {
-                    geoProperty = jProperty;
+                    geoProperty = jProperty.Value;
                 }
             }
 
@@ -63,14 +63,14 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.Name);
+            var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.GetPropertyName());
 
-            if (!TryParseDistance((string)distanceProperty.Value, out var distanceDegrees))
+            if (!TryParseDistance(distanceProperty.Value<string>(), out var distanceDegrees))
             {
                 return null;
             }
 
-            if (!TryGetPointFromJToken(geoProperty.Value, out var point))
+            if (!TryGetPointFromJToken(geoProperty, out var point))
             {
                 return null;
             }
@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
         {
             distanceDegrees = -1;
 
-            var distanceString = Regex.Match(distanceValue, @"^((\d+(\.\d*)?)|(\.\d+))").Value;
+            var distanceString = StringDistanceRegex().Match(distanceValue).Value;
 
             if (string.IsNullOrEmpty(distanceString))
             {
@@ -150,15 +150,15 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
             return false;
         }
 
-        private static bool TryGetPointFromJToken(JToken geoToken, out IPoint point)
+        private static bool TryGetPointFromJToken(JsonNode geoToken, out IPoint point)
         {
             point = null;
 
             var ctx = SpatialContext.Geo;
 
-            switch (geoToken.Type)
+            switch (geoToken.GetValueKind())
             {
-                case JTokenType.String:
+                case JsonValueKind.String:
                     var geoStringValue = geoToken.ToString();
 
                     var geoStringSplit = geoStringValue.Split(',');
@@ -181,8 +181,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
                     point = GeohashUtils.Decode(geoStringValue, ctx);
                     return true;
-                case JTokenType.Object:
-                    var geoPointValue = (JObject)geoToken;
+                case JsonValueKind.Object:
+                    var geoPointValue = geoToken.AsObject();
 
                     if (!geoPointValue.ContainsKey("lon") || !geoPointValue.ContainsKey("lat"))
                     {
@@ -191,8 +191,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
                     point = new Point(geoPointValue["lon"].Value<double>(), geoPointValue["lat"].Value<double>(), ctx);
                     return true;
-                case JTokenType.Array:
-                    var geoArrayValue = (JArray)geoToken;
+                case JsonValueKind.Array:
+                    var geoArrayValue = geoToken.AsArray();
 
                     if (geoArrayValue.Count != 2)
                     {
@@ -205,5 +205,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 default: throw new ArgumentException("Invalid geo point representation");
             }
         }
+
+        [GeneratedRegex(@"^((\d+(\.\d*)?)|(\.\d+))")]
+        private static partial Regex StringDistanceRegex();
     }
 }

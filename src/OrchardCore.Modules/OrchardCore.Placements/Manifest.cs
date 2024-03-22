@@ -18,6 +18,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Placements.FileStorage",
     Name = "Placements file storage",
     Description = "Stores Placements in a local file.",
-    Dependencies = new[] { "OrchardCore.Placements" },
+    Dependencies = ["OrchardCore.Placements"],
     Category = "Development"
 )]

@@ -21,15 +21,9 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
 
     public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
     {
-        if (user == null)
-        {
-            throw new ArgumentNullException(nameof(user));
-        }
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (claims == null)
-        {
-            throw new ArgumentNullException(nameof(claims));
-        }
+        ArgumentNullException.ThrowIfNull(claims);
 
         if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && !await _userManager.GetTwoFactorEnabledAsync(user))

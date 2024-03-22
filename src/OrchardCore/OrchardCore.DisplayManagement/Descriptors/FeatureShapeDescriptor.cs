@@ -132,13 +132,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             if (this is not ShapeDescriptorIndex)
             {
-                CreatingAsync = Enumerable.Empty<Func<ShapeCreatingContext, Task>>();
-                CreatedAsync = Enumerable.Empty<Func<ShapeCreatedContext, Task>>();
-                DisplayingAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                ProcessingAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                DisplayedAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                Wrappers = new List<string>();
-                BindingSources = new List<string>();
+                CreatingAsync = [];
+                CreatedAsync = [];
+                DisplayingAsync = [];
+                ProcessingAsync = [];
+                DisplayedAsync = [];
+                Wrappers = [];
+                BindingSources = [];
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
             }
 
