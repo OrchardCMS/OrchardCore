@@ -79,7 +79,7 @@ public static class HttpBackgroundJob
                 try
                 {
                     var nextHttp = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    //Restore user credentials
+                    // Restore the current user.
                     nextHttp.HttpContext.User = userPrincipal;
 
                     await job(scope);
