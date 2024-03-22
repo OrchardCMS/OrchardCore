@@ -7,11 +7,12 @@
 }
 
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperClasses()">
             <div class="@Orchard.GetLimitedWidthClasses()">
-                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" />
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))

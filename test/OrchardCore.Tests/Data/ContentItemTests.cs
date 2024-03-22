@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Data
 {
@@ -47,9 +48,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldUpdateContent()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -62,9 +61,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldAlterPart()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -77,9 +74,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldOnlyContainParts()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -89,9 +84,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldStoreFields()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = "test");
+            var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x =>
             {
                 x.GetOrCreate<MyField>("myField");
@@ -101,6 +94,44 @@ namespace OrchardCore.Tests.Data
             var json = JConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
+        }
+
+        [Fact]
+        public void ContentShouldBeJsonPathQueryable()
+        {
+            var contentItem = CreateContentItemWithMyPart();
+            JsonNode contentItemJson = contentItem.Content;
+            JsonNode contentPartJson = contentItem.As<MyPart>().Content;
+
+            // The content part should be selectable from the content item.
+            var selectedItemNode = contentItemJson.SelectNode("MyPart");
+            Assert.NotNull(selectedItemNode);
+            Assert.Equal(selectedItemNode.ToJsonString(), contentPartJson.ToJsonString());
+
+            // Verify that SelectNode queries the subtree of the node it's called on (not the document root).
+            var textPropertyNode = selectedItemNode.SelectNode("Text");
+            AssertJsonEqual(textPropertyNode, JObject.Parse(selectedItemNode.ToJsonString()).SelectNode("Text"));
+
+            // Verify consistent results when targeting the same node in different ways.
+            AssertJsonEqual(textPropertyNode, contentPartJson.SelectNode("Text"));
+            AssertJsonEqual(textPropertyNode, contentItemJson.SelectNode("MyPart.Text"));
+            AssertJsonEqual(textPropertyNode, contentItemJson.SelectNode("$..Text"));
+        }
+
+        private static ContentItem CreateContentItemWithMyPart(string text = "test")
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = text);
+            
+            return contentItem;
+        }
+
+        private static void AssertJsonEqual(JsonNode expected, JsonNode actual)
+        {
+            Assert.NotNull(expected);
+            Assert.NotNull(actual);
+            Assert.Equal(expected.ToJsonString(), actual.ToJsonString());
         }
 
         [Fact]

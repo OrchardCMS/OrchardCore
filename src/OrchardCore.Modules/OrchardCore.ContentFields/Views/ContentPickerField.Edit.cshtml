@@ -16,7 +16,7 @@
 <style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
-    <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 

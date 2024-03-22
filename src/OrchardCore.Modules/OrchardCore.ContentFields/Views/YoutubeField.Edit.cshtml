@@ -5,9 +5,10 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.RawAddress)_FieldWrapper">
-    <label asp-for="RawAddress" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="RawAddress" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        <input asp-for="RawAddress" class="form-control content-preview-text" required="@settings.Required" />
+        <input asp-for="RawAddress" class="form-control content-preview-text" />
+        <span asp-validation-for="RawAddress"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

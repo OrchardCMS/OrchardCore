@@ -13,9 +13,10 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label asp-for="Values" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Values" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
+        <span asp-validation-for="Values"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
