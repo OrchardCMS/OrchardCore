@@ -122,6 +122,7 @@ namespace OrchardCore.Tests.Data
             Assert.Equal("test", contentItem.As<MyPart>().Text);
             var node = (JsonNode)contentItem.Content.SelectNode("MyPart");
             Assert.NotNull(node);
+        }
 
         [Fact]
         public void ShouldDeserializeListContentPart()
