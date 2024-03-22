@@ -213,11 +213,11 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var itemControllerName = typeof(ItemController).ControllerName();
+            routes.AddGetContentEndpoint()
+                .AddCreateContentEndpoint()
+                .AddDeleteContentEndpoint();
 
-            routes.AddCreateContentApiEndpoint()
-                .AddGetContentApiContentEndpoint()
-                .AddDeleteContentApiEndpoint();
+            var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "DisplayContentItem",

@@ -4,43 +4,47 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class DeleteEndpoint
 {
-    public static IEndpointRouteBuilder AddDeleteContentApiEndpoint(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder AddDeleteContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("api/content/{contentItemId}", ActionAsync);
+        builder.MapDelete("api/content/{contentItemId}", ActionAsync)
+            .AllowAnonymous()
+            .DisableAntiforgery();
 
         return builder;
     }
 
     [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> ActionAsync(string contentItemId,
+    private static async Task<IResult> ActionAsync(
+        string contentItemId,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
         {
-            return Results.Forbid();
+            return httpContext.ChallengeOrForbid("Api");
         }
 
         var contentItem = await contentManager.GetAsync(contentItemId);
 
         if (contentItem == null)
         {
-            return Results.NotFound();
+            return TypedResults.NotFound();
         }
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, contentItem))
         {
-            return Results.Forbid();
+            return httpContext.ChallengeOrForbid("Api");
         }
 
         await contentManager.RemoveAsync(contentItem);
 
-        return Results.Ok(contentItem);
+        return TypedResults.Ok(contentItem);
     }
 }

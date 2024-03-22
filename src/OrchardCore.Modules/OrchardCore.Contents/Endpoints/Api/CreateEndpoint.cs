@@ -11,14 +11,17 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class CreateEndpoint
 {
-    public static IEndpointRouteBuilder AddCreateContentApiEndpoint(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/content", ActionAsync);
+        builder.MapPost("api/content", ActionAsync)
+            .AllowAnonymous()
+            .DisableAntiforgery();
 
         return builder;
     }
@@ -31,16 +34,16 @@ public static class CreateEndpoint
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> ActionAsync(
         ContentItem model,
-        bool draft,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
         IUpdateModelAccessor updateModelAccessor,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        bool draft = false)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
         {
-            return Results.Forbid();
+            return httpContext.ChallengeOrForbid("Api");
         }
 
         var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
@@ -50,7 +53,7 @@ public static class CreateEndpoint
         {
             if (string.IsNullOrEmpty(model?.ContentType) || await contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
             {
-                return Results.BadRequest();
+                return TypedResults.BadRequest();
             }
 
             contentItem = await contentManager.NewAsync(model.ContentType);
@@ -58,7 +61,7 @@ public static class CreateEndpoint
 
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {
-                return Results.Forbid();
+                return httpContext.ChallengeOrForbid("Api");
             }
 
             contentItem.Merge(model);
@@ -77,14 +80,14 @@ public static class CreateEndpoint
             {
                 var errors = modelState.ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(x => x.ErrorMessage).ToArray());
 
-                return Results.ValidationProblem(errors);
+                return TypedResults.ValidationProblem(errors, detail: string.Join(", ", modelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))));
             }
         }
         else
         {
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
             {
-                return Results.Forbid();
+                return httpContext.ChallengeOrForbid("Api");
             }
 
             contentItem.Merge(model, _updateJsonMergeSettings);
@@ -104,7 +107,7 @@ public static class CreateEndpoint
             {
                 var errors = modelState.ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(x => x.ErrorMessage).ToArray());
 
-                return Results.ValidationProblem(errors);
+                return TypedResults.ValidationProblem(errors, detail: string.Join(", ", modelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))));
             }
         }
 
@@ -117,7 +120,7 @@ public static class CreateEndpoint
             await contentManager.SaveDraftAsync(contentItem);
         }
 
-        return Results.Ok(contentItem);
+        return TypedResults.Ok(contentItem);
     }
 
     private static void AddValidationErrorsToModelState(ContentValidateResult result, ModelStateDictionary modelState)
