@@ -168,7 +168,7 @@ namespace OrchardCore.Lists.Drivers
         {
             if (settings.ContainedContentTypes == null)
             {
-                return Enumerable.Empty<ContentTypeDefinition>();
+                return [];
             }
 
             var definitions = new List<ContentTypeDefinition>();

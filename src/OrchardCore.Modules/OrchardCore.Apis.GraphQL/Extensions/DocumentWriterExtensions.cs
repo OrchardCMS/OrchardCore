@@ -9,16 +9,13 @@ namespace OrchardCore.Apis.GraphQL
 {
     internal static class DocumentWriterExtensions
     {
-        public static async Task WriteErrorAsync(this IDocumentWriter documentWriter, HttpContext context, string message, Exception e = null)
+        public static async Task WriteErrorAsync(this IGraphQLSerializer graphQLSerializer, HttpContext context, string message, Exception e = null)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             var errorResult = new ExecutionResult
             {
-                Errors = new ExecutionErrors()
+                Errors = []
             };
 
             if (e == null)
@@ -33,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            await documentWriter.WriteAsync(context.Response.Body, errorResult);
+            await graphQLSerializer.WriteAsync(context.Response.Body, errorResult);
         }
     }
 }

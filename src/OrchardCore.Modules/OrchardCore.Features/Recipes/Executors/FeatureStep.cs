@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
@@ -14,7 +15,8 @@ namespace OrchardCore.Features.Recipes.Executors
     {
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
-        public FeatureStep(IShellFeaturesManager shellFeaturesManager)
+        public FeatureStep(
+            IShellFeaturesManager shellFeaturesManager)
         {
             _shellFeaturesManager = shellFeaturesManager;
         }
@@ -28,12 +30,12 @@ namespace OrchardCore.Features.Recipes.Executors
 
             var step = context.Step.ToObject<FeatureStepModel>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
+            var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
 
-            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
-            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();
+            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToArray();
+            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToArray();
 
-            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
+            if (featuresToDisable.Length > 0 || featuresToEnable.Length > 0)
             {
                 await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }

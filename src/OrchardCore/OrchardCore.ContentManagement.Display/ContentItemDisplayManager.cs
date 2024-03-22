@@ -51,10 +51,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
@@ -123,10 +120,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
@@ -174,10 +168,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");

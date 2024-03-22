@@ -14,16 +14,19 @@ var getStoredTheme = function getStoredTheme() {
 var setStoredTheme = function setStoredTheme(theme) {
   return localStorage.setItem(getTenantName() + '-admintheme', theme);
 };
+var isDarkMedia = function isDarkMedia() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
 var getPreferredTheme = function getPreferredTheme() {
   var storedTheme = getStoredTheme();
   if (storedTheme) {
     return storedTheme;
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeName : lightThemeName;
+  return isDarkMedia() ? darkThemeName : lightThemeName;
 };
 var setTheme = function setTheme(theme) {
-  if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-bs-theme', darkThemeName);
+  if (theme === 'auto') {
+    document.documentElement.setAttribute('data-bs-theme', isDarkMedia() ? darkThemeName : lightThemeName);
   } else {
     document.documentElement.setAttribute('data-bs-theme', theme);
   }

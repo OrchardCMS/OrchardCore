@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Notify;
@@ -22,6 +23,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Placements.Controllers
 {
+    [Admin("Placements/{action}/{shapeType?}", "Placements.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -57,6 +59,7 @@ namespace OrchardCore.Placements.Controllers
             S = stringLocalizer;
         }
 
+        [Admin("Placements", "Placements.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
@@ -130,7 +133,7 @@ namespace OrchardCore.Placements.Controllers
             {
                 Creating = true,
                 ShapeType = suggestion,
-                Nodes = JsonConvert.SerializeObject(template, Formatting.Indented)
+                Nodes = JConvert.SerializeObject(template, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -144,7 +147,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
+            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? [];
 
             if (placementNodes.Count == 0 || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
             {
@@ -153,13 +156,15 @@ namespace OrchardCore.Placements.Controllers
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
+
                 if (!string.IsNullOrEmpty(contentType))
                 {
-                    generatedNode.Filters.Add("contentType", new JArray(contentType));
+                    generatedNode.Filters.Add("contentType", new JsonArray(contentType));
                 }
+
                 if (!string.IsNullOrEmpty(contentPart))
                 {
-                    generatedNode.Filters.Add("contentPart", new JArray(contentPart));
+                    generatedNode.Filters.Add("contentPart", new JsonArray(contentPart));
                 }
 
                 placementNodes.Add(generatedNode);
@@ -168,7 +173,7 @@ namespace OrchardCore.Placements.Controllers
             var viewModel = new EditShapePlacementViewModel
             {
                 ShapeType = shapeType,
-                Nodes = JsonConvert.SerializeObject(placementNodes, Formatting.Indented)
+                Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -194,7 +199,7 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
                     ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.
@@ -220,7 +225,7 @@ namespace OrchardCore.Placements.Controllers
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch (JsonReaderException jsonException)
+            catch (JsonException jsonException)
             {
                 await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);
@@ -321,16 +326,17 @@ namespace OrchardCore.Placements.Controllers
         }
 
 
-        private static bool FilterEquals(JToken token, string value)
+        private static bool FilterEquals(object node, string value)
         {
-            if (token is JArray)
+            var jsonNode = JNode.FromObject(node);
+            if (jsonNode is JsonArray jsonArray)
             {
-                var tokenValues = token.Values<string>();
+                var tokenValues = jsonArray.Values<string>();
                 return tokenValues.Count() == 1 && tokenValues.First() == value;
             }
             else
             {
-                return token.Value<string>() == value;
+                return jsonNode.Value<string>() == value;
             }
         }
     }

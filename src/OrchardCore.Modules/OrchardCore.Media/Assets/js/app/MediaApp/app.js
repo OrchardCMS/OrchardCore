@@ -70,13 +70,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
                     });
 
-                    bus.$on('mediaRenamed', function (newName, newPath, oldPath) {
+                    bus.$on('mediaRenamed', function (newName, newPath, oldPath, newUrl) {
                         var media = self.mediaItems.filter(function (item) {
                             return item.mediaPath === oldPath;
                         })[0];
 
                         media.mediaPath = newPath;
                         media.name = newName;
+                        media.url = newUrl;
                     });
 
                     bus.$on('createFolderRequested', function (media) {
@@ -501,7 +502,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     success: function (data) {
                         var modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
                         modal.hide();
-                        bus.$emit('mediaRenamed', newName, newPath, oldPath);
+                        bus.$emit('mediaRenamed', newName, newPath, oldPath, data.newUrl);
                     },
                     error: function (error) {
                         $('#renameMediaModal-errors').empty();

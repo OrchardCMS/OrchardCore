@@ -21,7 +21,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin]
+    [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
     public class MediaProfilesController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -57,6 +57,7 @@ namespace OrchardCore.Media.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("MediaProfiles", "MediaProfiles.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
@@ -195,12 +196,11 @@ namespace OrchardCore.Media.Controllers
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            if (!mediaProfilesDocument.MediaProfiles.ContainsKey(name))
+            if (!mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
 
-            var mediaProfile = mediaProfilesDocument.MediaProfiles[name];
             // Is a custom width if the width is not 0 and it is not in the array of supported sizes.
             var isCustomWidth = mediaProfile.Width != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Width) < 0;
             var isCustomHeight = mediaProfile.Height != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Height) < 0;

@@ -15,7 +15,7 @@ internal sealed class SafeBoolModelBinder : IModelBinder
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        ArgumentNullException.ThrowIfNull(nameof(bindingContext));
+        ArgumentNullException.ThrowIfNull(bindingContext);
 
         var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 

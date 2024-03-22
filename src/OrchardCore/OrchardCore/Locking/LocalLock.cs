@@ -15,7 +15,7 @@ namespace OrchardCore.Locking
     {
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, Semaphore> _semaphores = new();
+        private readonly Dictionary<string, Semaphore> _semaphores = [];
 
         public LocalLock(ILogger<LocalLock> logger)
         {

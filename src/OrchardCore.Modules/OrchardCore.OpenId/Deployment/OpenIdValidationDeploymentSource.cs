@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -27,7 +27,7 @@ namespace OrchardCore.OpenId.Deployment
             var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
             // The 'name' property should match the related recipe step name.
-            var jObject = new JObject(new JProperty("name", nameof(OpenIdValidationSettings)));
+            var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
 
             // Merge settings as the recipe step doesn't use a child property.
             jObject.Merge(JObject.FromObject(validationSettings));

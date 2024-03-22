@@ -22,9 +22,9 @@ namespace OrchardCore.Environment.Commands
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
-            var matches = MatchCommands(parameters) ?? Enumerable.Empty<Match>();
+            var matches = MatchCommands(parameters) ?? [];
 
-            if (matches.Count() == 1)
+            if (matches.Count == 1)
             {
                 var match = matches.Single();
                 await match.CommandHandler.ExecuteAsync(match.Context);
@@ -33,7 +33,7 @@ namespace OrchardCore.Environment.Commands
             {
                 var commandMatch = string.Join(" ", parameters.Arguments.ToArray());
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
-                if (matches.Any())
+                if (matches.Count > 0)
                 {
                     throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
                         commandMatch, commandList]);

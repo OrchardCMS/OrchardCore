@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -30,9 +33,10 @@ namespace OrchardCore.Workflows.Services
         private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IClock _clock;
 
-        private readonly Dictionary<string, int> _recursions = new();
+        private readonly Dictionary<string, int> _recursions = [];
         private int _currentRecursionDepth;
 
         public WorkflowManager
@@ -47,6 +51,7 @@ namespace OrchardCore.Workflows.Services
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IClock clock)
         {
             _activityLibrary = activityLibrary;
@@ -59,15 +64,13 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _clock = clock;
         }
 
         public Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null)
         {
-            if (workflowType == null)
-            {
-                throw new ArgumentNullException(nameof(workflowType));
-            }
+            ArgumentNullException.ThrowIfNull(workflowType);
 
             var workflow = new Workflow
             {
@@ -76,7 +79,7 @@ namespace OrchardCore.Workflows.Services
                 State = JObject.FromObject(new WorkflowState
                 {
                     ActivityStates = workflowType.Activities.ToDictionary(x => x.ActivityId, x => x.Properties)
-                }),
+                }, _jsonSerializerOptions),
                 CorrelationId = correlationId,
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
@@ -89,22 +92,16 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowType workflowType, Workflow workflow, IDictionary<string, object> input = null)
         {
-            if (workflowType == null)
-            {
-                throw new ArgumentNullException(nameof(workflowType));
-            }
+            ArgumentNullException.ThrowIfNull(workflowType);
 
-            if (workflow == null)
-            {
-                throw new ArgumentNullException(nameof(workflow));
-            }
+            ArgumentNullException.ThrowIfNull(workflow);
 
-            var state = workflow.State.ToObject<WorkflowState>();
+            var state = workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
                 if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
                 {
-                    activityState = new JObject();
+                    activityState = [];
                 }
 
                 return CreateActivityExecutionContextAsync(x, activityState);
@@ -119,12 +116,9 @@ namespace OrchardCore.Workflows.Services
             return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
-        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
+        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties)
         {
-            if (activityRecord == null)
-            {
-                throw new ArgumentNullException(nameof(activityRecord));
-            }
+            ArgumentNullException.ThrowIfNull(activityRecord);
 
             var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
 
@@ -143,14 +137,16 @@ namespace OrchardCore.Workflows.Services
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
+        public async Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
             if (activity == null)
             {
                 _logger.LogError("Activity '{ActivityName}' was not found", name);
-                return;
+                return Array.Empty<WorkflowExecutionContext>();
             }
+
+            var triggerdWorkflows = new List<WorkflowExecutionContext>();
 
             // Resume workflow instances halted on this kind of activity for the specified target.
             var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
@@ -193,7 +189,8 @@ namespace OrchardCore.Workflows.Services
                 var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
                 foreach (var blockingActivity in blockingActivities)
                 {
-                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                    var context = await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                    triggerdWorkflows.Add(context);
                 }
             }
 
@@ -242,21 +239,17 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
-                await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                var context = await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                triggerdWorkflows.Add(context);
             }
+            return triggerdWorkflows;
         }
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null)
         {
-            if (workflow == null)
-            {
-                throw new ArgumentNullException(nameof(workflow));
-            }
+            ArgumentNullException.ThrowIfNull(workflow);
 
-            if (awaitingActivity == null)
-            {
-                throw new ArgumentNullException(nameof(awaitingActivity));
-            }
+            ArgumentNullException.ThrowIfNull(awaitingActivity);
 
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             var activityRecord = workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
@@ -310,10 +303,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null)
         {
-            if (workflowType == null)
-            {
-                throw new ArgumentNullException(nameof(workflowType));
-            }
+            ArgumentNullException.ThrowIfNull(workflowType);
 
             var startActivity = workflowType.Activities?.FirstOrDefault(x => x.IsStart)
                 ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
@@ -367,10 +357,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
         {
-            if (workflowType == null)
-            {
-                throw new ArgumentNullException(nameof(workflowType));
-            }
+            ArgumentNullException.ThrowIfNull(workflowType);
 
             startActivity ??= workflowType.Activities?.FirstOrDefault(x => x.IsStart)
                 ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
@@ -537,7 +524,7 @@ namespace OrchardCore.Workflows.Services
             // Apply Distinct() as two paths could block on the same activity.
             var blockingActivities = blocking.Distinct().ToList();
 
-            workflowContext.Status = blockingActivities.Any() || workflowContext.Workflow.BlockingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
+            workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
 
             foreach (var blockingActivity in blockingActivities)
             {
@@ -570,7 +557,7 @@ namespace OrchardCore.Workflows.Services
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
         {
-            var state = workflowContext.Workflow.State.ToObject<WorkflowState>();
+            var state = workflowContext.Workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
 
             state.Input = await SerializeAsync(workflowContext.Input);
             state.Output = await SerializeAsync(workflowContext.Output);
@@ -579,7 +566,7 @@ namespace OrchardCore.Workflows.Services
             state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
             state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
-            workflowContext.Workflow.State = JObject.FromObject(state);
+            workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
             await _workflowStore.SaveAsync(workflowContext.Workflow);
         }
 
