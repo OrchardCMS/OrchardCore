@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
-using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Data
 {
@@ -118,27 +117,12 @@ namespace OrchardCore.Tests.Data
             AssertJsonEqual(textPropertyNode, contentItemJson.SelectNode("$..Text"));
         }
 
-        private static ContentItem CreateContentItemWithMyPart(string text = "test")
-        {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
-            contentItem.Alter<MyPart>(x => x.Text = text);
-            
-            return contentItem;
-        }
 
-        private static void AssertJsonEqual(JsonNode expected, JsonNode actual)
-        {
-            Assert.NotNull(expected);
-            Assert.NotNull(actual);
-            Assert.Equal(expected.ToJsonString(), actual.ToJsonString());
-        }
 
         [Fact]
         public void ContentShouldCanCallRemoveMethod()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
+            var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x => x.Text = "test");
             Assert.Equal("test", contentItem.As<MyPart>().Text);
             Assert.True(contentItem.Content.Remove("MyPart"));
@@ -147,8 +131,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ContentShouldCanCallSelectNodeMethod()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<MyPart>();
+            var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x => x.Text = "test");
             Assert.Equal("test", contentItem.As<MyPart>().Text);
             var node = (JsonNode)contentItem.Content.SelectNode("MyPart");
@@ -158,8 +141,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldDeserializeListContentPart()
         {
-            var contentItem = new ContentItem();
-            contentItem.GetOrCreate<GetOnlyListPart>();
+            var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x => x.Text = "test");
             contentItem.Alter<MyPart>(x =>
             {
@@ -170,6 +152,22 @@ namespace OrchardCore.Tests.Data
             var json = JConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
+        }
+
+        private static ContentItem CreateContentItemWithMyPart(string text = "test")
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = text);
+
+            return contentItem;
+        }
+
+        private static void AssertJsonEqual(JsonNode expected, JsonNode actual)
+        {
+            Assert.NotNull(expected);
+            Assert.NotNull(actual);
+            Assert.Equal(expected.ToJsonString(), actual.ToJsonString());
         }
     }
 
