@@ -31,7 +31,7 @@ public static class HttpBackgroundJob
         {
             return Task.CompletedTask;
         }
-        //records the current login user
+        // Record the current logged in user.
         var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
         // Fire and forget in an isolated child scope.
