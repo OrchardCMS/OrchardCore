@@ -10,6 +10,7 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
+using OrchardCore.Json;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -27,13 +28,13 @@ namespace OrchardCore.Queries.Sql
             ILiquidTemplateManager liquidTemplateManager,
             IDbConnectionAccessor dbConnectionAccessor,
             ISession session,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _templateOptions = templateOptions.Value;
         }
 

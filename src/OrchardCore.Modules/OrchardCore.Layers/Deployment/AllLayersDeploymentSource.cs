@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Settings;
@@ -18,11 +19,11 @@ namespace OrchardCore.Layers.Deployment
         public AllLayersDeploymentSource(
             ILayerService layerService,
             ISiteService siteService,
-            IOptions<JsonSerializerOptions> serializationOptions)
+            IOptions<ContentSerializerJsonOptions> serializationOptions)
         {
             _layerService = layerService;
             _siteService = siteService;
-            _jsonSerializerOptions = serializationOptions.Value;
+            _jsonSerializerOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

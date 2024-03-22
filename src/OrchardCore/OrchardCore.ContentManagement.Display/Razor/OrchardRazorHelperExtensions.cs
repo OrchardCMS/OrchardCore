@@ -88,4 +88,16 @@ public static class OrchardRazorHelperExtensions
 
         return o;
     }
+
+    internal static JsonObject ConvertContentPart(ContentPart contentPart)
+    {
+        var o = new JsonObject
+        {
+            // Write all well-known properties.
+            [nameof(ContentPart.ContentItem)] = ConvertContentItem(contentPart.ContentItem),
+            [nameof(ContentPart.Content)] = JObject.FromObject(contentPart.Content),
+        };
+
+        return o;
+    }
 }

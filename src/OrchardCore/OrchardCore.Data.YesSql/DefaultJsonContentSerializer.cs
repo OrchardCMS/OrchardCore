@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 
 namespace YesSql.Serialization
 {
@@ -8,9 +9,9 @@ namespace YesSql.Serialization
     {
         private readonly JsonSerializerOptions _options;
 
-        public DefaultJsonContentSerializer(IOptions<JsonSerializerOptions> options)
+        public DefaultJsonContentSerializer(IOptions<ContentSerializerJsonOptions> options)
         {
-            _options = options.Value;
+            _options = options.Value.SerializerOptions;
         }
 
         public DefaultJsonContentSerializer(JsonSerializerOptions options)
