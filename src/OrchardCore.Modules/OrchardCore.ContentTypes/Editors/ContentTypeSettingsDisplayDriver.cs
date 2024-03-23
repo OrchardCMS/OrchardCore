@@ -96,7 +96,7 @@ namespace OrchardCore.ContentTypes.Editors
                 return stereotypesOptions;
             }
 
-            if (contentTypeDefinition.Name != null && _options.Stereotypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
+            if (contentTypeDefinition.Name != null && _options.ContentTypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
             {
                 return typeOptions;
             }
