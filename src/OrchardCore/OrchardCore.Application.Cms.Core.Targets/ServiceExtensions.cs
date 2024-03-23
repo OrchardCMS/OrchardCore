@@ -19,7 +19,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddSecurity()
                 .AddMvc()
                 .AddIdGeneration()
-                .AddMappings()
                 .AddEmailAddressValidator()
                 .AddHtmlSanitizer()
                 .AddSetupFeatures("OrchardCore.Setup")

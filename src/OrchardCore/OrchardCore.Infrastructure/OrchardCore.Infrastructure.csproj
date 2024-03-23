@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
-    <PackageReference Include="Mapster" />
     <PackageReference Include="MimeKit" />
+    <PackageReference Include="Riok.Mapperly" />
   </ItemGroup>
 
   <ItemGroup>
