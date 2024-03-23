@@ -13,14 +13,11 @@ public class FormShapeTableProvider : IShapeTableProvider
         builder.Describe("Widget__Form")
             .OnDisplaying(context =>
             {
-                if (context.Shape.TryGetProperty<ContentItem>("ContentItem", out var contentItem) && contentItem.ContentType == "Form")
+                if (context.Shape.TryGetProperty<ContentItem>("ContentItem", out var contentItem) 
+                    && contentItem.TryGet<FormElementPart>(out var elementPart) 
+                    && !string.IsNullOrEmpty(elementPart.Id))
                 {
-                    context.Shape.Metadata.Alternates.Add($"Widget__Form_{contentItem.ContentItemId.EncodeAlternateElement()}");
-
-                    if (contentItem.TryGet<FormElementPart>(out var elementPart) && !string.IsNullOrEmpty(elementPart.Id))
-                    {
-                        context.Shape.Metadata.Alternates.Add($"Widget__Form_{elementPart.Id.EncodeAlternateElement()}");
-                    }
+                    context.Shape.Metadata.Alternates.Add($"Widget__{contentItem.ContentType}_{elementPart.Id.EncodeAlternateElement()}");
                 }
             });
     }
