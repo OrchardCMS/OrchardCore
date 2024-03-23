@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -14,8 +13,9 @@ namespace OrchardCore.ContentTypes.Editors
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
 
-        protected readonly IStringLocalizer S;
         private readonly ContentTypeDefinitionOptions _options;
+
+        protected readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(
             IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
@@ -26,8 +26,7 @@ namespace OrchardCore.ContentTypes.Editors
         }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
-        {
-            return Initialize("ContentTypeSettings_Edit", (Action<ContentTypeSettingsViewModel>)(model =>
+            => Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
             {
                 var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
@@ -39,9 +38,7 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Stereotype = settings.Stereotype;
                 model.Description = settings.Description;
                 model.Options = GetOptions(contentTypeDefinition, settings.Stereotype);
-
-            })).Location("Content:5");
-        }
+            }).Location("Content:5");
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
         {
@@ -72,30 +69,35 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 context.Builder.Versionable(model.Versionable);
             }
+
             if (options.ShowCreatable)
             {
                 context.Builder.Creatable(model.Creatable);
             }
+
             if (options.ShowSecurable)
             {
                 context.Builder.Securable(model.Securable);
             }
+
             if (options.ShowListable)
             {
                 context.Builder.Listable(model.Listable);
             }
         }
 
-        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string sterotype)
+        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string stereotype)
         {
-            if (sterotype != null && _options.Stereotypes.TryGetValue(sterotype, out var stereotypesOptions))
-            {
-                return stereotypesOptions;
-            }
-
-            if (contentTypeDefinition.Name != null && _options.Stereotypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
+            if (contentTypeDefinition.Name != null
+                && _options.ContentTypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
             {
                 return typeOptions;
+            }
+
+            if (stereotype != null
+                && _options.Stereotypes.TryGetValue(stereotype, out var stereotypesOptions))
+            {
+                return stereotypesOptions;
             }
 
             return _defaultOptions;

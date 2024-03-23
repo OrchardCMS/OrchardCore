@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Json;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.UserTasks.Activities;
@@ -38,7 +39,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _workflowStore = workflowStore;
@@ -46,7 +47,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             _workflowManager = workflowManager;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
 
             H = localizer;
         }
