@@ -15,7 +15,7 @@ public class FormShapeTableProvider : IShapeTableProvider
             {
                 if (context.Shape.TryGetProperty<ContentItem>("ContentItem", out var contentItem) && contentItem.ContentType == "Form")
                 {
-                    context.Shape.Metadata.Alternates.Add($"Widget__Form_{contentItem.ContentItemId}");
+                    context.Shape.Metadata.Alternates.Add($"Widget__Form_{contentItem.ContentItemId.EncodeAlternateElement()}");
 
                     if (contentItem.TryGet<FormElementPart>(out var elementPart) && !string.IsNullOrEmpty(elementPart.Id))
                     {
