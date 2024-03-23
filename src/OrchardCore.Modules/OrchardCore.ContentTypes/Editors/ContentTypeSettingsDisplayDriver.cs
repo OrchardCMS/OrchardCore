@@ -72,14 +72,17 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 context.Builder.Versionable(model.Versionable);
             }
+            
             if (options.ShowCreatable)
             {
                 context.Builder.Creatable(model.Creatable);
             }
+            
             if (options.ShowSecurable)
             {
                 context.Builder.Securable(model.Securable);
             }
+            
             if (options.ShowListable)
             {
                 context.Builder.Listable(model.Listable);
