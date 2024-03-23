@@ -156,7 +156,7 @@ namespace OrchardCore.Media.Azure
             _logger = logger;
         }
 
-        // This is needed to be greater than OrchardCore.Media's 0 to replace the IImageCache implementation registered
+        // The order should exceed that of the 'OrchardCore.Media' module to substitute the default implementation of 'IImageCache'.
         // there.
         public override int Order => 5;
 
