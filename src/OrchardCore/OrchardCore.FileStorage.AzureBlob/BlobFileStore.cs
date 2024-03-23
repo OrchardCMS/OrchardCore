@@ -439,7 +439,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             var placeholderBlob = GetBlobReference(this.Combine(path, DirectoryMarkerFileName));
 
             // Create a directory marker file to make this directory appear when listing directories.
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it."));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file used by Orchard Core."));
             await placeholderBlob.UploadAsync(stream);
         }
 

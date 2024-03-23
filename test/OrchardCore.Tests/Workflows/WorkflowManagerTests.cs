@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -54,7 +55,7 @@ namespace OrchardCore.Tests.Workflows
                 ]
             };
 
-            var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);
+            var workflowManager = CreateWorkflowManager(serviceProvider, [addTask, writeLineTask, setOutputTask], workflowType);
             var a = 10d;
             var b = 22d;
             var expectedSum = a + b;
@@ -113,6 +114,10 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
+            var jsonOptionsMock = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            jsonOptionsMock.Setup(x => x.Value)
+                .Returns(new ContentSerializerJsonOptions());
+
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
@@ -124,6 +129,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
+                jsonOptionsMock.Object,
                 clock.Object
                 );
 
