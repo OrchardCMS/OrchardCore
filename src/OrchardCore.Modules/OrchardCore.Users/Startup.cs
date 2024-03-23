@@ -463,7 +463,13 @@ namespace OrchardCore.Users
 
             services.Configure<ContentTypeDefinitionOptions>(options =>
             {
-                options.Stereotypes.TryAdd("CustomUserSettings", new ContentTypeDefinitionDriverOptions(false));
+                options.Stereotypes.TryAdd("CustomUserSettings", new ContentTypeDefinitionDriverOptions
+                {
+                    ShowCreatable = false,
+                    ShowListable = false,
+                    ShowDraftable = false,
+                    ShowVersionable = false,
+                });
             });
         }
     }

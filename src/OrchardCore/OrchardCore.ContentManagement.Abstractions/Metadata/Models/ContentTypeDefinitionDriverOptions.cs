@@ -11,13 +11,4 @@ public class ContentTypeDefinitionDriverOptions
     public bool ShowVersionable { get; set; }
 
     public bool ShowSecurable { get; set; }
-
-    public ContentTypeDefinitionDriverOptions(bool defaultValue = true)
-    {
-        ShowCreatable = defaultValue;
-        ShowListable = defaultValue;
-        ShowDraftable = defaultValue;
-        ShowVersionable = defaultValue;
-        ShowSecurable = defaultValue;
-    }
 }
