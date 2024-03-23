@@ -61,7 +61,8 @@ public static class HttpBackgroundJob
 
             // Create a new 'HttpContext' to be used in the background.
             httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
-
+            // Restore the current user.
+            httpContextAccessor.HttpContext.User = userPrincipal;
             // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
             // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.
             var actionContextAccessor = scope.ServiceProvider.GetService<IActionContextAccessor>();
@@ -78,10 +79,6 @@ public static class HttpBackgroundJob
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
                 try
                 {
-                    var nextHttp = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    // Restore the current user.
-                    nextHttp.HttpContext.User = userPrincipal;
-
                     await job(scope);
                 }
                 catch (Exception ex)
