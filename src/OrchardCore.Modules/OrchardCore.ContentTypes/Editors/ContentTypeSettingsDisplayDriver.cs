@@ -89,7 +89,7 @@ namespace OrchardCore.ContentTypes.Editors
             }
         }
 
-        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string sterotype)
+        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string stereotype)
         {
             if (sterotype != null && _options.Stereotypes.TryGetValue(sterotype, out var stereotypesOptions))
             {
