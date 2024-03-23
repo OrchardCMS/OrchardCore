@@ -95,21 +95,6 @@ namespace OrchardCore.Search.Lucene
                 }
             });
         }
-        public async Task DeleteDocumentsByVersionIdAsync(string indexName, IEnumerable<string> ContentItemVersionIds)
-        {
-            await WriteAsync(indexName, writer =>
-            {
-                writer.DeleteDocuments(ContentItemVersionIds.Select(x => new Term("ContentItemVersionId", x)).ToArray());
-
-                writer.Commit();
-
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
-                    pool.Release();
-                }
-            });
-        }
 
         public void DeleteIndex(string indexName)
         {

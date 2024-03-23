@@ -60,22 +60,18 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
         var services = scope.ServiceProvider;
         var contentManager = services.GetRequiredService<IContentManager>();
         var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
-
+        var indexManager = services.GetRequiredService<AzureAIIndexDocumentManager>();
         var indexSettingsService = services.GetRequiredService<AzureAISearchIndexSettingsService>();
         var logger = services.GetRequiredService<ILogger<AzureAISearchIndexingContentHandler>>();
-        var indexDocumentManager = services.GetRequiredService<AzureAIIndexDocumentManager>();
 
         // Multiple items may have been updated in the same scope, e.g through a recipe.
-        var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId);
+        var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
         // Get all contexts for each content item id.
         foreach (var ContextsById in contextsGroupById)
         {
             // Only process the last context.
             var context = ContextsById.Last();
-
-            ContentItem published = null, latest = null;
-            bool publishedLoaded = false, latestLoaded = false;
 
             foreach (var indexSettings in await indexSettingsService.GetSettingsAsync())
             {
@@ -85,33 +81,74 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
 
                 if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                 {
-                    if (!indexSettings.IndexLatest && !publishedLoaded)
+                    if (context is RemoveContentContext)
                     {
-                        publishedLoaded = true;
-                        published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+                        await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                        continue;
                     }
 
-                    if (indexSettings.IndexLatest && !latestLoaded)
+                    if (!indexSettings.IndexLatest)
                     {
-                        latestLoaded = true;
-                        latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
-                    }
+                        if (context is PublishContentContext publishContext)
+                        {
+                            if (publishContext.Cancel)
+                            {
+                                continue;
+                            }
 
-                    var contentItem = !indexSettings.IndexLatest ? published : latest;
-
-                    if (contentItem == null)
-                    {
-                        await indexDocumentManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            if (publishContext.IsPublishing == true)
+                            {
+                                await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                            }
+                            else
+                            {
+                                await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            }
+                        }
+                        else if (context is UpdateContentContext updateContext)
+                        {
+                            await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                        }
                     }
                     else
                     {
-                        var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-                        var buildIndexContext = new BuildIndexContext(index, contentItem, [contentItem.ContentType], new AzureAISearchContentIndexSettings());
-                        await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
-                        await indexDocumentManager.MergeOrUploadDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex }, indexSettings);
+                        if (context is PublishContentContext publishContext)
+                        {
+                            if (publishContext.Cancel)
+                            {
+                                continue;
+                            }
+
+                            if (publishContext.IsPublishing == true)
+                            {
+                                await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                            }
+                            else
+                            {
+                                await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            }
+                        }
+                        else if (context is UpdateContentContext updateContext)
+                        {
+                            await StoreLuceneDocument(updateContext.UpdatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                        }
+                        else if (context is CreateContentContext createContext)
+                        {
+                            await StoreLuceneDocument(createContext.CreatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private static async Task StoreLuceneDocument(ContentItem contentItem, IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers, AzureAIIndexDocumentManager indexManager, ILogger logger, AzureAISearchIndexSettings indexSettings)
+    {
+
+        var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new AzureAISearchContentIndexSettings());
+        await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
+        await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
+        await indexManager.MergeOrUploadDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex }, indexSettings);
     }
 }

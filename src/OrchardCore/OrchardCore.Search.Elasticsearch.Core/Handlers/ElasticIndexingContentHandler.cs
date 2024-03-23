@@ -69,8 +69,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
             var services = scope.ServiceProvider;
             var contentManager = services.GetRequiredService<IContentManager>();
             var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
-            var elasticIndexManager = services.GetRequiredService<ElasticIndexManager>();
-            var elasticIndexSettingsService = services.GetRequiredService<ElasticIndexSettingsService>();
+            var indexManager = services.GetRequiredService<ElasticIndexManager>();
+            var indexSettingsService = services.GetRequiredService<ElasticIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<ElasticIndexingContentHandler>>();
 
             // Multiple items may have been updated in the same scope, e.g through a recipe.
@@ -82,10 +82,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                 // Only process the last context.
                 var context = ContextsById.Last();
 
-                ContentItem published = null, latest = null;
-                bool publishedLoaded = false, latestLoaded = false;
-
-                foreach (var indexSettings in await elasticIndexSettingsService.GetSettingsAsync())
+                foreach (var indexSettings in await indexSettingsService.GetSettingsAsync())
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
@@ -93,35 +90,75 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
-                        if (!indexSettings.IndexLatest && !publishedLoaded)
+                        if (context is RemoveContentContext)
                         {
-                            publishedLoaded = true;
-                            published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+                            await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            continue;
                         }
 
-                        if (indexSettings.IndexLatest && !latestLoaded)
+                        if (!indexSettings.IndexLatest)
                         {
-                            latestLoaded = true;
-                            latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
-                        }
+                            if (context is PublishContentContext publishContext)
+                            {
+                                if (publishContext.Cancel)
+                                {
+                                    continue;
+                                }
 
-                        var contentItem = !indexSettings.IndexLatest ? published : latest;
-
-                        if (contentItem == null)
-                        {
-                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [context.ContentItem.ContentItemId]);
+                                if (publishContext.IsPublishing == true)
+                                {
+                                    await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                                }
+                                else
+                                {
+                                    await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                                }
+                            }
+                            else if (context is UpdateContentContext updateContext)
+                            {
+                                await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            }
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticContentIndexSettings());
-                            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+                            if (context is PublishContentContext publishContext)
+                            {
+                                if (publishContext.Cancel)
+                                {
+                                    continue;
+                                }
 
-                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);
-                            await elasticIndexManager.StoreDocumentsAsync(indexSettings.IndexName, [buildIndexContext.DocumentIndex]);
+                                if (publishContext.IsPublishing == true)
+                                {
+                                    await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                                }
+                                else
+                                {
+                                    await indexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                                }
+                            }
+                            else if (context is UpdateContentContext updateContext)
+                            {
+                                await StoreDocument(updateContext.UpdatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                            }
+                            else if (context is CreateContentContext createContext)
+                            {
+                                await StoreDocument(createContext.CreatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                            }
                         }
                     }
                 }
             }
+        }
+
+        private static async Task StoreDocument(ContentItem contentItem, IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers, ElasticIndexManager elasticIndexManager, ILogger logger, ElasticIndexSettings indexSettings)
+        {
+
+            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ElasticContentIndexSettings());
+            await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
+
+            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
+            await elasticIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
         }
     }
 }
