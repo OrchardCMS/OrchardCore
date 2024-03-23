@@ -72,12 +72,10 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 ## Getting Started
 
 - Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch for the latest release, or the `dev` branch for the cutting-edge version.
-
 - Watch the ASP.NET Community Standup video where Orchard Core was demonstrated: <https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24>
-
 - Follow the samples on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications
-
 - Follow the tutorial inside the [Training Demo Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) to learn how to develop Orchard Core modules.
+- Follow [Dojo Course 3 - the full Orchard Core tutorial](https://orcharddojo.net/orchard-training/dojo-course-3-the-full-orchard-core-tutorial).
 
 ### Command line
 
