@@ -10,7 +10,7 @@ using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Media.AmazonS3.Services;
 
 public class MediaS3BucketTenantEvents : ModularTenantEvents
 {

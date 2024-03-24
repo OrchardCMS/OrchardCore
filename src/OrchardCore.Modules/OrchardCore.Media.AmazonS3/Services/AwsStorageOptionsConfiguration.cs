@@ -6,7 +6,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
 
-namespace OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Media.AmazonS3.Services;
 
 public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
 {
