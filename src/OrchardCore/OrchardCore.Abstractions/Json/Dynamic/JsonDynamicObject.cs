@@ -83,6 +83,7 @@ public class JsonDynamicObject : DynamicObject
     public bool Remove(string key)
     {
         _dictionary.Remove(key);
+
         return _jsonObject.Remove(key);
     }
     public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
