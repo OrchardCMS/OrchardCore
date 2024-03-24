@@ -149,8 +149,8 @@ namespace OrchardCore.Media.Azure
         private readonly ILogger _logger;
 
         public ImageSharpAzureBlobCacheStartup(
-        IShellConfiguration configuration, 
-        ILogger<ImageSharpAzureBlobCacheStartup> logger)
+            IShellConfiguration configuration,
+            ILogger<ImageSharpAzureBlobCacheStartup> logger)
         {
             _configuration = configuration;
             _logger = logger;
