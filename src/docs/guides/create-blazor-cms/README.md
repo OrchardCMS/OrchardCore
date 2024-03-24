@@ -943,7 +943,7 @@ Now, navigate to `https://localhost:5001/tenant01` and click on the `Orchard Cor
 
 The Blazor App is now served from a tenant-specific subpath, and the content is rendered correctly. But what about interactivity? As you saw we specified to use the `InteractiveServerRenderMode` in the `MapRazorComponents` method. This should mean that when we specify a component to be rendered using the `InteractiveServerRenderMode`, it should be interactive.
 
-Let's add a button to our BaseUrl page that increments a counter. This will demonstrate that the interactivity works.
+Let's add a button to our BaseUrl page that displays the current local time. This will demonstrate that the interactivity works.
 
 Create a Components solution folder in the Blazor App project and create a file called ```InteractiveButton```, with the following content:
 
