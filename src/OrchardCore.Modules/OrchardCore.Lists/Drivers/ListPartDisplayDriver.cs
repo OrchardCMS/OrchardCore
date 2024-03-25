@@ -155,6 +155,7 @@ namespace OrchardCore.Lists.Drivers
                 model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
                 model.Context = context;
                 model.Pager = await context.New.PagerSlim(pager);
+                model.ListPart = listPart;
             })
                 .Location("Detail", "Content:10");
         }

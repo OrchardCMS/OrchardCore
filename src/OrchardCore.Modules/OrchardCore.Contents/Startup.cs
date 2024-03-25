@@ -18,6 +18,7 @@ using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
+using OrchardCore.Contents.Endpoints.Api;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
@@ -212,6 +213,10 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.AddGetContentEndpoint()
+                .AddCreateContentEndpoint()
+                .AddDeleteContentEndpoint();
+
             var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(
