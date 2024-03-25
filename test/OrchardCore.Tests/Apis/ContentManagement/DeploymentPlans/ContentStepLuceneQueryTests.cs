@@ -67,7 +67,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
                 if (timeoutTask.IsCompleted)
                 {
-                    Assert.Fail("LuceneIndex check timeout.");
+                    Assert.Fail("The Lucene index wasn't updated after the import within 5s and thus the test timed out.");
                 }
             }
         }
