@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Data.Documents
 {
@@ -11,11 +12,10 @@ namespace OrchardCore.Data.Documents
     {
         private readonly IDocumentFileStore _documentFileStore;
 
-        private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, object> _updated = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _updated = new();
 
-        private readonly List<Type> _afterCommitsSuccess = new List<Type>();
-        private readonly List<Type> _afterCommitsFailure = new List<Type>();
+        private readonly List<Type> _afterCommitsSuccess = new();
+        private readonly List<Type> _afterCommitsFailure = new();
 
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
@@ -30,16 +30,17 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
-            if (_loaded.TryGetValue(typeof(T), out var loaded))
+            var loaded = ShellScope.Get<T>(typeof(T));
+            if (loaded != null)
             {
-                return loaded as T;
+                return loaded;
             }
 
             var document = (T)await _documentFileStore.GetDocumentAsync(typeof(T))
                 ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
                 ?? new T();
 
-            _loaded[typeof(T)] = document;
+            ShellScope.Set(typeof(T), document);
 
             return document;
         }
@@ -47,10 +48,11 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
-            if (_loaded.TryGetValue(typeof(T), out var loaded))
+            var loaded = ShellScope.Get<T>(typeof(T));
+            if (loaded != null)
             {
                 // Return the already loaded document but indicating that it should not be cached.
-                return (false, loaded as T);
+                return (false, loaded);
             }
 
             return (true, (T)await _documentFileStore.GetDocumentAsync(typeof(T)) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
@@ -107,7 +109,6 @@ namespace OrchardCore.Data.Documents
                     await _documentFileStore.SaveDocumentAsync(updated.Key, updated.Value);
                 }
 
-                _loaded.Clear();
                 _updated.Clear();
 
                 if (!_canceled && _afterCommitSuccess != null)
@@ -120,25 +121,17 @@ namespace OrchardCore.Data.Documents
             }
             catch (Exception exception)
             {
-                typeName = attribute.FileName ?? typeName;
-            }
-
-            var filename = _tenantPath + typeName + ".json";
-
-            await _semaphore.WaitAsync();
-            try
-            {
-                using var file = File.CreateText(filename);
-                var serializer = new JsonSerializer
+                if (_afterCommitFailure != null)
                 {
-                    Formatting = Formatting.Indented
-                };
-
-                serializer.Serialize(file, document);
-            }
-            finally
-            {
-                _semaphore.Release();
+                    foreach (var d in _afterCommitFailure.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitFailureDelegate)d)(exception);
+                    }
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
     }

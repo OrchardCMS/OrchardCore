@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Data.Documents
@@ -42,10 +42,8 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                using var file = File.OpenText(filename);
-                var serializer = new JsonSerializer();
-
-                return serializer.Deserialize(file, documentType);
+                using var stream = File.OpenRead(filename);
+                return await JsonSerializer.DeserializeAsync(stream, documentType, JOptions.Default);
             }
             finally
             {
@@ -61,13 +59,8 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                using var file = File.CreateText(filename);
-                var serializer = new JsonSerializer
-                {
-                    Formatting = Formatting.Indented
-                };
-
-                serializer.Serialize(file, document);
+                using var stream = File.Create(filename);
+                await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
             }
             finally
             {
