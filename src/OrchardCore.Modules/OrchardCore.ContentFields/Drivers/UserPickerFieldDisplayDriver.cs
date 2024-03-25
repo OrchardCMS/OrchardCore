@@ -85,7 +85,7 @@ namespace OrchardCore.ContentFields.Drivers
 
                 if (settings.Required && field.UserIds.Length == 0)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 if (!settings.Multiple && field.UserIds.Length > 1)
