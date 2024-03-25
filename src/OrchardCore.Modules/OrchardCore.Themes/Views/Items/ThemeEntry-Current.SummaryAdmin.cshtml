@@ -6,8 +6,8 @@
 @if (Model.Value.IsAdmin)
 {
     <span class="text-muted">@T["This is the current Admin theme"]</span>
+
+    return;
 }
-else
-{
-    <span class="text-muted">@T["This is the current Site theme"]</span>
-}
+
+<span class="text-muted">@T["This is the current Site theme"]</span>
