@@ -57,11 +57,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
                 if (nodes is not null
                     && nodes.AsArray().Count == 2
-                    && "new version".Equals(nodes[0]["displayText"].ToString())
-                    && "second content item display text".Equals(nodes[1]["displayText"].ToString())
+                    && "new version" == nodes[0]["displayText"].ToString()
+                    && "second content item display text" == nodes[1]["displayText"].ToString()
                     )
                 {
-                    Assert.True(true);
                     break;
                 }
 
