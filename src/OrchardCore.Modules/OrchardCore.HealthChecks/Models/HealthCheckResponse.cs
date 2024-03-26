@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OrchardCore.HealthChecks.Models;
 
 /// <summary>
-/// Represents a health check response to be displayed on the browser.
+/// Represents a health check response to be displayed in the JSON result when the health checks endpoint hit.
 /// </summary>
 public class HealthCheckResponse
 {

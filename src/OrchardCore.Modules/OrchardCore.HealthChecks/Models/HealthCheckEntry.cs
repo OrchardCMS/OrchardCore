@@ -1,7 +1,7 @@
 namespace OrchardCore.HealthChecks.Models;
 
 /// <summary>
-/// Represents a health check entry.
+/// Represents a health check entry for each health provider that could be displayed in the <see cref="HealthCheckResponse"/>.
 /// </summary>
 public class HealthCheckEntry
 {
