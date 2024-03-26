@@ -1,12 +1,14 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Localization;
@@ -18,16 +20,22 @@ namespace OrchardCore.ContentLocalization.Drivers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly IIdGenerator _idGenerator;
         private readonly ILocalizationService _localizationService;
+        private readonly INotifier _notifier;
+
+        protected readonly IHtmlLocalizer H;
 
         public LocalizationPartDisplayDriver(
             IContentLocalizationManager contentLocalizationManager,
             IIdGenerator idGenerator,
-            ILocalizationService localizationService
-        )
+            ILocalizationService localizationService,
+            INotifier notifier,
+            IHtmlLocalizer<LocalizationPartDisplayDriver> htmlLocalizer)
         {
             _contentLocalizationManager = contentLocalizationManager;
             _idGenerator = idGenerator;
             _localizationService = localizationService;
+            _notifier = notifier;
+            H = htmlLocalizer;
         }
 
         public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
@@ -38,9 +46,11 @@ namespace OrchardCore.ContentLocalization.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LocalizationPart localizationPart, BuildPartEditorContext context)
+        public async override Task<IDisplayResult> EditAsync(LocalizationPart part, BuildPartEditorContext context)
         {
-            return Initialize<LocalizationPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, localizationPart));
+            await _notifier.WarningAsync(H["Changing the culture will open a new editor to display or localize the content item in the selected culture."]);
+
+            return Initialize<LocalizationPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, IUpdateModel updater, UpdatePartEditorContext context)
