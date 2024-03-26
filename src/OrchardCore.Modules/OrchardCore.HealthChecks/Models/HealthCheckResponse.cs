@@ -6,7 +6,7 @@ namespace OrchardCore.HealthChecks.Models;
 /// <summary>
 /// Represents a health check response to be displayed on the browser.
 /// </summary>
-public class HealthCheckReponse
+public class HealthCheckResponse
 {
     /// <summary>
     /// Gets or sets the overall health checks status.

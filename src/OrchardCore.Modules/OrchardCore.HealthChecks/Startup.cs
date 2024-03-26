@@ -46,7 +46,7 @@ namespace OrchardCore.HealthChecks
                         [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
                         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
                     },
-                    ResponseWriter = async (httpContext, healthReport) => await healthChecksResponseWriter.WriteResponseAsync(httpContext, healthReport)
+                    ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
                 });
             }
             else

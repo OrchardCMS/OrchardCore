@@ -11,7 +11,7 @@ namespace OrchardCore.HealthChecks
         public string Url { get; set; } = "/health/live";
 
         /// <summary>
-        /// Whether to show the details for the checks dependency or not. Default to <c>false</c>.
+Gets or sets a value indicating whether to show the details for the checks dependency or not. Defaults to <see langword="false"/>.
         /// </summary>
         public bool ShowDetails { get; set; }
     }
