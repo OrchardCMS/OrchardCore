@@ -240,7 +240,7 @@ namespace OrchardCore.Data.Migration
                 return (int)method.Invoke(migration, []);
             }
 
-            throw new Exception("Invalid return type used in a migration method.");
+            throw new InvalidOperationException("Invalid return type used in a migration method.");
         }
 
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
