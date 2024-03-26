@@ -100,3 +100,7 @@ After configuring a provider, you may test it by visiting `Configuration` → `S
 ## Events
 
 You can easily monitor various events triggered during the message-sending process by either implementing the `IEmailServiceEvents` or inheriting from `EmailServiceEventsBase` base class, then registering your service.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

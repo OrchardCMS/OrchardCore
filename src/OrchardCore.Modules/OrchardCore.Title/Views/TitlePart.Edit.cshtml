@@ -6,10 +6,11 @@
 @using OrchardCore
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
+    var isRequired = Model.Settings?.Options == TitlePartOptions.EditableRequired;
 }
 
 <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
-    <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
+    <label asp-for="Title" class="@Orchard.GetLabelClasses(inputRequired: isRequired)">@T["Title"]</label>
     <div class="@Orchard.GetEndClasses()">
         <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
         <span asp-validation-for="Title"></span>
