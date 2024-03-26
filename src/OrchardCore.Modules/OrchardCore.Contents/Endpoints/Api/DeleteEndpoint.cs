@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 

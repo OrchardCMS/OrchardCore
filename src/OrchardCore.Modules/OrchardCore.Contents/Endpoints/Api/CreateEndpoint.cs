@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 
