@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 
@@ -12,7 +11,7 @@ public static class DeleteEndpoint
 {
     public static IEndpointRouteBuilder AddDeleteContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("api/content/{contentItemId}", ActionAsync)
+        builder.MapDelete("api/content/{contentItemId}", HandleAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -20,7 +19,7 @@ public static class DeleteEndpoint
     }
 
     [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> ActionAsync(
+    private static async Task<IResult> HandleAsync(
         string contentItemId,
         IContentManager contentManager,
         IAuthorizationService authorizationService,

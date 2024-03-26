@@ -11,28 +11,27 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class CreateEndpoint
 {
+    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+    {
+        MergeArrayHandling = MergeArrayHandling.Replace,
+    };
+
     public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/content", ActionAsync)
+        builder.MapPost("api/content", HandleAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
 
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-    };
-
     [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> ActionAsync(
+    private static async Task<IResult> HandleAsync(
         ContentItem model,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
