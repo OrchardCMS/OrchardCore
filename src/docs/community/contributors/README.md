@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-305-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-307-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -265,7 +265,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/lthoa"><img src="https://avatars1.githubusercontent.com/u/6874322?v=4?s=100" width="100px;" alt="lthoa"/><br /><sub><b>lthoa</b></sub></a><br /><a href="#translation-lthoa" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/tysongibby"><img src="https://avatars0.githubusercontent.com/u/12217620?v=4?s=100" width="100px;" alt="Tyson Gibby"/><br /><sub><b>Tyson Gibby</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tysongibby" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/paragpkulkarni"><img src="https://avatars1.githubusercontent.com/u/6860233?v=4?s=100" width="100px;" alt="parag"/><br /><sub><b>parag</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=paragpkulkarni" title="Code">💻</a></td>
-      <td align="center" valign="top" width="16.66%"><a href="https://github.com/sarahelsaig"><img src="https://avatars.githubusercontent.com/u/4007293?v=4&s=100" width="100px;" alt="Sára El-Saig"/><br /><sub><b>Sára El-Saig</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sarahelsaig" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/sarahelsaig"><img src="https://avatars1.githubusercontent.com/u/4007293?v=4?s=100" width="100px;" alt="Sára El-Saig"/><br /><sub><b>Sára El-Saig</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sarahelsaig" title="Code">💻</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/rjpowers10"><img src="https://avatars3.githubusercontent.com/u/68876423?v=4?s=100" width="100px;" alt="rjpowers10"/><br /><sub><b>rjpowers10</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=rjpowers10" title="Code">💻</a></td>
@@ -417,6 +417,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/viktoriamagyar"><img src="https://avatars.githubusercontent.com/u/84029837?v=4?s=100" width="100px;" alt="Viktória Magyar"/><br /><sub><b>Viktória Magyar</b></sub></a><br /><a href="#eventOrganizing-viktoriamagyar" title="Event Organizing">📋</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/SimonCropp"><img src="https://avatars.githubusercontent.com/u/122666?v=4?s=100" width="100px;" alt="Simon Cropp"/><br /><sub><b>Simon Cropp</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=SimonCropp" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/w-ko"><img src="https://avatars.githubusercontent.com/u/126988022?v=4?s=100" width="100px;" alt="Holerö"/><br /><sub><b>Holerö</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=w-ko" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/aliamiras"><img src="https://avatars.githubusercontent.com/u/107989021?v=4?s=100" width="100px;" alt="aliamiras"/><br /><sub><b>aliamiras</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aliamiras" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/xtomas"><img src="https://avatars.githubusercontent.com/u/10938220?v=4?s=100" width="100px;" alt="Tomáš Jákl"/><br /><sub><b>Tomáš Jákl</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=xtomas" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/porgabi"><img src="https://avatars.githubusercontent.com/u/51411356?v=4?s=100" width="100px;" alt="Gábor Pór"/><br /><sub><b>Gábor Pór</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=porgabi" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

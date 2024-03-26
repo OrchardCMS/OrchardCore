@@ -89,7 +89,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
+                        S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 // Update display text for tags.
