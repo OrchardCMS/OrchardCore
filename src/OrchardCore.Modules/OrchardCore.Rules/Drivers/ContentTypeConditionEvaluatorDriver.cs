@@ -45,11 +45,11 @@ namespace OrchardCore.Rules.Drivers
         {
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
 
-            // If no content types are considered and the operation is an INegateOperator, return true,
-            // since displaying no content type should match any negative comparision on any content type
-            if (!_contentTypes.Any() && condition.Operation is INegateOperator)
+            // If no content types are considered, use the empty string as the value to compare against,
+            // since we still want comparisons such as "Does Not Equal", "Does Not Start With", etc. to evaluate to true in this case.
+            if (!_contentTypes.Any())
             {
-                return ValueTask.FromResult(true);
+                return ValueTask.FromResult(operatorComparer.Compare(condition.Operation, string.Empty, condition.Value));
             }
 
             foreach (var contentType in _contentTypes)
