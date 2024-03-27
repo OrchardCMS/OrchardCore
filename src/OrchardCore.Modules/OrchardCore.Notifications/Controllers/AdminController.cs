@@ -118,8 +118,8 @@ public class AdminController : Controller, IUpdateModel
 
         foreach (var notification in queryResult.Notifications)
         {
-            dynamic shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
-            shape.Notification = notification;
+            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
+            shape.Properties.TryAdd(nameof(Notification), notification);
 
             notificationSummaries.Add(shape);
         }

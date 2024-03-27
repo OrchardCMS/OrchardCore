@@ -7,9 +7,16 @@
     <span class="hint">@T["You may use Liquid syntax."]</span>
 </div>
 
+<div class="mb-3" asp-validation-class-for="Summary">
+    <label asp-for="Summary" class="form-label">@T["Summary"]</label>
+    <textarea asp-for="Summary" rows="3" class="form-control"></textarea>
+    <span asp-validation-for="Summary"></span>
+    <span class="hint">@T["You may use Liquid syntax. Html is supported."]</span>
+</div>
+
 <div class="mb-3" asp-validation-class-for="TextBody">
     <label asp-for="TextBody" class="form-label">@T["Text Body"]</label>
-    <textarea asp-for="TextBody" rows="10" class="form-control"></textarea>
+    <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["This optional text body does not support HTML. You may use Liquid syntax."]</span>
 </div>
 
