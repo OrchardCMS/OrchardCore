@@ -9,6 +9,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Themes.Deployment;
 using OrchardCore.Themes.Drivers;
+using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
@@ -33,6 +34,7 @@ namespace OrchardCore.Themes
             services.AddScoped<ThemeTogglerService>();
             services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ThemeEntry>, ThemeEntryDisplayDriver>();
         }
     }
 }

@@ -120,15 +120,6 @@ namespace OrchardCore.Admin
 
                     return NilValue.Instance;
                 }));
-
-                o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
-                {
-                    return name switch
-                    {
-                        nameof(Navbar.Properties) => new ObjectValue(navbar.Properties),
-                        _ => NilValue.Instance
-                    };
-                });
             });
         }
     }
