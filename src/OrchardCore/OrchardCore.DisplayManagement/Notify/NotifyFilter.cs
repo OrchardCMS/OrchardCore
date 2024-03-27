@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Layout;
 
 namespace OrchardCore.DisplayManagement.Notify
@@ -23,9 +24,9 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly NotifyJsonSerializerOptions _notifyJsonSerializerOptions;
         private readonly ILogger _logger;
 
-        public readonly JsonSerializerOptions _settings;
         private NotifyEntry[] _existingEntries = [];
         private bool _shouldDeleteCookie;
 
@@ -35,6 +36,7 @@ namespace OrchardCore.DisplayManagement.Notify
             ILayoutAccessor layoutAccessor,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
+            IOptions<NotifyJsonSerializerOptions> notifyJsonSerializerOptions,
             ILogger<NotifyFilter> logger)
         {
             _notifier = notifier;
@@ -42,10 +44,8 @@ namespace OrchardCore.DisplayManagement.Notify
             _layoutAccessor = layoutAccessor;
             _dataProtectionProvider = dataProtectionProvider;
             _htmlEncoder = htmlEncoder;
+            _notifyJsonSerializerOptions = notifyJsonSerializerOptions.Value;
             _logger = logger;
-
-            _settings = new(JOptions.Default);
-            _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 
         private void OnHandlerExecuting(FilterContext filterContext)
@@ -175,7 +175,7 @@ namespace OrchardCore.DisplayManagement.Notify
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _settings));
+                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _notifyJsonSerializerOptions.SerializerOptions));
                 return WebUtility.UrlEncode(signed);
             }
             catch
@@ -190,7 +190,7 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _settings);
+                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _notifyJsonSerializerOptions.SerializerOptions);
             }
             catch
             {

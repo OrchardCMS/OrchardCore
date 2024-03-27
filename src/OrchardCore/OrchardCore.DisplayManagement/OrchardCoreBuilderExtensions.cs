@@ -44,6 +44,8 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Filters.Add(typeof(RazorViewActionFilter));
                     });
 
+                    services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
+
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
