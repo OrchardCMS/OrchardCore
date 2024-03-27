@@ -1,6 +1,6 @@
 ## Introduction
 
-In this article, you will learn how to use Orchard CMS as a decoupled CMS with .NET Blazor (SSR/Server Interactive) Application.
+In this article, you will learn how to use Orchard CMS as a decoupled CMS with the .NET Blazor (SSR/Server Interactive) Application.
 
 ## Setting up the project
 
