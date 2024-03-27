@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -43,6 +44,14 @@ namespace OrchardCore.Rules.Drivers
         private ValueTask<bool> EvaluateAsync(ContentTypeCondition condition)
         {
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
+
+            // If no content types are considered and the operation is an INegateOperator, return true,
+            // since displaying no content type should match any negative comparision on any content type
+            if (!_contentTypes.Any() && condition.Operation is INegateOperator)
+            {
+                return ValueTask.FromResult(true);
+            }
+
             foreach (var contentType in _contentTypes)
             {
                 if (operatorComparer.Compare(condition.Operation, contentType, condition.Value))
