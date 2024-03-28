@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
@@ -118,6 +119,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
+            serviceCollection.AddKeyedSingleton<Dictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager));
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
             serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 

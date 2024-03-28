@@ -19,6 +19,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
     /// </summary>
     public class DefaultShapeTableManager : IShapeTableManager
     {
+        private const string DefaultThemeIdKey = "_ShapeTable";
+
         // FeatureShapeDescriptors are identical across tenants so they can be reused statically. Each shape table will
         // create a unique list of these per tenant.
         private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
@@ -49,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             // This method is intentionally kept non-async since most calls
             // are from cache.
 
-            if (_shapeTableCache.TryGetValue(themeId, out var shapeTable))
+            if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
             {
                 return Task.FromResult(shapeTable);
             }
@@ -132,7 +134,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
             _logger.LogInformation("Done building shape table");
 
-            _shapeTableCache[themeId] = shapeTable;
+            _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
 
             return shapeTable;
         }
