@@ -45,6 +45,9 @@ edit_uri: edit/main/src/
 # Options
 docs_dir: src
 
+extra_css:
+  - docs/assets/css/neoteroi-mkdocs.css
+
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
@@ -55,6 +58,7 @@ markdown_extensions:
   # - mdx_truly_sane_lists:
   #     nested_indent: 2
   #     truly_sane: True
+  - neoteroi.timeline
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
@@ -274,3 +278,5 @@ nav:
       - Honorable Members:
           - Jean-Thierry Kéchichian: docs/community/jean-thierry/README.md
       - Jean-Thierry Kéchichian Community Award: docs/community/jean-thierry-community-award/README.md
+  - Samples:
+      - Timeline: docs/samples/timeline.
