@@ -60,13 +60,18 @@ public class AzureAIIndexDocumentManager(
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var counter = 0L;
 
+        if (searchResult.Value is null)
+        {
+            return counter;
+        }
+
         await foreach (var doc in searchResult.Value.GetResultsAsync())
         {
             action(doc.Document);
             counter++;
         }
 
-        return searchResult.Value?.TotalCount ?? counter;
+        return searchResult.Value.TotalCount ?? counter;
     }
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
