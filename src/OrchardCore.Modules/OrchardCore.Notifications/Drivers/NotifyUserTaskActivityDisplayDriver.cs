@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -15,17 +13,25 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity, TEditViewModel>
+public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity, TEditViewModel>
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IHtmlSanitizerService _htmlSanitizerService;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+
+    protected readonly IStringLocalizer S;
 
     protected virtual string EditShapeType => $"{nameof(NotifyUserTaskActivity)}_Fields_Edit";
 
-    public NotifyUserTaskActivityDisplayDriver(IServiceProvider serviceProvider)
+    public NotifyUserTaskActivityDisplayDriver(
+        IHtmlSanitizerService htmlSanitizerService,
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer stringLocalizer)
     {
-        _serviceProvider = serviceProvider;
+        _htmlSanitizerService = htmlSanitizerService;
+        _liquidTemplateManager = liquidTemplateManager;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(TActivity model)
@@ -41,31 +47,24 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
         var viewModel = new TEditViewModel();
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            var liquidTemplateManager = _serviceProvider.GetService<ILiquidTemplateManager>();
-
-            if (liquidTemplateManager != null)
+            if (!_liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
             {
-                var S = _serviceProvider.GetRequiredService<IStringLocalizer<NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel>>>();
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
+            }
 
-                if (!liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
-                }
+            if (!_liquidTemplateManager.Validate(viewModel.Summary, out var summaryErrors))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
+            }
 
-                if (!liquidTemplateManager.Validate(viewModel.Summary, out var summaryErrors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
-                }
+            if (!_liquidTemplateManager.Validate(viewModel.TextBody, out var textBodyErrors))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
+            }
 
-                if (!liquidTemplateManager.Validate(viewModel.TextBody, out var textBodyErrors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
-                }
-
-                if (!liquidTemplateManager.Validate(viewModel.HtmlBody, out var htmlBodyErrors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
-                }
+            if (!_liquidTemplateManager.Validate(viewModel.HtmlBody, out var htmlBodyErrors))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
             }
 
             if (updater.ModelState.IsValid)
@@ -114,21 +113,10 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-        var htmlSanitizer = _serviceProvider.GetService<IHtmlSanitizerService>();
-
-        if (htmlSanitizer != null)
-        {
-            activity.Summary = new WorkflowExpression<string>(htmlSanitizer.Sanitize(model.Summary));
-            activity.HtmlBody = new WorkflowExpression<string>(htmlSanitizer.Sanitize(model.HtmlBody));
-        }
-        else
-        {
-            activity.Summary = new WorkflowExpression<string>(model.Summary);
-            activity.HtmlBody = new WorkflowExpression<string>(model.HtmlBody);
-        }
-
         activity.Subject = new WorkflowExpression<string>(model.Subject);
+        activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary));
         activity.TextBody = new WorkflowExpression<string>(model.TextBody);
+        activity.HtmlBody = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.HtmlBody));
         activity.IsHtmlPreferred = model.IsHtmlPreferred;
     }
 
@@ -143,11 +131,14 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     }
 }
 
-public class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUserTaskActivityDisplayDriver<TActivity, NotifyUserTaskActivityViewModel>
-        where TActivity : NotifyUserTaskActivity
+public abstract class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUserTaskActivityDisplayDriver<TActivity, NotifyUserTaskActivityViewModel>
+    where TActivity : NotifyUserTaskActivity
 {
-    public NotifyUserTaskActivityDisplayDriver(IServiceProvider serviceProvider)
-        : base(serviceProvider)
+    public NotifyUserTaskActivityDisplayDriver(
+        IHtmlSanitizerService htmlSanitizerService,
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer stringLocalizer)
+        : base(htmlSanitizerService, liquidTemplateManager, stringLocalizer)
     {
     }
 }
