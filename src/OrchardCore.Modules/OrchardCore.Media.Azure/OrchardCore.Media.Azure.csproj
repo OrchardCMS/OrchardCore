@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" />
+  </ItemGroup>
+
 </Project>
