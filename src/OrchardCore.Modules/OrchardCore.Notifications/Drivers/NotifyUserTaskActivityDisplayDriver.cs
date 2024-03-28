@@ -1,11 +1,14 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Notifications.Activities;
+using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
@@ -19,6 +22,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 {
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly NotificationOptions _notificationOptions;
 
     protected readonly IStringLocalizer S;
 
@@ -27,10 +31,12 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public NotifyUserTaskActivityDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
         ILiquidTemplateManager liquidTemplateManager,
+        IOptions<NotificationOptions> notificationOptions,
         IStringLocalizer stringLocalizer)
     {
         _htmlSanitizerService = htmlSanitizerService;
         _liquidTemplateManager = liquidTemplateManager;
+        _notificationOptions = notificationOptions.Value;
         S = stringLocalizer;
     }
 
@@ -116,7 +122,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         activity.Subject = new WorkflowExpression<string>(model.Subject);
         activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary));
         activity.TextBody = new WorkflowExpression<string>(model.TextBody);
-        activity.HtmlBody = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.HtmlBody));
+        activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody));
         activity.IsHtmlPreferred = model.IsHtmlPreferred;
     }
 
@@ -137,8 +143,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUse
     public NotifyUserTaskActivityDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
         ILiquidTemplateManager liquidTemplateManager,
+        IOptions<NotificationOptions> notificationOptions,
         IStringLocalizer stringLocalizer)
-        : base(htmlSanitizerService, liquidTemplateManager, stringLocalizer)
+        : base(htmlSanitizerService, liquidTemplateManager, notificationOptions, stringLocalizer)
     {
     }
 }

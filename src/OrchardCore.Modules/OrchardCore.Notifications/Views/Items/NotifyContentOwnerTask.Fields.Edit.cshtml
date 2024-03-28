@@ -11,7 +11,7 @@
     <label asp-for="Summary" class="form-label">@T["Summary"]</label>
     <textarea asp-for="Summary" rows="3" class="form-control"></textarea>
     <span asp-validation-for="Summary"></span>
-    <span class="hint">@T["You may use Liquid syntax. Html is supported."]</span>
+    <span class="hint">@T["HTML summary for the notification. You may use Liquid syntax."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="TextBody">

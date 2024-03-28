@@ -119,7 +119,7 @@ public class AdminController : Controller, IUpdateModel
         foreach (var notification in queryResult.Notifications)
         {
             var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
-            shape.Properties.TryAdd(nameof(Notification), notification);
+            shape.Properties[nameof(Notification)] = notification;
 
             notificationShapes.Add(shape);
         }

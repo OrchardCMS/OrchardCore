@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Notifications.Activities;
+using OrchardCore.Notifications.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
@@ -10,8 +12,9 @@ public class NotifyContentOwnerTaskDisplayDriver : NotifyUserTaskActivityDisplay
     public NotifyContentOwnerTaskDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
         ILiquidTemplateManager liquidTemplateManager,
+        IOptions<NotificationOptions> notificationOptions,
         IStringLocalizer<NotifyContentOwnerTaskDisplayDriver> stringLocalizer)
-        : base(htmlSanitizerService, liquidTemplateManager, stringLocalizer)
+        : base(htmlSanitizerService, liquidTemplateManager, notificationOptions, stringLocalizer)
     {
     }
 }

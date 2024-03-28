@@ -11,7 +11,7 @@ public interface INotificationMessage
     string Subject { get; }
 
     /// <summary>
-    /// Gets the message summary. This property can contain HTML.
+    /// Gets the message summary. This property contains HTML.
     /// </summary>
     string Summary { get; }
 
@@ -21,7 +21,7 @@ public interface INotificationMessage
     string TextBody { get; }
 
     /// <summary>
-    /// Gets the HTML message body. This property can contain HTML.
+    /// Gets the HTML message body. This property contains HTML.
     /// </summary>
     string HtmlBody { get; }
 
