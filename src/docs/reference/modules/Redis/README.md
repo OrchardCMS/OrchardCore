@@ -10,7 +10,7 @@ Integrates Redis into Orchard Core. Provides the following features:
 
 ## Health Checks
 
-This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../../module/HealthChecks/README.md).
+This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
 ## Video
 

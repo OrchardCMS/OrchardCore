@@ -10,12 +10,10 @@ namespace OrchardCore.Redis.HealthChecks;
 public class RedisHealthCheck : IHealthCheck
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IStringLocalizer S;
 
-    public RedisHealthCheck(IServiceProvider serviceProvider, IStringLocalizer<RedisHealthCheck> stringLocalizer)
+    public RedisHealthCheck(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        S = stringLocalizer;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -25,7 +23,7 @@ public class RedisHealthCheck : IHealthCheck
             var redisService = _serviceProvider.GetService<IRedisService>();
             if (redisService == null)
             {
-                return HealthCheckResult.Unhealthy(description: S["The service '{0}' isn't registered.", nameof(IRedisService)]);
+                return HealthCheckResult.Unhealthy(description: $"The service '{nameof(IRedisService)}' isn't registered.");
             }
 
             if (redisService.Connection == null)
@@ -38,7 +36,7 @@ public class RedisHealthCheck : IHealthCheck
                 var time = await redisService.Database.PingAsync();
                 if (time > TimeSpan.FromSeconds(30))
                 {
-                    return HealthCheckResult.Unhealthy(description: S["The Redis server isn't a live."]);
+                    return HealthCheckResult.Unhealthy(description: "The Redis server couldn't be reached within {seconds} seconds and might be offline or have degraded performance.");
                 }
                 else
                 {
@@ -47,12 +45,12 @@ public class RedisHealthCheck : IHealthCheck
             }
             else
             {
-                return HealthCheckResult.Unhealthy(description: S["There's an issue in the Redis connection."]);
+                return HealthCheckResult.Unhealthy(description: S["Couldn't connect to the Redis server."]);
             }
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy(description: ex.Message);
+            return HealthCheckResult.Unhealthy("Retrieving the status of the Redis service failed.", ex);
         }
     }
 }
