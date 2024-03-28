@@ -647,6 +647,9 @@ namespace OrchardCore.ContentManagement
 
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
         {
+            var contentList = contentItems.Select(x => new ImportContentContext(x)).ToList();
+            await ReversedHandlers.InvokeAsync((handler, list) => handler.BeforeImportAsync(list), contentList, _logger);
+
             var skip = 0;
 
             var importedVersionIds = new HashSet<string>();
@@ -775,6 +778,10 @@ namespace OrchardCore.ContentManagement
                 skip += ImportBatchSize;
                 batchedContentItems = contentItems.Skip(skip).Take(ImportBatchSize);
             }
+
+            await ReversedHandlers.InvokeAsync((handler, list) => handler.AfterImportAsync(list), contentList, _logger);
+
+
         }
 
         public async Task UpdateAsync(ContentItem contentItem)
