@@ -33,9 +33,9 @@
             <div class="summary d-flex flex-column flex-md-row">
                 <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
 
-                    <h5 class="mb-0">@notification.Subject</h5>
+                    <h5 class="mb-2">@notification.Subject</h5>
 
-                    <p class="mb-0 mt-2">
+                    <p class="mb-0">
                         @Html.Raw(notification.Summary)
                     </p>
 
