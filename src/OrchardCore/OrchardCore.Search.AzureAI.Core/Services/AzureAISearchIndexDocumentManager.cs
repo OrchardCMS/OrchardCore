@@ -71,7 +71,7 @@ public class AzureAIIndexDocumentManager(
             counter++;
         }
 
-        return searchResult.Value.TotalCount;
+        return searchResult.Value.TotalCount ?? counter;
     }
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
