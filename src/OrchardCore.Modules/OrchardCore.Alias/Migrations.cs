@@ -24,10 +24,10 @@ namespace OrchardCore.Alias
                 .WithDescription("Provides a way to define custom aliases for content items."));
 
             await SchemaBuilder.CreateMapIndexTableAsync<AliasPartIndex>(table => table
-                .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<bool>("Latest", c => c.WithDefault(false))
-                .Column<bool>("Published", c => c.WithDefault(true))
+                .Column<string>("Alias", column => column.WithLength(AliasPart.MaxAliasLength))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<bool>("Latest", column => column.WithDefault(false))
+                .Column<bool>("Published", column => column.WithDefault(true))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
@@ -47,11 +47,11 @@ namespace OrchardCore.Alias
         public async Task<int> UpdateFrom1Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
-                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+                .AddColumn<bool>("Latest", column => column.WithDefault(false))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
-                .AddColumn<bool>("Published", c => c.WithDefault(true))
+                .AddColumn<bool>("Published", column => column.WithDefault(true))
             );
 
             return 2;

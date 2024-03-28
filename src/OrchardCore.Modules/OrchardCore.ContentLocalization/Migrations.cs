@@ -27,9 +27,9 @@ namespace OrchardCore.ContentLocalization.Records
                 .WithDescription("Provides a way to create localized version of content."));
 
             await SchemaBuilder.CreateMapIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .Column<string>("LocalizationSet", col => col.WithLength(26))
-                .Column<string>("Culture", col => col.WithLength(16))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<string>("LocalizationSet", column => column.NotNull().WithLength(26))
+                .Column<string>("Culture", column => column.NotNull().WithLength(16))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
                 .Column<bool>("Published")
                 .Column<bool>("Latest")
             );

@@ -24,8 +24,8 @@ namespace OrchardCore.Lists
                 .WithDescription("Add a list behavior."));
 
             await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ListContentItemId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ListContentItemId", column => column.NotNull().WithLength(26))
                 .Column<string>("DisplayText")
                 .Column<int>("Order")
                 .Column<string>("ListContentType")

@@ -12,8 +12,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<UserPickerFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
