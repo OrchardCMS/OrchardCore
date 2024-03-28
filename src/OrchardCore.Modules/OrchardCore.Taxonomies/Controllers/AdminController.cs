@@ -319,8 +319,6 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            // taxonomy.As<TaxonomyPart>().Content.Remove(taxonomyItemId);
-
             taxonomy.Alter<TaxonomyPart>(part =>
             {
                 part.Terms = part.Terms.Where(x => x.ContentItemId != taxonomyItemId).ToList();
