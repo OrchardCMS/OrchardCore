@@ -107,7 +107,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
             {
                 var analyzer = CreateAnalyzer(analyzerProperties);
-                analyzersDescriptor = new AnalyzersDescriptor();
                 analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
 
                 indexSettingsDescriptor = new IndexSettingsDescriptor();
