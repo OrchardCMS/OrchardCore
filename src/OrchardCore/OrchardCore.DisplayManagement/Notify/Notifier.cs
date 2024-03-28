@@ -8,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Notify
 {
     public class Notifier : INotifier
     {
-        private readonly IList<NotifyEntry> _entries;
+        private readonly List<NotifyEntry> _entries;
         private readonly ILogger _logger;
 
         public Notifier(ILogger<Notifier> logger)
