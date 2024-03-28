@@ -6,17 +6,22 @@ namespace OrchardCore.Notifications;
 public interface INotificationMessage
 {
     /// <summary>
-    /// Gets the message summary.
+    /// Gets the message subject. This property cannot contain HTML.
+    /// </summary>
+    string Subject { get; }
+
+    /// <summary>
+    /// Gets the message summary. This property can contain HTML.
     /// </summary>
     string Summary { get; }
 
     /// <summary>
-    /// Gets the plain message body.
+    /// Gets the plain message body. This property cannot contain HTML.
     /// </summary>
     string TextBody { get; }
 
     /// <summary>
-    /// Gets the HTML message body.
+    /// Gets the HTML message body. This property can contain HTML.
     /// </summary>
     string HtmlBody { get; }
 

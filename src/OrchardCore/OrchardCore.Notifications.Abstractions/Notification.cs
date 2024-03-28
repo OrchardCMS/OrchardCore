@@ -14,6 +14,11 @@ public class Notification : Entity
     public string NotificationId { get; set; }
 
     /// <summary>
+    /// Gets or sets the notification subject.
+    /// </summary>
+    public string Subject { get; set; }
+
+    /// <summary>
     /// Gets or sets the notification summary.
     /// </summary>
     public string Summary { get; set; }
