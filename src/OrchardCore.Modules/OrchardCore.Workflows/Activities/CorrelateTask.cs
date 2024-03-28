@@ -10,11 +10,13 @@ namespace OrchardCore.Workflows.Activities
     public class CorrelateTask : TaskActivity<CorrelateTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
+        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<CorrelateTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
 
@@ -28,6 +30,12 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public bool IsLiquidSyntax
+        {
+            get => GetProperty(() => false);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"]);
@@ -35,7 +43,8 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
+            var value = IsLiquidSyntax ? await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null) :
+                    (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");
