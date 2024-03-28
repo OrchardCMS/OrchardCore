@@ -133,7 +133,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
             }
 
-            tagHelperContext.Items.Add(typeof(IShape), shape);
+            tagHelperContext.Items[typeof(IShape)] = shape;
 
             if (!string.IsNullOrWhiteSpace(Cache))
             {
