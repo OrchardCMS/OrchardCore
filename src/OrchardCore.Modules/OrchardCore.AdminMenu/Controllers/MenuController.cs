@@ -27,10 +27,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
-        private readonly ILogger _logger;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -38,31 +35,30 @@ namespace OrchardCore.AdminMenu.Controllers
         public MenuController(
             IAuthorizationService authorizationService,
             IAdminMenuService adminMenuService,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             INotifier notifier,
             IStringLocalizer<MenuController> stringLocalizer,
-            IHtmlLocalizer<MenuController> htmlLocalizer,
-            ILogger<MenuController> logger)
+            IHtmlLocalizer<MenuController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
             _adminMenuService = adminMenuService;
-            _pagerOptions = pagerOptions.Value;
-            _shapeFactory = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _logger = logger;
         }
 
-        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            [FromServices] ILogger<MenuController> logger,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
@@ -86,7 +82,7 @@ namespace OrchardCore.AdminMenu.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error when retrieving the list of admin menus.");
+                logger.LogError(ex, "Error when retrieving the list of admin menus.");
                 await _notifier.ErrorAsync(H["Error when retrieving the list of admin menus."]);
             }
 
@@ -98,7 +94,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, adminMenuList.Count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, adminMenuList.Count, routeData);
 
             var model = new AdminMenuListViewModel
             {

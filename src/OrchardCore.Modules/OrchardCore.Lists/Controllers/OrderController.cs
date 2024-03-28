@@ -17,7 +17,9 @@ namespace OrchardCore.Lists.Controllers
         private readonly IContainerService _containerService;
         private readonly IAuthorizationService _authorizationService;
 
-        public OrderController(IContainerService containerService, IAuthorizationService authorizationService)
+        public OrderController(
+            IContainerService containerService,
+            IAuthorizationService authorizationService)
         {
             _containerService = containerService;
             _authorizationService = authorizationService;

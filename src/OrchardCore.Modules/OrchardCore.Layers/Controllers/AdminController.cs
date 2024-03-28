@@ -28,7 +28,7 @@ using YesSql;
 namespace OrchardCore.Layers.Controllers
 {
     [Admin("Layers/{action}/{id?}", "Layers.{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
@@ -37,16 +37,16 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
         private readonly IDisplayManager<Condition> _conditionDisplayManager;
         private readonly IDisplayManager<Rule> _ruleDisplayManager;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _conditionFactories;
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentDefinitionManager contentDefinitionManager,
@@ -56,7 +56,6 @@ namespace OrchardCore.Layers.Controllers
             ILayerService layerService,
             IAuthorizationService authorizationService,
             ISession session,
-            IUpdateModelAccessor updateModelAccessor,
             IVolatileDocumentManager<LayerState> layerStateManager,
             IDisplayManager<Condition> conditionDisplayManager,
             IDisplayManager<Rule> ruleDisplayManager,
@@ -74,7 +73,6 @@ namespace OrchardCore.Layers.Controllers
             _layerService = layerService;
             _authorizationService = authorizationService;
             _session = session;
-            _updateModelAccessor = updateModelAccessor;
             _layerStateManager = layerStateManager;
             _conditionDisplayManager = conditionDisplayManager;
             _ruleDisplayManager = ruleDisplayManager;
@@ -116,7 +114,7 @@ namespace OrchardCore.Layers.Controllers
 
                 if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                 {
-                    list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+                    list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, this, "SummaryAdmin"));
                 }
                 else
                 {
@@ -198,14 +196,14 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, this, "Summary");
             rule.ConditionId = layer.LayerRule.ConditionId;
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _conditionFactories)
             {
                 var condition = factory.Create();
-                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, this, "Thumbnail");
                 thumbnail.Condition = condition;
                 thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
                 thumbnails.Add(factory.Name, thumbnail);

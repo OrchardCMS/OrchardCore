@@ -22,7 +22,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers
 {
     [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
-    public class SitemapIndexController : Controller
+    public class SitemapIndexController : Controller, IUpdateModel
     {
         private const string _optionsSearch = "Options.Search";
 
@@ -30,10 +30,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISitemapManager _sitemapManager;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -43,9 +40,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IAuthorizationService authorizationService,
             ISitemapIdGenerator sitemapIdGenerator,
             ISitemapManager sitemapManager,
-            IOptions<PagerOptions> pagerOptions,
-            IUpdateModelAccessor updateModelAccessor,
-            IShapeFactory shapeFactory,
             IStringLocalizer<SitemapIndexController> stringLocalizer,
             IHtmlLocalizer<SitemapIndexController> htmlLocalizer,
             INotifier notifier)
@@ -54,22 +48,23 @@ namespace OrchardCore.Sitemaps.Controllers
             _authorizationService = authorizationService;
             _sitemapIdGenerator = sitemapIdGenerator;
             _sitemapManager = sitemapManager;
-            _pagerOptions = pagerOptions.Value;
-            _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<SitemapIndex>();
@@ -94,7 +89,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ListSitemapIndexViewModel
             {
@@ -170,7 +165,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
+                await _sitemapService.ValidatePathAsync(model.Path, this);
 
             }
 
@@ -260,7 +255,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, sitemap.SitemapId);
+                await _sitemapService.ValidatePathAsync(model.Path, this, sitemap.SitemapId);
             }
 
             // Path validation may invalidate model state.

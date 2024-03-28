@@ -47,8 +47,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly TenantsOptions _tenantsOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ITenantValidator _tenantValidator;
-        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
+
+        protected readonly IStringLocalizer S;
 
         public ApiController(
             IShellHost shellHost,

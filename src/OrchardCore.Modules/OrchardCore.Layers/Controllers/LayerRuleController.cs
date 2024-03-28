@@ -17,7 +17,7 @@ using OrchardCore.Rules.Services;
 namespace OrchardCore.Layers.Controllers
 {
     [Admin("Layers/Rules/{action}", "Layers.Rules.{action}")]
-    public class LayerRuleController : Controller
+    public class LayerRuleController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<Condition> _displayManager;
@@ -25,7 +25,6 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         protected readonly IHtmlLocalizer H;
 
@@ -36,8 +35,7 @@ namespace OrchardCore.Layers.Controllers
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
             _displayManager = displayManager;
             _factories = factories;
@@ -45,7 +43,6 @@ namespace OrchardCore.Layers.Controllers
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
         }
 
@@ -83,7 +80,7 @@ namespace OrchardCore.Layers.Controllers
                 Name = name,
                 ConditionGroupId = conditionGroup.ConditionId,
                 ConditionType = type,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: this, isNew: true, string.Empty, string.Empty)
             };
 
             return View(model);
@@ -119,7 +116,7 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: this, isNew: true, "", "");
 
             if (ModelState.IsValid)
             {
@@ -161,7 +158,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayerRuleEditViewModel
             {
                 Name = name,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: this, isNew: false, "", "")
             };
 
             return View(model);
@@ -190,7 +187,7 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: this, isNew: false, "", "");
 
             if (ModelState.IsValid)
             {

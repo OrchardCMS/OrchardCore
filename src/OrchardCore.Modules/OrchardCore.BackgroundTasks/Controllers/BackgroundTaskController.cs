@@ -29,9 +29,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -40,8 +38,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IAuthorizationService authorizationService,
             IEnumerable<IBackgroundTask> backgroundTasks,
             BackgroundTaskManager backgroundTaskManager,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             IStringLocalizer<BackgroundTaskController> stringLocalizer,
             INotifier notifier)
@@ -49,15 +45,17 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _authorizationService = authorizationService;
             _backgroundTasks = backgroundTasks;
             _backgroundTaskManager = backgroundTaskManager;
-            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         [Admin("BackgroundTasks", "BackgroundTasks")]
-        public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            AdminIndexOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
@@ -125,8 +123,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 routeData.Values.TryAdd(_optionsStatus, options.Status);
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+            var pagerShape = await shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {

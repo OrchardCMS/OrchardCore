@@ -22,6 +22,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 

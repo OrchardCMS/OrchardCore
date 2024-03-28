@@ -23,19 +23,20 @@ namespace OrchardCore.Media.Controllers
     public class AdminController : Controller
     {
         private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
-        private static readonly char[] _extensionSeperator = [' ', ','];
+        private static readonly char[] _extensionSeparator = [' ', ','];
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-        protected readonly IStringLocalizer S;
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly IChunkFileUploadService _chunkFileUploadService;
         private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IServiceProvider _serviceProvider;
+
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -489,7 +490,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!string.IsNullOrWhiteSpace(exts))
             {
-                var extensions = exts.Split(_extensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var extensions = exts.Split(_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                 var requestedExtensions = _mediaOptions.AllowedFileExtensions
                     .Intersect(extensions)

@@ -33,9 +33,7 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
 
         protected readonly IStringLocalizer S;
@@ -45,9 +43,7 @@ namespace OrchardCore.Shortcodes.Controllers
             IAuthorizationService authorizationService,
             ShortcodeTemplatesManager shortcodeTemplatesManager,
             ILiquidTemplateManager liquidTemplateManager,
-            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IHtmlSanitizerService htmlSanitizerService
@@ -56,23 +52,25 @@ namespace OrchardCore.Shortcodes.Controllers
             _authorizationService = authorizationService;
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
-            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _htmlSanitizerService = htmlSanitizerService;
         }
 
         [Admin("Shortcodes", "Shortcodes.Index")]
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
@@ -96,7 +94,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ShortcodeTemplateIndexViewModel
             {

@@ -14,29 +14,26 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
-    public class PreviewController : Controller
+    public class PreviewController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public PreviewController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentManagerSession contentManagerSession,
             IAuthorizationService authorizationService,
-            IClock clock,
-            IUpdateModelAccessor updateModelAccessor)
+            IClock clock)
         {
             _authorizationService = authorizationService;
             _clock = clock;
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _contentManagerSession = contentManagerSession;
-            _updateModelAccessor = updateModelAccessor;
         }
 
         public IActionResult Index()
@@ -77,7 +74,7 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.Published = true;
 
             // TODO: we should probably get this value from the main editor as it might impact validators.
-            _ = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            _ = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
 
             if (!ModelState.IsValid)
             {
@@ -112,7 +109,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
 
             return View(model);
         }

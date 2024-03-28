@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -19,35 +18,30 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
     [Admin("AuditTrail/Content/{action}/{auditTrailEventId}", "{action}AuditTrailContent")]
-    public class AuditTrailContentController : Controller
+    public class AuditTrailContentController : Controller, IUpdateModel
     {
         private readonly ISession _session;
         private readonly IContentManager _contentManager;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
-        private readonly ILogger _logger;
 
         public AuditTrailContentController(
             ISession session,
             IContentManager contentManager,
-            IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
             IContentItemDisplayManager contentItemDisplayManager,
             INotifier notifier,
-            IHtmlLocalizer<AuditTrailContentController> htmlLocalizer,
-            ILogger<AuditTrailContentController> logger)
+            IHtmlLocalizer<AuditTrailContentController> htmlLocalizer)
         {
             _session = session;
             _contentManager = contentManager;
-            _updateModelAccessor = updateModelAccessor;
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
             _notifier = notifier;
             H = htmlLocalizer;
-            _logger = logger;
         }
 
         public async Task<ActionResult> Display(string auditTrailEventId)
@@ -82,7 +76,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 auditTrailPart.ShowComment = true;
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
             model.Properties["VersionNumber"] = auditTrailContentEvent.VersionNumber;
 
@@ -119,7 +113,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 foreach (var error in result.Errors)
                 {
                     // Pass ErrorMessage as an argument to ensure it is encoded
-                    await _notifier.WarningAsync(new LocalizedHtmlString(nameof(AuditTrailContentController.Restore), "{0}", false, error.ErrorMessage));
+                    await _notifier.WarningAsync(new LocalizedHtmlString(nameof(Restore), "{0}", false, error.ErrorMessage));
                 }
 
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });

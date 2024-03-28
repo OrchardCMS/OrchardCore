@@ -24,6 +24,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
 
         public AddToDeploymentPlanController(

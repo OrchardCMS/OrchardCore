@@ -30,6 +30,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 

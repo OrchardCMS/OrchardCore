@@ -17,13 +17,12 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers
 {
     [Admin]
-    public class SourceController : Controller
+    public class SourceController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<SitemapSource> _displayManager;
         private readonly IEnumerable<ISitemapSourceFactory> _factories;
         private readonly ISitemapManager _sitemapManager;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
 
         protected readonly IStringLocalizer S;
@@ -34,7 +33,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IDisplayManager<SitemapSource> displayManager,
             IEnumerable<ISitemapSourceFactory> factories,
             ISitemapManager sitemapManager,
-            IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IStringLocalizer<SourceController> stringLocalizer,
             IHtmlLocalizer<SourceController> htmlLocalizer)
@@ -43,7 +41,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _sitemapManager = sitemapManager;
-            _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -77,7 +74,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 SitemapSource = source,
                 SitemapSourceId = source.Id,
                 SitemapSourceType = sourceType,
-                Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(source, updater: this, isNew: true, string.Empty, string.Empty)
             };
 
             model.Editor.SitemapSource = source;
@@ -107,7 +104,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            dynamic editor = await _displayManager.UpdateEditorAsync(source, updater: this, isNew: true, string.Empty, string.Empty);
             editor.SitemapStep = source;
 
             if (ModelState.IsValid)
@@ -154,7 +151,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 SitemapId = sitemapId,
                 SitemapSource = source,
                 SitemapSourceId = source.Id,
-                Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(source, updater: this, isNew: false, string.Empty, string.Empty)
             };
 
             model.Editor.SitemapSource = source;
@@ -184,7 +181,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(source, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {

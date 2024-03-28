@@ -22,7 +22,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers
 {
     [Admin("Sitemaps/{action}/{sitemapId?}", "Sitemaps{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private const string _optionsSearch = "Options.Search";
 
@@ -32,10 +32,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IEnumerable<ISitemapSourceFactory> _sourceFactories;
         private readonly ISitemapManager _sitemapManager;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -47,10 +44,7 @@ namespace OrchardCore.Sitemaps.Controllers
             IEnumerable<ISitemapSourceFactory> sourceFactories,
             ISitemapManager sitemapManager,
             ISitemapIdGenerator sitemapIdGenerator,
-            IOptions<PagerOptions> pagerOptions,
-            IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
@@ -60,22 +54,23 @@ namespace OrchardCore.Sitemaps.Controllers
             _authorizationService = authorizationService;
             _sitemapManager = sitemapManager;
             _sitemapIdGenerator = sitemapIdGenerator;
-            _pagerOptions = pagerOptions.Value;
-            _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();
@@ -104,7 +99,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
                 Options = options,
-                Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
+                Pager = await shapeFactory.PagerAsync(pager, count, routeData)
             };
 
             model.Options.ContentsBulkAction =
@@ -140,7 +135,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var items = new List<dynamic>();
             foreach (var source in sitemap.SitemapSources)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+                dynamic item = await _displayManager.BuildDisplayAsync(source, this, "SummaryAdmin");
                 item.SitemapId = sitemap.SitemapId;
                 item.SitemapSource = source;
                 items.Add(item);
@@ -150,7 +145,7 @@ namespace OrchardCore.Sitemaps.Controllers
             foreach (var factory in _sourceFactories)
             {
                 var source = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, this, "Thumbnail");
                 thumbnail.SitemapSource = source;
                 thumbnail.SitemapSourceType = factory.Name;
                 thumbnail.Sitemap = sitemap;
@@ -194,7 +189,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
 
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
+                await _sitemapService.ValidatePathAsync(model.Path, this);
             }
 
             if (ModelState.IsValid)
@@ -263,7 +258,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
 
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, model.SitemapId);
+                await _sitemapService.ValidatePathAsync(model.Path, this, model.SitemapId);
             }
 
             if (ModelState.IsValid)

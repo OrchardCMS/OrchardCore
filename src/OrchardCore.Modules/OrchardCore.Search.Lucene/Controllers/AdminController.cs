@@ -48,9 +48,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly PagerOptions _pagerOptions;
         private readonly JavaScriptEncoder _javaScriptEncoder;
-        private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly ILocalizationService _localizationService;
@@ -69,9 +67,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
-            IOptions<PagerOptions> pagerOptions,
             JavaScriptEncoder javaScriptEncoder,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
@@ -88,9 +84,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
-            _pagerOptions = pagerOptions.Value;
             _javaScriptEncoder = javaScriptEncoder;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
@@ -98,7 +92,11 @@ namespace OrchardCore.Search.Lucene.Controllers
             _localizationService = localizationService;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IShapeFactory shapeFactory,
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
             {
@@ -107,7 +105,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
             var count = indexes.Count();
             var results = indexes;
 
@@ -133,7 +131,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 Indexes = results,
                 Options = options,
-                Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
+                Pager = await shapeFactory.PagerAsync(pager, count, routeData)
             };
 
             model.Options.ContentsBulkAction =

@@ -24,6 +24,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -39,7 +40,6 @@ namespace OrchardCore.Themes.Controllers
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
-
             H = localizer;
         }
 

@@ -24,8 +24,6 @@ namespace OrchardCore.OpenId.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IOpenIdScopeManager _scopeManager;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
@@ -35,8 +33,6 @@ namespace OrchardCore.OpenId.Controllers
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
-            IShapeFactory shapeFactory,
-            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ScopeController> stringLocalizer,
             IAuthorizationService authorizationService,
             INotifier notifier,
@@ -45,8 +41,6 @@ namespace OrchardCore.OpenId.Controllers
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            _shapeFactory = shapeFactory;
-            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -56,19 +50,22 @@ namespace OrchardCore.OpenId.Controllers
         }
 
         [Admin("OpenId/Scope", "OpenIdScope")]
-        public async Task<ActionResult> Index(PagerParameters pagerParameters)
+        public async Task<ActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
             var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
+                Pager = await shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))

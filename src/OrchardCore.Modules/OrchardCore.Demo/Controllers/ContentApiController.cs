@@ -14,7 +14,9 @@ namespace OrchardCore.Demo.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
 
-        public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager)
+        public ContentApiController(
+            IAuthorizationService authorizationService,
+            IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;

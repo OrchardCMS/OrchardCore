@@ -55,7 +55,6 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly ElasticConnectionOptions _elasticConnectionOptions;
-        private readonly IShapeFactory _shapeFactory;
         private readonly ILocalizationService _localizationService;
 
         protected readonly IStringLocalizer S;
@@ -77,7 +76,6 @@ namespace OrchardCore.Search.Elasticsearch
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
             IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-            IShapeFactory shapeFactory,
             ILocalizationService localizationService,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -97,13 +95,15 @@ namespace OrchardCore.Search.Elasticsearch
             _logger = logger;
             _templateOptions = templateOptions;
             _elasticConnectionOptions = elasticConnectionOptions.Value;
-            _shapeFactory = shapeFactory;
             _localizationService = localizationService;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
@@ -141,7 +141,7 @@ namespace OrchardCore.Search.Elasticsearch
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, totalIndexes, routeData);
 
             var model = new AdminIndexViewModel
             {

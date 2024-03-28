@@ -23,7 +23,7 @@ using YesSql.Services;
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin("DeploymentPlan/{action}/{id?}", "DeploymentPlan{action}")]
-    public class DeploymentPlanController : Controller
+    public class DeploymentPlanController : Controller, IUpdateModel
     {
         private const string _optionsSearch = "Options.Search";
 
@@ -31,10 +31,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDisplayManager<DeploymentStep> _displayManager;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -44,26 +41,24 @@ namespace OrchardCore.Deployment.Controllers
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IStringLocalizer<DeploymentPlanController> stringLocalizer,
             IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
             _displayManager = displayManager;
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
-            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -75,7 +70,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
@@ -100,7 +95,7 @@ namespace OrchardCore.Deployment.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new DeploymentPlanIndexViewModel
             {
@@ -173,7 +168,7 @@ namespace OrchardCore.Deployment.Controllers
             var items = new List<dynamic>();
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
+                dynamic item = await _displayManager.BuildDisplayAsync(step, this, "Summary");
                 item.DeploymentStep = step;
                 items.Add(item);
             }
@@ -182,7 +177,7 @@ namespace OrchardCore.Deployment.Controllers
             foreach (var factory in _factories)
             {
                 var step = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, this, "Thumbnail");
                 thumbnail.DeploymentStep = step;
                 thumbnails.Add(factory.Name, thumbnail);
             }

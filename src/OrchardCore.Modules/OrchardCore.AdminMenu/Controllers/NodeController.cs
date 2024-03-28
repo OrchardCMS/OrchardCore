@@ -15,16 +15,15 @@ using OrchardCore.Navigation;
 namespace OrchardCore.AdminMenu.Controllers
 {
     [Admin("AdminMenu/Node/{action}", "AdminMenuNode{action}")]
-    public class NodeController : Controller
+    public class NodeController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<MenuItem> _displayManager;
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
-        protected readonly IHtmlLocalizer H;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
+        protected readonly IHtmlLocalizer H;
 
         public NodeController(
             IAuthorizationService authorizationService,
@@ -32,15 +31,13 @@ namespace OrchardCore.AdminMenu.Controllers
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
             IHtmlLocalizer<NodeController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
             _displayManager = displayManager;
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
         }
 
@@ -68,7 +65,7 @@ namespace OrchardCore.AdminMenu.Controllers
             foreach (var factory in _factories)
             {
                 var treeNode = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, _updateModelAccessor.ModelUpdater, "TreeThumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, this, "TreeThumbnail");
                 thumbnail.TreeNode = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -109,7 +106,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNode = treeNode,
                 AdminNodeId = treeNode.UniqueId,
                 AdminNodeType = type,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: true, string.Empty, string.Empty)
             };
 
             return View(model);
@@ -138,7 +135,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: true, string.Empty, string.Empty);
             editor.TreeNode = treeNode;
 
             if (ModelState.IsValid)
@@ -187,7 +184,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNodeType = treeNode.GetType().Name,
                 Priority = treeNode.Priority,
                 Position = treeNode.Position,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: this, isNew: false, string.Empty, string.Empty)
             };
 
             model.Editor.TreeNode = treeNode;
@@ -218,7 +215,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {

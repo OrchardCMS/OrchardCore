@@ -29,9 +29,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly MediaProfilesManager _mediaProfilesManager;
         private readonly MediaOptions _mediaOptions;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -40,9 +38,7 @@ namespace OrchardCore.Media.Controllers
             IAuthorizationService authorizationService,
             MediaProfilesManager mediaProfilesManager,
             IOptions<MediaOptions> mediaOptions,
-            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<MediaProfilesController> stringLocalizer,
             IHtmlLocalizer<MediaProfilesController> htmlLocalizer
             )
@@ -50,22 +46,24 @@ namespace OrchardCore.Media.Controllers
             _authorizationService = authorizationService;
             _mediaProfilesManager = mediaProfilesManager;
             _mediaOptions = mediaOptions.Value;
-            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
         [Admin("MediaProfiles", "MediaProfiles.Index")]
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
             var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
@@ -90,7 +88,7 @@ namespace OrchardCore.Media.Controllers
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+            var pagerShape = await shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new MediaProfileIndexViewModel
             {

@@ -25,8 +25,9 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        protected readonly IStringLocalizer S;
         private readonly TemplateOptions _templateOptions;
+
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -34,7 +35,6 @@ namespace OrchardCore.Queries.Sql.Controllers
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer,
             IOptions<TemplateOptions> templateOptions)
-
         {
             _authorizationService = authorizationService;
             _store = store;
@@ -46,7 +46,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         [Admin("Queries/Sql/Query", "QueriesRunSql")]
         public Task<IActionResult> Query(string query)
         {
-            query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            query = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
             return Query(new AdminQueryViewModel
             {
                 DecodedQuery = query,

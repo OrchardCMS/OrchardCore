@@ -16,29 +16,33 @@ using OrchardCore.Flows.ViewModels;
 namespace OrchardCore.Flows.Controllers
 {
     [Admin("Flows/{action}", "Flows.{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IShapeFactory shapeFactory,
-            IUpdateModelAccessor updateModelAccessor)
+            IContentItemDisplayManager contentItemDisplayManager)
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentItemDisplayManager = contentItemDisplayManager;
-            _shapeFactory = shapeFactory;
-            _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(
+            [FromServices] IShapeFactory shapeFactory,
+            string id,
+            string prefix,
+            string prefixesName,
+            string contentTypesName,
+            string contentItemsName,
+            string targetId,
+            bool flowMetadata,
+            string parentContentType,
+            string partName)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -67,9 +71,9 @@ namespace OrchardCore.Flows.Controllers
             }
 
             // Create a Card Shape
-            dynamic contentCard = await _shapeFactory.New.ContentCard(
+            dynamic contentCard = await shapeFactory.New.ContentCard(
                 // Updater is the controller for AJAX Requests
-                Updater: _updateModelAccessor.ModelUpdater,
+                Updater: this,
                 // Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,

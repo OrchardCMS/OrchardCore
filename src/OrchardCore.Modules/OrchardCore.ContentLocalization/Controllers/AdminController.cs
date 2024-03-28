@@ -18,6 +18,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(

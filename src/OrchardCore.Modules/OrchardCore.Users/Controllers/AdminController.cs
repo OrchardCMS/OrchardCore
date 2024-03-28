@@ -30,21 +30,18 @@ using YesSql.Services;
 namespace OrchardCore.Users.Controllers
 {
     [Admin("Users/{action}/{id?}", "Users{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
-        private readonly PagerOptions _pagerOptions;
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
         private readonly IUsersAdminListQueryService _usersAdminListQueryService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
         protected readonly IHtmlLocalizer H;
@@ -61,12 +58,9 @@ namespace OrchardCore.Users.Controllers
             IRoleService roleService,
             IUsersAdminListQueryService usersAdminListQueryService,
             INotifier notifier,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _userDisplayManager = userDisplayManager;
             _userOptionsDisplayManager = userOptionsDisplayManager;
@@ -75,18 +69,19 @@ namespace OrchardCore.Users.Controllers
             _session = session;
             _userManager = userManager;
             _notifier = notifier;
-            _pagerOptions = pagerOptions.Value;
             _userService = userService;
             _roleService = roleService;
             _usersAdminListQueryService = usersAdminListQueryService;
-            _updateModelAccessor = updateModelAccessor;
-            _shapeFactory = shapeFactory;
             _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
+        public async Task<ActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
+            PagerParameters pagerParameters)
         {
             // Check a dummy user account to see if the current user has permission to view users.
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
@@ -97,13 +92,13 @@ namespace OrchardCore.Users.Controllers
             var options = new UserIndexOptions
             {
                 // Populate route values to maintain previous route data when generating page links
-                // await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+                // await _userOptionsDisplayManager.UpdateEditorAsync(options, this, false);
                 FilterResult = queryFilterResult
             };
             options.FilterResult.MapTo(options);
 
             // With the options populated we filter the query, allowing the filters to alter the options.
-            var users = await _usersAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
+            var users = await _usersAdminListQueryService.QueryAsync(options, this);
 
             // The search text is provided back to the UI.
             options.SearchText = options.FilterResult.ToString();
@@ -112,7 +107,7 @@ namespace OrchardCore.Users.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var count = await users.CountAsync();
 
@@ -121,7 +116,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
+            dynamic pagerShape = await shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -130,7 +125,7 @@ namespace OrchardCore.Users.Controllers
                 userEntries.Add(new UserEntry
                 {
                     UserId = user.UserId,
-                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
                 });
             }
 
@@ -195,9 +190,9 @@ namespace OrchardCore.Users.Controllers
             options.UsersCount = userEntries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-            var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
+            var shapeViewModel = await shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
                 viewModel.Users = userEntries;
                 viewModel.Pager = pagerShape;
@@ -219,7 +214,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -300,7 +295,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: this, isNew: true, string.Empty, string.Empty);
 
             return View(shape);
         }
@@ -316,7 +311,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -359,7 +354,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: this, isNew: false, string.Empty, string.Empty);
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -392,7 +387,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -448,7 +443,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var model = await _userDisplayManager.BuildDisplayAsync(user, _updateModelAccessor.ModelUpdater, "DetailAdmin");
+            var model = await _userDisplayManager.BuildDisplayAsync(user, this, "DetailAdmin");
 
             return View(model);
         }

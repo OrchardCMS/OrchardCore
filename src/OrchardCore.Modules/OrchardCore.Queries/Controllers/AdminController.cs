@@ -20,18 +20,15 @@ using OrchardCore.Routing;
 namespace OrchardCore.Queries.Controllers
 {
     [Admin("Queries/{action}/{id?}", "Queries{action}")]
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private const string _optionsSearch = "Options.Search";
 
         private readonly IAuthorizationService _authorizationService;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -39,35 +36,33 @@ namespace OrchardCore.Queries.Controllers
         public AdminController(
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IQueryManager queryManager,
-            IEnumerable<IQuerySource> querySources,
-            IUpdateModelAccessor updateModelAccessor)
+            IEnumerable<IQuerySource> querySources)
         {
             _displayManager = displayManager;
             _authorizationService = authorizationService;
-            _pagerOptions = pagerOptions.Value;
             _queryManager = queryManager;
             _querySources = querySources;
-            _updateModelAccessor = updateModelAccessor;
-            _shapeFactory = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
             var queries = await _queryManager.ListQueriesAsync();
             queries = queries.OrderBy(x => x.Name);
@@ -94,7 +89,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 Queries = [],
                 Options = options,
-                Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
+                Pager = await shapeFactory.PagerAsync(pager, queries.Count(), routeData),
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()
             };
 
@@ -103,7 +98,7 @@ namespace OrchardCore.Queries.Controllers
                 model.Queries.Add(new QueryEntry
                 {
                     Query = query,
-                    Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
                 });
             }
 
@@ -139,7 +134,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true, string.Empty, string.Empty),
                 SourceName = id
             };
 
@@ -161,7 +156,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {
@@ -196,7 +191,7 @@ namespace OrchardCore.Queries.Controllers
                 SourceName = query.Source,
                 Name = query.Name,
                 Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false, string.Empty, string.Empty)
             };
 
             return View(model);
@@ -217,7 +212,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false, string.Empty, string.Empty);
 
             if (ModelState.IsValid)
             {

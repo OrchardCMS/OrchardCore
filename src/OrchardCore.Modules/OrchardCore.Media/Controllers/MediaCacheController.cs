@@ -18,6 +18,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly INotifier _notifier;
+
         protected readonly IHtmlLocalizer H;
 
         public MediaCacheController(

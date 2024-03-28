@@ -30,7 +30,6 @@ public class SearchController : Controller
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
-    private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
 
     protected readonly IHtmlLocalizer H;
@@ -43,7 +42,6 @@ public class SearchController : Controller
         INotifier notifier,
         IHtmlLocalizer<SearchController> htmlLocalizer,
         IEnumerable<ISearchHandler> searchHandlers,
-        IShapeFactory shapeFactory,
         ILogger<SearchController> logger
         )
     {
@@ -54,11 +52,13 @@ public class SearchController : Controller
         _notifier = notifier;
         H = htmlLocalizer;
         _searchHandlers = searchHandlers;
-        _shapeFactory = shapeFactory;
         _logger = logger;
     }
 
-    public async Task<IActionResult> Search(SearchViewModel viewModel, PagerSlimParameters pagerParameters)
+    public async Task<IActionResult> Search(
+        [FromServices] IShapeFactory shapeFactory,
+        SearchViewModel viewModel,
+        PagerSlimParameters pagerParameters)
     {
         var searchServices = _serviceProvider.GetServices<ISearchService>();
 
@@ -206,7 +206,7 @@ public class SearchController : Controller
                 .Take(pager.PageSize)
                 .ToList(),
             },
-            Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
+            Pager = await shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
                 { nameof(viewModel.Terms), viewModel.Terms },
                 { nameof(viewModel.Index), viewModel.Index },
