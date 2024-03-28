@@ -10,6 +10,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
@@ -138,37 +139,70 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped(sp =>
                 {
                     var store = sp.GetService<IStore>();
-
                     if (store == null)
                     {
                         return null;
                     }
 
                     var session = store.CreateSession();
-
                     var scopedServices = sp.GetServices<IScopedIndexProvider>();
-
                     session.RegisterIndexes(scopedServices.ToArray());
 
                     ShellScope.Current
                         .RegisterBeforeDispose(scope =>
                         {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CommitAsync();
+                            return session.SaveChangesAsync();
                         })
                         .AddExceptionHandler((scope, e) =>
                         {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CancelAsync();
+                            return session.CancelAsync();
                         });
 
                     return session;
                 });
 
-                services.AddScoped<IDocumentStore, DocumentStore>();
-                services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
+                services.AddScoped<IDocumentStore>(sp =>
+                {
+                    var session = sp.GetService<ISession>();
+                    if (session == null)
+                    {
+                        return null;
+                    }
+
+                    var documentStore = new DocumentStore(session);
+
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return documentStore.CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return documentStore.CancelAsync();
+                        });
+
+                    return documentStore;
+                });
+
+                services.AddSingleton<IDocumentFileStore, FileSystemDocumentStore>();
+
+                services.AddScoped<IFileDocumentStore>(sp =>
+                {
+                    var fileDocumentStore = sp.CreateInstance<FileDocumentStore>();
+
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return fileDocumentStore.CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return fileDocumentStore.CancelAsync();
+                        });
+
+                    return fileDocumentStore;
+                });
+
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
