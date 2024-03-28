@@ -19,6 +19,7 @@ namespace OrchardCore.ContentFields.GraphQL
             services.AddObjectGraphType<LinkField, LinkFieldQueryObjectType>();
             services.AddObjectGraphType<HtmlField, HtmlFieldQueryObjectType>();
             services.AddObjectGraphType<ContentPickerField, ContentPickerFieldQueryObjectType>();
+            services.AddObjectGraphType<UserPickerField, UserPickerFieldQueryObjectType>();
         }
     }
 }

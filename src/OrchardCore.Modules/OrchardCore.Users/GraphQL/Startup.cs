@@ -10,6 +10,6 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ISchemaBuilder, CurrentUserQuery>();
-        services.AddTransient<UserType>();
+        services.AddScoped<UserType>();
     }
 }
