@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -47,7 +46,7 @@ namespace OrchardCore.Rules.Drivers
 
             // If no content types are considered, use the empty string as the value to compare against,
             // since we still want comparisons such as "Does Not Equal", "Does Not Start With", etc. to evaluate to true in this case.
-            if (!_contentTypes.Any())
+            if (_contentTypes.Count == 0)
             {
                 return ValueTask.FromResult(operatorComparer.Compare(condition.Operation, string.Empty, condition.Value));
             }
