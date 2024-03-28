@@ -25,9 +25,10 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ILogger _logger;
 
-        public readonly JsonSerializerOptions _settings;
         private NotifyEntry[] _existingEntries = [];
         private bool _shouldDeleteCookie;
+
+        private static (HtmlEncoder HtmlEncoder, JsonSerializerOptions JsonSerializerOptions) _cachedOptions;
 
         public NotifyFilter(
             INotifier notifier,
@@ -43,9 +44,6 @@ namespace OrchardCore.DisplayManagement.Notify
             _dataProtectionProvider = dataProtectionProvider;
             _htmlEncoder = htmlEncoder;
             _logger = logger;
-
-            _settings = new(JOptions.Default);
-            _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 
         private void OnHandlerExecuting(FilterContext filterContext)
@@ -76,10 +74,10 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private void OnHandlerExecuted(FilterContext filterContext)
         {
-            var messageEntries = _notifier.List().ToArray();
+            var messageEntries = _notifier.List();
 
             // Don't touch temp data if there's no work to perform.
-            if (messageEntries.Length == 0 && _existingEntries.Length == 0)
+            if (messageEntries.Count == 0 && _existingEntries.Length == 0)
             {
                 return;
             }
@@ -174,8 +172,16 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             try
             {
+                var options = _cachedOptions;
+                if (options.HtmlEncoder != _htmlEncoder)
+                {
+                    options = new(_htmlEncoder, new JsonSerializerOptions(JOptions.Default));
+                    options.JsonSerializerOptions.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
+                    _cachedOptions = options;
+                }
+
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _settings));
+                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, options.JsonSerializerOptions));
                 return WebUtility.UrlEncode(signed);
             }
             catch
@@ -188,9 +194,17 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             try
             {
+                var options = _cachedOptions;
+                if (options.HtmlEncoder != _htmlEncoder)
+                {
+                    options = new (_htmlEncoder, new JsonSerializerOptions(JOptions.Default));
+                    options.JsonSerializerOptions.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
+                    _cachedOptions = options;
+                }
+
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _settings);
+                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, options.JsonSerializerOptions);
             }
             catch
             {
