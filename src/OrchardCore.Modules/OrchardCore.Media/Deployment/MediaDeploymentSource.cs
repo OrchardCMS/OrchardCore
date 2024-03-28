@@ -46,7 +46,10 @@ namespace OrchardCore.Media.Deployment
             {
                 var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath);
 
-                await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
+                if (result is FileDeploymentPlanResult fileResult)
+                {
+                    await fileResult.FileBuilder.SetFileAsync(path.SourcePath, stream);
+                }
             }
 
             // Adding media files
