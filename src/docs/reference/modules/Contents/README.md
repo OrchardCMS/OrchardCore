@@ -129,6 +129,125 @@ Well known properties include
     To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
     This will allow the shape to execute, and populate the alternates for any child shapes.
 
+## Contents Module API Controller
+
+The `OrchardCore.Contents` module provides an `ApiController.cs` (here the ApiController [source file](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs)) featuring endpoints to manage _content items_ created in the Orchard Core "Admin" backoffice. These endpoints allow for operations such as retrieving, creating, updating, and deleting content items instances. Access to these endpoints requires authentication and appropriate user role permissions.
+
+### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
+
+To utilize the Orchard Core ApiController endpoints, user accounts must authenticate using the OAuth 2 standard. This requires activating the "OpenId Authorization Server" feature and configuring it (detailed information can be found in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server)). Furthermore, the "OpenId Token Validation" feature needs to be activated, which provides a token to authenticated users for future API calls (more details are available in the [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation)). Upon activating these features, the administration area's "Security" section will display a new menu option "OpenID Connect," enabling the OAuth 2 server configuration through the creation of "Scopes" and "Applications".
+
+It is usually better to create a dedicated user for performing API calls, to maintain control over user rights, and to easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles > Edit (User)":
+
+- View and edit the OpenID Connect client settings
+- View and edit the OpenID Connect server settings
+- View and edit the OpenID Connect validation settings
+- View, add, edit, and remove the OpenID Connect applications
+- View, add, edit, and remove the OpenID Connect scopes.
+
+### Contents API Controller Endpoints
+
+#### <span style="color:blue">GET /api/content/{contentItemId} </span>
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path |  | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### <span style="color:blue">GET /api/queries/{name} </span>
+##### Parameters
+
+!!! note
+    This endpoint can only be used when the GraphQL feature is active
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| name | path |  | Yes | string |
+| parameters | query |  | No | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### <span style="color:green">POST /api/content </span>
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| draft | query |  | No | boolean |
+
+##### Body payload example
+
+```json
+{
+  "contentItem": "string",
+  "id": 0,
+  "contentItemId": "string",
+  "contentItemVersionId": "string",
+  "contentType": "string",
+  "published": true,
+  "latest": true,
+  "modifiedUtc": "2024-03-14T11:40:20.331Z",
+  "publishedUtc": "2024-03-14T11:40:20.331Z",
+  "createdUtc": "2024-03-14T11:40:20.331Z",
+  "owner": "string",
+  "author": "string",
+  "displayText": "string"
+}
+```
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### <span style="color:green">POST /api/queries/{name} </span>
+##### Parameters
+
+!!! note
+    This endpoint can only be used when the GraphQL feature is active
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| name | path |  | Yes | string |
+| parameters | query |  | No | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### <span style="color:red">DELETE /api/content/{contentItemId}</span>
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path |  | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
 ## GraphQL
 
 The contents module provides a feature to provide GraphQL queries for content items.
