@@ -14,19 +14,17 @@
 
         @if (Model.Content != null || Model.Attributes != null)
         {
-            <p class="card-text">
-                @if (Model.Content != null)
-                {
-                    @await DisplayAsync(Model.Content)
-                }
+            @if (Model.Content != null)
+            {
+                @await DisplayAsync(Model.Content)
+            }
 
-                @if (Model.Tags != null)
-                {
-                    <ul class="list-group list-group-flush">
-                        @await DisplayAsync(Model.Tags)
-                    </ul>
-                }
-            </p>
+            @if (Model.Tags != null)
+            {
+                <ul class="list-group list-group-flush">
+                    @await DisplayAsync(Model.Tags)
+                </ul>
+            }
         }
 
     </div>
@@ -39,13 +37,13 @@
             {
                 <div class="d-flex justify-content-between">
 
-                    <div>
+                    <div class="d-inline-flex">
                         @if (Model.FooterStart != null)
                         {
                             @await DisplayAsync(Model.FooterStart)
                         }
                     </div>
-                    <div>
+                    <div class="d-inline-flex">
                         @if (Model.FooterEnd != null)
                         {
                             @await DisplayAsync(Model.FooterEnd)
