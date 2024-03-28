@@ -45,7 +45,7 @@ public class RedisHealthCheck : IHealthCheck
             }
             else
             {
-                return HealthCheckResult.Unhealthy(description: S["Couldn't connect to the Redis server."]);
+                return HealthCheckResult.Unhealthy(description: "Couldn't connect to the Redis server.");
             }
         }
         catch (Exception ex)
