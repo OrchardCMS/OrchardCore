@@ -1,66 +1,43 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Facebook.Settings;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Services
+namespace OrchardCore.Facebook.Services;
+
+public class FacebookService : OAuthSettingsService<FacebookSettings>, IFacebookService
 {
-    public class FacebookService : IFacebookService
+    public FacebookService(
+        ISiteService siteService,
+        IStringLocalizer<OAuthSettingsService<FacebookSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        private readonly ISiteService _siteService;
+    }
 
-        protected readonly IStringLocalizer S;
+    public override IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
 
-        public FacebookService(
-            ISiteService siteService,
-            IStringLocalizer<FacebookService> stringLocalizer)
+        var results = new List<ValidationResult>();
+
+        if (string.IsNullOrEmpty(settings.AppId))
         {
-            _siteService = siteService;
-            S = stringLocalizer;
+            results.Add(new ValidationResult(S["The AppId is required."],
+            [
+                nameof(settings.AppId),
+            ]));
         }
 
-        public async Task<FacebookSettings> GetSettingsAsync()
+        if (string.IsNullOrEmpty(settings.AppSecret))
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<FacebookSettings>();
+            results.Add(new ValidationResult(S["The App Secret is required."],
+            [
+                nameof(settings.AppSecret),
+            ]));
         }
 
-        public async Task UpdateSettingsAsync(FacebookSettings settings)
-        {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
-
-        public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
-        {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            var results = new List<ValidationResult>();
-
-            if (string.IsNullOrEmpty(settings.AppId))
-            {
-                results.Add(new ValidationResult(S["The AppId is required."], new[]
-                {
-                    nameof(settings.AppId),
-                }));
-            }
-
-            if (string.IsNullOrEmpty(settings.AppSecret))
-            {
-                results.Add(new ValidationResult(S["The App Secret is required."], new[]
-                {
-                    nameof(settings.AppSecret),
-                }));
-            }
-
-            return results;
-        }
+        return results;
     }
 }

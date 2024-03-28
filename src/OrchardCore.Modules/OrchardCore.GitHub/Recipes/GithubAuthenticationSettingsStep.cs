@@ -27,7 +27,7 @@ namespace OrchardCore.GitHub.Recipes
                 return;
             }
             var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-            var settings = await _githubAuthenticationService.LoadSettingsAsync();
+            var settings = await _githubAuthenticationService.GetSettingsAsync();
 
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;
