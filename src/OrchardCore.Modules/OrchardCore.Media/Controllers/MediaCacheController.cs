@@ -1,9 +1,7 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.ViewModels;
@@ -22,14 +20,12 @@ namespace OrchardCore.Media.Controllers
 
         public MediaCacheController(
             IAuthorizationService authorizationService,
-            IServiceProvider serviceProvider,
+            IMediaFileStoreCache mediaFileStoreCache,
             INotifier notifier,
-            IHtmlLocalizer<MediaCacheController> htmlLocalizer
-            )
+            IHtmlLocalizer<MediaCacheController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
-            // Resolve from service provider as the service will not be registered if configuration is invalid.
-            _mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
+            _mediaFileStoreCache = mediaFileStoreCache;
             _notifier = notifier;
             H = htmlLocalizer;
         }

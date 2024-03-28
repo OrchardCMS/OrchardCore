@@ -20,25 +20,25 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 
     private readonly IMediaFileStore _mediaFileStore;
     private readonly ILogger _logger;
-
     private readonly string _cachePath;
     private readonly TimeSpan? _cacheMaxStale;
+    private readonly IMediaFileStoreCache _mediaFileStoreCache;
 
     public RemoteMediaCacheBackgroundTask(
         ShellSettings shellSettings,
         IMediaFileStore mediaFileStore,
         IWebHostEnvironment webHostEnvironment,
+        IMediaFileStoreCache mediaFileStoreCache,
         IOptions<MediaOptions> mediaOptions,
         ILogger<RemoteMediaCacheBackgroundTask> logger)
     {
         _mediaFileStore = mediaFileStore;
-
         _cachePath = Path.Combine(
             webHostEnvironment.WebRootPath,
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
-
         _cacheMaxStale = mediaOptions.Value.RemoteCacheMaxStale;
+        _mediaFileStoreCache = mediaFileStoreCache;
         _logger = logger;
     }
 
@@ -51,7 +51,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
         }
 
         // Ensure that a remote media cache has been registered.
-        if (serviceProvider.GetService<IMediaFileStoreCache>() is null)
+        if (_mediaFileStoreCache is NullMediaFileStoreCache)
         {
             return;
         }
