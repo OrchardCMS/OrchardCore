@@ -38,8 +38,7 @@ namespace OrchardCore.Users.Controllers
             {
                 To = email,
                 Subject = subject,
-                Body = body,
-                IsHtmlBody = true
+                Body = new MailMessageBody { Html = body }
             };
 
             var result = await emailService.SendAsync(message);
