@@ -38,7 +38,7 @@ namespace OrchardCore.Twitter.Services
 
         public virtual string GetNonce()
         {
-            return Convert.ToBase64String(new ASCIIEncoding().GetBytes(_clock.UtcNow.Ticks.ToString()));
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(_clock.UtcNow.Ticks.ToString()));
         }
 
         public async Task ConfigureOAuthAsync(HttpRequestMessage request)
@@ -100,7 +100,7 @@ namespace OrchardCore.Twitter.Services
 
             var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
 
-            var signature = Convert.ToBase64String(HMACSHA256.HashData(key: Encoding.UTF8.GetBytes(secret), source: Encoding.UTF8.GetBytes(baseString)));
+            var signature = Convert.ToBase64String(HMACSHA1.HashData(key: Encoding.UTF8.GetBytes(secret), source: Encoding.UTF8.GetBytes(baseString)));
 
             var sb = new StringBuilder();
             sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(_twitterSettings.ConsumerKey)).Append("\", ");
