@@ -17,9 +17,10 @@ namespace OrchardCore.Users.Handlers
         Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims);
 
         /// <summary>
-        /// Occurs when the user roles are updated.
+        /// Occurs when the user updated.
         /// </summary>
-        /// <param name="context">The <see cref="UpdateRolesContext"/>.</param>
-        Task UpdateRoles(UpdateRolesContext context);
+        /// <param name="context">The <see cref="UpdateUserContext"/>.</param>
+        Task UpdateUser(UpdateUserContext context);
+       
     }
 }
