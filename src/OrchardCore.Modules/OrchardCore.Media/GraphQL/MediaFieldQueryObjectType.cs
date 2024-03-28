@@ -23,11 +23,12 @@ namespace OrchardCore.Media.GraphQL
                     {
                         return Array.Empty<string>();
                     }
+
                     return x.Page(x.Source.Paths);
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
-                .Description("the media fileNames")
+                .Description("the media file names")
                 .PagingArguments()
                 .Resolve(x =>
                 {
@@ -50,8 +51,54 @@ namespace OrchardCore.Media.GraphQL
                     }
                     var paths = x.Page(x.Source.Paths);
                     var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
+
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
+
+            Field<ListGraphType<MediaFileItemType>, IEnumerable<MediaFileItem>>("files")
+                .Description("the files of the media items")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    if (x.Source?.Paths is null)
+                    {
+                        return Array.Empty<MediaFileItem>();
+                    }
+
+                    var paths = x.Page(x.Source.Paths).ToArray();
+                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
+                    var urls = paths.Select(p => mediaFileStore.MapPathToPublicUrl(p)).ToArray();
+                    var fileNames = x.Page(x.Source?.GetAttachedFileNames()).ToArray();
+                    var items = new List<MediaFileItem>();
+                    for (int i = 0; i < paths.Length; i++)
+                    {
+                        items.Add(new MediaFileItem
+                        {
+                            Path = paths[i],
+                            FileName = fileNames.Length > i ? fileNames[i] : string.Empty,
+                            Url = urls.Length > i ? urls[i] : string.Empty
+                        });
+                    }
+
+                    return items;
+                });
         }
+    }
+
+    public class MediaFileItemType : ObjectGraphType<MediaFileItem>
+    {
+        public MediaFileItemType()
+        {
+            Field<StringGraphType>("fileName").Description("the file name of the media file item").Resolve(x => x.Source.FileName);
+            Field<StringGraphType>("path").Description("the path of the media file item").Resolve(x => x.Source.Path);
+            Field<StringGraphType>("url").Description("the url name of the media file item").Resolve(x => x.Source.Url);
+        }
+    }
+
+    public class MediaFileItem
+    {
+        public string FileName { get; set; }
+        public string Path { get; set; }
+        public string Url { get; set; }
     }
 }
