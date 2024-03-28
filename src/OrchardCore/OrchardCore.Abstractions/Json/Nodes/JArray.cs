@@ -118,7 +118,7 @@ public static class JArray
 
         settings ??= new JsonMergeSettings();
 
-        switch (settings?.MergeArrayHandling ?? MergeArrayHandling.Concat)
+        switch (settings.MergeArrayHandling)
         {
             case MergeArrayHandling.Concat:
 
