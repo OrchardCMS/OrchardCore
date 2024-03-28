@@ -136,19 +136,12 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
 
-                    var message = new MailMessage()
-                    {
-                        To = email,
-                        Subject = subject,
-                        Body = body,
-                        IsHtmlBody = true
-                    };
-
-                    var result = await _emailService.SendAsync(message);
+                    var result = await _emailService.SendAsync(email, subject, body);
 
                     if (!result.Succeeded)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
+
                         if (updater != null)
                         {
                             foreach (var error in result.Errors)
