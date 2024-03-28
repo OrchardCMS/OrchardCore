@@ -1,20 +1,21 @@
 @using OrchardCore.Admin.Models
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.DisplayManagement.Zones
 
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 
 @if (Model.Content == null)
 {
-    dynamic shape = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType));
+    var shape = await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType);
 
-    if (shape.Content == null)
+    if (!shape.TryGetProperty<IShape>("Content", out var content))
     {
         return;
     }
 
-    Model.Content = shape.Content;
+    Model.Content = content;
 }
 
 <ul class="navbar-nav user-top-navbar">
