@@ -91,12 +91,8 @@ namespace OrchardCore.ContentManagement
                         contentItem.Owner = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     default:
-                        if (reader.TokenType == JsonTokenType.StartObject)
-                        {
-                            var property = JNode.Load(ref reader);
-                            contentItem.Data[propertyName] = property;
-                        }
-                        else if (reader.TokenType == JsonTokenType.StartArray)
+                        if (reader.TokenType == JsonTokenType.StartObject ||
+                            reader.TokenType == JsonTokenType.StartArray)
                         {
                             var property = JNode.Load(ref reader);
                             contentItem.Data[propertyName] = property;
