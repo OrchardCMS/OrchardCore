@@ -144,6 +144,12 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
+        public bool IsBinary
+        {
+            get => GetProperty(() => false);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
@@ -192,14 +198,28 @@ namespace OrchardCore.Workflows.Http.Activities
 
             var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
-            workflowContext.LastResult = new
+            if (IsBinary) 
             {
-                Body = await response.Content.ReadAsStringAsync(),
-                Headers = response.Headers.ToDictionary(x => x.Key),
-                response.StatusCode,
-                response.ReasonPhrase,
-                response.IsSuccessStatusCode
-            };
+                workflowContext.LastResult = new
+                {
+                    Body = await response.Content.ReadAsByteArrayAsync(),
+                    Headers = response.Headers.ToDictionary(x => x.Key),
+                    StatusCode = response.StatusCode,
+                    ReasonPhrase = response.ReasonPhrase,
+                    IsSuccessStatusCode = response.IsSuccessStatusCode
+                };
+            } 
+            else
+            {
+                workflowContext.LastResult = new
+                {
+                    Body = await response.Content.ReadAsStringAsync(),
+                    Headers = response.Headers.ToDictionary(x => x.Key),
+                    StatusCode = response.StatusCode,
+                    ReasonPhrase = response.ReasonPhrase,
+                    IsSuccessStatusCode = response.IsSuccessStatusCode
+                };
+            }
 
             return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
         }

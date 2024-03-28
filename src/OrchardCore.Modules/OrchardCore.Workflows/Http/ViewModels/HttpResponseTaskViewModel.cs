@@ -6,5 +6,6 @@ namespace OrchardCore.Workflows.Http.ViewModels
         public string Headers { get; set; }
         public string Content { get; set; }
         public string ContentType { get; set; }
+        public bool IsBinary { get; set; }
     }
 }
