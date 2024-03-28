@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,6 +25,9 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -32,11 +36,14 @@ namespace OrchardCore.Contents.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
+        private const int OwnerFilterPageSize = 50;
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
 
@@ -49,6 +56,7 @@ namespace OrchardCore.Contents.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
+            UserManager<IUser> userManager,
             ISession session,
             INotifier notifier,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -59,6 +67,7 @@ namespace OrchardCore.Contents.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
+            _userManager = userManager;
             _session = session;
             _notifier = notifier;
 
@@ -641,6 +650,34 @@ namespace OrchardCore.Contents.Controllers
             return Url.IsLocalUrl(returnUrl)
                 ? this.LocalRedirect(returnUrl, true)
                 : RedirectToAction(nameof(List));
+        }
+
+        public async Task<IActionResult> OwnerFilterUserSearch(string searchTerm, string selectedOwnerUserName, int page = 1)
+        {
+            var query = _session.Query<User, UserIndex>();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query.Where(x => x.NormalizedUserName.Contains(_userManager.NormalizeName(searchTerm)));
+            }
+
+            var totalUsersCount = await query.CountAsync();
+            var hasMoreResults = page * OwnerFilterPageSize < totalUsersCount;
+
+            var users = await query
+                .OrderBy(u => u.NormalizedUserName)
+                .Skip((page - 1) * OwnerFilterPageSize)
+                .Take(OwnerFilterPageSize)
+                .ListAsync();
+
+            var results = users.Select(u => new SelectListItem()
+            {
+                Text = u.UserName,
+                Value = u.UserName,
+                Selected = _userManager.NormalizeName(u.UserName) == _userManager.NormalizeName(selectedOwnerUserName)
+            });
+
+            return new ObjectResult(new { results, hasMoreResults });
         }
 
         private async Task<IActionResult> CreatePOST(

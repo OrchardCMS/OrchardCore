@@ -5,12 +5,15 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -248,6 +251,39 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
+                )
+                .WithNamedTerm("owner", builder => builder
+                    .OneCondition(async (userName, query, ctx) =>
+                    {
+                        if (!string.IsNullOrEmpty(userName))
+                        {
+                            var context = (ContentQueryContext)ctx;
+                            var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                            var user = await userManager.FindByNameAsync(userName) as User;
+                            var userId = user?.UserId;
+
+                            query.With<ContentItemIndex>(x => x.Owner == userId);
+                        }
+
+                        return query;
+                    })
+                    .MapTo<ContentOptionsViewModel>((userName, model) =>
+                    {
+                        if (!string.IsNullOrEmpty(userName))
+                        {
+                            model.SelectedOwnerUserName = userName;
+                        }
+                    })
+                    .MapFrom<ContentOptionsViewModel>((model) =>
+                    {
+                        if (!string.IsNullOrEmpty(model.SelectedOwnerUserName))
+                        {
+                            return (true, model.SelectedOwnerUserName);
+                        }
+
+                        return (false, string.Empty);
+                    })
+                    .AlwaysRun()
                 )
                 .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
