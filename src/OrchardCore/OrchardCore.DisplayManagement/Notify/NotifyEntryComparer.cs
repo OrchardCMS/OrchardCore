@@ -15,12 +15,12 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public bool Equals(NotifyEntry x, NotifyEntry y)
         {
-            return x.Type == y.Type && x.ToString(_htmlEncoder) == y.ToString(_htmlEncoder);
+            return x.Type == y.Type && x.ToHtmlString(_htmlEncoder) == y.ToHtmlString(_htmlEncoder);
         }
 
         public int GetHashCode(NotifyEntry obj)
         {
-            return HashCode.Combine(obj.ToString(_htmlEncoder), obj.Type);
+            return HashCode.Combine(obj.ToHtmlString(_htmlEncoder), obj.Type);
         }
     }
 }
