@@ -48,7 +48,7 @@ namespace OrchardCore.Twitter.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
+            return Initialize<TwitterSettingsViewModel>("XSettings_Edit", model =>
             {
                 model.APIKey = settings.ConsumerKey;
                 if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))

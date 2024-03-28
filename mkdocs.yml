@@ -183,7 +183,7 @@ nav:
           - Authentication:
               - Microsoft: docs/reference/modules/Microsoft.Authentication/README.md
               - Facebook: docs/reference/modules/Facebook/README.md
-              - Twitter: docs/reference/modules/Twitter/README.md
+              - X (Twitter): docs/reference/modules/X/README.md
               - GitHub: docs/reference/modules/GitHub/README.md
               - Google: docs/reference/modules/Google/README.md
           - Users:

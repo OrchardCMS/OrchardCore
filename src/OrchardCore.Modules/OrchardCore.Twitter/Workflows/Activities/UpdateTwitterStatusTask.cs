@@ -26,7 +26,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
             S = localizer;
         }
 
-        public override LocalizedString DisplayText => S["Update Twitter Status Task"];
+        public override LocalizedString DisplayText => S["Update X Status Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
         public override LocalizedString Category => S["Social"];
