@@ -1,12 +1,10 @@
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -321,7 +319,12 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            taxonomy.As<TaxonomyPart>().Content.Remove(taxonomyItemId);
+            // taxonomy.As<TaxonomyPart>().Content.Remove(taxonomyItemId);
+
+            taxonomy.Alter<TaxonomyPart>(part =>
+            {
+                part.Terms = part.Terms.Where(x => x.ContentItemId != taxonomyItemId).ToList();
+            });
 
             await _session.SaveAsync(taxonomy);
 
