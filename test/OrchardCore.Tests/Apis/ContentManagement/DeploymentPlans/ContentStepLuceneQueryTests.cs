@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
@@ -34,21 +35,40 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             await context.PostRecipeAsync(recipe);
 
-            // Test
-            var result = await context
-                .GraphQLClient
-                .Content
-                .Query("RecentBlogPosts", builder =>
+            // Search indexes are no longer updated in a deferred task at the end of a shell scope
+            // but in a background job after the http request, so they are not already up to date.
+
+            var timeoutTask = Task.Delay(5_000);
+
+            while (true)
+            {
+                await Task.Delay(1_000);
+                // Test
+                var result = await context
+                    .GraphQLClient
+                    .Content
+                    .Query("RecentBlogPosts", builder =>
+                    {
+                        builder
+                            .WithField("displayText");
+                    });
+
+                var nodes = result["data"]["recentBlogPosts"];
+
+                if (nodes is not null
+                    && nodes.AsArray().Count == 2
+                    && "new version" == nodes[0]["displayText"].ToString()
+                    && "second content item display text" == nodes[1]["displayText"].ToString()
+                    )
                 {
-                    builder
-                        .WithField("displayText");
-                });
+                    break;
+                }
 
-            var nodes = result["data"]["recentBlogPosts"];
-
-            Assert.Equal(2, nodes.AsArray().Count);
-            Assert.Equal("new version", nodes[0]["displayText"].ToString());
-            Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
+                if (timeoutTask.IsCompleted)
+                {
+                    Assert.Fail("The Lucene index wasn't updated after the import within 5s and thus the test timed out.");
+                }
+            }
         }
     }
 }
