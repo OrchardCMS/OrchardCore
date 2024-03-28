@@ -21,19 +21,15 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var queryGraphType = _partObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
-                                                       partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
-                                                            .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
-                                                   );
+            var queryGraphType = GetObjectGraphType(field);
 
             if (queryGraphType != null)
             {
                 return new FieldType
                 {
-                    Name = field.Name,
+                    Name = customFieldName ?? field.Name,
                     Description = field.FieldDefinition.Name,
                     Type = queryGraphType.GetType(),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
@@ -41,7 +37,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                         // Check if part has been collapsed by trying to get the parent part.
-                        var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                        var contentPart = context.Source.Get(typeof(ContentPart), namedPartTechnicalName);
 
                         // Part is not collapsed, access field directly.
                         contentPart ??= context.Source;
@@ -53,6 +49,21 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
 
             return null;
+        }
+
+        private IObjectGraphType GetObjectGraphType(ContentPartFieldDefinition field)
+        {
+            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+
+            return _partObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
+                partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
+                    .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
+                );
+        }
+
+        public bool HasField(ContentPartFieldDefinition field)
+        {
+            return GetObjectGraphType(field) != null;
         }
     }
 }
