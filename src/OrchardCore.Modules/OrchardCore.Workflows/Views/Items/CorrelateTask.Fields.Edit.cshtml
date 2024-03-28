@@ -7,7 +7,7 @@
     <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
     <span asp-validation-for="Value"></span>
     <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
-</div>
+</div> 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
     document.addEventListener('DOMContentLoaded', function () {

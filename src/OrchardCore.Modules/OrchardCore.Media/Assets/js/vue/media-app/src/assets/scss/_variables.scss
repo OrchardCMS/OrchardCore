@@ -1,0 +1,10 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+
+// file-specific
+$file-border-content: 1px solid #dee2e6;
+$selected-background-color: lighten($primary, 45%);
+
+:root {
+    --topcon-red: #d9534f;
+}

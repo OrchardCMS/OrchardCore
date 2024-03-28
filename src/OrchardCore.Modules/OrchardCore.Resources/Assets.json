@@ -169,6 +169,24 @@
   },
   {
     "inputs": [
+      "node_modules/jquery.ui.widget/jquery.ui.widget.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.ui.widget.js"
+  },
+  {
+    "inputs": [
+      "node_modules/blueimp-file-upload/js/jquery.fileupload.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.fileupload.js"
+  },
+  {
+    "inputs": [
+      "node_modules/blueimp-file-upload/js/jquery.iframe-transport.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.iframe-transport.js"
+  },  
+  {
+    "inputs": [
       "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
     ],
     "output": "wwwroot/Scripts/jquery-resizable.js"
@@ -216,23 +234,30 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.js"
+      "Assets/trumbowyg/ui/icons.svg"
     ],
-    "output": "wwwroot/Scripts/vue.js"
+    "output": "wwwroot/Styles/ui/icons.svg"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.min.js"
+      "Assets/Vendor/vue-2.7.14/dist/vue.*"
     ],
-    "output": "wwwroot/Scripts/vue.min.js"
+    "output": "wwwroot/Scripts/vue-2.7.14/@"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.min.js"
+      "node_modules/vue/dist/vue.global.*"
     ],
-    "output": "wwwroot/Scripts/vue-multiselect.min.js"
+    "output": "wwwroot/Scripts/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.umd.*"
+    ],
+    "output": "wwwroot/Scripts/@"
   },
   {
     "copy": true,
@@ -244,21 +269,14 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/sortablejs/Sortable.min.js"
+      "node_modules/sortablejs/Sortable.*"
     ],
-    "output": "wwwroot/Scripts/Sortable.min.js"
+    "output": "wwwroot/Scripts/@"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/sortablejs/Sortable.js"
-    ],
-    "output": "wwwroot/Scripts/Sortable.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vuedraggable/dist/vuedraggable.umd.*"
+      "node_modules/vuedraggable/dist/vuedraggable.*"
     ],
     "output": "wwwroot/Scripts/@"
   },
@@ -284,6 +302,13 @@
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
   },
   {
+    "copy": true,
+    "inputs": [
+      "Assets/Vendor/**"
+    ],
+    "output": "wwwroot/Vendor/@"
+  },
+  {
     "generateSourceMaps": false,
     "inputs": [
       "node_modules/js-cookie/dist/js.cookie.js"
@@ -293,23 +318,9 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/nouislider/dist/nouislider.js"
+      "node_modules/nouislider/dist/nouislider.*"
     ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/nouislider/dist/nouislider.d.ts"
-    ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.d.ts"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/nouislider/dist/nouislider.css"
-    ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.css"
+    "output": "wwwroot/Scripts/nouislider/@"
   },
   {
     "copy": true,

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Vue + TS</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+
+      .layout-main {
+        padding: 32px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout-main">
+      <div id="media-app" class="media-app">
+        <media-app
+          site-id="xtwa3swgv9favzbynjd81d8e5v"
+          translations='{&quot;NewFolder&quot;:&quot;New folder&quot;,&quot;DeleteFolderTitle&quot;:&quot;Delete folder&quot;,&quot;DeleteFolderMessage&quot;:&quot;Are you sure you want to delete this folder?&quot;,&quot;DeleteFileTitle&quot;:&quot;Delete file&quot;,&quot;DeleteFileMessage&quot;:&quot;Are you sure you want to delete this/these file(s)?&quot;,&quot;RenameFileTitle&quot;:&quot;Rename file&quot;,&quot;RenameFileMessage&quot;:&quot;New name&quot;,&quot;MoveFileTitle&quot;:&quot;Move file(s)&quot;,&quot;MoveFileMessage&quot;:&quot;Are you sure you want to move the selected file(s) to this folder?&quot;,&quot;CreateFolderTitle&quot;:&quot;Create folder&quot;,&quot;CreateFolderMessage&quot;:&quot;Folder name&quot;,&quot;SameFolderMessage&quot;:&quot;The file is already in this folder&quot;,&quot;EditButton&quot;:&quot;Rename&quot;,&quot;DeleteButton&quot;:&quot;Delete&quot;,&quot;DownloadButton&quot;:&quot;Download&quot;,&quot;SelectAll&quot;:&quot;Select All&quot;,&quot;FolderEmpty&quot;:&quot;This folder is empty&quot;,&quot;FolderFilterEmpty&quot;:&quot;Nothing to show with this filter&quot;,&quot;Upload&quot;:&quot;Upload&quot;,&quot;UploadFiles&quot;:&quot;Upload files&quot;,&quot;SelectNone&quot;:&quot;Select None&quot;,&quot;Invert&quot;:&quot;Invert&quot;,&quot;Delete&quot;:&quot;Delete&quot;,&quot;DropHere&quot;:&quot;Drop your file here&quot;,&quot;DropTitle&quot;:&quot;Your files will be uploaded to the current folder when you drop them here&quot;,&quot;FileLibrary&quot;:&quot;Files&quot;,&quot;FolderRoot&quot;:&quot;/&quot;,&quot;Filter&quot;:&quot;Search and filter...&quot;,&quot;Cancel&quot;:&quot;Cancel&quot;,&quot;Error&quot;:&quot;This file exceeds the maximum upload size&quot;,&quot;Uploads&quot;:&quot;Uploads&quot;,&quot;Errors&quot;:&quot;Errors&quot;,&quot;ClearErrors&quot;:&quot;Clear Errors&quot;,&quot;ImageHeader&quot;:&quot;File&quot;,&quot;NameHeader&quot;:&quot;Name&quot;,&quot;LastModifyHeader&quot;:&quot;Last modified&quot;,&quot;SizeHeader&quot;:&quot;Size&quot;,&quot;TypeHeader&quot;:&quot;Type&quot;,&quot;PagerFirstButton&quot;:&quot;First&quot;,&quot;PagerPreviousButton&quot;:&quot;Previous&quot;,&quot;PagerNextButton&quot;:&quot;Next&quot;,&quot;PagerLastButton&quot;:&quot;Last&quot;,&quot;PagerPageSizeLabel&quot;:&quot;Page Size&quot;,&quot;PagerPageLabel&quot;:&quot;Page:&quot;,&quot;PagerTotalLabel&quot;:&quot;Total items:&quot;,&quot;ErrorRenamingFile&quot;:&quot;Error renaming file&quot;,&quot;ErrorMovingFile&quot;:&quot;Error moving file&quot;,&quot;ErrorDeleteFile&quot;:&quot;Error deleting file&quot;,&quot;ErrorDeleteFiles&quot;:&quot;Error deleting files&quot;,&quot;ErrorCreateFolder&quot;:&quot;Error creating folder&quot;,&quot;ErrorDeleteFolder&quot;:&quot;Error deleting folder&quot;,&quot;ErrorGetFolders&quot;:&quot;Error getting folders&quot;,&quot;Ok&quot;:&quot;Ok&quot;,&quot;ActionFileTitle&quot;:&quot;File Action&quot;,&quot;ActionFileMessage&quot;:&quot;What do you want to do with this file?&quot;,&quot;BulkActionFilesTitle&quot;:&quot;Files Bulk Action&quot;,&quot;BulkActionFilesMessage&quot;:&quot;What do you want to do with these file(s)?&quot;,&quot;CreateDesignset&quot;:&quot;Create design set&quot;,&quot;CreateDesignsetWithSingleTask&quot;:&quot;Create design set with single task&quot;,&quot;CreateDesignsetWithTaskPerSurface&quot;:&quot;Create design set with task per surface&quot;,&quot;Rename&quot;:&quot;Rename&quot;,&quot;ApplyLocalization&quot;:&quot;Apply localization&quot;,&quot;ReplaceLocalization&quot;:&quot;Replace existing localization&quot;,&quot;ApplyNewSchedule&quot;:&quot;Apply new schedule&quot;,&quot;UpdateSchedule&quot;:&quot;Update existing schedule&quot;,&quot;AddLayersToModelView&quot;:&quot;Add layers to model view&quot;,&quot;ReplaceLayer&quot;:&quot;Replace existing layer&quot;,&quot;Download&quot;:&quot;Download&quot;,&quot;Processing&quot;:&quot;Processing&quot;,&quot;Common&quot;:&quot;Common&quot;,&quot;Localization&quot;:&quot;Localization&quot;,&quot;Models&quot;:&quot;Models&quot;,&quot;Schedule&quot;:&quot;Schedule&quot;,&quot;Survey&quot;:&quot;Survey&quot;,&quot;Status&quot;:&quot;Status&quot;,&quot;RenamingFileWarning&quot;:&quot;Renaming file failed. File name was identical.&quot;,&quot;CreateSubFolder&quot;:&quot;Create a subfolder&quot;,&quot;ActionFolderTitle&quot;:&quot;Folder Action&quot;,&quot;ActionFolderMessage&quot;:&quot;What do you want to do with this folder?&quot;}'
+          base-host="https://localhost:5001"
+          base-path=""
+          upload-files-url="/api/media/upload"
+          :max-upload-chunk-size="0"
+        ></media-app>
+      </div>
+    </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.js"
+      integrity="sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.min.js"
+      integrity="sha512-P7EUiLYW7QUrhYrLgaJ++ok2j2I7Pu0UgGnrpLowujPZicu7mIR0V/Trq+7kl/0nEkp6yNGh8eFJY1JUv3dkPA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.iframe-transport.min.js"
+      integrity="sha512-LUdOz2V2MwwP3u+2C68TrHWk7kLyhftqOD3Ay/HRqYXPQh4skWvRSlef4mAJHuRj0vxDD5WqHWCOvgCqCcxUjA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

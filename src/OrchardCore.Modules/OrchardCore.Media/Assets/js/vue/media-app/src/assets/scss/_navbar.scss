@@ -1,0 +1,131 @@
+.action-bar {
+  border-bottom: $file-border-content;
+  align-items: center;
+
+  .badge {
+    color: black;
+  }
+
+  .btn-light{
+    background-color: #f1f6ff;
+  }
+
+  .file-filter {
+    button {
+        border-color: #6c757d;
+    }
+
+    button:disabled{
+        border-color: #CED4DA !important;
+        opacity: 1;
+    }
+
+    svg {
+        opacity: 0.6;
+    }
+
+    .fa-filter {
+      position: relative;
+      left: 23px;
+      top: 10px;
+      z-index: 100;
+      margin-left: -20px;
+    }
+
+    .input-filter {
+      border-color: $gray-400;
+      border-right: none;
+      padding-left: 32px;
+    }
+
+    .input-group-append button {
+      border-color: $gray-400;
+      opacity: 1;
+      border-left: none;
+    }
+
+    .input-group-append button[disabled] {
+      color: transparent;
+    }
+
+    .icon-inside-input {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      z-index: $zindex-fixed;
+      pointer-events: none;
+      color: $gray-600;
+    }
+  }
+
+  /* Upload button */
+  .fileinput-button {
+    cursor: pointer;
+
+    svg {
+      margin-right: 6px;
+    }
+
+    input {
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+  }
+  // hide glow on filter input
+  input[type="text"] {
+    outline: none;
+    box-shadow: none !important;
+  }
+}
+
+#breadcrumb {
+  background-color: #f1f6ff;
+  border-bottom: $file-border-content;
+  border-radius: 0px;
+  min-height: 40px;
+
+  .breadcrumb-path {
+    flex-grow: 1;
+
+    .breadcrumb-item {
+      display: inline-block;
+
+      a {
+        color: $gray-700;
+      }
+    }
+  }
+
+  .breadcrumb-buttons {
+    justify-content: flex-start;
+    flex-grow: 1;
+    margin-top: -5px;
+
+    a {
+      border-radius: 0px !important;
+      color: $gray-700;
+    }
+  }
+}
+
+.visibility-buttons {
+  justify-content: flex-end;
+  flex-grow: 0;
+
+  button {
+    border-radius: 0px !important;
+    color: $gray-700;
+  }
+
+  .selected {
+    color: $primary;
+  }
+}
+
+#clear-file-filter-button {
+  z-index: 100;
+}
