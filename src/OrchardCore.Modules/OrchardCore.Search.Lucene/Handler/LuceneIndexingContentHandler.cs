@@ -100,9 +100,9 @@ namespace OrchardCore.Search.Lucene.Handlers
                                     continue;
                                 }
 
-                                if (publishContext.IsPublishing == true)
+                                if (publishContext.IsPublishing)
                                 {
-                                    await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                                    await StoreDocumentAsync(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                                 }
                                 else
                                 {
@@ -123,9 +123,9 @@ namespace OrchardCore.Search.Lucene.Handlers
                                     continue;
                                 }
 
-                                if (publishContext.IsPublishing == true)
+                                if (publishContext.IsPublishing)
                                 {
-                                    await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers,indexManager, logger, indexSettings);
+                                    await StoreDocumentAsync(publishContext.PublishingItem, contentItemIndexHandlers,indexManager, logger, indexSettings);
                                 }
                                 else
                                 {
@@ -134,11 +134,11 @@ namespace OrchardCore.Search.Lucene.Handlers
                             }
                             else if (context is UpdateContentContext updateContext)
                             {
-                                await StoreDocument(updateContext.UpdatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                                await StoreDocumentAsync(updateContext.UpdatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                             }
                             else if (context is CreateContentContext createContext)
                             {
-                                await StoreDocument(createContext.CreatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
+                                await StoreDocumentAsync(createContext.CreatingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                             }
                         }
                     }
@@ -146,7 +146,7 @@ namespace OrchardCore.Search.Lucene.Handlers
             }
         }
 
-        private static async Task StoreDocument(ContentItem contentItem, IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers, LuceneIndexManager luceneIndexManager, ILogger logger, LuceneIndexSettings indexSettings)
+        private static async Task StoreDocumentAsync(ContentItem contentItem, IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers, LuceneIndexManager luceneIndexManager, ILogger logger, LuceneIndexSettings indexSettings)
         {
 
             var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());

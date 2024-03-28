@@ -96,7 +96,7 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
                                 continue;
                             }
 
-                            if (publishContext.IsPublishing == true)
+                            if (publishContext.IsPublishing)
                             {
                                 await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                             }
@@ -119,7 +119,7 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
                                 continue;
                             }
 
-                            if (publishContext.IsPublishing == true)
+                            if (publishContext.IsPublishing)
                             {
                                 await StoreLuceneDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                             }

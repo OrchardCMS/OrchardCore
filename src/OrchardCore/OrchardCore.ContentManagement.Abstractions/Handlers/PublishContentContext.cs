@@ -2,9 +2,9 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public class PublishContentContext : ContentContextBase
     {
-        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem, bool? isPublishing = true) : base(contentItem)
+        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem, bool isPublishing = true) : base(contentItem)
         {
-            PublishingItem = isPublishing == true ? contentItem : null;
+            PublishingItem = isPublishing ? contentItem : null;
             PreviousItem = previousContentItem;
             IsPublishing = isPublishing;
         }
@@ -14,6 +14,6 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public bool Cancel { get; set; }
 
-        public bool? IsPublishing { get; private set; } = true;
+        public bool IsPublishing { get; private set; } = true;
     }
 }

@@ -105,7 +105,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                                     continue;
                                 }
 
-                                if (publishContext.IsPublishing == true)
+                                if (publishContext.IsPublishing)
                                 {
                                     await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                                 }
@@ -128,7 +128,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                                     continue;
                                 }
 
-                                if (publishContext.IsPublishing == true)
+                                if (publishContext.IsPublishing)
                                 {
                                     await StoreDocument(publishContext.PublishingItem, contentItemIndexHandlers, indexManager, logger, indexSettings);
                                 }
