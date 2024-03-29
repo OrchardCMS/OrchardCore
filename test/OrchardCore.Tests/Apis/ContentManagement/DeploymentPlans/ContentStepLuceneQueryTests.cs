@@ -93,19 +93,23 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     ReturnContentItems = false,
                     Template = @"
                             {
-                              ""query"": {
-                                ""term"": { ""Content.ContentItem.ContentType"": ""BlogPost"" }
-                              },
-                              ""sort"": {
-                                ""Content.ContentItem.CreatedUtc"": {
-                                  ""order"": ""desc"",
-                                  ""type"": ""double""
-                                }
-                              },
-                              ""size"": 3
+                                ""query"": {
+                                    ""term"": { ""Content.ContentItem.ContentType"": ""BlogPost"" }
+                                },
+                                ""filter"": [
+                                    {
+                                        ""term"": { ""Content.ContentItem.Published"":""true"" }
+                                    },
+                                    {
+                                        ""term"": { ""Content.ContentItem.ContentItemId"":""{{parameters.contentItemId}}"" }
+                                    }
+                                ]
                             }",
                 };
-                var queryParameters = new Dictionary<string, object>();
+                var queryParameters = new Dictionary<string, object>
+                {
+                    ["contentItemId"] = context.OriginalBlogPost.ContentItemId
+                };
                 var timeoutTask = Task.Delay(5_000);
                 while (true)
                 {
