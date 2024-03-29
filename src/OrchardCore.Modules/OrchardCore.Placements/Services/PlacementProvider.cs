@@ -30,11 +30,11 @@ namespace OrchardCore.Placements.Services
 
         public class PlacementInfoResolver : IPlacementInfoResolver
         {
-            private readonly IReadOnlyDictionary<string, IEnumerable<PlacementNode>> _placements;
+            private readonly IReadOnlyDictionary<string, PlacementNode[]> _placements;
             private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
             public PlacementInfoResolver(
-                IReadOnlyDictionary<string, IEnumerable<PlacementNode>> placements,
+                IReadOnlyDictionary<string, PlacementNode[]> placements,
                 IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
             {
                 _placements = placements;
