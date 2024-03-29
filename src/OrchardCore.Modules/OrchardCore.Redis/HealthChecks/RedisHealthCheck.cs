@@ -36,7 +36,7 @@ public class RedisHealthCheck : IHealthCheck
                 var time = await redisService.Database.PingAsync();
                 if (time > TimeSpan.FromSeconds(30))
                 {
-                    return HealthCheckResult.Unhealthy(description: "The Redis server couldn't be reached within {seconds} seconds and might be offline or have degraded performance.");
+                    return HealthCheckResult.Unhealthy(description: $"The Redis server couldn't be reached within {time.TotalSeconds} seconds and might be offline or have degraded performance.");
                 }
                 else
                 {
