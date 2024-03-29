@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection TryAddDefaultEmailProvider(this IServiceCollection services)
+        public static IServiceCollection TryAddDefaultEmailTokenProvider(this IServiceCollection services)
         {
             var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
             services.TryAddTransient(emailTokenProviderType);

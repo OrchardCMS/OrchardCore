@@ -96,7 +96,7 @@ public class EmailAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddDefaultEmailProvider()
+        services.TryAddDefaultEmailTokenProvider()
             .Configure<TwoFactorOptions>(options =>
         {
             options.Providers.Add(TokenOptions.DefaultEmailProvider);
