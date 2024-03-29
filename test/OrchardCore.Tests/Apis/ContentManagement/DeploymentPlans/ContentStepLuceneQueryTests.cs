@@ -53,7 +53,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         }
 
 
-        [Fact]        
+        [Fact]
         public async Task ShouldLuceneIndexOnlyIndexesTheLatestversion()
         {
 
@@ -75,7 +75,12 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             secondContentItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "new-path";
             data.Add(secondContentItem);
 
-            Assert.Equal(2, recipe.SelectNode("$.steps[0].Data").AsArray().Count);
+            Assert.Equal(2, data.Count);
+            Assert.Single(data.Select(x => x.SelectNode(nameof(ContentItem.ContentItemId)).ToString()).Distinct());
+
+            // validate different contentItem versionId
+            var versionIds = data.Select(x => x.SelectNode(nameof(ContentItem.ContentItemVersionId)).ToString()).Distinct();
+            Assert.Equal(2, versionIds.Count());
 
             await context.PostRecipeAsync(recipe);
 
