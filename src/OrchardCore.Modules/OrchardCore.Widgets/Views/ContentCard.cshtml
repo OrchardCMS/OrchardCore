@@ -1,3 +1,4 @@
+@using OrchardCore.DisplayManagement
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
@@ -25,14 +26,14 @@
             //Build Editor for Content Item
             // AJAX request is new request and will not have CollectionShape.
             var isNew = Model.CollectionShape == null ? true : false;
-            var contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, string.Empty, Model.PrefixValue);
+            IShape contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, string.Empty, Model.PrefixValue);
 
             //We don't show Actions and Side bar the parent editor has its own buttons.
             contentItemEditor.Properties["Actions"] = null;
             contentItemEditor.Properties["Sidebar"] = null;
 
             //Move Content Footer to Card Footer, if any
-            Model.Footer = contentItemEditor.GetProperty("Footer");
+            Model.Footer = contentItemEditor.GetProperty<IShape>("Footer");
             contentItemEditor.Properties["Footer"] = null;
 
             Model.ContentEditor = contentItemEditor;
