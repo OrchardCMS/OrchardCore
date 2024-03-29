@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     await Task.Delay(1_000);
                     // Test
                     var result = (LuceneQueryResults)await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
-                    if (result == null)
+                    if (result is not null)
                     {
                         if (result.Count > 1)
                         {
