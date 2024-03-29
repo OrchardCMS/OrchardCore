@@ -20,8 +20,7 @@ jobs:
         npm run rebuild
     - name: Check if git has changes
       id: changes
-      # uses: UnicornGlobal/has-changes-action@v1.0.11
-      run: echo "changed=$(git status --porcelain)" >> $GITHUB_OUTPUT
+      uses: UnicornGlobal/has-changes-action@v1.0.11
     - name: Changes detected after building assets
       if: steps.changes.outputs.changed == 1
       run: | 
