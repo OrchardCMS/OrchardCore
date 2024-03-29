@@ -96,7 +96,8 @@ public class EmailAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TwoFactorOptions>(options =>
+        services.TryAddDefaultEmailProvider()
+            .Configure<TwoFactorOptions>(options =>
         {
             options.Providers.Add(TokenOptions.DefaultEmailProvider);
         });
@@ -111,6 +112,14 @@ public class SmsAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(typeof(IUser));
+        services.AddTransient(phoneNumberProviderType);
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultPhoneProvider;
+            options.Tokens.ProviderMap.TryAdd(TokenOptions.DefaultPhoneProvider, new TokenProviderDescriptor(phoneNumberProviderType));
+        });
+
         services.Configure<TwoFactorOptions>(options =>
         {
             options.Providers.Add(TokenOptions.DefaultPhoneProvider);

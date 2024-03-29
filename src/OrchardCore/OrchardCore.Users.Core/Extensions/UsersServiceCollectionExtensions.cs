@@ -65,5 +65,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        public static IServiceCollection TryAddDefaultEmailProvider(this IServiceCollection services)
+        {
+            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
+            services.TryAddTransient(emailTokenProviderType);
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Tokens.ProviderMap.TryAdd(TokenOptions.DefaultEmailProvider, new TokenProviderDescriptor(emailTokenProviderType));
+            });
+
+            return services;
+        }
     }
 }
