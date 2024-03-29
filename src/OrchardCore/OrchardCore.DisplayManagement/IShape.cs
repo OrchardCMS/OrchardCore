@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -43,17 +44,18 @@ namespace OrchardCore.DisplayManagement
             return false;
         }
 
+        [Obsolete("Use GetPropertyOrDefault()) instead")]
         public static object GetProperty(this IShape shape, string key)
         {
-            return GetProperty(shape, key, (object)null);
+            return shape.GetPropertyOrDefault<object>(key);
         }
 
-        public static T GetProperty<T>(this IShape shape, string key)
+        public static T GetPropertyOrDefault<T>(this IShape shape, string key)
         {
             return GetProperty(shape, key, default(T));
         }
 
-        public static T GetProperty<T>(this IShape shape, string key, T value)
+        public static T GetProperty<T>(this IShape shape, string key, T defaultValue)
         {
             if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
             {
@@ -63,7 +65,7 @@ namespace OrchardCore.DisplayManagement
                 }
             }
 
-            return value;
+            return defaultValue;
         }
 
         public static async ValueTask<IShape> AddRangeAsync(this IShape shape, IEnumerable<object> items, string position = null)
