@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Search.Lucene;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
@@ -49,6 +50,82 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             Assert.Equal(2, nodes.AsArray().Count);
             Assert.Equal("new version", nodes[0]["displayText"].ToString());
             Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
+        }
+
+
+        [Fact]
+        public async Task ShouldUpdateLuceneIndexesLatestDocOnly()
+        {
+
+            using var context = new BlogPostDeploymentContext();
+
+            // Setup
+            await context.InitializeAsync();
+            // Act
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+            {
+                jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
+                jItem[nameof(ContentItem.DisplayText)] = "new version";
+            });
+            const string secondcontentitemversionid = "secondcontentitemversionid";
+            var data = recipe["steps"][0]["Data"].AsArray();
+            var secondContentItem = JObject.FromObject(context.OriginalBlogPost);
+            secondContentItem[nameof(ContentItem.ContentItemVersionId)] = secondcontentitemversionid;
+            secondContentItem[nameof(ContentItem.DisplayText)] = "second content item version display text";
+            secondContentItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "new-path";
+            data.Add(secondContentItem);
+
+            Assert.Equal(2, recipe.SelectNode("$.steps[0].Data").AsArray().Count);
+
+            await context.PostRecipeAsync(recipe);
+
+            // Search indexes are no longer updated in a deferred task at the end of a shell scope
+            // but in a background job after the http request, so they are not already up to date.
+
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var luceneQuerySource = scope.ServiceProvider.GetRequiredService<LuceneQuerySource>();
+                var luceneQuery = new LuceneQuery
+                {
+                    Index = "Search",
+                    ReturnContentItems = false,
+                    Template = @"
+                            {
+                              ""query"": {
+                                ""term"": { ""Content.ContentItem.ContentType"": ""BlogPost"" }
+                              },
+                              ""sort"": {
+                                ""Content.ContentItem.CreatedUtc"": {
+                                  ""order"": ""desc"",
+                                  ""type"": ""double""
+                                }
+                              },
+                              ""size"": 3
+                            }",
+                };
+                var queryParameters = new Dictionary<string, object>();
+                var timeoutTask = Task.Delay(5_000);
+                while (!timeoutTask.IsCompleted)
+                {
+                    await Task.Delay(1_000);
+                    // Test
+                    var result = (LuceneQueryResults)await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+                    if (result == null)
+                    {
+                        if (result.Count > 1)
+                        {
+                            Assert.Fail("The Lucene index should only index latest version on BlogPost type.");
+                        }
+                        if (result.Count == 1 && JObject.FromObject(result).SelectNode("$.items[0].ContentItemVersionId").ToString() == secondcontentitemversionid)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                Assert.Fail("The Lucene index wasn't updated after the import within 5s and thus the test timed out.");
+            });
+
         }
     }
 }
