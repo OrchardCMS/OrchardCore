@@ -21,7 +21,7 @@ jobs:
     - name: Check if git has changes
       id: changes
       run: echo "changed=$(git status --porcelain | wc -l)" >> $GITHUB_OUTPUT
-      - name: Changes detected after building assets
+    - name: Changes detected after building assets
       if: steps.changes.outputs.changed != 0 
       run: | 
         git status
