@@ -3,6 +3,11 @@
 
 @model ShapeViewModel<ThemeEntry>
 
-<span class="theme-entry-description">
+@if (string.IsNullOrEmpty(Model.Value.Extension.Manifest.Description))
+{
+    return;
+}
+
+<p class="text-muted mb-2">
     @Model.Value.Extension.Manifest.Description
-</span>
+</p>
