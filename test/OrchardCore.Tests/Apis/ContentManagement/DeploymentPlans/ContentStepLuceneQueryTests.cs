@@ -56,10 +56,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         [Fact]
         public async Task ShouldLuceneIndexOnlyIndexesTheLatestversion()
         {
-
             using var context = new BlogPostDeploymentContext();
-
-            // Setup
             await context.InitializeAsync();
             // Act
             var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -110,7 +107,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 };
                 var queryParameters = new Dictionary<string, object>();
                 var timeoutTask = Task.Delay(5_000);
-                while (!timeoutTask.IsCompleted)
+                while (true)
                 {
                     await Task.Delay(1_000);
                     // Test
@@ -126,11 +123,12 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             break;
                         }
                     }
+                    if (timeoutTask.IsCompleted)
+                    {
+                        Assert.Fail("The Lucene index wasn't updated after the import within 5s and thus the test timed out.");
+                    }
                 }
-
-                Assert.Fail("The Lucene index wasn't updated after the import within 5s and thus the test timed out.");
             });
-
         }
     }
 }
