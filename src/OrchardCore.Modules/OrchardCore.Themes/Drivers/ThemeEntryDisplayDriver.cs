@@ -15,11 +15,11 @@ public class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
             View("ThemeEntry_SummaryAdmin__Title", model).Location("SummaryAdmin", "Header:5"),
             View("ThemeEntry_SummaryAdmin__Descriptions", model).Location("SummaryAdmin", "Content:5"),
             View("ThemeEntry_SummaryAdmin__Attributes", model).Location("SummaryAdmin", "Tags:5"),
-         };
+        };
 
         if (model.IsCurrent)
         {
-            results.Add(View("ThemeEntry_SummaryAdmin__Current", model).Location("SummaryAdmin", "FooterBelow:5"));
+            results.Add(View("ThemeEntry_SummaryAdmin__Current", model).Location("SummaryAdmin", "FooterStart:5"));
         }
         else
         {
