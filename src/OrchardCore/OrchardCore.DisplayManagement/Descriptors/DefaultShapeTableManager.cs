@@ -43,9 +43,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
             _logger = logger;
         }
 
-        public ShapeTable GetShapeTable(string themeId)
-            => GetShapeTableAsync(themeId).GetAwaiter().GetResult();
-
         public Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
             // This method is intentionally kept non-async since most calls
