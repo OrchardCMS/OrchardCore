@@ -185,7 +185,7 @@ namespace OrchardCore.DisplayManagement.Views
                 else
                 {
                     // try to access it as a member.
-                    parentShape = parentShape.GetProperty<IShape>(zone);
+                    parentShape = parentShape.GetPropertyOrDefault<IShape>(zone);
                 }
             }
 

@@ -1,5 +1,6 @@
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Notify
 {
     public class Notifier : INotifier
     {
-        private readonly IList<NotifyEntry> _entries;
+        private readonly List<NotifyEntry> _entries;
         private readonly ILogger _logger;
 
         public Notifier(ILogger<Notifier> logger)
@@ -16,17 +17,21 @@ namespace OrchardCore.DisplayManagement.Notify
             _logger = logger;
         }
 
-        [Obsolete("This method will be removed in a later version. Use AddAsync()")]
-        // TODO The implementation for this is provided as an interface default implementation
-        // when the interface method is removed, replace this with AddAsync.
         public void Add(NotifyType type, LocalizedHtmlString message)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ValueTask AddAsync(NotifyType type, LocalizedHtmlString message)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message.Value);
+                _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message.ToString());
             }
 
             _entries.Add(new NotifyEntry { Type = type, Message = message });
+
+            return ValueTask.CompletedTask;
         }
 
         public IList<NotifyEntry> List()

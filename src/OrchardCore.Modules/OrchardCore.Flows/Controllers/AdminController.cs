@@ -67,7 +67,7 @@ namespace OrchardCore.Flows.Controllers
             }
 
             // Create a Card Shape
-            dynamic contentCard = await _shapeFactory.New.ContentCard(
+            var contentCard = await _shapeFactory.New.ContentCard(
                 // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
                 // Shape Specific
