@@ -53,8 +53,8 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         }
 
 
-        [Fact]
-        public async Task ShouldUpdateLuceneIndexesLatestDocOnly()
+        [Fact]        
+        public async Task ShouldLuceneIndexOnlyIndexesTheLatestversion()
         {
 
             using var context = new BlogPostDeploymentContext();
