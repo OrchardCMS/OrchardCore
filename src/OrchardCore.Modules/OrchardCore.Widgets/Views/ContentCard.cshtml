@@ -33,7 +33,7 @@
             contentItemEditor.Properties["Sidebar"] = null;
 
             //Move Content Footer to Card Footer, if any
-            Model.Footer = contentItemEditor.GetPropertyOrDefault<IShape>("Footer");
+            Model.Footer = contentItemEditor.GetProperty<IShape>("Footer");
             contentItemEditor.Properties["Footer"] = null;
 
             Model.ContentEditor = contentItemEditor;

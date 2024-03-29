@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 #pragma warning disable CA1822 // Mark members as static
         public IHtmlContent AdminTabs(IShape shape)
         {
-            var tabsGrouping = shape.GetPropertyOrDefault<IList<IGrouping<string, object>>>("Tabs");
+            var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
             if (tabsGrouping == null)
             {
                 return HtmlString.Empty;
@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             var tagBuilder = shape.GetTagBuilder("ul");
-            var identifier = shape.GetPropertyOrDefault<string>("Identifier");
+            var identifier = shape.GetProperty<string>("Identifier");
             tagBuilder.AddCssClass("nav nav-tabs flex-column flex-md-row");
             tagBuilder.Attributes["role"] = "tablist";
 
