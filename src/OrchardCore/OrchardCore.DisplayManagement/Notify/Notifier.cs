@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public ValueTask AddAsync(NotifyType type, LocalizedHtmlString message)
         {
-            _logger.LogInformation("Notification '{type}' with message '{message}'", type, message);
+            _logger.LogInformation("Notification '{Type}' with message '{Message}'", type, message);
 
             _entries.Add(new NotifyEntry { Type = type, Message = message });
 
