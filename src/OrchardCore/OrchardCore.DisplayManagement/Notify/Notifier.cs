@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -17,17 +16,9 @@ namespace OrchardCore.DisplayManagement.Notify
             _logger = logger;
         }
 
-        public void Add(NotifyType type, LocalizedHtmlString message)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public ValueTask AddAsync(NotifyType type, LocalizedHtmlString message)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message.ToString());
-            }
+            _logger.LogInformation("Notification '{type}' with message '{message}'", type, message);
 
             _entries.Add(new NotifyEntry { Type = type, Message = message });
 
@@ -35,8 +26,6 @@ namespace OrchardCore.DisplayManagement.Notify
         }
 
         public IList<NotifyEntry> List()
-        {
-            return _entries;
-        }
+            => _entries;
     }
 }
