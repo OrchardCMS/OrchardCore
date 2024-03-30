@@ -9,7 +9,7 @@ namespace YesSql.Serialization
     {
         private readonly JsonSerializerOptions _options;
 
-        public DefaultJsonContentSerializer(IOptions<ContentSerializerJsonOptions> options)
+        public DefaultJsonContentSerializer(IOptions<DocumentJsonSerializerOptions> options)
         {
             _options = options.Value.SerializerOptions;
         }

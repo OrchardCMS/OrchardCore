@@ -180,7 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            var serializerOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>();
+            var serializerOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>();
 
             var storeConfiguration = new YesSql.Configuration
             {

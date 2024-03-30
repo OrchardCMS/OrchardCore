@@ -56,7 +56,7 @@ namespace OrchardCore.Apis.GraphQL
                 // Common types of converters are already configured in the assembly "GraphQL.SystemTextJson".
                 options.Converters.Add(GraphQLNamedQueryRequestJsonConverter.Instance);
 
-                var contentSerializerJsonOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>().Value;
+                var contentSerializerJsonOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>().Value;
                 options.Merge(contentSerializerJsonOptions.SerializerOptions);
             }));
 
