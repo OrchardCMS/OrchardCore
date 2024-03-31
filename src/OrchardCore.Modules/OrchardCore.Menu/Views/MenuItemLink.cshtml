@@ -1,1 +1,1 @@
-﻿<a href="@(Model.Href ?? "#")">@Model.Text</a>
+<a href="@(Model.Href ?? "#")" @(Model.Target ?? $"target=\"" + Model.Target + "\"")>@Model.Text</a>

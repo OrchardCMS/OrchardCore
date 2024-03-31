@@ -93,5 +93,10 @@ namespace OrchardCore.Navigation
         /// The css classes to render with the menu item.
         /// </summary>
         public List<string> Classes { get; }
+
+        /// <summary>
+        /// The html target of the menu item.
+        /// </summary>
+        public string Target { get; set; }
     }
 }
