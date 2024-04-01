@@ -41,7 +41,7 @@
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.2" />
     <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="8.3.0" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.17.3" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.17.4" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.4.0" />
@@ -66,6 +66,7 @@
     <PackageManagement Include="StackExchange.Redis" Version="2.7.33" />
     <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
+    <PackageManagement Include="System.IO.Hashing" Version="8.0.0" />
     <PackageManagement Include="xunit" Version="2.7.0" />
     <PackageManagement Include="xunit.analyzers" Version="1.11.0" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.7" />
