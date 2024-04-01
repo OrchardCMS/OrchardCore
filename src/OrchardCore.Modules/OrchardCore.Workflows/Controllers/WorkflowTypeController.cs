@@ -198,7 +198,7 @@ namespace OrchardCore.Workflows.Controllers
 
                         return new PhysicalFileResult(archiveFileName, "application/zip")
                         {
-                            FileDownloadName = $"Workflows.zip"
+                            FileDownloadName = $"WorkflowTypes.zip"
                         };
 
                     case WorkflowTypeBulkAction.Delete:
