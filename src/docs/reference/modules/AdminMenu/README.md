@@ -211,3 +211,9 @@ jquery.ui.sortable.js 1.10+
 Copyright (c) 2010-2016 Manuele J Sarfatti and contributors
 Licensed under the MIT License
 <http://www.opensource.org/licenses/mit-license.php>
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_Z6gPoAfHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
