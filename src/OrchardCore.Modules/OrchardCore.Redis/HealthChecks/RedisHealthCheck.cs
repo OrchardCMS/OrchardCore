@@ -9,6 +9,8 @@ namespace OrchardCore.Redis.HealthChecks;
 
 public class RedisHealthCheck : IHealthCheck
 {
+    private const int Timeout = 30;
+
     private readonly IServiceProvider _serviceProvider;
 
     public RedisHealthCheck(IServiceProvider serviceProvider)
@@ -34,9 +36,9 @@ public class RedisHealthCheck : IHealthCheck
             if (redisService.Connection.IsConnected)
             {
                 var time = await redisService.Database.PingAsync();
-                if (time > TimeSpan.FromSeconds(30))
+                if (time > TimeSpan.FromSeconds(Timeout))
                 {
-                    return HealthCheckResult.Unhealthy(description: $"The Redis server couldn't be reached within {time.TotalSeconds} seconds and might be offline or have degraded performance.");
+                    return HealthCheckResult.Unhealthy(description: $"The Redis server couldn't be reached within {Timeout} seconds and might be offline or have degraded performance.");
                 }
                 else
                 {
