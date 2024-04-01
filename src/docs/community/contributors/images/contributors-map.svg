@@ -206,47 +206,48 @@
 	.palette-color-4 { fill: #6AB356 !important; }
 	.palette-color-5 { fill: #47A042 !important; }
 	.palette-color-6 { fill: #328533 !important; }
-	.se { fill: #6AB356; }
-	.nl { fill: #6AB356; }
-	.fi { fill: #6AB356; }
-	.be { fill: #6AB356; }
-	.au { fill: #47A042; }
-	.hu { fill: #47A042; }
-	.cn { fill: #47A042; }
-	.ca { fill: #47A042; }
-	.ye { fill: #328533; }
-	.us { fill: #328533; }
-	.gb { fill: #328533; }
-	.fr { fill: #328533; }
+	.palette-color-7 { fill: #1D6A23 !important; }
+	.vn { fill: #D9E887; }
+	.ee { fill: #D9E887; }
+	.dk { fill: #D9E887; }
+	.cy { fill: #D9E887; }
+	.ru { fill: #D9E887; }
 	.no { fill: #D9E887; }
+	.ro { fill: #D9E887; }
+	.im { fill: #D9E887; }
 	.ba { fill: #D9E887; }
 	.bg { fill: #D9E887; }
-	.cy { fill: #D9E887; }
-	.vn { fill: #D9E887; }
-	.im { fill: #D9E887; }
-	.ee { fill: #D9E887; }
 	.tr { fill: #D9E887; }
 	.sg { fill: #D9E887; }
-	.dk { fill: #D9E887; }
-	.ro { fill: #D9E887; }
-	.ru { fill: #D9E887; }
-	.pl { fill: #B3D778; }
-	.za { fill: #B3D778; }
+	.at { fill: #B3D778; }
 	.jp { fill: #B3D778; }
-	.rs { fill: #B3D778; }
 	.ch { fill: #B3D778; }
 	.in { fill: #B3D778; }
+	.pl { fill: #B3D778; }
 	.es { fill: #B3D778; }
-	.pk { fill: #B3D778; }
-	.at { fill: #B3D778; }
-	.ua { fill: #B3D778; }
 	.it { fill: #B3D778; }
-	.tn { fill: #8CC569; }
-	.nz { fill: #8CC569; }
-	.pt { fill: #8CC569; }
-	.de { fill: #8CC569; }
+	.pk { fill: #B3D778; }
+	.rs { fill: #B3D778; }
+	.ua { fill: #B3D778; }
+	.za { fill: #B3D778; }
 	.th { fill: #8CC569; }
-#legend6 { display: inline !important; }</style>
+	.pt { fill: #8CC569; }
+	.tn { fill: #8CC569; }
+	.de { fill: #8CC569; }
+	.be { fill: #6AB356; }
+	.fi { fill: #6AB356; }
+	.se { fill: #6AB356; }
+	.nl { fill: #6AB356; }
+	.au { fill: #47A042; }
+	.cn { fill: #47A042; }
+	.nz { fill: #47A042; }
+	.hu { fill: #47A042; }
+	.us { fill: #328533; }
+	.ye { fill: #328533; }
+	.ca { fill: #328533; }
+	.gb { fill: #328533; }
+	.fr { fill: #1D6A23; }
+#legend7 { display: inline !important; }</style>
 
   <path
      id="ocean"
@@ -1631,7 +1632,7 @@
      class="landxx coastxx nz"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6637">New Zealand (17 contributions)
+       id="title6637">New Zealand (407 contributions)
 </title>
     <path
        id="path3560"
@@ -2936,7 +2937,7 @@
      class="landxx coastxx gb"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7077">United Kingdom (948 contributions)
+       id="title7077">United Kingdom (558 contributions)
 </title>
     <path
        id="United_Kingdom_Northern_Ireland"
@@ -9550,7 +9551,7 @@
            id="tspan23840"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">%8</tspan></text>
+           y="1542.405">2.7k</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9594,7 +9595,7 @@
            id="tspan29690"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">478</tspan></text>
+           y="1542.4438">430</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9762,7 +9763,7 @@
            id="tspan101998"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">%8</tspan></text>
+           y="1542.405">2.7k</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9808,7 +9809,7 @@
            id="tspan102014"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">478</tspan></text>
+           y="1542.4438">430</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9958,7 +9959,7 @@
            id="tspan104696"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">%8</tspan></text>
+           y="1542.405">2.7k</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10004,7 +10005,7 @@
            id="tspan104712"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">478</tspan></text>
+           y="1542.4438">430</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10177,7 +10178,7 @@
            id="tspan106782"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">478</tspan></text>
+           y="1542.4438">430</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10305,7 +10306,7 @@
            id="tspan106828"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">%8</tspan></text>
+           y="1542.444">2.7k</tspan></text>
     </g>
   </g>
   <g
@@ -10327,7 +10328,7 @@
            id="tspan108946"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">478</tspan></text>
+           y="1542.4438">430</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10586,7 +10587,7 @@
            id="tspan111694"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">478</tspan></text>
+           y="1542.444">430</tspan></text>
     </g>
   </g>
   <g
