@@ -101,8 +101,8 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: this, isNew: true, string.Empty, string.Empty);
-            editor.DeploymentStep = step;
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+            editor.Properties["DeploymentStep"] = step;
 
             if (ModelState.IsValid)
             {

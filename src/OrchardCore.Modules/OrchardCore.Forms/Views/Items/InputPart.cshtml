@@ -7,7 +7,7 @@
     var fieldName = formInputElementPart.Name;
     var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
     var fieldValue = Model.Value.DefaultValue;
-    var fieldClass = "form-control";
+    var fieldClass = Model.Value.Type == "checkbox" ? "form-check-input" : "form-control";
     var isChecked = false;
 
     if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
@@ -23,9 +23,9 @@
 
         if (fieldEntry.Errors.Count > 0)
         {
-            fieldClass = "form-control input-validation-error is-invalid";
+            fieldClass += " input-validation-error is-invalid";
         }
     }
 }
 
-<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" : "") />
+<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" : string.Empty) />

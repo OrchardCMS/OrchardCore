@@ -168,8 +168,8 @@ namespace OrchardCore.Deployment.Controllers
             var items = new List<dynamic>();
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(step, this, "Summary");
-                item.DeploymentStep = step;
+                var item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
+                item.Properties["DeploymentStep"] = step;
                 items.Add(item);
             }
 
@@ -177,8 +177,8 @@ namespace OrchardCore.Deployment.Controllers
             foreach (var factory in _factories)
             {
                 var step = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, this, "Thumbnail");
-                thumbnail.DeploymentStep = step;
+                var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["DeploymentStep"] = step;
                 thumbnails.Add(factory.Name, thumbnail);
             }
 

@@ -329,12 +329,14 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, this, displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
+
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
-            activityShape.Activity = activityContext.Activity;
-            activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.IsBlocking = isBlocking;
+            activityShape.Properties["Activity"] = activityContext.Activity;
+            activityShape.Properties["ActivityRecord"] = activityContext.ActivityRecord;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["IsBlocking"] = isBlocking;
+
             return activityShape;
         }
     }

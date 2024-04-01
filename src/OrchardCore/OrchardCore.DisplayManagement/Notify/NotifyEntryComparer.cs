@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 
@@ -14,12 +15,12 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public bool Equals(NotifyEntry x, NotifyEntry y)
         {
-            return x.Type == y.Type && x.GetMessageAsString(_htmlEncoder) == y.GetMessageAsString(_htmlEncoder);
+            return x.Type == y.Type && x.ToHtmlString(_htmlEncoder) == y.ToHtmlString(_htmlEncoder);
         }
 
         public int GetHashCode(NotifyEntry obj)
         {
-            return obj.GetMessageAsString(_htmlEncoder).GetHashCode() & 23 * obj.Type.GetHashCode();
+            return HashCode.Combine(obj.ToHtmlString(_htmlEncoder), obj.Type);
         }
     }
 }

@@ -104,8 +104,8 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(source, updater: this, isNew: true, string.Empty, string.Empty);
-            editor.SitemapStep = source;
+            var editor = await _displayManager.UpdateEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            editor.Properties["SitemapStep"] = source;
 
             if (ModelState.IsValid)
             {

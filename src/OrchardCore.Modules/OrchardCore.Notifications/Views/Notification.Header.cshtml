@@ -18,6 +18,8 @@
     var readInfo = notification.As<NotificationReadInfo>();
 }
 
-<div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
-    <span aria-hidden="false">@notification.Summary</span>
+<div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2 @(readInfo.IsRead ? "notification-is-read": "notification-is-unread")">
+    <div aria-hidden="false">
+        @Html.Raw(notification.Summary)
+    </div>
 </div>
