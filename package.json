@@ -20,7 +20,7 @@
     "es6-promise": "4.2.8",
     "glob": "^8.0.3",
     "graceful-fs": "4.2.11",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-babel": "8.0.0",
     "gulp-cli": "^2.3.0",
     "gulp-concat": "2.6.1",
