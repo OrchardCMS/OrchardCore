@@ -11,8 +11,9 @@
 <ol class="list-group condition-group pt-3" data-conditiongroupid="@Model.Condition.ConditionId">
     @foreach (var entry in Model.Entries)
     {
-        dynamic summary = await DisplayManager.BuildDisplayAsync(entry.Condition, null, "Summary");
-        summary.Condition = entry.Condition;
+        var summary = await DisplayManager.BuildDisplayAsync(entry.Condition, null, "Summary");
+        summary.Properties["Condition"] = entry.Condition;
+
         <li class="list-group-item pr-0" data-conditionid="@entry.Condition.ConditionId">
             @await DisplayAsync(summary)
         </li>
