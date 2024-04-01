@@ -65,7 +65,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
                 foreach (var binding in alternationDescriptor.Bindings)
                 {
-                    _bindings.TryAdd(binding.Key, binding.Value);
+                    _bindings[binding.Key] = binding.Value;
                 }
 
                 _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
