@@ -45,6 +45,12 @@ namespace OrchardCore.Navigation
             _item.Url = url;
             return this;
         }
+        public NavigationItemBuilder Target(string target)
+        {
+            _item.Target = target;
+            return this;
+        }
+
 
         public NavigationItemBuilder Culture(string culture)
         {

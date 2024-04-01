@@ -10,8 +10,14 @@ namespace OrchardCore.Menu.Models
         public string Url { get; set; }
 
         /// <summary>
+        /// The target of the link to create.
+        /// </summary>
+        public string Target { get; set; }
+
+        /// <summary>
         /// The raw html to display for this link.
         /// </summary>
         public string Html { get; set; }
+
     }
 }

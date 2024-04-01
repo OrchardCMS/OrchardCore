@@ -68,6 +68,7 @@ namespace OrchardCore.Navigation
             var menuItemShape = (await shapeFactory.NavigationItem())
                 .Text(menuItem.Text)
                 .Href(menuItem.Href)
+                .Target(menuItem.Target)
                 .Url(menuItem.Url)
                 .LinkToFirstChild(menuItem.LinkToFirstChild)
                 .RouteValues(menuItem.RouteValues)

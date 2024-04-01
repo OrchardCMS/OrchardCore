@@ -25,6 +25,12 @@
 </div>
 
 <div class="mb-3">
+    <label asp-for="Target" class="form-label">@T["Target"]</label>
+    <input asp-for="Target" class="form-control" />
+    <span class="hint">@T["The target attribute of the A tag, see more:"] <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">target</a></span>
+</div>
+
+<div class="mb-3">
     <label asp-for="IconClass" class="form-label">@T["Icon"]</label>
 
     <div class="input-group mb-3">

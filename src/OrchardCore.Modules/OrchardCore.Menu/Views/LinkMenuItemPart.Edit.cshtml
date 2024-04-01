@@ -14,3 +14,10 @@
         <input asp-for="Url" class="form-control" />
     </div>
 </div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Target" class="@Orchard.GetLabelClasses()">@T["Target"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Target" class="form-control" />
+    </div>
+</div>

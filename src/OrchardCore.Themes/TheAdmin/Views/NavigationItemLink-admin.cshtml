@@ -14,6 +14,11 @@
         tag.Attributes["href"] = "#m" + Model.GetHashCode().ToString();
     }
 
+    if (!string.IsNullOrEmpty(Model.Target))
+    {
+        tag.Attributes["target"] = Model.Target;
+    }
+
     var prefix = "icon-class-";
 
     // Extract classes that are not icons from Model.Classes
