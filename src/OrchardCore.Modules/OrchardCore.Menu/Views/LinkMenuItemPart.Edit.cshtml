@@ -19,5 +19,6 @@
     <label asp-for="Target" class="@Orchard.GetLabelClasses()">@T["Target"]</label>
     <div class="@Orchard.GetEndClasses()">
         <input asp-for="Target" class="form-control" />
+        <span class="hint">@T["The target attribute of the A tag, see more:"] <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">target</a></span>
     </div>
 </div>
