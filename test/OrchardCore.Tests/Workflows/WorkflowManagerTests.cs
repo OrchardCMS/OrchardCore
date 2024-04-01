@@ -114,9 +114,9 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
-            var jsonOptionsMock = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            var jsonOptionsMock = new Mock<IOptions<DocumentJsonSerializerOptions>>();
             jsonOptionsMock.Setup(x => x.Value)
-                .Returns(new ContentSerializerJsonOptions());
+                .Returns(new DocumentJsonSerializerOptions());
 
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
