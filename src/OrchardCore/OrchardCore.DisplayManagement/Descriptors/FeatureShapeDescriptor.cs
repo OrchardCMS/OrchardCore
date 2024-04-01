@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Implementation;
@@ -22,16 +21,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public class ShapeDescriptorIndex : ShapeDescriptor
     {
-        private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
-        private readonly FeatureShapeDescriptor[] _alternationDescriptors;
-        private readonly string[] _wrappers;
-        private readonly string[] _bindingSources;
-        private readonly Dictionary<string, ShapeBinding> _bindings;
-        private readonly Func<ShapeCreatingContext, Task>[] _creatingAsync;
-        private readonly Func<ShapeCreatedContext, Task>[] _createdAsync;
-        private readonly Func<ShapeDisplayContext, Task>[] _displayingAsync;
-        private readonly Func<ShapeDisplayContext, Task>[] _processingAsync;
-        private readonly Func<ShapeDisplayContext, Task>[] _displayedAsync;
+        private readonly List<FeatureShapeDescriptor> _alternationDescriptors = [];
+        private readonly List<string> _wrappers = [];
+        private readonly List<string> _bindingSources = [];
+        private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<Func<ShapeCreatingContext, Task>> _creatingAsync = [];
+        private readonly List<Func<ShapeCreatedContext, Task>> _createdAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _displayingAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _processingAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _displayedAsync = [];
 
         public ShapeDescriptorIndex(
             string shapeType,
@@ -39,46 +37,43 @@ namespace OrchardCore.DisplayManagement.Descriptors
             ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
         {
             ShapeType = shapeType;
-            _descriptors = descriptors;
 
-            // pre-calculate as much as we can
-            _alternationDescriptors = alterationKeys
-                .Select(key => _descriptors[key])
-                .ToArray();
+            // Pre-calculate as much as we can for performance reasons.
+            foreach (var alterationKey in alterationKeys)
+            {
+                if (!descriptors.TryGetValue(alterationKey, out var alternationDescriptor))
+                {
+                    continue;
+                }
 
-            _wrappers = _alternationDescriptors
-                .SelectMany(sd => sd.Wrappers)
-                .ToArray();
+                _alternationDescriptors.Add(alternationDescriptor);
 
-            _bindingSources = _alternationDescriptors
-                .SelectMany(sd => sd.BindingSources)
-                .ToArray();
+                if (alternationDescriptor.Wrappers.Count > 0)
+                {
+                    _wrappers.AddRange(alternationDescriptor.Wrappers);
+                }
 
-            _bindings = _alternationDescriptors
-                .SelectMany(sd => sd.Bindings)
-                .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-                .Select(kv => kv.Last())
-                .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
+                if (alternationDescriptor.BindingSources.Count > 0)
+                {
+                    _bindingSources.AddRange(alternationDescriptor.BindingSources);
+                }
 
-            _creatingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatingAsync)
-                .ToArray();
+                if (alternationDescriptor.BindingSources.Count > 0)
+                {
+                    _bindingSources.AddRange(alternationDescriptor.BindingSources);
+                }
 
-            _createdAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatedAsync)
-                .ToArray();
+                foreach (var binding in alternationDescriptor.Bindings)
+                {
+                    _bindings.TryAdd(binding.Key, binding.Value);
+                }
 
-            _displayingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayingAsync)
-                .ToArray();
-
-            _processingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.ProcessingAsync)
-                .ToArray();
-
-            _displayedAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayedAsync)
-                .ToArray();
+                _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
+                _createdAsync.AddRange(alternationDescriptor.CreatedAsync);
+                _displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);
+                _displayedAsync.AddRange(alternationDescriptor.DisplayedAsync);
+                _processingAsync.AddRange(alternationDescriptor.ProcessingAsync);
+            }
         }
 
         /// <summary>
@@ -108,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private PlacementInfo CalculatePlacement(ShapePlacementContext ctx)
         {
             PlacementInfo info = null;
-            for (var i = _alternationDescriptors.Length - 1; i >= 0; i--)
+            for (var i = _alternationDescriptors.Count - 1; i >= 0; i--)
             {
                 var descriptor = _alternationDescriptors[i];
                 info = descriptor.Placement(ctx);
