@@ -5,16 +5,16 @@ using OrchardCore.Json;
 
 namespace YesSql.Serialization
 {
-    public class DefaultJsonContentSerializer : IContentSerializer
+    public class DefaultContentJsonSerializer : IContentSerializer
     {
         private readonly JsonSerializerOptions _options;
 
-        public DefaultJsonContentSerializer(IOptions<ContentSerializerJsonOptions> options)
+        public DefaultContentJsonSerializer(IOptions<DocumentJsonSerializerOptions> options)
         {
             _options = options.Value.SerializerOptions;
         }
 
-        public DefaultJsonContentSerializer(JsonSerializerOptions options)
+        public DefaultContentJsonSerializer(JsonSerializerOptions options)
             => _options = options;
 
         public object Deserialize(string content, Type type)
