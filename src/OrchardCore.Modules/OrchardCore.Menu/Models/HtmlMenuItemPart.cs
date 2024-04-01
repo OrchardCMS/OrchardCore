@@ -18,6 +18,5 @@ namespace OrchardCore.Menu.Models
         /// The raw html to display for this link.
         /// </summary>
         public string Html { get; set; }
-
     }
 }

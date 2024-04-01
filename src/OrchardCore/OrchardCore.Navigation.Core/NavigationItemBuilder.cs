@@ -51,7 +51,6 @@ namespace OrchardCore.Navigation
             return this;
         }
 
-
         public NavigationItemBuilder Culture(string culture)
         {
             _item.Culture = culture;

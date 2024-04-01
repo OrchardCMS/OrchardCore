@@ -83,6 +83,7 @@ namespace OrchardCore.Menu.Drivers
                 part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
                 part.Url = model.Url;
                 part.Target = model.Target;
+
                 var urlToValidate = part.Url;
 
                 if (!string.IsNullOrEmpty(urlToValidate))

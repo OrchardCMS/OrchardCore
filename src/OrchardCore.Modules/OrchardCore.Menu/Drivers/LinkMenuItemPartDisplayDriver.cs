@@ -73,6 +73,7 @@ namespace OrchardCore.Menu.Drivers
                 part.Url = model.Url;
                 part.Target = model.Target;
                 part.ContentItem.DisplayText = model.Name;
+
                 // This code can be removed in a later release.
 #pragma warning disable 0618
                 part.Name = model.Name;
