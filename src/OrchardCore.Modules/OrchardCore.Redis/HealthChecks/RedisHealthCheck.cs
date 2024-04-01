@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Redis.HealthChecks;
 
@@ -13,10 +12,7 @@ public class RedisHealthCheck : IHealthCheck
 
     private readonly IServiceProvider _serviceProvider;
 
-    public RedisHealthCheck(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
+    public RedisHealthCheck(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
