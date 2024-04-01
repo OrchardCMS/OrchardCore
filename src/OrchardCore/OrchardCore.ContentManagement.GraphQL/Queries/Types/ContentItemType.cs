@@ -1,10 +1,10 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.GraphQL.Options;

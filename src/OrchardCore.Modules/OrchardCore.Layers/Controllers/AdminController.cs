@@ -198,16 +198,16 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
-            rule.ConditionId = layer.LayerRule.ConditionId;
+            var rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.Properties["ConditionId"] = layer.LayerRule.ConditionId;
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _conditionFactories)
             {
                 var condition = factory.Create();
-                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.Condition = condition;
-                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
+                var thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["Condition"] = condition;
+                thumbnail.Properties["TargetUrl"] = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
