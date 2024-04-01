@@ -13,6 +13,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public string LinkUrl { get; set; }
 
         public string Target { get; set; }
+
         public string IconClass { get; set; }
 
         public string SelectedPermissionNames { get; set; }

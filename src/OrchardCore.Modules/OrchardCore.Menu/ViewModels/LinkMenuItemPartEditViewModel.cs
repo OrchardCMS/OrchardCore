@@ -8,6 +8,7 @@ namespace OrchardCore.Menu.ViewModels
         public string Name { get; set; }
 
         public string Url { get; set; }
+
         public string Target { get; set; }
 
         [BindNever]
