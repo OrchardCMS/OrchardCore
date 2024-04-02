@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Widgets
@@ -20,12 +21,12 @@ namespace OrchardCore.Widgets
                 .OnDisplaying(context =>
                 {
                     // Defines Edit Alternates for the Content Item being edited.
-                    dynamic contentCardEditor = context.Shape;
-                    string collectionType = contentCardEditor.CollectionShapeType;
-                    string contentType = contentCardEditor.ContentTypeValue;
-                    string parentContentType = contentCardEditor.ParentContentType;
-                    string namedPart = contentCardEditor.CollectionPartName;
-                    if (contentCardEditor.BuildEditor == true)
+                    var contentCardEditor = context.Shape;
+                    var collectionType = contentCardEditor.GetProperty<string>("CollectionShapeType");
+                    var contentType = contentCardEditor.GetProperty<string>("ContentTypeValue");
+                    var parentContentType = contentCardEditor.GetProperty<string>("ParentContentType");
+                    var namedPart = contentCardEditor.GetProperty<string>("CollectionPartName");
+                    if (contentCardEditor.TryGetProperty<bool>("BuildEditor", out var buildEditor) && buildEditor)
                     {
                         // Define edit card shape per collection type
                         // ContentCard_Edit__[CollectionType]
@@ -135,8 +136,8 @@ namespace OrchardCore.Widgets
             builder.Describe(ContentCardFieldsEdit)
                .OnDisplaying(context =>
                {
-                   dynamic contentCardEditorFields = context.Shape;
-                   var collectionType = contentCardEditorFields.CardShape.CollectionShapeType as string;
+                   var contentCardEditorFields = context.Shape;
+                   var collectionType = contentCardEditorFields.GetProperty<IShape>("CardShape").GetProperty<string>("CollectionShapeType");
                    contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
                });
 

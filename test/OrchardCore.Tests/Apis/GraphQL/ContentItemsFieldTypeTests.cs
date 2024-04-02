@@ -42,16 +42,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
             derivedOptions.Setup(x => x.Value)
                 .Returns(new JsonDerivedTypesOptions());
 
-            var configuration = new ContentSerializerJsonOptionsConfiguration(derivedOptions.Object);
+            var configuration = new DocumentJsonSerializerOptionsConfiguration(derivedOptions.Object);
 
-            var jsonOptions = new ContentSerializerJsonOptions();
+            var jsonOptions = new DocumentJsonSerializerOptions();
             configuration.Configure(jsonOptions);
 
-            var jsonSerializerOptions = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            var jsonSerializerOptions = new Mock<IOptions<DocumentJsonSerializerOptions>>();
             jsonSerializerOptions.Setup(x => x.Value)
                 .Returns(jsonOptions);
 
-            var contentSerializer = new DefaultJsonContentSerializer(jsonSerializerOptions.Object);
+            var contentSerializer = new DefaultContentJsonSerializer(jsonSerializerOptions.Object);
 
             _store.Configuration.ContentSerializer = contentSerializer;
             _prefixedStore.Configuration.ContentSerializer = contentSerializer;
