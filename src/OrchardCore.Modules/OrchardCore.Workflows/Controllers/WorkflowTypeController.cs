@@ -587,7 +587,7 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             deploymentPlanResult.Steps.Add(new JsonObject
             {
-                ["name"] = packageName,
+                ["name"] = "WorkflowType",
                 ["data"] = data
             });
 
