@@ -4,7 +4,6 @@ using Esprima;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,20 +17,17 @@ namespace OrchardCore.Rules.Drivers
 {
     public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
-        private readonly ConditionOperatorOptions _options;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly JavascriptConditionEvaluator _evaluator;
 
         public JavascriptConditionDisplayDriver(
-            IOptions<ConditionOperatorOptions> options,
             IHtmlLocalizer<JavascriptConditionDisplayDriver> htmlLocalizer,
             IStringLocalizer<JavascriptConditionDisplayDriver> stringLocalizer,
             JavascriptConditionEvaluator evaluator,
             INotifier notifier)
         {
-            _options = options.Value;
             H = htmlLocalizer;
             S = stringLocalizer;
             _evaluator = evaluator;
@@ -64,7 +60,7 @@ namespace OrchardCore.Rules.Drivers
                 if (string.IsNullOrWhiteSpace(model.Script))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script is required"]);
-                    //Codemirror hides the textarea which displays the error when updater.ModelState.AddModelError is used, that's why a notifier is used to show the error to user
+                    // Codemirror hides the textarea which displays the error when updater.ModelState.AddModelError is used, that's why a notifier is used to show the error to user
                     await _notifier.ErrorAsync(H["The script is required"]);
                     return Edit(condition);
                 }
@@ -79,17 +75,17 @@ namespace OrchardCore.Rules.Drivers
                     });
                     condition.Script = model.Script;
                 }
-                catch (ParserException ex) //Invalid syntax
+                catch (ParserException ex) // Invalid syntax
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
                     await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]);
                 }
-                catch (JavaScriptException ex) //Evaluation threw an Error
+                catch (JavaScriptException ex) // Evaluation threw an Error
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
                     await _notifier.ErrorAsync(H["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
                 }
-                catch (Exception ex) when (ex is InvalidCastException or FormatException) //Evaluation completes successfully, but the result cannot be converted to Boolean
+                catch (Exception ex) when (ex is InvalidCastException or FormatException) // Evaluation completes successfully, but the result cannot be converted to Boolean
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script evaluation failed. Details: {0}", ex.Message]);
                     await _notifier.ErrorAsync(H["The script evaluation failed. Details: {0}", ex.Message]);
