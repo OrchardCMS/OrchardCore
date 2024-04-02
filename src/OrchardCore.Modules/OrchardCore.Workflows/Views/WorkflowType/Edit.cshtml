@@ -24,9 +24,9 @@
                 </button>
             </div>
             <div>
-                <form method="post" asp-action="Export" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">
+                <form method="post" asp-action="Export" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" enctype="multipart/form-data" class="no-multisubmit">
                     <button type="button" class="btn btn-sm btn-secondary">
-                        <i class="fa-solid fa-bars-progress"></i> @T["Export"]
+                        @T["Export"]
                     </button>
                 </form>
                 <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
