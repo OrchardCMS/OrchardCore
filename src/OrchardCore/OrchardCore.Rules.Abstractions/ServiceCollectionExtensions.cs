@@ -26,5 +26,9 @@ namespace OrchardCore.Rules
             where TConditionEvaluator : IConditionEvaluator
             where TConditionFactory : IConditionFactory
             => services.AddCondition(typeof(TCondition), typeof(TConditionEvaluator), typeof(TConditionFactory));
+
+        public static IServiceCollection AddCondition<TCondition, TConditionEvaluator>(this IServiceCollection services)
+            where TCondition : Condition, new()
+            => services.AddCondition(typeof(TCondition), typeof(TConditionEvaluator), typeof(ConditionFactory<TCondition>));
     }
 }

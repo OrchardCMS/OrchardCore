@@ -6,17 +6,17 @@ Enabling the `OrchardCore.Rules` module allows you to implement condition based 
 
 You may create your own conditions for more complex scenarios.
 
-You will need to implement the abstractions found in the `OrchardCore.Rules.Abstractions` package.
+You will need to implement the following abstractions found in the `OrchardCore.Rules.Abstractions` package.
 
 - `Condition`
 - `ConditionEvaluator`
 - `ConditionDisplayDriver`
 - Appropriate views for your condition display driver.
 
+Then you can register the services like so
+
 ``` csharp
-  services
-    .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
-    .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+services.AddRule<BooleanCondition, BooleanConditionEvaluator, BooleanConditionDisplayDriver>();
 ```
 
 Refer [Layers](../Layers/README.md) for more information about rules and conditions.
