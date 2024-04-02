@@ -195,11 +195,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
                     case WorkflowTypeBulkAction.Export:
                         var archiveFileName = await ExportWorkflows(itemIds.ToArray());
-
-                        return new PhysicalFileResult(archiveFileName, "application/zip")
-                        {
-                            FileDownloadName = $"WorkflowTypes.zip"
-                        };
+                        return await ExportWorkflows(itemIds.ToArray());
 
                     case WorkflowTypeBulkAction.Delete:
                         foreach (var entry in checkedEntries)
@@ -230,12 +226,8 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var resultFileName = await ExportWorkflows(id);
 
-            return new PhysicalFileResult(resultFileName, "application/zip")
-            {
-                FileDownloadName = "WorkflowType.zip"
-            };
+            return await ExportWorkflows(id);
         }
         public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
 
@@ -576,19 +568,15 @@ namespace OrchardCore.Workflows.Controllers
             return activityShape;
         }
 
-        private async Task<string> ExportWorkflows(params long[] itemIds)
+        private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
         {
-            using var fileBuilder = new TemporaryFileBuilder();
-            var archiveFileName = fileBuilder.Folder + ".zip";
-            var recipeDescriptor = new RecipeDescriptor();
-            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
+            var packageName = workflowTypes.Count() == 1
+                           ? workflowTypes.FirstOrDefault().Name
+                           : S["workflowTypes"];
+
             var data = new JArray();
-            deploymentPlanResult.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
-            ));
-   
-            foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
+            foreach (var workflow in workflowTypes)
             {
                 var objectData = JObject.FromObject(workflow);
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
@@ -596,10 +584,22 @@ namespace OrchardCore.Workflows.Controllers
                 data.Add(objectData);
             }
 
+            using var fileBuilder = new TemporaryFileBuilder();
+            var archiveFileName = fileBuilder.Folder + ".zip";
+            var recipeDescriptor = new RecipeDescriptor();
+            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            deploymentPlanResult.Steps.Add(new JObject(
+                new JProperty("name", packageName),
+                new JProperty("data", data)
+            ));
+
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
 
-            return archiveFileName;
+            return new PhysicalFileResult(packageName, "application/zip")
+            {
+                FileDownloadName = packageName + ".zip"
+            }; ;
         }
     }
 }

@@ -24,11 +24,7 @@
                 </button>
             </div>
             <div>
-                <form method="post" asp-action="Export" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" enctype="multipart/form-data" class="no-multisubmit">
-                    <button type="button" class="btn btn-sm btn-secondary">
-                        @T["Export"]
-                    </button>
-                </form>
+                <a class="btn btn-sm btn-secondary" asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Export"]</a>
                 <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
                 <a class="btn btn-sm btn-secondary" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
             </div>
