@@ -36,6 +36,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
             IEnumerable<string> alterationKeys,
             ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
         {
+            ArgumentException.ThrowIfNullOrEmpty(shapeType);
+
             ShapeType = shapeType;
 
             // Pre-calculate as much as we can for performance reasons.
@@ -47,32 +49,19 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 }
 
                 _alternationDescriptors.Add(alternationDescriptor);
-
-                if (alternationDescriptor.Wrappers.Count > 0)
-                {
-                    _wrappers.AddRange(alternationDescriptor.Wrappers);
-                }
-
-                if (alternationDescriptor.BindingSources.Count > 0)
-                {
-                    _bindingSources.AddRange(alternationDescriptor.BindingSources);
-                }
-
-                if (alternationDescriptor.BindingSources.Count > 0)
-                {
-                    _bindingSources.AddRange(alternationDescriptor.BindingSources);
-                }
-
-                foreach (var binding in alternationDescriptor.Bindings)
-                {
-                    _bindings[binding.Key] = binding.Value;
-                }
-
+                _wrappers.AddRange(alternationDescriptor.Wrappers);
+                _bindingSources.AddRange(alternationDescriptor.BindingSources);
+                _bindingSources.AddRange(alternationDescriptor.BindingSources);
                 _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
                 _createdAsync.AddRange(alternationDescriptor.CreatedAsync);
                 _displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);
                 _displayedAsync.AddRange(alternationDescriptor.DisplayedAsync);
                 _processingAsync.AddRange(alternationDescriptor.ProcessingAsync);
+
+                foreach (var binding in alternationDescriptor.Bindings)
+                {
+                    _bindings[binding.Key] = binding.Value;
+                }
             }
         }
 
