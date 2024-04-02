@@ -57,7 +57,6 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage bucket name.");
-            throw;
         }
     }
 
@@ -76,7 +75,6 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage base path.");
-            throw;
         }
     }
 }

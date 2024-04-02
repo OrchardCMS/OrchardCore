@@ -118,6 +118,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
+            serviceCollection.AddKeyedSingleton<Dictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager));
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
             serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 

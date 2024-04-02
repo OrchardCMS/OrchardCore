@@ -34,8 +34,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             Name = "OrderByDirection";
             Description = "the order by direction";
-            AddValue("ASC", "orders content items in ascending order", OrderByDirection.Ascending);
-            AddValue("DESC", "orders content items in descending order", OrderByDirection.Descending);
+            Add("ASC", OrderByDirection.Ascending, "orders content items in ascending order");
+            Add("DESC", OrderByDirection.Descending, "orders content items in descending order");
         }
     }
 }

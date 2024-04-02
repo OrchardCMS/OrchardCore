@@ -7,6 +7,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +16,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -29,6 +30,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
@@ -63,9 +65,9 @@ namespace OrchardCore.OpenId.Services
 
         private OpenIdServerSettings GetSettingsFromContainer(ISite container)
         {
-            if (container.Properties.TryGetValue(nameof(OpenIdServerSettings), out var settings))
+            if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
-                return settings.ToObject<OpenIdServerSettings>();
+                return settings.ToObject<OpenIdServerSettings>(JOptions.Default);
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
@@ -89,7 +91,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

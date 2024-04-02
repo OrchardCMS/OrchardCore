@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -22,28 +21,20 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else if (second != null)
             {
-                first.Alternates = first.Alternates.Combine(second.Alternates);
-                first.Wrappers = first.Wrappers.Combine(second.Wrappers);
-                if (!string.IsNullOrEmpty(second.ShapeType))
+                var combined = new PlacementInfo
                 {
-                    first.ShapeType = second.ShapeType;
-                }
+                    Alternates = first.Alternates.Combine(second.Alternates),
+                    Wrappers = first.Wrappers.Combine(second.Wrappers),
 
-                if (!string.IsNullOrEmpty(second.Location))
-                {
-                    first.Location = second.Location;
-                }
+                    ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
+                    Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
+                    DefaultPosition = string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
+                    Source = $"{first.Source},{second.Source}"
+                };
 
-                if (!string.IsNullOrEmpty(second.DefaultPosition))
-                {
-                    first.DefaultPosition = second.DefaultPosition;
-                }
-
-                if (!string.IsNullOrEmpty(second.Source))
-                {
-                    first.Source += "," + second.Source;
-                }
+                return combined;
             }
+
             return first;
         }
 
@@ -64,7 +55,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else if (second != null)
             {
-                first.AddRange(second);
+                var combined = new AlternatesCollection();
+
+                combined.AddRange(first);
+                combined.AddRange(second);
+
+                return combined;
             }
 
             return first;

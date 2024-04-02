@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment
@@ -15,9 +15,7 @@ namespace OrchardCore.Search.Lucene.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var luceneSettingsStep = step as LuceneSettingsDeploymentStep;
-
-            if (luceneSettingsStep == null)
+            if (step is not LuceneSettingsDeploymentStep)
             {
                 return;
             }
@@ -25,10 +23,11 @@ namespace OrchardCore.Search.Lucene.Deployment
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
             // Adding Lucene settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LuceneSettings", JObject.FromObject(luceneSettings))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Settings",
+                ["LuceneSettings"] = JObject.FromObject(luceneSettings),
+            });
         }
     }
 }

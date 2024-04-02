@@ -14,7 +14,7 @@ public class ElasticsearchIndexPermissionHelper
 
     public static Permission GetElasticIndexPermission(string indexName)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
 
         if (!_permissions.TryGetValue(indexName, out var permission))
         {

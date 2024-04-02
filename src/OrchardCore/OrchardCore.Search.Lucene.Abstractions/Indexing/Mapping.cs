@@ -10,6 +10,6 @@ namespace OrchardCore.Search.Lucene.Indexing
         /// <summary>
         /// Gets the list properties to index indexed by name.
         /// </summary>
-        public Dictionary<string, Property> Properties { get; } = [];
+        public Dictionary<string, Property> Properties { get; init; } = [];
     }
 }

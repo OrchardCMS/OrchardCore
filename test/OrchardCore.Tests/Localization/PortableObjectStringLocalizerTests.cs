@@ -106,7 +106,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "small",  new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -123,7 +123,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
-                new CultureDictionaryRecord("ball", "big", new [] { "míček", "míčky", "míčků" })
+                new CultureDictionaryRecord("ball", "big", ["míček", "míčky", "míčků"])
             });
 
             var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
