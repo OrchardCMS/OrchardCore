@@ -180,7 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            var serializerOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>();
+            var serializerOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>();
 
             var storeConfiguration = new YesSql.Configuration
             {
@@ -189,7 +189,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
                 Logger = loggerFactory.CreateLogger("YesSql"),
-                ContentSerializer = new DefaultJsonContentSerializer(serializerOptions.Value.SerializerOptions)
+                ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions)
             };
 
             if (yesSqlOptions.IdGenerator != null)

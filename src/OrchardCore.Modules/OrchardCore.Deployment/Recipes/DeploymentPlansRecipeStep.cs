@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment.Recipes
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
