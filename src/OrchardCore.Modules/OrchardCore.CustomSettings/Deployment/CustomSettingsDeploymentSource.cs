@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
 
@@ -24,7 +24,10 @@ namespace OrchardCore.CustomSettings.Deployment
                 return;
             }
 
-            var settingsList = new List<JProperty> { new("name", "custom-settings") };
+            var settingsList = new List<KeyValuePair<string, JsonNode>>
+            {
+                new("name", "custom-settings"),
+            };
 
             var settingsTypes = customSettingsStep.IncludeAll
                 ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
@@ -41,11 +44,11 @@ namespace OrchardCore.CustomSettings.Deployment
             foreach (var settingsType in settingsTypes)
             {
                 var settings = await _customSettingsService.GetSettingsAsync(settingsType);
-                settingsList.Add(new JProperty(settings.ContentType, JObject.FromObject(settings)));
+                settingsList.Add(new(settings.ContentType, JObject.FromObject(settings)));
             }
 
             // Adding custom settings
-            result.Steps.Add(new JObject(settingsList.ToArray()));
+            result.Steps.Add(new JsonObject(settingsList.ToArray()));
         }
     }
 }

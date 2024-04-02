@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 
@@ -56,6 +57,9 @@ public static class ServiceCollectionExtensions
         where TStep : DeploymentStep, new()
     {
         services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>());
+
+        // TStep instances are part for DeploymentPlan objects that are serialized to JSON
+        services.AddJsonDerivedTypeInfo<TStep, DeploymentStep>();
 
         return services;
     }

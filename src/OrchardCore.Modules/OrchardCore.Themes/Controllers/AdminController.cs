@@ -16,6 +16,7 @@ using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Controllers
 {
+    [Admin("Themes/{action}/{id?}", "Themes.{action}")]
     public class AdminController : Controller
     {
         private readonly ISiteThemeService _siteThemeService;
@@ -42,6 +43,7 @@ namespace OrchardCore.Themes.Controllers
             H = localizer;
         }
 
+        [Admin("Themes", "Themes.Index")]
         public async Task<ActionResult> Index()
         {
             var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners

@@ -32,8 +32,8 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
-        ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(searchText);
 
         var client = GetSearchClient(indexName);
 
@@ -60,13 +60,18 @@ public class AzureAIIndexDocumentManager(
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var counter = 0L;
 
+        if (searchResult.Value is null)
+        {
+            return counter;
+        }
+
         await foreach (var doc in searchResult.Value.GetResultsAsync())
         {
             action(doc.Document);
             counter++;
         }
 
-        return searchResult.Value?.TotalCount ?? counter;
+        return searchResult.Value.TotalCount ?? counter;
     }
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)

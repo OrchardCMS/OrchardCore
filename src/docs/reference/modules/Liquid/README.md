@@ -1030,3 +1030,7 @@ Optionally you can pass a class for model binding.
 <https://github.com/sebastienros/fluid>  
 Copyright (c) 2017 Sebastien Ros  
 MIT License
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

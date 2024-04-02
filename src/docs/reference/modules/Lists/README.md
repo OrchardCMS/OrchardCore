@@ -84,9 +84,11 @@ The `list_count` filter counts published content items for a given `ContentItem`
 
 The `list_items` filter loads published content items for a given `ContentItem` object or explicit `ContentItem` id given as a string in a list.
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Lucene Indexing
 

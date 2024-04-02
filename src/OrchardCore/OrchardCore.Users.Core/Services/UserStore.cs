@@ -448,7 +448,7 @@ namespace OrchardCore.Users.Services
                 return Task.FromResult(u.RoleNames);
             }
 
-            return Task.FromResult<IList<string>>(new List<string>());
+            return Task.FromResult<IList<string>>([]);
         }
 
         public Task<bool> IsInRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
@@ -513,7 +513,7 @@ namespace OrchardCore.Users.Services
                 return Task.FromResult(u.LoginInfos);
             }
 
-            return Task.FromResult<IList<UserLoginInfo>>(new List<UserLoginInfo>());
+            return Task.FromResult<IList<UserLoginInfo>>([]);
         }
 
         public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -542,7 +542,7 @@ namespace OrchardCore.Users.Services
 
             if (user is not User u)
             {
-                return Task.FromResult<IList<Claim>>(new List<Claim>());
+                return Task.FromResult<IList<Claim>>([]);
             }
 
             return Task.FromResult<IList<Claim>>(u.UserClaims.Select(x => x.ToClaim()).ToList());
