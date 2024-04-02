@@ -3,7 +3,7 @@
 @inject IContentManager ContentManager
 
 @{
-    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
+  var matchAllQuery = OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel.MatchAllQueryBase64;
 }
 
 <style asp-name="codemirror"></style>
