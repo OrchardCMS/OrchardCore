@@ -47,6 +47,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -66,7 +67,8 @@ namespace OrchardCore.Workflows.Controllers
             ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            JsonSerializerOptions jsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -81,6 +83,7 @@ namespace OrchardCore.Workflows.Controllers
             _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _jsonSerializerOptions = jsonSerializerOptions;
         }
 
         [Admin("Workflows/Types", "WorkflowTypes")]
@@ -575,7 +578,7 @@ namespace OrchardCore.Workflows.Controllers
             var data = new JsonArray();
             foreach (var workflow in workflowTypes)
             {
-                var objectData = JObject.FromObject(workflow);
+                var objectData = JObject.FromObject(workflow, _jsonSerializerOptions);
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(workflow.Id));
                 data.Add(objectData);
