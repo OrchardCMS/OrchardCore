@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -57,7 +58,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                     services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-                    services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
+                    services.AddKeyedSingleton<Dictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager));
+                    services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
                     services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
