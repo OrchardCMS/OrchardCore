@@ -18,7 +18,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
         S = stringLocalizer;
     }
 
-    public string Method => "Email";
+    public string Method { get; } = "Email";
 
     public LocalizedString Name => S["Email Notifications"];
 
@@ -34,7 +34,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
         var mailMessage = new MailMessage()
         {
             To = user.Email,
-            Subject = message.Summary,
+            Subject = message.Subject,
         };
 
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))

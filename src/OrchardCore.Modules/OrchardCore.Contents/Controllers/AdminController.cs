@@ -192,7 +192,7 @@ namespace OrchardCore.Contents.Controllers
                 ? pagerOptions.Value.MaxPagedCount
                 : await query.CountAsync();
 
-            dynamic pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
+            var pagerShape = await shapeFactory.PagerAsync(pager, itemsPerPage, options.RouteValues);
 
             // Load items so that loading handlers are invoked.
             var pageOfContentItems = await query.Skip(pager.GetStartIndex())
@@ -207,11 +207,11 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+            var startIndex = (pager.Page - 1) * pager.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + contentItemSummaries.Count - 1;
             options.ContentItemsCount = contentItemSummaries.Count;
-            options.TotalItemCount = pagerShape.TotalItemCount;
+            options.TotalItemCount = itemsPerPage;
 
             var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
