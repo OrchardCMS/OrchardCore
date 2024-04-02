@@ -572,7 +572,7 @@ namespace OrchardCore.Workflows.Controllers
                            ? workflowTypes.FirstOrDefault().Name
                            : S["workflowTypes"];
 
-            var data = new JArray();
+            var data = new JsonArray();
             foreach (var workflow in workflowTypes)
             {
                 var objectData = JObject.FromObject(workflow);
@@ -585,10 +585,11 @@ namespace OrchardCore.Workflows.Controllers
             var archiveFileName = fileBuilder.Folder + ".zip";
             var recipeDescriptor = new RecipeDescriptor();
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-            deploymentPlanResult.Steps.Add(new JObject(
-                new JProperty("name", packageName),
-                new JProperty("data", data)
-            ));
+            deploymentPlanResult.Steps.Add(new JsonObject
+            {
+                ["name"] = packageName,
+                ["data"] = data
+            });
 
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
