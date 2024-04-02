@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -65,7 +64,7 @@ namespace OrchardCore.ContentFields.Fields
                 field.Values = viewModel.Values;
 
                 var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                if (settings.Required && !viewModel.Values.Any())
+                if (settings.Required && viewModel.Values.Length == 0)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }

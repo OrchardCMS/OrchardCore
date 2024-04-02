@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -77,6 +76,7 @@ namespace OrchardCore.Workflows.Controllers
             S = stringLocalizer;
         }
 
+        [Admin("Workflows/Types/{workflowTypeId}/Instances/{action}", "Workflows")]
         public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -212,13 +212,12 @@ namespace OrchardCore.Workflows.Controllers
                 workflowType.Transitions,
             };
 
-            var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var viewModel = new WorkflowViewModel
             {
                 Workflow = workflow,
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
-                WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
+                WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
+                WorkflowJson = JConvert.SerializeObject(workflow, JOptions.CamelCaseIndented),
                 ActivityDesignShapes = activityDesignShapes,
             };
 
@@ -325,7 +324,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
             return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });
@@ -333,12 +332,13 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
-            activityShape.Activity = activityContext.Activity;
-            activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.IsBlocking = isBlocking;
+            activityShape.Properties["Activity"] = activityContext.Activity;
+            activityShape.Properties["ActivityRecord"] = activityContext.ActivityRecord;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["IsBlocking"] = isBlocking;
+
             return activityShape;
         }
     }

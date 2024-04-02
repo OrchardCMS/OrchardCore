@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation
@@ -14,9 +14,9 @@ namespace OrchardCore.Navigation
     {
         public MenuItem()
         {
-            Permissions = new List<Permission>();
-            Classes = new List<string>();
-            Items = new List<MenuItem>();
+            Permissions = [];
+            Classes = [];
+            Items = [];
             LinkToFirstChild = true;
         }
 

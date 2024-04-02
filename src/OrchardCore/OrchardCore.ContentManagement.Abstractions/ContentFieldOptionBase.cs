@@ -6,10 +6,7 @@ namespace OrchardCore.ContentManagement
     {
         public ContentFieldOptionBase(Type contentFieldType)
         {
-            if (contentFieldType == null)
-            {
-                throw new ArgumentNullException(nameof(contentFieldType));
-            }
+            ArgumentNullException.ThrowIfNull(contentFieldType);
 
             Type = contentFieldType;
         }

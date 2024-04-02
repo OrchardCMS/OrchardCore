@@ -1,18 +1,13 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
-using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
 using OrchardCore.Notifications.Handlers;
 using OrchardCore.Notifications.Indexes;
@@ -29,11 +24,11 @@ namespace OrchardCore.Notifications;
 
 public class Startup : StartupBase
 {
-    private readonly AdminOptions _adminOptions;
+    private readonly IShellConfiguration _shellConfiguration;
 
-    public Startup(IOptions<AdminOptions> adminOptions)
+    public Startup(IShellConfiguration shellConfiguration)
     {
-        _adminOptions = adminOptions.Value;
+        _shellConfiguration = shellConfiguration;
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -65,19 +60,11 @@ public class Startup : StartupBase
             return new DefaultNotificationAdminListFilterParser(parser);
         });
 
+        services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
+
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
-    }
-
-    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        routes.MapAreaControllerRoute(
-            name: "ListNotifications",
-            areaName: "OrchardCore.Notifications",
-            pattern: _adminOptions.AdminUrlPrefix + "/notifications",
-            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
-        );
     }
 }
 

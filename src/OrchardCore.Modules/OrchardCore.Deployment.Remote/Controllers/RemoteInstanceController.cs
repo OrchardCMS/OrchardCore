@@ -19,7 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/RemoteInstance/{action}/{id?}", "DeploymentRemoteInstancesCreate{action}")]
     public class RemoteInstanceController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -248,7 +248,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

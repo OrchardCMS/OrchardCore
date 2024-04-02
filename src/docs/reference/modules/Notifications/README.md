@@ -1,10 +1,20 @@
 # Notifications (`OrchardCore.Notifications`)
 
-The `Notifications` module provides the infrastructure necessary to send notification to the app users.
+The `Notifications` module offers a comprehensive infrastructure for managing notifications effectively. It includes a centralized notification center and streamlined mechanisms for seamlessly dispatching notifications to users within the application.
+## Configurations 
+
+You can customize the default notification options through the configuration provider using the following settings:
+
+```json
+"OrchardCore_Notifications": {
+    "TotalUnreadNotifications": 10,
+    "DisableNotificationHtmlBodySanitizer": false
+}
+```
 
 ## Notification Methods
 
-There are many methods to send notifications to a user (e.x., Email, Web Push, Mobile Push, SMS, etc.). Any notification should appear in the notification center.
+There are many methods to send notifications to a user (e.x., Email, Web Push, Mobile Push, SMS, etc.) Any notification sent will be centralized in the notification center before being dispatched to users according to their specified preferences.
 
 !!! info
 When multiple notification methods are enabled, the user can opt-in/out any method they wishes to receive by editing their profile.
@@ -14,14 +24,14 @@ When multiple notification methods are enabled, the user can opt-in/out any meth
 The `Email Notifications` feature offers a means to inform users by dispatching notifications through email.
 
 !!! note
-When using `Email Notifications` feature, you must also configure the [SMTP Service](../Email/README.md).
+When using `Email Notifications` feature, you must also configure the [Email Service](../Email/README.md).
 
-### Email Notifications
+### SMS Notifications
 
 The `SMS Notifications` feature offers a means to inform users by dispatching notifications through phone via SMS provider.
 
 !!! note
-When using `Email SMS` feature, you must also configure the [SMS Provider](../Sms/README.md).
+When using `SMS Notifications` feature, you must also configure the [SMS Services](../Sms/README.md).
 
 ## Adding Custom Notification Provider
 
@@ -56,3 +66,7 @@ When `OrchardCore.Workflows` feature is enabled, you'll see new activities that 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Lj2g-bBy-I0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_3pTgV4oTxU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/lGEsdPzHcog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

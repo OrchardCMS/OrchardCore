@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement
@@ -7,7 +6,4 @@ namespace OrchardCore.ContentManagement
     {
         Task<string> GetContentItemIdAsync(string handle);
     }
-
-    [Obsolete("This interface has been renamed to IContentHandleManager")]
-    public interface IContentAliasManager { }
 }

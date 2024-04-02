@@ -26,18 +26,15 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
         return permissions;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _defaultStereotypes;
-
-    private static readonly IEnumerable<PermissionStereotype> _defaultStereotypes = new[]
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[]
-                {
-                    AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
-                },
-            },
-        };
+            Name = "Administrator",
+            Permissions =
+            [
+                AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
+            ],
+        },
+    ];
 }

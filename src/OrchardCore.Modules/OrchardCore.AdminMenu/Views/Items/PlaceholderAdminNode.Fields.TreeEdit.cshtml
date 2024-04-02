@@ -1,6 +1,6 @@
 @model PlaceholderAdminNodeViewModel
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Serialization
+@using System.Text.Json
+@using System.Text.Json.Nodes
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
@@ -63,8 +63,8 @@
 
 <div class="mb-3">
     @{
-        var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-        var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+        var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
+        var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
     <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>

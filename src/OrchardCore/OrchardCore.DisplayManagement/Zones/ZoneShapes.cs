@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -90,7 +89,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.IndexOf(';') != -1)
+                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.Contains(';'))
                         {
                             return true;
                         }
@@ -187,7 +186,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.IndexOf(';') != -1)
+                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.Contains(';'))
                         {
                             return true;
                         }
@@ -321,7 +320,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     if (columnModifiers.TryGetValue(orderedGrouping.Key, out var columnModifier))
                     {
                         // When the modifier also has a - assume it is providing a breakpointed class.
-                        if (columnModifier.IndexOf('-') != -1)
+                        if (columnModifier.Contains('-'))
                         {
                             columnClasses = "col-12 col-" + columnModifier;
                         }
@@ -427,7 +426,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var firstGroupWithModifier = grouping.FirstOrDefault(group =>
             {
-                if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Column) && s.Metadata.Column.IndexOf(modifier) != -1)
+                if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Column) && s.Metadata.Column.Contains(modifier))
                 {
                     return true;
                 }

@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Rules.Drivers
 {
@@ -18,7 +19,7 @@ namespace OrchardCore.Rules.Drivers
         private readonly IConditionOperatorResolver _operatorResolver;
 
         // Hashset to prevent duplicate entries, but comparison is done by the comparers.
-        private readonly HashSet<string> _contentTypes = new();
+        private readonly HashSet<string> _contentTypes = [];
 
         public ContentTypeConditionEvaluatorDriver(IConditionOperatorResolver operatorResolver)
         {
@@ -42,6 +43,14 @@ namespace OrchardCore.Rules.Drivers
         private ValueTask<bool> EvaluateAsync(ContentTypeCondition condition)
         {
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
+
+            // If no content types are considered, use the empty string as the value to compare against,
+            // since we still want comparisons such as "Does Not Equal", "Does Not Start With", etc. to evaluate to true in this case.
+            if (_contentTypes.Count == 0)
+            {
+                return ValueTask.FromResult(operatorComparer.Compare(condition.Operation, string.Empty, condition.Value));
+            }
+
             foreach (var contentType in _contentTypes)
             {
                 if (operatorComparer.Compare(condition.Operation, contentType, condition.Value))

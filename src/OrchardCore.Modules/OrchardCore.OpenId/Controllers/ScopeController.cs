@@ -18,7 +18,8 @@ using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Admin, Feature(OpenIdConstants.Features.Management)]
+    [Feature(OpenIdConstants.Features.Management)]
+    [Admin("OpenId/Scope/{action}/{id?}", "OpenIdScope{action}")]
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -54,6 +55,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellHost = shellHost;
         }
 
+        [Admin("OpenId/Scope", "OpenIdScope")]
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))

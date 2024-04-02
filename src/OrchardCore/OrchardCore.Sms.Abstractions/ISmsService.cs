@@ -5,11 +5,9 @@ namespace OrchardCore.Sms;
 public interface ISmsService
 {
     /// <summary>
-    /// Send the given message.
+    /// Send the given message using the default provider.
     /// </summary>
     /// <param name="message">The message to send.</param>
-    /// <param name="provider">An SMS Provider to use. When null, we sent using the default provider.</param>
     /// <returns>SmsResult object.</returns>
-    Task<SmsResult> SendAsync(SmsMessage message, ISmsProvider provider = null);
-
+    Task<SmsResult> SendAsync(SmsMessage message);
 }

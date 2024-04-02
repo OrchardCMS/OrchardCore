@@ -20,7 +20,7 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Controllers
 {
-    [Admin]
+    [Admin("Templates/{action}/{name?}", "Templates.{action}")]
     public class TemplateController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -63,6 +63,7 @@ namespace OrchardCore.Templates.Controllers
             return Index(options, pagerParameters);
         }
 
+        [Admin("Templates", "Templates.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
@@ -115,7 +116,9 @@ namespace OrchardCore.Templates.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            return View(model);
+            // The 'Admin' action redirect the user to the 'Index' action.
+            // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.
+            return View(nameof(Index), model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
@@ -126,7 +129,7 @@ namespace OrchardCore.Templates.Controllers
                 { _optionsSearch, model.Options.Search }
             });
 
-        public async Task<IActionResult> Create(bool adminTemplates = false, string returnUrl = null)
+        public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -138,8 +141,14 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
+            var model = new TemplateViewModel
+            {
+                AdminTemplates = adminTemplates,
+                Name = name
+            };
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
+            return View(model);
         }
 
         [HttpPost, ActionName(nameof(Create))]
@@ -369,7 +378,7 @@ namespace OrchardCore.Templates.Controllers
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

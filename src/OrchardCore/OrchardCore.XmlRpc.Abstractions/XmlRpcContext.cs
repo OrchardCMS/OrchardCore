@@ -12,6 +12,6 @@ namespace OrchardCore.XmlRpc
         public IUrlHelper Url { get; set; }
         public XRpcMethodCall RpcMethodCall { get; set; }
         public XRpcMethodResponse RpcMethodResponse { get; set; }
-        public ICollection<IXmlRpcDriver> Drivers = new List<IXmlRpcDriver>();
+        public ICollection<IXmlRpcDriver> Drivers = [];
     }
 }

@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         }
 
         /// <inheritdoc />
-        /// <value>Returns "<c>or</c>"</value>
+        /// <value>Returns "<c>or</c>".</value>
         protected override string Operator => "or";
     }
 }

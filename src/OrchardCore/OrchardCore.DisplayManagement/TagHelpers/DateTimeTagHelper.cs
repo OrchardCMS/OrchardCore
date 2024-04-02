@@ -28,10 +28,10 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var shapeType = "DateTime";
-            dynamic shape = await _shapeFactory.CreateAsync(shapeType);
-            shape.Utc = Utc;
-            shape.Format = Format;
-            
+            var shape = await _shapeFactory.CreateAsync(shapeType);
+            shape.Properties["Utc"] = Utc;
+            shape.Properties["Format"] = Format;
+
             output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape

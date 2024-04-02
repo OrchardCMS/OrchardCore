@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -23,7 +22,7 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var smtpService = controller.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
+            var emailService = controller.HttpContext.RequestServices.GetRequiredService<IEmailService>();
             var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
             var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
             var body = string.Empty;
@@ -43,13 +42,13 @@ namespace OrchardCore.Users.Controllers
                 IsHtmlBody = true
             };
 
-            var result = await smtpService.SendAsync(message);
+            var result = await emailService.SendAsync(message);
 
             return result.Succeeded;
         }
 
         /// <summary>
-        /// Returns the created user, otherwise returns null
+        /// Returns the created user, otherwise returns null.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="model"></param>
