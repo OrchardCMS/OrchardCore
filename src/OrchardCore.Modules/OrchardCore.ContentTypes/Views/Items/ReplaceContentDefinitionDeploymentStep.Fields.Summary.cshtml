@@ -14,14 +14,14 @@ else
     var contentTypes = Model.Value.ContentTypes;
     var contentParts = Model.Value.ContentParts;
 
-    var allTypes = ContentDefinitionManager.ListTypeDefinitions();
-    var allParts = ContentDefinitionManager.ListPartDefinitions();
+    var allTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
+    var allParts = await ContentDefinitionManager.ListPartDefinitionsAsync();
 
     var parts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 
     if (contentTypes?.Length > 0)
     {
-        foreach (var def in ContentDefinitionManager.ListTypeDefinitions())
+        foreach (var def in await ContentDefinitionManager.ListTypeDefinitionsAsync())
         {
             if (contentTypes.Contains(def.Name))
             {

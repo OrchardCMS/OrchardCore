@@ -9,20 +9,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "lucene-index",
-  "Indices": [
+  "steps":[
     {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
+      "name":"lucene-index",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
     }
   ]
-},
+}
 ```
 
 ### Queries recipe step
@@ -31,11 +35,15 @@ Here is an example for creating a Lucene query from a Queries recipe step:
 
 ```json
 {
-    "Source": "Lucene",
-    "Name": "RecentBlogPosts",
-    "Index": "Search",
-    "Template": "...", // json encoded query template
-    "ReturnContentItems": true
+  "steps": [
+    {
+      "Source": "Lucene",
+      "Name": "RecentBlogPosts",
+      "Index": "Search",
+      "Template":"...", // JSON encoded query template.
+      "ReturnContentItems": true
+    }
+  ]
 }
 ```
 
@@ -77,21 +85,145 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 ## Lucene Queries
 
 The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
-See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
-### Query Filters
+## Recipe step
 
-Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do. 
-
-Here is an example of a filtered query: 
+Lucene indices can be created during recipe execution using the `ElasticIndexSettings` step.  
+Here is a sample step:
 
 ```json
 {
-  "query": {
-    "bool": {
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+  "steps":[
+    {
+      "name":"LuceneIndexSettings",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "Culture":"",
+            "StoreSourceData":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Lucene settings recipe step
+
+Here is an example for setting default search settings:
+
+```json
+{
+  "steps":[
+    {
+      // Create the search settings.
+      "name":"Settings",
+      "LuceneSettings":{
+        "SearchIndex":"search",
+        "DefaultSearchFields":[
+          "Content.ContentItem.FullText"
+        ],
+        "AllowLuceneQueriesInSearch":false
+      }
+    }
+  ]
+}
+```
+
+### Reset Lucene Index Step
+
+This Reset Index Step resets an Lucene index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-reset",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To reset all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-reset",
+      "IncludeAll":true
+    }
+  ]
+}
+```
+
+### Rebuild Lucene Index Step
+
+This Rebuild Index Step rebuilds an Lucene index.
+Deletes and recreates the full index content.
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-rebuild",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To rebuild all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-rebuild",
+      "IncludeAll":true
+    }
+  ]
+}
+```
+
+### Query Filters
+
+Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do.
+
+Here is an example of a filtered query:
+
+```json
+{
+  "query":{
+    "bool":{
+      "filter":[
+        {
+          "term":{
+            "Content.ContentItem.Published":"true"
+          }
+        },
+        {
+          "wildcard":{
+            "Content.ContentItem.DisplayText":"Main*"
+          }
+        }
       ]
     }
   }
@@ -102,14 +234,24 @@ With a must query in the bool Query. "finding specific content type(s)"
 
 ```json
 {
-  "query": {
-    "bool": {
-      "must" : {
-          "term" : { "Content.ContentItem.ContentType.keyword" : "Menu" }
+  "query":{
+    "bool":{
+      "must":{
+        "term":{
+          "Content.ContentItem.ContentType.keyword":"Menu"
+        }
       },
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+      "filter":[
+        {
+          "term":{
+            "Content.ContentItem.Published":"true"
+          }
+        },
+        {
+          "wildcard":{
+            "Content.ContentItem.DisplayText":"Main*"
+          }
+        }
       ]
     }
   }
@@ -120,12 +262,11 @@ Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elastics
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "Content.ContentItem.FullText:\"exploration\""
+    "query": {
+        "query_string": {
+            "query": "Content.ContentItem.FullText:\"exploration\""
+        }
     }
-  }
 }
 ```
 
@@ -133,11 +274,10 @@ Or in a way that you don't have to select the fields in the query (to allow user
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "\"exploration\"",
-      "default_field": "Content.ContentItem.FullText"
+  "query":{
+    "query_string":{
+      "query":"\"exploration\"",
+      "default_field":"Content.ContentItem.FullText"
     }
   }
 }
@@ -147,10 +287,12 @@ An alternative to the previous one with [`simple_query_string`](https://www.elas
 
 ```json
 {
-  "query": {
-    "simple_query_string" : {
-        "query": "\"exploration\"",
-        "fields": ["Content.ContentItem.FullText"]
+  "query":{
+    "simple_query_string":{
+      "query":"\"exploration\"",
+      "fields":[
+        "Content.ContentItem.FullText"
+      ]
     }
   }
 }
@@ -158,7 +300,7 @@ An alternative to the previous one with [`simple_query_string`](https://www.elas
 
 As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene are also filters.
 
-So you can use: 
+So you can use:
 
 - `bool`
 - `geo_distance`
@@ -176,8 +318,8 @@ So you can use:
 - `terms`
 - `wildcard`
 
-See ElasticSearch documentation for more details: 
-https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+See ElasticSearch documentation for more details:
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html>
 
 ## Automatic mapping
 
@@ -186,3 +328,5 @@ Starting from OC version 1.5 the Lucene module will automatically map text field
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jJH9ntqi_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

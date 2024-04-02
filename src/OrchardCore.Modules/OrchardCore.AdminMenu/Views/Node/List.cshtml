@@ -6,17 +6,17 @@
     var index = 0;
 }
 
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="jQuery-ui"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
 
-<nav class="card mb-3">
-    <div class="card-body bg-primary p-3">
+<nav class="card text-bg-theme mb-3">
+    <div class="card-body p-3">
         <div class="mb-0">
             <div class="dropdown float-end order-md-1">
                 <!-- Button trigger modal -->
-                <a asp-route-action="Create" class="btn btn-sm btn-primary" role="button" data-bs-toggle="modal" data-bs-target="#modalTreeNodes">
+                <a asp-route-action="Create" class="btn btn-sm btn-secondary" role="button" data-bs-toggle="modal" data-bs-target="#modalTreeNodes">
                     @T["Add Node"]
                 </a>
             </div>
@@ -37,10 +37,10 @@
                 {
                     if (menuItem != null)
                     {
-                        dynamic adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
-                        adminNodeShape.AdminMenuId = Model.AdminMenu.Id;
-                        adminNodeShape.MenuItem = menuItem;
-                        adminNodeShape.Index = index++;
+                        var adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
+                        adminNodeShape.Properties["AdminMenuId"] = Model.AdminMenu.Id;
+                        adminNodeShape.Properties["MenuItem"] = menuItem;
+                        adminNodeShape.Properties["Index"] = index++;
 
                         @await DisplayAsync(adminNodeShape)
                     }

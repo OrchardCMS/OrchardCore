@@ -8,8 +8,8 @@
             en: {
                 template: 'Template'
             },
-            sl: {
-                template: 'Predloga'
+            az: {
+                template: 'Şablon'
             },
             by: {
                 template: 'Шаблон'
@@ -43,6 +43,9 @@
             },
             ru: {
                 template: 'Шаблон'
+            },
+            sl: {
+                template: 'Predloga'
             },
             tr: {
                 template: 'Şablon'

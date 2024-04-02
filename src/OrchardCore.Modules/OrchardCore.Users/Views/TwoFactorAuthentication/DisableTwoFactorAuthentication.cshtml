@@ -1,0 +1,18 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Disable Two-Factor Authentication"])</li>
+    </ol>
+</nav>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>@T["This action disables two-factor authentication for your account."]</strong>
+    </p>
+</div>
+
+<div>
+    <form method="post">
+        <button class="btn btn-danger" type="submit">@T["Disable Two-factor Authentication"]</button>
+    </form>
+</div>

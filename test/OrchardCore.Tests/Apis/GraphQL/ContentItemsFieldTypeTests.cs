@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -16,12 +9,15 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using Xunit;
-using YesSql;
+using OrchardCore.Extensions;
+using OrchardCore.Json;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
+using YesSql.Serialization;
 using YesSql.Sql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
@@ -37,10 +33,28 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
             _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
+            _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename)));
 
             _prefix = "tp";
-            _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+            _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+
+            var derivedOptions = new Mock<IOptions<JsonDerivedTypesOptions>>();
+            derivedOptions.Setup(x => x.Value)
+                .Returns(new JsonDerivedTypesOptions());
+
+            var configuration = new DocumentJsonSerializerOptionsConfiguration(derivedOptions.Object);
+
+            var jsonOptions = new DocumentJsonSerializerOptions();
+            configuration.Configure(jsonOptions);
+
+            var jsonSerializerOptions = new Mock<IOptions<DocumentJsonSerializerOptions>>();
+            jsonSerializerOptions.Setup(x => x.Value)
+                .Returns(jsonOptions);
+
+            var contentSerializer = new DefaultContentJsonSerializer(jsonSerializerOptions.Object);
+
+            _store.Configuration.ContentSerializer = contentSerializer;
+            _prefixedStore.Configuration.ContentSerializer = contentSerializer;
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -85,11 +99,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         private static async Task CreateTablesAsync(IStore store)
         {
-            using (var session = store.CreateSession())
+            await using (var session = store.CreateSession())
             {
                 var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
 
-                builder.CreateMapIndexTable<ContentItemIndex>(table => table
+                await builder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
                     .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                     .Column<bool>("Latest")
@@ -103,11 +117,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
                 );
 
-                builder.CreateMapIndexTable<AnimalIndex>(table => table
+                await builder.CreateMapIndexTableAsync<AnimalIndex>(table => table
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
 
-                builder.CreateMapIndexTable<AnimalTraitsIndex>(table => table
+                await builder.CreateMapIndexTableAsync<AnimalTraitsIndex>(table => table
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                     .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
                 );
@@ -123,32 +137,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Build();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services);
+            var context = CreateAnimalFieldContext(services);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new AnimalPart { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
+            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
+                            .ResolveAsync(context) as IEnumerable<ContentItem>;
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
 
         [Fact]
@@ -156,39 +169,36 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => _prefixedStore.CreateSession());
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => _prefixedStore.CreateSession());
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
 
-                var shellSettings = new ShellSettings();
-                shellSettings["TablePrefix"] = _prefix;
+            var shellSettings = new ShellSettings();
+            shellSettings["TablePrefix"] = _prefix;
 
-                services.Services.AddScoped(x => shellSettings);
-                services.Build();
+            services.Services.AddScoped(x => shellSettings);
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services);
+            var context = CreateAnimalFieldContext(services);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new AnimalPart { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
+            var dogs = await ResolveContentItems(type, context);
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
-
 
         [Theory]
         [InlineData("animal")]
@@ -198,33 +208,34 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Build();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddIndexProvider<AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services, fieldName);
+            var context = CreateAnimalFieldContext(services, fieldName);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new AnimalPart { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal",
+                new Schema(services),
+                Options.Create(new GraphQLContentOptions()),
+                Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }")), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse($"{{\"{fieldName}\" : {{ \"name\": \"doug\" }} }}"), ArgumentSource.Variable);
+            var dogs = await ResolveContentItems(type, context);
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
 
         [Fact]
@@ -232,40 +243,38 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddIndexProvider<ContentItemIndexProvider>();
+            services.Services.AddIndexProvider<AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
 
-                services.Build();
-                var context = CreateAnimalFieldContext(services);
+            services.Build();
+            var context = CreateAnimalFieldContext(services);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new Animal { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new Animal { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ cats: { name: \"doug\" } }"), ArgumentSource.Variable);
-                var cats = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"cats\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
+            var cats = await ResolveContentItems(type, context);
 
-                Assert.Single(cats);
-                Assert.Equal("doug", cats.First().As<Animal>().Name);
+            Assert.Single(cats);
+            Assert.Equal("doug", cats.First().As<Animal>().Name);
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ dogs: { name: \"doug\" } }"), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"dogs\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
+            var dogs = await ResolveContentItems(type, context);
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<Animal>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<Animal>().Name);
         }
 
         [Fact]
@@ -274,47 +283,45 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _store.RegisterIndexes<AnimalIndexProvider>();
             _store.RegisterIndexes<AnimalTraitsIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
-                services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddIndexProvider<ContentItemIndexProvider>();
+            services.Services.AddIndexProvider<AnimalIndexProvider>();
+            services.Services.AddIndexProvider<AnimalTraitsIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
 
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
-                services.Build();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services);
+            var context = CreateAnimalFieldContext(services);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new Animal { Name = "doug", IsHappy = true, IsScary = false });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new Animal { Name = "doug", IsHappy = true, IsScary = false });
 
-                var ci1 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
-                ci1.Weld(new Animal { Name = "doug", IsHappy = false, IsScary = true });
+            var ci1 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
+            ci1.Weld(new Animal { Name = "doug", IsHappy = false, IsScary = true });
 
-                var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
-                ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
+            var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
+            ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                session.Save(ci1);
-                session.Save(ci2);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveAsync(ci1);
+            await session.SaveAsync(ci2);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animals: { name: \"doug\", isScary: true } }"), ArgumentSource.Variable);
-                var animals = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animals\": { \"name\": \"doug\", \"isScary\": true } }"), ArgumentSource.Variable);
+            var animals = await ResolveContentItems(type, context);
 
-                Assert.Single(animals);
-                Assert.Equal("doug", animals.First().As<Animal>().Name);
-                Assert.True(animals.First().As<Animal>().IsScary);
-                Assert.False(animals.First().As<Animal>().IsHappy);
-            }
+            Assert.Single(animals);
+            Assert.Equal("doug", animals.First().As<Animal>().Name);
+            Assert.True(animals.First().As<Animal>().IsScary);
+            Assert.False(animals.First().As<Animal>().IsHappy);
         }
 
         [Fact]
@@ -322,34 +329,32 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Build();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddIndexProvider<ContentItemIndexProvider>();
+            services.Services.AddIndexProvider<AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services);
+            var context = CreateAnimalFieldContext(services);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new AnimalPart { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animal: { name: \"doug\" } }"), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animal\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
+            var dogs = await ResolveContentItems(type, context);
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
 
         [Fact]
@@ -357,38 +362,39 @@ namespace OrchardCore.Tests.Apis.GraphQL
         {
             _store.RegisterIndexes<AnimalIndexProvider>();
 
-            using (var services = new FakeServiceCollection())
-            {
-                services.Populate(new ServiceCollection());
-                services.Services.AddScoped(x => new ShellSettings());
-                services.Services.AddScoped(x => _store.CreateSession());
-                services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
-                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
-                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
-                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
-                services.Build();
+            using var services = new FakeServiceCollection();
+            services.Populate(new ServiceCollection());
+            services.Services.AddScoped(x => new ShellSettings());
+            services.Services.AddScoped(x => _store.CreateSession());
+            services.Services.AddIndexProvider<ContentItemIndexProvider>();
+            services.Services.AddIndexProvider<AnimalIndexProvider>();
+            services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+            services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+            services.Build();
 
-                var context = CreateAnimalFieldContext(services, collapsed: true);
+            var context = CreateAnimalFieldContext(services, collapsed: true);
 
-                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
-                ci.Weld(new AnimalPart { Name = "doug" });
+            var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+            ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = context.RequestServices.GetService<ISession>();
-                session.Save(ci);
-                await session.SaveChangesAsync();
+            var session = context.RequestServices.GetService<ISession>();
+            await session.SaveAsync(ci);
+            await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+            var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ name: \"doug\" }"), ArgumentSource.Variable);
-                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"name\": \"doug\" }"), ArgumentSource.Variable);
+            var dogs = await ResolveContentItems(type, context);
 
-                Assert.Single(dogs);
-                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
-            }
+            Assert.Single(dogs);
+            Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
 
-
-        private static IResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
+        private static async Task<IEnumerable<ContentItem>> ResolveContentItems(ContentItemsFieldType type, ResolveFieldContext context)
+        {
+            return (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
+        }
+        private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
         {
             IGraphType where;
 
@@ -409,13 +415,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     Name = "Inputs",
                     ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
-                    Arguments = new QueryArguments {
-                            new QueryArgument<WhereInputObjectGraphType> {
+                    Arguments = [
+                            new QueryArgument<WhereInputObjectGraphType>
+                            {
                                 Name = "where",
                                 Description = "filters the animals",
                                 ResolvedType = where
                             }
-                        }
+                        ]
                 },
                 RequestServices = services
             };
@@ -515,8 +522,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleAliasIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "cats",
@@ -535,7 +542,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = nameof(AnimalIndex),
                 IndexType = typeof(AnimalIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
@@ -545,8 +552,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleIndexesIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "animals.name",
@@ -565,7 +572,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = $"IsScary",
                 IndexType = typeof(AnimalTraitsIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
@@ -575,7 +582,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class FakeServiceCollection : IServiceProvider, IDisposable
     {
-        private IServiceProvider _inner;
+        private ServiceProvider _inner;
         private IServiceCollection _services;
 
         public IServiceCollection Services => _services;
@@ -590,7 +597,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public void Populate(IServiceCollection services)
         {
             _services = services;
-            _services.AddSingleton<FakeServiceCollection>(this);
+            _services.AddSingleton(this);
         }
 
         public void Build()
@@ -598,7 +605,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             _inner = _services.BuildServiceProvider();
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             (_inner as IDisposable)?.Dispose();
         }

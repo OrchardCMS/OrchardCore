@@ -7,7 +7,7 @@ namespace OrchardCore.Workflows.Indexes
 {
     public class WorkflowIndex : MapIndex
     {
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
         public int WorkflowStatus { get; set; }

@@ -1,0 +1,30 @@
+@model ResetAuthenticatorViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="AuthenticatorApp">@T["Configure Authenticator App"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Reset Authenticator App"])</li>
+    </ol>
+</nav>
+
+@if (!Model.CanRemove)
+{
+    <div class="alert alert-warning">
+        @T["Two-Factor authentication is required and you cannot remove the only active method. If you want to add another device, <a href=\"{0}\">click here</a> to reconfigure it.", Url.Action("Index", "AuthenticatorApp")]
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        <p><strong>@T["If you reset your authenticator key your authenticator app will not work until you reconfigure it."]</strong></p>
+        @if (Model.WillDisableTwoFactor)
+        {
+            <p>@T["This process disables the two-factor authentication for your account."]</p>
+        }
+    </div>
+
+    <form method="post">
+        <button class="btn btn-danger" type="submit">@T["Reset authenticator key"]</button>
+    </form>
+}

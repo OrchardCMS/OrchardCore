@@ -2,18 +2,19 @@
 @using OrchardCore.ContentLocalization
 @using OrchardCore.Localization
 @using OrchardCore.Title.Models
-@using OrchardCore.Title.ViewModels;
-
+@using OrchardCore.Title.ViewModels
+@using OrchardCore
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
+    var isRequired = Model.Settings?.Options == TitlePartOptions.EditableRequired;
 }
-@if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
-{
-    <div class="mb-3" asp-validation-class-for="Title">
-        <label asp-for="Title">@T["Title"]</label>
+
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
+    <label asp-for="Title" class="@Orchard.GetLabelClasses(inputRequired: isRequired)">@T["Title"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
         <span asp-validation-for="Title"></span>
-        @if (!String.IsNullOrWhiteSpace(Model.Settings?.Pattern))
+        @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern))
         {
             switch (Model.Settings?.Options)
             {
@@ -26,4 +27,4 @@
             }
         }
     </div>
-}
+</div>

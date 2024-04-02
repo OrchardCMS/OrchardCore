@@ -21,7 +21,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
+#pragma warning restore CA1822 // Mark members as static
             string ItemTagName,
             IEnumerable<string> ItemClasses,
             IDictionary<string, string> ItemAttributes,
@@ -40,11 +42,11 @@ namespace OrchardCore.DisplayManagement.Shapes
                 }
             }
 
-            // prevent multiple enumerations
+            // Prevent multiple enumerations.
             var items = Items.ToList();
 
             // var itemDisplayOutputs = Items.Select(item => Display(item)).Where(output => !string.IsNullOrWhiteSpace(output.ToHtmlString())).ToList();
-            var count = items.Count();
+            var count = items.Count;
             if (count < 1)
             {
                 return HtmlString.Empty;
@@ -52,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             var listTagBuilder = shape.GetTagBuilder("ul");
 
-            var itemTagName = String.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
+            var itemTagName = string.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
 
             var index = 0;
 
@@ -102,10 +104,12 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent Message(IShape Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
             var tagBuilder = Shape.GetTagBuilder("div");
-            string type = Shape.Properties["Type"].ToString().ToLowerInvariant();
+            var type = Shape.Properties["Type"].ToString().ToLowerInvariant();
             var message = Shape.Properties["Message"] as IHtmlContent;
             tagBuilder.AddCssClass("message");
             tagBuilder.AddCssClass("message-" + type);
@@ -115,20 +119,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
     }
 
-    public class CoreShapesTableProvider : IShapeTableProvider
+    public class CoreShapesTableProvider : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("List")
                 .OnCreated(created =>
                 {
-                    dynamic list = created.Shape;
-
-                    // Intializes the common properties of a List shape
+                    // Initializes the common properties of a List shape
                     // such that views can safely add values to them.
-                    list.ItemClasses = new List<string>();
-                    list.ItemAttributes = new Dictionary<string, string>();
+                    created.Shape.Properties["ItemClasses"] = new List<string>();
+                    created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

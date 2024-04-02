@@ -1,0 +1,88 @@
+@import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+
+.ta-navbar-top {
+    border-bottom: var(--oc-border-content);
+    z-index: var(--oc-top-nav-zindex);
+    height: var(--oc-top-nav-height);
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    padding-top: 0;
+    padding-bottom: 0;
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 0;
+    }
+
+    .brand-wrapper-title {
+        display: none;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        margin-top: 1rem;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .brand-wrapper-title {
+            display: block;
+            position: absolute;
+            left: calc(var(--oc-start-navigation-width) + 10px);
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .navbar-collapse {
+            li:first-child .nav-link {
+                padding-top: 15px;
+            }
+
+            li:last-child .nav-link {
+                padding-bottom: 0px;
+            }
+        }
+    }
+}
+
+.left-sidebar-compact .ta-navbar-top {
+    .brand-wrapper-title {
+        left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    }
+}
+
+.brand-wrapper-title > h1 {
+    margin-bottom: 0;
+}
+
+.ta-navbar-brand {
+    white-space: nowrap;
+    transition: width 0.2s ease-in-out;
+    color: var(--bs-navbar-brand-color);
+
+    span {
+        font-size: 14px;
+        font-weight: bold;
+    }
+}
+
+.ta-navbar-brand img {
+    height: 32px;
+}
+
+// When left-sidebar is compact nav brand is compacted too.
+// It displays logo only, not text.
+.left-sidebar-compact .ta-navbar-brand {
+    span {
+        display: none;
+    }
+}
+
+.user-top-navbar {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.user-top-navbar .nav-item .nav-link {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}

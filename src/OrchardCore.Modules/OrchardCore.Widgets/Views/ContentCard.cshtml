@@ -1,10 +1,11 @@
+@using OrchardCore.DisplayManagement
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    var contentDefinitions = ContentDefinitionManager.ListTypeDefinitions();
+    var contentDefinitions = await ContentDefinitionManager.ListTypeDefinitionsAsync();
     //Set Model (Current Shape) as Child content of Outer Frame, Later this Model is used to render other shapes
-    dynamic contentCardFrame = await New.ContentCard_Frame();
+    var contentCardFrame = await New.ContentCard_Frame();
 
     var contentItem = Model.ContentItem;
     Model.ContentTypeValue = contentItem.ContentType;
@@ -17,7 +18,7 @@
         if (Model.BuildEditor == true)
         {
             //Assign prefix
-            if (String.IsNullOrEmpty(Model.PrefixValue))
+            if (string.IsNullOrEmpty(Model.PrefixValue))
             {
                 Model.PrefixValue = Guid.NewGuid().ToString("n");
             }
@@ -25,15 +26,15 @@
             //Build Editor for Content Item
             // AJAX request is new request and will not have CollectionShape.
             var isNew = Model.CollectionShape == null ? true : false;
-            dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", Model.PrefixValue);
+            IShape contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, string.Empty, Model.PrefixValue);
 
             //We don't show Actions and Side bar the parent editor has its own buttons.
-            contentItemEditor.Actions = null;
-            contentItemEditor.Sidebar = null;
+            contentItemEditor.Properties["Actions"] = null;
+            contentItemEditor.Properties["Sidebar"] = null;
 
             //Move Content Footer to Card Footer, if any
-            Model.Footer = contentItemEditor.Footer;
-            contentItemEditor.Footer = null;
+            Model.Footer = contentItemEditor.GetProperty<IShape>("Footer");
+            contentItemEditor.Properties["Footer"] = null;
 
             Model.ContentEditor = contentItemEditor;
 
@@ -48,8 +49,7 @@
         else
         {
             //Just Create Preview
-            dynamic contentDisplay = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ?? "Detail");
-            Model.ContentPreview = contentDisplay;
+            Model.ContentPreview = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ?? "Detail");
 
             //Hide the Delete
             Model.CanDelete = false;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Sitemaps.Models
@@ -44,6 +44,6 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Sitemap sources contained by this sitemap.
         /// </summary>
-        public List<SitemapSource> SitemapSources { get; set; } = new List<SitemapSource>();
+        public List<SitemapSource> SitemapSources { get; set; } = [];
     }
 }

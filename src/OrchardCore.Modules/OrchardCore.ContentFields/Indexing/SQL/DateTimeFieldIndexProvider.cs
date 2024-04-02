@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class DateTimeFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public DateTimeFieldIndexProvider(IServiceProvider serviceProvider)
@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<DateTimeFieldIndex>()
-                .Map(contentItem =>
+                .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
                     if (!contentItem.Published && !contentItem.Latest)
@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for DateTimeField
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                     if (contentTypeDefinition == null)
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentItemId = contentItem.ContentItemId,
                                 ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                                 ContentField = pair.Definition.Name,
                                 DateTime = pair.Field.Value,
                             });

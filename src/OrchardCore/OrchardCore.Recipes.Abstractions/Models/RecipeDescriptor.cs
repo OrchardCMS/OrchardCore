@@ -18,7 +18,7 @@ namespace OrchardCore.Recipes.Models
         public bool RequireNewScope { get; set; } = true;
 
         /// <summary>
-        /// The path of the recipe file for the <see cref="RecipeDescriptor.FileProvider"/> property
+        /// The path of the recipe file for the <see cref="RecipeDescriptor.FileProvider"/> property.
         /// </summary>
         public string BasePath { get; set; }
 

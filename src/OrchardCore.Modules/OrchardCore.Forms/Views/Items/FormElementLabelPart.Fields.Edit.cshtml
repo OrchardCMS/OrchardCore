@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.Forms.ViewModels
 @using OrchardCore.Forms.Models
 @model FormElementLabelPartViewModel
@@ -6,20 +7,24 @@
 }
 <div class="properties-wrapper show-for-input" id="@wrapperId">
 
-    <div class="mb-3 show-for-input-label">
-        <label asp-for="LabelOption">@T["Label option"]</label>
-        <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
-            <option value="@LabelOptions.None">@T["None"]</option>
-            <option value="@LabelOptions.Standard">@T["Standard"]</option>
-            <option value="@LabelOptions.ScreenReaders">@T["Screen Readers"]</option>
-        </select>
-        <span class="hint">@T["The type of label to create for this field."]</span>
+    <div class="@Orchard.GetWrapperClasses("show-for-input-label")">
+        <label asp-for="LabelOption" class="@Orchard.GetLabelClasses()">@T["Label option"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
+                <option value="@nameof(LabelOptions.None)">@T["None"]</option>
+                <option value="@nameof(LabelOptions.Standard)">@T["Standard"]</option>
+                <option value="@nameof(LabelOptions.ScreenReaders)">@T["Screen Readers"]</option>
+            </select>
+            <span class="hint">@T["The type of label to create for this field."]</span>
+        </div>
     </div>
 
-    <div class="mb-3 d-none label-text-container">
-        <label asp-for="Label">@T["Label Text"]</label>
-        <input asp-for="Label" type="text" class="form-control content-preview-text" />
-        <span class="hint">@T["The text to display in the label."]</span>
+    <div class="@Orchard.GetWrapperClasses("d-none","label-text-container")">
+        <label asp-for="Label" class="@Orchard.GetLabelClasses()">@T["Label Text"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <input asp-for="Label" type="text" class="form-control content-preview-text" />
+            <span class="hint">@T["The text to display in the label."]</span>
+        </div>
     </div>
 </div>
 

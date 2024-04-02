@@ -18,8 +18,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     /// </summary>
     public class LiquidTagHelperFactory
     {
-        private static ConcurrentDictionary<Type, LiquidTagHelperMatching> _allMatchings = new ConcurrentDictionary<Type, LiquidTagHelperMatching>();
-        private static ConcurrentDictionary<Type, LiquidTagHelperActivator> _allActivators = new ConcurrentDictionary<Type, LiquidTagHelperActivator>();
+        private static readonly ConcurrentDictionary<Type, LiquidTagHelperMatching> _allMatchings = new();
+        private static readonly ConcurrentDictionary<Type, LiquidTagHelperActivator> _allActivators = new();
 
         private List<LiquidTagHelperMatching> _matchings;
         private readonly ApplicationPartManager _partManager;
@@ -76,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public LiquidTagHelperActivator GetActivator(string helper, IEnumerable<string> arguments)
         {
             EnsureMatchings();
-            var matching = _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? LiquidTagHelperMatching.None;
+            var matching = _matchings.FirstOrDefault(d => d.Match(helper, arguments)) ?? LiquidTagHelperMatching.None;
 
             if (matching != LiquidTagHelperMatching.None)
             {
@@ -104,7 +104,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 if (name.EndsWith("TagHelper", StringComparison.OrdinalIgnoreCase))
                 {
-                    name = name.Substring(0, name.Length - "TagHelper".Length);
+                    name = name[..^"TagHelper".Length];
                 }
 
                 descriptorBuilder.TagMatchingRule(ruleBuilder =>

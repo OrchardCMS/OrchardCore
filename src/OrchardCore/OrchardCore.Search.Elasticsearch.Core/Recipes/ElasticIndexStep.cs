@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -28,19 +29,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var indices = context.Step["Indices"];
-            if (indices != null)
+            if (indices is JsonArray jsonArray)
             {
-                foreach (var index in indices)
+                foreach (var index in jsonArray)
                 {
                     var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
 
-                    if (!await _elasticIndexManager.Exists(elasticIndexSettings.Key))
+                    if (!await _elasticIndexManager.ExistsAsync(elasticIndexSettings.Key))
                     {
                         elasticIndexSettings.Value.IndexName = elasticIndexSettings.Key;
                         await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings.Value);

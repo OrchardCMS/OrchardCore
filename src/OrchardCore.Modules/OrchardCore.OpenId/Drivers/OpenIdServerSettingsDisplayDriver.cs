@@ -18,7 +18,10 @@ namespace OrchardCore.OpenId.Drivers
             => _serverService = serverService;
 
         public override Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
-            => Task.FromResult<IDisplayResult>(Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
+        {
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
+            return Task.FromResult<IDisplayResult>(Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
                 model.AccessTokenFormat = settings.AccessTokenFormat;
                 model.Authority = settings.Authority?.AbsoluteUri;
@@ -67,6 +70,7 @@ namespace OrchardCore.OpenId.Drivers
                     });
                 }
             }).Location("Content:2"));
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, UpdateEditorContext context)
         {

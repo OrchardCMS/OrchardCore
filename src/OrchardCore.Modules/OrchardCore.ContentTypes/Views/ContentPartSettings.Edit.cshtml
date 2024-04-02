@@ -2,19 +2,19 @@
 @model ContentPartSettingsViewModel
 
 <div class="mb-3">
-    <label asp-for="ContentPartDefinition.Name">@T["Technical Name"]</label>
-    <input asp-for="ContentPartDefinition.Name" class="form-control w-md-25" readonly />
+    <label asp-for="ContentPartDefinition.Name" class="form-label">@T["Technical Name"]</label>
+    <input asp-for="ContentPartDefinition.Name" class="form-control w-md-75 w-xl-50" readonly />
     <span class="hint w-100">@T["Technical name of the part."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="DisplayName">@T["Display Name"]</label>
-    <input asp-for="DisplayName" class="form-control w-md-25" placeholder="@Model.ContentPartDefinition.DisplayName()" />
+    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+    <input asp-for="DisplayName" class="form-control w-md-75 w-xl-50" placeholder="@Model.ContentPartDefinition.DisplayName()" />
     <span class="hint w-100">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="Description">@T["Description"]</label>
+    <label asp-for="Description" class="form-label">@T["Description"]</label>
     @Html.ValidationMessageFor(m => m.Description)
     <input asp-for="Description" class="form-control w-md-75" />
     <span class="hint w-100">@T["Optionally provide a description for this part."]</span>

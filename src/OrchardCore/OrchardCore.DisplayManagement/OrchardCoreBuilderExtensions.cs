@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -44,6 +45,8 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Filters.Add(typeof(RazorViewActionFilter));
                     });
 
+                    services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
+
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
@@ -55,7 +58,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                     services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-                    services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
+                    services.AddKeyedSingleton<Dictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager));
+                    services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
                     services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
@@ -95,12 +99,14 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddTagHelpers<ClearAlternatesTagHelper>();
                     services.AddTagHelpers<ClearClassesTagHelper>();
                     services.AddTagHelpers<ClearWrappersTagHelper>();
+                    services.AddTagHelpers<DateTimeTagHelper>();
                     services.AddTagHelpers<InputIsDisabledTagHelper>();
                     services.AddTagHelpers<RemoveAlternateTagHelper>();
                     services.AddTagHelpers<RemoveClassTagHelper>();
                     services.AddTagHelpers<RemoveWrapperTagHelper>();
                     services.AddTagHelpers<ShapeMetadataTagHelper>();
                     services.AddTagHelpers<ShapeTagHelper>();
+                    services.AddTagHelpers<TimeSpanTagHelper>();
                     services.AddTagHelpers<ValidationMessageTagHelper>();
                     services.AddTagHelpers<ZoneTagHelper>();
                 });

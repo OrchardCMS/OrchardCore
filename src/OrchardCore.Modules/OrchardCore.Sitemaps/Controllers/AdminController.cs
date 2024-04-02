@@ -21,9 +21,11 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    [Admin]
+    [Admin("Sitemaps/{action}/{sitemapId?}", "Sitemaps{action}")]
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<SitemapSource> _displayManager;
@@ -33,9 +35,10 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        private readonly IShapeFactory _shapeFactory;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISitemapHelperService sitemapService,
@@ -60,9 +63,9 @@ namespace OrchardCore.Sitemaps.Controllers
             _pagerOptions = pagerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            New = shapeFactory;
         }
 
         public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
@@ -89,34 +92,36 @@ namespace OrchardCore.Sitemaps.Controllers
                 .Take(pager.PageSize)
                 .ToList();
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
 
             var model = new ListSitemapViewModel
             {
                 Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("List")]
+        [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapViewModel model)
-        {
-            return RedirectToAction(nameof(List), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(List), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Display(string sitemapId)
         {
@@ -135,9 +140,9 @@ namespace OrchardCore.Sitemaps.Controllers
             var items = new List<dynamic>();
             foreach (var source in sitemap.SitemapSources)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
-                item.SitemapId = sitemap.SitemapId;
-                item.SitemapSource = source;
+                var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+                item.Properties["SitemapId"] = sitemap.SitemapId;
+                item.Properties["SitemapSource"] = source;
                 items.Add(item);
             }
 
@@ -145,10 +150,11 @@ namespace OrchardCore.Sitemaps.Controllers
             foreach (var factory in _sourceFactories)
             {
                 var source = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.SitemapSource = source;
-                thumbnail.SitemapSourceType = factory.Name;
-                thumbnail.Sitemap = sitemap;
+                var thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["SitemapSource"] = source;
+                thumbnail.Properties["SitemapSourceType"] = factory.Name;
+                thumbnail.Properties["Sitemap"] = sitemap;
+
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
@@ -184,7 +190,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
@@ -253,7 +259,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
@@ -349,7 +355,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemaps successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        return BadRequest();
                 }
             }
 

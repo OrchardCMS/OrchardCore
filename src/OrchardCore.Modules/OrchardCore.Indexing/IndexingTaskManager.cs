@@ -30,7 +30,7 @@ namespace OrchardCore.Indexing.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
+        private readonly List<IndexingTask> _tasksQueue = [];
 
         public IndexingTaskManager(
             IClock clock,
@@ -48,10 +48,7 @@ namespace OrchardCore.Indexing.Services
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException("contentItem");
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             // Do not index a preview content item.
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
@@ -98,7 +95,7 @@ namespace OrchardCore.Indexing.Services
 
             var contentItemIds = new HashSet<string>();
 
-            // Remove duplicate tasks, only keep the last one
+            // Remove duplicate tasks, only keep the last one.
             for (var i = localQueue.Count; i > 0; i--)
             {
                 var task = localQueue[i - 1];
@@ -113,87 +110,81 @@ namespace OrchardCore.Indexing.Services
                 }
             }
 
-            // At this point, content items ids should be unique in localQueue
+            // At this point, content items ids should be unique in localQueue.
             var ids = localQueue.Select(x => x.ContentItemId).ToArray();
             var table = $"{session.Store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
-            using (var connection = dbConnectionAccessor.CreateConnection())
+            if (logger.IsEnabled(LogLevel.Debug))
             {
-                await connection.OpenAsync();
+                logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
+            }
 
-                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
+            await using var connection = dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+
+            using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
+            var dialect = session.Store.Configuration.SqlDialect;
+
+            try
+            {
+                // Page delete statements to prevent the limits from IN sql statements.
+                var pageSize = 100;
+
+                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+
+                do
                 {
-                    var dialect = session.Store.Configuration.SqlDialect;
+                    var pageOfIds = ids.Take(pageSize).ToArray();
 
-                    try
+                    if (pageOfIds.Length > 0)
                     {
-                        if (logger.IsEnabled(LogLevel.Debug))
-                        {
-                            logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
-                        }
-
-                        // Page delete statements to prevent the limits from IN sql statements
-                        var pageSize = 100;
-
-                        var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
-
-                        do
-                        {
-                            var pageOfIds = ids.Take(pageSize).ToArray();
-
-                            if (pageOfIds.Any())
-                            {
-                                await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
-                                ids = ids.Skip(pageSize).ToArray();
-                            }
-                        } while (ids.Any());
-
-                        var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                        await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
-
-                        transaction.Commit();
+                        await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                        ids = ids.Skip(pageSize).ToArray();
                     }
-                    catch (Exception e)
-                    {
-                        transaction.Rollback();
-                        logger.LogError(e, "An error occurred while updating indexing tasks");
+                } while (ids.Length > 0);
 
-                        throw;
-                    }
-                }
+                var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync();
+                logger.LogError(e, "An error occurred while updating indexing tasks");
+
+                throw;
             }
         }
 
-        public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(int afterTaskId, int count)
+        public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
-            using (var connection = _dbConnectionAccessor.CreateConnection())
+            await using var connection = _dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+
+            try
             {
-                await connection.OpenAsync();
+                var dialect = _store.Configuration.SqlDialect;
+                var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
 
-                try
+                sqlBuilder.Select();
+                sqlBuilder.Table(nameof(IndexingTask), alias: null, _store.Configuration.Schema);
+                sqlBuilder.Selector("*");
+
+                if (count > 0)
                 {
-                    var dialect = _store.Configuration.SqlDialect;
-                    var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
-
-                    sqlBuilder.Select();
-                    sqlBuilder.Table(nameof(IndexingTask), alias: null, _store.Configuration.Schema);
-                    sqlBuilder.Selector("*");
-
-                    if (count > 0)
-                    {
-                        sqlBuilder.Take(count.ToString());
-                    }
-
-                    sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
-                    sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
-
-                    return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
+                    sqlBuilder.Take(count.ToString());
                 }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "An error occurred while reading indexing tasks");
-                    throw;
-                }
+
+                sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
+                sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
+
+                return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An error occurred while reading indexing tasks");
+                throw;
             }
         }
     }

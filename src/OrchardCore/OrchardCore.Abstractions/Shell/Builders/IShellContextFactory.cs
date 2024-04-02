@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Shell.Builders
     public interface IShellContextFactory
     {
         /// <summary>
-        /// Builds a shell context given a specific tenant settings structure
+        /// Builds a shell context given a specific tenant settings structure.
         /// </summary>
         Task<ShellContext> CreateShellContextAsync(ShellSettings settings);
 

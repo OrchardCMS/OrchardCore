@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
+        private readonly List<string> _templateFileExtensions = new([RazorViewEngine.ViewExtension]);
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Razor
             return output.ToString();
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
+        private static IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)
@@ -135,7 +135,7 @@ namespace OrchardCore.DisplayManagement.Razor
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
             var errorMessage = string.Join(
                 System.Environment.NewLine,
-                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 
             throw new InvalidOperationException(errorMessage);
         }

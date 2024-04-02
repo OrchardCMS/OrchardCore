@@ -1,0 +1,97 @@
+@import '../mixins/_word-wrap';
+@import '../../../node_modules/bootstrap/scss/mixins/_border-radius';
+@import '../_variables';
+
+.hint {
+    font-size: 0.875em;
+    color: var(--bs-secondary) !important;
+    @include word-wrap;
+}
+
+.hint,
+.text-muted {
+    &.dashed::before {
+        content: '\2014\00a0';
+    }
+}
+
+.code,
+.form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
+.form-label {
+    margin-bottom: 0.25rem;
+}
+
+.label-link {
+    float: right;
+    font-size: 12px;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: var(--bs-secondary-bg);
+    opacity: 1;
+}
+
+// When the validation message in inside the label, add a separator
+label .field-validation-error::before {
+    content: "- ";
+}
+
+label.input-required:after {
+    color: var(--bs-danger-text-emphasis);
+    content: " *"
+}
+
+.button {
+    @extend .btn, .btn-primary;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+.has-filter .form-control,
+.has-search .form-control {
+    padding-left: 2rem;
+    color: var(--bs-body-color);
+}
+
+.has-filter .form-control-feedback,
+.has-search .form-control-feedback {
+    position: absolute;
+    left: 1.75rem;
+    z-index: 10;
+    display: block;
+    width: 1rem;
+    height: 2rem;
+    line-height: 1rem;
+    text-align: center;
+    pointer-events: none;
+    color: var(--bs-secondary);
+}
+
+.has-filter .form-control-feedback {
+    left: 4.25rem;
+    top: 0.25rem;
+}
+
+.has-search .form-control-feedback {
+    left: 1.75rem;
+}
+
+.has-search:not(.input-group) .form-control-feedback,
+.has-filter:not(.input-group) .form-control-feedback {
+    left: 1.75rem;
+    top: 1.25rem;
+}
+
+.has-filter .btn:not(.show) {
+    border-color: var(--bs-border-color) !important;
+}

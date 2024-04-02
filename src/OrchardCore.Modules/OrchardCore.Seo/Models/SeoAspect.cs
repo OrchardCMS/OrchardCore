@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using OrchardCore.ResourceManagement;
 
@@ -15,7 +14,7 @@ namespace OrchardCore.Seo.Models
         public string Canonical { get; set; }
 
         public string MetaRobots { get; set; }
-        public MetaEntry[] CustomMetaTags { get; set; } = Array.Empty<MetaEntry>();
+        public MetaEntry[] CustomMetaTags { get; set; } = [];
 
         // Twitter card
         public string TwitterCard { get; set; }
