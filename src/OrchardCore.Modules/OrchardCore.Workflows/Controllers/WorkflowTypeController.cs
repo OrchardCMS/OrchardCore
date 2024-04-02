@@ -587,7 +587,7 @@ namespace OrchardCore.Workflows.Controllers
                 new JProperty("name", "WorkflowType"),
                 new JProperty("data", data)
             ));
-            //Do filter
+   
             foreach (var workflow in await _workflowTypeStore.GetAsync(itemIds))
             {
                 var objectData = JObject.FromObject(workflow);

@@ -65,11 +65,6 @@ namespace OrchardCore.Workflows.Scripting
                 Name = "correlationId",
                 Method = serviceProvider => () => workflowContext.Workflow.CorrelationId,
             };
-            _correlationIdMethod = new GlobalMethod
-            {
-                Name = "setCorrelationId",
-                Method = serviceProvider => (string correlationId) => workflowContext.Workflow.CorrelationId = correlationId,
-            };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
