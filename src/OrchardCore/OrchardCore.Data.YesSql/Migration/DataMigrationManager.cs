@@ -222,7 +222,7 @@ namespace OrchardCore.Data.Migration
                 }
                 finally
                 {
-                    // Persist data migrations
+                    // Persist data migrations.
                     await _session.SaveAsync(_dataMigrationRecord);
                 }
             }
@@ -230,12 +230,17 @@ namespace OrchardCore.Data.Migration
 
         private static async Task<int> InvokeMethod(MethodInfo method, IDataMigration migration)
         {
-            if (method.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null)
+            if (method.ReturnType == typeof(Task<int>))
             {
                 return await (Task<int>)method.Invoke(migration, []);
             }
 
-            return (int)method.Invoke(migration, []);
+            if (method.ReturnType == typeof(int))
+            {
+                return (int)method.Invoke(migration, []);
+            }
+
+            throw new InvalidOperationException("Invalid return type used in a migration method.");
         }
 
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)

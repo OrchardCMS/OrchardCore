@@ -112,23 +112,23 @@ public class AdminController : Controller, IUpdateModel
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        dynamic pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
+        var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
-        var notificationSummaries = new List<dynamic>();
+        var notificationShapes = new List<IShape>();
 
         foreach (var notification in queryResult.Notifications)
         {
-            dynamic shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
-            shape.Notification = notification;
+            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
+            shape.Properties[nameof(Notification)] = notification;
 
-            notificationSummaries.Add(shape);
+            notificationShapes.Add(shape);
         }
 
-        var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+        var startIndex = (pager.Page - 1) * pager.PageSize + 1;
         options.StartIndex = startIndex;
-        options.EndIndex = startIndex + notificationSummaries.Count - 1;
-        options.NotificationsCount = notificationSummaries.Count;
-        options.TotalItemCount = pagerShape.TotalItemCount;
+        options.EndIndex = startIndex + notificationShapes.Count - 1;
+        options.NotificationsCount = notificationShapes.Count;
+        options.TotalItemCount = queryResult.TotalCount;
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
@@ -136,7 +136,7 @@ public class AdminController : Controller, IUpdateModel
         {
             viewModel.Options = options;
             viewModel.Header = header;
-            viewModel.Notifications = notificationSummaries;
+            viewModel.Notifications = notificationShapes;
             viewModel.Pager = pagerShape;
         });
 
