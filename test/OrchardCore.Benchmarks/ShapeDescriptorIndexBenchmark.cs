@@ -20,13 +20,12 @@ public class ShapeDescriptorIndexBenchmark
     [GlobalSetup]
     public async Task SetupAsync()
     {
-        using var _content = new BlogContext();
-        await _content.InitializeAsync();
-        await _content.UsingTenantScopeAsync(async scope =>
+        using var content = new BlogContext();
+        await content.InitializeAsync();
+        await content.UsingTenantScopeAsync(async scope =>
         {
             var bindingStrategies = scope.ServiceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
             var typeFeatureProvider = scope.ServiceProvider.GetRequiredService<ITypeFeatureProvider>();
-            var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
 
             foreach (var bindingStrategy in bindingStrategies)
             {
@@ -35,15 +34,15 @@ public class ShapeDescriptorIndexBenchmark
                 var builder = new ShapeTableBuilder(strategyFeature, []);
                 await bindingStrategy.DiscoverAsync(builder);
 
-                BuildDescriptors(bindingStrategy, builder.BuildAlterations(), shapeDescriptors);
+                BuildDescriptors(bindingStrategy, builder.BuildAlterations());
             }
         });
     }
 
     [Benchmark(Baseline = true)]
-    public void SingleLoopLists()
+    public List<ShapeDescriptorIndex> SingleLoopLists()
     {
-        var descriptors = _shapeDescriptors
+        return _shapeDescriptors
             .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
             .Select(group => new ShapeDescriptorIndex
             (
@@ -55,9 +54,9 @@ public class ShapeDescriptorIndexBenchmark
     }
 
     [Benchmark]
-    public void MultipleLoopsUsingLists()
+    public List<MultiSelectShapeDescriptorIndex> MultipleLoopsUsingLists()
     {
-        var descriptors = _shapeDescriptors
+        return _shapeDescriptors
             .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
             .Select(group => new MultiSelectShapeDescriptorIndex
             (
@@ -69,9 +68,9 @@ public class ShapeDescriptorIndexBenchmark
     }
 
     [Benchmark]
-    public void MultipleLoopsArrays()
+    public List<MultiSelectShapeDescriptorIndexArray> MultipleLoopsArrays()
     {
-        var descriptors = _shapeDescriptors
+        return _shapeDescriptors
             .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
             .Select(group => new MultiSelectShapeDescriptorIndexArray
             (
@@ -83,9 +82,8 @@ public class ShapeDescriptorIndexBenchmark
     }
 
     private void BuildDescriptors(
-            IShapeTableProvider bindingStrategy,
-            IEnumerable<ShapeAlteration> builtAlterations,
-            Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+        IShapeTableProvider bindingStrategy,
+        IEnumerable<ShapeAlteration> builtAlterations)
     {
         var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
@@ -110,7 +108,7 @@ public class ShapeDescriptorIndexBenchmark
                     alteration.Alter(descriptor);
                 }
 
-                shapeDescriptors[key] = descriptor;
+                _shapeDescriptors[key] = descriptor;
             }
         }
     }
