@@ -84,15 +84,15 @@ public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
 
     public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
-    public override IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
+    public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
-    public override IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
+    public override IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
 
     public override Func<ShapePlacementContext, PlacementInfo> Placement => CalculatePlacement;
 
@@ -112,9 +112,9 @@ public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
         return info ?? DefaultPlacementAction(ctx);
     }
 
-    public override IList<string> Wrappers => _wrappers;
+    public override IReadOnlyList<string> Wrappers => _wrappers;
 
-    public override IList<string> BindingSources => _bindingSources;
+    public override IReadOnlyList<string> BindingSources => _bindingSources;
 }
 
 public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
@@ -192,15 +192,15 @@ public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
 
     public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
-    public override IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
+    public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
-    public override IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
+    public override IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
 
-    public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
+    public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
 
     public override Func<ShapePlacementContext, PlacementInfo> Placement => CalculatePlacement;
 
@@ -220,7 +220,7 @@ public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
         return info ?? DefaultPlacementAction(ctx);
     }
 
-    public override IList<string> Wrappers => _wrappers;
+    public override IReadOnlyList<string> Wrappers => _wrappers;
 
-    public override IList<string> BindingSources => _bindingSources;
+    public override IReadOnlyList<string> BindingSources => _bindingSources;
 }
