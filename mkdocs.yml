@@ -98,6 +98,7 @@ nav:
       - Create a website: docs/guides/create-cms-application/README.md
       - Leverage CSPROJ meta information: docs/guides/leverage-csproj-meta-info/README.md
       - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
+      - Create a Decoupled CMS site with a .NET Blazor Application (Server Side): docs/guides/create-blazor-cms/README.md
       - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
       - Add an admin menu: docs/guides/add-admin-menu/README.md
       - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
