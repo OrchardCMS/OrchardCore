@@ -1,6 +1,6 @@
 ## Introduction
 
-In this article, you will learn how to use Orchard CMS as a decoupled CMS with .NET Blazor (SSR/Server Interactive) Application.
+In this article, you will learn how to use Orchard CMS as a decoupled CMS with the .NET Blazor (SSR/Server Interactive) Application.
 
 ## Setting up the project
 
@@ -148,7 +148,7 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 
 > !!! NOTE
 > 
-> You can add `.razor` files in the main Orchard Core Web application, however adding `.razor` files in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use the razor class library and add it as a reference to your Orchard Core Web project or Orchard Core module.
+> You can add `.razor` files in the main Orchard Core Web application, however adding `.razor` files in Orchard Core modules is not supported. For this reason, and to have maximum reusability of your razor components, always use the razor class library and add it as a reference to your Orchard Core Web project or Orchard Core module.
 
 
 - Create a Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
