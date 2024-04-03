@@ -1,6 +1,6 @@
 ## Introduction
 
-In this article, you will learn how to use Orchard CMS as a decoupled CMS with .NET Blazor Application.
+In this article, you will learn how to use Orchard CMS as a decoupled CMS with the .NET Blazor (SSR/Server Interactive) Application.
 
 ## Setting up the project
 
@@ -146,9 +146,10 @@ dotnet sln add ./BlazorCms
 
 In this section, we will create a .NET Blazor application, as Razor Class library and then, we will reference it in the Orchard Core application.
 
-!!! note
+> !!! NOTE
+> 
+> You can add `.razor` files in the main Orchard Core Web application, however adding `.razor` files in Orchard Core modules is not supported. For this reason, and to have maximum reusability of your razor components, always use the razor class library and add it as a reference to your Orchard Core Web project or Orchard Core module.
 
-You can add `.razor` files in the main Orchard Core Web application, however adding `.razor` files in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use the razor class library and add it as a reference to your Orchard Core Web project or Orchard Core module.
 
 - Create a Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
 - Add the project's reference to your web application project.
@@ -540,10 +541,10 @@ Now, your project explorer should look like the image below.
 
 ```razor
     <Router AppAssembly="typeof(App).Assembly">
-    	<Found Context="routeData">
-    		<RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-    		<FocusOnNavigate RouteData="routeData" Selector="h1" />
-    	</Found>
+     <Found Context="routeData">
+      <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+      <FocusOnNavigate RouteData="routeData" Selector="h1" />
+     </Found>
     </Router>
 ```
 
@@ -572,15 +573,15 @@ Our blazor application's basic structure is finished. Now we are ready to create
         
         @code
         {
-        	protected override async Task OnInitializedAsync()
-        	{
+         protected override async Task OnInitializedAsync()
+         {
         
-        	}
+         }
         
-        	protected override async Task OnParametersSetAsync()
-        	{
+         protected override async Task OnParametersSetAsync()
+         {
         
-        	}
+         }
         }        
     ```
 
@@ -609,7 +610,7 @@ builder.Services
        .AddInteractiveServerComponents()
        ;
 
-	})
+ })
     .Configure( (app, routes, services) => {
          app.UseStaticFiles();
          app.UseAntiforgery();
@@ -723,5 +724,263 @@ Run the application. Click on the `Orchard Core` link on the Left Nav will load 
 - Now lets add `@attribute [StreamRendering]` on `Content.razor` to add stream rendering. Run the application and see stream rendering in action as per the below image.
 
 ![Sendering Orchard Content in Blazor App](./images/image-006.gif)
+
+# Add multitenancy to the Blazor App
+One of the key features of Orchard Core is its multi-tenancy support. In this section, we will add multi-tenancy support to our Blazor application.
+
+## Enable the tenant feature.
+
+In orchard core admin, go to `Configuration` -> `Features` and enable the `Tenants` feature.
+
+![Enalbe tenants feature](./images/enable-tenants.jpg)
+
+## Add the first tenant
+
+Navigate to `Multi tenancy` -> `Tenants` and add a new tenant with the following settings.
+
+![Create first tenant](./images/create-tenant.png)
+
+- Tenant name: FirstTenant
+- Url Prefix: tenant01
+- Recipe: Headless site
+
+
+![Create first tenant](./images/first-tenant.png)
+
+Now setup the first tenant, by clicking on the `Setup` button.
+
+![Setup new tenant](./images/setup-first-tenant.png)
+
+![Setup screen first tenant](./images/setup-screen-first-tenant.png)
+
+After setup is finished, you can access the first tenant by navigating to `https://localhost:5001/tenant01`. Since Orchard listens to ```/``` (and on ```/tenant01/```), it presents the login screen. You can log in with the user you just created in the setup procedure.
+
+# The base url
+In App.razor in the razor class library that contains our Blazor App, we need to add the base url to the base tag. This is necessary because the Blazor App is served from a subpath of the Orchard Core application.
+
+```razor
+<base href="/" />
+```
+
+This is the default and works great if we only use one tenant, the default.
+
+But each tenant lives on a different subpath, so we need to adjust the base tag to reflect that.
+
+The most obvious way to do this is to use the `NavigationManager` to get the base path of the current tenant and set the base tag accordingly.
+
+So, let's modify our App.razor to use the base path of the current tenant.
+
+```razor
+@inject NavigationManager NavManager
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <base href=@_baseUrl />
+ <link rel="stylesheet" href="OrchardCore.Resources/Styles/bootstrap.min.css" />
+ <link rel="stylesheet" href="_content/OCBlazorLib/OCBlazorLib.bundle.scp.css" />
+ <HeadOutlet />
+</head>
+
+<body>
+ <Routes />
+ <script src="_framework/blazor.web.js"></script>
+</body>
+</html>
+
+@code
+{
+ protected string _baseUrl = "/";
+
+ protected override void OnParametersSet()
+ {
+  base.OnParametersSet();
+  _baseUrl = NavManager.BaseUri;
+ }
+}
+```
+
+The `NavigationManager` is injected into the App component and the base path is set in the `OnParametersSet` method.
+
+> NOTE:
+> 
+> There are other ways of retrieving, or composing the base path, but this is the simplest and most straightforward way. Other ways include:
+>  
+> - Using the HttpContext (Request.BasePath)
+> - Using the ShellScope (Context.Settings.RequestUrlPrefix)
+> - Using the settings of ISiteService (Site.BaseUrl). This can be set in the admin UI.
+
+The example contains a page with the url ```baseurl``` that demonstrates the various methods. 
+
+![Base url retrievement](./images/base-url-page.png)
+
+> NOTE:
+>
+> The base url can be specified as an absolute path, or as a relative path.
+>
+> NOTE:
+>
+> The settings for the base path can be set in orchard. If you don't set them, the value returned is null/empty.
+>
+> ![Tenant site settings](./images/tenant-site-settings.png)
+
+## Test the modifications
+
+Now make sure the tenant 01 also imports the content type and content item, so we can verify multi-tenancy in the Blazor App.
+
+Import the following:
+
+Log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
+```json
+{
+  "name": "",
+  "displayName": "",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "",
+  "issetuprecipe": false,
+  "categories": [],
+  "tags": [],
+  "steps": [
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "48swn17t4vn6dwvgkzk970q6dp",
+          "ContentItemVersionId": "4x0wa7sfp911brv9gmvdmp7rmf",
+          "ContentType": "MarkdownPage",
+          "DisplayText": "ORCHARD CORE FOR TENANT 01",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2024-01-27T20:26:30.0529958Z",
+          "PublishedUtc": "2024-01-27T20:26:30.0704945Z",
+          "CreatedUtc": "2024-01-27T20:26:08.2132621Z",
+          "Owner": "4bs2031dvfyh2zxwvvz109e1nr",
+          "Author": "admin",
+          "MarkdownPage": {},
+          "AliasPart": {
+            "Alias": "orchard-core"
+          },
+          "MarkdownBodyPart": {
+            "Markdown": "## Introduction \r\nOpen-source, modular, multi-tenant application framework and CMS for ASP.NET Core\r\n\r\n## Features\r\n- Media Management\r\n- Multi-Lingual\r\n- Modular\r\n- Multi-Tenant (as we are seeing)\r\n- Security\r\n- Workflows"
+          },
+          "TitlePart": {
+            "Title": "ORCHARD CORE"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "MarkdownPage",
+          "DisplayName": "Markdown Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true
+            },
+            "FullTextAspectSettings": {},
+            "GraphQLContentTypeSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "MarkdownPage",
+              "Name": "MarkdownPage",
+              "Settings": {}
+            },
+            {
+              "PartName": "AliasPart",
+              "Name": "AliasPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "MarkdownBodyPart",
+              "Name": "MarkdownBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    }
+  ]
+}
+```
+
+![Import content definition and item into tenant 01](./images/import-content-tenant.png)
+
+Now, navigate to `https://localhost:5001/tenant01` and click on the `Orchard Core` link in the left navigation. You should see the content item rendered in the Blazor App.
+
+![tenant specific content page](./images/multi-tenant-content.png)
+
+## Blazor SSR works, what about interactivity?
+
+The Blazor App is now served from a tenant-specific subpath, and the content is rendered correctly. But what about interactivity? As you saw we specified to use the `InteractiveServerRenderMode` in the `MapRazorComponents` method. This should mean that when we specify a component to be rendered using the `InteractiveServerRenderMode`, it should be interactive.
+
+Let's add a button to our BaseUrl page that displays the current local time. This will demonstrate that the interactivity works.
+
+Create a Components solution folder in the Blazor App project and create a file called ```InteractiveButton```, with the following content:
+
+```razor
+<h3>Interactivity test</h3>
+
+<button class="btn-primary" @onclick="Clicked">Test</button>
+<hr />
+@_interactiveFeedback
+
+@code {
+
+    protected string? _interactiveFeedback;
+
+    protected void Clicked()
+    {
+        _interactiveFeedback = $"Clicked! [{DateTime.Now.ToLocalTime()}]";
+    }
+}
+```
+
+On the BaseUrl page, we add:
+
+```razor
+<OCBlazorLib.Components.InteractiveButton @rendermode="RenderMode.InteractiveServer" />
+```
+
+> Note the ```@rendermode="RenderMode.InteractiveServer"``` attribute. This tells the framework to render this component in interactive mode.
+
+When you navigate to the BaseUrl page, you should see the button. When you click it, the text should change to reflect the time of the click.
+
+![Interactive button](./images/server-interactivity.gif)
+
+To further verify that there is now an active SignalR connection with the server, you can open the browser's developer tools and look at the network tab. Filter on web socket connections, and refresh the page. You should see a connection to the server. Click it to see the messages being sent when you click the button.
+
+### Conclusion
+
+In this guide, we have seen how to create a Blazor application, in a Razor class library, and serve it from an Orchard Core CMS application. We have seen how to add multi-tenancy support to the Blazor application, and how to make the Blazor application interactive.
 
 The source code for this guide is available at [github.com/OrchardCMS/OrchardCore.Samples](https://github.com/OrchardCMS/OrchardCore.Samples) 
