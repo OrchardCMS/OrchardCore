@@ -45,6 +45,10 @@ namespace OrchardCore.ContentManagement.Display.Liquid
             {
                 sb.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
             }
+            else if (content is ContentPart contentPart)
+            {
+                sb.Append(OrchardRazorHelperExtensions.ConvertContentPart(contentPart).ToString());
+            }
             else if (content is IShape shape)
             {
                 sb.Append(shape.ShapeToJson().ToString());

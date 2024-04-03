@@ -82,7 +82,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
+                        S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement
         /// <returns>true if a part found, otherwise false.</returns>
         public static bool TryGet<TPart>(this ContentItem contentItem, string name, out TPart part) where TPart : ContentPart
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             try
             {

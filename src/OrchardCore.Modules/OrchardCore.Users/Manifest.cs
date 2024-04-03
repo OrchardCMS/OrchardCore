@@ -57,6 +57,15 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Users.Localization",
+    Name = "User Localization",
+    Description = "Provides a way to set the culture per user.",
+    Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Localization" },
+    Category = "Settings",
+    Priority = "-1" // Added to avoid changing the order in the localization module.
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Users.CustomUserSettings",
     Name = "Custom User Settings",
     Description = "The custom user settings feature allows content types to become custom user settings.",

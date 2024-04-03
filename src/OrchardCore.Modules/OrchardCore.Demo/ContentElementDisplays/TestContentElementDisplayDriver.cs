@@ -32,7 +32,8 @@ namespace OrchardCore.Demo.ContentElementDisplays
                     async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
                     shape =>
                     {
-                        ((dynamic)shape).Processing = _processing++;
+                        shape.Properties["Processing"] = _processing++;
+
                         return Task.CompletedTask;
                     })
                     .Location("Detail", "Content")

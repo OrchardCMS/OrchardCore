@@ -6,21 +6,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Controllers
 {
+    [Admin("Media/{action}", "Media.{action}")]
     public class AdminController : Controller
     {
-        private static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
-        private static readonly char[] ExtensionSeperator = [' ', ','];
-        private static readonly HashSet<string> EmptySet = [];
+        private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
+        private static readonly char[] _extensionSeperator = [' ', ','];
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
@@ -31,6 +34,8 @@ namespace OrchardCore.Media.Controllers
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly IChunkFileUploadService _chunkFileUploadService;
+        private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly IServiceProvider _serviceProvider;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
 
         public AdminController(
@@ -43,6 +48,8 @@ namespace OrchardCore.Media.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IUserAssetFolderNameProvider userAssetFolderNameProvider,
             IChunkFileUploadService chunkFileUploadService,
+            IFileVersionProvider fileVersionProvider,
+            IServiceProvider serviceProvider,
             AttachedMediaFieldFileService attachedMediaFieldFileService)
         {
             _mediaFileStore = mediaFileStore;
@@ -54,9 +61,12 @@ namespace OrchardCore.Media.Controllers
             S = stringLocalizer;
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _chunkFileUploadService = chunkFileUploadService;
+            _fileVersionProvider = fileVersionProvider;
+            _serviceProvider = serviceProvider;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
         }
 
+        [Admin("Media", "Media.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
@@ -132,7 +142,10 @@ namespace OrchardCore.Media.Controllers
             var allowedExtensions = GetRequestedExtensions(extensions, false);
 
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-                .WhereAwait(async e => !e.IsDirectory && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                .WhereAwait(async e =>
+                    !e.IsDirectory
+                    && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
+                    && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
                 .Select(e => CreateFileResult(e));
 
             return Ok(await allowed.ToListAsync());
@@ -220,6 +233,9 @@ namespace OrchardCore.Media.Controllers
                             mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                            stream.Position = 0;
+                            await PreCacheRemoteMedia(mediaFile, stream);
 
                             result.Add(CreateFileResult(mediaFile));
                         }
@@ -329,7 +345,10 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
 
-            return Ok();
+            var newFileInfo = await _mediaFileStore.GetFileInfoAsync(newPath);
+            await PreCacheRemoteMedia(newFileInfo);
+
+            return Ok(new { newUrl = GetCacheBustingMediaPublicUrl(newPath) });
         }
 
         [HttpPost]
@@ -420,7 +439,7 @@ namespace OrchardCore.Media.Controllers
 
             name = _mediaNameNormalizerService.NormalizeFolderName(name);
 
-            if (InvalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
             {
                 return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
             }
@@ -462,7 +481,7 @@ namespace OrchardCore.Media.Controllers
                 size = mediaFile.Length,
                 lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
-                url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
+                url = GetCacheBustingMediaPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = string.Empty,
@@ -493,7 +512,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!string.IsNullOrWhiteSpace(exts))
             {
-                var extensions = exts.Split(ExtensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var extensions = exts.Split(_extensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                 var requestedExtensions = _mediaOptions.AllowedFileExtensions
                     .Intersect(extensions)
@@ -511,7 +530,39 @@ namespace OrchardCore.Media.Controllers
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
             }
 
-            return EmptySet;
+            return [];
+        }
+
+        private string GetCacheBustingMediaPublicUrl(string path) =>
+            _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(path));
+
+        // If a remote storage is used, then we need to preemptively cache the newly uploaded or renamed file. Without
+        // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
+        // ShellFileVersionProvider won't find it in the local cache.
+        // This is not required for files moved across folders, because the folder will be reopened anyway.
+        private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
+        {
+            var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
+            if (mediaFileStoreCache == null)
+            {
+                return;
+            }
+
+            Stream localStream = null;
+
+            if (stream == null)
+            {
+                stream = localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
+            }
+
+            try
+            {
+                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+            }
+            finally
+            {
+                localStream?.Dispose();
+            }
         }
 
         private bool IsSpecialFolder(string path)

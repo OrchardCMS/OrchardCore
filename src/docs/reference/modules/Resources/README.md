@@ -54,8 +54,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.11.8        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.3.2         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.3.2  | -              |
+| bootstrap             | Script | 5.3.3         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.3.3  | -              |
 | bootstrap-select      | Script | 1.14.0-beta3  | -              |
 | bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | codemirror            | Script | 5.65.7        | -              |
@@ -68,8 +68,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.27.3        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.44.0        | -              |
-| monaco                | Script | 0.44.0        | monaco-loader  |
+| monaco-loader         | Script | 0.46.0        | -              |
+| monaco                | Script | 0.46.0        | monaco-loader  |
 | nouislider            | Script | 15.6.1        | -              |
 | nouislider            | Style  | 15.6.1        | -              |
 
@@ -595,3 +595,7 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

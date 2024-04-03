@@ -53,7 +53,10 @@ namespace OrchardCore.Localization
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }
 
-            return new CultureDictionaryRecordKey(messageId, context);
+            return new CultureDictionaryRecordKey
+            {
+                MessageId = messageId, Context = context
+            };
         }
     }
 }

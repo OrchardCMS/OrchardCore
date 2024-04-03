@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -28,6 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
+    [Admin("Users/{action}/{id?}", "Users{action}")]
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
@@ -119,7 +121,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -183,16 +185,15 @@ namespace OrchardCore.Users.Controllers
                         Text = roleName,
                         Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
                         Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
-                    })
-,
+                    }),
             ];
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+            var startIndex = (pager.Page - 1) * pager.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + userEntries.Count - 1;
             options.UsersCount = userEntries.Count;
-            options.TotalItemCount = pagerShape.TotalItemCount;
+            options.TotalItemCount = count;
 
             var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 

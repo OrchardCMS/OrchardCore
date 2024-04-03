@@ -15,7 +15,9 @@ namespace OrchardCore.Contents.Liquid
         private readonly IContentManager _contentManager;
         private readonly IContentItemRecursionHelper<FullTextFilter> _fullTextRecursionHelper;
 
-        public FullTextFilter(IContentManager contentManager, IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper)
+        public FullTextFilter(
+            IContentManager contentManager,
+            IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper)
         {
             _contentManager = contentManager;
             _fullTextRecursionHelper = fullTextRecursionHelper;
@@ -38,7 +40,7 @@ namespace OrchardCore.Contents.Liquid
                     }
                 }
 
-                if (!contentItems.Any())
+                if (contentItems.Count == 0)
                 {
                     return NilValue.Instance;
                 }

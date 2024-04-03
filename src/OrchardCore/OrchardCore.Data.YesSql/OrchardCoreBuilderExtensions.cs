@@ -3,8 +3,6 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -83,7 +81,9 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
 
-                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings["DatabaseName"]);
+                            // Only allow creating a file DB when a tenant is in the Initializing state
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
+
                             storeConfiguration
                                 .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();
@@ -180,9 +180,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>().ToList();
-            var derivedTypesOptions = sp.GetService<IOptions<JsonDerivedTypesOptions>>();
-            typeInfoResolvers.Add(new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value));
+            var serializerOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>();
 
             var storeConfiguration = new YesSql.Configuration
             {
@@ -191,9 +189,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
                 Logger = loggerFactory.CreateLogger("YesSql"),
+                ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions)
             };
-
-            storeConfiguration.ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers);
 
             if (yesSqlOptions.IdGenerator != null)
             {

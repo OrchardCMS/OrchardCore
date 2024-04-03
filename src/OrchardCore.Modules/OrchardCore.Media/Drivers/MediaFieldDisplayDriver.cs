@@ -132,7 +132,7 @@ namespace OrchardCore.Media.Drivers
 
                 if (settings.Required && field.Paths.Length < 1)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 if (field.Paths.Length > 1 && !settings.Multiple)

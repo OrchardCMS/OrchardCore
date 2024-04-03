@@ -9,6 +9,6 @@ namespace OrchardCore.ContentManagement.Routing
         /// <summary>
         /// Json accessors to provide a list of contained content items.
         /// </summary>
-        public IList<Func<JsonObject, JsonArray>> Accessors { get; set; } = new List<Func<JsonObject, JsonArray>>();
+        public IList<Func<JsonObject, JsonArray>> Accessors { get; set; } = [];
     }
 }

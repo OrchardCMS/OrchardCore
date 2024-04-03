@@ -14,9 +14,9 @@ public class JsonDynamicObject : DynamicObject
 {
     private readonly JsonObject _jsonObject;
 
-    private readonly Dictionary<string, object?> _dictionary = new();
+    private readonly Dictionary<string, object?> _dictionary = [];
 
-    public JsonDynamicObject() => _jsonObject = new JsonObject();
+    public JsonDynamicObject() => _jsonObject = [];
 
     public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
 
@@ -79,6 +79,18 @@ public class JsonDynamicObject : DynamicObject
         result = typeof(JsonObject).InvokeMember(binder.Name, BindingFlags.InvokeMethod, null, _jsonObject, args);
         return true;
     }
+
+    public bool Remove(string key)
+    {
+        _dictionary.Remove(key);
+
+        return _jsonObject.Remove(key);
+    }
+
+    public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
+
+    [Obsolete("Please use the SelectNode method", error: true)]
+    public JsonNode? SelectToken(string path) => _jsonObject.SelectNode(path);
 
     public object? GetValue(string key)
     {

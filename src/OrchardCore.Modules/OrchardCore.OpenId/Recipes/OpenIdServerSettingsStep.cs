@@ -17,7 +17,9 @@ namespace OrchardCore.OpenId.Recipes
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdServerSettingsStep(IOpenIdServerService serverService)
-            => _serverService = serverService;
+        {
+            _serverService = serverService;
+        }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {

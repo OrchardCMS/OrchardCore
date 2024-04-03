@@ -43,6 +43,11 @@ label .field-validation-error::before {
     content: "- ";
 }
 
+label.input-required:after {
+    color: var(--bs-danger-text-emphasis);
+    content: " *"
+}
+
 .button {
     @extend .btn, .btn-primary;
 }

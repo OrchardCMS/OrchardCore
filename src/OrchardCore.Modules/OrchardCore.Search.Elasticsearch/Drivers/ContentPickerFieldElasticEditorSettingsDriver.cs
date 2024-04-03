@@ -13,7 +13,8 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+        public ContentPickerFieldElasticEditorSettingsDriver(
+            ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
