@@ -75,13 +75,13 @@ namespace OrchardCore.Media.Services
             var folderPath = i >= 0 ? path[..i] : path;
 
             var directory = await _fileStore.GetDirectoryInfoAsync(folderPath);
-            if(directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
+            if (directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
             {
                 // This could be a new directory, or a new or existing file in the root folder. As we cannot directly determine
                 // whether a file is uploaded or a new directory is created, we will check against the list of allowed extensions.
                 // If none is matched, we assume a new directory is created, otherwise we will check the root access only.
                 // Note: The file path is currently not authorized during upload, only the folder is checked. Therefore checking 
-                // the file extensions is not actually required, but I'll leave this in case we add an authorization call later.
+                // the file extensions is not actually required, but let's leave this in case we add an authorization call later.
                 if(await _fileStore.GetFileInfoAsync(folderPath) is not null ||
                    _mediaOptions.AllowedFileExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -207,7 +207,7 @@ namespace OrchardCore.Media.Services
         private void MarkAsSecure(ClaimsPrincipal user)
         {
             // If anonymous access is allowed, also allow default caching in the browser.
-            if(user.Identity?.IsAuthenticated ?? false)
+            if (user.Identity?.IsAuthenticated ?? false)
                 _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
         }
 

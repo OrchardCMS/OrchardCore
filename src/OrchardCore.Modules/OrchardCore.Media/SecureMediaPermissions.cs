@@ -42,7 +42,7 @@ namespace OrchardCore.Media
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            // The ViewRootMedia permission must be implied by any sub folder permission.
+            // The ViewRootMedia permission must be implied by any subfolder permission.
             var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
 
             var result = new List<Permission>()
@@ -108,16 +108,13 @@ namespace OrchardCore.Media
         }
 
         /// <summary>
-        /// Returns a dynamic permission for a secure folder, based on a global view content permission template.
+        /// Returns a dynamic permission for a secure folder, based on a global view media permission template.
         /// </summary>
         public static Permission ConvertToDynamicPermission(Permission permission) => PermissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
 
         internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             secureFolder = secureFolder?.Trim(_trimSecurePathChars);
 

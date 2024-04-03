@@ -203,7 +203,7 @@ namespace OrchardCore.Media
             var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
             // Secure media file middleware, but only if the feature is enabled.
-            if(serviceProvider.IsSecureMediaEnabled())
+            if (serviceProvider.IsSecureMediaEnabled())
             {
                 app.UseMiddleware<SecureMediaMiddleware>();
             }
