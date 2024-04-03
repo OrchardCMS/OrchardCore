@@ -320,7 +320,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
         mockUserAssetFolderNameProvider.Setup(afp => afp.GetUserAssetFolderName(It.Is<ClaimsPrincipal>(ci => ci.Identity.AuthenticationType == "Test"))).Returns("user-folder");
 
         var mockContentManager = new Mock<IContentManager>();
-        mockContentManager.Setup(cm => cm.GetAsync(It.IsAny<string>())).ReturnsAsync(Mock.Of<ContentItem>()); // Pretents an existing content item.
+        mockContentManager.Setup(cm => cm.GetAsync(It.IsAny<string>())).ReturnsAsync(Mock.Of<ContentItem>()); // Pretends an existing content item.
 
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,
