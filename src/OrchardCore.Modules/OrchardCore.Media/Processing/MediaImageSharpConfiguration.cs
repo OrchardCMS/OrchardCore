@@ -101,7 +101,7 @@ namespace OrchardCore.Media.Processing
                         ? "no-store"
                         : "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxSecureFilesBrowserCacheDays).TotalSeconds.ToString();
 
-                    context.Response.Headers[HeaderNames.CacheControl] = secureCacheControl;
+                    context.Response.Headers.CacheControl = secureCacheControl;
                 }
             };
         }
