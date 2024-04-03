@@ -51,7 +51,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 _alternationDescriptors.Add(alternationDescriptor);
                 _wrappers.AddRange(alternationDescriptor.Wrappers);
                 _bindingSources.AddRange(alternationDescriptor.BindingSources);
-                _bindingSources.AddRange(alternationDescriptor.BindingSources);
                 _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
                 _createdAsync.AddRange(alternationDescriptor.CreatedAsync);
                 _displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);
