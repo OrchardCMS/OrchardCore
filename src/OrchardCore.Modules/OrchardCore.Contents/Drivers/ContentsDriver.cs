@@ -74,8 +74,8 @@ namespace OrchardCore.Contents.Drivers
                 var user = _httpContextAccessor.HttpContext.User;
 
                 results.Add(contentsMetadataShape);
-                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
-                results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
+                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "Actions:10"));
+                results.Add(Shape("ContentsButtonActions_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "ActionsMenu:10")
                     .RenderWhen(async () =>
                     {
                         var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
