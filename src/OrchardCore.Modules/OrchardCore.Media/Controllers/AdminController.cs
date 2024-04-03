@@ -473,7 +473,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> MediaApplication(MediaApplicationViewModel model)
         {
-            // Check if the user has access to new folders. If not we hide the "create folder" button from the root folder.
+            // Check if the user has access to new folders. If not, we hide the "create folder" button from the root folder.
             model.AllowNewRootFolders = !HttpContext.IsSecureMediaEnabled() || await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)"_non-existent-path-87FD1922-8F88-4A33-9766-DA03E6E6F7BA");
 
             return View(model);
