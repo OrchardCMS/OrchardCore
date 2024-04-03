@@ -8,6 +8,8 @@ Authenticates users with their Microsoft Account.
 If the site allows to register new users, a local user is created and the Microsoft Account is linked.
 If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
+> Note: If you want to allow users to authenticate with their Microsoft account, but also with work or school accounts, use multi-tenant Entra ID authentication described below instead.
+
 You should create an app in the [Application Registration Portal](https://apps.dev.microsoft.com) and add the web platform.
 
 Give a name for your App, create a secret that you will use it as AppSecret in Orchard, and allow the implicit flow. The default callback at Orchard is [tenant]/signin-microsoft or can be set as needed.
@@ -25,6 +27,8 @@ If no value is provided, setup Microsoft Account app to use the default path /si
 
 Authenticates users with their Microsoft Entra ID Account, including Microsoft work, school, and personal accounts (such as Skype, Xbox, Outlook.com). If the site allows to register new users, a local user is created and the Microsoft Entra ID account is linked. If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
+> Note: If you only want to allow Microsoft Accounts, use the Microsoft Account feature described above.
+  
 First, you need to create an Microsoft Entra ID app on the [Azure Portal](https://portal.azure.com) for your Microsoft Entra ID tenant.
 
 1. Go to the "Azure Active Directory" menu, which will open your organization's Active Directory settings.
