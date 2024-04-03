@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -204,7 +204,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
         foreach (var part in parts)
         {
-            hash.Append(Encoding.UTF8.GetBytes(part));
+            hash.Append(MemoryMarshal.AsBytes<char>(part));
         }
 
         return Convert.ToHexString(hash.GetCurrentHash());
