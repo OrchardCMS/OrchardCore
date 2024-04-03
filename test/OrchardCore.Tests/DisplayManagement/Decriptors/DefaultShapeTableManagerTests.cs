@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
@@ -10,7 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Descriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
