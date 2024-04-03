@@ -4,16 +4,13 @@ Enabling the `OrchardCore.Rules` module allows you to implement condition based 
 
 ### Custom Conditions
 
-You may create your own conditions for more complex scenarios.
-
-You will need to implement the following abstractions found in the `OrchardCore.Rules.Abstractions` package.
+For more intricate scenarios, you have the option to craft your own conditions. To achieve this, you'll be required to implement the following abstractions from the `OrchardCore.Rules.Abstractions` package:
 
 - `Condition`
 - `ConditionEvaluator`
 - `ConditionDisplayDriver`
-- Appropriate views for your condition display driver.
 
-Then you can register the services like so
+Afterward, proceed with registering the services as follows:
 
 ``` csharp
 services.AddRule<BooleanCondition, BooleanConditionEvaluator, BooleanConditionDisplayDriver>();
