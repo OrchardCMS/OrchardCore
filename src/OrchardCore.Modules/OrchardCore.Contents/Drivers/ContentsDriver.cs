@@ -73,23 +73,19 @@ namespace OrchardCore.Contents.Drivers
 
                 var user = _httpContextAccessor.HttpContext.User;
 
-                results.AddRange(
-                [
-                    contentsMetadataShape,
-                    Shape("ContentsButtonEdit_SummaryAdmin", contentItemViewModel)
-                        .Location("SummaryAdmin", "Actions:10"),
-                    Shape("ContentsButtonActions_SummaryAdmin", contentItemViewModel)
-                        .Location("SummaryAdmin", "ActionsMenu:10")
-                        .RenderWhen(async () =>
-                        {
-                            var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
-                            var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem);
-                            var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem);
-                            var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
+                results.Add(contentsMetadataShape);
+                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
+                results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
+                    .RenderWhen(async () =>
+                    {
+                        var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
+                        var hasDeletePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem);
+                        var hasPreviewPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PreviewContent, contentItem);
+                        var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
 
-                            return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
-                        }),
-                ]);
+                        return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
+                    })
+                );
             }
 
             return Combine(results);

@@ -74,17 +74,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         foreach (var displayType in displayTypes)
                         {
-                            ctx.Shape.Metadata.Alternates.AddRange([
-
+                            foreach (var displayType in displayTypes)
+                            {
                                 // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
-                                $"{partType}{displayType}__{fieldName}",
+                                ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
                                 // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
-                                $"{contentType}{displayType}__{fieldType}",
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
 
                                 // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                                $"{contentType}{displayType}__{partType}__{fieldName}"
-                            ]);
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
+                            }
                         }
                     }
                     else
@@ -113,20 +113,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                                 }
                             }
 
-                            ctx.Shape.Metadata.Alternates.AddRange([
+                            // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
-                                // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
-                                $"{fieldType}{displayType}__{shapeType}",
+                            // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
 
-                                // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
-                                $"{partType}{displayType}__{fieldName}__{shapeType}",
+                            // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
 
-                                // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
-                                $"{contentType}{displayType}__{fieldType}__{shapeType}",
-
-                                // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
-                                $"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}",
-                            ]);
+                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
                         }
                     }
                 });

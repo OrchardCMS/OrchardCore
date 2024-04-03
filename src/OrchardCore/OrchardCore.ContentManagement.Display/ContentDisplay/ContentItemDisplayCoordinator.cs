@@ -118,14 +118,12 @@ namespace OrchardCore.ContentManagement.Display
 
                         foreach (var displayType in displayTypes)
                         {
-                            ctx.Shape.Metadata.Alternates.AddRange([
-                                // eg. ServicePart,  ServicePart.Summary
-                                $"{partTypeName}{displayType}",
+                            // eg. ServicePart,  ServicePart.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
 
-                                // [ContentType]_[DisplayType]__[PartType]
-                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
-                                $"{contentType}{displayType}__{partTypeName}"
-                            ]);
+                            // [ContentType]_[DisplayType]__[PartType]
+                            // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
 
                             if (hasStereotype)
                             {
@@ -384,16 +382,13 @@ namespace OrchardCore.ContentManagement.Display
             typePartShapeResult.OnGroup(groupId);
             typePartShapeResult.Displaying(ctx =>
             {
+                // ContentPart_Edit__[PartType]
+                // eg ContentPart-ServicePart.Edit
+                ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
 
-                ctx.Shape.Metadata.Alternates.AddRange([
-                    // ContentPart_Edit__[PartType]
-                    // eg ContentPart-ServicePart.Edit
-                    $"{shapeType}__{partTypeName}",
-
-                    // ContentPart_Edit__[ContentType]__[PartType]
-                    // e.g. ContentPart-LandingPage-ServicePart.Edit
-                    $"{shapeType}__{contentType}__{partTypeName}",
-                ]);
+                // ContentPart_Edit__[ContentType]__[PartType]
+                // e.g. ContentPart-LandingPage-ServicePart.Edit
+                ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
 
                 var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
 
