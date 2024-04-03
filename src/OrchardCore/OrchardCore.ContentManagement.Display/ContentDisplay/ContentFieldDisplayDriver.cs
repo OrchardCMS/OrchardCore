@@ -76,14 +76,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         {
                             ctx.Shape.Metadata.Alternates.AddRange([
 
-                            // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
-                            $"{partType}{displayType}__{fieldName}",
+                                // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
+                                $"{partType}{displayType}__{fieldName}",
 
-                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
-                            $"{contentType}{displayType}__{fieldType}",
+                                // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
+                                $"{contentType}{displayType}__{fieldType}",
 
-                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                            $"{contentType}{displayType}__{partType}__{fieldName}"
+                                // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                                $"{contentType}{displayType}__{partType}__{fieldName}"
                             ]);
                         }
                     }
@@ -114,6 +114,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             }
 
                             ctx.Shape.Metadata.Alternates.AddRange([
+
                                 // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
                                 $"{fieldType}{displayType}__{shapeType}",
 
@@ -125,7 +126,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                                 // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
                                 $"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}",
-                                ]);
+                            ]);
                         }
                     }
                 });
