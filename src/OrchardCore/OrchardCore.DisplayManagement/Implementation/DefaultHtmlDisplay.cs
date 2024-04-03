@@ -236,8 +236,8 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             // When no alternates matches, the shapeType is used to find the longest matching binding,
-            // the shapetype name can break itself into shorter fallbacks at double-underscore marks,
-            // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one.
+            // the shape-type name can break itself into shorter fallbacks at double-underscore marks,
+            // so the shape-type itself may contain a longer alternate forms that falls back to a shorter one.
             var shapeTypeScan = shapeType;
 
             do
