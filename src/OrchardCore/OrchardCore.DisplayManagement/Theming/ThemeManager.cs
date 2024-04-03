@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -42,10 +41,7 @@ namespace OrchardCore.DisplayManagement.Theming
                     return null;
                 }
 
-                if (themeResults.Count > 1)
-                {
-                    themeResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
-                }
+                themeResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
 
                 // Try to load the theme to ensure it's present
                 foreach (var theme in themeResults)
