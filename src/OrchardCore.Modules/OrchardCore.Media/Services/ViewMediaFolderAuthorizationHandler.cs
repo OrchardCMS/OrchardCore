@@ -75,7 +75,7 @@ namespace OrchardCore.Media.Services
             var folderPath = i >= 0 ? path[..i] : path;
 
             var directory = await _fileStore.GetDirectoryInfoAsync(folderPath);
-            if(directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
+            if (directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
             {
                 // This could be a new directory, or a new or existing file in the root folder. As we cannot directly determine
                 // whether a file is uploaded or a new directory is created, we will check against the list of allowed extensions.
