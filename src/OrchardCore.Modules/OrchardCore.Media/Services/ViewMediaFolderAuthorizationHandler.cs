@@ -207,7 +207,7 @@ namespace OrchardCore.Media.Services
         private void MarkAsSecure(ClaimsPrincipal user)
         {
             // If anonymous access is allowed, also allow default caching in the browser.
-            if(user.Identity?.IsAuthenticated ?? false)
+            if (user.Identity?.IsAuthenticated ?? false)
                 _httpContextAccessor.HttpContext.Items["IsSecureMedia"] = "true";
         }
 
