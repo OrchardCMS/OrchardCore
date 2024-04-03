@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules;
 
@@ -19,21 +18,6 @@ public static class ServiceCollectionExtensions
         where TDisplayDriver : DisplayDriver<Condition, TCondition>
         => services.AddRule<TCondition, TEvaluator>()
             .AddScoped<IDisplayDriver<Condition>, TDisplayDriver>();
-
-    public static IServiceCollection AddConditionOperators(this IServiceCollection services)
-    {
-        // Allows to serialize 'ConditionOperator' derived types
-        services.AddConditionOperator<StringEqualsOperator>();
-        services.AddConditionOperator<StringNotEqualsOperator>();
-        services.AddConditionOperator<StringStartsWithOperator>();
-        services.AddConditionOperator<StringNotStartsWithOperator>();
-        services.AddConditionOperator<StringEndsWithOperator>();
-        services.AddConditionOperator<StringNotEndsWithOperator>();
-        services.AddConditionOperator<StringContainsOperator>();
-        services.AddConditionOperator<StringNotContainsOperator>();
-
-        return services;
-    }
 
     public static IServiceCollection AddConditionOperator<TOperator>(this IServiceCollection services)
         where TOperator : ConditionOperator

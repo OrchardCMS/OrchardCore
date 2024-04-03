@@ -14,8 +14,7 @@ namespace OrchardCore.Rules
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddConditionOperators()
-                .AddOptions<ConditionOptions>();
+            services.AddOptions<ConditionOptions>();
 
             // Rule services.
             services
@@ -62,6 +61,16 @@ namespace OrchardCore.Rules
                 .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
                 .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>())
                 .AddJsonDerivedTypeInfo<ContentTypeCondition, Condition>();
+
+            // Allows to serialize 'ConditionOperator' derived types
+            services.AddConditionOperator<StringEqualsOperator>()
+                .AddConditionOperator<StringNotEqualsOperator>()
+                .AddConditionOperator<StringStartsWithOperator>()
+                .AddConditionOperator<StringNotStartsWithOperator>()
+                .AddConditionOperator<StringEndsWithOperator>()
+                .AddConditionOperator<StringNotEndsWithOperator>()
+                .AddConditionOperator<StringContainsOperator>()
+                .AddConditionOperator<StringNotContainsOperator>();
         }
     }
 }
