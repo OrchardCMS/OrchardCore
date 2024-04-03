@@ -74,17 +74,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         foreach (var displayType in displayTypes)
                         {
-                            foreach (var displayType in displayTypes)
-                            {
-                                // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
-                                ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
+                            // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
+                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                                // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
-                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
+                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
 
-                                // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
-                            }
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
                         }
                     }
                     else
