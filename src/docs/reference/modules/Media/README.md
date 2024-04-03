@@ -294,6 +294,10 @@ The following configuration values are used by default and can be customized:
       // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
       "MaxBrowserCacheDays": 30,
 
+      // The number of days to store secure media files in the browser cache.
+      // Set to 0 (default) to disable caching secure files.
+      "MaxSecureFilesBrowserCacheDays": 0,
+
       // The number of days a cached resized media item will be valid for, before being rebuilt on request.
       "MaxCacheDays": 365,
 
@@ -500,6 +504,20 @@ To set up indexing for Media do the following:
 2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see two new fields named with the pattern "ContentPart.FieldTechnicalName.MediaText" and "ContentPart.FieldTechnicalName.FileText", e.g. "BlogPost.File.MediaText" and "BlogPost.File.FileText".
 3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
+
+## Secure Media
+
+The Secure Media feature enhances security and control over media files within the Media module. 
+
+When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders. New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+
+### Handling Unauthorized Access
+
+A middleware component returns a 404 NotFound response for unauthenticated access attempts to secured media files. This not only restricts access but also conceals the existence of the file, enhancing privacy and security.
+
+### Configurable Cache-Control for Secured Files
+
+The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. 
 
 ## Videos
 
