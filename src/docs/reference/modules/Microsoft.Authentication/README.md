@@ -43,7 +43,7 @@ You are now ready to configure Microsoft Entra ID login in Orchard too. After en
 
 - Display Name: The text that will be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
 - AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.
-- TenantId: Use the above-mentioned "Directory (tenant) ID" from the Azure Portal. For multitenant applications, use 'common' or 'organizations' as noted below.
+- TenantId: Use the above-mentioned "Directory (tenant) ID" from the Azure Portal. For multi-tenant applications, use 'common' or 'organizations' as noted below.
 - CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code, or if the `/signin-oidc` path is used by something else. This is the path within the application's base path where the user-agent will be returned after login. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup. If you change this, you will also need to use it under "Redirect URIs" of the app in the Azure Portal.
 
 Now, the login screen will display a button for Microsoft Entra ID login:
@@ -52,7 +52,7 @@ Now, the login screen will display a button for Microsoft Entra ID login:
 
 Existing users who have the same e-mail address in Orchard and in Microsoft Entra ID will be able to log in and attach their two accounts. New users will be able to register if registration is otherwise enabled and set up, see below.
 
-### Multitenant App registrations
+### Multi-tenant App registrations
 
 This feature supports either single-tenant or multi-tenant app registrations. Be aware of the audiences allowed to authenticate.
 
@@ -63,7 +63,7 @@ When you register and configure an application, you can configure it to be singl
 
 | Audience | Single/multi-tenant | Tenant ID | Who can sign in |
 |----------|---------------------|-----------|-----------------|
-| Accounts in your  directory only | Single tenant | Use the "Directory (tenant) ID" from the Azure Portal. | All user and guest accounts in your directory can authenticate. Use this option if your target audience is internal to your organization. |
+| Accounts in your directory only | Single tenant | Use the "Directory (tenant) ID" from the Azure Portal. | All user and guest accounts in your directory can authenticate. Use this option if your target audience is internal to your organization. |
 | Accounts in any Microsoft Entra directory | Multi-tenant | `organizations` | All users and guests with a work or school account from Microsoft can authenticate. This includes schools and businesses that use Microsoft 365. Use this option if your target audience is business or educational customers. |
 | Accounts in any Microsoft Entra directory and personal Microsoft accounts (such as Skype, Xbox, Outlook.com) | Multi-tenant | `common` | All users with a work or school, or personal Microsoft account can authenticate. It includes schools and businesses that use Microsoft 365 as well as personal accounts that are used to sign in to services like Xbox and Skype. Use this option to target the widest set of Microsoft accounts. |
 
