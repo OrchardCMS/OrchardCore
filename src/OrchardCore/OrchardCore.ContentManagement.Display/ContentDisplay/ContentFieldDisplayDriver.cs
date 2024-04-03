@@ -63,7 +63,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
+                    var displayTypes = new[] { string.Empty, "_" + ctx.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TextField.Summary
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
@@ -74,14 +74,17 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         foreach (var displayType in displayTypes)
                         {
+                            ctx.Shape.Metadata.Alternates.AddRange([
+
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
-                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
+                            $"{partType}{displayType}__{fieldName}",
 
                             // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
+                            $"{contentType}{displayType}__{fieldType}",
 
                             // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
+                            $"{contentType}{displayType}__{partType}__{fieldName}"
+                            ]);
                         }
                     }
                     else
@@ -100,7 +103,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             {
                                 shapeType = $"{fieldType}__{displayMode}";
 
-                                if (displayType == "")
+                                if (displayType == string.Empty)
                                 {
                                     displayType = DisplayToken;
                                 }
@@ -110,17 +113,19 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                                 }
                             }
 
-                            // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.AddRange([
+                                // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
+                                $"{fieldType}{displayType}__{shapeType}",
 
-                            // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
+                                // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
+                                $"{partType}{displayType}__{fieldName}__{shapeType}",
 
-                            // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
+                                // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
+                                $"{contentType}{displayType}__{fieldType}__{shapeType}",
 
-                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
+                                // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
+                                $"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}",
+                                ]);
                         }
                     }
                 });
