@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Media.Services
@@ -122,7 +121,7 @@ namespace OrchardCore.Media.Services
                 ServeUnknownFileTypes = true,
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers.CacheControl = ctx.Context.Items.ContainsKey("IsSecureMedia") ? secureCacheControl : cacheControl;
+                    ctx.Context.Response.Headers.CacheControl = ctx.Context.IsSecureMediaRequested() ? secureCacheControl : cacheControl;
                     ctx.Context.Response.Headers.ContentSecurityPolicy = contentSecurityPolicy;
                 }
             };

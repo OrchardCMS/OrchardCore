@@ -94,17 +94,17 @@ namespace OrchardCore.Media.Controllers
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
                 .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path));
 
-            return Ok(await allowed.Select(f =>
+            return Ok(await allowed.Select(folder =>
             {
-                var isSpecial = IsSpecialFolder(f.Path);
+                var isSpecial = IsSpecialFolder(folder.Path);
                 return new MediaFolderViewModel()
                 {
-                    Name = f.Name,
-                    Path = f.Path,
-                    DirectoryPath = f.DirectoryPath,
-                    IsDirectory = f.IsDirectory,
-                    LastModifiedUtc = f.LastModifiedUtc,
-                    Length = f.Length,
+                    Name = folder.Name,
+                    Path = folder.Path,
+                    DirectoryPath = folder.DirectoryPath,
+                    IsDirectory = folder.IsDirectory,
+                    LastModifiedUtc = folder.LastModifiedUtc,
+                    Length = folder.Length,
                     CanCreateFolder = !isSpecial,
                     CanDeleteFolder = !isSpecial
                 };

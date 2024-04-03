@@ -17,13 +17,13 @@ namespace OrchardCore.Media
         public static readonly Permission ViewOthersMedia = new("ViewOthersMediaContent", "View others media content", new[] { Permissions.ManageMediaFolder });
         public static readonly Permission ViewOwnMedia = new("ViewOwnMediaContent", "View own media content", new[] { ViewOthersMedia });
 
-        private static readonly Permission s_viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in {0}", new[] { ViewMedia });
+        private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in {0}", new[] { ViewMedia });
 
-        private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();
-        private static readonly char[] s_trimSecurePathChars = ['/', '\\', ' '];
+        private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByFolder = new();
+        private static readonly char[] _trimSecurePathChars = ['/', '\\', ' '];
         public static readonly ReadOnlyDictionary<string, Permission> PermissionTemplates = new(new Dictionary<string, Permission>()
         {
-            { ViewMedia.Name, s_viewMediaTemplate },
+            { ViewMedia.Name, _viewMediaTemplate },
         });
 
         private readonly MediaOptions _mediaOptions;
@@ -110,15 +110,7 @@ namespace OrchardCore.Media
         /// <summary>
         /// Returns a dynamic permission for a secure folder, based on a global view content permission template.
         /// </summary>
-        public static Permission ConvertToDynamicPermission(Permission permission)
-        {
-            if (PermissionTemplates.TryGetValue(permission.Name, out var result))
-            {
-                return result;
-            }
-
-            return null;
-        }
+        public static Permission ConvertToDynamicPermission(Permission permission) => PermissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
 
         internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
         {
@@ -127,11 +119,11 @@ namespace OrchardCore.Media
                 throw new ArgumentNullException(nameof(template));
             }
 
-            secureFolder = secureFolder?.Trim(s_trimSecurePathChars)?.ToLowerInvariant();
+            secureFolder = secureFolder?.Trim(_trimSecurePathChars);
 
             var key = new ValueTuple<string, string>(template.Name, secureFolder);
 
-            if (s_permissionsByFolder.TryGetValue(key, out var permission))
+            if (_permissionsByFolder.TryGetValue(key, out var permission))
             {
                 return permission;
             }
@@ -142,12 +134,12 @@ namespace OrchardCore.Media
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, secureFolder))
             );
 
-            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)
+            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByFolder)
             {
                 [key] = permission,
             };
 
-            s_permissionsByFolder = localPermissions;
+            _permissionsByFolder = localPermissions;
 
             return permission;
         }

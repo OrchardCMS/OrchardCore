@@ -208,7 +208,7 @@ namespace OrchardCore.Media.Services
         {
             // If anonymous access is allowed, also allow default caching in the browser.
             if(user.Identity?.IsAuthenticated ?? false)
-                _httpContextAccessor.HttpContext.Items["IsSecureMedia"] = "true";
+                _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
         }
 
         private static bool IsAuthorizedFolder(string authorizedFolder, string childPath)

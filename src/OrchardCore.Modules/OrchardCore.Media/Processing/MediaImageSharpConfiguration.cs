@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
+using OrchardCore.Media.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
@@ -94,7 +94,7 @@ namespace OrchardCore.Media.Processing
                 }
 
                 // Override cache control for secure files
-                if (context.Items.ContainsKey("IsSecureMedia"))
+                if (context.IsSecureMediaRequested())
                 {
                     var mediaOptions = context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
                     var secureCacheControl = mediaOptions.MaxSecureFilesBrowserCacheDays == 0
