@@ -122,8 +122,8 @@ namespace OrchardCore.Media.Services
                 ServeUnknownFileTypes = true,
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = ctx.Context.Items.ContainsKey("IsSecureMedia") ? secureCacheControl : cacheControl;
-                    ctx.Context.Response.Headers[HeaderNames.ContentSecurityPolicy] = contentSecurityPolicy;
+                    ctx.Context.Response.Headers.CacheControl = ctx.Context.Items.ContainsKey("IsSecureMedia") ? secureCacheControl : cacheControl;
+                    ctx.Context.Response.Headers.ContentSecurityPolicy = contentSecurityPolicy;
                 }
             };
         }
