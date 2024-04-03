@@ -122,10 +122,7 @@ namespace OrchardCore.Media
 
         internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             secureFolder = secureFolder?.Trim(s_trimSecurePathChars)?.ToLowerInvariant();
 
