@@ -42,7 +42,7 @@ namespace OrchardCore.Media
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            // The ViewRootMedia permission must be implied by any sub folder permission.
+            // The ViewRootMedia permission must be implied by any subfolder permission.
             var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
 
             var result = new List<Permission>()
