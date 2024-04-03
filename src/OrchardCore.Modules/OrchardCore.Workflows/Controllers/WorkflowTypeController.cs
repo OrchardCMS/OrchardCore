@@ -571,7 +571,7 @@ namespace OrchardCore.Workflows.Controllers
         private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
         {
             var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
-            var packageName = workflowTypes.Count() == 1
+            var packageName = itemIds.Length == 1
                            ? workflowTypes.FirstOrDefault().Name
                            : S["workflowTypes"];
 
@@ -600,7 +600,7 @@ namespace OrchardCore.Workflows.Controllers
             return new PhysicalFileResult(packageName, "application/zip")
             {
                 FileDownloadName = packageName + ".zip"
-            }; ;
+            };
         }
     }
 }
