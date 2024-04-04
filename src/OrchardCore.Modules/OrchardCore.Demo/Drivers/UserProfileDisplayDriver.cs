@@ -34,7 +34,7 @@ namespace OrchardCore.Demo.Drivers
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, UpdateEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile))
             {

@@ -90,7 +90,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         .OnGroup(EmailSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, IUpdateModel updater, UpdateEditorContext context)
     {
         if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {

@@ -72,7 +72,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         .OnGroup(EmailSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, UpdateEditorContext context)
     {
         if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {

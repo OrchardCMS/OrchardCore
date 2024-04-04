@@ -35,7 +35,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
             User user,
             UserTimeZone userTimeZone,
             IUpdateModel updater,
-            BuildEditorContext context
+            UpdateEditorContext context
         )
         {
             var model = new UserTimeZoneViewModel();

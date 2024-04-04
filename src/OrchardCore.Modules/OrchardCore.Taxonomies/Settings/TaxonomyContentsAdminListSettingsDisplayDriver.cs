@@ -55,7 +55,7 @@ namespace OrchardCore.Taxonomies.Settings
             }).Location("Content:2").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GroupId)
             {

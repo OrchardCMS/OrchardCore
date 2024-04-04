@@ -83,7 +83,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, UpdateEditorContext context)
     {
         if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || _searchOptions.DisableUIConfiguration)
         {

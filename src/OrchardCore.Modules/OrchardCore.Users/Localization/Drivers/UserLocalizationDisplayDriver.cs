@@ -54,7 +54,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         }).Location("Content:2"));
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(User model, UserLocalizationSettings section, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(User model, UserLocalizationSettings section, IUpdateModel updater, UpdateEditorContext context)
     {
         var viewModel = new UserLocalizationViewModel();
 

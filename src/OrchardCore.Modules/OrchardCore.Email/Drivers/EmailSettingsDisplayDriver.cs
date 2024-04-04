@@ -71,7 +71,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         .OnGroup(EmailSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, UpdateEditorContext context)
     {
         if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {

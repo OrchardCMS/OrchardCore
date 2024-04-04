@@ -69,7 +69,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         .OnGroup(SmsSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, IUpdateModel updater, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

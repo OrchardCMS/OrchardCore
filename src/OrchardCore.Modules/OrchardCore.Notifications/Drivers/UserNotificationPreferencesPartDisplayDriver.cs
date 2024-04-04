@@ -54,7 +54,7 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
         return Task.FromResult<IDisplayResult>(result);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPreferencesPart part, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(User user, UserNotificationPreferencesPart part, IUpdateModel updater, UpdateEditorContext context)
     {
         var model = new UserNotificationViewModel();
 

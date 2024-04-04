@@ -58,7 +58,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

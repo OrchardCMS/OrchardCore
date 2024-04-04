@@ -91,7 +91,7 @@ namespace OrchardCore.Twitter.Drivers
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Twitter)
             {
