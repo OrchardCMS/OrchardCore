@@ -54,7 +54,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Task.FromResult(shapeTable);
             }
 
-            return BuildShapeTableAsync(themeId);
+            lock (_shapeTableCache)
+            {
+                if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
+                {
+                    return Task.FromResult(shapeTable);
+                }
+
+                return BuildShapeTableAsync(themeId);
+            }
         }
 
         private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
