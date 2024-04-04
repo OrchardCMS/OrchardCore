@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Descriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
@@ -118,7 +118,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
-            serviceCollection.AddKeyedSingleton<Dictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager));
+            serviceCollection.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
             serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 
