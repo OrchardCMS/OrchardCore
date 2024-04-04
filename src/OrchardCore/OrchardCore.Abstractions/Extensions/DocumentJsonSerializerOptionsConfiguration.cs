@@ -6,16 +6,16 @@ using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Extensions;
 
-public class ContentSerializerJsonOptionsConfiguration : IConfigureOptions<ContentSerializerJsonOptions>
+public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptions<DocumentJsonSerializerOptions>
 {
     private readonly JsonDerivedTypesOptions _derivedTypesOptions;
 
-    public ContentSerializerJsonOptionsConfiguration(IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+    public DocumentJsonSerializerOptionsConfiguration(IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
     {
         _derivedTypesOptions = derivedTypesOptions.Value;
     }
 
-    public void Configure(ContentSerializerJsonOptions options)
+    public void Configure(DocumentJsonSerializerOptions options)
     {
         options.SerializerOptions.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
         options.SerializerOptions.ReferenceHandler = JOptions.Base.ReferenceHandler;

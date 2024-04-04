@@ -265,3 +265,7 @@ In our Liquid template we will now retrieve these records.
 ```
 
 Please note that Datetimes are stored as UTC so a conversion with the current request culture will be required.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/tFLZ4Ha7PZE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

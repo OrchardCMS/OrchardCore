@@ -117,14 +117,23 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdClientSettings> GetClientSettingsAsync()
         {
             var settings = await _clientService.GetSettingsAsync();
-            if ((await _clientService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+
+            var result = await _clientService.ValidateSettingsAsync(settings);
+
+            if (result.Any(x => x != ValidationResult.Success))
             {
                 if (_shellSettings.IsRunning())
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success)
+                            .Select(x => x.ErrorMessage);
 
-                return null;
+                        _logger.LogWarning("The OpenID client settings are invalid: {Errors}", string.Join(System.Environment.NewLine, errors));
+                    }
+
+                    return null;
+                }
             }
 
             return settings;

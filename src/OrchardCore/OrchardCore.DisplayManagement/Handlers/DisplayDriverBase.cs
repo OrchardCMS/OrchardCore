@@ -71,7 +71,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Factory(shapeType,
                 async ctx =>
                 {
-                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
                     await initializeAsync(shape);
                     return shape;
                 });
@@ -85,7 +85,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Factory(shapeType,
                 async ctx =>
                 {
-                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
                     initialize(shape);
                     return shape;
                 });
