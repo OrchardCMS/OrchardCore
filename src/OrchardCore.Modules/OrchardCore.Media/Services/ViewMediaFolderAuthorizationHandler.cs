@@ -20,6 +20,8 @@ namespace OrchardCore.Media.Services
     {
         private const char PathSeparator = '/';
 
+        private static readonly ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IContentManager _contentManager;
@@ -193,7 +195,13 @@ namespace OrchardCore.Media.Services
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
             if (await authorizationService.AuthorizeAsync(context.User, permission, resource))
             {
-                MarkAsSecure(context.User);
+                // If anonymous access is also possible, we want to use default browser caching policies.
+                // Otherwise we set a marker which causes a different caching policy being used.
+                if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource))
+                {
+                    _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
+                }
+
                 context.Succeed(requirement);
             }
             else
@@ -202,13 +210,6 @@ namespace OrchardCore.Media.Services
                 // users and attached media field folders, e.g. if the anonymous role has the "ViewMedia" permission set.
                 context.Fail(new AuthorizationFailureReason(this, "View media permission not granted"));
             }
-        }
-
-        private void MarkAsSecure(ClaimsPrincipal user)
-        {
-            // If anonymous access is allowed, also allow default caching in the browser.
-            if (user.Identity?.IsAuthenticated ?? false)
-                _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
         }
 
         private static bool IsAuthorizedFolder(string authorizedFolder, string childPath)
