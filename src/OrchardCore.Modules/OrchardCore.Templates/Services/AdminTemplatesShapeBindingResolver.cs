@@ -17,6 +17,7 @@ namespace OrchardCore.Templates.Services
         private readonly AdminPreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HtmlEncoder _htmlEncoder;
+        private bool? isAdmin;
 
         public AdminTemplatesShapeBindingResolver(
             AdminTemplatesManager templatesManager,
@@ -34,7 +35,11 @@ namespace OrchardCore.Templates.Services
 
         public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
-            if (!AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            // Cache this value since the service is scoped and this method is invoked for every
+            // alternate of every shape.
+            isAdmin ??= AdminAttribute.IsApplied(_httpContextAccessor.HttpContext);
+
+            if (!isAdmin.Value)
             {
                 return null;
             }
@@ -67,11 +72,7 @@ namespace OrchardCore.Templates.Services
             {
                 BindingName = shapeType,
                 BindingSource = shapeType,
-                BindingAsync = async displayContext =>
-                {
-                    var content = await _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value);
-                    return content;
-                }
+                BindingAsync = displayContext => _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value)
             };
         }
     }
