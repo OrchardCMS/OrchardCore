@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -47,7 +46,7 @@ namespace OrchardCore.Rules
             // Role condition.
             services.AddRule<RoleCondition, RoleConditionEvaluator, RoleConditionDisplayDriver>();
 
-            // Javascript condition.
+            // JavaScript condition.
             services.AddRule<JavascriptCondition, JavascriptConditionEvaluator, JavascriptConditionDisplayDriver>();
 
             // Is authenticated condition.
@@ -58,19 +57,18 @@ namespace OrchardCore.Rules
 
             // Content type condition.
             services.AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
-                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
-                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>())
-                .AddJsonDerivedTypeInfo<ContentTypeCondition, Condition>();
+                .AddRuleCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
+                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
 
             // Allows to serialize 'ConditionOperator' derived types
-            services.AddConditionOperator<StringEqualsOperator>()
-                .AddConditionOperator<StringNotEqualsOperator>()
-                .AddConditionOperator<StringStartsWithOperator>()
-                .AddConditionOperator<StringNotStartsWithOperator>()
-                .AddConditionOperator<StringEndsWithOperator>()
-                .AddConditionOperator<StringNotEndsWithOperator>()
-                .AddConditionOperator<StringContainsOperator>()
-                .AddConditionOperator<StringNotContainsOperator>();
+            services.AddRuleConditionOperator<StringEqualsOperator>()
+                .AddRuleConditionOperator<StringNotEqualsOperator>()
+                .AddRuleConditionOperator<StringStartsWithOperator>()
+                .AddRuleConditionOperator<StringNotStartsWithOperator>()
+                .AddRuleConditionOperator<StringEndsWithOperator>()
+                .AddRuleConditionOperator<StringNotEndsWithOperator>()
+                .AddRuleConditionOperator<StringContainsOperator>()
+                .AddRuleConditionOperator<StringNotContainsOperator>();
         }
     }
 }

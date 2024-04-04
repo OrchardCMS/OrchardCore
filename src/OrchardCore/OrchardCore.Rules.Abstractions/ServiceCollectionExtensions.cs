@@ -21,14 +21,11 @@ namespace OrchardCore.Rules
             return services;
         }
 
+        [Obsolete("This method is deprecated and will be removed. Please use the .AddRule<> or .AddRuleCondition<> extensions found in OrchardCore.Rule.Core instead.")]
         public static IServiceCollection AddCondition<TCondition, TConditionEvaluator, TConditionFactory>(this IServiceCollection services)
             where TCondition : Condition
             where TConditionEvaluator : IConditionEvaluator
             where TConditionFactory : IConditionFactory
             => services.AddCondition(typeof(TCondition), typeof(TConditionEvaluator), typeof(TConditionFactory));
-
-        public static IServiceCollection AddCondition<TCondition, TConditionEvaluator>(this IServiceCollection services)
-            where TCondition : Condition, new()
-            => services.AddCondition(typeof(TCondition), typeof(TConditionEvaluator), typeof(ConditionFactory<TCondition>));
     }
 }
