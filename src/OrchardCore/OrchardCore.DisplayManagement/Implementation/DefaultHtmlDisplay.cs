@@ -99,14 +99,15 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                     // Copy all binding sources (all templates for this shape) in order to use them as Localization scopes.
                     shapeMetadata.BindingSources = shapeDescriptor.BindingSources;
+
                     if (shapeMetadata.BindingSources.Count == 0)
                     {
-                        shapeMetadata.BindingSources.Add(shapeDescriptor.BindingSource);
+                        shapeMetadata.BindingSources = [shapeDescriptor.BindingSource];
                     }
                 }
 
                 // Invoking ShapeMetadata displaying events.
-                shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
+                shapeMetadata.Displaying.Invoke((action, displayContext) => action(displayContext), displayContext, _logger);
 
                 // Use pre-fetched content if available (e.g. coming from specific cache implementation).
                 if (displayContext.ChildContent != null)

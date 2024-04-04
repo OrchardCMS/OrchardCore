@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +28,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IFeaturesProvider _featuresProvider;
 
-        private Dictionary<string, ExtensionEntry> _extensions;
+        private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
         private Dictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
@@ -374,7 +375,7 @@ namespace OrchardCore.Environment.Extensions
                     .Select(f => f.Extension)
                     .ToList();
 
-                _extensions = _extensionsInfos.ToDictionary(e => e.Id, e => loadedExtensions[e.Id]);
+                _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
 
                 _isInitialized = true;
             }
