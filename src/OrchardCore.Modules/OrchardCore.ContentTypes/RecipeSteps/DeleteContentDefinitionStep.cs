@@ -41,7 +41,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             }
         }
 
-        private class DeleteContentDefinitionStepModel
+        private sealed class DeleteContentDefinitionStepModel
         {
             public string[] ContentTypes { get; set; } = [];
             public string[] ContentParts { get; set; } = [];
