@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Implementation
     public class DefaultHtmlDisplay : IHtmlDisplay
     {
         private const string _separator = "__";
-        private static ConcurrentDictionary<string, string[]> _alternateShapeTypes = [];
+        private static readonly ConcurrentDictionary<string, string[]> _alternateShapeTypes = [];
 
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
@@ -245,21 +246,16 @@ namespace OrchardCore.DisplayManagement.Implementation
             // Build a cache of such values
             var alternateShapeTypes = _alternateShapeTypes.GetOrAdd(shapeType, shapeType =>
             {
-                var segments = shapeType.Split("__");
+                var segments = new List<string>(2);
 
-                if (segments.Length == 1)
+                var alternate = shapeType;
+
+                do
                 {
-                    return segments;
-                }
+                    segments.Add(alternate);
+                } while (TryGetParentShapeTypeName(alternate, out alternate));
 
-                for (var i = 1; i < segments.Length; i++)
-                {
-                    segments[i] = segments[i - 1] + "__" + segments[i];
-                }
-
-                Array.Reverse(segments);
-
-                return segments;
+                return segments.ToArray();
             });
 
             foreach (var shapeTypeSegment in alternateShapeTypes)
@@ -281,6 +277,20 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             return null;
+        }
+
+        private static bool TryGetParentShapeTypeName(string shapeTypeScan, out string parentType)
+        {
+            parentType = shapeTypeScan;
+
+            var delimiterIndex = shapeTypeScan.LastIndexOf(_separator, StringComparison.Ordinal);
+            if (delimiterIndex > 0)
+            {
+                parentType = shapeTypeScan[..delimiterIndex];
+                return true;
+            }
+
+            return false;
         }
 
         private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
