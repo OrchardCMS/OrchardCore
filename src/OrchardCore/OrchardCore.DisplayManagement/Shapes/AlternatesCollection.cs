@@ -122,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             return GetEnumerator();
         }
 
-        private class KeyedAlternateCollection : KeyedCollection<string, string>
+        private sealed class KeyedAlternateCollection : KeyedCollection<string, string>
         {
             protected override string GetKeyForItem(string item)
             {

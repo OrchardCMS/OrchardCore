@@ -11,7 +11,7 @@ using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo.Services
 {
-    internal class UserProfileClaimsProvider : IUserClaimsProvider
+    internal sealed class UserProfileClaimsProvider : IUserClaimsProvider
     {
         public Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {

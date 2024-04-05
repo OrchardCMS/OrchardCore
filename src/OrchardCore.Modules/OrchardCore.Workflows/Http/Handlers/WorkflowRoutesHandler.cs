@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Handlers
 {
-    internal class WorkflowRoutesHandler : WorkflowHandlerBase
+    internal sealed class WorkflowRoutesHandler : WorkflowHandlerBase
     {
         private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
         private readonly IWorkflowTypeStore _workflowTypeStore;

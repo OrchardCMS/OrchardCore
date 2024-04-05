@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private class TestModuleExtensionInfo : IExtensionInfo
+        private sealed class TestModuleExtensionInfo : IExtensionInfo
         {
             public TestModuleExtensionInfo(string name)
             {
@@ -49,7 +49,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
             public bool Exists => true;
         }
 
-        private class TestThemeExtensionInfo : IThemeExtensionInfo
+        private sealed class TestThemeExtensionInfo : IThemeExtensionInfo
         {
             public TestThemeExtensionInfo(string name)
             {
