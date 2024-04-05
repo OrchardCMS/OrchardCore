@@ -8,7 +8,7 @@ using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    internal class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
+    internal sealed class OpenIdConnectOptionsConfiguration : IConfigureNamedOptions<OpenIdConnectOptions>
     {
         private readonly IOptionsMonitor<MicrosoftIdentityOptions> _azureADOptions;
         private readonly AzureADSettings _azureADSettings;

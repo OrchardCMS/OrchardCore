@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
@@ -24,9 +23,11 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailService _emailService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
+
+        protected readonly IStringLocalizer S;
 
         public RegisterUserTask(
             IUserService userService,
@@ -34,6 +35,7 @@ namespace OrchardCore.Users.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
+            IEmailService emailService,
             IUpdateModelAccessor updateModelAccessor,
             IStringLocalizer<RegisterUserTask> localizer,
             HtmlEncoder htmlEncoder)
@@ -43,6 +45,7 @@ namespace OrchardCore.Users.Workflows.Activities
             _expressionEvaluator = expressionEvaluator;
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
+            _emailService = emailService;
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
             _htmlEncoder = htmlEncoder;
@@ -140,29 +143,23 @@ namespace OrchardCore.Users.Workflows.Activities
                         Body = body,
                         IsHtmlBody = true
                     };
-                    var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
-                    if (smtpService == null)
+                    var result = await _emailService.SendAsync(message);
+
+                    if (!result.Succeeded)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
-                        updater?.ModelState.TryAddModelError("", S["No email service is available"]);
-                        outcome = "Invalid";
-                    }
-                    else
-                    {
-                        var result = await smtpService.SendAsync(message);
-                        if (!result.Succeeded)
+                        if (updater != null)
                         {
-                            var updater = _updateModelAccessor.ModelUpdater;
-                            if (updater != null)
+                            foreach (var error in result.Errors)
                             {
-                                foreach (var item in result.Errors)
+                                foreach (var errorMessage in error.Value)
                                 {
-                                    updater.ModelState.TryAddModelError(item.Name, item.Value);
+                                    updater.ModelState.TryAddModelError(error.Key, errorMessage);
                                 }
                             }
-                            outcome = "Invalid";
                         }
+                        outcome = "Invalid";
                     }
                 }
             }

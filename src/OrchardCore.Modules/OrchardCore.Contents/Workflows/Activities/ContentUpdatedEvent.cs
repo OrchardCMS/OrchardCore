@@ -6,7 +6,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentUpdatedEvent : ContentEvent
     {
-        public ContentUpdatedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentUpdatedEvent> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public ContentUpdatedEvent(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<ContentUpdatedEvent> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

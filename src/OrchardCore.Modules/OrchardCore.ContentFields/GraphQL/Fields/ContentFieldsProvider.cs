@@ -121,7 +121,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             return _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
         }
 
-        private class FieldTypeDescriptor
+        private sealed class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }

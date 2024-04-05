@@ -22,7 +22,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ISession _session;
 
-        public AuditTrailContentEventDisplayDriver(IAuditTrailManager auditTrailManager, ISession session)
+        public AuditTrailContentEventDisplayDriver(
+            IAuditTrailManager auditTrailManager,
+            ISession session)
         {
             _auditTrailManager = auditTrailManager;
             _session = session;

@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +18,7 @@ using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
+using OrchardCore.Contents.Endpoints.Api;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
@@ -50,8 +53,6 @@ using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
-using System;
-using System.Threading.Tasks;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
@@ -212,6 +213,10 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.AddGetContentEndpoint()
+                .AddCreateContentEndpoint()
+                .AddDeleteContentEndpoint();
+
             var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(

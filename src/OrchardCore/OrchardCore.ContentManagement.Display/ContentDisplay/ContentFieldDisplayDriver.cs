@@ -63,7 +63,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
+                    var displayTypes = new[] { string.Empty, "_" + ctx.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TextField.Summary
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
@@ -100,7 +100,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             {
                                 shapeType = $"{fieldType}__{displayMode}";
 
-                                if (displayType == "")
+                                if (displayType == string.Empty)
                                 {
                                     displayType = DisplayToken;
                                 }

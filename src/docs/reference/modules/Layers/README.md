@@ -65,3 +65,7 @@ You must have declared the corresponding zones as sections in your theme:
     ``` html
     @await RenderSectionAsync("Header", required: false)
     ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

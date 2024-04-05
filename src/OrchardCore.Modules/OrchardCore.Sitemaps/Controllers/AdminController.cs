@@ -140,9 +140,9 @@ namespace OrchardCore.Sitemaps.Controllers
             var items = new List<dynamic>();
             foreach (var source in sitemap.SitemapSources)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
-                item.SitemapId = sitemap.SitemapId;
-                item.SitemapSource = source;
+                var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+                item.Properties["SitemapId"] = sitemap.SitemapId;
+                item.Properties["SitemapSource"] = source;
                 items.Add(item);
             }
 
@@ -150,10 +150,11 @@ namespace OrchardCore.Sitemaps.Controllers
             foreach (var factory in _sourceFactories)
             {
                 var source = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.SitemapSource = source;
-                thumbnail.SitemapSourceType = factory.Name;
-                thumbnail.Sitemap = sitemap;
+                var thumbnail = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["SitemapSource"] = source;
+                thumbnail.Properties["SitemapSourceType"] = factory.Name;
+                thumbnail.Properties["Sitemap"] = sitemap;
+
                 thumbnails.Add(factory.Name, thumbnail);
             }
 

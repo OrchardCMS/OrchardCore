@@ -150,7 +150,9 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path).All());
+            // Do not use commands that are terminating query, e.g. All() in here. Query needs to be editable, because ContentItemsFieldType that calls PreQueryAsync might need to work with it (e.g. insert another where conditions).
+
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
         }
 
         return Task.FromResult(query);

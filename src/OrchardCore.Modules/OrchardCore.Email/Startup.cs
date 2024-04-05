@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Email.Core;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Migrations;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -14,12 +15,12 @@ namespace OrchardCore.Email
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddEmailServices()
+                .AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>()
+                .AddScoped<IPermissionProvider, Permissions>()
+                .AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
-            services.AddScoped<ISmtpService, SmtpService>();
+            services.AddDataMigration<EmailMigrations>();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        private class TestDisplayEvents : IShapeDisplayEvents
+        private sealed class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };
