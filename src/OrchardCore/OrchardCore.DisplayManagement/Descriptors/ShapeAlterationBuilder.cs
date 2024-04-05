@@ -44,6 +44,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public ShapeAlterationBuilder BoundAs(string bindingSource, Func<DisplayContext, Task<IHtmlContent>> bindingDelegate)
         {
+            ArgumentException.ThrowIfNullOrEmpty(bindingSource);
+
             // Schedule the configuration.
             return Configure(descriptor =>
             {
