@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -98,12 +99,12 @@ namespace OrchardCore.DisplayManagement
 
             var tagBuilder = new TagBuilder(tagName);
 
-            if (shape.Attributes != null)
+            if (shape.Attributes != null && shape.Attributes.Any())
             {
                 tagBuilder.MergeAttributes(shape.Attributes, false);
             }
 
-            if (shape.Classes != null)
+            if (shape.Classes != null && shape.Classes.Any())
             {
                 // Faster than AddCssClass which will do twice as many concatenations as classes.
                 tagBuilder.Attributes["class"] = string.Join(' ', shape.Classes);
