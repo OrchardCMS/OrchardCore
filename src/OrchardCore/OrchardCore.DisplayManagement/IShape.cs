@@ -105,10 +105,8 @@ namespace OrchardCore.DisplayManagement
 
             if (shape.Classes != null)
             {
-                foreach (var cssClass in shape.Classes)
-                {
-                    tagBuilder.AddCssClass(cssClass);
-                }
+                // Faster than AddCssClass which will do twice as many concatenations as classes.
+                tagBuilder.Attributes["class"] = string.Join(' ', shape.Classes);
             }
 
             if (!string.IsNullOrWhiteSpace(shape.Id))
