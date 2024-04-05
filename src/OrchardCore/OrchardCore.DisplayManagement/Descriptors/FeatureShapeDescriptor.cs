@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Implementation;
@@ -22,63 +21,47 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public class ShapeDescriptorIndex : ShapeDescriptor
     {
-        private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
-        private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
-        private readonly List<string> _wrappers;
-        private readonly List<string> _bindingSources;
-        private readonly Dictionary<string, ShapeBinding> _bindings;
-        private readonly List<Func<ShapeCreatingContext, Task>> _creatingAsync;
-        private readonly List<Func<ShapeCreatedContext, Task>> _createdAsync;
-        private readonly List<Func<ShapeDisplayContext, Task>> _displayingAsync;
-        private readonly List<Func<ShapeDisplayContext, Task>> _processingAsync;
-        private readonly List<Func<ShapeDisplayContext, Task>> _displayedAsync;
+        private readonly List<FeatureShapeDescriptor> _alternationDescriptors = [];
+        private readonly List<string> _wrappers = [];
+        private readonly List<string> _bindingSources = [];
+        private readonly Dictionary<string, ShapeBinding> _bindings = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<Func<ShapeCreatingContext, Task>> _creatingAsync = [];
+        private readonly List<Func<ShapeCreatedContext, Task>> _createdAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _displayingAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _processingAsync = [];
+        private readonly List<Func<ShapeDisplayContext, Task>> _displayedAsync = [];
 
         public ShapeDescriptorIndex(
             string shapeType,
             IEnumerable<string> alterationKeys,
             ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
         {
+            ArgumentException.ThrowIfNullOrEmpty(shapeType);
+
             ShapeType = shapeType;
-            _descriptors = descriptors;
 
-            // pre-calculate as much as we can
-            _alternationDescriptors = alterationKeys
-                .Select(key => _descriptors[key])
-                .ToList();
+            // Pre-calculate as much as we can for performance reasons.
+            foreach (var alterationKey in alterationKeys)
+            {
+                if (!descriptors.TryGetValue(alterationKey, out var alternationDescriptor))
+                {
+                    continue;
+                }
 
-            _wrappers = _alternationDescriptors
-                .SelectMany(sd => sd.Wrappers)
-                .ToList();
+                _alternationDescriptors.Add(alternationDescriptor);
+                _wrappers.AddRange(alternationDescriptor.Wrappers);
+                _bindingSources.AddRange(alternationDescriptor.BindingSources);
+                _creatingAsync.AddRange(alternationDescriptor.CreatingAsync);
+                _createdAsync.AddRange(alternationDescriptor.CreatedAsync);
+                _displayingAsync.AddRange(alternationDescriptor.DisplayingAsync);
+                _displayedAsync.AddRange(alternationDescriptor.DisplayedAsync);
+                _processingAsync.AddRange(alternationDescriptor.ProcessingAsync);
 
-            _bindingSources = _alternationDescriptors
-                .SelectMany(sd => sd.BindingSources)
-                .ToList();
-
-            _bindings = _alternationDescriptors
-                .SelectMany(sd => sd.Bindings)
-                .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
-                .Select(kv => kv.Last())
-                .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
-
-            _creatingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatingAsync)
-                .ToList();
-
-            _createdAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatedAsync)
-                .ToList();
-
-            _displayingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayingAsync)
-                .ToList();
-
-            _processingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.ProcessingAsync)
-                .ToList();
-
-            _displayedAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayedAsync)
-                .ToList();
+                foreach (var binding in alternationDescriptor.Bindings)
+                {
+                    _bindings[binding.Key] = binding.Value;
+                }
+            }
         }
 
         /// <summary>
@@ -93,15 +76,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
-        public override IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
+        public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
-        public override IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
+        public override IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
 
         public override Func<ShapePlacementContext, PlacementInfo> Placement => CalculatePlacement;
 
@@ -121,27 +104,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
             return info ?? DefaultPlacementAction(ctx);
         }
 
-        public override IList<string> Wrappers => _wrappers;
+        public override IReadOnlyList<string> Wrappers => _wrappers;
 
-        public override IList<string> BindingSources => _bindingSources;
+        public override IReadOnlyList<string> BindingSources => _bindingSources;
     }
 
     public class ShapeDescriptor
     {
         public ShapeDescriptor()
         {
-            if (this is not ShapeDescriptorIndex)
-            {
-                CreatingAsync = [];
-                CreatedAsync = [];
-                DisplayingAsync = [];
-                ProcessingAsync = [];
-                DisplayedAsync = [];
-                Wrappers = [];
-                BindingSources = [];
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
-            }
-
             Placement = DefaultPlacementAction;
         }
 
@@ -171,19 +142,19 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public virtual Func<DisplayContext, Task<IHtmlContent>> Binding =>
             Bindings[ShapeType].BindingAsync;
 
-        public virtual IDictionary<string, ShapeBinding> Bindings { get; set; }
+        public virtual IDictionary<string, ShapeBinding> Bindings { get; } = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
 
-        public virtual IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync { get; set; }
+        public virtual IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync { get; set; } = [];
 
         public virtual Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
         public string DefaultPlacement { get; set; }
 
-        public virtual IList<string> Wrappers { get; set; }
-        public virtual IList<string> BindingSources { get; set; }
+        public virtual IReadOnlyList<string> Wrappers { get; set; } = [];
+        public virtual IReadOnlyList<string> BindingSources { get; set; } = [];
     }
 
     public class ShapeBinding

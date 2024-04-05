@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// </summary>
     public class AlternatesCollection : IEnumerable<string>
     {
-        public static readonly AlternatesCollection Empty = [];
+        public static AlternatesCollection Empty = [];
 
         private KeyedAlternateCollection _collection;
 
@@ -25,9 +25,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        public string this[int index] => _collection[index];
+        public string this[int index] => _collection?[index] ?? "";
 
-        public string Last => _collection.LastOrDefault() ?? "";
+        public string Last => _collection?.LastOrDefault() ?? "";
 
         public void Add(string alternate)
         {
@@ -99,6 +99,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         private void EnsureCollection()
         {
+            if (this == Empty)
+            {
+                throw new NotSupportedException("AlternateCollection can't be changed.");
+            }
+
             _collection ??= new KeyedAlternateCollection();
         }
 
