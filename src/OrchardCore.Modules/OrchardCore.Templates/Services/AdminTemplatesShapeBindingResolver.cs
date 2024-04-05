@@ -46,12 +46,9 @@ namespace OrchardCore.Templates.Services
 
             var localTemplates = _previewTemplatesProvider.GetTemplates();
 
-            if (localTemplates != null)
+            if (localTemplates != null && localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
             {
-                if (localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
-                {
-                    return BuildShapeBinding(shapeType, localTemplate);
-                }
+                return BuildShapeBinding(shapeType, localTemplate);
             }
 
             _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
@@ -60,10 +57,8 @@ namespace OrchardCore.Templates.Services
             {
                 return BuildShapeBinding(shapeType, template);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private ShapeBinding BuildShapeBinding(string shapeType, Template template)

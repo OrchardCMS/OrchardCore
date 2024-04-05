@@ -60,10 +60,8 @@ namespace OrchardCore.Templates.Services
             {
                 return BuildShapeBinding(shapeType, template);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private ShapeBinding BuildShapeBinding(string shapeType, Template template)
