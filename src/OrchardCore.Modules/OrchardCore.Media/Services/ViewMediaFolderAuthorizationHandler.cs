@@ -84,7 +84,7 @@ namespace OrchardCore.Media.Services
                 // If none is matched, we assume a new directory is created, otherwise we will check the root access only.
                 // Note: The file path is currently not authorized during upload, only the folder is checked. Therefore checking 
                 // the file extensions is not actually required, but let's leave this in case we add an authorization call later.
-                if(await _fileStore.GetFileInfoAsync(folderPath) is not null ||
+                if (await _fileStore.GetFileInfoAsync(folderPath) is not null ||
                    _mediaOptions.AllowedFileExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
                 {
                     path = string.Empty;
