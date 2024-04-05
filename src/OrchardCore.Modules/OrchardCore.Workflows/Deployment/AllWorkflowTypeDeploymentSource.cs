@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Deployment
 
         public AllWorkflowTypeDeploymentSource(
             IWorkflowTypeStore workflowTypeStore,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _workflowTypeStore = workflowTypeStore;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;

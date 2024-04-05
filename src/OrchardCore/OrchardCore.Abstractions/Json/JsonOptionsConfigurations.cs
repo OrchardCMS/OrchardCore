@@ -5,11 +5,11 @@ using OrchardCore.Json.Extensions;
 
 namespace OrchardCore.Json;
 
-public class JsonOptionsConfigurations : IConfigureOptions<JsonOptions>
+internal sealed class JsonOptionsConfigurations : IConfigureOptions<JsonOptions>
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public JsonOptionsConfigurations(IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+    public JsonOptionsConfigurations(IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
