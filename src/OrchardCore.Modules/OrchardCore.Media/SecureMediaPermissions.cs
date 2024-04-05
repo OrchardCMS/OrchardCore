@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Media.Services;
 using OrchardCore.Security.Permissions;
@@ -28,51 +29,40 @@ namespace OrchardCore.Media
 
         private readonly MediaOptions _mediaOptions;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
+        private readonly SecureMediaDirectoryChangeHelper _changeHelper;
         private readonly IMediaFileStore _fileStore;
+        private readonly IMemoryCache _cache;
 
         public SecureMediaPermissions(
             IOptions<MediaOptions> options,
             IMediaFileStore fileStore,
-            AttachedMediaFieldFileService attachedMediaFieldFileService)
+            IMemoryCache cache,
+            AttachedMediaFieldFileService attachedMediaFieldFileService,
+            SecureMediaDirectoryChangeHelper changeHelper)
         {
             _mediaOptions = options.Value;
             _fileStore = fileStore;
+            _cache = cache;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
+            _changeHelper = changeHelper;
         }
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            // The ViewRootMedia permission must be implied by any subfolder permission.
-            var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
-
-            var result = new List<Permission>()
+            if (await _changeHelper.DetectChangesAsync())
             {
-                ViewMedia,
-                new (ViewRootMedia.Name, ViewRootMedia.Description, viewRootImpliedBy),
-                ViewOthersMedia,
-                ViewOwnMedia
-            };
-
-            await foreach (var entry in _fileStore.GetDirectoryContentAsync())
-            {
-                if (!entry.IsDirectory)
-                    continue;
-
-                if (entry.Name == _mediaOptions.AssetsUsersFolder ||
-                    entry.Name == _attachedMediaFieldFileService.MediaFieldsFolder)
-                    continue;
-
-                var folderPath = entry.Path;
-
-                foreach (var template in PermissionTemplates)
-                {
-                    var dynamicPermission = CreateDynamicPermission(template.Value, folderPath);
-                    result.Add(dynamicPermission);
-                    viewRootImpliedBy.Add(dynamicPermission);
-                }
+                // Rebuild permissions if any directory has been added or deleted.
+                _cache.Remove(nameof(SecureMediaPermissions));
             }
 
-            return result.AsEnumerable();
+            return await _cache.GetOrCreateAsync(nameof(SecureMediaPermissions), async (entry) =>
+            {
+                // Ensure to rebuild at least after some time, to detect directory changes from outside of
+                // the media module.
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+
+                return await GetPermissionsInternalAsync();
+            });
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -139,6 +129,41 @@ namespace OrchardCore.Media
             _permissionsByFolder = localPermissions;
 
             return permission;
+        }
+
+        private async Task<IEnumerable<Permission>> GetPermissionsInternalAsync()
+        {
+            // The ViewRootMedia permission must be implied by any subfolder permission.
+            var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
+
+            var result = new List<Permission>()
+            {
+                ViewMedia,
+                new (ViewRootMedia.Name, ViewRootMedia.Description, viewRootImpliedBy),
+                ViewOthersMedia,
+                ViewOwnMedia
+            };
+
+            await foreach (var entry in _fileStore.GetDirectoryContentAsync())
+            {
+                if (!entry.IsDirectory)
+                    continue;
+
+                if (entry.Name == _mediaOptions.AssetsUsersFolder ||
+                    entry.Name == _attachedMediaFieldFileService.MediaFieldsFolder)
+                    continue;
+
+                var folderPath = entry.Path;
+
+                foreach (var template in PermissionTemplates)
+                {
+                    var dynamicPermission = CreateDynamicPermission(template.Value, folderPath);
+                    result.Add(dynamicPermission);
+                    viewRootImpliedBy.Add(dynamicPermission);
+                }
+            }
+
+            return result.AsEnumerable();
         }
     }
 }

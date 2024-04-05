@@ -14,4 +14,10 @@ namespace OrchardCore.Media.Events
         Task MediaMovingAsync(MediaMoveContext context);
         Task MediaMovedAsync(MediaMoveContext context);
     }
+
+    public interface IMediaEventHandler2 : IMediaEventHandler
+    {
+        Task MediaCreatingDirectoryAsync(MediaCreatingContext context);
+        Task MediaCreatedDirectoryAsync(MediaCreatedContext context);
+    }
 }
