@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             requiredAttributeParser.AddRequiredAttributes(ruleBuilder);
         }
 
-        private class DefaultRequiredAttributeParser
+        private sealed class DefaultRequiredAttributeParser
         {
             private const char RequiredAttributeWildcardSuffix = '*';
 
