@@ -3,7 +3,7 @@ using OrchardCore.Media.Events;
 
 namespace OrchardCore.Media.Core.Events
 {
-    public class MediaEventHandlerBase : IMediaEventHandler, IMediaEventHandler2
+    public class MediaEventHandlerBase : IMediaEventHandler
     {
         public virtual Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
         {

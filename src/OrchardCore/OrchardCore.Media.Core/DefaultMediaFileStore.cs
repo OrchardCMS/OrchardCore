@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Core
                 Path = path
             };
 
-            await _mediaEventHandlers.InvokeAsync((handler, context) => (handler as IMediaEventHandler2)?.MediaCreatingDirectoryAsync(context) ?? Task.CompletedTask, creatingContext, _logger);
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatingDirectoryAsync(context), creatingContext, _logger);
 
             var result = await _fileStore.TryCreateDirectoryAsync(path);
 
@@ -79,7 +79,7 @@ namespace OrchardCore.Media.Core
                 Result = result
             };
 
-            await _mediaEventHandlers.InvokeAsync((handler, context) => (handler as IMediaEventHandler2)?.MediaCreatedDirectoryAsync(context) ?? Task.CompletedTask, createdContext, _logger);
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatedDirectoryAsync(context), createdContext, _logger);
 
             return result;
         }
