@@ -13,7 +13,10 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
     {
         public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, System.StringComparison.Ordinal))
+            {
+                return null;
+            }
 
             return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
             {
@@ -24,7 +27,10 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, System.StringComparison.Ordinal))
+            {
+                return null;
+            }
 
             var viewModel = new AuditTrailPartSettingsViewModel();
 

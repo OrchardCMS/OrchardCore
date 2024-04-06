@@ -47,7 +47,7 @@ namespace OrchardCore.Markdown.GraphQL
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", System.StringComparison.Ordinal));
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
             // The default Markdown option is to entity escape html

@@ -13,8 +13,8 @@ namespace OrchardCore.Indexing
     {
         Task IContentFieldIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildIndexContext context, IContentIndexSettings settings)
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name, System.StringComparison.Ordinal) &&
+               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name, System.StringComparison.Ordinal))
             {
                 return Task.CompletedTask;
             }

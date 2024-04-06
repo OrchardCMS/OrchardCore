@@ -102,7 +102,7 @@ namespace OrchardCore.Title.Handlers
         private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), System.StringComparison.Ordinal));
 
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();
         }

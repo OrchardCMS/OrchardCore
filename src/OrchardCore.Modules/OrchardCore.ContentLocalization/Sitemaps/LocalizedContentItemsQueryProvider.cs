@@ -54,14 +54,14 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             {
                 // Test that content type is still valid to include in sitemap.
                 var contentType = routeableContentTypeDefinitions
-                    .FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
+                    .FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name, System.StringComparison.Ordinal));
 
                 if (contentType == null)
                 {
                     return;
                 }
 
-                if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart))))
+                if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart), System.StringComparison.Ordinal)))
                 {
                     // Get all content items here for reference. Then reduce by default culture.
                     // We know that the content item should be localized.
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
                     // Reduce by default culture.
                     var items = queryResults
-                        .Where(ci => string.Equals(ci.As<LocalizationPart>().Culture, defaultCulture))
+                        .Where(ci => string.Equals(ci.As<LocalizationPart>().Culture, defaultCulture, System.StringComparison.Ordinal))
                         .Skip(source.LimitedContentType.Skip)
                         .Take(source.LimitedContentType.Take);
 
@@ -104,7 +104,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             {
                 // Test that content types are still valid to include in sitemap.
                 var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
+                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, System.StringComparison.Ordinal)))
                     .Select(x => x.Name);
 
                 // No advantage here in reducing with localized index.

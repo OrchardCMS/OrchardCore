@@ -50,7 +50,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
+            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme, System.StringComparison.Ordinal))
             {
                 return;
             }

@@ -45,8 +45,8 @@ namespace OrchardCore.ContentFields.GraphQL
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
+            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, System.StringComparison.Ordinal));
+            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, System.StringComparison.Ordinal));
             var settings = contentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
             var html = ctx.Source.Html;

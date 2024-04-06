@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Controllers
 
             // Ensure the access token represents a user and not an application.
             var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-            if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
+            if (!string.Equals(type, OpenIdConstants.EntityTypes.User, System.StringComparison.Ordinal))
             {
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {

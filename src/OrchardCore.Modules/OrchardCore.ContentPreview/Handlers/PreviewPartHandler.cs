@@ -31,7 +31,7 @@ namespace OrchardCore.ContentPreview.Handlers
         private async Task<string> GetPatternAsync(PreviewPart part)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "PreviewPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "PreviewPart", System.StringComparison.Ordinal));
             var pattern = contentTypePartDefinition.GetSettings<PreviewPartSettings>().Pattern;
 
             return pattern;

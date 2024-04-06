@@ -56,7 +56,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, MicrosoftIdentityOptions options)
         {
-            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, System.StringComparison.Ordinal))
             {
                 return;
             }
@@ -81,7 +81,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, System.StringComparison.Ordinal))
             {
                 return;
             }

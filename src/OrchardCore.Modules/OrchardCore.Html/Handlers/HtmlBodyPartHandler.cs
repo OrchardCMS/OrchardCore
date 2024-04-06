@@ -41,7 +41,7 @@ namespace OrchardCore.Html.Handlers
                 try
                 {
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", System.StringComparison.Ordinal));
                     var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
                     var html = part.Html;
