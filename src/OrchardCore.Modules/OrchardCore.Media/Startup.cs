@@ -328,7 +328,6 @@ namespace OrchardCore.Media
             services.AddScoped<IPermissionProvider, SecureMediaPermissions>();
             services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
-            services.AddSingleton<SecureMediaDirectoryChangeHelper>();
             services.AddSingleton<IMediaEventHandler, SecureMediaFileStoreEventHandler>();
         }
     }

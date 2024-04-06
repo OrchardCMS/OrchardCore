@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Media.Services;
 using OrchardCore.Security.Permissions;
 
@@ -29,7 +30,7 @@ namespace OrchardCore.Media
 
         private readonly MediaOptions _mediaOptions;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
-        private readonly SecureMediaDirectoryChangeHelper _changeHelper;
+        private readonly ISignal _signal;
         private readonly IMediaFileStore _fileStore;
         private readonly IMemoryCache _cache;
 
@@ -38,28 +39,24 @@ namespace OrchardCore.Media
             IMediaFileStore fileStore,
             IMemoryCache cache,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
-            SecureMediaDirectoryChangeHelper changeHelper)
+            ISignal signal)
         {
             _mediaOptions = options.Value;
             _fileStore = fileStore;
             _cache = cache;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
-            _changeHelper = changeHelper;
+            _signal = signal;
         }
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            if (await _changeHelper.DetectChangesAsync())
-            {
-                // Rebuild permissions if any directory has been added or deleted.
-                _cache.Remove(nameof(SecureMediaPermissions));
-            }
-
             return await _cache.GetOrCreateAsync(nameof(SecureMediaPermissions), async (entry) =>
             {
                 // Ensure to rebuild at least after some time, to detect directory changes from outside of
-                // the media module.
-                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+                // the media module. The signal gets set if a directory is created or deleted in the media
+                // libary directly.
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5))
+                     .AddExpirationToken(_signal.GetToken(nameof(SecureMediaPermissions)));
 
                 return await GetPermissionsInternalAsync();
             });

@@ -1,25 +1,37 @@
 using System.Threading.Tasks;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Media.Core.Events;
-using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Events;
 
 internal class SecureMediaFileStoreEventHandler : MediaEventHandlerBase
 {
-    private readonly SecureMediaDirectoryChangeHelper _changeHelper;
+    private readonly ISignal _signal;
 
-    public SecureMediaFileStoreEventHandler(SecureMediaDirectoryChangeHelper changeHelper)
+    public SecureMediaFileStoreEventHandler(ISignal signal)
     {
-        _changeHelper = changeHelper;
+        _signal = signal;
     }
 
     public override Task MediaCreatedDirectoryAsync(MediaCreatedContext context)
     {
-        return context.Result ? _changeHelper.UpdateAsync() : Task.CompletedTask;
+        if (context.Result)
+        {
+            SignalDirectoryChange();
+        }
+
+        return Task.CompletedTask;
     }
 
     public override Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
     {
-        return context.Result ? _changeHelper.UpdateAsync() : Task.CompletedTask;
+        if (context.Result)
+        {
+            SignalDirectoryChange();
+        }
+
+        return Task.CompletedTask;
     }
+
+    private void SignalDirectoryChange() => _signal.DeferredSignalToken(nameof(SecureMediaPermissions));
 }
