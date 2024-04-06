@@ -1,6 +1,6 @@
 namespace OrchardCore.Media.Azure;
 
-public class ImageSharpImageCacheOptions
+public class ImageSharpBlobImageCacheOptions
 {
     /// <summary>
     /// The Azure Blob connection string.

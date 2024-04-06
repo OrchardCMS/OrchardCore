@@ -8,28 +8,28 @@ using OrchardCore.Media.Azure.Helpers;
 
 namespace OrchardCore.Media.Azure.Services;
 
-internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<ImageSharpImageCacheOptions>
+internal class BlobImageSharpImageCacheOptionsConfiguration : IConfigureOptions<ImageSharpBlobImageCacheOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public ImageSharpImageCacheOptionsConfiguration(
+    public BlobImageSharpImageCacheOptionsConfiguration(
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
-        ILogger<ImageSharpImageCacheOptionsConfiguration> logger)
+        ILogger<BlobImageSharpImageCacheOptionsConfiguration> logger)
     {
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
         _logger = logger;
     }
 
-    public void Configure(ImageSharpImageCacheOptions options)
+    public void Configure(ImageSharpBlobImageCacheOptions options)
     {
         var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
         section.Bind(options);
 
-        var fluidParserHelper = new FluidParserHelper<ImageSharpImageCacheOptions>(_shellSettings);
+        var fluidParserHelper = new FluidParserHelper<ImageSharpBlobImageCacheOptions>(_shellSettings);
 
         try
         {
