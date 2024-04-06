@@ -11,7 +11,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure.Services;
 
-internal class BlobImageSharpImageCacheTenantEvents : ModularTenantEvents
+internal class ImageSharpBlobImageCacheTenantEvents : ModularTenantEvents
 {
     private readonly ImageSharpBlobImageCacheOptions _options;
     private readonly ShellSettings _shellSettings;
@@ -19,11 +19,11 @@ internal class BlobImageSharpImageCacheTenantEvents : ModularTenantEvents
 
     protected readonly IStringLocalizer S;
 
-    public BlobImageSharpImageCacheTenantEvents(
+    public ImageSharpBlobImageCacheTenantEvents(
         IOptions<ImageSharpBlobImageCacheOptions> options,
         ShellSettings shellSettings,
-        ILogger<BlobImageSharpImageCacheTenantEvents> logger,
-        IStringLocalizer<BlobImageSharpImageCacheTenantEvents> localizer)
+        ILogger<ImageSharpBlobImageCacheTenantEvents> logger,
+        IStringLocalizer<ImageSharpBlobImageCacheTenantEvents> localizer)
     {
         _options = options.Value;
         _shellSettings = shellSettings;

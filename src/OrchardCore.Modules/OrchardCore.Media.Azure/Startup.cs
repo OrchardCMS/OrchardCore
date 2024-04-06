@@ -162,7 +162,7 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IConfigureOptions<ImageSharpImageCacheOptions>, ImageSharpImageCacheOptionsConfiguration>();
+            services.AddTransient<IConfigureOptions<ImageSharpBlobImageCacheOptions>, ImageSharpBlobImageCacheOptionsConfiguration>();
             services.AddTransient<IConfigureOptions<AzureBlobStorageCacheOptions>, AzureBlobStorageCacheOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
@@ -180,7 +180,7 @@ namespace OrchardCore.Media.Azure
             // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
             services.Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
 
-            services.AddScoped<IModularTenantEvents, ImageSharpImageCacheTenantEvents>();
+            services.AddScoped<IModularTenantEvents, ImageSharpBlobImageCacheTenantEvents>();
         }
 
         private bool CheckOptions(string connectionString, string containerName)

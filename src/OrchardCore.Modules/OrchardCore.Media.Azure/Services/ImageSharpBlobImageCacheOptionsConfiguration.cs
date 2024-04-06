@@ -8,16 +8,16 @@ using OrchardCore.Media.Azure.Helpers;
 
 namespace OrchardCore.Media.Azure.Services;
 
-internal class BlobImageSharpImageCacheOptionsConfiguration : IConfigureOptions<ImageSharpBlobImageCacheOptions>
+internal class ImageSharpBlobImageCacheOptionsConfiguration : IConfigureOptions<ImageSharpBlobImageCacheOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public BlobImageSharpImageCacheOptionsConfiguration(
+    public ImageSharpBlobImageCacheOptionsConfiguration(
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
-        ILogger<BlobImageSharpImageCacheOptionsConfiguration> logger)
+        ILogger<ImageSharpBlobImageCacheOptionsConfiguration> logger)
     {
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
