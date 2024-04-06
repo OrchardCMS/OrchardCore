@@ -6,7 +6,7 @@ namespace OrchardCore.Environment.Extensions.Utility
 {
     public static class DependencyOrdering
     {
-        private class Node<T>
+        private sealed class Node<T>
         {
             public T Item { get; set; }
             public bool Used { get; set; }

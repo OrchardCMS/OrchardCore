@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string starts with the pattern.
         /// </summary>
-        private class StartsWithMatchOptions : MatchOptions
+        private sealed class StartsWithMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)
@@ -45,7 +45,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string ends with the pattern.
         /// </summary>
-        private class EndsWithMatchOptions : MatchOptions
+        private sealed class EndsWithMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)
@@ -57,7 +57,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string contains the pattern.
         /// </summary>
-        private class ContainsMatchOptions : MatchOptions
+        private sealed class ContainsMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)
