@@ -54,7 +54,6 @@
 
             document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
                 var syntax = e.target.value.toLowerCase();
-                console.log(syntax);
                 monaco.editor.setModelLanguage(editor.getModel(), syntax);
                 if (syntax == 'javascript') {
                     document.getElementById('liquid_hint').classList.add('d-none');
