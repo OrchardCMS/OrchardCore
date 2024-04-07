@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.AmazonS3.Helpers;
-using OrchardCore.Media.Azure;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 

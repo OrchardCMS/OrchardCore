@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media.Azure;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.AmazonS3.Services;

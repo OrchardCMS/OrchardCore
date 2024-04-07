@@ -1,6 +1,4 @@
-using OrchardCore.FileStorage.AmazonS3;
-
-namespace OrchardCore.Media.Azure;
+namespace OrchardCore.FileStorage.AmazonS3;
 
 /// <summary>
 /// Configuration for ImageSharp's <c>AWSS3StorageCache</c>.

@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.FileStorage.AmazonS3;
 using SixLabors.ImageSharp.Web.Caching.AWS;
 
-namespace OrchardCore.Media.Azure.Services;
+namespace OrchardCore.Media.AmazonS3.Services;
 
 // Configuration for ImageSharp's own configuration object. We just pass the settings from the Orchard Core
 // configuration.
