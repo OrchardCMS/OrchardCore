@@ -1,7 +1,7 @@
 using Fluid;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Media.Azure.Helpers;
+namespace OrchardCore.Media.AmazonS3.Helpers;
 
 // This is the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
 internal class FluidParserHelper<TOptions> where TOptions : class

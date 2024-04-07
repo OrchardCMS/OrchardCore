@@ -1,10 +1,10 @@
 using System;
-using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
+using OrchardCore.Media.AmazonS3.Helpers;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
@@ -13,9 +13,6 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
-
-    // Local instance since it can be discarded once the startup is over.
-    private readonly FluidParser _fluidParser = new();
 
     public AwsStorageOptionsConfiguration(
         IShellConfiguration shellConfiguration,
@@ -31,46 +28,20 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     {
         options.BindConfiguration(Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
 
-        var templateOptions = new TemplateOptions();
-        var templateContext = new TemplateContext(templateOptions);
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-        templateOptions.MemberAccessStrategy.Register<AwsStorageOptions>();
-        templateContext.SetValue("ShellSettings", _shellSettings);
+        var fluidParserHelper = new FluidParserHelper<AwsStorageOptions>(_shellSettings);
 
-        ParseBucketName(options, templateContext);
-        ParseBasePath(options, templateContext);
-    }
-
-    private void ParseBucketName(AwsStorageOptions options, TemplateContext templateContext)
-    {
-        // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
         try
         {
-            var template = _fluidParser.Parse(options.BucketName);
-
-            options.BucketName = template
-                .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", string.Empty)
-                .Replace("\n", string.Empty)
-                .Trim();
+            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName).Trim();
         }
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage bucket name.");
         }
-    }
 
-    private void ParseBasePath(AwsStorageOptions options, TemplateContext templateContext)
-    {
         try
         {
-            var template = _fluidParser.Parse(options.BasePath);
-
-            options.BasePath = template
-                .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", string.Empty)
-                .Replace("\n", string.Empty)
-                .Trim();
+            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath).Trim();
         }
         catch (Exception e)
         {
