@@ -19,6 +19,7 @@ using OrchardCore.Deployment.Core.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Json;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
@@ -68,7 +69,7 @@ namespace OrchardCore.Workflows.Controllers
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor,
-            JsonSerializerOptions jsonSerializerOptions)
+           IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -83,7 +84,7 @@ namespace OrchardCore.Workflows.Controllers
             _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _jsonSerializerOptions = jsonSerializerOptions;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         [Admin("Workflows/Types", "WorkflowTypes")]
@@ -597,7 +598,7 @@ namespace OrchardCore.Workflows.Controllers
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
 
-            return new PhysicalFileResult(packageName, "application/zip")
+            return new PhysicalFileResult(archiveFileName, "application/zip")
             {
                 FileDownloadName = packageName + ".zip"
             };
