@@ -72,7 +72,7 @@ namespace OrchardCore.Recipes
             return new EmbeddedFileProvider(assembly).GetFileInfo(path);
         }
 
-        private class RecipeEventHandler : IRecipeEventHandler
+        private sealed class RecipeEventHandler : IRecipeEventHandler
         {
             public RecipeExecutionContext Context { get; private set; }
 

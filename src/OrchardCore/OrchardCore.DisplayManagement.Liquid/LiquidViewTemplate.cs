@@ -99,7 +99,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
     }
 
-    internal class ShapeAccessor : DelegateAccessor<object, object>
+    internal sealed class ShapeAccessor : DelegateAccessor<object, object>
     {
         public ShapeAccessor() : base((obj, name, ctx) => _getter(obj, name))
         {

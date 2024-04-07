@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -83,7 +82,10 @@ namespace OrchardCore.DisplayManagement.Views
 
             var wrapped = PositionWrapper.TryWrap(item, position);
             if (wrapped is not null)
+            {
                 _items.Add(wrapped);
+            }
+
             return new ValueTask<IShape>(this);
         }
     }

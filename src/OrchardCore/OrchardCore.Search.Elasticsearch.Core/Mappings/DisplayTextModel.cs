@@ -2,7 +2,7 @@ using Nest;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Mappings
 {
-    internal class DisplayTextModel
+    internal sealed class DisplayTextModel
     {
         [Text(Name = "Analyzed")]
         public string Analyzed { get; set; }

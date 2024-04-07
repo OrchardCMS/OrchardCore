@@ -259,7 +259,7 @@ namespace OrchardCore.Forms
             return 4;
         }
 
-        internal class TitlePartSettings
+        internal sealed class TitlePartSettings
         {
             public int Options { get; set; }
 
