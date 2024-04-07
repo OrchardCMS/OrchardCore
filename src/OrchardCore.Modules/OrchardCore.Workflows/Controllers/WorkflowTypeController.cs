@@ -573,7 +573,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
             var packageName = itemIds.Length == 1
                            ? workflowTypes.FirstOrDefault().Name
-                           : S["workflowTypes"];
+                           : S["Workflow Types"];
 
             var data = new JsonArray();
             foreach (var workflow in workflowTypes)
