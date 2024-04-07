@@ -306,8 +306,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddDefaultEmailTokenProvider()
-                .Configure<IdentityOptions>(options => options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider);
+            services.AddOptions<ChangeEmailTokenProviderOptions>();
+
+            services.AddTransient<IConfigureOptions<TokenOptions>, ChangeEmailTokenOptionsConfigurations>()
+                .AddTransient<IConfigureOptions<IdentityOptions>, ChangeEmailIdentityOptionsConfigurations>()
+                .TryAddTransient<ChangeEmailTokenProvider>();
 
             services.Configure<TemplateOptions>(o =>
             {
@@ -364,8 +367,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddDefaultEmailTokenProvider()
-                .Configure<IdentityOptions>(options => options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider);
+            services.AddOptions<EmailConfirmationTokenProviderOptions>();
+
+            services.AddTransient<IConfigureOptions<TokenOptions>, EmailConfirmationTokenOptionsConfigurations>()
+                .AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+                .TryAddTransient<EmailConfirmationTokenProvider>();
 
             services.Configure<TemplateOptions>(o =>
             {
@@ -426,6 +432,12 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions<PasswordResetTokenProviderOptions>();
+
+            services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
+                .AddTransient<IConfigureOptions<TokenOptions>, PasswordResetTokenOptionsConfigurations>()
+                .TryAddTransient<PasswordResetTokenProvider>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<LostPasswordViewModel>();

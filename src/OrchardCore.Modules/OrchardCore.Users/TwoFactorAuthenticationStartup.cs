@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -96,11 +97,11 @@ public class EmailAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddDefaultEmailTokenProvider()
-            .Configure<TwoFactorOptions>(options =>
+        services.Configure<IdentityOptions>(options =>
         {
-            options.Providers.Add(TokenOptions.DefaultEmailProvider);
-        });
+            options.Tokens.ProviderMap.TryAdd(TwoFactorOptions.TwoFactorEmailProvider, new TokenProviderDescriptor(typeof(TwoFactorEmailTokenProvider)));
+        }).Configure<TwoFactorOptions>(options => options.Providers.Add(TwoFactorOptions.TwoFactorEmailProvider))
+        .TryAddTransient<TwoFactorEmailTokenProvider>();
 
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();

@@ -1,17 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data;
+using OrchardCore.Json;
 using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users;
+using OrchardCore.Users.Core.Json;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.Core.Json;
-using System.Text.Json;
-using OrchardCore.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -61,18 +60,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<DocumentJsonSerializerOptions>(options =>
             {
                 options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
-            });
-
-            return services;
-        }
-
-        public static IServiceCollection TryAddDefaultEmailTokenProvider(this IServiceCollection services)
-        {
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
-            services.TryAddTransient(emailTokenProviderType);
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Tokens.ProviderMap.TryAdd(TokenOptions.DefaultEmailProvider, new TokenProviderDescriptor(emailTokenProviderType));
             });
 
             return services;

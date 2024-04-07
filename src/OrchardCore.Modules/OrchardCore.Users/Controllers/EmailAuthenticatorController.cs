@@ -168,7 +168,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TwoFactorOptions.TwoFactorEmailProvider);
 
         var message = new MailMessage()
         {
