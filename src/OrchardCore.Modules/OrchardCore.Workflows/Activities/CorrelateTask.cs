@@ -30,9 +30,9 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public bool IsLiquidSyntax
+        public string Syntax
         {
-            get => GetProperty(() => false);
+            get => GetProperty(() => "JavaScript");
             set => SetProperty(value);
         }
 
@@ -43,8 +43,12 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = IsLiquidSyntax ? await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null) :
-                    (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
+            var value = Syntax switch {
+                "Liquid" => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
+                "JavaScript" => (await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null))?.Trim(),
+                _ => null 
+            };
+
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");

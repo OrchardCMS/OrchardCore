@@ -1,23 +1,23 @@
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
-<div class="form-group mb-3">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="IsLiquidSyntax" checked="@Model.IsLiquidSyntax" />
-        <label class="custom-control-label" asp-for="IsLiquidSyntax">@T["Is Liquid syntax"]</label>
-        <span class="hint dashed">
-            @T["Choose between Liquid or JavaScript support."]
-        </span>
-    </div>
+<div class="form-group mb-3" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
+    <select asp-for="Syntax" class="form-select">
+        <option>JavaScript</option>
+        <option>Liquid</option>
+    </select>
+    <span asp-validation-for="Syntax"></span>
+    <span class="hint">@T["Choose between Liquid or JavaScript syntax."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Value">
     <label asp-for="Value" class="form-label">@T["Value"]</label>
-    <input type="hidden" asp-for="Value" class="form-control"/>
-    <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
+    <input type="hidden" asp-for="Value" />
+    <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Value" class="form-control" style="min-height: 100px;"></div>
     <span asp-validation-for="Value"></span>
-    <span id="liquid_hint" class="hint @(Model.IsLiquidSyntax ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
-    <span id="javascript_hint" class="hint @(Model.IsLiquidSyntax ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+    <span id="liquid_hint" class="hint @(Model.Syntax == "Liquid" ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.Syntax == "JavaScript" ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
 </div>
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
@@ -25,7 +25,7 @@
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 "automaticLayout": true,
-                "language": "@(Model.IsLiquidSyntax ? "liquid" : "javascript")"
+                "language": "@(Model.Syntax.ToLowerInvariant())"
             };
 
             var html = document.documentElement;
@@ -52,15 +52,16 @@
                 textArea.value = editor.getValue();
             });
 
-            $('#@Html.IdFor(x => x.IsLiquidSyntax)').on('change', function() {
-                if ($(this).is(":checked")) {
-                    monaco.editor.setModelLanguage(editor.getModel(), 'liquid');
-                    document.getElementById('javascript_hint').classList.add('d-none');
-                    document.getElementById('liquid_hint').classList.remove('d-none');
-                } else {
-                    monaco.editor.setModelLanguage(editor.getModel(), 'javascript');
+            document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
+                var syntax = e.target.value.toLowerCase();
+                console.log(syntax);
+                monaco.editor.setModelLanguage(editor.getModel(), syntax);
+                if (syntax == 'javascript') {
                     document.getElementById('liquid_hint').classList.add('d-none');
                     document.getElementById('javascript_hint').classList.remove('d-none');
+                } else {
+                    document.getElementById('javascript_hint').classList.add('d-none');
+                    document.getElementById('liquid_hint').classList.remove('d-none');
                 }
             });
         });
