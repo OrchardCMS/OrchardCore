@@ -365,10 +365,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.TryAddDefaultEmailTokenProvider()
-                .Configure<IdentityOptions>(options =>
-                {
-                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
-                });
+                .Configure<IdentityOptions>(options => options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider);
 
             services.Configure<TemplateOptions>(o =>
             {
