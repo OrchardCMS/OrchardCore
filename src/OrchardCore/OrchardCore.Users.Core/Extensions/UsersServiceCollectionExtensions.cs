@@ -58,7 +58,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
             services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
 
-            services.Configure<ContentSerializerJsonOptions>(options =>
+            services.Configure<DocumentJsonSerializerOptions>(options =>
             {
                 options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
             });

@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        private class PartConfigurerImpl : ContentTypePartDefinitionBuilder
+        private sealed class PartConfigurerImpl : ContentTypePartDefinitionBuilder
         {
             private readonly ContentPartDefinition _partDefinition;
 

@@ -25,7 +25,7 @@ namespace OrchardCore.Queries.Recipes
         public QueryStep(
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             ILogger<QueryStep> logger)
         {
             _queryManager = queryManager;

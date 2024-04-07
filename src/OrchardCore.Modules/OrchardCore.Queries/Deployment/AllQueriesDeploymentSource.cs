@@ -14,7 +14,7 @@ namespace OrchardCore.Queries.Deployment
 
         public AllQueriesDeploymentSource(
             IQueryManager queryManager,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _queryManager = queryManager;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
