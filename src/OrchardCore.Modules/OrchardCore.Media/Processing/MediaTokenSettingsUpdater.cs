@@ -15,6 +15,8 @@ namespace OrchardCore.Media.Processing
     /// </summary>
     public class MediaTokenSettingsUpdater : FeatureEventHandler, IModularTenantEvents
     {
+        private const int DefaultMediaTokenKeySize = 64;
+
         private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
 
@@ -38,10 +40,7 @@ namespace OrchardCore.Media.Processing
             {
                 var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
-                var rng = RandomNumberGenerator.Create();
-
-                mediaTokenSettings.HashKey = new byte[64];
-                rng.GetBytes(mediaTokenSettings.HashKey);
+                mediaTokenSettings.HashKey = RandomNumberGenerator.GetBytes(DefaultMediaTokenKeySize);
                 siteSettings.Put(mediaTokenSettings);
 
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
@@ -65,10 +64,7 @@ namespace OrchardCore.Media.Processing
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
             var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
 
-            var rng = RandomNumberGenerator.Create();
-
-            mediaTokenSettings.HashKey = new byte[64];
-            rng.GetBytes(mediaTokenSettings.HashKey);
+            mediaTokenSettings.HashKey = RandomNumberGenerator.GetBytes(DefaultMediaTokenKeySize);
             siteSettings.Put(mediaTokenSettings);
 
             await _siteService.UpdateSiteSettingsAsync(siteSettings);

@@ -36,8 +36,9 @@
                     @for (int i = 0; i < maxCount; i++)
                     {
                         var notification = Model.Notifications[i];
-                        dynamic shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
-                        shape.Notification = notification;
+                        var shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
+                        shape.Properties[nameof(Notification)] = notification;
+
                         <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                             @await DisplayAsync(shape)
                         </div>
