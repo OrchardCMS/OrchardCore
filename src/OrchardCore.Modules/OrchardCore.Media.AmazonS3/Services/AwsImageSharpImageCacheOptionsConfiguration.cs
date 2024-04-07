@@ -32,7 +32,7 @@ public class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Aws
 
         try
         {
-            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName).Trim();
+            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName);
         }
         catch (Exception e)
         {
@@ -41,7 +41,7 @@ public class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Aws
 
         try
         {
-            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath).Trim();
+            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath);
         }
         catch (Exception e)
         {

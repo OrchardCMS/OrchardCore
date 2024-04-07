@@ -32,7 +32,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
         try
         {
-            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName).Trim();
+            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName);
         }
         catch (Exception e)
         {
@@ -41,7 +41,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
         try
         {
-            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath).Trim();
+            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath);
         }
         catch (Exception e)
         {

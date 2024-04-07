@@ -3,7 +3,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Media.AmazonS3.Helpers;
 
-// This is the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
+// This is almost the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
 internal class OptionsFluidParserHelper<TOptions> where TOptions : class
 {
     // Local instance since it can be discarded once the startup is over.
@@ -25,7 +25,8 @@ internal class OptionsFluidParserHelper<TOptions> where TOptions : class
         var parsedTemplate = _fluidParser.Parse(template);
         return parsedTemplate.Render(templateContext, NullEncoder.Default)
             .Replace("\r", string.Empty)
-            .Replace("\n", string.Empty);
+            .Replace("\n", string.Empty)
+            .Trim();
     }
 
     private TemplateContext GetTemplateContext()
