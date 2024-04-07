@@ -128,7 +128,8 @@ The feature replaces the default `PhysicalFileSystemCache` of ImageSharp that st
 - Persistent image cache not to have to repeatedly resize images, even if the local file system of the webserver is ephemeral. This helps if you e.g. use containers to host the app, or do clean deployments to the webserver that remove all previously existing files.
 - Better performance if disk IO is a bottleneck: The local storage of the webserver may be slow or access to it deliberately throttled, like it is the case with Azure App Services. Using Blob Storage can alleviate pressure on the local disk, leaving more resources available to serve other requests, as well as offer a higher request per second limit for image requests.
 
-Note that since at the moment configuring a sub-path [is not supported by `AzureBlobStorageImageCache`](https://github.com/SixLabors/ImageSharp.Web/discussions/351), the cached files for all tenants are stored in the same Azure Blob Container. This means that purging the cache of just one tenant is not supported. Furthermore, cache files are only removed for a tenant when removing the tenant itself if you use a separate container for each tenant.
+!!! note
+    Cache files are only removed for a tenant when removing the tenant itself if you use a separate container for each tenant.
 
 ### Configuration
 
@@ -153,4 +154,5 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Templating the configuration and configuring a container per tenant works the same way as for Azure Media Storage; follow its documentation above.
+!!! note
+    Templating the configuration and configuring a container per tenant work the same way as for Azure Media Storage; follow its documentation above.
