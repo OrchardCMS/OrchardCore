@@ -61,9 +61,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 );
         }
 
-        public bool HasField(ContentPartFieldDefinition field)
-        {
-            return GetObjectGraphType(field) != null;
-        }
+        public bool HasField(ContentPartFieldDefinition field) => GetObjectGraphType(field) != null;
     }
 }

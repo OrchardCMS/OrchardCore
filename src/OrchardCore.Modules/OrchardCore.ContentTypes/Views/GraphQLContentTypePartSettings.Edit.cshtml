@@ -50,13 +50,13 @@
         const preventFieldNameCollisionCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.PreventFieldNameCollision))");
         const setFieldVisibility = (checked) => {
             preventFieldNameCollisionCheckbox.parentElement.style.display = checked ? 'block' : 'none';
+
             if (!checked) {
                 preventFieldNameCollisionCheckbox.checked = false;
             }            
         };
-        collapseCheckbox.addEventListener('change', (e) => {
-            setFieldVisibility(e.target.checked);
-        });
+        collapseCheckbox.addEventListener('change', (e) => setFieldVisibility(e.target.checked));
+
         setFieldVisibility(@(collapsed.ToString().ToLower()));
     })();
 </script>

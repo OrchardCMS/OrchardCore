@@ -229,7 +229,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             if (settings.PreventFieldNameCollision)
             {
-                return $"{partName.ToFieldName()}{fieldName.ToPascalCase()}";
+                return partName.ToFieldName() + fieldName.ToPascalCase();
             }
 
             return fieldName;

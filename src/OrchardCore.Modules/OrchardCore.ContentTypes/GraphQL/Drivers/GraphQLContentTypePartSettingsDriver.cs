@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Settings;
@@ -14,12 +13,10 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
     public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly GraphQLContentOptions _contentOptions;
-        private readonly IStringLocalizer S;
 
-        public GraphQLContentTypePartSettingsDriver(IOptions<GraphQLContentOptions> optionsAccessor, IStringLocalizer<GraphQLContentTypePartSettingsDriver> stringLocalizer)
+        public GraphQLContentTypePartSettingsDriver(IOptions<GraphQLContentOptions> optionsAccessor)
         {
             _contentOptions = optionsAccessor.Value;
-            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
