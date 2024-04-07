@@ -130,4 +130,3 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
         }
     }
 }
-
