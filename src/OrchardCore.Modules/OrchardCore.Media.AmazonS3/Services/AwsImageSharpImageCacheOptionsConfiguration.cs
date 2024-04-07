@@ -28,7 +28,7 @@ public class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Aws
     {
         options.BindConfiguration(Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
 
-        var fluidParserHelper = new FluidParserHelper<AwsImageSharpImageCacheOptions>(_shellSettings);
+        var fluidParserHelper = new OptionsFluidParserHelper<AwsImageSharpImageCacheOptions>(_shellSettings);
 
         try
         {

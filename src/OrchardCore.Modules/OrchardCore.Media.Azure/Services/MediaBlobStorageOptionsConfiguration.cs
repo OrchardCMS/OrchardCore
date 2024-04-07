@@ -29,7 +29,7 @@ internal class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlo
     {
         _shellConfiguration.GetSection("OrchardCore_Media_Azure").Bind(options);
 
-        var fluidParserHelper = new FluidParserHelper<MediaBlobStorageOptionsConfiguration>(_shellSettings);
+        var fluidParserHelper = new OptionsFluidParserHelper<MediaBlobStorageOptionsConfiguration>(_shellSettings);
 
         try
         {

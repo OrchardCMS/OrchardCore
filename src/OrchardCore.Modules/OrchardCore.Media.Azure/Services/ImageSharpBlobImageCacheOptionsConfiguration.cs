@@ -29,7 +29,7 @@ internal class ImageSharpBlobImageCacheOptionsConfiguration : IConfigureOptions<
         var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
         section.Bind(options);
 
-        var fluidParserHelper = new FluidParserHelper<ImageSharpBlobImageCacheOptions>(_shellSettings);
+        var fluidParserHelper = new OptionsFluidParserHelper<ImageSharpBlobImageCacheOptions>(_shellSettings);
 
         try
         {

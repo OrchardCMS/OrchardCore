@@ -28,7 +28,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     {
         options.BindConfiguration(Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
 
-        var fluidParserHelper = new FluidParserHelper<AwsStorageOptions>(_shellSettings);
+        var fluidParserHelper = new OptionsFluidParserHelper<AwsStorageOptions>(_shellSettings);
 
         try
         {

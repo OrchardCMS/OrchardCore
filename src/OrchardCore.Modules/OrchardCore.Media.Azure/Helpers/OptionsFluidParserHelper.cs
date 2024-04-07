@@ -1,10 +1,10 @@
 using Fluid;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Media.AmazonS3.Helpers;
+namespace OrchardCore.Media.Azure.Helpers;
 
 // This is the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
-internal class FluidParserHelper<TOptions> where TOptions : class
+internal class OptionsFluidParserHelper<TOptions> where TOptions : class
 {
     // Local instance since it can be discarded once the startup is over.
     private readonly FluidParser _fluidParser = new();
@@ -12,7 +12,7 @@ internal class FluidParserHelper<TOptions> where TOptions : class
 
     private TemplateContext _templateContext;
 
-    public FluidParserHelper(ShellSettings shellSettings)
+    public OptionsFluidParserHelper(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
     }
