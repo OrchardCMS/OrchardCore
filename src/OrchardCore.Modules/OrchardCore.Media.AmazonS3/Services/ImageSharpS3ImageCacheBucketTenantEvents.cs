@@ -25,8 +25,8 @@ public class ImageSharpS3ImageCacheBucketTenantEvents : ModularTenantEvents
         ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
         IOptions<AwsImageSharpImageCacheOptions> options,
-        IStringLocalizer<MediaS3BucketTenantEvents> localizer,
-        ILogger<MediaS3BucketTenantEvents> logger)
+        IStringLocalizer<ImageSharpS3ImageCacheBucketTenantEvents> localizer,
+        ILogger<ImageSharpS3ImageCacheBucketTenantEvents> logger)
     {
         _shellSettings = shellSettings;
         _amazonS3Client = amazonS3Client;
