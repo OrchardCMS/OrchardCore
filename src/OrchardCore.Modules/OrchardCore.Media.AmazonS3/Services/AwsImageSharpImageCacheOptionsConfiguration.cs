@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.FileStorage.AmazonS3;
+using OrchardCore.Media.Azure;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
+public class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
@@ -17,7 +17,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     // Local instance since it can be discarded once the startup is over.
     private readonly FluidParser _fluidParser = new();
 
-    public AwsStorageOptionsConfiguration(
+    public AwsImageSharpImageCacheOptionsConfiguration(
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<AwsStorageOptionsConfiguration> logger)
@@ -27,21 +27,21 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         _logger = logger;
     }
 
-    public void Configure(AwsStorageOptions options)
+    public void Configure(AwsImageSharpImageCacheOptions options)
     {
-        options.BindConfiguration(Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
+        options.BindConfiguration(Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
 
         var templateOptions = new TemplateOptions();
         var templateContext = new TemplateContext(templateOptions);
         templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-        templateOptions.MemberAccessStrategy.Register<AwsStorageOptions>();
+        templateOptions.MemberAccessStrategy.Register<AwsImageSharpImageCacheOptions>();
         templateContext.SetValue("ShellSettings", _shellSettings);
 
         ParseBucketName(options, templateContext);
         ParseBasePath(options, templateContext);
     }
 
-    private void ParseBucketName(AwsStorageOptions options, TemplateContext templateContext)
+    private void ParseBucketName(AwsImageSharpImageCacheOptions options, TemplateContext templateContext)
     {
         // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
         try
@@ -56,11 +56,11 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage bucket name.");
+            _logger.LogCritical(e, "Unable to parse Amazon S3 ImageSharp Image Cache bucket name.");
         }
     }
 
-    private void ParseBasePath(AwsStorageOptions options, TemplateContext templateContext)
+    private void ParseBasePath(AwsImageSharpImageCacheOptions options, TemplateContext templateContext)
     {
         try
         {
@@ -74,7 +74,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unable to parse Amazon S3 Media Storage base path.");
+            _logger.LogCritical(e, "Unable to parse Amazon S3 ImageSharp Image Cache base path.");
         }
     }
 }

@@ -11,7 +11,7 @@ namespace OrchardCore.Media.AmazonS3;
 
 public static class AwsStorageOptionsExtension
 {
-    public static IEnumerable<ValidationResult> Validate(this AwsStorageOptions options)
+    public static IEnumerable<ValidationResult> Validate(this IAwsStorageOptions options)
     {
         if (string.IsNullOrWhiteSpace(options.BucketName))
         {
@@ -20,16 +20,16 @@ public static class AwsStorageOptionsExtension
 
         if (options.AwsOptions is not null)
         {
-            if (options.AwsOptions.Region is null)
+            if (options.AwsOptions.Region is null && options.AwsOptions.DefaultClientConfig.ServiceURL is null)
             {
-                yield return new ValidationResult(Constants.ValidationMessages.RegionEndpointIsEmpty);
+                yield return new ValidationResult(Constants.ValidationMessages.RegionAndServiceUrlAreEmpty);
             }
         }
     }
 
-    public static AwsStorageOptions BindConfiguration(this AwsStorageOptions options, IShellConfiguration shellConfiguration, ILogger logger)
+    public static IAwsStorageOptions BindConfiguration(this IAwsStorageOptions options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
     {
-        var section = shellConfiguration.GetSection("OrchardCore_Media_AmazonS3");
+        var section = shellConfiguration.GetSection(configSection);
 
         if (!section.Exists())
         {
@@ -44,7 +44,7 @@ public static class AwsStorageOptionsExtension
         try
         {
             // Binding AWS Options.
-            options.AwsOptions = shellConfiguration.GetAWSOptions("OrchardCore_Media_AmazonS3");
+            options.AwsOptions = shellConfiguration.GetAWSOptions(configSection);
 
             // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
             // since by design GetAWSOptions skips Credential section while parsing config.

@@ -10,10 +10,21 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.AmazonS3",
     Name = "Amazon Media Storage",
-    Description = "Enables support for storing media files in Amazon S3 Bucket.",
+    Description = "Enables support for storing media files in Amazon S3.",
     Dependencies =
     [
         "OrchardCore.Media.Cache"
+    ],
+    Category = "Hosting"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.AmazonS3.ImageSharpImageCache",
+    Name = "Amazon Media ImageSharp Image Cache",
+    Description = "Enables support for storing cached images resized via ImageSharp in Amazon S3.",
+    Dependencies =
+    [
+        "OrchardCore.Media"
     ],
     Category = "Hosting"
 )]
