@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <RootNamespace>OrchardCore.Rules</RootNamespace>
-    <!-- NuGet properties-->
     <Title>OrchardCore Rules Core</Title>
     <Description>
       $(OCCMSDescription)
