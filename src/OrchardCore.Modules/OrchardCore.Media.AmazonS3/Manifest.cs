@@ -24,7 +24,8 @@ using OrchardCore.Modules.Manifest;
     Description = "Enables support for storing cached images resized via ImageSharp in Amazon S3.",
     Dependencies =
     [
-        "OrchardCore.Media"
+        "OrchardCore.Media",
+        "OrchardCore.Media.AmazonS3"
     ],
     Category = "Hosting"
 )]
