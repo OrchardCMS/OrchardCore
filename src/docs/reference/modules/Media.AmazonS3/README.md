@@ -156,9 +156,9 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 }
 ```
 
-### Configuring a Local Emulator
+## Configuring a Local Emulator
 
-During development, instead of using an online S3 resource, you can use a local storage emulator too. This is especially important for development teams, since you don't want to step on each others' feet by using a shared storage.
+During development, instead of using an online S3 resource, you can use a local storage emulator too. This is especially important for development teams since you don't want to step on each others' feet by using a shared storage.
 
 For emulators, you'll need to configure a `ServiceURL`. Instead of the default [virtual host addressing of buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html), you'll also need to enable path-style addressing (i.e. instead of `http://mybucket.localhost`, the local bucket will be accessible under `http://localhost/mybucket`).
 

@@ -215,7 +215,7 @@ namespace OrchardCore.Media.Controllers
 
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                            // The .NET AWS SDK, and only that form the built-in ones (but others maybe too), disposes
+                            // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
                             // the stream. There's no better way to check for that than handling the exception. An
                             // alternative would be to re-read the file for every other storage provider as well but
                             // that would be wasteful.
