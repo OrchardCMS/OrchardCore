@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
@@ -13,7 +14,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
     {
         public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, System.StringComparison.Ordinal))
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }
@@ -27,7 +28,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, System.StringComparison.Ordinal))
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }
