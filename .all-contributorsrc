@@ -2870,6 +2870,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MarGraz",
+      "name": "MarGraz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19241483?v=4",
+      "profile": "https://codingops.dev/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
