@@ -2879,6 +2879,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "arnaudroy97",
+      "name": "Arnaud",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66786602?v=4",
+      "profile": "https://github.com/arnaudroy97",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

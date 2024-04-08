@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-310-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-311-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -424,6 +424,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/porgabi"><img src="https://avatars.githubusercontent.com/u/51411356?v=4?s=100" width="100px;" alt="Gábor Pór"/><br /><sub><b>Gábor Pór</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=porgabi" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/jorisdebock"><img src="https://avatars.githubusercontent.com/u/10253291?v=4?s=100" width="100px;" alt="Joris de Bock"/><br /><sub><b>Joris de Bock</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jorisdebock" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://codingops.dev/"><img src="https://avatars.githubusercontent.com/u/19241483?v=4?s=100" width="100px;" alt="MarGraz"/><br /><sub><b>MarGraz</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MarGraz" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/arnaudroy97"><img src="https://avatars.githubusercontent.com/u/66786602?v=4?s=100" width="100px;" alt="Arnaud"/><br /><sub><b>Arnaud</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=arnaudroy97" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
