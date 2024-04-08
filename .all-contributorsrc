@@ -3041,6 +3041,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DrewScoggins",
+      "name": "Drew Scoggins",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9439069?v=4",
+      "profile": "https://github.com/DrewScoggins",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
