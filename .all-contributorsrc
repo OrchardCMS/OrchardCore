@@ -3095,6 +3095,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ggkoning",
+      "name": "Gido Koning",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60574784?v=4",
+      "profile": "https://github.com/ggkoning",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

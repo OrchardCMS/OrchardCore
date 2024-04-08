@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-334-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-335-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -456,6 +456,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/ahmedbera"><img src="https://avatars.githubusercontent.com/u/5622227?v=4?s=100" width="100px;" alt="Bera"/><br /><sub><b>Bera</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ahmedbera" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/markus-codechefs"><img src="https://avatars.githubusercontent.com/u/62404942?v=4?s=100" width="100px;" alt="Markus Trachsel"/><br /><sub><b>Markus Trachsel</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=markus-codechefs" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/mwpowellhtx"><img src="https://avatars.githubusercontent.com/u/1824187?v=4?s=100" width="100px;" alt="Michael W Powell"/><br /><sub><b>Michael W Powell</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mwpowellhtx" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ggkoning"><img src="https://avatars.githubusercontent.com/u/60574784?v=4?s=100" width="100px;" alt="Gido Koning"/><br /><sub><b>Gido Koning</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ggkoning" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
