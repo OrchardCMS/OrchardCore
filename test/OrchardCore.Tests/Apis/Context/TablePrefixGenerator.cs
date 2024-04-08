@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Apis.Context
     /// <remarks>
     /// Does not guarantee uniqueness.
     /// </remarks>
-    internal class TablePrefixGenerator
+    internal sealed class TablePrefixGenerator
     {
         private static readonly char[] _charList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 

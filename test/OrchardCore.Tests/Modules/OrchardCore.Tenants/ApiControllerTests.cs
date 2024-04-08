@@ -197,7 +197,7 @@ public class ApiControllerTests
         return httpContext;
     }
 
-    private class FakeDataProtector : IDataProtector
+    private sealed class FakeDataProtector : IDataProtector
     {
         public IDataProtector CreateProtector(string purpose) => this;
 

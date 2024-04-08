@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +29,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private static readonly object _syncLock = new();
 
         // Singleton cache to hold a tenant's theme ShapeTable 
-        private readonly Dictionary<string, ShapeTable> _shapeTableCache;
+        private readonly IDictionary<string, ShapeTable> _shapeTableCache;
 
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
 
         public DefaultShapeTableManager(
-            [FromKeyedServices(nameof(DefaultShapeTableManager))] Dictionary<string, ShapeTable> shapeTableCache,
+            [FromKeyedServices(nameof(DefaultShapeTableManager))] IDictionary<string, ShapeTable> shapeTableCache,
             IServiceProvider serviceProvider,
             ILogger<DefaultShapeTableManager> logger)
         {
@@ -45,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
-            // This method is intentionally kept non-async since most calls
+            // This method is intentionally not awaited since most calls
             // are from cache.
 
             if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
@@ -53,12 +54,20 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Task.FromResult(shapeTable);
             }
 
-            return BuildShapeTableAsync(themeId);
+            lock (_shapeTableCache)
+            {
+                if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
+                {
+                    return Task.FromResult(shapeTable);
+                }
+
+                return BuildShapeTableAsync(themeId);
+            }
         }
 
         private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
         {
-            _logger.LogInformation("Start building shape table");
+            _logger.LogInformation("Start building shape table for {Theme}", themeId);
 
             // These services are resolved lazily since they are only required when initializing the shape tables
             // during the first request. And binding strategies would be expensive to build since this service is called many times
@@ -125,11 +134,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
             var shapeTable = new ShapeTable
             (
-                descriptors: descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
-                bindings: descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
+                descriptors: descriptors.ToFrozenDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
+                bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
             );
 
-            _logger.LogInformation("Done building shape table");
+            _logger.LogInformation("Done building shape table for {Theme}", themeId);
 
             _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
 
