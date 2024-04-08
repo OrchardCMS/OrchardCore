@@ -2942,6 +2942,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ovekaaven",
+      "name": "Ove Kåven",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20878244?v=4",
+      "profile": "https://github.com/ovekaaven",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
