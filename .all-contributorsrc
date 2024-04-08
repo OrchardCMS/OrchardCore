@@ -3059,6 +3059,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "elaurentin",
+      "name": "Banzai316",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5598813?v=4",
+      "profile": "http://www.ernzo.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
