@@ -8,6 +8,6 @@ public sealed class ChangeEmailTokenProviderOptions : DataProtectionTokenProvide
     public ChangeEmailTokenProviderOptions()
     {
         Name = "ChangeEmailDataProtectionTokenProvider";
-        TokenLifespan = TimeSpan.FromMinutes(30);
+        TokenLifespan = TimeSpan.FromMinutes(15);
     }
 }
