@@ -3050,6 +3050,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "xperiandri",
+      "name": "Andrii Chebukin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2365592?v=4",
+      "profile": "https://github.com/xperiandri",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
