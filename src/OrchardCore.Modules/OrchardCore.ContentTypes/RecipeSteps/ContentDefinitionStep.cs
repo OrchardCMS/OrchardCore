@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -76,7 +77,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 }
             });
 
-        private class ContentDefinitionStepModel
+        private sealed class ContentDefinitionStepModel
         {
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];

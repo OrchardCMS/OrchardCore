@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
 using OrchardCore.Settings;
@@ -34,12 +35,19 @@ namespace OrchardCore.ReCaptcha.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ReCaptchaSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
                 {
@@ -59,7 +67,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
             {
                 var model = new ReCaptchaSettingsViewModel();
 

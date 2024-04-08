@@ -1,5 +1,4 @@
-using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.ContentFields.Settings
 {
@@ -12,13 +11,13 @@ namespace OrchardCore.ContentFields.Settings
 
     public class MultiTextFieldValueOption
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
 
-        [JsonProperty("default")]
+        [JsonPropertyName("default")]
         public bool Default { get; set; }
     }
 }

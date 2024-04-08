@@ -1,8 +1,8 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Tests.Apis.Context;
-using YesSql;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
@@ -189,11 +189,11 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
             });
 
-            var firstRecipeData = firstRecipe.SelectToken("steps[0].Data") as JArray;
+            var firstRecipeData = firstRecipe.SelectNode("steps[0].Data").AsArray();
 
-            var secondContentItem = secondRecipe.SelectToken("steps[0].Data[0]");
+            var secondContentItem = secondRecipe.SelectNode("steps[0].Data[0]");
 
-            firstRecipeData.Add(secondContentItem);
+            firstRecipeData.Add(secondContentItem.Clone());
 
             await context.PostRecipeAsync(firstRecipe);
 

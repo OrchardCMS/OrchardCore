@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.OpenId.YesSql.Models
 {
@@ -58,7 +58,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// Gets or sets the JSON Web Key Set associated with the current application.
         /// </summary>
         // TODO: change the property type to JsonWebKeySet after migrating to System.Text.Json.
-        public JObject JsonWebKeySet { get; set; }
+        public JsonObject JsonWebKeySet { get; set; }
 
         /// <summary>
         /// Gets or sets the permissions associated with the application.
@@ -73,7 +73,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the additional properties associated with the current application.
         /// </summary>
-        public JObject Properties { get; set; }
+        public JsonObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the callback URLs associated with the current application.

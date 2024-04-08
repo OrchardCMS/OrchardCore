@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 

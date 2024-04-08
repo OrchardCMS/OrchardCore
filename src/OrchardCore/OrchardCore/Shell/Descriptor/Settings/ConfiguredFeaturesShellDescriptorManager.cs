@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -64,7 +63,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             return Task.CompletedTask;
         }
 
-        private class ConfiguredFeatures
+        private sealed class ConfiguredFeatures
         {
             public string[] Features { get; set; } = [];
         }

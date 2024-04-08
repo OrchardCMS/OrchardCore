@@ -5,9 +5,9 @@ using YesSql;
 
 namespace OrchardCore.MiniProfiler
 {
-    internal class MiniProfilerConnectionFactory : IConnectionFactory
+    internal sealed class MiniProfilerConnectionFactory : IConnectionFactory
     {
-        protected static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
+        private static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
 
         private readonly IConnectionFactory _factory;
 

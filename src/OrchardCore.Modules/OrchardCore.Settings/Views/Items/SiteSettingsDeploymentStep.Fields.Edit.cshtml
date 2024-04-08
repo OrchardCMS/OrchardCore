@@ -1,6 +1,6 @@
 @model SiteSettingsDeploymentStepViewModel
+@using System.Text.Json.Serialization
 @using System.Reflection
-@using Newtonsoft.Json
 @{
     var settings = Model.Settings;
     var ignoredProperties = new HashSet<string> { "Identifier", "Properties" };

@@ -283,7 +283,7 @@ namespace OrchardCore.Tests.ResourceManagement
         #endregion
 
         #region Stubs
-        private class StubFileVersionProvider : IFileVersionProvider
+        private sealed class StubFileVersionProvider : IFileVersionProvider
         {
             public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
 

@@ -90,7 +90,7 @@
           "Permissions": []
         },
         {
-          "Name": "AUTHENTICATED",
+          "Name": "Authenticated",
           "Description": "Authenticated",
           "Permissions": [
             "ViewContent",
@@ -99,7 +99,7 @@
           ]
         },
         {
-          "Name": "ANONYMOUS",
+          "Name": "Anonymous",
           "Description": "Anonymous",
           "Permissions": []
         }

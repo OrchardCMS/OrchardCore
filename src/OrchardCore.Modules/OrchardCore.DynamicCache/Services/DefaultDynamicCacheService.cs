@@ -3,13 +3,13 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DynamicCache.Models;
 using OrchardCore.Environment.Cache;
 
@@ -20,7 +20,6 @@ namespace OrchardCore.DynamicCache.Services
         public const string FailoverKey = "OrchardCore_DynamicCache_FailoverKey";
         public static readonly TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
 
-        private readonly PoolingJsonSerializer _serializer;
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IMemoryCache _memoryCache;
@@ -33,7 +32,6 @@ namespace OrchardCore.DynamicCache.Services
         private ITagCache _tagcache;
 
         public DefaultDynamicCacheService(
-            ArrayPool<char> _arrayPool,
             ICacheContextManager cacheContextManager,
             IDynamicCache dynamicCache,
             IMemoryCache memoryCache,
@@ -42,7 +40,6 @@ namespace OrchardCore.DynamicCache.Services
             IOptions<CacheOptions> options,
             ILogger<DefaultDynamicCacheService> logger)
         {
-            _serializer = new PoolingJsonSerializer(_arrayPool);
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
             _memoryCache = memoryCache;
@@ -84,7 +81,7 @@ namespace OrchardCore.DynamicCache.Services
             var cacheKey = await GetCacheKey(context);
 
             _localCache[cacheKey] = value;
-            var esi = _serializer.Serialize(CacheContextModel.FromCacheContext(context));
+            var esi = JConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
 
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
@@ -206,7 +203,7 @@ namespace OrchardCore.DynamicCache.Services
                 return null;
             }
 
-            var esiModel = _serializer.Deserialize<CacheContextModel>(cachedValue);
+            var esiModel = JConvert.DeserializeObject<CacheContextModel>(cachedValue);
             return esiModel.ToCacheContext();
         }
     }

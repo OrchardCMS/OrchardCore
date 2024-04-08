@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -43,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
@@ -52,17 +50,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             if (virtualFileInfo.Exists)
             {
-                await using var stream = virtualFileInfo.CreateReadStream();
-                using var reader = new StreamReader(stream);
-                await using var jtr = new JsonTextReader(reader);
+                using var stream = virtualFileInfo.CreateReadStream();
 
-                var serializer = new JsonSerializer();
-                var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                if (placementFile != null)
+                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JOptions.Default);
+                if (placementFile is not null)
                 {
                     ProcessPlacementFile(builder, featureDescriptor, placementFile);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
@@ -122,13 +119,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         }
 
         private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, JToken> term)
+              KeyValuePair<string, object> term)
         {
             return BuildPredicate(predicate, term, _placementParseMatchProviders);
         }
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
+                KeyValuePair<string, object> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
             if (placementMatchProviders != null)
             {

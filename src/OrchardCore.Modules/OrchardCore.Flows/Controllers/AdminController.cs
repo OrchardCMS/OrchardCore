@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -15,6 +15,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Controllers
 {
+    [Admin("Flows/{action}", "Flows.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -66,7 +67,7 @@ namespace OrchardCore.Flows.Controllers
             }
 
             // Create a Card Shape
-            dynamic contentCard = await _shapeFactory.New.ContentCard(
+            var contentCard = await _shapeFactory.New.ContentCard(
                 // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
                 // Shape Specific

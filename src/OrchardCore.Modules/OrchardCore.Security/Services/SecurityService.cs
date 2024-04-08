@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
