@@ -5,15 +5,15 @@ namespace OrchardCore.Users.Models;
 
 public sealed class TwoFactorEmailTokenProviderOptions
 {
-    //
-    // Summary:
-    //     Gets or sets the amount of time a generated token remains valid. Defaults to
-    //     5 Minutes.
-    //
-    // Value:
-    //     The amount of time a generated token remains valid.
+    /// <summary>
+    /// Gets or sets the amount of time a generated token remains valid.
+    /// The amount of time a generated token remains valid. Default value is 5 minutes.
+    /// </summary>
     public TimeSpan TokenLifespan { get; set; }
 
+    /// <summary>
+    /// Gets or sets the length of the generated token. Default value is 8 digits long.
+    /// </summary>
     public Rfc6238TokenLength TokenLength { get; set; }
 
     public TwoFactorEmailTokenProviderOptions()
