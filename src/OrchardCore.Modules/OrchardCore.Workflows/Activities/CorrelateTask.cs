@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -13,11 +14,13 @@ namespace OrchardCore.Workflows.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<CorrelateTask> localizer)
+        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<CorrelateTask> stringLocalizer)
         {
             _scriptEvaluator = scriptEvaluator;
             _expressionEvaluator = expressionEvaluator;
-            S = localizer;
+            S = stringLocalizer;
         }
 
         public override LocalizedString DisplayText => S["Correlate Task"];
@@ -45,11 +48,11 @@ namespace OrchardCore.Workflows.Activities
         {
             var value = Syntax switch {
                 "Liquid" => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
-                "JavaScript" => (await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null))?.Trim(),
-                _ => null 
+                "JavaScript" => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null),
+                _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for CorrelateTask.")
             };
 
-            workflowContext.CorrelationId = value;
+            workflowContext.CorrelationId = value?.Trim();
 
             return Outcomes("Done");
         }
