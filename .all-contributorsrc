@@ -2888,6 +2888,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mroskamp",
+      "name": "Brian Roskamp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4029047?v=4",
+      "profile": "https://github.com/mroskamp",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
