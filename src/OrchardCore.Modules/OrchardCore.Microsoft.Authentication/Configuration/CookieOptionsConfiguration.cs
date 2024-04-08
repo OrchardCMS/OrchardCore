@@ -6,7 +6,7 @@ using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    internal class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
+    internal sealed class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly string _tenantPrefix;
 

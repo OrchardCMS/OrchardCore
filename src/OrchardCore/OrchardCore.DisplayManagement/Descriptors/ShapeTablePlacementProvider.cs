@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             return new ShapeTablePlacementResolver(shapeTable);
         }
 
-        private class ShapeTablePlacementResolver : IPlacementInfoResolver
+        private sealed class ShapeTablePlacementResolver : IPlacementInfoResolver
         {
             private readonly ShapeTable _shapeTable;
 

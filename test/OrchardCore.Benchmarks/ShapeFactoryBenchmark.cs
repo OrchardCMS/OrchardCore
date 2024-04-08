@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Fluid;
@@ -28,8 +29,8 @@ namespace OrchardCore.Benchmark
             _templateContext = new TemplateContext();
             var defaultShapeTable = new ShapeTable
             (
-                [],
-                []
+                new Dictionary<string, ShapeDescriptor>(),
+                new Dictionary<string, ShapeBinding>()
             );
 
             var shapeFactory = new DefaultShapeFactory(

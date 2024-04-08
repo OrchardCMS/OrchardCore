@@ -56,6 +56,7 @@ namespace OrchardCore.Admin
             context.Items[typeof(AdminAttribute)] = null;
         }
 
-        public static bool IsApplied(HttpContext context) => context.Items.TryGetValue(typeof(AdminAttribute), out _);
+        public static bool IsApplied(HttpContext context)
+            => context.Items.ContainsKey(typeof(AdminAttribute));
     }
 }
