@@ -2906,6 +2906,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "AndreySurkov",
+      "name": "AndreySurkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17640441?v=4",
+      "profile": "https://github.com/AndreySurkov",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
