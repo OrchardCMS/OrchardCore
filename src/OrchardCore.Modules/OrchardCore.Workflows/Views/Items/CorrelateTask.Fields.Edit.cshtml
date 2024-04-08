@@ -4,8 +4,8 @@
 <div class="form-group mb-3" asp-validation-class-for="Syntax">
     <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
     <select asp-for="Syntax" class="form-select">
-        <option>JavaScript</option>
-        <option>Liquid</option>
+        <option value="javascript">JavaScript</option>
+        <option value="liquid">Liquid</option>
     </select>
     <span asp-validation-for="Syntax"></span>
     <span class="hint">@T["Choose between Liquid or JavaScript syntax."]</span>
@@ -15,8 +15,8 @@
     <label asp-for="Value" class="form-label">@T["Value"]</label>
     <textarea asp-for="Value" class="form-control"></textarea>
     <span asp-validation-for="Value"></span>
-    <span id="liquid_hint" class="hint @(Model.Syntax == "Liquid" ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
-    <span id="javascript_hint" class="hint @(Model.Syntax == "JavaScript" ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+    <span id="liquid_hint" class="hint @(Model.Syntax == "liquid" ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.Syntax == "javascript" ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
 </div>
 
 <style asp-name="codemirror"></style>
@@ -47,7 +47,7 @@
         const editor = initializeEditor(document.getElementById('@Html.IdFor(x => x.Value)'));
 
         document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
-            const syntax = e.target.value.toLowerCase();
+            const syntax = e.target.value;
             editor.setOption('mode', syntax);
 
             if (syntax == 'javascript') {
