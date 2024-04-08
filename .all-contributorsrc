@@ -2924,6 +2924,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ThiemeNL",
+      "name": "ThiemeNL",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5397828?v=4",
+      "profile": "https://github.com/ThiemeNL",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
