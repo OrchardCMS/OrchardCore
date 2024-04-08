@@ -3005,6 +3005,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vesko-k",
+      "name": "Veselin Kutsarov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12114162?v=4",
+      "profile": "https://github.com/vesko-k",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
