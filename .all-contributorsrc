@@ -2933,6 +2933,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "miroslavpopovic",
+      "name": "Miroslav Popovic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1155797?v=4",
+      "profile": "https://miroslavpopovic.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
