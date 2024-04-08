@@ -128,7 +128,6 @@ nav:
       #        - Data: docs/topics/data/README.md
       #        - Configuration: docs/topics/configuration/README.md
       - Workflows: docs/topics/workflows/README.md
-      - Contributing to the docs: docs/topics/docs-contributions/README.md
       - Contributing:
           - Contributing to the docs: docs/topics/contributing/contributing-documentation.md
       - Publishing a new release: docs/topics/publishing-releases/README.md
