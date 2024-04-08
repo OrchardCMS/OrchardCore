@@ -361,7 +361,14 @@ namespace OrchardCore.ResourceManagement
         protected virtual void ExpandDependencies(
             ResourceDefinition resource,
             RequireSettings settings,
-            ResourceDictionary allResources)
+            ResourceDictionary allResources) =>
+            ExpandDependenciesImplementation(resource, settings, allResources, isTopLevel: true);
+
+        private void ExpandDependenciesImplementation(
+            ResourceDefinition resource,
+            RequireSettings settings,
+            ResourceDictionary allResources,
+            bool isTopLevel)
         {
             if (resource == null)
             {
@@ -385,24 +392,13 @@ namespace OrchardCore.ResourceManagement
                 dependencies = new List<string>(settings.Dependencies);
             }
 
-            // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
-            // location is Head, so too should Bar's location, similarly, if Foo is First positioned, Bar dependency should be too.
-            //
-            // Forge the effective require settings for this resource.
-            // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
-            // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
+            // Settings is given so the location can cascade down into dependencies. For example, if Foo depends on Bar,
+            // and Foo's required location is Head, so too should Bar's location, similarly, if Foo is First positioned,
+            // Bar dependency should be too. This behavior only applies to the dependencies.
 
-            var dependencySettings = (((RequireSettings)allResources[resource])
-                    ?.NewAndCombine(settings)
-                ?? new RequireSettings(_options)
-                {
-                    Name = resource.Name,
-                    Type = resource.Type,
-                    Position = resource.Position
-                }
-                    .Combine(settings))
-                    .CombinePosition(settings)
-                    ;
+            var dependencySettings = ((RequireSettings)allResources[resource])?.New() ?? new RequireSettings(_options, resource);
+            dependencySettings = isTopLevel ? dependencySettings.Combine(settings) : dependencySettings.AtLocation(settings.Location);
+            dependencySettings = dependencySettings.CombinePosition(settings);
 
             if (dependencies != null)
             {
@@ -431,7 +427,7 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    ExpandDependencies(dependency, dependencySettings, allResources);
+                    ExpandDependenciesImplementation(dependency, dependencySettings, allResources, isTopLevel: false);
                 }
             }
 

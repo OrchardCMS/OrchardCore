@@ -60,9 +60,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.5.1         | -              |
-| font-awesome          | Script | 6.5.1         | -              |
-| font-awesome-v4-shims | Script | 6.5.1         | -              |
+| font-awesome          | Style  | 6.5.2         | -              |
+| font-awesome          | Script | 6.5.2         | -              |
+| font-awesome-v4-shims | Script | 6.5.2         | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Style  | 2.27.3        | -              |
 | trumbowyg             | Script | 2.27.3        | -              |
@@ -595,3 +595,7 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

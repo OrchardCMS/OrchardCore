@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Text.Json.Nodes;
 using Jint;
+using Jint.Native;
+using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 
@@ -41,7 +45,7 @@ namespace OrchardCore.Scripting.JavaScript
                 ThrowInvalidScopeTypeException();
             }
 
-            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string) entry.Key));
 
             var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 

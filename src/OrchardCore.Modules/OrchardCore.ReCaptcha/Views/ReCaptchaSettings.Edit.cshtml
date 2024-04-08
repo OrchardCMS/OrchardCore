@@ -1,7 +1,5 @@
 @model ReCaptchaSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
 <div class="mb-3" asp-validation-class-for="SiteKey">
     <label asp-for="SiteKey" class="form-label">@T["Site Key"]</label>
     <input asp-for="SiteKey" class="form-control" type="text" />

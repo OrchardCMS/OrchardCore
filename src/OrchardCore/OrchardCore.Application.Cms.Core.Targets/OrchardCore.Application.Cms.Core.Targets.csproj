@@ -60,6 +60,8 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email.Azure\OrchardCore.Email.Azure.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Email.Smtp\OrchardCore.Email.Smtp.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Facebook\OrchardCore.Facebook.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Feeds\OrchardCore.Feeds.csproj" PrivateAssets="none" />
