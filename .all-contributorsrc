@@ -2951,6 +2951,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Psichorex",
+      "name": "Roland Márkus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92299130?v=4",
+      "profile": "https://github.com/Psichorex",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

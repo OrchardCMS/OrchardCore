@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-318-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-319-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -434,6 +434,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/ThiemeNL"><img src="https://avatars.githubusercontent.com/u/5397828?v=4?s=100" width="100px;" alt="ThiemeNL"/><br /><sub><b>ThiemeNL</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ThiemeNL" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://miroslavpopovic.com/"><img src="https://avatars.githubusercontent.com/u/1155797?v=4?s=100" width="100px;" alt="Miroslav Popovic"/><br /><sub><b>Miroslav Popovic</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=miroslavpopovic" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/ovekaaven"><img src="https://avatars.githubusercontent.com/u/20878244?v=4?s=100" width="100px;" alt="Ove Kåven"/><br /><sub><b>Ove Kåven</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ovekaaven" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Psichorex"><img src="https://avatars.githubusercontent.com/u/92299130?v=4?s=100" width="100px;" alt="Roland Márkus"/><br /><sub><b>Roland Márkus</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Psichorex" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
