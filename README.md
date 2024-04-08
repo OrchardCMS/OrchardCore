@@ -55,7 +55,7 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 - [X (Twitter)](https://twitter.com/orchardcms)
 - [LinkedIn](https://www.linkedin.com/groups/13605669/)
-- [Meta (Facebook)](https://www.facebook.com/OrchardCore)
+- [Facebook](https://www.facebook.com/OrchardCore)
 
 ## Local Communities
 
