@@ -58,13 +58,13 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
         // Number of 0's is length of the generated pin.
         _format ??= _options.TokenLength switch
         {
-            Rfc6238TokenLength.Two => "D2",
-            Rfc6238TokenLength.Three => "D3",
-            Rfc6238TokenLength.Four => "D4",
-            Rfc6238TokenLength.Five => "D5",
-            Rfc6238TokenLength.Six => "D6",
-            Rfc6238TokenLength.Seven => "D7",
-            Rfc6238TokenLength.Eight => "D8",
+            TwoFactorEmailTokenLength.Two => "D2",
+            TwoFactorEmailTokenLength.Three => "D3",
+            TwoFactorEmailTokenLength.Four => "D4",
+            TwoFactorEmailTokenLength.Five => "D5",
+            TwoFactorEmailTokenLength.Six => "D6",
+            TwoFactorEmailTokenLength.Seven => "D7",
+            TwoFactorEmailTokenLength.Eight or TwoFactorEmailTokenLength.Default => "D8",
             _ => throw new NotSupportedException("Unsupported token length.")
         };
 
@@ -97,10 +97,10 @@ internal sealed class Rfc6238AuthenticationService
     private static readonly UTF8Encoding _encoding = new(false, true);
 
     private readonly TimeSpan _timeSpan;
-    private readonly Rfc6238TokenLength _length;
+    private readonly TwoFactorEmailTokenLength _length;
     private int? _modulo;
 
-    public Rfc6238AuthenticationService(TimeSpan timeSpan, Rfc6238TokenLength length)
+    public Rfc6238AuthenticationService(TimeSpan timeSpan, TwoFactorEmailTokenLength length)
     {
         _timeSpan = timeSpan;
         _length = length;
@@ -111,13 +111,13 @@ internal sealed class Rfc6238AuthenticationService
         // Number of 0's is length of the generated PIN.
         _modulo ??= _length switch
         {
-            Rfc6238TokenLength.Two => 100,
-            Rfc6238TokenLength.Three => 1000,
-            Rfc6238TokenLength.Four => 10000,
-            Rfc6238TokenLength.Five => 100000,
-            Rfc6238TokenLength.Six => 1000000,
-            Rfc6238TokenLength.Seven => 10000000,
-            Rfc6238TokenLength.Eight => 100000000,
+            TwoFactorEmailTokenLength.Two => 100,
+            TwoFactorEmailTokenLength.Three => 1000,
+            TwoFactorEmailTokenLength.Four => 10000,
+            TwoFactorEmailTokenLength.Five => 100000,
+            TwoFactorEmailTokenLength.Six => 1000000,
+            TwoFactorEmailTokenLength.Seven => 10000000,
+            TwoFactorEmailTokenLength.Eight or TwoFactorEmailTokenLength.Default => 100000000,
             _ => throw new NotSupportedException("Unsupported token length.")
         };
 

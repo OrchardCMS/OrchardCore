@@ -1,5 +1,4 @@
 using System;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Models;
 
@@ -12,13 +11,13 @@ public sealed class TwoFactorEmailTokenProviderOptions
     public TimeSpan TokenLifespan { get; set; }
 
     /// <summary>
-    /// Gets or sets the length of the generated token. Default value is 8 digits long.
+    /// Gets or sets the generated token's length. Default value is 8 digits long.
     /// </summary>
-    public Rfc6238TokenLength TokenLength { get; set; }
+    public TwoFactorEmailTokenLength TokenLength { get; set; }
 
     public TwoFactorEmailTokenProviderOptions()
     {
         TokenLifespan = TimeSpan.FromMinutes(5);
-        TokenLength = Rfc6238TokenLength.Eight;
+        TokenLength = TwoFactorEmailTokenLength.Default;
     }
 }
