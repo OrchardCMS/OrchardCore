@@ -2996,6 +2996,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "thatplatypus",
+      "name": "thatplatypus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29233866?v=4",
+      "profile": "https://github.com/thatplatypus",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
