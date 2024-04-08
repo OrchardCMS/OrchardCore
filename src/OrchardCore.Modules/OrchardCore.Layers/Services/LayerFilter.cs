@@ -143,7 +143,7 @@ namespace OrchardCore.Layers.Services
             await next.Invoke();
         }
 
-        internal class CacheEntry : Document
+        internal sealed class CacheEntry : Document
         {
             public IEnumerable<LayerMetadata> Widgets { get; set; }
         }

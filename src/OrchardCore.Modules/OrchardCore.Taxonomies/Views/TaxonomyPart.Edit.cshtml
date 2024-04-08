@@ -52,9 +52,9 @@
         <ol id="menu" class="list-group my-3">
             @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
             {
-                dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
-                termShape.TaxonomyPart = Model.TaxonomyPart;
-                termShape.Index = index++;
+                var termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
+                termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;
+                termShape.Properties["Index"] = index++;
                 @await DisplayAsync(termShape)
             }
         </ol>

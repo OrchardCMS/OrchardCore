@@ -12,7 +12,7 @@
 
     // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
-    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
+    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">

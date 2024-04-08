@@ -23,8 +23,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.TextPlaceholder = settings.TextPlaceholder;
                 model.DefaultUrl = settings.DefaultUrl;
                 model.DefaultText = settings.DefaultText;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

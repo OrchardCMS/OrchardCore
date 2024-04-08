@@ -46,12 +46,12 @@ namespace OrchardCore.Recipes.RecipeSteps
             context.InnerRecipes = innerRecipes;
         }
 
-        private class InternalStep
+        private sealed class InternalStep
         {
             public InternalStepValue[] Values { get; set; }
         }
 
-        private class InternalStepValue
+        private sealed class InternalStepValue
         {
             public string ExecutionId { get; set; }
             public string Name { get; set; }

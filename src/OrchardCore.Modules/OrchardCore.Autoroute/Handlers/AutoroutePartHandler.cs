@@ -37,6 +37,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
+
         protected readonly IStringLocalizer S;
 
         private IContentManager _contentManager;

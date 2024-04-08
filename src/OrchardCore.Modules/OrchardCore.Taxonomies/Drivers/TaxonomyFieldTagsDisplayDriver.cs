@@ -21,14 +21,15 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
+            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> stringLocalizer)
         {
             _contentManager = contentManager;
-            S = s;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
@@ -88,7 +89,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
+                        S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 // Update display text for tags.

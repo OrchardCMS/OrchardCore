@@ -1,4 +1,6 @@
 using System;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -14,10 +16,13 @@ using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
 using OrchardCore.Common.Components;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Mvc.Core.Utilities;
@@ -125,6 +130,31 @@ namespace OrchardCore.Admin
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Scope.SetValue(nameof(Navbar), new FunctionValue(async (args, ctx) =>
+                {
+                    if (ctx is LiquidTemplateContext context)
+                    {
+                        var displayManager = context.Services.GetRequiredService<IDisplayManager<Navbar>>();
+                        var updateModelAccessor = context.Services.GetRequiredService<IUpdateModelAccessor>();
+
+                        var shape = await displayManager.BuildDisplayAsync(updateModelAccessor.ModelUpdater);
+
+                        return FluidValue.Create(shape, ctx.Options);
+                    }
+
+                    return NilValue.Instance;
+                }));
+            });
         }
     }
 }

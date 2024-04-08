@@ -31,6 +31,7 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
@@ -57,7 +58,7 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+        private static ServiceProvider CreateServiceProvider() => new ServiceCollection()
             .AddScripting()
             .AddSingleton<IDistributedLock, LocalLock>()
             .AddLogging()
@@ -71,7 +72,7 @@ namespace OrchardCore.Recipes
             return new EmbeddedFileProvider(assembly).GetFileInfo(path);
         }
 
-        private class RecipeEventHandler : IRecipeEventHandler
+        private sealed class RecipeEventHandler : IRecipeEventHandler
         {
             public RecipeExecutionContext Context { get; private set; }
 
