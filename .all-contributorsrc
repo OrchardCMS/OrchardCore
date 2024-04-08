@@ -2969,6 +2969,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "michaelschiller",
+      "name": "michaelschiller",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6459215?v=4",
+      "profile": "https://github.com/michaelschiller",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
