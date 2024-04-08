@@ -3113,6 +3113,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kartheekp-ms",
+      "name": "Kartheek Penagamuri",
+      "avatar_url": "https://avatars.githubusercontent.com/u/52756182?v=4",
+      "profile": "https://github.com/kartheekp-ms",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
