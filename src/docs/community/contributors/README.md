@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-331-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-332-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -453,6 +453,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="http://www.ernzo.com/"><img src="https://avatars.githubusercontent.com/u/5598813?v=4?s=100" width="100px;" alt="Banzai316"/><br /><sub><b>Banzai316</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=elaurentin" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ahmedbera"><img src="https://avatars.githubusercontent.com/u/5622227?v=4?s=100" width="100px;" alt="Bera"/><br /><sub><b>Bera</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ahmedbera" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
