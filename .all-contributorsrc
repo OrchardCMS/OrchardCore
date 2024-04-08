@@ -2861,6 +2861,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jorisdebock",
+      "name": "Joris de Bock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10253291?v=4",
+      "profile": "https://github.com/jorisdebock",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

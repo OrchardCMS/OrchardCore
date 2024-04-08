@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-307-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-309-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -422,6 +422,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/xtomas"><img src="https://avatars.githubusercontent.com/u/10938220?v=4?s=100" width="100px;" alt="Tomáš Jákl"/><br /><sub><b>Tomáš Jákl</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=xtomas" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/porgabi"><img src="https://avatars.githubusercontent.com/u/51411356?v=4?s=100" width="100px;" alt="Gábor Pór"/><br /><sub><b>Gábor Pór</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=porgabi" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/jorisdebock"><img src="https://avatars.githubusercontent.com/u/10253291?v=4?s=100" width="100px;" alt="Joris de Bock"/><br /><sub><b>Joris de Bock</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jorisdebock" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
