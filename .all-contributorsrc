@@ -3023,6 +3023,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "plompd",
+      "name": "Daniel Plomp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1482375?v=4",
+      "profile": "https://www.zimplerapps.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
