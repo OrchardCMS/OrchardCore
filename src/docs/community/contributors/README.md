@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-314-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-315-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -430,6 +430,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/M-Lipin"><img src="https://avatars.githubusercontent.com/u/23213980?v=4?s=100" width="100px;" alt="Mikhail Lipin"/><br /><sub><b>Mikhail Lipin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=M-Lipin" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/AndreySurkov"><img src="https://avatars.githubusercontent.com/u/17640441?v=4?s=100" width="100px;" alt="AndreySurkov"/><br /><sub><b>AndreySurkov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=AndreySurkov" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/spyraklas"><img src="https://avatars.githubusercontent.com/u/93044877?v=4?s=100" width="100px;" alt="Spyros"/><br /><sub><b>Spyros</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=spyraklas" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
