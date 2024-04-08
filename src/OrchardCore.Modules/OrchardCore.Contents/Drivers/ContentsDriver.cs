@@ -34,19 +34,17 @@ namespace OrchardCore.Contents.Drivers
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
 
-            var contentItemViewModel = new ContentItemViewModel(contentItem);
-
             var results = new List<IDisplayResult>()
             {
-                Shape("ContentsTags_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "Tags:10"),
-                Shape("ContentsMeta_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "Meta:20"),
+                Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"),
+                Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"),
             };
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (contentTypeDefinition != null)
             {
-                var contentsMetadataShape = Shape("ContentsMetadata", contentItemViewModel)
+                var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem))
                     .Location("Detail", "Content:before");
 
                 contentsMetadataShape.Displaying(ctx =>
@@ -74,8 +72,8 @@ namespace OrchardCore.Contents.Drivers
                 var user = _httpContextAccessor.HttpContext.User;
 
                 results.Add(contentsMetadataShape);
-                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "Actions:10"));
-                results.Add(Shape("ContentsButtonActions_SummaryAdmin", contentItemViewModel).Location("SummaryAdmin", "ActionsMenu:10")
+                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
+                results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
                     .RenderWhen(async () =>
                     {
                         var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
