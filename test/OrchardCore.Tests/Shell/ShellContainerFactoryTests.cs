@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Shell
             .AsDefaultShell()
             .AsUninitialized();
 
-        private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly ShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;
 
         public ShellContainerFactoryTests()
