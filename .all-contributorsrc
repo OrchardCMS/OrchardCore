@@ -3077,6 +3077,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "markus-codechefs",
+      "name": "Markus Trachsel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62404942?v=4",
+      "profile": "https://github.com/markus-codechefs",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
