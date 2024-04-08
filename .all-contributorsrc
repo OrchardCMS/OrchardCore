@@ -3104,6 +3104,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "idan-h",
+      "name": "Idan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61008695?v=4",
+      "profile": "https://github.com/idan-h",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
