@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-325-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-326-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -445,6 +445,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/vesko-k"><img src="https://avatars.githubusercontent.com/u/12114162?v=4?s=100" width="100px;" alt="Veselin Kutsarov"/><br /><sub><b>Veselin Kutsarov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vesko-k" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/lakuri"><img src="https://avatars.githubusercontent.com/u/8038760?v=4?s=100" width="100px;" alt="lakuri"/><br /><sub><b>lakuri</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lakuri" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
