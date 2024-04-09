@@ -61,7 +61,7 @@ The latest released version of Orchard Core is `1.8.2`. The release notes can be
 
 ## Getting Started
 
-- See [our getting started guide](docs/getting-started/README.md).
+- See [our getting started guide](docs/getting-started/README.md) or [test drive Orchard Core](docs/getting-started/test-drive-orchard-core.md).
 - Watch the [ASP.NET Community Standup video where Orchard Core was demonstrated](https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24).
 - Follow the samples on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications
 - Follow the tutorial inside the [Training Demo Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) to learn how to develop Orchard Core modules.
