@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;

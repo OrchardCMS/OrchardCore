@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -34,9 +35,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             }
 
             var indices = context.Step["Indices"];
-            if (indices != null)
+            if (indices is JsonArray jsonArray)
             {
-                foreach (var index in indices)
+                foreach (var index in jsonArray)
                 {
                     var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
 

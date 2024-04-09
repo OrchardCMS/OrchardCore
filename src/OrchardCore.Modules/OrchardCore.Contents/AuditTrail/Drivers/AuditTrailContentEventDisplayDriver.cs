@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -22,7 +22,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ISession _session;
 
-        public AuditTrailContentEventDisplayDriver(IAuditTrailManager auditTrailManager, ISession session)
+        public AuditTrailContentEventDisplayDriver(
+            IAuditTrailManager auditTrailManager,
+            ISession session)
         {
             _auditTrailManager = auditTrailManager;
             _session = session;

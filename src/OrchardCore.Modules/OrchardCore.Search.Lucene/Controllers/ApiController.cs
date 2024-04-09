@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Controllers
@@ -89,11 +89,10 @@ namespace OrchardCore.Search.Lucene.Controllers
             };
 
             var queryParameters = queryModel.Parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
-            var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
-            return result;
+            return _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
         }
     }
 }

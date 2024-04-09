@@ -1,8 +1,7 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -123,7 +122,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// The tenant state.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TenantState State
         {
             get => _settings.GetValue<TenantState>("State");

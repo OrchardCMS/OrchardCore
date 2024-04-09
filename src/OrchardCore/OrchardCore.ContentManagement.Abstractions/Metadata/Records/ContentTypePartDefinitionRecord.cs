@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
@@ -20,6 +20,6 @@ namespace OrchardCore.ContentManagement.Metadata.Records
         /// <summary>
         /// Gets or sets the settings of the part for this type.
         /// </summary>
-        public JObject Settings { get; set; }
+        public JsonObject Settings { get; set; }
     }
 }

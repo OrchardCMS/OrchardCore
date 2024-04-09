@@ -126,7 +126,7 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.Equal("Baz", foo.Baz);
         }
 
-        private class SubShape : Shape
+        private sealed class SubShape : Shape
         {
         }
     }

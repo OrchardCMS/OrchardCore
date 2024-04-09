@@ -87,7 +87,7 @@ namespace OrchardCore.Locking
             }
         }
 
-        private class Semaphore
+        private sealed class Semaphore
         {
             public Semaphore(string key, SemaphoreSlim value)
             {
@@ -101,7 +101,7 @@ namespace OrchardCore.Locking
             internal int RefCount { get; set; }
         }
 
-        private class Locker : ILocker
+        private sealed class Locker : ILocker
         {
             private readonly LocalLock _localLock;
             private readonly Semaphore _semaphore;

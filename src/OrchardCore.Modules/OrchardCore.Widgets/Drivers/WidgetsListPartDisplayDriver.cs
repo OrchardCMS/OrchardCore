@@ -93,7 +93,7 @@ namespace OrchardCore.Widgets.Drivers
             var zonedContentItems = new Dictionary<string, List<ContentItem>>();
 
             // Remove any content or the zones would be merged and not be cleared.
-            part.Content.Widgets.RemoveAll();
+            part.Content.Remove("Widgets");
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
