@@ -4,23 +4,26 @@ on:
     issues:
       types: [opened]
     pull_request_target:
-      types: [opened]
+      types: [opened, closed]
 
 jobs:
   first-time-contributor-welcome:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/first-interaction@v1
+    # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
+    # PR merge.
+    # Once https://github.com/wow-actions/welcome/pull/12 is merged, we should use https://github.com/wow-actions/welcome
+    # directly.
+    - uses: OrchardCMS/welcome-action@task/update-to-node-20
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: >
+        FIRST_ISSUE_COMMENT: >
           Thank you for submitting your first issue, awesome! 🚀 If you haven't filled out the template fully already,
           please be sure to do so. This helps us better understand your feature request/bug report. A core team member 
           will be with you shortly to review your issue.
-        pr-message: >
+        FIRST_PR_COMMENT: >
           Thank you for submitting your first pull request, awesome! 🚀 If you haven't read it already, please be sure 
           to check out our [contribution guide](https://docs.orchardcore.net/en/latest/docs/guides/contributing/). A 
-          core team member will be with you shortly to review your PR. Until then, please @all-contributors please 
-          add yourself to our [contributors list](https://docs.orchardcore.net/en/latest/docs/community/contributors/) 
-          with the [All Contributors Bots](https://allcontributors.org/docs/en/bot/usage); most possibly you need to 
-          comment `@all-contributors please add @<your username> for code` (and/or `for doc`).
+          core team member will be with you shortly to review your PR.
+        FIRST_PR_MERGED_COMMENT: >
+          Congratulations on your first PR merge! 🎉 Thank you for your contribution! We're looking forward to welcome 
+          other contributions of yours in the future. @all-contributors please add @{{ author }} for code.
