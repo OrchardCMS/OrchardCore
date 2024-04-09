@@ -10,7 +10,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  build:
+  publish-issue-metrics:
     name: Generate Issue and Pull Request Metrics
     runs-on: ubuntu-latest
     steps:
