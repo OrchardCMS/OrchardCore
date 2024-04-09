@@ -15,6 +15,8 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
 {
     private readonly Rfc6238AuthenticationService _service;
     private readonly TwoFactorEmailTokenProviderOptions _options;
+    
+    private string _format;
 
     public TwoFactorEmailTokenProvider(IOptions<TwoFactorEmailTokenProviderOptions> options)
     {
