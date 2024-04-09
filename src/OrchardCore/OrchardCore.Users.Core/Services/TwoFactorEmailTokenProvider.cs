@@ -190,7 +190,10 @@ internal sealed class Rfc6238AuthenticationService
 
         var currentTimeStep = GetCurrentTimeStepNumber();
 
-        var modifierBytes = modifier is not null ? _encoding.GetBytes(modifier) : null;
+        if (var modifierBytes = modifier is not null)
+        {
+            _encoding.GetBytes(modifier);
+        }
 
         // Allow a variance of no greater than 9 minutes in either direction.
         for (var i = -2; i <= 2; i++)
