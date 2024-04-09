@@ -15,7 +15,7 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
 {
     private readonly Rfc6238AuthenticationService _service;
     private readonly TwoFactorEmailTokenProviderOptions _options;
-    
+
     private string _format;
 
     public TwoFactorEmailTokenProvider(IOptions<TwoFactorEmailTokenProviderOptions> options)
@@ -181,15 +181,24 @@ internal sealed class Rfc6238AuthenticationService
 
         var currentTimeStep = GetCurrentTimeStepNumber();
 
-        if (var modifierBytes = modifier is not null)
-        {
-            _encoding.GetBytes(modifier);
-        }
+        var modifierBytes = modifier is not null ? _encoding.GetBytes(modifier) : null;
 
-        // Allow a variance of no greater than 9 minutes in either direction.
-        for (var i = -2; i <= 2; i++)
+        if (_timeSpan.Minutes <= 3)
         {
-            var computedTOTP = ComputeTOTP(securityToken, (ulong)((long)currentTimeStep + i), modifierBytes);
+            // Allow a variance of no greater than 9 minutes in either direction.
+            for (var i = -2; i <= 2; i++)
+            {
+                var computedTOTP = ComputeTOTP(securityToken, (ulong)((long)currentTimeStep + i), modifierBytes);
+
+                if (computedTOTP == code)
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            var computedTOTP = ComputeTOTP(securityToken, currentTimeStep, modifierBytes);
 
             if (computedTOTP == code)
             {
