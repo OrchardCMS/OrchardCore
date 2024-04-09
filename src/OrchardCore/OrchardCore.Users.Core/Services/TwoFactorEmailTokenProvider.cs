@@ -130,9 +130,9 @@ internal sealed class Rfc6238AuthenticationService
         }
 
         Span<byte> hash = stackalloc byte[HMACSHA1.HashSizeInBytes];
+#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
         res = HMACSHA1.TryHashData(key, modifierCombinedBytes, hash, out var written);
-        Debug.Assert(res);
-        Debug.Assert(written == hash.Length);
+#pragma warning restore CA5350 // Do Not Use Weak Cryptographic Algorithms
 
         // Generate DT string.
         var offset = hash[hash.Length - 1] & 0xf;
