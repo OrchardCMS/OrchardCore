@@ -132,6 +132,7 @@ nav:
           - Contributing to Orchard Core: docs/topics/contributing/README.md
           - Contributing code: docs/topics/contributing/contributing-code.md
           - Contributing documentation: docs/topics/contributing/contributing-documentation.md
+          - Reviewing pull requests: docs/topics/contributing/reviewing-pull-requests.md
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md
