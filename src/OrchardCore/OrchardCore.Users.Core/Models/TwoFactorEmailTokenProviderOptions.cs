@@ -17,7 +17,7 @@ public sealed class TwoFactorEmailTokenProviderOptions
 
     public TwoFactorEmailTokenProviderOptions()
     {
-        TokenLifespan = TimeSpan.FromMinutes(5);
+        TokenLifespan = TimeSpan.FromMinutes(3);
         TokenLength = TwoFactorEmailTokenLength.Default;
     }
 }
