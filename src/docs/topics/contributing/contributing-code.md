@@ -7,7 +7,7 @@ First of all, thank you for thinking about contributing to the code! Be sure to 
 
 ## Working with Orchard Core's source code
 
-First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below.
+First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. You can also use [any other .NET IDE](../../resources/development-tools/README.md) too.
 
 ### Command Line
 
@@ -57,7 +57,7 @@ You might also read these two blogs posts on contributing code: [Open Source Con
 
 All code submissions will be reviewed and tested by the core team, and only those that meet our bar for both quality and design/roadmap appropriateness will be merged. Please be patient; we very much appreciate you contributing to Orchard Core!
 
-!!! tip
+!!! note
     Following the below recommendations will ensure that your PR is merged as quickly as possible. Please work with us so it's a pleasant experience for everyone.
 
 - Please update your pull request according to feedback until it is approved by one of the core team members.
@@ -66,3 +66,6 @@ All code submissions will be reviewed and tested by the core team, and only thos
 - Feel free to mark conversations that you addressed to keep track of them with an emoji or otherwise, just don't resolve them.
 - Please keep conversations happening in line comments in those convos, otherwise communication will be a mess. If you have trouble finding them, see [this video](https://github.com/OrchardCMS/OrchardCore/pull/14749#issuecomment-1917976028).
 - When you're done addressing all feedback of a review, click ["Re-request review"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#re-requesting-a-review) in the top-right corner for each reviewer when you're ready for another round of review, so they know that you're done.
+
+!!! tip
+    Do you want to demo what you've done to others, to showcase your work and to gather feedback? Join one of [our meetings](../../resources/meeting/README.md).

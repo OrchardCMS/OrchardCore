@@ -8,7 +8,7 @@ One of the easiest ways to contribute is to participate in discussions under Git
 
 - [Contributing code](contributing-code.md)
 - [Contributing documentation](contributing-documentation.md)
-- [Reviewing pull requests](docs/topics/contributing/reviewing-pull-requests.md)
+- [Reviewing pull requests](reviewing-pull-requests.md)
 
 ## Contributor License Agreement
 
