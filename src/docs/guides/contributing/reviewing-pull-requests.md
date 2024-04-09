@@ -12,3 +12,4 @@ Giving feedback on pull requests, i.e. reviewing them, is a very important contr
 - Add the "dontmerge" label on PRs that are ready for review, approved by you and/or others, but you asked more people for feedback before it can be merged.
 - Add the "needs triage" label on PRs that you think should be checked by others during the weekly triage meeting too. Explain in a comment why do you deem this is necessary.
 - Be sure to actually merge PRs that don't need a second opinion. This is especially important for external contributors who can't merge their own PRs. Keeping PRs open will make them collect merge conflicts and make the contributor demotivated.
+- Be especially patient and encouraging with first-time contributors. This is indicated by such a flag on the PR.
