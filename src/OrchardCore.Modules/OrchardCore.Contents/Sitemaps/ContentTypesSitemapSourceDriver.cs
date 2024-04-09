@@ -107,7 +107,7 @@ namespace OrchardCore.Contents.Sitemaps
                 })
                 .ToArray();
 
-            var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType));
+            var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType, StringComparison.Ordinal));
             if (limitedEntry != null)
             {
                 sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
