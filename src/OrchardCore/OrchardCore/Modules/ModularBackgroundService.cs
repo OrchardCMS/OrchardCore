@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : BackgroundService
+    internal sealed class ModularBackgroundService : BackgroundService
     {
         private static readonly TimeSpan _pollingTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(10);

@@ -21,6 +21,7 @@ namespace OrchardCore.Rules
             return services;
         }
 
+        [Obsolete("This method is deprecated and will be removed in future releases. Please use the .AddRule<> or .AddRuleCondition<> extensions found in OrchardCore.Rule.Core instead.")]
         public static IServiceCollection AddCondition<TCondition, TConditionEvaluator, TConditionFactory>(this IServiceCollection services)
             where TCondition : Condition
             where TConditionEvaluator : IConditionEvaluator
