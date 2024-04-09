@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
@@ -36,9 +37,9 @@ namespace OrchardCore.Contents.Sitemaps
                 {
                     ContentTypeName = ctd.Name,
                     ContentTypeDisplayName = ctd.DisplayName,
-                    IsChecked = sitemapSource.ContentTypes.Any(s => string.Equals(s.ContentTypeName, ctd.Name)),
-                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
-                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
+                    IsChecked = sitemapSource.ContentTypes.Any(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal)),
+                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal))?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal))?.Priority ?? 5,
                 })
                 .OrderBy(ctd => ctd.ContentTypeDisplayName)
                 .ToArray();
@@ -53,11 +54,11 @@ namespace OrchardCore.Contents.Sitemaps
                 .ToArray();
 
             var limitedCtd = contentTypeDefinitions
-                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
+                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
             if (limitedCtd != null)
             {
-                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name));
+                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name, StringComparison.Ordinal));
                 limitedEntry.Priority = sitemapSource.LimitedContentType.Priority;
                 limitedEntry.ChangeFrequency = sitemapSource.LimitedContentType.ChangeFrequency;
                 limitedEntry.Skip = sitemapSource.LimitedContentType.Skip;
@@ -106,7 +107,7 @@ namespace OrchardCore.Contents.Sitemaps
                     })
                     .ToArray();
 
-                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType));
+                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType, StringComparison.Ordinal));
                 if (limitedEntry != null)
                 {
                     sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
