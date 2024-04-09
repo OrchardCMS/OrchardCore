@@ -33,14 +33,14 @@ namespace OrchardCore.Benchmark
         }
 
         [Benchmark]
-        public object CreateInstance()
+        public static object CreateInstance()
         {
             var shape = (IShape)Activator.CreateInstance(typeof(ContentItemViewModel));
             return shape;
         }
 
         [Benchmark]
-        public object CreateDynamicProxy()
+        public static object CreateDynamicProxy()
         {
             var options = new ProxyGenerationOptions();
             options.AddMixinInstance(new ShapeViewModel());
@@ -48,7 +48,7 @@ namespace OrchardCore.Benchmark
         }
 
         [Benchmark]
-        public object CreateCachedProxy()
+        public static object CreateCachedProxy()
         {
             if (_proxyTypesCache.TryGetValue(typeof(MenuItem), out var proxyType))
             {
