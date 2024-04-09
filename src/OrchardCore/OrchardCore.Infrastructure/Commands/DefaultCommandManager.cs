@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Commands
             }
         }
 
-        private class Match
+        private sealed class Match
         {
             public CommandContext Context { get; set; }
             public ICommandHandler CommandHandler { get; set; }

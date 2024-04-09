@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -44,18 +46,23 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Filters.Add(typeof(RazorViewActionFilter));
                     });
 
+                    services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
+
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
 
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
 
-                    services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+                    services.AddScoped<RazorShapeTemplateViewEngine>();
+                    services.AddScoped<IShapeTemplateViewEngine>(sp => sp.GetService<RazorShapeTemplateViewEngine>());
+
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
                     services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 
                     services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-                    services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
+                    services.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
+                    services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
                     services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();

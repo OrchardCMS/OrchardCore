@@ -10,8 +10,9 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
+
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <div class="hint dashed mt-lg-2">@settings.Hint</div>
@@ -96,5 +97,8 @@
                 }
             }
         </div>
+
+        <span asp-validation-for="TermEntries"></span>
+
     </div>
 </div>

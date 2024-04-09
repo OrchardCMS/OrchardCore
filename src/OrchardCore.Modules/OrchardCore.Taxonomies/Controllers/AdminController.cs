@@ -1,12 +1,10 @@
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -74,10 +72,10 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-            model.TaxonomyContentItemId = taxonomyContentItemId;
-            model.TaxonomyItemId = taxonomyItemId;
+            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+            model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
             return View(model);
         }
@@ -123,12 +121,12 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
-                model.TaxonomyContentItemId = taxonomyContentItemId;
-                model.TaxonomyItemId = taxonomyItemId;
+                model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+                model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
                 return View(model);
             }
@@ -197,10 +195,10 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            model.TaxonomyContentItemId = taxonomyContentItemId;
-            model.TaxonomyItemId = taxonomyItemId;
+            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+            model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
             return View(model);
         }
@@ -256,12 +254,12 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
-                model.TaxonomyContentItemId = taxonomyContentItemId;
-                model.TaxonomyItemId = taxonomyItemId;
+                model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+                model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
                 return View(model);
             }
@@ -321,7 +319,10 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            taxonomy.As<TaxonomyPart>().Content.Remove(taxonomyItemId);
+            taxonomy.Alter<TaxonomyPart>(part =>
+            {
+                part.Terms = part.Terms.Where(x => x.ContentItemId != taxonomyItemId).ToList();
+            });
 
             await _session.SaveAsync(taxonomy);
 

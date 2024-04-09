@@ -105,8 +105,8 @@
                 DefaultValue = Model.DefaultValue,
                 Usage = Model.Usage
             };
-                    dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                    shape.Actions = null;
+                    var shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                    shape.Properties["Actions"] = null;
                     @await DisplayAsync(shape)
                 }
             </div>

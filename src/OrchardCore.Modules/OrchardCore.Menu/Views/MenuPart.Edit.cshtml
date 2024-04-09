@@ -37,9 +37,9 @@
                 {
                     if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                     {
-                        dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                        menuItemShape.MenuPart = Model.MenuPart;
-                        menuItemShape.Index = index++;
+                        var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                        menuItemShape.Properties["MenuPart"] = Model.MenuPart;
+                        menuItemShape.Properties["Index"] = index++;
 
                         @await DisplayAsync(menuItemShape)
                     }
@@ -62,10 +62,10 @@
                     @foreach (var type in Model.MenuItemContentTypes)
                     {
                         var menuItem = await ContentManager.NewAsync(type.Name);
-                        dynamic thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
-                        thumbnail.MenuItemType = type.Name;
-                        thumbnail.MenuItemTypeDisplayName = type.DisplayName;
-                        thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
+                        var thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
+                        thumbnail.Properties["MenuItemType"] = type.Name;
+                        thumbnail.Properties["MenuItemTypeDisplayName"] = type.DisplayName;
+                        thumbnail.Properties["MenuContentItemId"] = Model.MenuPart.ContentItem.ContentItemId;
                         <div class="col">
                             @await DisplayAsync(thumbnail)
                         </div>

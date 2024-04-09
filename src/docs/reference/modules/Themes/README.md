@@ -282,3 +282,15 @@ Instead of rendering the shapes that have been removed from the zone, some custo
 One advantage of reusing the shape is that its template might contain some complex logic that is not easily reusable.  
 This is the case for the `MarkdownPart` shape for instance, as it will have to convert some markdown content to HTML.  
 The `TitlePart` however could easily be ignored and the __Content__ template directly access the `Title` property of this shape.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yMzqwvr6Lgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yDtUyQpormU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Hm9HeZMsDA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

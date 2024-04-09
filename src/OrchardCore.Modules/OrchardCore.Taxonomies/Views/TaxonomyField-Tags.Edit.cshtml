@@ -28,7 +28,7 @@
 <style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label class="@Orchard.GetLabelClasses(inputRequired: taxonomySettings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
         {
@@ -79,6 +79,8 @@
             <script depends-on="tags-editor" at="Foot">
                 initializeTagsEditor(document.querySelector("#@vueElementId"));
             </script>
+
+            <span asp-validation-for="TermContentItemIds"></span>
         }
     </div>
 </div>

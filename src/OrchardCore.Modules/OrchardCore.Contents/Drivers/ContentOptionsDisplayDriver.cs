@@ -8,7 +8,7 @@ namespace OrchardCore.Contents.Drivers
 {
     public class ContentOptionsDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
-        // Maintain the Options prefix for compatability with binding.
+        // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
         {
             Prefix = "Options";
@@ -36,7 +36,6 @@ namespace OrchardCore.Contents.Drivers
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSummary", m => BuildContentOptionsViewModel(m, model)).Location("Summary:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListFilters", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminList_Fields_BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1")
-
             );
         }
 
@@ -45,7 +44,7 @@ namespace OrchardCore.Contents.Drivers
             // Map the incoming values from a form post to the filter result.
             model.FilterResult.MapFrom(model);
 
-            return Task.FromResult<IDisplayResult>(Edit(model));
+            return Task.FromResult(Edit(model));
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)

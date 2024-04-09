@@ -96,7 +96,7 @@ namespace OrchardCore.Security.Extensions.Tests
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
-        private static IApplicationBuilder CreateApplicationBuilder()
+        private static ApplicationBuilder CreateApplicationBuilder()
         {
             var services = new ServiceCollection();
             var serviceProvider = services.BuildServiceProvider();
