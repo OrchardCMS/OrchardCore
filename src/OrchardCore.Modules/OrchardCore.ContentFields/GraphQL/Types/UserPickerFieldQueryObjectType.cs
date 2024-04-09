@@ -17,7 +17,7 @@ namespace OrchardCore.ContentFields.GraphQL
 {
     public class UserPickerFieldQueryObjectType : ObjectGraphType<UserPickerField>
     {
-        public UserPickerFieldQueryObjectType(UserType userType)
+        public UserPickerFieldQueryObjectType()
         {
             Name = nameof(UserPickerField);
 
@@ -30,7 +30,6 @@ namespace OrchardCore.ContentFields.GraphQL
                 });
 
             Field<ListGraphType<UserType>, IEnumerable<User>>("users")
-                .Type(new ListGraphType(userType))
                 .Description("the user items")
                 .PagingArguments()
                 .ResolveAsync(x =>
@@ -41,8 +40,8 @@ namespace OrchardCore.ContentFields.GraphQL
                         return itemResultSet.SelectMany(x => x);
                     });
                 });
+
             Field<UserType, User>("user")
-                .Type(userType)
                 .Description("the first user")
                 .ResolveAsync(x =>
                 {
@@ -53,7 +52,6 @@ namespace OrchardCore.ContentFields.GraphQL
                     });
                 });
         }
-
         public static IDataLoader<string, IEnumerable<User>> GetOrAddUserProfileByIdDataLoader<T>(IResolveFieldContext<T> context)
         {
             IDataLoaderContextAccessor requiredService = context.RequestServices.GetRequiredService<IDataLoaderContextAccessor>();
