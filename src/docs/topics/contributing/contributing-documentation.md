@@ -4,7 +4,8 @@ First of all, thank you for thinking about contributing to the docs! This is esp
 
 The [Orchard Core documentation site](https://docs.orchardcore.net/) is built with [MkDocs](https://www.mkdocs.org/) and served from [Read the docs](https://readthedocs.org/projects/orchardcore/).
 
-Are you looking for information on contributing code? Head over to [here](contributing-code.md) instead.
+!!! info
+    Are you looking for information on contributing code? Head over to [here](contributing-code.md) instead.
 
 ## Editing documentation pages
 
