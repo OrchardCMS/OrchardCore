@@ -19,7 +19,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Http
 {
-    internal class TenantHttpClientFactory : IHttpClientFactory, IHttpMessageHandlerFactory, IDisposable
+    internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessageHandlerFactory, IDisposable
     {
         private static readonly TimerCallback _cleanupCallback = (s) => ((TenantHttpClientFactory)s!).CleanupTimer_Tick();
         private IServiceProvider? _services;
@@ -242,13 +242,13 @@ namespace Microsoft.Extensions.Http
         }
 
         // Internal so it can be overridden in tests.
-        internal virtual void StartHandlerEntryTimer(ActiveHandlerTrackingEntry entry)
+        internal void StartHandlerEntryTimer(ActiveHandlerTrackingEntry entry)
         {
             entry.StartExpiryTimer(_expiryCallback);
         }
 
         // Internal so it can be overridden in tests.
-        internal virtual void StartCleanupTimer()
+        internal void StartCleanupTimer()
         {
             lock (_cleanupTimerLock)
             {
@@ -257,7 +257,7 @@ namespace Microsoft.Extensions.Http
         }
 
         // Internal so it can be overridden in tests.
-        internal virtual void StopCleanupTimer()
+        internal void StopCleanupTimer()
         {
             lock (_cleanupTimerLock)
             {
