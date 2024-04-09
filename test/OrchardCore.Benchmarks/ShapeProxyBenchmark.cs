@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 using Castle.DynamicProxy;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -19,6 +20,10 @@ namespace OrchardCore.Benchmark
 
     [MemoryDiagnoser]
     [ShortRunJob]
+    [SuppressMessage(
+        "Performance",
+        "CA1822:Mark members as static",
+        Justification = "BenchmarkDotNet needs all benchmark methods to be instance-level.")]
     public class ShapeProxyBenchmark
     {
         private static ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
