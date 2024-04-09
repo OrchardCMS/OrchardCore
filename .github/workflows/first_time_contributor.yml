@@ -16,11 +16,11 @@ jobs:
         issue-message: >
           Thank you for submitting your first issue, awesome! 🚀 If you haven't filled out the template fully already,
           please be sure to do so. This helps us better understand your feature request/bug report. A core team member 
-          will be with you shortly to review your issue. 😊
+          will be with you shortly to review your issue.
         pr-message: >
           Thank you for submitting your first pull request, awesome! 🚀 If you haven't read it already, please be sure 
           to check out our [contribution guide](https://docs.orchardcore.net/en/latest/docs/guides/contributing/). A 
-          core team member will be with you shortly to review your PR. 😊 Until then, please @all-contributors please 
+          core team member will be with you shortly to review your PR. Until then, please @all-contributors please 
           add yourself to our [contributors list](https://docs.orchardcore.net/en/latest/docs/community/contributors/) 
           with the [All Contributors Bots](https://allcontributors.org/docs/en/bot/usage); most possibly you need to 
           comment `@all-contributors please add @<your username> for code` (and/or `for doc`).
