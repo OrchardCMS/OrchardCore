@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
@@ -18,10 +19,12 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
 
     private string _format;
 
-    public TwoFactorEmailTokenProvider(IOptions<TwoFactorEmailTokenProviderOptions> options)
+    public TwoFactorEmailTokenProvider(
+        IOptions<TwoFactorEmailTokenProviderOptions> options,
+        IClock clock)
     {
         _options = options.Value;
-        _service = new Rfc6238AuthenticationService(options.Value.TokenLifespan, options.Value.TokenLength);
+        _service = new Rfc6238AuthenticationService(options.Value.TokenLifespan, options.Value.TokenLength, clock);
     }
 
     public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<IUser> manager, IUser user)
@@ -89,12 +92,18 @@ internal sealed class Rfc6238AuthenticationService
 
     private readonly TimeSpan _timeSpan;
     private readonly TwoFactorEmailTokenLength _length;
+    private readonly IClock _clock;
+
     private int? _modulo;
 
-    public Rfc6238AuthenticationService(TimeSpan timeSpan, TwoFactorEmailTokenLength length)
+    public Rfc6238AuthenticationService(
+        TimeSpan timeSpan,
+        TwoFactorEmailTokenLength length,
+        IClock clock)
     {
         _timeSpan = timeSpan;
         _length = length;
+        _clock = clock;
     }
 
     private int GetModuloValue()
@@ -159,7 +168,7 @@ internal sealed class Rfc6238AuthenticationService
     /// </summary>
     private ulong GetCurrentTimeStepNumber()
     {
-        var delta = DateTimeOffset.UtcNow - DateTimeOffset.UnixEpoch;
+        var delta = _clock.UtcNow - DateTimeOffset.UnixEpoch;
 
         return (ulong)(delta.Ticks / _timeSpan.Ticks);
     }
