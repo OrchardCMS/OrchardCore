@@ -89,6 +89,7 @@ nav:
   - About Orchard Core: README.md
   - Getting started:
       - Create a CMS Web application: docs/getting-started/README.md
+      - Test drive Orchard Core: docs/getting-started/test-drive-orchard-core.md
       - Configure Preview package source: docs/getting-started/preview-package-source.md
       - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
       - Code Generation Templates: docs/getting-started/templates/README.md
