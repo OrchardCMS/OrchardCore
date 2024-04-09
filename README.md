@@ -72,7 +72,7 @@ Cloudsmith is the only fully hosted, cloud-native, universal package management 
 
 ## Code of Conduct
 
-See [our Code of Conduct](./CODE-OF-CONDUCT.md).
+See [our Code of Conduct](https://docs.orchardcore.net/en/latest/docs/guides/contributing/#code-of-conduct).
 
 ## .NET Foundation
 
