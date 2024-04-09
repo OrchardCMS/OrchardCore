@@ -76,15 +76,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
-        public override IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
+        public override IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync => _creatingAsync;
 
-        public override IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
+        public override IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync => _createdAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync => _displayingAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync => _processingAsync;
 
-        public override IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
+        public override IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync => _displayedAsync;
 
         public override Func<ShapePlacementContext, PlacementInfo> Placement => CalculatePlacement;
 
@@ -104,27 +104,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
             return info ?? DefaultPlacementAction(ctx);
         }
 
-        public override IList<string> Wrappers => _wrappers;
+        public override IReadOnlyList<string> Wrappers => _wrappers;
 
-        public override IList<string> BindingSources => _bindingSources;
+        public override IReadOnlyList<string> BindingSources => _bindingSources;
     }
 
     public class ShapeDescriptor
     {
         public ShapeDescriptor()
         {
-            if (this is not ShapeDescriptorIndex)
-            {
-                CreatingAsync = [];
-                CreatedAsync = [];
-                DisplayingAsync = [];
-                ProcessingAsync = [];
-                DisplayedAsync = [];
-                Wrappers = [];
-                BindingSources = [];
-                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
-            }
-
             Placement = DefaultPlacementAction;
         }
 
@@ -154,19 +142,19 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public virtual Func<DisplayContext, Task<IHtmlContent>> Binding =>
             Bindings[ShapeType].BindingAsync;
 
-        public virtual IDictionary<string, ShapeBinding> Bindings { get; set; }
+        public virtual IDictionary<string, ShapeBinding> Bindings { get; } = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
 
-        public virtual IEnumerable<Func<ShapeCreatingContext, Task>> CreatingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeCreatedContext, Task>> CreatedAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; }
-        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> DisplayedAsync { get; set; }
+        public virtual IReadOnlyList<Func<ShapeCreatingContext, Task>> CreatingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeCreatedContext, Task>> CreatedAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; } = [];
+        public virtual IReadOnlyList<Func<ShapeDisplayContext, Task>> DisplayedAsync { get; set; } = [];
 
         public virtual Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
         public string DefaultPlacement { get; set; }
 
-        public virtual IList<string> Wrappers { get; set; }
-        public virtual IList<string> BindingSources { get; set; }
+        public virtual IReadOnlyList<string> Wrappers { get; set; } = [];
+        public virtual IReadOnlyList<string> BindingSources { get; set; } = [];
     }
 
     public class ShapeBinding

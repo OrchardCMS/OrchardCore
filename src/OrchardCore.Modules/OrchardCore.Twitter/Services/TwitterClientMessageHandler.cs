@@ -100,7 +100,9 @@ namespace OrchardCore.Twitter.Services
 
             var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
 
+#pragma warning disable CA5350 // Do not use weak cryptographic hashing algorithm
             var signature = Convert.ToBase64String(HMACSHA1.HashData(key: Encoding.UTF8.GetBytes(secret), source: Encoding.UTF8.GetBytes(baseString)));
+#pragma warning restore CA5350
 
             var sb = new StringBuilder();
             sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(_twitterSettings.ConsumerKey)).Append("\", ");
