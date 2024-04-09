@@ -195,7 +195,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             result = await context.GraphQLClient.Content
                 .Query("blogPost(status: LATEST) { displayText, published }");
 
-            Assert.Equal(2, result["data"]["blogPost"].AsArray().Count());
+            Assert.Equal(2, result["data"]["blogPost"].AsArray().Count);
         }
 
         [Fact]

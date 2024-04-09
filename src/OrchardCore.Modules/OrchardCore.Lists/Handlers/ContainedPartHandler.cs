@@ -32,7 +32,7 @@ namespace OrchardCore.Lists.Handlers
                 {
                     var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
                     var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(listContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart"));
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
                     var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                     if (settings.EnableOrdering)
                     {

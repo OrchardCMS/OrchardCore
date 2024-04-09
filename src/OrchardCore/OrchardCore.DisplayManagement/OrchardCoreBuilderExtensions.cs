@@ -54,7 +54,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
 
-                    services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+                    services.AddScoped<RazorShapeTemplateViewEngine>();
+                    services.AddScoped<IShapeTemplateViewEngine>(sp => sp.GetService<RazorShapeTemplateViewEngine>());
+
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
                     services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 

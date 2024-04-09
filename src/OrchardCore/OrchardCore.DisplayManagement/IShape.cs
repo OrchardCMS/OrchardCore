@@ -98,17 +98,15 @@ namespace OrchardCore.DisplayManagement
 
             var tagBuilder = new TagBuilder(tagName);
 
-            if (shape.Attributes != null)
+            if (shape.Attributes?.Count > 0)
             {
                 tagBuilder.MergeAttributes(shape.Attributes, false);
             }
 
-            if (shape.Classes != null)
+            if (shape.Classes?.Count > 0)
             {
-                foreach (var cssClass in shape.Classes)
-                {
-                    tagBuilder.AddCssClass(cssClass);
-                }
+                // Faster than AddCssClass which will do twice as many concatenations as classes.
+                tagBuilder.Attributes["class"] = string.Join(' ', shape.Classes);
             }
 
             if (!string.IsNullOrWhiteSpace(shape.Id))

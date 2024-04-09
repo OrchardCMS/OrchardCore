@@ -101,7 +101,7 @@ namespace OrchardCore.Media.Services
             childPath = _fileStore.NormalizePath(childPath)
                         .TrimEnd(_pathSeparator) + _pathSeparator;
 
-            return childPath.Equals(authorizedFolder);
+            return childPath.Equals(authorizedFolder, StringComparison.Ordinal);
         }
 
         private bool IsDescendantOfauthorizedFolder(string authorizedFolder, string childPath)

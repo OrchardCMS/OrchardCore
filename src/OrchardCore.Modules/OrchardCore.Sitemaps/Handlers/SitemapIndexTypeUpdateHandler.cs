@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -52,12 +53,12 @@ namespace OrchardCore.Sitemaps.Handlers
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
-                    else if (source.LimitItems && string.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
+                    else if (source.LimitItems && string.Equals(source.LimitedContentType.ContentTypeName, contentTypeName, StringComparison.Ordinal))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
-                    else if (source.ContentTypes.Any(ct => string.Equals(ct.ContentTypeName, contentTypeName)))
+                    else if (source.ContentTypes.Any(ct => string.Equals(ct.ContentTypeName, contentTypeName, StringComparison.Ordinal)))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;
