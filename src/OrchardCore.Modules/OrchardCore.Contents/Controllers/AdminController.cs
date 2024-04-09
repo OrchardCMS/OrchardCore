@@ -777,7 +777,7 @@ namespace OrchardCore.Contents.Controllers
                     continue;
                 }
 
-                items.Add(new SelectListItem(definition.DisplayName, definition.Name, string.Equals(definition.Name, selectedContentType)));
+                items.Add(new SelectListItem(definition.DisplayName, definition.Name, string.Equals(definition.Name, selectedContentType, StringComparison.Ordinal)));
             }
 
             return items;

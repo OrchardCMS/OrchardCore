@@ -155,7 +155,7 @@ The following JavaScript functions are available by default to any activity that
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
 | `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
-| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/README.md#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 | `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
