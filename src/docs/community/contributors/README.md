@@ -4,7 +4,13 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-307-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
+
+!!! info
+    Do you want to become an Orchard Core contributor too? Awesome! Check out [our contribution guide](../../guides/contributing/README.md).
+
+!!! tip
+    You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
