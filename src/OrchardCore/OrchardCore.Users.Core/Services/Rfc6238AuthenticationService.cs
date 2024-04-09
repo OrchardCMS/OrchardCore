@@ -53,7 +53,6 @@ public sealed class Rfc6238AuthenticationService
 
     private string GetStringFormat()
     {
-        // Number of 0's is length of the generated pin.
         _format ??= _length switch
         {
             TwoFactorEmailTokenLength.Two => "D2",
