@@ -82,7 +82,7 @@ plugins:
         - "*node_modules*"
   - redirects:
       redirect_maps:
-        'docs/topics/docs-contributions/README.md': 'docs/topics/contributing/contributing-documentation.md'
+        'docs/topics/docs-contributions/README.md': 'docs/guides/contributing/contributing-documentation.md'
 
 # Page tree
 nav:
@@ -116,6 +116,11 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: docs/guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
+      - Contributing:
+          - Contributing to Orchard Core: docs/guides/contributing/README.md
+          - Contributing code: docs/guides/contributing/contributing-code.md
+          - Contributing documentation: docs/guides/contributing/contributing-documentation.md
+          - Reviewing pull requests: docs/guides/contributing/reviewing-pull-requests.md
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: docs/topics/content-management/README.md
@@ -129,11 +134,6 @@ nav:
       #        - Data: docs/topics/data/README.md
       #        - Configuration: docs/topics/configuration/README.md
       - Workflows: docs/topics/workflows/README.md
-      - Contributing:
-          - Contributing to Orchard Core: docs/topics/contributing/README.md
-          - Contributing code: docs/topics/contributing/contributing-code.md
-          - Contributing documentation: docs/topics/contributing/contributing-documentation.md
-          - Reviewing pull requests: docs/topics/contributing/reviewing-pull-requests.md
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md

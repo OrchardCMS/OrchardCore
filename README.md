@@ -60,7 +60,7 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
 
-Check out the docs [on contributing code](https://docs.orchardcore.net/en/latest/docs/topics/code-contributions/) and [contributing documentation](https://docs.orchardcore.net/en/latest/docs/topics/docs-contributions/).
+Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/docs/guides/contributing/).
 
 ## Preview Package Feed
 
