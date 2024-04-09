@@ -4,8 +4,8 @@
 <div class="form-group mb-3" asp-validation-class-for="Syntax">
     <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
     <select asp-for="Syntax" class="form-select">
-        <option value="javascript">JavaScript</option>
-        <option value="liquid">Liquid</option>
+        <option value="javascript">@T["JavaScript"]</option>
+        <option value="liquid">@T["Liquid"]</option>
     </select>
     <span asp-validation-for="Syntax"></span>
     <span class="hint">@T["Choose between Liquid or JavaScript syntax."]</span>
