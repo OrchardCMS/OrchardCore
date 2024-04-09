@@ -243,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
             var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
             var getterClosedGenericMethod = _callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
-            var getterDelegate = getterClosedGenericMethod.CreateDelegate(typeof(Func<object, object>), getterAsFunc);
+            var getterDelegate = getterClosedGenericMethod.CreateDelegate<Func<object, object>>(getterAsFunc);
 
             return (Func<object, object>)getterDelegate;
         }
