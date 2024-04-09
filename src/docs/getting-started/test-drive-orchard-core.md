@@ -14,7 +14,7 @@ Go to [Try Orchard Core](https://try.orchardcore.net/) and create a demo site wi
 
 ## DotNest
 
-[DotNest](https://dotnest.com/) is an Orchard Core SaaS, operated by the company [Lombiq](https://lombiq.com). After signing up, you can create SaaS-hosted Orchard Core sites for free.
+[DotNest](https://dotnest.com/) is an Orchard Core SaaS, operated by the company [Lombiq](https://lombiq.com). After signing up, you can create cloud-hosted Orchard Core sites for free.
 
 These sites can be used in production, since unlike Try Orchard Core, they aren't deleted periodically.
 

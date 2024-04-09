@@ -61,10 +61,10 @@ All code submissions will be reviewed and tested by the core team, and only thos
     Following the below recommendations will ensure that your PR is merged as quickly as possible. Please work with us so it's a pleasant experience for everyone.
 
 - Please update your pull request according to feedback until it is approved by one of the core team members.
-- Apply [suggested changes](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#applying-suggested-changes) directly so the reviewer doesn't have to eyeball the changes. These resolve themselves after applying them, that's fine.
+- Apply [suggested changes](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#applying-suggested-changes) directly so the reviewer doesn't have to eyeball the changes. These resolve themselves after applying them, and that's fine.
 - Don't resolve other conversations so it's easier to track for the reviewer. Then, the reviewer will resolve them.
 - Feel free to mark conversations that you addressed to keep track of them with an emoji or otherwise, just don't resolve them.
-- Please keep conversations happening in line comments in those convos, otherwise communication will be a mess. If you have trouble finding them, see [this video](https://github.com/OrchardCMS/OrchardCore/pull/14749#issuecomment-1917976028).
+- Please keep conversations happening in line comments in those convos, otherwise, communication will be a mess. If you have trouble finding them, see [this video](https://github.com/OrchardCMS/OrchardCore/pull/14749#issuecomment-1917976028).
 - When you're done addressing all feedback of a review, click ["Re-request review"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#re-requesting-a-review) in the top-right corner for each reviewer when you're ready for another round of review, so they know that you're done.
 
 !!! tip
