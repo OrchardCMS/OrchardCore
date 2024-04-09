@@ -7,7 +7,7 @@ If you just want to test drive Orchard Core as a user (including an administrato
 Go to [Try Orchard Core](https://try.orchardcore.net/) and create a demo site with two clicks. We recommend starting with the Agency recipe (the first one) that showcases a simple company/portfolio website, or the Blog recipe (the second one) for a simple blog.
 
 !!! warning
-    Try Orchard Core is really only for trying out Orchard Core. Your site will be automatically deleted within a week.
+    Try Orchard Core is really only for trying out Orchard Core. Your site will be automatically deleted the next Sunday.
 
 !!! info
     Try Orchard Core, just as everything related to Orchard Core, is open source, and you can find its source [here](https://github.com/OrchardCMS/TryOrchardCore).
