@@ -41,9 +41,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     services.Configure<MvcOptions>((options) =>
                     {
-                        options.Filters.Add(typeof(ModelBinderAccessorFilter));
-                        options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(RazorViewActionFilter));
+                        options.Filters.Add<ModelBinderAccessorFilter>();
+                        options.Filters.Add<NotifyFilter>();
+                        options.Filters.Add<RazorViewActionFilter>();
                     });
 
                     services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
