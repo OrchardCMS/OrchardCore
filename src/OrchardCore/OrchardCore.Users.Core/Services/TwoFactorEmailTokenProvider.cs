@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -12,8 +11,6 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
 {
     private readonly Rfc6238AuthenticationService _service;
     private readonly TwoFactorEmailTokenProviderOptions _options;
-
-    private string _format;
 
     public TwoFactorEmailTokenProvider(
         IOptions<TwoFactorEmailTokenProviderOptions> options,
@@ -32,8 +29,9 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
         var token = await manager.CreateSecurityTokenAsync(user);
         var modifier = await GetUserModifierAsync(purpose, manager, user);
 
-        return _service.GenerateCode(token, modifier)
-            .ToString(GetStringFormat(), CultureInfo.InvariantCulture);
+        var pin = _service.GenerateCode(token, modifier);
+
+        return _service.GetString(pin);
     }
 
     public async Task<bool> ValidateAsync(string purpose, string token, UserManager<IUser> manager, IUser user)
@@ -58,23 +56,5 @@ public sealed class TwoFactorEmailTokenProvider : IUserTwoFactorTokenProvider<IU
         var userId = await manager.GetUserIdAsync(user);
 
         return $"Totp:{purpose}:{userId}";
-    }
-
-    private string GetStringFormat()
-    {
-        // Number of 0's is length of the generated pin.
-        _format ??= _options.TokenLength switch
-        {
-            TwoFactorEmailTokenLength.Two => "D2",
-            TwoFactorEmailTokenLength.Three => "D3",
-            TwoFactorEmailTokenLength.Four => "D4",
-            TwoFactorEmailTokenLength.Five => "D5",
-            TwoFactorEmailTokenLength.Six => "D6",
-            TwoFactorEmailTokenLength.Seven => "D7",
-            TwoFactorEmailTokenLength.Eight or TwoFactorEmailTokenLength.Default => "D8",
-            _ => throw new NotSupportedException("Unsupported token length.")
-        };
-
-        return _format;
     }
 }

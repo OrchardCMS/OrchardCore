@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,7 +12,7 @@ namespace OrchardCore.Users.Services;
 /// <summary>
 /// The following code is influenced by <see href="https://github.com/dotnet/aspnetcore/blob/main/src/Identity/Extensions.Core/src/Rfc6238AuthenticationService.cs"/>
 /// </summary>
-internal sealed class Rfc6238AuthenticationService
+public sealed class Rfc6238AuthenticationService
 {
     private static readonly UTF8Encoding _encoding = new(false, true);
 
@@ -20,6 +21,7 @@ internal sealed class Rfc6238AuthenticationService
     private readonly IClock _clock;
 
     private int? _modulo;
+    private string _format;
 
     public Rfc6238AuthenticationService(
         TimeSpan timeSpan,
@@ -49,7 +51,28 @@ internal sealed class Rfc6238AuthenticationService
         return _modulo.Value;
     }
 
-    internal int ComputeTOTP(byte[] key, ulong timestepNumber, byte[] modifierBytes)
+    private string GetStringFormat()
+    {
+        // Number of 0's is length of the generated pin.
+        _format ??= _length switch
+        {
+            TwoFactorEmailTokenLength.Two => "D2",
+            TwoFactorEmailTokenLength.Three => "D3",
+            TwoFactorEmailTokenLength.Four => "D4",
+            TwoFactorEmailTokenLength.Five => "D5",
+            TwoFactorEmailTokenLength.Six => "D6",
+            TwoFactorEmailTokenLength.Seven => "D7",
+            TwoFactorEmailTokenLength.Eight or TwoFactorEmailTokenLength.Default => "D8",
+            _ => throw new NotSupportedException("Unsupported token length.")
+        };
+
+        return _format;
+    }
+
+    public string GetString(int code)
+        => code.ToString(GetStringFormat(), CultureInfo.InvariantCulture);
+
+    public int ComputeTOTP(byte[] key, ulong timestepNumber, byte[] modifierBytes)
     {
         // See https://tools.ietf.org/html/rfc4226
         // We can add an optional modifier.
@@ -63,10 +86,8 @@ internal sealed class Rfc6238AuthenticationService
             modifierCombinedBytes = ApplyModifier(timestepAsBytes, modifierBytes);
         }
 
-        Span<byte> hash = stackalloc byte[HMACSHA1.HashSizeInBytes];
-#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
-        res = HMACSHA1.TryHashData(key, modifierCombinedBytes, hash, out var written);
-#pragma warning restore CA5350 // Do Not Use Weak Cryptographic Algorithms
+        Span<byte> hash = stackalloc byte[HMACSHA256.HashSizeInBytes];
+        res = HMACSHA256.TryHashData(key, modifierCombinedBytes, hash, out var written);
 
         // Generate DT string.
         var offset = hash[hash.Length - 1] & 0xf;
@@ -117,22 +138,10 @@ internal sealed class Rfc6238AuthenticationService
 
         var modifierBytes = modifier is not null ? _encoding.GetBytes(modifier) : null;
 
-        if (_timeSpan.Minutes <= 3)
+        // Check the current, previous, and next time steps.
+        for (var i = -1; i <= 1; i++)
         {
-            // Allow a variance of no greater than 9 minutes in either direction.
-            for (var i = -2; i <= 2; i++)
-            {
-                var computedTOTP = ComputeTOTP(securityToken, (ulong)((long)currentTimeStep + i), modifierBytes);
-
-                if (computedTOTP == code)
-                {
-                    return true;
-                }
-            }
-        }
-        else
-        {
-            var computedTOTP = ComputeTOTP(securityToken, currentTimeStep, modifierBytes);
+            var computedTOTP = ComputeTOTP(securityToken, (ulong)((long)currentTimeStep + i), modifierBytes);
 
             if (computedTOTP == code)
             {
