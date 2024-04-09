@@ -29,13 +29,13 @@ namespace OrchardCore.Benchmark
         {
             var options = new ProxyGenerationOptions();
             options.AddMixinInstance(new ShapeViewModel());
-            _proxyType = _proxyGenerator.CreateClassProxy(typeof(MenuItem), options).GetType();
+            _proxyType = _proxyGenerator.CreateClassProxy<MenuItem>(options).GetType();
         }
 
         [Benchmark]
         public object CreateInstance()
         {
-            var shape = (IShape)Activator.CreateInstance(typeof(ContentItemViewModel));
+            var shape = Activator.CreateInstance<ContentItemViewModel>();
             return shape;
         }
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Benchmark
         {
             var options = new ProxyGenerationOptions();
             options.AddMixinInstance(new ShapeViewModel());
-            return (IShape)_proxyGenerator.CreateClassProxy(typeof(MenuItem), options);
+            return (IShape)_proxyGenerator.CreateClassProxy<MenuItem>(options);
         }
 
         [Benchmark]
@@ -58,7 +58,7 @@ namespace OrchardCore.Benchmark
 
             var options = new ProxyGenerationOptions();
             options.AddMixinInstance(new ShapeViewModel());
-            var shape = (IShape)_proxyGenerator.CreateClassProxy(typeof(MenuItem), options);
+            var shape = (IShape)_proxyGenerator.CreateClassProxy<MenuItem>(options);
 
             _proxyTypesCache.TryAdd(typeof(MenuItem), shape.GetType());
 
