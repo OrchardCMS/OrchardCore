@@ -13,3 +13,4 @@ Giving feedback on pull requests, i.e. reviewing them, is a very important contr
 - Add the "needs triage" label on PRs that you think should be checked by others during the weekly triage meeting too. Explain in a comment why you deem this is necessary.
 - Be sure to actually merge PRs that don't need a second opinion. This is especially important for external contributors who can't merge their own PRs. Keeping PRs open will make them collect merge conflicts and make the contributor demotivated.
 - Be especially patient and encouraging with first-time contributors. This is indicated by such a flag on the PR.
+- You can add the [Feedback section](contributing-code.md) to your review comment (i.e. the one that you send your per-line comments with) to remind the author about the practices.
