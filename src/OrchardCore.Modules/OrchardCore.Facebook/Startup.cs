@@ -40,7 +40,7 @@ namespace OrchardCore.Facebook
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(FBInitFilter));
+                options.Filters.Add<FBInitFilter>();
             });
         }
     }
