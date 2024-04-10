@@ -5,24 +5,6 @@ end_of_line = crlf
 charset = utf-8
 indent_style = space
 indent_size = 4
-tab_width = 2
-dotnet_style_operator_placement_when_wrapping = beginning_of_line
-dotnet_style_coalesce_expression = true:suggestion
-dotnet_style_null_propagation = true:suggestion
-dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
-dotnet_style_prefer_auto_properties = true:silent
-dotnet_style_object_initializer = true:suggestion
-dotnet_style_collection_initializer = true:suggestion
-dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
-dotnet_style_prefer_conditional_expression_over_assignment = true:silent
-dotnet_style_prefer_conditional_expression_over_return = true:silent
-dotnet_style_explicit_tuple_names = true:suggestion
-dotnet_style_prefer_inferred_tuple_names = true:suggestion
-dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
-dotnet_style_prefer_compound_assignment = true:suggestion
-dotnet_style_prefer_simplified_interpolation = true:suggestion
-dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
-dotnet_style_namespace_match_folder = true:suggestion
 
 [*.{json,yml,csproj,props,targets}]
 indent_size = 2
@@ -48,8 +30,8 @@ dotnet_diagnostic.IDE0305.severity                         = none
 dotnet_sort_system_directives_first                        = true
 
 # Code-block preferences
-csharp_prefer_braces = true:silent
-csharp_prefer_simple_using_statement                       = true:suggestion
+csharp_prefer_braces = true
+csharp_prefer_simple_using_statement                       = true
 csharp_style_namespace_declarations                        = file_scoped:suggestion
 
 # Range operator
@@ -72,7 +54,7 @@ dotnet_style_predefined_type_for_member_access             = true : suggestion
 csharp_style_pattern_matching_over_is_with_cast_check      = true : none
 csharp_style_pattern_matching_over_as_with_null_check      = true : none
 csharp_style_inlined_variable_declaration                  = true : none
-csharp_style_throw_expression                              = true:none
+csharp_style_throw_expression                              = true : none
 csharp_style_conditional_delegate_call                     = true : none
 
 dotnet_style_object_initializer                            = true : suggestion
@@ -311,16 +293,3 @@ dotnet_diagnostic.SA1648.severity = none            # Inheritdoc should be used 
 dotnet_diagnostic.SA1649.severity = none            # File name should match first type name.
 dotnet_diagnostic.SA1650.severity = none            # Element documentation should be spelled correctly.
 dotnet_diagnostic.SA1651.severity = none            # Do not use placeholder elements.
-csharp_indent_labels = one_less_than_current
-csharp_using_directive_placement = outside_namespace:silent
-csharp_style_prefer_method_group_conversion = true:silent
-csharp_style_prefer_top_level_statements = true:silent
-csharp_style_prefer_primary_constructors = true:suggestion
-csharp_style_expression_bodied_methods = false:silent
-csharp_style_expression_bodied_constructors = false:silent
-csharp_style_expression_bodied_operators = false:silent
-csharp_style_expression_bodied_properties = true:silent
-csharp_style_expression_bodied_indexers = true:silent
-csharp_style_expression_bodied_accessors = true:silent
-csharp_style_expression_bodied_lambdas = true:silent
-csharp_style_expression_bodied_local_functions = false:silent
