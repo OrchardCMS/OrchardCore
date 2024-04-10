@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Media.Services
 {
-    internal class SecureMediaMarkerService { }
+    internal sealed class SecureMediaMarkerService { }
 
     internal static class SecureMediaExtensions
     {

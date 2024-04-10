@@ -4,7 +4,7 @@ using OrchardCore.Media.Core.Events;
 
 namespace OrchardCore.Media.Events;
 
-internal class SecureMediaFileStoreEventHandler : MediaEventHandlerBase
+internal sealed class SecureMediaFileStoreEventHandler : MediaEventHandlerBase
 {
     private readonly ISignal _signal;
 
