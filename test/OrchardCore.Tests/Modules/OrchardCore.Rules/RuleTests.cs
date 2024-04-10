@@ -33,17 +33,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new HomepageCondition
                     {
                         Value = isHomepage
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
-                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
+                .AddRuleCondition<HomepageCondition, HomepageConditionEvaluator>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
@@ -66,14 +66,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new BooleanCondition { Value = boolean }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
-                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+                .AddRuleCondition<BooleanCondition, BooleanConditionEvaluator>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -90,22 +90,22 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new AnyConditionGroup
                     {
-                        Conditions = new List<Condition>
-                        {
+                        Conditions =
+                        [
                             new BooleanCondition { Value = first },
                             new BooleanCondition { Value = second }
-                        }
+                        ]
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
-                .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>()
-                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+                .AddRuleCondition<AnyConditionGroup, AnyConditionEvaluator>()
+                .AddRuleCondition<BooleanCondition, BooleanConditionEvaluator>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -121,18 +121,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new UrlCondition
                     {
                         Value = path,
                         Operation = new StringEqualsOperator()
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
-                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
+                .AddRuleCondition<UrlCondition, UrlConditionEvaluator>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
@@ -155,17 +155,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule
             {
-                Conditions = new List<Condition>
-                {
+                Conditions =
+                [
                     new JavascriptCondition
                     {
                         Script = script
                     }
-                }
+                ]
             };
 
             var services = CreateRuleServiceCollection()
-                .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>()
+                .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
                 .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
                 .AddMemoryCache()
                 .AddScripting()

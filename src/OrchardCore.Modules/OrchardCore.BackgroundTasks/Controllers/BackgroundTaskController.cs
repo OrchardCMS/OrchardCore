@@ -20,7 +20,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.BackgroundTasks.Controllers
 {
-    [Admin]
+    [Admin("BackgroundTasks/{action}/{name?}", "BackgroundTasks{action}")]
     public class BackgroundTaskController : Controller
     {
         private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
@@ -56,6 +56,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("BackgroundTasks", "BackgroundTasks")]
         public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))

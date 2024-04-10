@@ -1,10 +1,11 @@
+using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
-        private static readonly char[] _delimiters = { ':', '#', '@', '%', '|' };
+        private static readonly char[] _delimiters = [':', '#', '@', '%', '|'];
 
         public string Location { get; set; }
         public string Source { get; set; }
@@ -15,12 +16,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public bool IsLayoutZone()
         {
-            return Location.StartsWith("/", System.StringComparison.OrdinalIgnoreCase);
+            return Location.StartsWith("/", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
         /// Returns the list of zone names.
-        /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
+        /// e.g.,. <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
         /// </summary>
         /// <returns></returns>
         public string[] GetZones()
@@ -83,7 +84,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         /// <summary>
         /// Extracts the group information from a location string, or <c>null</c> if it is not present.
-        /// e.g., Content:12@search
+        /// e.g., Content:12@search.
         /// </summary>
         public string GetGroup()
         {
@@ -104,7 +105,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         /// <summary>
         /// Extracts the card information from a location string, or <c>null</c> if it is not present.
-        /// e.g., Content:12%search
+        /// e.g., Content:12%search.
         /// </summary>
         public string GetCard()
         {
@@ -125,7 +126,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         /// <summary>
         /// Extracts the column information from a location string, or <c>null</c> if it is not present.
-        /// e.g., Content:12!search
+        /// e.g., Content:12!search.
         /// </summary>
         public string GetColumn()
         {

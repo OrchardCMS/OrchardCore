@@ -6,22 +6,22 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
     public abstract class MatchOptions
     {
         /// <summary>
-        /// Match the start of the string to the pattern
+        /// Match the start of the string to the pattern.
         /// </summary>
         public static readonly MatchOptions StartsWith = new StartsWithMatchOptions();
 
         /// <summary>
-        /// Match the end of the string to the pattern
+        /// Match the end of the string to the pattern.
         /// </summary>
         public static readonly MatchOptions EndsWith = new EndsWithMatchOptions();
 
         /// <summary>
-        /// Match when the string contains the pattern
+        /// Match when the string contains the pattern.
         /// </summary>
         public static readonly MatchOptions Contains = new ContainsMatchOptions();
 
         /// <summary>
-        /// Convert the pattern, by appending/prepending "%"
+        /// Convert the pattern, by appending/prepending "%".
         /// </summary>
         /// <param name="pattern">The string to convert to the appropriate match pattern.</param>
         /// <returns>
@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string starts with the pattern.
         /// </summary>
-        private class StartsWithMatchOptions : MatchOptions
+        private sealed class StartsWithMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)
@@ -45,7 +45,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string ends with the pattern.
         /// </summary>
-        private class EndsWithMatchOptions : MatchOptions
+        private sealed class EndsWithMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)
@@ -57,7 +57,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// <summary>
         /// The <see cref="MatchOptions" /> that matches if the string contains the pattern.
         /// </summary>
-        private class ContainsMatchOptions : MatchOptions
+        private sealed class ContainsMatchOptions : MatchOptions
         {
             /// <inheritdoc />
             public override string ToMatchString(string pattern)

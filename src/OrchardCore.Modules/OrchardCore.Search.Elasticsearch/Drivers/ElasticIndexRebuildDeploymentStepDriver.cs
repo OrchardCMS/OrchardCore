@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -40,13 +39,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticIndexRebuildDeploymentStep rebuildIndexStep, IUpdateModel updater)
         {
-            rebuildIndexStep.Indices = Array.Empty<string>();
+            rebuildIndexStep.Indices = [];
 
             await updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
 
             if (rebuildIndexStep.IncludeAll)
             {
-                rebuildIndexStep.Indices = Array.Empty<string>();
+                rebuildIndexStep.Indices = [];
             }
 
             return Edit(rebuildIndexStep);

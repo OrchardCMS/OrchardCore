@@ -34,6 +34,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
+                string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+            {
+                _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
+
+                return;
+            }
+
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
             {
@@ -45,7 +53,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public void Configure(string name, MicrosoftAccountOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme))
+            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -26,6 +27,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
 {
+    [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
@@ -88,6 +90,7 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("Tenants", "Tenants")]
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
@@ -247,7 +250,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var allSettings = _shellHost.GetAllSettings();
 
-            foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
+            foreach (var tenantName in model.TenantNames ?? [])
             {
                 if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
@@ -377,7 +380,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -473,7 +476,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet

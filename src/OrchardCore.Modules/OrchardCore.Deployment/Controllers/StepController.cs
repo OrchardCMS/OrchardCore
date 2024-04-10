@@ -44,6 +44,7 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("DeploymentPlan/{id}/Step/Create", "DeploymentPlanCreateStep")]
         public async Task<IActionResult> Create(long id, string type)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -103,8 +104,8 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-            editor.DeploymentStep = step;
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+            editor.Properties["DeploymentStep"] = step;
 
             if (ModelState.IsValid)
             {
@@ -122,6 +123,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Edit", "DeploymentPlanEditStep")]
         public async Task<IActionResult> Edit(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -197,6 +199,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Delete", "DeploymentPlanDeleteStep")]
         public async Task<IActionResult> Delete(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))

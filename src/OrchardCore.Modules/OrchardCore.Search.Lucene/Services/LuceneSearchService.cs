@@ -47,7 +47,7 @@ public class LuceneSearchService : ISearchService
 
         if (index == null || !_luceneIndexManager.Exists(index))
         {
-            _logger.LogWarning("Lucene: Couldn't execute search. The search index doesn't exist.");
+            _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
             return result;
         }

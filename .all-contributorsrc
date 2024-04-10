@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "Contributors.md"
+    "src/docs/community/contributors/README.md"
   ],
   "imageSize": 100,
   "commit": true,
@@ -1805,10 +1805,10 @@
       ]
     },
     {
-      "login": "DAud-IcI",
-      "name": "El-Saig Dávid",
+      "login": "sarahelsaig",
+      "name": "Sára El-Saig",
       "avatar_url": "https://avatars1.githubusercontent.com/u/4007293?v=4",
-      "profile": "https://github.com/DAud-IcI",
+      "profile": "https://github.com/sarahelsaig",
       "contributions": [
         "code"
       ]
@@ -2807,7 +2807,62 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "viktoriamagyar",
+      "name": "Viktória Magyar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84029837?v=4",
+      "profile": "https://github.com/viktoriamagyar",
+      "contributions": [
+        "eventOrganizing"
+      ]
+    },
+    {
+      "login": "SimonCropp",
+      "name": "Simon Cropp",
+      "avatar_url": "https://avatars.githubusercontent.com/u/122666?v=4",
+      "profile": "https://github.com/SimonCropp",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "w-ko",
+      "name": "Holerö",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126988022?v=4",
+      "profile": "https://github.com/w-ko",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "aliamiras",
+      "name": "aliamiras",
+      "avatar_url": "https://avatars.githubusercontent.com/u/107989021?v=4",
+      "profile": "https://github.com/aliamiras",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xtomas",
+      "name": "Tomáš Jákl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10938220?v=4",
+      "profile": "https://github.com/xtomas",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "porgabi",
+      "name": "Gábor Pór",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51411356?v=4",
+      "profile": "https://github.com/porgabi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }

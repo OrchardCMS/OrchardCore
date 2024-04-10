@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -15,13 +18,16 @@ namespace OrchardCore.Deployment.Recipes
     public class DeploymentPlansRecipeStep : IRecipeStepHandler
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IDeploymentPlanService _deploymentPlanService;
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _deploymentPlanService = deploymentPlanService;
         }
 
@@ -50,7 +56,7 @@ namespace OrchardCore.Deployment.Recipes
                 {
                     if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
                     {
-                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
+                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType(), _jsonSerializerOptions);
 
                         deploymentPlan.DeploymentSteps.Add(deploymentStep);
                     }
@@ -74,23 +80,23 @@ namespace OrchardCore.Deployment.Recipes
             return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
         }
 
-        private class DeploymentPlansModel
+        private sealed class DeploymentPlansModel
         {
             public DeploymentPlanModel[] Plans { get; set; }
         }
 
-        private class DeploymentPlanModel
+        private sealed class DeploymentPlanModel
         {
             public string Name { get; set; }
 
             public DeploymentStepModel[] Steps { get; set; }
         }
 
-        private class DeploymentStepModel
+        private sealed class DeploymentStepModel
         {
             public string Type { get; set; }
 
-            public JObject Step { get; set; }
+            public JsonObject Step { get; set; }
         }
     }
 }

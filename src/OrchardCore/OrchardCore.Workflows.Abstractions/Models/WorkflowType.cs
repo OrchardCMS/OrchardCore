@@ -48,11 +48,11 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A complete list of all activities that are part of this workflow.
         /// </summary>
-        public IList<ActivityRecord> Activities { get; set; } = new List<ActivityRecord>();
+        public IList<ActivityRecord> Activities { get; set; } = [];
 
         /// <summary>
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
-        public IList<Transition> Transitions { get; set; } = new List<Transition>();
+        public IList<Transition> Transitions { get; set; } = [];
     }
 }

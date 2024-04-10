@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Security;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Services
 {
@@ -102,7 +101,7 @@ namespace OrchardCore.Media.Services
             childPath = _fileStore.NormalizePath(childPath)
                         .TrimEnd(_pathSeparator) + _pathSeparator;
 
-            return childPath.Equals(authorizedFolder);
+            return childPath.Equals(authorizedFolder, StringComparison.Ordinal);
         }
 
         private bool IsDescendantOfauthorizedFolder(string authorizedFolder, string childPath)

@@ -12,7 +12,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -57,6 +56,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         _shellSettings = shellSettings;
     }
 
+    [Admin("Authenticator/Configure/App", "ConfigureAuthenticatorApp")]
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -106,6 +106,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return await RedirectToTwoFactorAsync(user);
     }
 
+    [Admin("Authenticator/Reset/App", "RemoveAuthenticatorApp")]
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -190,7 +191,9 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         return string.Format(
             CultureInfo.InvariantCulture,
+#pragma warning disable CA1863 // Cache a 'CompositeFormat' for repeated use in this formatting operation
             AuthenticatorUriFormat,
+#pragma warning restore CA1863
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),
             unformattedKey,

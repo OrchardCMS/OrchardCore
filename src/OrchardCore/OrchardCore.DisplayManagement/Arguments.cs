@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement
             return propertiesAccessor(propertyObject);
         }
 
-        private class NamedEnumerable<T> : INamedEnumerable<T>
+        private sealed class NamedEnumerable<T> : INamedEnumerable<T>
         {
             private readonly List<T> _arguments;
             private readonly List<string> _names;
@@ -58,15 +58,12 @@ namespace OrchardCore.DisplayManagement
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
-                if (arguments.Count() < names.Count())
-                {
-                    throw new ArgumentException("arguments.Count() < names.Count()");
-                }
-
                 _arguments = arguments.ToList();
                 _names = names.ToList();
 
-                _positional = Array.Empty<T>();
+                ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Count, _names.Count);
+
+                _positional = [];
 
                 if (_arguments.Count != _names.Count)
                 {
@@ -94,7 +91,7 @@ namespace OrchardCore.DisplayManagement
                 get { return _named ??= new Named(_arguments, _names); }
             }
 
-            private class Named : IDictionary<string, T>
+            private sealed class Named : IDictionary<string, T>
             {
                 private readonly IList<T> _arguments;
                 private readonly IList<string> _names;
@@ -190,7 +187,7 @@ namespace OrchardCore.DisplayManagement
                     return pair.Key != null;
                 }
 
-                //TBD
+                // TBD
                 T IDictionary<string, T>.this[string key]
                 {
                     get

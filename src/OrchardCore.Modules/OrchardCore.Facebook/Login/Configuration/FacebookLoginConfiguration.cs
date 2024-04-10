@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Settings;
@@ -45,6 +44,13 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+            {
+                _logger.LogWarning("The Facebook login provider is enabled but not configured.");
+
+                return;
+            }
+
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
             if (loginSettings == null)
             {
@@ -62,7 +68,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         public void Configure(string name, FacebookOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme))
+            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

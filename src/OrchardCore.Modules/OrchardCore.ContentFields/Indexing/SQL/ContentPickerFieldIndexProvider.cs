@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class ContentPickerFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public ContentPickerFieldIndexProvider(IServiceProvider serviceProvider)
@@ -80,7 +80,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentItemId = contentItem.ContentItemId,
                                 ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                                 ContentField = pair.Definition.Name,
                                 SelectedContentItemId = pair.ContentItemId,
                             });

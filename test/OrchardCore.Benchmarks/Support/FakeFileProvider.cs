@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.FileProviders;
 
 namespace OrchardCore.Benchmark.Support
 {
-    internal class FakeFileProvider : IFileProvider
+    internal sealed class FakeFileProvider : IFileProvider
     {
         public IDirectoryContents GetDirectoryContents(string subpath)
         {

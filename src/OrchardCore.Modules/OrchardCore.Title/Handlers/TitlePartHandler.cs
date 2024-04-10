@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace OrchardCore.Title.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         protected readonly IStringLocalizer S;
-        private readonly HashSet<ContentItem> _contentItems = new();
+        private readonly HashSet<ContentItem> _contentItems = [];
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
@@ -102,7 +103,7 @@ namespace OrchardCore.Title.Handlers
         private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
 
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();
         }

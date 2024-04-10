@@ -91,7 +91,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <returns><see cref="bool"/>.</returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            //Get Index name scoped by ShellName
+            // Get Index name scoped by ShellName
             if (await ExistsAsync(elasticIndexSettings.IndexName))
             {
                 return true;
@@ -107,7 +107,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
             {
                 var analyzer = CreateAnalyzer(analyzerProperties);
-                analyzersDescriptor = new AnalyzersDescriptor();
                 analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
 
                 indexSettingsDescriptor = new IndexSettingsDescriptor();
@@ -234,7 +233,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         {
                             if (analyzerProperty.Value is JsonArray)
                             {
-                                var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+                                var values = analyzerProperty.Value.Values<string>().ToArray();
 
                                 property.SetValue(analyzer, new StopWords(values));
                             }
@@ -242,15 +241,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             continue;
                         }
 
-                        if (analyzerProperty.Value is JsonArray)
+                        if (analyzerProperty.Value is JsonArray jsonArray)
                         {
-                            var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+                            var values = jsonArray.Values<string>().ToArray();
 
                             property.SetValue(analyzer, values);
                         }
                         else
                         {
-                            var value = JsonSerializer.Deserialize(analyzerProperty.Value, property.PropertyType);
+                            var value = JNode.ToObject(analyzerProperty.Value, property.PropertyType);
 
                             property.SetValue(analyzer, value);
                         }
@@ -345,7 +344,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// Deletes all documents in an index in one request.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>.
         /// </summary>
         public async Task<bool> DeleteAllDocumentsAsync(string indexName)
         {
@@ -411,7 +410,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 documents.Add(CreateElasticDocument(indexDocument));
             }
 
-            if (documents.Any())
+            if (documents.Count > 0)
             {
                 var descriptor = new BulkDescriptor();
 

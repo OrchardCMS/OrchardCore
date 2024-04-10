@@ -1,8 +1,17 @@
 # Community
 
-The Orchard Core community is a thriving hub of collaboration and knowledge exchange, where diverse members come together to contribute to the growth and innovation of Orchard Core. This dynamic group is characterized by its shared passion for development and a commitment to supporting one another. In recognizing those who have played instrumental roles in our collective journey, we extend our gratitude to the following honorable member:
+The Orchard Core community is a thriving hub of collaboration and knowledge exchange, where diverse members come together to contribute to the growth and innovation of Orchard Core. This dynamic group is characterized by its shared passion for development and a commitment to supporting one another.
+
+## All of our Contributors
+
+Orchard Core is steered and built by all of those who contribute, with code, bug reports and feature requests, code reviews, documentation, and in any other way.
+
+- [Our wonderful contributors](contributors/README.md)
+- [A map of where our contributors come from](contributors/Map.md)
 
 ## Honorable Members
+
+In recognizing those who have played instrumental roles in our collective journey, we extend our gratitude to the following honorable members:
 
 - [Jean-Thierry Kéchichian](jean-thierry/README.md)
 

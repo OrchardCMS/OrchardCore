@@ -16,7 +16,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
-        private readonly HashSet<string> _identifiers = new();
+        private readonly HashSet<string> _identifiers = [];
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -37,13 +37,9 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             // Check if a shortcode template is recursively called.
-            if (_identifiers.Contains(identifier))
+            if (!_identifiers.Add(identifier))
             {
                 return null;
-            }
-            else
-            {
-                _identifiers.Add(identifier);
             }
 
             var model = new ShortcodeViewModel
@@ -69,7 +65,7 @@ namespace OrchardCore.Shortcodes.Services
             return result;
         }
 
-        internal class Content : LiquidContentAccessor
+        internal sealed class Content : LiquidContentAccessor
         {
             public readonly string _content;
             public Content(string content) => _content = content;

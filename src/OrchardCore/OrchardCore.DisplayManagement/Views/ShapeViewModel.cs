@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -16,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
-            ArgumentException.ThrowIfNullOrEmpty(shapeType, nameof(shapeType));
+            ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
             Metadata.Type = shapeType;
         }
@@ -81,25 +80,10 @@ namespace OrchardCore.DisplayManagement.Views
             _sorted = false;
             _items ??= [];
 
-            if (item is IHtmlContent)
+            var wrapped = PositionWrapper.TryWrap(item, position);
+            if (wrapped is not null)
             {
-                _items.Add(new PositionWrapper((IHtmlContent)item, position));
-            }
-            else if (item is string)
-            {
-                _items.Add(new PositionWrapper((string)item, position));
-            }
-            else
-            {
-                if (item is IPositioned shape)
-                {
-                    if (position != null)
-                    {
-                        shape.Position = position;
-                    }
-
-                    _items.Add(shape);
-                }
+                _items.Add(wrapped);
             }
 
             return new ValueTask<IShape>(this);

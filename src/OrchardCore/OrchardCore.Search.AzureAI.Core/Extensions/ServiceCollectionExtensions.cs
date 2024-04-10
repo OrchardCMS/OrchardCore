@@ -31,7 +31,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
 
         services.AddAzureClientsCore();
-        services.AddSingleton<SearchIndexClientAccessor>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
@@ -39,7 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AzureAIIndexDocumentManager>();
         services.AddScoped<AzureAISearchIndexingService>();
         services.AddSingleton<AzureAISearchIndexSettingsService>();
-        services.AddSingleton<SearchClientFactory>();
+        services.AddSingleton<AzureAIClientFactory>();
 
         services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
         services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();

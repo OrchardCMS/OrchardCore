@@ -79,13 +79,13 @@ namespace OrchardCore.ContentFields.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds))
             {
                 field.UserIds = viewModel.UserIds == null
-                    ? Array.Empty<string>() : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
 
                 if (settings.Required && field.UserIds.Length == 0)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 if (!settings.Multiple && field.UserIds.Length > 1)

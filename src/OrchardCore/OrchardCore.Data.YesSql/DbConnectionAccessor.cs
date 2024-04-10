@@ -17,7 +17,9 @@ namespace OrchardCore.Data
         /// <param name="store">The <see cref="IStore"/>.</param>
         public DbConnectionAccessor(IStore store)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            ArgumentNullException.ThrowIfNull(store);
+
+            _store = store;
         }
 
         /// <inheritdocs />

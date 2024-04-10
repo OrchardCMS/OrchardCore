@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -30,7 +29,7 @@ namespace OrchardCore.Settings.Deployment
         public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            step.Settings = Array.Empty<string>();
+            step.Settings = [];
 
             await updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
 

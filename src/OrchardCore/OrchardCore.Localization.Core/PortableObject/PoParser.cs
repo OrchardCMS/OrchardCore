@@ -138,7 +138,7 @@ namespace OrchardCore.Localization.PortableObject
             };
         }
 
-        private class DictionaryRecordBuilder
+        private sealed class DictionaryRecordBuilder
         {
             private readonly List<string> _values;
             private IEnumerable<string> _validValues => _values.Where(value => !string.IsNullOrEmpty(value));
@@ -154,7 +154,7 @@ namespace OrchardCore.Localization.PortableObject
 
             public DictionaryRecordBuilder()
             {
-                _values = new List<string>();
+                _values = [];
             }
 
             public void Set(PoContext context, string text)

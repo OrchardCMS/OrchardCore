@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public ShellsSettingsSources(IOptions<ShellOptions> shellOptions)
         {
-            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "tenants.json");
+            _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, OrchardCoreConstants.Shell.TenantsFileName);
         }
 
         public Task AddSourcesAsync(IConfigurationBuilder builder)
@@ -27,21 +27,18 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            JObject tenantsSettings;
+            JsonObject tenantsSettings;
             if (File.Exists(_tenants))
             {
-                using var streamReader = File.OpenText(_tenants);
-                using var jsonReader = new JsonTextReader(streamReader);
-
-                tenantsSettings = await JObject.LoadAsync(jsonReader);
+                using var streamReader = File.OpenRead(_tenants);
+                tenantsSettings = await JObject.LoadAsync(streamReader);
             }
             else
             {
-                tenantsSettings = new JObject();
+                tenantsSettings = [];
             }
 
-            var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
-
+            var settings = tenantsSettings[tenant] as JsonObject ?? [];
             foreach (var key in data.Keys)
             {
                 if (data[key] is not null)
@@ -56,29 +53,24 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            using var streamWriter = File.CreateText(_tenants);
-            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-            await tenantsSettings.WriteToAsync(jsonWriter);
+            using var streamWriter = File.Create(_tenants);
+            await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented);
         }
 
         public async Task RemoveAsync(string tenant)
         {
             if (File.Exists(_tenants))
             {
-                JObject tenantsSettings;
-                using (var streamReader = File.OpenText(_tenants))
+                JsonObject tenantsSettings;
+                using (var streamReader = File.OpenRead(_tenants))
                 {
-                    using var jsonReader = new JsonTextReader(streamReader);
-                    tenantsSettings = await JObject.LoadAsync(jsonReader);
+                    tenantsSettings = await JObject.LoadAsync(streamReader);
                 }
 
                 tenantsSettings.Remove(tenant);
 
-                using var streamWriter = File.CreateText(_tenants);
-                using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-                await tenantsSettings.WriteToAsync(jsonWriter);
+                using var streamWriter = File.Create(_tenants);
+                await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JOptions.Indented);
             }
         }
     }

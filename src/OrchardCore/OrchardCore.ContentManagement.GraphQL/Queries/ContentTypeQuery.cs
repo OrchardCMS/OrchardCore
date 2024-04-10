@@ -75,8 +75,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                // Only add queries over standard content types
-                if (!typeDefinition.HasStereotype())
+                // Limit queries to standard content types or those content types that are explicitly configured.
+                if (!typeDefinition.TryGetStereotype(out var stereotype) || _contentOptionsAccessor.Value.DiscoverableSterotypes.Contains(stereotype))
                 {
                     schema.Query.AddField(query);
                 }

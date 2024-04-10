@@ -8,7 +8,8 @@ namespace OrchardCore.Documents
     public class DocumentEntityManager<TDocumentStore, TDocumentEntity> : DocumentEntityManager<TDocumentEntity>, IDocumentEntityManager<TDocumentStore, TDocumentEntity>
         where TDocumentStore : IDocumentStore where TDocumentEntity : class, IDocumentEntity, new()
     {
-        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager) : base(documentManager)
+        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager)
+            : base(documentManager)
         {
         }
     }

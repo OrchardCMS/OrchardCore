@@ -140,9 +140,9 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                 handler.ChangedAsync(shellDescriptor, _shellSettings), shellDescriptor, _shellSettings, _logger);
         }
 
-        private class ConfiguredFeatures
+        private sealed class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = Array.Empty<string>();
+            public string[] Features { get; set; } = [];
         }
     }
 }
