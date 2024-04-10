@@ -1,4 +1,4 @@
-name: Monthly Community Metrics
+name: Community Metrics
 on:
   pull_request:
   workflow_dispatch:
