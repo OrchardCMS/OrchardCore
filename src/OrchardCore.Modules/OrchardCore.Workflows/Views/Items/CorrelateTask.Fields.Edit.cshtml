@@ -1,11 +1,12 @@
+@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
 <div class="form-group mb-3" asp-validation-class-for="Syntax">
     <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
     <select asp-for="Syntax" class="form-select">
-        <option value="javascript">@T["JavaScript"]</option>
-        <option value="liquid">@T["Liquid"]</option>
+        <option value="@WorkflowScriptSyntax.JavaScript">@T["JavaScript"]</option>
+        <option value="@WorkflowScriptSyntax.Liquid">@T["Liquid"]</option>
     </select>
     <span asp-validation-for="Syntax"></span>
     <span class="hint">@T["Choose between Liquid or JavaScript syntax."]</span>
@@ -15,8 +16,8 @@
     <label asp-for="Value" class="form-label">@T["Value"]</label>
     <textarea asp-for="Value" class="form-control"></textarea>
     <span asp-validation-for="Value"></span>
-    <span id="liquid_hint" class="hint @(Model.Syntax == "liquid" ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
-    <span id="javascript_hint" class="hint @(Model.Syntax == "javascript" ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+    <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "d-none" : "")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
 </div>
 
 <style asp-name="codemirror"></style>
@@ -37,7 +38,7 @@
             lineWrapping: true,
             matchBrackets: true,
             styleActiveLine: true,
-            mode: { name: '@(Model.Syntax.ToLowerInvariant())' }
+            mode: { name: '@(Model.Syntax.GetSyntaxName())' }
         });
 
         return textArea.CoreMirrorEditor;
@@ -48,12 +49,13 @@
 
         document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
             const syntax = e.target.value;
-            editor.setOption('mode', syntax);
 
-            if (syntax == 'javascript') {
+            if (syntax == '@WorkflowScriptSyntax.JavaScript') {
+                editor.setOption('mode', 'javascript');
                 document.getElementById('liquid_hint').classList.add('d-none');
                 document.getElementById('javascript_hint').classList.remove('d-none');
             } else {
+                editor.setOption('mode', 'liquid');
                 document.getElementById('javascript_hint').classList.add('d-none');
                 document.getElementById('liquid_hint').classList.remove('d-none');
             }

@@ -33,9 +33,9 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public string Syntax
+        public WorkflowScriptSyntax Syntax
         {
-            get => GetProperty(() => "JavaScript");
+            get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
             set => SetProperty(value);
         }
 
@@ -47,8 +47,8 @@ namespace OrchardCore.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var value = Syntax switch {
-                "Liquid" => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
-                "JavaScript" => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null),
+                WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
+                WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null),
                 _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for CorrelateTask.")
             };
 

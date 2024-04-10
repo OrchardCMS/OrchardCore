@@ -1,9 +1,11 @@
+using OrchardCore.Workflows.Models;
+
 namespace OrchardCore.Workflows.ViewModels
 {
     public class CorrelateTaskViewModel
     {
         public string Value { get; set; }
 
-        public string Syntax { get; set; }
+        public WorkflowScriptSyntax Syntax { get; set; }
     }
 }
