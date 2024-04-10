@@ -28,7 +28,7 @@ jobs:
         VERSION="${arrTag[2]}"
         VERSION="${VERSION//v}"
         echo VERSION:${VERSION}
-        echo ::set-output name=VERSION::${VERSION}
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
       shell: bash
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
