@@ -215,7 +215,19 @@ namespace OrchardCore.Media.Controllers
 
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                            stream.Position = 0;
+                            // The .NET AWS SDK, and only that from the built-in ones (but others maybe too), disposes
+                            // the stream. There's no better way to check for that than handling the exception. An
+                            // alternative would be to re-read the file for every other storage provider as well but
+                            // that would be wasteful.
+                            try
+                            {
+                                stream.Position = 0;
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                stream = null;
+                            }
+
                             await PreCacheRemoteMedia(mediaFile, stream);
 
                             result.Add(CreateFileResult(mediaFile));

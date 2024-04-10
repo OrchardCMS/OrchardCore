@@ -565,7 +565,7 @@ namespace OrchardCore.Environment.Shell.Scope
             }
         }
 
-        private class ShellScopeHolder
+        private sealed class ShellScopeHolder
         {
             public ShellScope Scope;
         }

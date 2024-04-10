@@ -9,7 +9,7 @@ using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Email.Services;
 
-[Obsolete]
+[Obsolete("Use IEmailService and its implementations instead")]
 public class SmtpService : ISmtpService
 {
     private readonly EmailProviderOptions _emailProviderOptions;

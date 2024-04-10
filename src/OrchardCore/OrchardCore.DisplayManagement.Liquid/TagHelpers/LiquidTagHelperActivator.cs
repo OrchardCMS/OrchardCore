@@ -214,7 +214,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return tagHelper;
         }
 
-        private class ReusableTagHelperFactory<T> where T : class, ITagHelper
+        private sealed class ReusableTagHelperFactory<T> where T : class, ITagHelper
         {
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {

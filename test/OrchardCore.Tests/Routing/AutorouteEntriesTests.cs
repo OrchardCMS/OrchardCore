@@ -247,7 +247,7 @@ namespace OrchardCore.Tests.Routing
             void RemoveEntries(IEnumerable<AutorouteEntry> entries);
         }
 
-        private class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
+        private sealed class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
         {
             public StubAutorouteEntries() : base(null) { }
             public new void AddEntries(IEnumerable<AutorouteEntry> entries) => base.AddEntries(entries);

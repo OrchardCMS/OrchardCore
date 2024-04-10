@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
-    internal class StartupBaseMock : StartupBase
+    internal sealed class StartupBaseMock : StartupBase
     {
         private readonly object _startup;
         private readonly MethodInfo _configureService;

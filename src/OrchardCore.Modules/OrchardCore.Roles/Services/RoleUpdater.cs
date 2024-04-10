@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,7 +68,7 @@ namespace OrchardCore.Roles.Services
                 var stereotypes = provider.GetDefaultStereotypes();
                 foreach (var stereotype in stereotypes)
                 {
-                    var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, stereotype.Name, System.StringComparison.OrdinalIgnoreCase));
+                    var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, stereotype.Name, StringComparison.OrdinalIgnoreCase));
                     if (role == null)
                     {
                         continue;
@@ -129,7 +130,7 @@ namespace OrchardCore.Roles.Services
         private async Task UpdateRoleForInstalledFeaturesAsync(string roleName)
         {
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
-            var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, System.StringComparison.OrdinalIgnoreCase));
+            var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, StringComparison.OrdinalIgnoreCase));
             if (role == null)
             {
                 return;
@@ -151,7 +152,7 @@ namespace OrchardCore.Roles.Services
 
             var stereotypes = _permissionProviders
                 .SelectMany(provider => provider.GetDefaultStereotypes())
-                .Where(stereotype => string.Equals(stereotype.Name, roleName, System.StringComparison.OrdinalIgnoreCase));
+                .Where(stereotype => string.Equals(stereotype.Name, roleName, StringComparison.OrdinalIgnoreCase));
 
             if (!stereotypes.Any())
             {
@@ -179,7 +180,7 @@ namespace OrchardCore.Roles.Services
         {
             var stereotypes = providers
                 .SelectMany(provider => provider.GetDefaultStereotypes())
-                .Where(stereotype => string.Equals(stereotype.Name, role.RoleName, System.StringComparison.OrdinalIgnoreCase));
+                .Where(stereotype => string.Equals(stereotype.Name, role.RoleName, StringComparison.OrdinalIgnoreCase));
 
             if (!stereotypes.Any())
             {
