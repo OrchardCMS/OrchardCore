@@ -25,7 +25,8 @@ jobs:
 
         if ($changes)
         {
-            Write-Output "Please make sure to build the assets properly before pushing. The following files changed:"
+            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
+            Write-Output 'The following files changed:'
             Write-Output $changes
             exit -1
         }
