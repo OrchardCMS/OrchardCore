@@ -72,8 +72,8 @@ jobs:
         Get-Content ./community_metrics.md >> $env:GITHUB_STEP_SUMMARY
           
     - name: Create Issue
-      # v4.0.1
-      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+      # v5.0.0
+      uses: peter-evans/create-issue-from-file@24452a72d85239eacf1468b0f1982a9f3fec4c94
       with:
         title: Monthly community metrics report for ${{ env.LAST_MONTH }}
         token: ${{ secrets.GITHUB_TOKEN }}
