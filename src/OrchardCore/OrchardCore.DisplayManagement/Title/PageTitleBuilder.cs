@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Title
         }
     }
 
-    internal class PositionalTitlePart : IPositioned
+    internal sealed class PositionalTitlePart : IPositioned
     {
         public string Position { get; set; }
         public IHtmlContent Value { get; set; }

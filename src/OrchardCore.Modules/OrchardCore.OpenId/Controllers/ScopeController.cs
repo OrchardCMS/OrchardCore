@@ -99,7 +99,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
                     Name = tenant.Name
                 });
             }
@@ -141,7 +141,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
@@ -186,7 +186,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
@@ -213,9 +213,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !string.Equals(
-                    await _scopeManager.GetIdAsync(other),
-                    await _scopeManager.GetIdAsync(scope)))
+                if (other != null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
                 {
                     ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
@@ -243,7 +241,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);
