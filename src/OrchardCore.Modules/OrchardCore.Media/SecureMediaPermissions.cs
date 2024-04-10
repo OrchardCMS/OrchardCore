@@ -21,7 +21,7 @@ namespace OrchardCore.Media
         public static readonly Permission ViewOthersMedia = new("ViewOthersMediaContent", "View others media content", new[] { Permissions.ManageMediaFolder });
         public static readonly Permission ViewOwnMedia = new("ViewOwnMediaContent", "View own media content", new[] { ViewOthersMedia });
 
-        private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in {0}", new[] { ViewMedia });
+        private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", new[] { ViewMedia });
 
         private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByFolder = new();
         private static readonly char[] _trimSecurePathChars = ['/', '\\', ' '];
