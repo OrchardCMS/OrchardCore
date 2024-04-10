@@ -7,10 +7,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Media.Services;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media
 {
+    [Feature("OrchardCore.Media.Security")]
     public class SecureMediaPermissions : IPermissionProvider
     {
         // Note: The ManageMediaFolder permission grants all access, so viewing must be implied by it too.
