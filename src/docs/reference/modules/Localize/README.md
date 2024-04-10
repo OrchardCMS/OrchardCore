@@ -150,6 +150,13 @@ msgstr[1] "[{0} livres]"
 ```csharp
 T.Plural(count, "{0} book", "{0} books")
 ```
+In this example
+* `"{0} book"` is the singular form
+* `"{0} books"` is the plural form
+* `count` will determine if the singular or plural form is used and will replace the {0} placeholder
+
+!!! warning
+    You should not hardcode a number in the singular or plural forms because different languages have different rules about when each form is used.
 
 ### Extract translations to PO files
 
