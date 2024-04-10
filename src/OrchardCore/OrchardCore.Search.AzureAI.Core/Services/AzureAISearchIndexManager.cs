@@ -188,7 +188,7 @@ public class AzureAISearchIndexManager
             }
             else
             {
-                throw new InvalidOperationException($"Unable to create a safe index prefix for SearchAI. Attempted to created a safe name using '{safePrefix}'.");
+                throw new InvalidOperationException($"Unable to create a safe index prefix for AI Search. Attempted to created a safe name using '{safePrefix}'.");
             }
         }
 
