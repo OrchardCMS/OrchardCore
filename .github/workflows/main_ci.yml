@@ -1,6 +1,5 @@
 name: Main - CI
 on:
-  pull_request:
   push:
     paths-ignore:
       - '**/*.md'
