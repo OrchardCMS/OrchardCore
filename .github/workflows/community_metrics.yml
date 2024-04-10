@@ -1,5 +1,6 @@
 name: Monthly Community Metrics
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
     # Run on the first day of every month at 2:19 AM UTC.
