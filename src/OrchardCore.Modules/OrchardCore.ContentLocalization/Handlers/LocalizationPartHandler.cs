@@ -4,18 +4,44 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Entities;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
     public class LocalizationPartHandler : ContentPartHandler<LocalizationPart>
     {
         private readonly ILocalizationEntries _entries;
+        private readonly IIdGenerator _idGenerator;
+        private readonly ILocalizationService _localizationService;
 
-        public LocalizationPartHandler(ILocalizationEntries entries)
+        public LocalizationPartHandler(
+            ILocalizationEntries entries,
+            IIdGenerator idGenerator,
+            ILocalizationService localizationService)
         {
             _entries = entries;
+            _idGenerator = idGenerator;
+            _localizationService = localizationService;
         }
 
+        public override async Task CreatingAsync(CreateContentContext context, LocalizationPart part)
+        {
+            if (string.IsNullOrEmpty(part.LocalizationSet))
+            {
+                context.ContentItem.Alter<LocalizationPart>(p => 
+                    p.LocalizationSet = _idGenerator.GenerateUniqueId()
+                );
+            }
+
+            if (string.IsNullOrEmpty(part.Culture))
+            {
+                await context.ContentItem.AlterAsync<LocalizationPart>(async p => 
+                    p.Culture = await _localizationService.GetDefaultCultureAsync()
+                );
+            }
+        }
+        
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
