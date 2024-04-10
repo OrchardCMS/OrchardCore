@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
 public sealed class ChangeEmailIdentityOptionsConfigurations : IConfigureOptions<IdentityOptions>
 {
-    private readonly TokenOptions _tokenOptions;
+    private readonly ChangeEmailTokenProviderOptions _tokenOptions;
 
-    public ChangeEmailIdentityOptionsConfigurations(IOptions<TokenOptions> tokenOptions)
+    public ChangeEmailIdentityOptionsConfigurations(IOptions<ChangeEmailTokenProviderOptions> tokenOptions)
     {
         _tokenOptions = tokenOptions.Value;
     }
 
     public void Configure(IdentityOptions options)
     {
-        options.Tokens.ProviderMap.TryAdd(_tokenOptions.ChangeEmailTokenProvider, new TokenProviderDescriptor(typeof(ChangeEmailTokenProvider)));
+        options.Tokens.ChangeEmailTokenProvider = _tokenOptions.Name;
+        options.Tokens.ProviderMap[_tokenOptions.Name] = new TokenProviderDescriptor(typeof(ChangeEmailTokenProvider));
     }
 }

@@ -25,7 +25,8 @@ namespace OrchardCore.Users.Controllers;
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
-    private readonly TokenOptions _tokenOptions;
+
+    private readonly IdentityOptions _identityOptions;
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
 
@@ -36,7 +37,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IOptions<TokenOptions> tokenOptions,
+        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         UrlEncoder urlEncoder,
@@ -53,7 +54,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
-        _tokenOptions = tokenOptions.Value;
+        _identityOptions = identityOptions.Value;
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
     }
@@ -90,7 +91,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return View(model);
         }
 
-        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, _tokenOptions.AuthenticatorTokenProvider, StripToken(model.Code));
+        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, _identityOptions.Tokens.AuthenticatorTokenProvider, StripToken(model.Code));
 
         if (!isValid)
         {

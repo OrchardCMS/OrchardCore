@@ -40,7 +40,7 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Users.Registration",
+    Id = UserConstants.Features.UserRegistration,
     Name = "Users Registration",
     Description = "The registration feature allows external users to sign up to the site and ask to confirm their email.",
     Dependencies =

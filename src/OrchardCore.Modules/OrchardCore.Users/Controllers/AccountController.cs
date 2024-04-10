@@ -13,6 +13,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
@@ -37,10 +38,12 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -57,6 +60,7 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
+            IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
         {
             _signInManager = signInManager;
@@ -69,6 +73,7 @@ namespace OrchardCore.Users.Controllers
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellFeaturesManager = shellFeaturesManager;
             _externalLoginHandlers = externalLoginHandlers;
 
             H = htmlLocalizer;
@@ -845,6 +850,14 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
         {
+            var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+
+            if (!registrationFeatureIsAvailable)
+            {
+                return false;
+            }
+
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail)
             {

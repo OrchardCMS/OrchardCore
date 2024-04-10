@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Controllers;
 [Authorize, Feature(UserConstants.Features.SmsAuthenticator)]
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
-    private readonly TokenOptions _tokenOptions;
+    private readonly IdentityOptions _identityOptions;
     private readonly IUserService _userService;
     private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -42,7 +42,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IOptions<TokenOptions> tokenOptions,
+        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         IUserService userService,
@@ -62,7 +62,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
-        _tokenOptions = tokenOptions.Value;
+        _identityOptions = identityOptions.Value;
         _userService = userService;
         _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
@@ -223,7 +223,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, _tokenOptions.ChangePhoneNumberTokenProvider);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, _identityOptions.Tokens.ChangePhoneNumberTokenProvider);
 
         var message = new SmsMessage()
         {
