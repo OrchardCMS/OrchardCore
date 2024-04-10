@@ -34,3 +34,7 @@ With MkDocs you can get the full docs.orchardcore.net experience locally too. If
 2. Open a command line in the root of your clone of the repository.
 3. Run `pip3 install -r src/docs/requirements.txt` to install dependencies.
 4. Run `mkdocs serve` to start the site. You'll then be able to browse it under <http://127.0.0.1:8000>. If you use Visual Studio under Windows, we recommend NOT running the command from a Windows PowerShell prompt opened from Visual Studio's Solution Explorer. Instead, open CMD or a PowerShell 7+ window; for some reason, the MkDocs build is really slow under Windows PowerShell.
+
+## Submitting a pull request and gathering feedback
+
+This happens in the same way as for code contributions, [see there](contributing-code.md).

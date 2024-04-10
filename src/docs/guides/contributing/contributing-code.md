@@ -49,6 +49,7 @@ You might also read these two blogs posts on contributing code: [Open Source Con
 - If there's no issue for your PR, then please describe the context and rationale in the pull request description, and provide screenshots/screen recordings of the changes if they affect the UX.
 - Refactoring is great, but if you do so, please guard it with new tests.
 - If you add a significant new feature or a breaking change, then document this under the release notes of the upcoming pull request.
+- So we can help you better, please [allow our core contributors to edit your PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork).
 
 !!! tip
     When in doubt, just ask the community for guidance, we're happy to help!
