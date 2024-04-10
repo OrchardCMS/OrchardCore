@@ -25,7 +25,8 @@ jobs:
 
         if ($changes)
         {
-            Write-Output "Please make sure to build the assets properly before pushing."
+            Write-Output "Please make sure to build the assets properly before pushing. The following files changed:"
+            Write-Output $changes
             exit -1
         }
         else
