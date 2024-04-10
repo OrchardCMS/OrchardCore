@@ -1,4 +1,4 @@
-name: Frontend Assets build validation
+name: Frontend Assets Build Validation
 on:
   # Manual trigger.
   workflow_dispatch:
