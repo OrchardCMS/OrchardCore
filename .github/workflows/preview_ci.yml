@@ -14,14 +14,6 @@ jobs:
     name: Build, Test, Deploy
     steps:
     - uses: actions/checkout@v4
-    - name: Check if should publish
-      id: check-publish
-      shell: pwsh
-      run: |
-        $hasCommitFromLastDay = ![string]::IsNullOrEmpty((git log --oneline --since '24 hours ago'))
-        Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
-        $shouldPublish = $hasCommitFromLastDay -and '${{ github.event_name }}' -eq 'schedule'
-        "should-publish=$($shouldPublish ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
     - uses: actions/setup-node@v4
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
