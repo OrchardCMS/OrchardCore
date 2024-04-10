@@ -1,4 +1,4 @@
-name: Monthly Issue and Pull Request Metrics
+name: Monthly Community Metrics
 on:
   workflow_dispatch:
   schedule:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    name: Generate Issue and Pull Request Metrics
+    name: Generate Community Metrics
     runs-on: ubuntu-latest
     steps:
     - name: Get Dates For Last Month
