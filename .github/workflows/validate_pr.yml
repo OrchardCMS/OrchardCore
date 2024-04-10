@@ -1,9 +1,7 @@
 name: Validate Pull Request
 
 on:
-  push:
-  pull_request_target:
-    types: [opened, synchronize]
+  pull_request:
 
 jobs:
   validate-pull-request:
