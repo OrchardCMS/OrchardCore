@@ -35,7 +35,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         // This should be called first determine whether the file configs are set or not.
         options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));
 
-        // The 'DisableUIConfiguration' should always be set when using the file options.
+        // The 'DisableUIConfiguration' should always be set from the file-options.
         options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
 
         options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
