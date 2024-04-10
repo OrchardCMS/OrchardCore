@@ -11,6 +11,6 @@ public class TwoFactorMethodLoginEmailDisplayDriver : DisplayDriver<TwoFactorMet
     {
         return View("EmailAuthenticatorValidation", model)
         .Location("Content")
-        .OnGroup(TwoFactorOptions.TwoFactorEmailProvider);
+        .OnGroup(TokenOptions.DefaultEmailProvider);
     }
 }

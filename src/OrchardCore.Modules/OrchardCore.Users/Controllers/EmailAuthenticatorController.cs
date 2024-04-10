@@ -26,6 +26,7 @@ namespace OrchardCore.Users.Controllers;
 [Authorize, Feature(UserConstants.Features.EmailAuthenticator)]
 public class EmailAuthenticatorController : TwoFactorAuthenticationBaseController
 {
+    private readonly TokenOptions _tokenOptions;
     private readonly IUserService _userService;
     private readonly IEmailService _emailService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -40,6 +41,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         IOptions<TwoFactorOptions> twoFactorOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
+        IOptions<TokenOptions> tokenOptions,
         IUserService userService,
         IEmailService emailService,
         ILiquidTemplateManager liquidTemplateManager,
@@ -56,6 +58,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             stringLocalizer,
             twoFactorOptions)
     {
+        _tokenOptions = tokenOptions.Value;
         _userService = userService;
         _emailService = emailService;
         _liquidTemplateManager = liquidTemplateManager;
@@ -94,6 +97,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return RedirectToTwoFactorIndex();
         }
 
+        var t = _tokenOptions;
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
@@ -168,7 +172,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TwoFactorOptions.TwoFactorEmailProvider);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
         var message = new MailMessage()
         {

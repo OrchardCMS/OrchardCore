@@ -75,6 +75,7 @@ namespace OrchardCore.Users
                 pattern: _userOptions.LoginPath,
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.Login) }
             );
+
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: UserConstants.Features.Users,
@@ -280,6 +281,19 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature(UserConstants.Features.UserEmailConfirmation)]
+    public class EmailConfirmationStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddOptions<EmailConfirmationTokenProviderOptions>();
+
+            services.AddTransient<IConfigureOptions<TokenOptions>, EmailConfirmationTokenOptionsConfigurations>()
+                .AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+                .AddTransient<EmailConfirmationTokenProvider>();
+        }
+    }
+
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailStartup : StartupBase
     {
@@ -367,12 +381,6 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions<EmailConfirmationTokenProviderOptions>();
-
-            services.AddTransient<IConfigureOptions<TokenOptions>, EmailConfirmationTokenOptionsConfigurations>()
-                .AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
-                .TryAddTransient<EmailConfirmationTokenProvider>();
-
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();

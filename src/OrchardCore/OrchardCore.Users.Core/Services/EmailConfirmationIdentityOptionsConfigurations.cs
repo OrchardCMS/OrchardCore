@@ -14,6 +14,6 @@ public sealed class EmailConfirmationIdentityOptionsConfigurations : IConfigureO
 
     public void Configure(IdentityOptions options)
     {
-        options.Tokens.ProviderMap.TryAdd(_tokenOptions.EmailConfirmationTokenProvider, new TokenProviderDescriptor(typeof(EmailConfirmationTokenProvider)));
+        options.Tokens.ProviderMap[_tokenOptions.EmailConfirmationTokenProvider] = new TokenProviderDescriptor(typeof(EmailConfirmationTokenProvider));
     }
 }

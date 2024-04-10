@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -77,16 +76,14 @@ public class AuthenticatorAppStartup : StartupBase
     {
         var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(typeof(IUser));
         services.AddTransient(authenticatorProviderType);
+
         services.Configure<IdentityOptions>(options =>
         {
             options.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
-            options.Tokens.ProviderMap.TryAdd(TokenOptions.DefaultAuthenticatorProvider, new TokenProviderDescriptor(authenticatorProviderType));
+            options.Tokens.ProviderMap[TokenOptions.DefaultAuthenticatorProvider] = new TokenProviderDescriptor(authenticatorProviderType);
         });
 
-        services.Configure<TwoFactorOptions>(options =>
-        {
-            options.Providers.Add(TokenOptions.DefaultAuthenticatorProvider);
-        });
+        services.AddTransient<IConfigureOptions<TwoFactorOptions>, AuthenticatorAppProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
@@ -97,13 +94,13 @@ public class EmailAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddOptions<TwoFactorEmailTokenProviderOptions>();
-
-        services.Configure<IdentityOptions>(options =>
-        {
-            options.Tokens.ProviderMap.TryAdd(TwoFactorOptions.TwoFactorEmailProvider, new TokenProviderDescriptor(typeof(TwoFactorEmailTokenProvider)));
-        }).Configure<TwoFactorOptions>(options => options.Providers.Add(TwoFactorOptions.TwoFactorEmailProvider))
-        .TryAddTransient<TwoFactorEmailTokenProvider>();
+        var emailProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
+        services.AddTransient(emailProviderType)
+            .Configure<TwoFactorOptions>(options => options.Providers.Add(TokenOptions.DefaultEmailProvider))
+            .Configure<IdentityOptions>(options =>
+            {
+                options.Tokens.ProviderMap[TokenOptions.DefaultEmailProvider] = new TokenProviderDescriptor(emailProviderType);
+            });
 
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();
@@ -120,14 +117,10 @@ public class SmsAuthenticatorStartup : StartupBase
         services.Configure<IdentityOptions>(options =>
         {
             options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultPhoneProvider;
-            options.Tokens.ProviderMap.TryAdd(TokenOptions.DefaultPhoneProvider, new TokenProviderDescriptor(phoneNumberProviderType));
+            options.Tokens.ProviderMap[TokenOptions.DefaultPhoneProvider] = new TokenProviderDescriptor(phoneNumberProviderType);
         });
 
-        services.Configure<TwoFactorOptions>(options =>
-        {
-            options.Providers.Add(TokenOptions.DefaultPhoneProvider);
-        });
-
+        services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
