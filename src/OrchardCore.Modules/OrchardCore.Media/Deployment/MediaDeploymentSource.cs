@@ -57,7 +57,7 @@ namespace OrchardCore.Media.Deployment
             });
         }
 
-        private class MediaDeploymentStepModel
+        private sealed class MediaDeploymentStepModel
         {
             public string SourcePath { get; set; }
             public string TargetPath { get; set; }

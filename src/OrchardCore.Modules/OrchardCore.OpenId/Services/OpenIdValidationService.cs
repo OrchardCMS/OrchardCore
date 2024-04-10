@@ -178,7 +178,7 @@ namespace OrchardCore.OpenId.Services
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {

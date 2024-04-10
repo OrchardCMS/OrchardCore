@@ -14,7 +14,7 @@ namespace OrchardCore.AdminMenu.Deployment
         private readonly JsonSerializerOptions _serializationOptions;
 
         public AdminMenuDeploymentSource(IAdminMenuService adminMenuService,
-            IOptions<ContentSerializerJsonOptions> serializationOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
             _serializationOptions = serializationOptions.Value.SerializerOptions;
