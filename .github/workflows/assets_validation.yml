@@ -87,6 +87,7 @@ jobs:
         }
     - name: Upload changed files as artifact
       uses: actions/upload-artifact@v4
+      if: failure()
       with:
         name: changed-files
         path: ${{ env.CHANGED_FILES }}
