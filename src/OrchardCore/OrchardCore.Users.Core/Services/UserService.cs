@@ -57,7 +57,7 @@ namespace OrchardCore.Users.Services
 
             if (string.IsNullOrWhiteSpace(identifier))
             {
-                reportError("UserName", S["A user name is required."]);
+                reportError("Username", S["A user name is required."]);
                 return null;
             }
 
