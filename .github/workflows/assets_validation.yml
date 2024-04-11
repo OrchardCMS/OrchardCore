@@ -45,6 +45,7 @@ jobs:
             Write-Output ''
 
             $changeLines = $changes -split '`n'
+            $changedFiles = @()
 
             foreach ($line in $changeLines) {
                 if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
@@ -65,11 +66,18 @@ jobs:
                         Get-Content -Path $file
                     }
 
+                    $changedFiles += $file
+
                     Write-Output ''
                     Write-Output '---------------------------------------'
                     Write-Output ''
                 }
             }
+
+            # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
+            # can consume it.
+            $changedFilesString = $changedFiles -join "`n"
+            "CHANGED_FILES=$changedFilesString" >> $Env:GITHUB_ENV
 
             exit -1
         }
@@ -77,3 +85,8 @@ jobs:
         {
             Write-Host "No uncommitted changes found. Repository is clean."
         }
+    - name: Upload changed files as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: changed-files
+        path: ${{ env.CHANGED_FILES }}
