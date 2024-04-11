@@ -1,7 +1,19 @@
 name: Frontend Assets Build Validation
-on:
-  # Manual trigger.
-  workflow_dispatch:
+
+on: 
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main ]
+  pull_request:
+    branches: [ main, release/** ]
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   test-npm-build:
     name: Test building assets
