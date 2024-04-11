@@ -11,8 +11,6 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
-
         private readonly ContentTypeDefinitionOptions _options;
 
         protected readonly IStringLocalizer S;
@@ -100,7 +98,7 @@ namespace OrchardCore.ContentTypes.Editors
                 return stereotypesOptions;
             }
 
-            return _defaultOptions;
+            return _options.Default;
         }
 
         private static bool IsAlphaNumericOrEmpty(string value)

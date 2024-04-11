@@ -18,4 +18,9 @@ public class ContentTypeDefinitionOptions
     /// In this dictionary, the 'key' denotes the content type, while the 'value' corresponds to the driver options.
     /// </summary>
     public Dictionary<string, ContentTypeDefinitionDriverOptions> ContentTypes { get; } = [];
+
+    /// <summary>
+    /// Configure the default driver options.
+    /// </summary>
+    public ContentTypeDefinitionDriverOptions Default { get; set; } = new();
 }
