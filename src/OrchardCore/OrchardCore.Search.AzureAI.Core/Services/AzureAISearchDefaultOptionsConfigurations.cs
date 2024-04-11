@@ -28,13 +28,14 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
     public async void Configure(AzureAISearchDefaultOptions options)
     {
-        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>()
+        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
+            .Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();
 
-        // This should be called first to set whether or not the file configs are set or not.
+        // This should be called first determine whether the file configs are set or not.
         options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));
 
-        // The DisableUIConfiguration should always be set using the file options only.
+        // The 'DisableUIConfiguration' should always be set from the file-options.
         options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
 
         options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
@@ -104,6 +105,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
             return false;
         }
 
-        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey || !string.IsNullOrEmpty(options.Credential?.Key);
+        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey ||
+            !string.IsNullOrEmpty(options.Credential?.Key);
     }
 }

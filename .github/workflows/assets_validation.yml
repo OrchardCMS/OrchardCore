@@ -1,14 +1,14 @@
-name: Frontend Assets build validation
+name: Frontend Assets Build Validation
 on:
-# manual trigger
+  # Manual trigger.
   workflow_dispatch:
 jobs:
   test-npm-build:
     name: Test building assets
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/cache@v3
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v4
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -19,11 +19,18 @@ jobs:
         npm install
         npm run rebuild
     - name: Check if git has changes
-      id: changes
-      uses: UnicornGlobal/has-changes-action@v1.0.11
-    - name: Changes detected after building assets
-      if: steps.changes.outputs.changed == 1
-      run: | 
-        git status
-        echo "Please make sure to build them properly before pushing"
-        exit -1
+      shell: pwsh
+      run: |
+        $changes = git status --porcelain
+
+        if ($changes)
+        {
+            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
+            Write-Output 'The following files changed:'
+            Write-Output $changes
+            exit -1
+        }
+        else
+        {
+            Write-Host "No uncommitted changes found. Repository is clean."
+        }

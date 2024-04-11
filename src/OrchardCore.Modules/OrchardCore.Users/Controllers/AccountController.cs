@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -39,6 +41,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
@@ -61,6 +65,8 @@ namespace OrchardCore.Users.Controllers
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
             IShellFeaturesManager shellFeaturesManager,
+            IDisplayManager<LoginForm> loginFormDisplayManager,
+            IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
         {
             _signInManager = signInManager;
@@ -74,6 +80,8 @@ namespace OrchardCore.Users.Controllers
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _shellFeaturesManager = shellFeaturesManager;
+            _loginFormDisplayManager = loginFormDisplayManager;
+            _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
 
             H = htmlLocalizer;
@@ -110,10 +118,13 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
+            var formShape = await _loginFormDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false);
+
             CopyTempDataErrorsToModelState();
+
             ViewData["ReturnUrl"] = returnUrl;
 
-            return View();
+            return View(formShape);
         }
 
         [HttpGet]
@@ -154,77 +165,79 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        [ActionName(nameof(Login))]
+        public async Task<IActionResult> LoginPOST(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            ArgumentNullException.ThrowIfNull(model);
+            var model = new LoginForm();
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+
+            if (disableLocalLogin)
             {
-                var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
-                if (disableLocalLogin)
+                ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
+            }
+            else
+            {
+                await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
+
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
-                }
-                else
-                {
-                    await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
-                    if (ModelState.IsValid)
+                    var user = await _userService.GetUserAsync(model.UserName);
+                    if (user != null)
                     {
-                        var user = await _userService.GetUserAsync(model.UserName);
-                        if (user != null)
+                        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                        if (result.Succeeded)
                         {
-                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
-                            if (result.Succeeded)
+                            if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user))
                             {
-                                if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user))
+                                result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                                if (result.Succeeded)
                                 {
-                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                                    _logger.LogInformation(1, "User logged in.");
+                                    await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                                    if (result.Succeeded)
-                                    {
-                                        _logger.LogInformation(1, "User logged in.");
-                                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                                        return await LoggedInActionResultAsync(user, returnUrl);
-                                    }
+                                    return await LoggedInActionResultAsync(user, returnUrl);
                                 }
                             }
-
-                            if (result.RequiresTwoFactor)
-                            {
-                                return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
-                                    typeof(TwoFactorAuthenticationController).ControllerName(),
-                                    new
-                                    {
-                                        returnUrl,
-                                        model.RememberMe
-                                    });
-                            }
-
-                            if (result.IsLockedOut)
-                            {
-                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
-
-                                return View();
-                            }
-
-                            // Login failed with a known user.
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                         }
 
-                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                        if (result.RequiresTwoFactor)
+                        {
+                            return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                                typeof(TwoFactorAuthenticationController).ControllerName(),
+                                new
+                                {
+                                    returnUrl,
+                                    model.RememberMe
+                                });
+                        }
+
+                        if (result.IsLockedOut)
+                        {
+                            ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                            await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+
+                            return View();
+                        }
+
+                        // Login failed with a known user.
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                     }
 
-                    // Login failed unknown user.
-                    await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                 }
+
+                // Login failed unknown user.
+                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
             }
 
             // If we got this far, something failed, redisplay form.
-            return View(model);
+            return View(formShape);
         }
 
         [HttpPost]
