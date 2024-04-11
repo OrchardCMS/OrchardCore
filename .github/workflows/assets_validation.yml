@@ -40,6 +40,7 @@ jobs:
             Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
             Write-Output 'The following files changed:'
             Write-Output $changes
+            Write-Output 'You can also download the attached artifact to see the changes.'
             Write-Output ''
             Write-Output '---------------------------------------'
             Write-Output ''
