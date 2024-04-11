@@ -23,5 +23,3 @@ jobs:
           close-pr-message: >
             Closing this pull request because it has been stale for very long. If you think this is still relevant, 
             feel free to reopen it.
-          # Earlier PRs aren't checked.
-          start-date: '2024-01-01T00:00:00Z'
