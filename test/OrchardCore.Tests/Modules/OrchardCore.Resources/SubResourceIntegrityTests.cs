@@ -54,7 +54,7 @@ public class SubResourceIntegrityTests
             }
 
             Assert.All(expectations, expectation => Assert.True(!string.IsNullOrEmpty(expectation.Item3), $"The {resourceType} {expectation.Item1} was not found (404 error). It is a non-valid url."));
-            Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item2), $"The {resourceType} {expectation.Item1} has invalid SRI hash, please use '{expectation.Item3}' instead."));
+            Assert.All(expectations, expectation => Assert.True(expectation.Item3.Equals(expectation.Item2, StringComparison.OrdinalIgnoreCase), $"The {resourceType} {expectation.Item1} has invalid SRI hash, please use '{expectation.Item3}' instead."));
         }
     }
 
