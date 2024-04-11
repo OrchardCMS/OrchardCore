@@ -40,16 +40,12 @@ public class CacheTicketStore : ITicketStore
         await _distributedCache.RemoveAsync(cacheKey);
     }
 
-    public async Task RenewAsync(string key, AuthenticationTicket ticket) //NOSONAR
+    public async Task RenewAsync(string key, AuthenticationTicket ticket)
     {
         var cacheKey = $"{KeyPrefix}-{key}";
 
         try
         {
-            ArgumentNullException.ThrowIfNull(DataProtector);
-            ArgumentNullException.ThrowIfNull(ticket);
-            ArgumentNullException.ThrowIfNull(ticket.Properties);
-
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
             await _distributedCache.SetAsync(cacheKey, protectedBytes,
                 new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc });
@@ -100,7 +96,7 @@ public class CacheTicketStore : ITicketStore
         catch (Exception e)
         {
             _logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync), cacheKey);
-            return string.Empty;
+            return null;
         }
     }
 
