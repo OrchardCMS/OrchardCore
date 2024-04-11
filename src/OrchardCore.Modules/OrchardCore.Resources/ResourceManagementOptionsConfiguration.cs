@@ -230,7 +230,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("bootstrap-select")
-                .SetDependencies("jQuery", "bootstrap")
+                .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.js")
                 .SetCdnIntegrity("sha384-0O3sg2SQIGn4393xwamQISjphC8DIXjCzlhj1gPAMC5xGg+2perF5Mehr5njv0fZ", "sha384-2b0aLFg/Ejp4OF57nW0BUqNzm259RHYYMf/mpKClBijsEH2P+4ea2oWAq0twd8L0")
@@ -461,16 +461,16 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuejs")
-                .SetUrl("~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.min.js", "~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js")
-                .SetCdnIntegrity("sha256-1gHyKSR7Jh0YGBmI9zN7P2UhZRh/PCKhCYIaUOqWoPk=", "sha256-ogKWlwEM30Qu6hELJMlzX9rPqSGYYK1u2IizINEC5gk=")
-                .SetVersion("2.7.14");
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue.min.js", "~/OrchardCore.Resources/Scripts/vue.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js")
+                .SetCdnIntegrity("sha384-ULpZhk1pvhc/UK5ktA9kwb2guy9ovNSTyxPNHANnA35YjBQgdwI+AhLkixDvdlw4", "sha384-t1tHLsbM7bYMJCXlhr0//00jSs7ZhsAhxgm191xFsyzvieTMCbUWKMhFg9I6ci8q")
+                .SetVersion("2.6.14");
 
             manifest
                 .DefineScript("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue.global.prod.js", "~/OrchardCore.Resources/Scripts/vue.global.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.js")
-                .SetCdnIntegrity("sha256-4yDa4p89hBgm4cwPC4fx7t8+QOEjjKFWYp9jpIsCsgM=", "sha256-PKohudZy73A99AyDWctqMmBXpTCuJ9RIboh4ZyILtCM=")
+                .SetCdnIntegrity("sha384-WZZj7qk4v/+9eNJl4Yf8GLEydI6DBrdbCd2a+8yYNrDo6Badw06X3KfVhRtujcos", "sha384-0iD0gBXHDCbr6i0rOCn2habGxMGj9NcokM7/T2CFDHMXQG+75NUL0/4scPuXUQ4s")
                 .SetVersion("3.4.19");
 
             manifest
@@ -486,7 +486,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("vuejs:3")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.umd.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.js")
-                .SetCdnIntegrity("sha256-BG2jF5avrBI525b65+XV3oBDf4aMwv0Gmby5+PR3YUc=", "sha256-XB6NElpLwfeswT2RqMxDyIXKP83r37JQoZaiSWXEFnA=")
+                .SetCdnIntegrity("sha384-0MajIK6LOklxyFg2ZqUDAMWf1Dfq1I4CnFU7y0dMp+PXxRmYwzV+GmuKdkUtZxub", "sha384-EbrrLK99/FwRZrAFC6SArMCXEVLvsnzeuvmRbesTEbx+sZj1W5XrTKAm2bXo0w0L")
                 .SetVersion("3.0.0");
 
             //TODO add vendor folder
@@ -522,7 +522,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("vuejs:3", "Sortable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.js")
-                .SetCdnIntegrity("sha256-FjxpX3VAkThN5LyMBcYXWG07S53R7zenPcuYdGsHM5I=", "sha256-WmIsBn89Zsqc1mnbARPrEIskG1iJLpZaMM91oA8QLDI=")
+                .SetCdnIntegrity("sha384-4d4fYdfApsS7fYSS4WOmsMfM4R4SmLZcANgHnbDWRzH3RIdOCoL/7gwQM7Kg7Lf+", "sha384-ZQ+FMVoqbmLVqF2knf5P95c+m/MSkrJ6C32O8xHOL7M1+SgWl2wBhCiLJLpO27Sm")
                 .SetVersion("4.1.0");
 
             manifest
