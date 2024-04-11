@@ -55,16 +55,16 @@ jobs:
 
                     Write-Output "Diff for: $file"
 
-                    if ($changeType -eq 'M')
-                    {
-                        # File is modified; use git diff to get the diff of the modified file.
-                        git diff -- $file
-                    }
-                    elseif ($changeType -eq '??')
-                    {
-                        # File is (untracked); display the file contents.
-                        Get-Content -Path $file
-                    }
+                    # if ($changeType -eq 'M')
+                    # {
+                    #     # File is modified; use git diff to get the diff of the modified file.
+                    #     git diff -- $file
+                    # }
+                    # elseif ($changeType -eq '??')
+                    # {
+                    #     # File is (untracked); display the file contents.
+                    #     Get-Content -Path $file
+                    # }
 
                     $changedFiles += $file
 
