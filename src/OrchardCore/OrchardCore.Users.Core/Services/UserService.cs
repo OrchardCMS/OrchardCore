@@ -20,11 +20,12 @@ namespace OrchardCore.Users.Services
     {
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
-        private readonly IOptions<IdentityOptions> _identityOptions;
+        private readonly IdentityOptions _identityOptions;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-        protected readonly IStringLocalizer S;
         private readonly ISiteService _siteService;
         private readonly ILogger _logger;
+
+        protected readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -37,7 +38,7 @@ namespace OrchardCore.Users.Services
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _identityOptions = identityOptions;
+            _identityOptions = identityOptions.Value;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
             S = stringLocalizer;
             _siteService = siteService;
@@ -168,14 +169,17 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
+            var user = await GetUserAsync(userIdentifier);
 
             if (user == null)
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (user is User u)
+            {
+                u.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            }
 
             return user;
         }
@@ -240,8 +244,17 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<IUser> GetUserAsync(string userName) =>
-            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
+        public async Task<IUser> GetUserAsync(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null && _identityOptions.User.RequireUniqueEmail)
+            {
+                user = await _userManager.FindByEmailAsync(userName);
+            }
+
+            return user;
+        }
 
         public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 
@@ -265,10 +278,10 @@ namespace OrchardCore.Users.Services
                         reportError("Password", S["Passwords must have at least one non letter or digit character."]);
                         break;
                     case "PasswordTooShort":
-                        reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                        reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Password.RequiredLength]);
                         break;
                     case "PasswordRequiresUniqueChars":
-                        reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+                        reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -19,31 +24,41 @@ namespace OrchardCore.Users.Controllers
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordController : Controller
     {
+        private static readonly string _controllerName = typeof(ResetPasswordController).ControllerName();
+
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IDisplayManager<ForgotPasswordForm> _displayManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
+
         protected readonly IStringLocalizer S;
 
         public ResetPasswordController(
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
+            IUpdateModelAccessor updateModelAccessor,
+            IDisplayManager<ForgotPasswordForm> displayManager,
+            IShellFeaturesManager shellFeaturesManager,
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+            IStringLocalizer<ResetPasswordController> stringLocalizer)
         {
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
-
-            S = stringLocalizer;
             _logger = logger;
+            _updateModelAccessor = updateModelAccessor;
+            _displayManager = displayManager;
+            _shellFeaturesManager = shellFeaturesManager;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
+            S = stringLocalizer;
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword()
         {
@@ -52,56 +67,63 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            return View();
+            var formShape = await _displayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+            return View(formShape);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        [ActionName(nameof(ForgotPassword))]
+        public async Task<IActionResult> ForgotPasswordPOST()
         {
             if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
 
+            var model = new ForgotPasswordForm();
+
+            var formShape = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
-                if (user == null || (
-                        (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
-                        && !await _userManager.IsEmailConfirmedAsync(user))
-                    )
+                var user = await _userService.GetForgotPasswordUserAsync(model.Identifier) as User;
+                if (user == null || await MustValidateEmailAsync(user))
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
-                    return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
+                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
 
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
-                var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
+                var resetPasswordUrl = Url.Action(nameof(ResetPassword), _controllerName, new { code = user.ResetToken }, HttpContext.Request.Scheme);
+
                 // send email with callback link
-                await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
+                await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel()
+                {
+                    User = user,
+                    LostPasswordUrl = resetPasswordUrl
+                });
 
                 var context = new PasswordRecoveryContext(user);
 
                 await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordRecoveredAsync(context), context, _logger);
 
-                return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return View(formShape);
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string code = null)
         {
@@ -132,28 +154,31 @@ namespace OrchardCore.Users.Controllers
             {
                 if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)))
                 {
-                    return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
+                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
             }
 
             return View(model);
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }
 
-        private RedirectResult RedirectToLocal(string returnUrl)
+        private async Task<bool> MustValidateEmailAsync(User user)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                           .Any(feature => feature.Id == "OrchardCore.Users.Registration");
+
+            if (!registrationFeatureIsAvailable)
             {
-                return Redirect(returnUrl);
+                return false;
             }
 
-            return Redirect("~/");
+            return (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
+                && !await _userManager.IsEmailConfirmedAsync(user);
         }
     }
 }

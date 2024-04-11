@@ -2,30 +2,25 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 
-public class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
     private readonly ISiteService _siteService;
-    private readonly ReCaptchaService _reCaptchaService;
 
-    public ReCaptchaLoginFormDisplayDriver(
-        ISiteService siteService,
-        ReCaptchaService reCaptchaService)
+    public ReCaptchaForgotPasswordFormDisplayDriver(ISiteService siteService)
     {
         _siteService = siteService;
-        _reCaptchaService = reCaptchaService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
     {
         var _reCaptchaSettings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
-        if (!_reCaptchaSettings.IsValid() || !_reCaptchaService.IsThisARobot())
+        if (!_reCaptchaSettings.IsValid())
         {
             return null;
         }

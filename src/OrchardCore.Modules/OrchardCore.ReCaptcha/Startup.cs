@@ -39,7 +39,7 @@ namespace OrchardCore.ReCaptcha
     }
 
     [Feature("OrchardCore.ReCaptcha.Users")]
-    public class StartupUsers : StartupBase
+    public class UsersStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -51,6 +51,16 @@ namespace OrchardCore.ReCaptcha
             {
                 options.Filters.Add<ReCaptchaLoginFilter>();
             });
+        }
+    }
+
+    [Feature("OrchardCore.ReCaptcha.Users")]
+    [RequireFeatures("OrchardCore.Users.ResetPassword")]
+    public class UsersResetPasswordStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ReCaptchaForgotPasswordFormDisplayDriver>();
         }
     }
 }

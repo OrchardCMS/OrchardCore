@@ -75,6 +75,7 @@ namespace OrchardCore.Users
                 pattern: _userOptions.LoginPath,
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.Login) }
             );
+
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: UserConstants.Features.Users,
@@ -440,7 +441,9 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+
             services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
         }
     }
 

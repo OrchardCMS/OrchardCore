@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -28,8 +27,6 @@ public class LoginFormDisplayDriver : DisplayDriver<LoginForm>
         model.UserName = viewModel.UserName;
         model.Password = viewModel.Password;
         model.RememberMe = viewModel.RememberMe;
-
-        model.Put(viewModel);
 
         return Edit(model);
     }

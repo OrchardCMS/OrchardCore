@@ -49,9 +49,6 @@ namespace OrchardCore.ReCaptcha
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            var afterForgotPasswordZone = layout.Zones["AfterForgotPassword"];
-            await afterForgotPasswordZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
-
             var afterRegisterZone = layout.Zones["AfterRegister"];
             await afterRegisterZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
