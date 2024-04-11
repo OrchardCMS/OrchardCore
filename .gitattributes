@@ -1,6 +1,3 @@
 * text=auto
 
 **/wwwroot/Scripts/* linguist-vendored
-
-# Keep LF line endings in webroot folder. Otherwise, building under Windows would change the line ending and cause changes without actually editing the files.
-**/wwwroot/* text eol=lf
