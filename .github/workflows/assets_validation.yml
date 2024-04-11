@@ -76,8 +76,8 @@ jobs:
 
             # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
             # can consume it.
-            $changedFilesString = $changedFiles -join "`nEOL"
-            "CHANGED_FILES<<EOL$changedFilesString" >> $Env:GITHUB_ENV
+            $changedFilesString = $changedFiles -join "`n"
+            "CHANGED_FILES<<ENDOFSTRING$changedFilesStringENDOFSTRING" >> $Env:GITHUB_ENV
 
             exit -1
         }
