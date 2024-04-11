@@ -2,7 +2,7 @@
 // It makes easier to use a single picker instance with several input fields.
 // How to use it: Call show() from outside , passing it the id's of the input fields you want the icon classes applied to.
 
-var iconPickesfdsddfdrVue = new Vue({
+var iconPickerVue = new Vue({
     el: '#iconPickerVue',
     data: {
         targetInputField: '',
