@@ -61,6 +61,7 @@ namespace OrchardCore.ReCaptcha
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ReCaptchaForgotPasswordFormDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ResetPasswordForm>, ReCaptchaResetPasswordFormDisplayDriver>();
         }
     }
 }

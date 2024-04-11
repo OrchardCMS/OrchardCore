@@ -45,7 +45,7 @@ namespace OrchardCore.Users.Services
             _logger = logger;
         }
 
-        public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
+        public async Task<IUser> AuthenticateAsync(string identifier, string password, Action<string, string> reportError)
         {
             var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(identifier))
             {
                 reportError("UserName", S["A user name is required."]);
                 return null;
@@ -67,7 +67,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await GetUserAsync(userName);
+            var user = await GetUserAsync(identifier);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -162,14 +162,14 @@ namespace OrchardCore.Users.Services
             return _userManager.GetUserAsync(principal);
         }
 
-        public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
+        public async Task<IUser> GetForgotPasswordUserAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = await GetUserAsync(userIdentifier);
+            var user = await GetUserAsync(userId);
 
             if (user == null)
             {
@@ -184,24 +184,24 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        public async Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ResetPasswordAsync(string identifier, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(emailAddress))
+            if (string.IsNullOrWhiteSpace(identifier))
             {
-                reportError("UserName", S["A email address is required."]);
+                reportError(nameof(ResetPasswordForm.Identifier), S["A username or email address is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(newPassword))
             {
-                reportError("Password", S["A password is required."]);
+                reportError(nameof(ResetPasswordForm.NewPassword), S["A password is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(resetToken))
             {
-                reportError("Token", S["A token is required."]);
+                reportError(nameof(ResetPasswordForm.ResetToken), S["A token is required."]);
                 result = false;
             }
 
@@ -210,7 +210,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await _userManager.FindByEmailAsync(emailAddress) as User;
+            var user = await GetUserAsync(identifier) as User;
 
             if (user == null)
             {
@@ -244,13 +244,13 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<IUser> GetUserAsync(string userName)
+        public async Task<IUser> GetUserAsync(string identifier)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(identifier);
 
             if (user is null && _identityOptions.User.RequireUniqueEmail)
             {
-                user = await _userManager.FindByEmailAsync(userName);
+                user = await _userManager.FindByEmailAsync(identifier);
             }
 
             return user;

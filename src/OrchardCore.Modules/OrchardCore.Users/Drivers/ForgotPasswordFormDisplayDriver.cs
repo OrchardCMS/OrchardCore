@@ -28,3 +28,4 @@ public class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
         return Edit(model);
     }
 }
+

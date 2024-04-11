@@ -32,7 +32,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IDisplayManager<ForgotPasswordForm> _displayManager;
+        private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
+        private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
         protected readonly IStringLocalizer S;
@@ -43,7 +44,8 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             ILogger<ResetPasswordController> logger,
             IUpdateModelAccessor updateModelAccessor,
-            IDisplayManager<ForgotPasswordForm> displayManager,
+            IDisplayManager<ForgotPasswordForm> forgotPasswordDisplayManager,
+            IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
             IStringLocalizer<ResetPasswordController> stringLocalizer)
@@ -53,7 +55,8 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _logger = logger;
             _updateModelAccessor = updateModelAccessor;
-            _displayManager = displayManager;
+            _forgotPasswordDisplayManager = forgotPasswordDisplayManager;
+            _resetPasswordDisplayManager = resetPasswordDisplayManager;
             _shellFeaturesManager = shellFeaturesManager;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
             S = stringLocalizer;
@@ -67,7 +70,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var formShape = await _displayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            var formShape = await _forgotPasswordDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             return View(formShape);
         }
@@ -84,7 +87,7 @@ namespace OrchardCore.Users.Controllers
 
             var model = new ForgotPasswordForm();
 
-            var formShape = await _displayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+            var formShape = await _forgotPasswordDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
@@ -131,34 +134,45 @@ namespace OrchardCore.Users.Controllers
             {
                 return NotFound();
             }
-            if (code == null)
+
+            if (string.IsNullOrWhiteSpace(code))
             {
-                // "A code must be supplied for password reset.";
+                return RedirectToAction(nameof(ForgotPassword));
             }
-            return View(new ResetPasswordViewModel { ResetToken = code });
+
+            var model = new ResetPasswordForm { ResetToken = code };
+            var shape = await _resetPasswordDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+            return View(shape);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        [ActionName(nameof(ResetPassword))]
+        public async Task<IActionResult> ResetPasswordPOST()
         {
             if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
             {
                 return NotFound();
             }
 
+            var model = new ResetPasswordForm();
+            var shape = await _resetPasswordDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)))
+                var token = Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken));
+
+                if (await _userService.ResetPasswordAsync(model.Identifier, token, model.NewPassword, ModelState.AddModelError))
                 {
-                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                    return RedirectToAction(nameof(ResetPasswordConfirmation));
                 }
             }
 
-            return View(model);
+            return View(shape);
         }
 
         [AllowAnonymous]

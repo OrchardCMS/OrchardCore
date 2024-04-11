@@ -441,6 +441,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
 
             services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
             services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();

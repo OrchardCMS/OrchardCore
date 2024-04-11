@@ -499,7 +499,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var model = new ResetPasswordViewModel { Email = user.Email };
+            var model = new ResetPasswordViewModel { Identifier = user.UserName };
 
             return View(model);
         }
@@ -507,7 +507,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
         {
-            if (await _userManager.FindByEmailAsync(model.Email) is not User user)
+            if (await _userService.GetUserAsync(model.Identifier) is not User user)
             {
                 return NotFound();
             }
@@ -521,7 +521,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+                if (await _userService.ResetPasswordAsync(model.Identifier, token, model.NewPassword, ModelState.AddModelError))
                 {
                     await _notifier.SuccessAsync(H["Password updated correctly."]);
 
