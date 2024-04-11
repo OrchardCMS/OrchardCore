@@ -2,6 +2,7 @@
 name: Close stale PRs
 
 on:
+  pull_request:
   schedule:
     # Every day at 1:39 AM UTC. A random time to avoid GitHub Actions being overloaded by scheduled workflows.
     - cron: '39 1 * * *'
@@ -23,3 +24,4 @@ jobs:
           close-pr-message: >
             Closing this pull request because it has been stale for very long. If you think this is still relevant, 
             feel free to reopen it.
+          debug-only: true
