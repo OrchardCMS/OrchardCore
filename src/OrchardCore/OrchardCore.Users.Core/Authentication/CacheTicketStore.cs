@@ -96,7 +96,9 @@ public class CacheTicketStore : ITicketStore
         catch (Exception e)
         {
             _logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync), cacheKey);
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
     }
 
