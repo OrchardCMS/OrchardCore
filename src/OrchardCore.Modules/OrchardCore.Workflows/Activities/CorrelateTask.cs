@@ -12,9 +12,11 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+
         protected readonly IStringLocalizer S;
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator,
+        public CorrelateTask(
+            IWorkflowScriptEvaluator scriptEvaluator,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<CorrelateTask> stringLocalizer)
         {

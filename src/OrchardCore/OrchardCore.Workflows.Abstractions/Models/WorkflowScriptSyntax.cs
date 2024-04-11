@@ -1,8 +1,7 @@
-namespace OrchardCore.Workflows.Models
+namespace OrchardCore.Workflows.Models;
+
+public enum WorkflowScriptSyntax
 {
-    public enum WorkflowScriptSyntax
-    {
-        JavaScript,
-        Liquid
-    }
+    JavaScript,
+    Liquid
 }

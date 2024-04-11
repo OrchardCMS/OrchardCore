@@ -2,6 +2,7 @@ using System;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Helpers;
+
 public static class WorkflowScriptSyntaxExtensions
 {
     public static string GetSyntaxName(this WorkflowScriptSyntax workflowScriptSyntax)
