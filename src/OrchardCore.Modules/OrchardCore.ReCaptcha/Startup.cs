@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -47,10 +46,6 @@ namespace OrchardCore.ReCaptcha
             services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
             services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
             services.AddScoped<IDisplayDriver<LoginForm>, ReCaptchaLoginFormDisplayDriver>();
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add<ReCaptchaLoginFilter>();
-            });
         }
     }
 
@@ -62,6 +57,16 @@ namespace OrchardCore.ReCaptcha
         {
             services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ReCaptchaForgotPasswordFormDisplayDriver>();
             services.AddScoped<IDisplayDriver<ResetPasswordForm>, ReCaptchaResetPasswordFormDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.ReCaptcha.Users")]
+    [RequireFeatures("OrchardCore.Users.Registration")]
+    public class UsersRegistrationStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
         }
     }
 }

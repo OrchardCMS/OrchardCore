@@ -1,4 +1,4 @@
-﻿using OrchardCore.Entities;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Users.Models;
 

@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-md-offset-4 col-md-8">
-        <h2>@T["Reset password"]</h2>
+        <h2>@T["Register a new account"]</h2>
         <hr />
 
-        <form asp-controller="ResetPassword" asp-action="ResetPassword" method="post" class="form-horizontal no-multisubmit">
+        <form asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
 
             <div asp-validation-summary="All"></div>
 
@@ -13,7 +13,7 @@
             }
 
             <div class="mb-3">
-                <button type="submit" class="btn btn-primary">@T["Reset password"]</button>
+                <button type="submit" class="btn btn-primary">@T["Register"]</button>
             </div>
         </form>
     </div>
