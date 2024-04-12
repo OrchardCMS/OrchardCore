@@ -85,10 +85,10 @@ jobs:
         
             if (-not $hasNonCrlfChange)
             {
+                Write-Output 'No non-CRLF changes found. Repository is clean.'
                 exit 0
             }
         
-            Write-Output "asdfasdf"
             # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
             # can consume it.
             $changedFilesString = $changedFiles -join "`n"
