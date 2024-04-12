@@ -104,7 +104,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public string RequestUrlHost
         {
-            get => _requestUrlHost ??= _settings["RequestUrlHost"] ?? "";
+            get => _requestUrlHost ??= _settings["RequestUrlHost"] ?? string.Empty;
             set => _requestUrlHost = _settings["RequestUrlHost"] = value;
         }
 
