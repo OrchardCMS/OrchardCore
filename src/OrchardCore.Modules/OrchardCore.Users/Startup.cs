@@ -75,6 +75,7 @@ namespace OrchardCore.Users
                 pattern: _userOptions.LoginPath,
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.Login) }
             );
+
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: UserConstants.Features.Users,
@@ -119,7 +120,7 @@ namespace OrchardCore.Users
 
             // Add the default token providers used to generate tokens for reset passwords, change email,
             // and for two-factor authentication token generation.
-            var identityBuilder = services.AddIdentity<IUser, IRole>(options =>
+            services.AddIdentity<IUser, IRole>(options =>
             {
                 // Specify OrchardCore User requirements.
                 // A user name cannot include an @ symbol, i.e. be an email address
@@ -128,17 +129,6 @@ namespace OrchardCore.Users
                 options.User.RequireUniqueEmail = true;
             });
 
-            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
-            identityBuilder.AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType);
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(identityBuilder.UserType);
-            identityBuilder.AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
-                options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
-                options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider;
-                options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultPhoneProvider;
-            });
             services.AddPhoneFormatValidator();
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
@@ -153,7 +143,7 @@ namespace OrchardCore.Users
                 options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
 
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                // set by the pipeline and coming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
@@ -292,6 +282,17 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature(UserConstants.Features.UserEmailConfirmation)]
+    public class EmailConfirmationStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+                .AddTransient<EmailConfirmationTokenProvider>()
+                .AddOptions<EmailConfirmationTokenProviderOptions>();
+        }
+    }
+
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailStartup : StartupBase
     {
@@ -318,6 +319,10 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<IdentityOptions>, ChangeEmailIdentityOptionsConfigurations>()
+                .AddTransient<ChangeEmailTokenProvider>()
+                .AddOptions<ChangeEmailTokenProviderOptions>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
@@ -339,7 +344,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = nameof(RegistrationController.Register);
@@ -384,7 +389,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     [RequireFeatures("OrchardCore.Deployment")]
     public class RegistrationDeploymentStartup : StartupBase
     {
@@ -433,6 +438,10 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
+                .AddTransient<PasswordResetTokenProvider>()
+                .AddOptions<PasswordResetTokenProviderOptions>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<LostPasswordViewModel>();
@@ -476,6 +485,7 @@ namespace OrchardCore.Users
         }
     }
 
+    [RequireFeatures("OrchardCore.Deployment")]
     public class UserDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
