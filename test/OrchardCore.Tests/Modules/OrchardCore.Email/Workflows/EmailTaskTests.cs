@@ -79,7 +79,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
                 emailServiceLocalizer.Object);
         }
 
-        private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
+        private sealed class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {
             public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
                 => await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T)));

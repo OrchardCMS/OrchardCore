@@ -515,14 +515,12 @@ namespace OrchardCore.Workflows.Controllers
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, long workflowTypeId,
             string localId, string displayType)
         {
-            dynamic activityShape =
-                await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater,
-                    displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
-            activityShape.Activity = activity;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            activityShape.Properties["Activity"] = activity;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["Index"] = index;
+            activityShape.Properties["ReturnUrl"] = Url.Action(nameof(Edit), new
             {
                 id = workflowTypeId,
                 localId,
@@ -534,14 +532,13 @@ namespace OrchardCore.Workflows.Controllers
         private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, long workflowTypeId,
             string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity,
-                _updateModelAccessor.ModelUpdater, displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
-            activityShape.Activity = activityContext.Activity;
-            activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            activityShape.Properties["Activity"] = activityContext.Activity;
+            activityShape.Properties["ActivityRecord"] = activityContext.ActivityRecord;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["Index"] = index;
+            activityShape.Properties["ReturnUrl"] = Url.Action(nameof(Edit), new
             {
                 id = workflowTypeId,
                 localId,

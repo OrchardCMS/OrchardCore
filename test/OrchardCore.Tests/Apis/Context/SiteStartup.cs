@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Apis.Context
             app.UseOrchardCore();
         }
 
-        private class ModuleNamesProvider : IModuleNamesProvider
+        private sealed class ModuleNamesProvider : IModuleNamesProvider
         {
             private readonly string[] _moduleNames;
 

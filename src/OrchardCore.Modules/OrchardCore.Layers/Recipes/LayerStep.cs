@@ -31,7 +31,7 @@ namespace OrchardCore.Layers.Recipes
             IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<ContentSerializerJsonOptions> serializationOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
