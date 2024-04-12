@@ -51,7 +51,6 @@ namespace OrchardCore.Users.Controllers
             S = stringLocalizer;
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
