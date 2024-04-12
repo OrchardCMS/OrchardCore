@@ -61,7 +61,7 @@ namespace OrchardCore.Users.Controllers
             var shellFeaturesManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
 
             var registrationFeatureIsAvailable = (await shellFeaturesManager.GetAvailableFeaturesAsync())
-               .Any(feature => feature.Id == "OrchardCore.Users.Registration");
+               .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
 
             if (!registrationFeatureIsAvailable)
             {

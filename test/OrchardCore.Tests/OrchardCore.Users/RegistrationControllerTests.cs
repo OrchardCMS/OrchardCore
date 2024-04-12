@@ -289,9 +289,9 @@ public class RegistrationControllerTests
                 var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                 var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
-                var extensionInfo = extensionManager.GetExtension("OrchardCore.Users.Registration");
+                var extensionInfo = extensionManager.GetExtension(UserConstants.Features.UserRegistration);
 
-                await shellFeatureManager.EnableFeaturesAsync([new FeatureInfo("OrchardCore.Users.Registration", extensionInfo)], true);
+                await shellFeatureManager.EnableFeaturesAsync([new FeatureInfo(UserConstants.Features.UserRegistration, extensionInfo)], true);
             }
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();

@@ -21,7 +21,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordController : Controller
     {
         private static readonly string _controllerName = typeof(ResetPasswordController).ControllerName();
@@ -184,7 +184,7 @@ namespace OrchardCore.Users.Controllers
         private async Task<bool> MustValidateEmailAsync(User user)
         {
             var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                           .Any(feature => feature.Id == "OrchardCore.Users.Registration");
+                           .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
 
             if (!registrationFeatureIsAvailable)
             {

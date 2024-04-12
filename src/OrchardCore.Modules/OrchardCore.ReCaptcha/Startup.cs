@@ -9,6 +9,7 @@ using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Users;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
@@ -50,7 +51,7 @@ namespace OrchardCore.ReCaptcha
     }
 
     [Feature("OrchardCore.ReCaptcha.Users")]
-    [RequireFeatures("OrchardCore.Users.ResetPassword")]
+    [RequireFeatures(UserConstants.Features.ResetPassword)]
     public class UsersResetPasswordStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -61,7 +62,7 @@ namespace OrchardCore.ReCaptcha
     }
 
     [Feature("OrchardCore.ReCaptcha.Users")]
-    [RequireFeatures("OrchardCore.Users.Registration")]
+    [RequireFeatures(UserConstants.Features.UserRegistration)]
     public class UsersRegistrationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

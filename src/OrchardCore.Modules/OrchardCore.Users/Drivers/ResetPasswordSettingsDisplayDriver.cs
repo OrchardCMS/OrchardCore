@@ -11,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
     {
         public const string GroupId = "userResetPassword";

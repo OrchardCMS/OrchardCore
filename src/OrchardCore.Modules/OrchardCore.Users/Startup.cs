@@ -400,7 +400,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordStartup : StartupBase
     {
         private const string ForgotPasswordPath = "ForgotPassword";
@@ -457,7 +457,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     [RequireFeatures("OrchardCore.Deployment")]
     public class ResetPasswordDeploymentStartup : StartupBase
     {
