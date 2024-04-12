@@ -27,7 +27,13 @@ namespace OrchardCore.Environment.Shell
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
         internal volatile int _shellCreating;
-        private bool _disposed;
+
+        private string _requestUrlPrefix;
+        private string _versionId;
+        private string _tenantId;
+        private string _requestUrlHost;
+        private string[] _requestUrlHosts;
+        private TenantState? _state;
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/>.
@@ -67,7 +73,7 @@ namespace OrchardCore.Environment.Shell
         /// Whether this instance has been disposed or not.
         /// </summary>
         [JsonIgnore]
-        public bool Disposed => _disposed;
+        public bool Disposed { get; private set; }
 
         /// <summary>
         /// Whether this instance is disposable or not.
@@ -80,33 +86,33 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public string VersionId
         {
-            get => _settings["VersionId"];
+            get => _versionId ??= _settings["VersionId"];
             set
             {
                 _settings["TenantId"] ??= _settings["VersionId"] ?? value;
-                _settings["VersionId"] = value;
+                _versionId = _settings["VersionId"] = value;
             }
         }
 
         /// <summary>
         /// The tenant identifier.
         /// </summary>
-        public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
+        public string TenantId => _tenantId ??= _settings["TenantId"] ?? _settings["VersionId"];
 
         /// <summary>
         /// The tenant request url host, multiple separated hosts may be provided.
         /// </summary>
         public string RequestUrlHost
         {
-            get => _settings["RequestUrlHost"];
-            set => _settings["RequestUrlHost"] = value;
+            get => _requestUrlHost ??= _settings["RequestUrlHost"] ?? string.Empty;
+            set => _requestUrlHost = _settings["RequestUrlHost"] = value;
         }
 
         /// <summary>
         /// The tenant request url host(s).
         /// </summary>
         [JsonIgnore]
-        public string[] RequestUrlHosts => _settings["RequestUrlHost"]
+        public string[] RequestUrlHosts => _requestUrlHosts ??= _settings["RequestUrlHost"]
             ?.Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
             ?? [];
 
@@ -115,8 +121,8 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public string RequestUrlPrefix
         {
-            get => _settings["RequestUrlPrefix"]?.Trim(' ', '/');
-            set => _settings["RequestUrlPrefix"] = value;
+            get => _requestUrlPrefix ??= _settings["RequestUrlPrefix"]?.Trim(' ', '/') ?? string.Empty;
+            set => _requestUrlPrefix = _settings["RequestUrlPrefix"] = value;
         }
 
         /// <summary>
@@ -125,8 +131,8 @@ namespace OrchardCore.Environment.Shell
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TenantState State
         {
-            get => _settings.GetValue<TenantState>("State");
-            set => _settings["State"] = value.ToString();
+            get => _state ??= _settings.GetValue<TenantState>("State");
+            set => _state = Enum.Parse<TenantState>(_settings["State"] = value.ToString());
         }
 
         /// <summary>
@@ -161,12 +167,12 @@ namespace OrchardCore.Environment.Shell
 
         private void Close()
         {
-            if (_disposed)
+            if (Disposed)
             {
                 return;
             }
 
-            _disposed = true;
+            Disposed = true;
 
             _settings?.Release();
             _configuration?.Release();
