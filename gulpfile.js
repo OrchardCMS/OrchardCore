@@ -163,7 +163,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         if (ext !== ".scss" && ext !== ".less" && ext !== ".css")
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
-    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : false;
     var generateRTL = assetGroup.hasOwnProperty("generateRTL") ? assetGroup.generateRTL : false;
     var containsLessOrScss = assetGroup.inputPaths.some(function (inputPath) {
         var ext = path.extname(inputPath).toLowerCase();
