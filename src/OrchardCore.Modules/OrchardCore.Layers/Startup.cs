@@ -36,7 +36,7 @@ namespace OrchardCore.Layers
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(LayerFilter));
+                options.Filters.Add<LayerFilter>();
             });
 
             services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();

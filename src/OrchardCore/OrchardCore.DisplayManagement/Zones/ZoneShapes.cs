@@ -438,7 +438,7 @@ namespace OrchardCore.DisplayManagement.Zones
         }
     }
 
-    internal class PositionalGrouping : IPositioned
+    internal sealed class PositionalGrouping : IPositioned
     {
         public PositionalGrouping()
         {

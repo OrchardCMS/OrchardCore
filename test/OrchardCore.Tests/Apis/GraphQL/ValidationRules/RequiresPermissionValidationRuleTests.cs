@@ -131,7 +131,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             };
         }
 
-        private class ValidationSchema : Schema
+        private sealed class ValidationSchema : Schema
         {
             public ValidationSchema()
             {
@@ -141,7 +141,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             }
         }
 
-        private class ValidationQueryRoot : ObjectGraphType
+        private sealed class ValidationQueryRoot : ObjectGraphType
         {
             public ValidationQueryRoot()
             {
@@ -151,7 +151,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             }
         }
 
-        private class TestField : ObjectGraphType
+        private sealed class TestField : ObjectGraphType
         {
             public TestField()
             {

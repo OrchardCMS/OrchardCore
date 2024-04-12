@@ -6,6 +6,8 @@ namespace OrchardCore.Queries.Sql.ViewModels
 {
     public class AdminQueryViewModel
     {
+        public static string MatchAllQueryBase64 { get; } = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
+
         public string DecodedQuery { get; set; }
         public string Parameters { get; set; } = "";
 

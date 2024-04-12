@@ -36,12 +36,12 @@ namespace OrchardCore.DisplayManagement.Theming
                     }
                 }
 
-                themeResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
-
                 if (themeResults.Count == 0)
                 {
                     return null;
                 }
+
+                themeResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
 
                 // Try to load the theme to ensure it's present
                 foreach (var theme in themeResults)

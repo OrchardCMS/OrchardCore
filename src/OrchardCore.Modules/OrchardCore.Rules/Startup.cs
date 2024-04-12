@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -27,83 +26,49 @@ namespace OrchardCore.Rules
                 .AddScoped<IRuleMigrator, RuleMigrator>();
 
             // All condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, AllConditionDisplayDriver>()
-                .AddCondition<AllConditionGroup, AllConditionEvaluator, ConditionFactory<AllConditionGroup>>();
+            services.AddRule<AllConditionGroup, AllConditionEvaluator, AllConditionDisplayDriver>();
 
             // Any condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, AnyConditionDisplayDriver>()
-                .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>();
+            services.AddRule<AnyConditionGroup, AnyConditionEvaluator, AnyConditionDisplayDriver>();
 
             // Boolean condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
-                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+            services.AddRule<BooleanCondition, BooleanConditionEvaluator, BooleanConditionDisplayDriver>();
 
             // Homepage condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, HomepageConditionDisplayDriver>()
-                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
+            services.AddRule<HomepageCondition, HomepageConditionEvaluator, HomepageConditionDisplayDriver>();
 
             // Url condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
-                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
+            services.AddRule<UrlCondition, UrlConditionEvaluator, UrlConditionDisplayDriver>();
 
             // Culture condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, CultureConditionDisplayDriver>()
-                .AddCondition<CultureCondition, CultureConditionEvaluator, ConditionFactory<CultureCondition>>();
+            services.AddRule<CultureCondition, CultureConditionEvaluator, CultureConditionDisplayDriver>();
 
             // Role condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
-                .AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
+            services.AddRule<RoleCondition, RoleConditionEvaluator, RoleConditionDisplayDriver>();
 
-            // Javascript condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
-                .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>();
+            // JavaScript condition.
+            services.AddRule<JavascriptCondition, JavascriptConditionEvaluator, JavascriptConditionDisplayDriver>();
 
             // Is authenticated condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, IsAuthenticatedConditionDisplayDriver>()
-                .AddCondition<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, ConditionFactory<IsAuthenticatedCondition>>();
+            services.AddRule<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, IsAuthenticatedConditionDisplayDriver>();
 
             // Is anonymous condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
-                .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();
+            services.AddRule<IsAnonymousCondition, IsAnonymousConditionEvaluator, IsAnonymousConditionDisplayDriver>();
 
             // Content type condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
-                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
+            services.AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
+                .AddRuleCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
                 .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
 
-            // Allows to serialize 'Condition' derived types for List<Condition> Layer.LayerRule
-            services.AddJsonDerivedTypeInfo<AllConditionGroup, Condition>();
-            services.AddJsonDerivedTypeInfo<AnyConditionGroup, Condition>();
-            services.AddJsonDerivedTypeInfo<BooleanCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<ContentTypeCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<CultureCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<HomepageCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<IsAnonymousCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<IsAuthenticatedCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<JavascriptCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<RoleCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<UrlCondition, Condition>();
-
             // Allows to serialize 'ConditionOperator' derived types
-            services.AddJsonDerivedTypeInfo<StringEqualsOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringNotEqualsOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringStartsWithOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringNotStartsWithOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringEndsWithOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringNotEndsWithOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringContainsOperator, ConditionOperator>();
-            services.AddJsonDerivedTypeInfo<StringNotContainsOperator, ConditionOperator>();
+            services.AddRuleConditionOperator<StringEqualsOperator>()
+                .AddRuleConditionOperator<StringNotEqualsOperator>()
+                .AddRuleConditionOperator<StringStartsWithOperator>()
+                .AddRuleConditionOperator<StringNotStartsWithOperator>()
+                .AddRuleConditionOperator<StringEndsWithOperator>()
+                .AddRuleConditionOperator<StringNotEndsWithOperator>()
+                .AddRuleConditionOperator<StringContainsOperator>()
+                .AddRuleConditionOperator<StringNotContainsOperator>();
         }
     }
 }
