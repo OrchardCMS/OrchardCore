@@ -203,7 +203,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(rename({
             suffix: ".min"
         }))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
@@ -224,7 +224,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(gulpif(generateRTL, postcss([rtl()])))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
