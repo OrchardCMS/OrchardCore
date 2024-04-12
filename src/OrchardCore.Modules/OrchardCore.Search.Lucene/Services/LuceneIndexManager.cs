@@ -520,7 +520,7 @@ namespace OrchardCore.Search.Lucene
         }
     }
 
-    internal class IndexWriterWrapper : IndexWriter
+    internal sealed class IndexWriterWrapper : IndexWriter
     {
         public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
         {
@@ -530,7 +530,7 @@ namespace OrchardCore.Search.Lucene
         public bool IsClosing { get; set; }
     }
 
-    internal class IndexReaderPool : IDisposable
+    internal sealed class IndexReaderPool : IDisposable
     {
         private bool _dirty;
         private int _count;

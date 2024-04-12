@@ -15,7 +15,9 @@ namespace Microsoft.Extensions.Http
         {
         }
 
+#pragma warning disable CA2215 // Dispose methods should call base class dispose
         protected override void Dispose(bool disposing)
+#pragma warning restore CA2215
         {
             // The lifetime of this is tracked separately by ActiveHandlerTrackingEntry.
         }

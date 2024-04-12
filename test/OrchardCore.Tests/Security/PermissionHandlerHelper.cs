@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Security
             await handler.HandleAsync(context);
         }
 
-        private class FakePermissionHandler : AuthorizationHandler<PermissionRequirement>
+        private sealed class FakePermissionHandler : AuthorizationHandler<PermissionRequirement>
         {
             private readonly HashSet<string> _permissionNames;
 

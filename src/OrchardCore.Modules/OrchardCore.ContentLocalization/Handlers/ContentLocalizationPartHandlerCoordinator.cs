@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
-    internal class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
+    internal sealed class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
     {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
