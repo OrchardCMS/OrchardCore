@@ -57,7 +57,7 @@ jobs:
                         $diffOutput = git diff -- $file
                         # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by gulp-eol,
                         # so the output files can still have some CRLF.
-                        if ($diffOutput -match 'warning: in the working copy of .*, CRLF will be replaced by LF the next time Git touches it')
+                        if ($diffOutput -match 'CRLF will be replaced by LF the next time Git touches it')
                         {
                             Write-Output "Warning: CRLF will be replaced by LF in $file. Fix this if you can, but certain CRLF line endings can't be replaced."
                         }
