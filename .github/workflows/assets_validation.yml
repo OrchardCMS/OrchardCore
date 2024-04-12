@@ -60,7 +60,6 @@ jobs:
                         if ($diffOutput -match 'warning: in the working copy of .*, CRLF will be replaced by LF the next time Git touches it')
                         {
                             Write-Output "Warning: CRLF will be replaced by LF in $file. Fix this if you can, but certain CRLF line endings can't be replaced."
-                            continue
                         }
                         else
                         {
