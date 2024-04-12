@@ -44,6 +44,7 @@
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
 </Project>

@@ -55,7 +55,7 @@ namespace OrchardCore.Tests.Extensions
                 );
         }
 
-        private class ModuleNamesProvider : IModuleNamesProvider
+        private sealed class ModuleNamesProvider : IModuleNamesProvider
         {
             private readonly string[] _moduleNames;
 

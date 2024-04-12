@@ -1,0 +1,26 @@
+
+<form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
+    <h1 class="fs-4">@T["Log in"]</h1>
+    <hr />
+
+    @if (Model.Content != null)
+    {
+        @await DisplayAsync(Model.Content)
+    }
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
+    </div>
+
+    @if (Model.Links != null)
+    {
+        <ul class="list-unstyled">
+            @await DisplayAsync(Model.Links)
+        </ul>
+    }
+
+    @if (Model.Footer != null)
+    {
+        @await DisplayAsync(Model.Footer)
+    }
+</form>
