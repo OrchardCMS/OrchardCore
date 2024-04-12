@@ -28,21 +28,22 @@ jobs:
       shell: pwsh
       run: |
         $changes = git status --porcelain
+        $pattern = "warning: in the working copy of '.*', CRLF will be replaced by LF the next time Git touches it"
+        $filteredChangeLines = $changes -split "`n" | Where-Object { $PSItem -notmatch $pattern }
 
         if ($changes)
         {
             Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
-            Write-Output 'The following files changed:'
-            Write-Output $changes
+            Write-Output 'The following files changed (not counting files with "warning: in the working copy of '/path/to/file', CRLF will be replaced by LF the next time Git touches it"):'
+            Write-Output $($filteredChangeLines -join "`r`n")
             Write-Output 'You can also download the attached artifact to see the changes.'
             Write-Output ''
             Write-Output '---------------------------------------'
             Write-Output ''
 
-            $changeLines = $changes -split '`n'
             $changedFiles = @()
 
-            foreach ($line in $changeLines) {
+            foreach ($line in $filteredChangeLines) {
                 if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
                 {
                     $changeType = $matches[1]
