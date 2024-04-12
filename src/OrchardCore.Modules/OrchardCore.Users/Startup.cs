@@ -212,6 +212,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<CustomUserSettingsService>();
             services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+            services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
         }
     }
 
@@ -379,6 +380,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         }
     }
 
@@ -400,7 +402,6 @@ namespace OrchardCore.Users
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
         private const string ResetPasswordControllerName = "ResetPassword";
-
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -439,6 +440,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
         }
     }
 
