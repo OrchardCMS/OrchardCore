@@ -292,7 +292,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(rename({
             suffix: ".min"
         }))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir))
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
