@@ -18,7 +18,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
         S = stringLocalizer;
     }
 
-    public string Method => "SMS";
+    public string Method { get; } = "SMS";
 
     public LocalizedString Name => S["SMS Notifications"];
 

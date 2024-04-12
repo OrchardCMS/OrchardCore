@@ -178,7 +178,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private class CookieCollectionWrapper
+        private sealed class CookieCollectionWrapper
         {
             public readonly IRequestCookieCollection RequestCookieCollection;
 
@@ -188,7 +188,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        private class HeaderDictionaryWrapper
+        private sealed class HeaderDictionaryWrapper
         {
             public readonly IHeaderDictionary HeaderDictionary;
 
@@ -198,7 +198,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        private class HttpContextItemsWrapper
+        private sealed class HttpContextItemsWrapper
         {
             public readonly IDictionary<object, object> Items;
 
@@ -208,7 +208,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
-        private class RouteValueDictionaryWrapper
+        private sealed class RouteValueDictionaryWrapper
         {
             public readonly IReadOnlyDictionary<string, object> RouteValueDictionary;
 
