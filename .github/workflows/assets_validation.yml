@@ -55,8 +55,9 @@ jobs:
                     {
                         # File is modified; use git diff to get the diff of the modified file.
                         $diffOutput = git diff -- $file
-                        # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by gulp-eol,
-                        # so the output files can still have some CRLF.
+                        Write-Output: "This is the diff:--->$diffOutput<---"
+                        # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by
+                        # gulp-eol, so the output files can still have some CRLF.
                         if ($($diffOutput ?? '').Contains('CRLF will be replaced by LF the next time Git touches it'))
                         {
                             Write-Output "Warning: CRLF will be replaced by LF in $file. Fix this if you can, but certain CRLF line endings can't be replaced."
