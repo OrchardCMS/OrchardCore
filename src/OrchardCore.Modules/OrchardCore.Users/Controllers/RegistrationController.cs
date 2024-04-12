@@ -15,7 +15,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationController : Controller
     {
         private readonly UserManager<IUser> _userManager;
