@@ -38,42 +38,62 @@ jobs:
             Write-Output ''
             Write-Output '---------------------------------------'
             Write-Output ''
-
+        
             $changeLines = $changes -split '`n'
             $changedFiles = @()
-
+            $hasNonCrlfChange = $false
+        
             foreach ($line in $changeLines) {
                 if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
                 {
                     $changeType = $matches[1]
                     $file = $matches[2]
-
+        
                     Write-Output "Diff for: $file"
-
+        
                     if ($changeType -eq 'M')
                     {
                         # File is modified; use git diff to get the diff of the modified file.
-                        git diff -- $file
+                        $diffOutput = git diff -- $file
+                        # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by gulp-eol,
+                        # so the output files can still have some CRLF.
+                        if ($diffOutput -match 'warning: in the working copy of .*, CRLF will be replaced by LF the next time Git touches it')
+                        {
+                            Write-Output "Warning: CRLF will be replaced by LF in $file. Fix this if you can, but certain CRLF line endings can't be replaced."
+                            continue
+                        }
+                        else
+                        {
+                            Write-Output $diffOutput
+                            $hasNonCrlfChange = $true
+                        }
                     }
                     elseif ($changeType -eq '??')
                     {
                         # File is (untracked); display the file contents.
                         Get-Content -Path $file
+                        $hasNonCrlfChange = $true
                     }
-
+        
                     $changedFiles += $file
-
+        
                     Write-Output ''
                     Write-Output '---------------------------------------'
                     Write-Output ''
                 }
             }
-
+        
+            if (-not $hasNonCrlfChange)
+            {
+                exit 0
+            }
+        
+            Write-Output "asdfasdf"
             # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
             # can consume it.
             $changedFilesString = $changedFiles -join "`n"
             "CHANGED_FILES<<ENDOFSTRING`n$($changedFilesString)`nENDOFSTRING" >> $Env:GITHUB_ENV
-
+        
             exit -1
         }
         else
