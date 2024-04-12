@@ -43,7 +43,7 @@ namespace OrchardCore.HealthChecks
                     ResultStatusCodes =
                     {
                         [HealthStatus.Healthy] = StatusCodes.Status200OK,
-                        [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
+                        [HealthStatus.Degraded] = StatusCodes.Status200OK,
                         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
                     },
                     ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
