@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -56,8 +57,8 @@ namespace OrchardCore.Markdown.GraphQL
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
+            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
+            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
 
             var settings = contentPartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 

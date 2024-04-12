@@ -384,23 +384,23 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.css")
-                .SetCdnIntegrity("sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g", "sha384-nrXXWLUi1MQU4ppkxCt05kh8YtWDU5Nf6gJikuch3OWafB4DxebHYZyah2r0+pVZ")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.css")
+                .SetCdnIntegrity("sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI", "sha384-t4FZn72pwiL8YQp59tFGXyBckR289CkH1zKxQs5bMaAgEbJ9Do0PU4yeIsKbJ2Mj")
+                .SetVersion("6.5.2");
 
             manifest
                 .DefineScript("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.js")
-                .SetCdnIntegrity("sha384-3ve3u7etWcm2heCe4TswfZSAYSg2jR/EJxRHuKM5foOiKS8IJL/xRlvmjCaHELBz", "sha384-IkmLcEDxkvCioiswmdraONwAU9uwbPWUbvuHAGrejK3zNlL74FCwCjvnTGJcrdbQ")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/all.js")
+                .SetCdnIntegrity("sha384-QvGJBgkqeVjFCXW39Q3psy0yEymI5WTMC5V+6LnvmNIeDfvGo1AI/j0AlTrID9lQ", "sha384-RDO2wWn8bGQEWqqTM/s6D+cc2+OfRSJp7/O23bWdBhukXW9gMARFwCIQZUyD3ZeJ")
+                .SetVersion("6.5.2");
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-HJMj0TodsrM5KmHW8l+5NnGnq9DLtu9LlpFYFFXVne/+pnZYGxIWtFFGRQSbcPo9", "sha384-J7/Cp2KkX6wV+2gGoFn8nB3/z3uoSut1tZKtmf4gqqGUwM1L0YI3n6rJst683v9Z")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-tj5YmFIdBVO/XRERdNj8QOyAFv67yagv304wrKG+kWqr14aj14FTlN5L5ijoDM9a", "sha384-KcVtZ/zEAUfN59N3IofEWLLKCAF4G7kSnXSvNcn+r+idf5aNbwboO9st8MGLzLVl")
+                .SetVersion("6.5.2");
 
             manifest
                 .DefineScript("jquery-resizable")
@@ -413,17 +413,17 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/ui/trumbowyg.css")
-                .SetCdnIntegrity("sha384-BMSJyRuWWysKSQXUwY6xhPnRLhIEIKVrndBFiMT8osUv0Jy4u+kVojiTB4oIk9Cy", "sha384-+WI6uKHvRRdOtp4c41xrQHz3liE5QZxjkFUx8KwLRMiMgSPpkoMnUMOjO7k8WH1Q")
-                .SetVersion("2.27.3");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.css")
+                .SetCdnIntegrity("sha384-XfI6P0jtm0X3QDEQxS1DotzhIXkJeuSV1wtBOntPaRxzpzTkMWkpZpkuzj8qVHzl", "sha384-GUyfWhYsIKKkAMejJuy50VTSfyfkrrJX2csg7fxJJt7vi+gXH8qxqH29C5GURaum")
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg")
                 .SetDependencies("jquery-resizable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/trumbowyg.js")
-                .SetCdnIntegrity("sha384-OZd+lx/Xv8IR7nJZmRKR4NJhT0urUXigW5V7FOEtmrFRf1BKKVc0DWhdiCh8UX8+", "sha384-nWqhxDAuUls0N/CYl8px54jeiP9i8+J64k1UPiM6DMC/u/qRY+jfkprB5VndU7B4")
-                .SetVersion("2.27.3");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.js")
+                .SetCdnIntegrity("sha384-O4OAGMDq5hnqt4/WQz+fW6yVgZ02jmw+Yf1j02zIgglnCYXf/7TmET8tFbrTN6u5", "sha384-dNxlebCuuiNWPhPBEd69nEAtkEWa7Z9IWkrL+OSmJ456dlu6TAASXgL72Bn4GGju")
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg-shortcodes")
@@ -435,13 +435,13 @@ namespace OrchardCore.Resources
                 .DefineStyle("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css", "~/OrchardCore.Resources/Styles/trumbowyg-plugins.css")
-                .SetVersion("2.27.3");
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg-plugins.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg-plugins.js")
-                .SetVersion("2.27.3");
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("vuejs")

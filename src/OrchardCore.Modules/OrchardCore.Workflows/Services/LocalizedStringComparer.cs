@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.Workflows.Services
     {
         public bool Equals(LocalizedString x, LocalizedString y)
         {
-            return x.Name.Equals(y.Name);
+            return x.Name.Equals(y.Name, StringComparison.Ordinal);
         }
 
         public int GetHashCode(LocalizedString obj)

@@ -191,7 +191,9 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         return string.Format(
             CultureInfo.InvariantCulture,
+#pragma warning disable CA1863 // Cache a 'CompositeFormat' for repeated use in this formatting operation
             AuthenticatorUriFormat,
+#pragma warning restore CA1863
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),
             unformattedKey,

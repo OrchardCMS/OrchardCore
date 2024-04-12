@@ -102,7 +102,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                 {
                     // Check if part has been collapsed by trying to get the parent part.
-                    var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                    ContentElement contentPart = context.Source.Get<ContentPart>(field.PartDefinition.Name);
 
                     // Part is not collapsed, access field directly.
                     contentPart ??= context.Source;
@@ -116,7 +116,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        private class FieldTypeDescriptor
+        private sealed class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }

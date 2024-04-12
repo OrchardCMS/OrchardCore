@@ -21,7 +21,7 @@ public class StartupPixel : StartupBase
 
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add(typeof(FacebookPixelFilter));
+            options.Filters.Add<FacebookPixelFilter>();
         });
     }
 }

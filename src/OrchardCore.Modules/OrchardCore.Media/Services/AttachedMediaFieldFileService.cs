@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Hashing;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -126,20 +125,9 @@ namespace OrchardCore.Media.Services
         private async Task<string> GetFileHashAsync(string filePath)
         {
             using var fs = await _fileStore.GetFileStreamAsync(filePath);
-            using HashAlgorithm hashAlgorithm = MD5.Create();
-            var hash = hashAlgorithm.ComputeHash(fs);
-            return ByteArrayToHexString(hash);
-        }
-
-        public static string ByteArrayToHexString(byte[] bytes)
-        {
-            var sb = new StringBuilder();
-            foreach (var b in bytes)
-            {
-                sb.Append(b.ToString("x2").ToLower());
-            }
-
-            return sb.ToString();
+            var hash = new XxHash32();
+            await hash.AppendAsync(fs);
+            return Convert.ToHexString(hash.GetCurrentHash()).ToLowerInvariant();
         }
 
         private static string GetFileExtension(string path)
