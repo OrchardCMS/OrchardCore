@@ -28,31 +28,28 @@ jobs:
       shell: pwsh
       run: |
         $changes = git status --porcelain
-        # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by gulp-eol, so the output
-        # files can still have some CRLF.
-        $pattern = "warning: in the working copy of '.*', CRLF will be replaced by LF the next time Git touches it"
-        $filteredChangeLines = $changes -split "`n" | Where-Object { $PSItem -notmatch $pattern }
-        
+
         if ($changes)
         {
             Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
-            Write-Output 'The following files changed (not counting files with "warning: in the working copy of ''path/to/file'', CRLF will be replaced by LF the next time Git touches it"):'
-            Write-Output $($filteredChangeLines -join "`r`n")
+            Write-Output 'The following files changed:'
+            Write-Output $changes
             Write-Output 'You can also download the attached artifact to see the changes.'
             Write-Output ''
             Write-Output '---------------------------------------'
             Write-Output ''
-        
+
+            $changeLines = $changes -split '`n'
             $changedFiles = @()
-        
-            foreach ($line in $filteredChangeLines) {
+
+            foreach ($line in $changeLines) {
                 if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
                 {
                     $changeType = $matches[1]
                     $file = $matches[2]
-        
+
                     Write-Output "Diff for: $file"
-        
+
                     if ($changeType -eq 'M')
                     {
                         # File is modified; use git diff to get the diff of the modified file.
@@ -63,20 +60,20 @@ jobs:
                         # File is (untracked); display the file contents.
                         Get-Content -Path $file
                     }
-        
+
                     $changedFiles += $file
-        
+
                     Write-Output ''
                     Write-Output '---------------------------------------'
                     Write-Output ''
                 }
             }
-        
+
             # Convert the array of changed files to a single string with each file on a new line so actions/upload-artifact
             # can consume it.
             $changedFilesString = $changedFiles -join "`n"
             "CHANGED_FILES<<ENDOFSTRING`n$($changedFilesString)`nENDOFSTRING" >> $Env:GITHUB_ENV
-        
+
             exit -1
         }
         else
