@@ -55,10 +55,7 @@ jobs:
                     {
                         # File is modified; use git diff to get the diff of the modified file.
 
-                        # Can't save git diff output to a variable directly because it'll still write to the console.
-                        git diff -- $file 2>&1 >> tmp.txt
-                        $diffOutput = Get-Content tmp.txt
-                        Remove-Item tmp.txt
+                        $diffOutput = git diff -- $file 2>&1 
 
                         Write-Output "This is the diff:--->$diffOutput<---"
 
