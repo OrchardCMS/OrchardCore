@@ -1,16 +1,19 @@
 {
-  "name": "orchardcore",
+  "name": "@orchardcore/root",
   "private": true,
+  "version": "1.0.0",
+  "packageManager": "yarn@3.5.0",
   "scripts": {
-    "build": "gulp build",
-    "rebuild": "gulp rebuild",
-    "watch": " gulp watch",
-    "postinstall": "node .scripts/install.js",
-    "update-projects": "node .scripts/update.js",
-    "install-project": "node .scripts/project.js install",
-    "update-project": "node .scripts/project.js update",
-    "cleanup": "node .scripts/cleanup.js"
+    "build": "asset-bundler build",
+    "copy": "asset-bundler copy",
+    "watch": "asset-bundler watch",
+    "dry-run": "asset-bundler dry-run",
+    "clean": "asset-bundler clean",
+    "lint": "eslint ."
   },
+  "workspaces": [
+    ".scripts/assets-build-tool"
+  ],
   "devDependencies": {
     "@babel/core": "^7.22.11",
     "@babel/preset-env": "^7.22.10",
@@ -46,7 +49,7 @@
     "postcss": "8.4.28",
     "postcss-rtl": "^2.0.0",
     "rtlcss": "4.1.0",
-    "typescript": "^5.2.2",
-    "source-map": "^0.7.4"
+    "source-map": "^0.7.4",
+    "typescript": "^5.2.2"
   }
 }

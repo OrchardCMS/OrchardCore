@@ -1,5 +1,5 @@
 {
-  "name": "@aptix/asset-build-tool",
+  "name": "@orchardcore/asset-build-tool",
   "version": "1.0.0",
   "main": "build.js",
   "type": "module",
