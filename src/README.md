@@ -33,7 +33,7 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 - **Performance**. This might the most obvious change when you start using Orchard Core CMS. It’s extremely fast for a CMS. So fast that we haven’t even cared about working on an output cache module. To give you an idea, without caching Orchard Core CMS is around 20 times faster than the previous version.
 
 - **Portable**. You can now develop and deploy Orchard Core CMS on Windows, Linux and macOS. We also have Docker images ready for use.
-- **Database Support**. SQL Server, MySQL, MariaDB, PostgreSQL and SQLite. For MariaDB, select MySQL as the type of database and follow all the rules of MySQL.
+- **Database Support**. SQL Server, MySQL, MariaDB, PostgreSQL, and SQLite. For MariaDB, select MySQL as the database type and follow all MySQL rules.
 
 - **Document database abstraction**. Orchard Core CMS still requires a relational database, and is compatible with SQL Server, MySQL, PostgreSQL and SQLite, but it’s now using a document abstraction (YesSql) that provides a document database API to store and query documents. This is a much better approach for CMS systems and helps performance significantly.
 
