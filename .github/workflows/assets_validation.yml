@@ -55,9 +55,10 @@ jobs:
                     {
                         # File is modified; use git diff to get the diff of the modified file.
 
-                        $diffOutput = git diff -- $file 2>&1 
-
-                        Write-Output "This is the diff:--->$diffOutput<---"
+                        # The diff will be sent to stderr so we need to redirect it to stdout to capture it.
+                        git diff -- $file 2>&1 >> tmp.txt
+                        $diffOutput = Get-Content tmp.txt
+                        Remove-Item tmp.txt
 
                         # Filtering out this pattern is necessary because certain CRLF line endings are not replaced by
                         # gulp-eol, so the output files can still have some CRLF.
