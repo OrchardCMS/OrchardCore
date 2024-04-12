@@ -15,7 +15,7 @@ namespace OrchardCore.Placements.Deployment
 
         public PlacementsDeploymentSource(
             PlacementsManager placementsManager,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _placementsManager = placementsManager;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;

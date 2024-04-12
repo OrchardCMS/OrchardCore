@@ -12,7 +12,7 @@ using OrchardCore.Mvc;
 
 namespace OrchardCore.Admin
 {
-    internal class AdminPageRouteModelProvider : IPageRouteModelProvider
+    internal sealed class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;

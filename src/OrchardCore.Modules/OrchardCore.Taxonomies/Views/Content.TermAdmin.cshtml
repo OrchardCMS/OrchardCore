@@ -54,9 +54,9 @@
             @foreach (JsonObject termObject in termsArray)
             {
                 var term = termObject.ToObject<ContentItem>();
-                dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
-                termShape.TaxonomyPart = Model.TaxonomyPart;
-                termShape.Index = Model.Index + "-" + index++;
+                var termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
+                termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;
+                termShape.Properties["Index"] = Model.Index + "-" + index++;
                 @await DisplayAsync(termShape)
             }
         </ol>

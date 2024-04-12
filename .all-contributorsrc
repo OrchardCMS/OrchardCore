@@ -2834,6 +2834,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "aliamiras",
+      "name": "aliamiras",
+      "avatar_url": "https://avatars.githubusercontent.com/u/107989021?v=4",
+      "profile": "https://github.com/aliamiras",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xtomas",
+      "name": "Tomáš Jákl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10938220?v=4",
+      "profile": "https://github.com/xtomas",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "porgabi",
+      "name": "Gábor Pór",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51411356?v=4",
+      "profile": "https://github.com/porgabi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment.Recipes
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
@@ -80,19 +80,19 @@ namespace OrchardCore.Deployment.Recipes
             return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
         }
 
-        private class DeploymentPlansModel
+        private sealed class DeploymentPlansModel
         {
             public DeploymentPlanModel[] Plans { get; set; }
         }
 
-        private class DeploymentPlanModel
+        private sealed class DeploymentPlanModel
         {
             public string Name { get; set; }
 
             public DeploymentStepModel[] Steps { get; set; }
         }
 
-        private class DeploymentStepModel
+        private sealed class DeploymentStepModel
         {
             public string Type { get; set; }
 

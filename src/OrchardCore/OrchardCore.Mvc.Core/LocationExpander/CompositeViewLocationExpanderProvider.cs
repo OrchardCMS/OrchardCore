@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Mvc.LocationExpander
 {
-    internal class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
+    internal sealed class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
         public int Priority
         {

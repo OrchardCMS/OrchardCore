@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -211,6 +212,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<CustomUserSettingsService>();
             services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+            services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
         }
     }
 
@@ -378,6 +380,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         }
     }
 
@@ -399,7 +402,6 @@ namespace OrchardCore.Users
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
         private const string ResetPasswordControllerName = "ResetPassword";
-
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -438,6 +440,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
         }
     }
 
@@ -459,6 +462,17 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
             services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
+
+            services.Configure<ContentTypeDefinitionOptions>(options =>
+            {
+                options.Stereotypes.TryAdd("CustomUserSettings", new ContentTypeDefinitionDriverOptions
+                {
+                    ShowCreatable = false,
+                    ShowListable = false,
+                    ShowDraftable = false,
+                    ShowVersionable = false,
+                });
+            });
         }
     }
 
