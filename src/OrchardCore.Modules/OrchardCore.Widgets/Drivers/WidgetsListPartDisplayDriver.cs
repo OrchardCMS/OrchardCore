@@ -49,6 +49,8 @@ namespace OrchardCore.Widgets.Drivers
             {
                 foreach (var widget in part.Widgets[zone])
                 {
+                    if (widget == null) continue;
+
                     var layerMetadata = widget.As<WidgetMetadata>();
 
                     if (layerMetadata != null)
