@@ -16,7 +16,6 @@ namespace OrchardCore.ContentTypes.Editors
     public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IContentDefinitionDisplayManager
     {
         private readonly IEnumerable<IContentDefinitionDisplayHandler> _handlers;
-        private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
@@ -24,7 +23,6 @@ namespace OrchardCore.ContentTypes.Editors
 
         public DefaultContentDefinitionDisplayManager(
             IEnumerable<IContentDefinitionDisplayHandler> handlers,
-            IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
@@ -33,7 +31,6 @@ namespace OrchardCore.ContentTypes.Editors
             ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
-            _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
@@ -44,8 +41,8 @@ namespace OrchardCore.ContentTypes.Editors
         {
             ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
-            dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
-            contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
+            var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
+            contentTypeDefinitionShape.Properties["ContentTypeDefinition"] = contentTypeDefinition;
 
             var typeContext = new BuildEditorContext(
                 contentTypeDefinitionShape,
@@ -68,8 +65,8 @@ namespace OrchardCore.ContentTypes.Editors
         {
             ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
-            dynamic contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
-            contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
+            var contentTypeDefinitionShape = await CreateContentShapeAsync("ContentTypeDefinition_Edit");
+            contentTypeDefinitionShape.Properties["ContentTypeDefinition"] = contentTypeDefinition;
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
@@ -149,8 +146,8 @@ namespace OrchardCore.ContentTypes.Editors
         {
             ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
-            dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
-            typePartDefinitionShape.ContentPart = contentTypePartDefinition;
+            var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
+            typePartDefinitionShape.Properties["ContentPart"] = contentTypePartDefinition;
 
             var partContext = new BuildEditorContext(
                 typePartDefinitionShape,
@@ -173,14 +170,14 @@ namespace OrchardCore.ContentTypes.Editors
         {
             ArgumentNullException.ThrowIfNull(contentTypePartDefinition);
 
-            dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
+            var typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             var layout = await _layoutAccessor.GetLayoutAsync();
 
             await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
                 return typeBuilder.WithPartAsync(contentTypePartDefinition.Name, async typePartBuilder =>
                 {
-                    typePartDefinitionShape.ContentPart = contentTypePartDefinition;
+                    typePartDefinitionShape.Properties["ContentPart"] = contentTypePartDefinition;
 
                     var partContext = new UpdateTypePartEditorContext(
                         typePartBuilder,
@@ -205,8 +202,8 @@ namespace OrchardCore.ContentTypes.Editors
         {
             ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
-            dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
-            partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
+            var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
+            partFieldDefinitionShape.Properties["ContentField"] = contentPartFieldDefinition;
 
             var fieldContext = new BuildEditorContext(
                 partFieldDefinitionShape,
@@ -230,7 +227,7 @@ namespace OrchardCore.ContentTypes.Editors
             ArgumentNullException.ThrowIfNull(contentPartFieldDefinition);
 
             var contentPartDefinition = contentPartFieldDefinition.PartDefinition;
-            dynamic partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
+            var partFieldDefinitionShape = await CreateContentShapeAsync("ContentPartFieldDefinition_Edit");
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
@@ -238,7 +235,7 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 return partBuilder.WithFieldAsync(contentPartFieldDefinition.Name, async partFieldBuilder =>
                 {
-                    partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
+                    partFieldDefinitionShape.Properties["ContentField"] = contentPartFieldDefinition;
 
                     var fieldContext = new UpdatePartFieldEditorContext(
                         partFieldBuilder,

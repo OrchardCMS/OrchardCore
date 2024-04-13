@@ -121,7 +121,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -177,7 +177,7 @@ namespace OrchardCore.Users.Controllers
             options.UserRoleFilters =
             [
                 new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = OrchardCoreConstants.Roles.Authenticated, Selected = string.Equals(options.SelectedRole, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase) },
                 // TODO Candidate for dynamic localization.
                 .. roleNames.Select(roleName =>
                     new SelectListItem
@@ -189,11 +189,11 @@ namespace OrchardCore.Users.Controllers
             ];
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+            var startIndex = (pager.Page - 1) * pager.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + userEntries.Count - 1;
             options.UsersCount = userEntries.Count;
-            options.TotalItemCount = pagerShape.TotalItemCount;
+            options.TotalItemCount = count;
 
             var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 

@@ -67,7 +67,7 @@ namespace OrchardCore.Routing
 
         public IComparer<Endpoint> Comparer => new FormValueRequiredEndpointComparer();
 
-        private class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
+        private sealed class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
         {
             protected override int CompareMetadata(FormValueRequiredAttribute x, FormValueRequiredAttribute y)
             {

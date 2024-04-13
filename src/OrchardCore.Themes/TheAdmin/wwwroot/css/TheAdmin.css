@@ -1,5 +1,6 @@
 @charset "UTF-8";
-/* Import variables first */ /* 
+/* Import variables first */
+/* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
 */
@@ -837,6 +838,11 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 
 label .field-validation-error::before {
   content: "- ";
+}
+
+label.input-required:after {
+  color: var(--bs-danger-text-emphasis);
+  content: " *";
 }
 
 input[type=password]::-ms-reveal,
@@ -8682,7 +8688,7 @@ span.field-validation-error {
 }
 
 .field-validation-error {
-  color: var(--bs-danger) !important;
+  color: var(--bs-danger-text-emphasis) !important;
 }
 
 .field-validation-valid {

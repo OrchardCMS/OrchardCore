@@ -12,7 +12,7 @@ namespace OrchardCore.Mvc.RazorPages
 
         public IComparer<Endpoint> Comparer => new PageEndpointComparer();
 
-        private class PageEndpointComparer : EndpointMetadataComparer<PageActionDescriptor>
+        private sealed class PageEndpointComparer : EndpointMetadataComparer<PageActionDescriptor>
         {
             protected override int CompareMetadata(PageActionDescriptor x, PageActionDescriptor y)
             {

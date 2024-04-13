@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public bool IsLayoutZone()
         {
-            return Location.StartsWith("/", System.StringComparison.OrdinalIgnoreCase);
+            return Location.StartsWith("/", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinition Build()
         {
-            if (!_name[0].IsLetter())
+            if (!char.IsLetter(_name[0]))
             {
                 throw new ArgumentException("Content type name must start with a letter", "name");
             }
@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        private class PartConfigurerImpl : ContentTypePartDefinitionBuilder
+        private sealed class PartConfigurerImpl : ContentTypePartDefinitionBuilder
         {
             private readonly ContentPartDefinition _partDefinition;
 
@@ -208,7 +208,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentTypePartDefinition Build()
             {
-                if (!Current.Name[0].IsLetter())
+                if (!char.IsLetter(Current.Name[0]))
                 {
                     throw new ArgumentException("Content part name must start with a letter", "name");
                 }

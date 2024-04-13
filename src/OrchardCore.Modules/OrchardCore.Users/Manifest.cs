@@ -12,25 +12,41 @@ using OrchardCore.Users;
     Id = UserConstants.Features.Users,
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
-    Dependencies = ["OrchardCore.Roles.Core"],
+    Dependencies =
+    [
+        "OrchardCore.Roles.Core"
+    ],
     Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = UserConstants.Features.UserEmailConfirmation,
+    Name = "Users Email Confirmation",
+    Description = "Provides services to handler user email confirmation.",
+    Category = "Security",
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Users.ChangeEmail",
     Name = "Users Change Email",
     Description = "The Change email feature allows users to change their email address.",
-    Dependencies = [UserConstants.Features.Users],
+    Dependencies =
+    [
+        UserConstants.Features.Users,
+        UserConstants.Features.UserEmailConfirmation,
+    ],
     Category = "Security"
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Users.Registration",
+    Id = UserConstants.Features.UserRegistration,
     Name = "Users Registration",
     Description = "The registration feature allows external users to sign up to the site and ask to confirm their email.",
     Dependencies =
     [
         UserConstants.Features.Users,
+        UserConstants.Features.UserEmailConfirmation,
         "OrchardCore.Email",
     ],
     Category = "Security"
@@ -60,7 +76,11 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.Localization",
     Name = "User Localization",
     Description = "Provides a way to set the culture per user.",
-    Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Localization" },
+    Dependencies =
+    [
+        "OrchardCore.Users",
+        "OrchardCore.Localization"
+    ],
     Category = "Settings",
     Priority = "-1" // Added to avoid changing the order in the localization module.
 )]
@@ -100,7 +120,7 @@ using OrchardCore.Users;
 [assembly: Feature(
     Id = UserConstants.Features.TwoFactorAuthentication,
     Name = "Two-Factor Authentication Services",
-    Description = "Provices Two-factor core services.",
+    Description = "Provides Two-factor core services.",
     Dependencies = [UserConstants.Features.Users],
     EnabledByDependencyOnly = true,
     Category = "Security"
@@ -126,6 +146,7 @@ using OrchardCore.Users;
     [
         UserConstants.Features.Users,
         UserConstants.Features.TwoFactorAuthentication,
+        UserConstants.Features.UserEmailConfirmation,
         "OrchardCore.Liquid",
         "OrchardCore.Email",
     ],

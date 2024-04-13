@@ -43,7 +43,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinition Build()
         {
-            if (!Name[0].IsLetter())
+            if (!char.IsLetter(Name[0]))
             {
                 throw new ArgumentException("Content part name must start with a letter", "name");
             }
@@ -212,7 +212,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        private class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
+        private sealed class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
         {
             private ContentFieldDefinition _fieldDefinition;
             private readonly ContentPartDefinition _partDefinition;
@@ -228,7 +228,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentPartFieldDefinition Build()
             {
-                if (!_fieldName[0].IsLetter())
+                if (!char.IsLetter(_fieldName[0]))
                 {
                     throw new ArgumentException("Content field name must start with a letter", "name");
                 }
