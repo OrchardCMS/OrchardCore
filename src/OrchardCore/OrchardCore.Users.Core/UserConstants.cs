@@ -15,5 +15,9 @@ public class UserConstants
         public const string EmailAuthenticator = "OrchardCore.Users.2FA.Email";
 
         public const string SmsAuthenticator = "OrchardCore.Users.2FA.Sms";
+
+        public const string UserEmailConfirmation = "OrchardCore.Users.EmailConfirmation";
+
+        public const string UserRegistration = "OrchardCore.Users.Registration";
     }
 }

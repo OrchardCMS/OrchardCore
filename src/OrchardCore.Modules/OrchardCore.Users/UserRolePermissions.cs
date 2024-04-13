@@ -44,7 +44,7 @@ public class UserRolePermissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 AssignRoleToUsers,
