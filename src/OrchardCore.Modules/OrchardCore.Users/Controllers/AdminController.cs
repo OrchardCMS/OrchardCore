@@ -177,7 +177,7 @@ namespace OrchardCore.Users.Controllers
             options.UserRoleFilters =
             [
                 new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = OrchardCoreConstants.Roles.Authenticated, Selected = string.Equals(options.SelectedRole, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase) },
                 // TODO Candidate for dynamic localization.
                 .. roleNames.Select(roleName =>
                     new SelectListItem

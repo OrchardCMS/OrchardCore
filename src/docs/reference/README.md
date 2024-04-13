@@ -33,7 +33,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Authentication:
   - [Microsoft](modules/Microsoft.Authentication/README.md)
   - [Facebook](modules/Facebook/README.md)
-  - [Twitter](modules/Twitter/README.md)
+  - [X (Twitter)](modules/X/README.md)
   - [GitHub](modules/GitHub/README.md)
   - [Google](modules/Google/README.md)
 - Users:
