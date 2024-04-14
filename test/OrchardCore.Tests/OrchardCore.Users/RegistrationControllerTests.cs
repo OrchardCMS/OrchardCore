@@ -29,17 +29,17 @@ public class RegistrationControllerTests
         // Act
         var model = new RegisterViewModel()
         {
-            UserName = "test1",
-            Email = "test1@orchardcore.com",
-            Password = "test1@OC!123",
-            ConfirmPassword = "test1@OC!123",
+            UserName = "test",
+            Email = "test@orchardcore.com",
+            Password = "test@OC!123",
+            ConfirmPassword = "test@OC!123",
         };
 
-        var responseFromPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
 
         // Assert
-        Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
-        Assert.Equal($"/{context.TenantName}/", responseFromPost.Headers.Location.ToString());
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -97,10 +97,12 @@ public class RegistrationControllerTests
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
+        var emailAddress = "test@orchardcore.com";
+
         var requestForPost = await CreateRequestMessageAsync(new RegisterViewModel()
         {
             UserName = "test1",
-            Email = "test@orchardcore.com",
+            Email = emailAddress,
             Password = "test1@OC!123",
             ConfirmPassword = "test1@OC!123",
         }, responseFromGet);
@@ -117,7 +119,7 @@ public class RegistrationControllerTests
         var requestForPost2 = await CreateRequestMessageAsync(new RegisterViewModel()
         {
             UserName = "test2",
-            Email = "test@orchardcore.com",
+            Email = emailAddress,
             Password = "test2@OC!123",
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
@@ -143,11 +145,12 @@ public class RegistrationControllerTests
         var responseFromGet = await context.Client.GetAsync("Register");
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
+        var emailAddress = "test@orchardcore.com";
 
         var requestForPost = await CreateRequestMessageAsync(new RegisterViewModel()
         {
             UserName = "test1",
-            Email = "test@orchardcore.com",
+            Email = emailAddress,
             Password = "test1@OC!123",
             ConfirmPassword = "test1@OC!123",
         }, responseFromGet);
@@ -164,7 +167,7 @@ public class RegistrationControllerTests
         var requestForPost2 = await CreateRequestMessageAsync(new RegisterViewModel()
         {
             UserName = "test2",
-            Email = "test@orchardcore.com",
+            Email = emailAddress,
             Password = "test2@OC!123",
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
@@ -269,10 +272,10 @@ public class RegistrationControllerTests
         var data = new Dictionary<string, string>
         {
             {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response) },
-            {"RegisterUserForm.UserName", model.UserName},
-            {"RegisterUserForm.Email", model.Email},
-            {"RegisterUserForm.Password", model.Password},
-            {"RegisterUserForm.ConfirmPassword", model.ConfirmPassword},
+            {$"{nameof(RegisterUserForm)}.{nameof(model.UserName)}", model.UserName},
+            {$"{nameof(RegisterUserForm)}.{nameof(model.Email)}", model.Email},
+            {$"{nameof(RegisterUserForm)}.{nameof(model.Password)}", model.Password},
+            {$"{nameof(RegisterUserForm)}.{nameof(model.ConfirmPassword)}", model.ConfirmPassword},
         };
 
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
