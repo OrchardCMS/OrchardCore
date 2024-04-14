@@ -15,6 +15,8 @@ public partial class AntiForgeryHelper
 
     public static async Task<string> ExtractAntiForgeryToken(HttpResponseMessage response)
     {
+        ArgumentNullException.ThrowIfNull(response);
+
         var raw = await response.Content.ReadAsStringAsync();
 
         return await Task.FromResult(ExtractAntiForgeryToken(raw));

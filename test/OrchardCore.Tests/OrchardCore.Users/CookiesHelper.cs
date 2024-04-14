@@ -4,8 +4,10 @@ namespace OrchardCore.Tests.OrchardCore.Users;
 
 public class CookiesHelper
 {
-    public static IDictionary<string, string> ExtractCookiesFromResponse(HttpResponseMessage response)
+    public static IDictionary<string, string> ExtractCookies(HttpResponseMessage response)
     {
+        ArgumentNullException.ThrowIfNull(response);
+
         var result = new Dictionary<string, string>();
 
         if (response.Headers.TryGetValues("Set-Cookie", out var values))
@@ -19,8 +21,11 @@ public class CookiesHelper
         return result;
     }
 
-    public static HttpRequestMessage PutCookiesOnRequest(HttpRequestMessage request, IDictionary<string, string> cookies)
+    public static HttpRequestMessage AddCookiesToRequest(HttpRequestMessage request, IDictionary<string, string> cookies)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(cookies);
+
         foreach (var key in cookies.Keys)
         {
             request.Headers.Add("Cookie", new CookieHeaderValue(key, cookies[key]).ToString());
@@ -29,6 +34,6 @@ public class CookiesHelper
         return request;
     }
 
-    public static HttpRequestMessage CopyCookiesFromResponse(HttpRequestMessage request, HttpResponseMessage response)
-        => PutCookiesOnRequest(request, ExtractCookiesFromResponse(response));
+    public static HttpRequestMessage CopyCookies(HttpRequestMessage source, HttpResponseMessage destination)
+        => AddCookiesToRequest(source, ExtractCookies(destination));
 }

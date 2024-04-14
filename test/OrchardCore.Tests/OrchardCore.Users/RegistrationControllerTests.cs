@@ -275,7 +275,7 @@ public class RegistrationControllerTests
             {"RegisterUserForm.ConfirmPassword", model.ConfirmPassword},
         };
 
-        return PostRequestHelper.CreateWithCookiesFromResponse("Register", data, response);
+        return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true)
