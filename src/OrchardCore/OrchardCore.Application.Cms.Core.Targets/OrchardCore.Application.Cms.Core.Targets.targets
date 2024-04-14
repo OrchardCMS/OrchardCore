@@ -1,14 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <UsingTask
-    TaskName="CopyTranslationFilesTask"
-    AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll"
-    Condition="'@(PackageTranslationFiles)' != ''" />
+  <UsingTask TaskName="CopyTranslationFilesTask"
+             AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
   <UsingTask TaskName="CreateLocalizationFolderTask" 
              AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
   <UsingTask TaskName="CreateWebRootFolderTask" 
              AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
-    
+
   <ItemGroup>
     <Compile Remove="App_Data\**;Localization\**" />
     <Content Remove="App_Data\**;Localization\**" />
@@ -30,9 +28,7 @@
     <CreateLocalizationFolderTask />
   </Target>
 
-  <Target
-    Name="CopyPackageTranslationFiles"
-    AfterTargets="Build">
+  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
     <CopyTranslationFilesTask SourceFile="%(PackageTranslationFiles.FullPath)" DestinationFolder="Localization\%(RecursiveDir)" />
   </Target>

@@ -5,7 +5,6 @@ namespace OrchardCore.Build.Tasks;
 
 public class CopyTranslationFilesTask : MSBuildTask
 {
-    [Required]
     public string SourceFile { get; set; }
 
     [Required]
@@ -13,6 +12,11 @@ public class CopyTranslationFilesTask : MSBuildTask
 
     public override bool Execute()
     {
+        if (string.IsNullOrEmpty(SourceFile))
+        {
+            return true;
+        }
+
         if (!Directory.Exists(DestinationFolder))
         {
             Directory.CreateDirectory(DestinationFolder);
@@ -20,7 +24,7 @@ public class CopyTranslationFilesTask : MSBuildTask
 
         var fileInfo = new FileInfo(SourceFile);
 
-        fileInfo.CopyTo(Path.Combine(DestinationFolder, fileInfo.Name));
+        fileInfo.CopyTo(Path.Combine(DestinationFolder, fileInfo.Name), overwrite: true);
 
         return true;
     }
