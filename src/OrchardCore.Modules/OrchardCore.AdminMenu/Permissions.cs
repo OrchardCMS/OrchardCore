@@ -46,12 +46,12 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions = _generalPermissions,
         },
     ];
