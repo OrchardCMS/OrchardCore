@@ -11,7 +11,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheDependencyTag
     {
-        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
 

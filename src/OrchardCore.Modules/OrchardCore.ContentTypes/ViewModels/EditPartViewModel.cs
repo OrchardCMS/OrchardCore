@@ -16,6 +16,7 @@ namespace OrchardCore.ContentTypes.ViewModels
         {
             Name = contentPartDefinition.Name;
             PartDefinition = contentPartDefinition;
+            _displayName = contentPartDefinition.DisplayName();
         }
 
         public string Name { get; set; }

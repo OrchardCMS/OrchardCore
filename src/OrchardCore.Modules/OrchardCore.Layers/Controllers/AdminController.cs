@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,13 +21,16 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
+    [Admin("Layers/{action}/{id?}", "Layers.{action}")]
     public class AdminController : Controller
     {
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly ISiteService _siteService;
@@ -37,11 +43,13 @@ namespace OrchardCore.Layers.Controllers
         private readonly IDisplayManager<Rule> _ruleDisplayManager;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _conditionFactories;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
 
         public AdminController(
+            IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
@@ -56,8 +64,10 @@ namespace OrchardCore.Layers.Controllers
             IEnumerable<IConditionFactory> conditionFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            ILogger<AdminController> logger)
         {
+            _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
@@ -73,8 +83,10 @@ namespace OrchardCore.Layers.Controllers
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _logger = logger;
         }
 
+        [Admin("Layers", "Layers.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -88,9 +100,10 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
-            model.Widgets = new Dictionary<string, List<dynamic>>();
+            model.Zones = siteSettings.As<LayerSettings>().Zones ?? [];
+            model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
             {
@@ -98,10 +111,18 @@ namespace OrchardCore.Layers.Controllers
                 List<dynamic> list;
                 if (!model.Widgets.TryGetValue(zone, out list))
                 {
-                    model.Widgets.Add(zone, list = new List<dynamic>());
+                    model.Widgets.Add(zone, list = []);
                 }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+                if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                {
+                    list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+                }
+                else
+                {
+                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
+                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
+                }
             }
 
             return View(model);
@@ -145,10 +166,10 @@ namespace OrchardCore.Layers.Controllers
                 var layer = new Layer
                 {
                     Name = model.Name,
-                    Description = model.Description
+                    Description = model.Description,
+                    LayerRule = new Rule(),
                 };
 
-                layer.LayerRule = new Rule();
                 _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
                 layers.Layers.Add(layer);
@@ -170,23 +191,23 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.GetLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {
                 return NotFound();
             }
 
-            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
-            rule.ConditionId = layer.LayerRule.ConditionId;
+            var rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.Properties["ConditionId"] = layer.LayerRule.ConditionId;
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _conditionFactories)
             {
                 var condition = factory.Create();
-                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.Condition = condition;
-                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = name, type = factory.Name });
+                var thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["Condition"] = condition;
+                thumbnail.Properties["TargetUrl"] = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
@@ -215,7 +236,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
                 if (layer == null)
                 {
@@ -243,7 +264,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.LoadLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {
@@ -252,7 +273,7 @@ namespace OrchardCore.Layers.Controllers
 
             var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
-            if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
+            if (!widgets.Any(x => string.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
             {
                 layers.Layers.Remove(layer);
                 await _layerService.UpdateAsync(layers);
@@ -271,7 +292,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return StatusCode(401);
+                return Unauthorized();
             }
 
             // Load the latest version first if any
@@ -279,14 +300,14 @@ namespace OrchardCore.Layers.Controllers
 
             if (contentItem == null)
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             var layerMetadata = contentItem.As<LayerMetadata>();
 
             if (layerMetadata == null)
             {
-                return StatusCode(403);
+                return Forbid();
             }
 
             layerMetadata.Position = position;
@@ -294,7 +315,7 @@ namespace OrchardCore.Layers.Controllers
 
             contentItem.Apply(layerMetadata);
 
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             // In case the moved contentItem is the draft for a published contentItem we update it's position too.
             // We do that because we want the position of published and draft version to be the same.
@@ -307,7 +328,7 @@ namespace OrchardCore.Layers.Controllers
 
                     if (layerMetadata == null)
                     {
-                        return StatusCode(403);
+                        return Forbid();
                     }
 
                     layerMetadata.Position = position;
@@ -315,16 +336,16 @@ namespace OrchardCore.Layers.Controllers
 
                     publishedContentItem.Apply(layerMetadata);
 
-                    _session.Save(publishedContentItem);
+                    await _session.SaveAsync(publishedContentItem);
                 }
             }
 
             // The state will be updated once the ambient session is committed.
             await _layerStateManager.UpdateAsync(new LayerState());
 
-            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
-                return StatusCode(200);
+                return Ok();
             }
             else
             {
@@ -334,11 +355,11 @@ namespace OrchardCore.Layers.Controllers
 
         private void ValidateViewModel(LayerEditViewModel model, LayersDocument layers, bool isNew)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
             }
-            else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            else if (isNew && layers.Layers.Any(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
             }

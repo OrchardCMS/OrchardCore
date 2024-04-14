@@ -4,23 +4,20 @@ Enabling the `OrchardCore.Rules` module allows you to implement condition based 
 
 ### Custom Conditions
 
-You may create your own conditions for more complex scenarios.
-
-You will need to implement the abstractions found in the `OrchardCore.Rules.Abstractions` package.
+For more intricate scenarios, you have the option to craft your own conditions. To achieve this, you'll be required to implement the following abstractions from the `OrchardCore.Rules.Abstractions` package:
 
 - `Condition`
 - `ConditionEvaluator`
 - `ConditionDisplayDriver`
-- Appropriate views for your condition display driver.
+
+Afterward, proceed with registering the services as follows:
 
 ``` csharp
-  services
-    .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
-    .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+services.AddRule<BooleanCondition, BooleanConditionEvaluator, BooleanConditionDisplayDriver>();
 ```
 
 Refer [Layers](../Layers/README.md) for more information about rules and conditions.
 
 #### Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Iq6VbXZg0B0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Iq6VbXZg0B0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

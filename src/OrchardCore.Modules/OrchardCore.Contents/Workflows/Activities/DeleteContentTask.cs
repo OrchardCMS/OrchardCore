@@ -12,7 +12,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public DeleteContentTask(IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<DeleteContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
@@ -29,14 +32,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var content = await GetContentAsync(workflowContext);
+            var content = (await GetContentAsync(workflowContext))
+                ?? throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
 
-            if (content == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
-            }
-
-            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }

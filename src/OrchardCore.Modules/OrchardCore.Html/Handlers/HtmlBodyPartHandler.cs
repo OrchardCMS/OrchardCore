@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
@@ -41,8 +41,8 @@ namespace OrchardCore.Html.Handlers
             {
                 try
                 {
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
                     var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
                     var html = part.Html;
@@ -53,7 +53,7 @@ namespace OrchardCore.Html.Handlers
                         {
                             Html = part.Html,
                             HtmlBodyPart = part,
-                            ContentItem = part.ContentItem
+                            ContentItem = part.ContentItem,
                         };
 
                         html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,

@@ -1,0 +1,25 @@
+@using OrchardCore.Environment.Shell
+@model ShapeViewModel<ShellSettingsEntry>
+
+@inject IFeatureProfilesService FeatureProfilesService
+
+@{
+    var currentFeatureProfiles = Model.Value.ShellSettings.GetFeatureProfiles();
+
+    if (currentFeatureProfiles.Length == 0)
+    {
+        return;
+    }
+
+    var featureProfiles = (await FeatureProfilesService.GetFeatureProfilesAsync())
+    .Select(x => new
+    {
+        Id = x.Key,
+        Name = x.Value.Name ?? x.Key,
+    }).Where(x => currentFeatureProfiles.Contains(x.Id));
+}
+
+@foreach (var featureProfile in featureProfiles)
+{
+    <span class="badge ta-badge font-weight-normal" title="@T["Feature Profile"]"><i class="fa-solid fa-layer-group text-info" aria-hidden="true"></i> @featureProfile.Name</span>
+}

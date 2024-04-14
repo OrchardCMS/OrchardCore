@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
-using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists.Services

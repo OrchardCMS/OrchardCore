@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
@@ -14,7 +13,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ResourcesTag
     {
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -25,7 +24,9 @@ namespace OrchardCore.Resources.Liquid
             {
                 switch (argument.Name)
                 {
+#pragma warning disable CA1806 // Do not ignore method results
                     case "type": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type); break;
+#pragma warning restore CA1806 // Do not ignore method results
                 }
             }
 

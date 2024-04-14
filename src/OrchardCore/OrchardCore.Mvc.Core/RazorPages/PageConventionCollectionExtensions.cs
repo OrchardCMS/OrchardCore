@@ -59,7 +59,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
                         }
                         else
                         {
-                            var cleanSubTemplate = route.Template.Substring(areaFolder.Length).TrimStart('/');
+                            var cleanSubTemplate = route.Template[areaFolder.Length..].TrimStart('/');
                             template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
                         }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Rules.Models;
 using OrchardCore.Scripting;
 
@@ -15,7 +14,7 @@ namespace OrchardCore.Rules.Services
         // The scope is built lazily once per request.
         private IScriptingScope _scope;
         private IScriptingEngine _engine;
-        
+
 
         public JavascriptConditionEvaluator(IScriptingManager scriptingManager, IServiceProvider serviceProvider)
         {

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -11,13 +10,12 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Fields
 {
     public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {
@@ -66,7 +64,7 @@ namespace OrchardCore.ContentFields.Fields
                 field.Values = viewModel.Values;
 
                 var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                if (settings.Required && !viewModel.Values.Any())
+                if (settings.Required && viewModel.Values.Length == 0)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }

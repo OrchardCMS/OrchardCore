@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.AdminMenu.Services
 {
@@ -19,7 +18,7 @@ namespace OrchardCore.AdminMenu.Services
         Task<Models.AdminMenuList> GetAdminMenuListAsync();
 
         /// <summary>
-        /// Persist an admin menu
+        /// Persist an admin menu.
         /// </summary>
         /// <param name="tree"></param>
         /// <returns></returns>
@@ -31,10 +30,10 @@ namespace OrchardCore.AdminMenu.Services
         Models.AdminMenu GetAdminMenuById(Models.AdminMenuList adminMenuList, string id);
 
         /// <summary>
-        /// Deletes an admin menu
+        /// Deletes an admin menu.
         /// </summary>
         /// <param name="tree"></param>
-        /// <returns>The count of deleted items</returns>
+        /// <returns>The count of deleted items.</returns>
         Task<int> DeleteAsync(Models.AdminMenu tree);
     }
 }

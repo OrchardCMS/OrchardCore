@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using OrchardCore.Environment.Cache;
-using Xunit;
 
 namespace OrchardCore.Tests.Environment.Cache
 {
@@ -70,7 +67,7 @@ namespace OrchardCore.Tests.Environment.Cache
             Assert.Collection(scopeA.Contexts, context => Assert.Contains("1", context),
                                                context => Assert.Contains("2", context));
 
-            Assert.False(scopeB.Contexts.Any());
+            Assert.Empty(scopeB.Contexts);
         }
 
         [Fact]

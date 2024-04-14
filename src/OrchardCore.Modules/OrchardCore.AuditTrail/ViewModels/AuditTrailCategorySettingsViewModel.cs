@@ -6,7 +6,7 @@ namespace OrchardCore.AuditTrail.ViewModels
     public class AuditTrailCategorySettingsViewModel
     {
         public string Name { get; set; }
-        
+
         public AuditTrailEventSettingsViewModel[] Events { get; set; }
 
         [BindNever]

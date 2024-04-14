@@ -1,9 +1,8 @@
 using System;
-using System.IO;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Commands.Parameters;
 using OrchardCore.Recipes.Models;
@@ -34,7 +33,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -55,7 +54,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             }
         }
 
-        private class CommandStepModel
+        private sealed class CommandStepModel
         {
             public string[] Commands { get; set; }
         }

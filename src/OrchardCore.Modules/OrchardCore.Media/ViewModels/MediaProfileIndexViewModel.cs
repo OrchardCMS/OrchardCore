@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using OrchardCore.Media.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.ViewModels
 {

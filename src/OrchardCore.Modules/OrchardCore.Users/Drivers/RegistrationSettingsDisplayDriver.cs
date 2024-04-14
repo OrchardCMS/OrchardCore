@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
     {
         public const string GroupId = "userRegistration";
@@ -28,7 +29,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -51,12 +52,12 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }

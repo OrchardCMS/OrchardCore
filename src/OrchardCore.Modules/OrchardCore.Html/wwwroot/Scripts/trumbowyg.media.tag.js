@@ -21,24 +21,23 @@
               $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
               $("#mediaApp").show();
               mediaApp.selectedMedias = [];
-              var modal = $('#mediaModalBody').modal(); //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
-
-              $('#mediaHtmlFieldSelectButton').off('click');
+              var modal = new bootstrap.Modal($("#mediaModalBody"));
+              modal.show();
+              //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
+              $('#mediaBodySelectButton').off('click');
               $('#mediaBodySelectButton').on('click', function (v) {
                 trumbowyg.restoreRange();
                 trumbowyg.range.deleteContents();
-
                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                   var mediaBodyContent = ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                   var node = document.createTextNode(mediaBodyContent);
                   trumbowyg.range.insertNode(node);
                 }
-
                 trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange'); //avoid tag to be selected after add it
-
+                trumbowyg.$c.trigger('tbwchange');
+                //avoid tag to be selected after add it
                 trumbowyg.$c.focus();
-                $('#mediaModalBody').modal('hide');
+                modal.hide();
                 return true;
               });
             }

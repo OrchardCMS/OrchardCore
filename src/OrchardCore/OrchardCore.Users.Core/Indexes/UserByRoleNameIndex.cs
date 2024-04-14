@@ -23,16 +23,15 @@ namespace OrchardCore.Users.Indexes
         public override void Describe(DescribeContext<User> context)
         {
             context.For<UserByRoleNameIndex, string>()
-                .Map(user => 
+                .Map(user =>
                 {
                     // Include a marker that the user does not have any roles, i.e. is Authenticated only.
                     if (!user.RoleNames.Any())
                     {
                         return new UserByRoleNameIndex[]
                         {
-                            new UserByRoleNameIndex
-                            {
-                                RoleName = NormalizeKey("Authenticated"),
+                            new() {
+                                RoleName = NormalizeKey(OrchardCoreConstants.Roles.Authenticated),
                                 Count = 1
                             }
                         };

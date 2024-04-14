@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             Prefix = $"{model.ContentTypeDefinition.Name}.{model.PartDefinition.Name}";
 
-            if (!String.IsNullOrEmpty(htmlFielPrefix))
+            if (!string.IsNullOrEmpty(htmlFielPrefix))
             {
                 Prefix = htmlFielPrefix + "." + Prefix;
             }
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override bool CanHandleModel(ContentTypePartDefinition model)
         {
-            return string.Equals(typeof(TPart).Name, model.PartDefinition.Name);
+            return string.Equals(typeof(TPart).Name, model.PartDefinition.Name, StringComparison.Ordinal);
         }
     }
 }

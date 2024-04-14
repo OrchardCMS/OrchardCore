@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -15,10 +15,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            if (bindingContext == null)
-            {
-                throw new ArgumentNullException(nameof(bindingContext));
-            }
+            ArgumentNullException.ThrowIfNull(bindingContext);
 
             var modelName = bindingContext.ModelName;
 
@@ -27,7 +24,7 @@ namespace OrchardCore.AuditTrail.Services
 
             if (valueProviderResult == ValueProviderResult.None)
             {
-                bindingContext.Result = ModelBindingResult.Success(_parser.Parse(String.Empty));
+                bindingContext.Result = ModelBindingResult.Success(_parser.Parse(string.Empty));
 
                 return Task.CompletedTask;
             }

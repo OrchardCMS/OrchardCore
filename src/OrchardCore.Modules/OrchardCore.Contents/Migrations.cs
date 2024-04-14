@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -6,16 +7,16 @@ namespace OrchardCore.Contents
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("CommonPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("CommonPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an editor for the common properties of a content item."));
 

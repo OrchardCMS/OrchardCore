@@ -18,7 +18,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.AAD,
-    Name = "Microsoft Azure Active Directory Authentication",
+    Name = "Microsoft Entra ID (Azure Active Directory) Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Azure Active Directory Account."
+    Description = "Authenticates users with their Microsoft Entra ID Account."
 )]

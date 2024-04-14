@@ -1,24 +1,14 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using OrchardCore.Rules.Models;
-using OrchardCore.Rules.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Rules.Models;
+using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
     public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
-        private readonly ConditionOperatorOptions _options;
-
-        public JavascriptConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
-        {
-            _options = options.Value;
-        }
-        
         public override IDisplayResult Display(JavascriptCondition condition)
         {
             return

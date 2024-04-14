@@ -7,9 +7,11 @@ using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha
 {
@@ -22,6 +24,7 @@ namespace OrchardCore.ReCaptcha
 
             services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 
@@ -43,9 +46,10 @@ namespace OrchardCore.ReCaptcha
             services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
             services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
             services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
+            services.AddScoped<IDisplayDriver<LoginForm>, ReCaptchaLoginFormDisplayDriver>();
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(ReCaptchaLoginFilter));
+                options.Filters.Add<ReCaptchaLoginFilter>();
             });
         }
     }

@@ -24,23 +24,25 @@ namespace OrchardCore.Contents.Indexing
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                    DocumentIndexOptions.Sanitize);
             }
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextAnalyzedKey,
                 context.ContentItem.DisplayText,
-                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                DocumentIndexOptions.Sanitize);
 
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
-                IndexingConstants.DisplayTextKey,
+                IndexingConstants.DisplayTextKey + IndexingConstants.KeywordKey,
                 context.ContentItem.DisplayText,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,
                 context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
         }
     }
 }

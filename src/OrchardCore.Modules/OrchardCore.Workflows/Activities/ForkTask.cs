@@ -6,16 +6,14 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ForkTask : TaskActivity
+    public class ForkTask : TaskActivity<ForkTask>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ForkTask(IStringLocalizer<ForkTask> localizer)
         {
             S = localizer;
         }
-
-        public override string Name => nameof(ForkTask);
 
         public override LocalizedString DisplayText => S["Fork Task"];
 

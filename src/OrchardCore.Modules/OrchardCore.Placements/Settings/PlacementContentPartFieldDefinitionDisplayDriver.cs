@@ -8,7 +8,7 @@ namespace OrchardCore.Placements.Settings
 {
     public class PlacementContentPartFieldDefinitionDisplayDriver : ContentPartFieldDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public PlacementContentPartFieldDefinitionDisplayDriver(IStringLocalizer<PlacementContentTypePartDefinitionDriver> localizer)
         {

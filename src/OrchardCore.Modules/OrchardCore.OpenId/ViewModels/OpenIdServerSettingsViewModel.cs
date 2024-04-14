@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
@@ -19,11 +18,13 @@ namespace OrchardCore.OpenId.ViewModels
         public StoreLocation? SigningCertificateStoreLocation { get; set; }
         public StoreName? SigningCertificateStoreName { get; set; }
         public string SigningCertificateThumbprint { get; set; }
-        public IList<CertificateInfo> AvailableCertificates { get; } = new List<CertificateInfo>();
+        public IList<CertificateInfo> AvailableCertificates { get; } = [];
         public bool EnableTokenEndpoint { get; set; }
         public bool EnableAuthorizationEndpoint { get; set; }
         public bool EnableLogoutEndpoint { get; set; }
         public bool EnableUserInfoEndpoint { get; set; }
+        public bool EnableIntrospectionEndpoint { get; set; }
+        public bool EnableRevocationEndpoint { get; set; }
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
@@ -32,6 +33,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool DisableRollingRefreshTokens { get; set; }
         public bool UseReferenceAccessTokens { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public class CertificateInfo
         {

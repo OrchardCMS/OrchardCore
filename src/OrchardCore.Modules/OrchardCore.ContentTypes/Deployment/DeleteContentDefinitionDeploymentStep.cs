@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment
@@ -13,8 +12,8 @@ namespace OrchardCore.ContentTypes.Deployment
             Name = "DeleteContentDefinition";
         }
 
-        public string[] ContentTypes { get; set; } = Array.Empty<string>();
+        public string[] ContentTypes { get; set; } = [];
 
-        public string[] ContentParts { get; set; } = Array.Empty<string>();
+        public string[] ContentParts { get; set; } = [];
     }
 }

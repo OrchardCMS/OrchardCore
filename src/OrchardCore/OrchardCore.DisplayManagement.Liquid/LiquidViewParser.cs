@@ -15,6 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid
     public class LiquidViewParser : FluidParser
     {
         public LiquidViewParser(IOptions<LiquidViewOptions> liquidViewOptions)
+            : base(new FluidParserOptions() { AllowFunctions = true })
         {
             RegisterEmptyTag("render_body", RenderBodyTag.WriteToAsync);
             RegisterParserTag("render_section", ArgumentsList, RenderSectionTag.WriteToAsync);
@@ -73,8 +74,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             public ParserBlockStatement(T value, List<Statement> statements, Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> render) : base(statements)
             {
+                ArgumentNullException.ThrowIfNull(render);
+
                 Value = value;
-                _render = render ?? throw new ArgumentNullException(nameof(render));
+                _render = render;
             }
 
             public T Value { get; }

@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Options
         public ActivityRegistration(Type activityType)
         {
             ActivityType = activityType;
-            DriverTypes = new HashSet<Type>();
+            DriverTypes = [];
         }
 
         public ActivityRegistration(Type activityType, Type driverType) : this(activityType)

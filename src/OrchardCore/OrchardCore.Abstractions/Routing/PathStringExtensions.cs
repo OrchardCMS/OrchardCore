@@ -9,7 +9,7 @@ namespace OrchardCore.Routing
         {
             if (other.HasValue && other.Value.EndsWith('/'))
             {
-                return path.StartsWithSegments(other.Value.Substring(0, other.Value.Length - 1));
+                return path.StartsWithSegments(other.Value[..^1]);
             }
 
             return path.StartsWithSegments(other);
@@ -19,7 +19,7 @@ namespace OrchardCore.Routing
         {
             if (other.HasValue && other.Value.EndsWith('/'))
             {
-                return path.StartsWithSegments(other.Value.Substring(0, other.Value.Length - 1), comparisonType);
+                return path.StartsWithSegments(other.Value[..^1], comparisonType);
             }
 
             return path.StartsWithSegments(other, comparisonType);
@@ -29,7 +29,7 @@ namespace OrchardCore.Routing
         {
             if (other.HasValue && other.Value.EndsWith('/'))
             {
-                return path.StartsWithSegments(other.Value.Substring(0, other.Value.Length - 1), out remaining);
+                return path.StartsWithSegments(other.Value[..^1], out remaining);
             }
 
             return path.StartsWithSegments(other, out remaining);
@@ -39,7 +39,7 @@ namespace OrchardCore.Routing
         {
             if (other.HasValue && other.Value.EndsWith('/'))
             {
-                return path.StartsWithSegments(other.Value.Substring(0, other.Value.Length - 1), comparisonType, out remaining);
+                return path.StartsWithSegments(other.Value[..^1], comparisonType, out remaining);
             }
 
             return path.StartsWithSegments(other, comparisonType, out remaining);

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
@@ -18,34 +19,32 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {
-                // The content definition manager tests existance before trying to delete.
-                _contentDefinitionManager.DeleteTypeDefinition(contentType);
+                // The content definition manager tests existence before trying to delete.
+                await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType);
             }
 
             foreach (var contentPart in step.ContentParts)
             {
-                // The content definition manager tests existance before trying to delete.
-                _contentDefinitionManager.DeletePartDefinition(contentPart);
+                // The content definition manager tests existence before trying to delete.
+                await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart);
             }
-
-            return Task.CompletedTask;
         }
 
-        private class DeleteContentDefinitionStepModel
+        private sealed class DeleteContentDefinitionStepModel
         {
-            public string[] ContentTypes { get; set; } = Array.Empty<string>();
-            public string[] ContentParts { get; set; } = Array.Empty<string>();
+            public string[] ContentTypes { get; set; } = [];
+            public string[] ContentParts { get; set; } = [];
         }
     }
 }

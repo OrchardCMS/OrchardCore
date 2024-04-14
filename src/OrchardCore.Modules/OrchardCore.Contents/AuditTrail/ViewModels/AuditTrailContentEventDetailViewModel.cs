@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.AuditTrail.ViewModels

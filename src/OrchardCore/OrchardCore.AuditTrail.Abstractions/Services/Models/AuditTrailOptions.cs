@@ -1,24 +1,25 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailOptions
     {
-        internal Dictionary<string, AuditTrailCategoryDescriptorBuilder> CategoryDescriptorBuilders { get; set; } = new Dictionary<string, AuditTrailCategoryDescriptorBuilder>();
+        internal Dictionary<string, AuditTrailCategoryDescriptorBuilder> CategoryDescriptorBuilders { get; set; } = [];
 
-        private Dictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
-        public IReadOnlyDictionary<string, AuditTrailCategoryDescriptor> CategoryDescriptors => _categoryDescriptors ??= BuildCategoryDescriptors();
+        private FrozenDictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
+        public IReadOnlyDictionary<string, AuditTrailCategoryDescriptor> CategoryDescriptors
+            => _categoryDescriptors ??= BuildCategoryDescriptors();
 
-        private Dictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
+        private FrozenDictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
         {
-            var categoryDescriptors = CategoryDescriptorBuilders.ToDictionary(k => k.Key, v => v.Value.Build());
+            var categoryDescriptors = CategoryDescriptorBuilders.ToFrozenDictionary(k => k.Key, v => v.Value.Build());
             CategoryDescriptorBuilders = null;
 
             return categoryDescriptors;
-        }  
+        }
     }
 
     public static class AuditTrailOptionsExtensions
@@ -32,9 +33,9 @@ namespace OrchardCore.AuditTrail.Services.Models
             }
 
             return auditTrailCategoryDescriptorBuilder;
-        }        
+        }
 
         public static bool Remove(this AuditTrailOptions options, string categoryName)
             => options.CategoryDescriptorBuilders.Remove(categoryName);
-    }    
+    }
 }

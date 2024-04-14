@@ -2,9 +2,10 @@
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <ItemGroup>
     <PackageReference Remove="Microsoft.SourceLink.GitHub" />
+    <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IncludeBuildOutput>False</IncludeBuildOutput>
     <IncludeSource>False</IncludeSource>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>

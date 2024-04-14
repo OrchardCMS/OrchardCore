@@ -9,11 +9,24 @@ $(function () {
         var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
+
+        // Retrieve all index values knowing that some elements may have been moved / removed.
+        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
+            .filter(function (i, e) {
+                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+            })
+            .map(function (i, e) {
+                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+            });
+
         // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
-        var prefix = htmlFieldPrefix + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+        var prefix = htmlFieldPrefix + '-' + index.toString();
+
         var contentTypesName = $(this).data("contenttypes-name");
+        var contentItemsName = $(this).data("contentitems-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
         })
         .done(function (data) {
             var result = JSON.parse(data);
@@ -37,11 +50,24 @@ $(function () {
         var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
+
+        // Retrieve all index values knowing that some elements may have been moved / removed.
+        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
+            .filter(function (i, e) {
+                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+            })
+            .map(function (i, e) {
+                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+            });
+
         // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
-        var prefix = htmlFieldPrefix + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+        var prefix = htmlFieldPrefix + '-' + index.toString();
+
         var contentTypesName = $(this).data("contenttypes-name");
+        var contentItemsName = $(this).data("contentitems-name");
         $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
+            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
         })
         .done(function (data) {
             var result = JSON.parse(data);

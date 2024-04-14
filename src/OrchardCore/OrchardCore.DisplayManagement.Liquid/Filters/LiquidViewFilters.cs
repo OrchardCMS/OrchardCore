@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Liquid;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -29,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return new ValueTask<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
         }
 
-        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _1, TemplateContext _2)
         {
             return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }

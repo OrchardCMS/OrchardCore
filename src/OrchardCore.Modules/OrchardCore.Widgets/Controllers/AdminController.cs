@@ -1,6 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -10,6 +10,7 @@ using OrchardCore.Widgets.ViewModels;
 
 namespace OrchardCore.Widgets.Controllers
 {
+    [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -29,9 +30,9 @@ namespace OrchardCore.Widgets.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -40,34 +41,37 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            string cardCollectionType = nameof(WidgetsListPart);
+            var cardCollectionType = nameof(WidgetsListPart);
 
-            //Create a Card Shape
+            // Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(
-                //Updater is the controller for AJAX Requests
+                // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
-                //Shape Specific
+                // Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
-                //WidgetListPart Specific
+                // WidgetListPart Specific
                 ZoneValue: zone,
-                //Card Specific Properties
+                // Card Specific Properties
                 TargetId: targetId,
                 Inline: true,
                 CanMove: true,
                 CanDelete: true,
-                //Input hidden
-                //Prefixes
+                // Input hidden
+                // Prefixes
                 PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
-                //ContentTypes
+                // ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
-                //Zones
+                // ContentItems
+                ContentItemsId: contentItemsName.Replace('.', '_'),
+                ContentItemsName: contentItemsName,
+                // Zones
                 ZonesId: zonesName.Replace('.', '_'),
                 ZonesName: zonesName
             );

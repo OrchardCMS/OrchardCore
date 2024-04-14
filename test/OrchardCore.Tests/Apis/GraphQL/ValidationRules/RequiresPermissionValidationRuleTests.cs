@@ -1,25 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Conversion;
+using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using GraphQL.Validation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
     public class RequiresPermissionValidationRuleTests
     {
-        internal readonly static Dictionary<string, Permission> _permissions = new Dictionary<string, Permission> {
+        internal readonly static Dictionary<string, Permission> _permissions = new()
+        {
             { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
             { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
         };
@@ -38,7 +33,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new GraphQLSerializer();
+            var result = JsonObject.Parse(writer.Serialize(executionResult));
+
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
 
@@ -47,7 +45,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
         public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
         {
-            var options = BuildExecutionOptions($"query {{ test {{{ fieldName }}} }}",
+            var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
                             new PermissionsContext
                             {
                                 UsePermissionsContext = true,
@@ -59,7 +57,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new GraphQLSerializer();
+            var result = JObject.Parse(writer.Serialize(executionResult));
+
             Assert.Equal(expectedFieldValue, result["data"]["test"][fieldName].ToString());
         }
 
@@ -94,17 +95,20 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new GraphQLSerializer();
+            var result = JObject.Parse(writer.Serialize(executionResult));
+
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
-        private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
+        private static ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
-
             services.AddAuthorization();
             services.AddLogging();
             services.AddOptions();
+            services.AddLocalization();
 
             services.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(x =>
             {
@@ -112,66 +116,60 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             });
 
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
-
+            services.AddLocalization();
             var serviceProvider = services.BuildServiceProvider();
 
             return new ExecutionOptions
             {
                 Query = query,
                 Schema = new ValidationSchema(),
-                UserContext = new GraphQLContext
+                UserContext = new GraphQLUserContext
                 {
-                    ServiceProvider = serviceProvider,
                     User = new ClaimsPrincipal(new StubIdentity())
                 },
-                ValidationRules = DocumentValidator.CoreRules().Concat(serviceProvider.GetServices<IValidationRule>())
+                ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
             };
         }
 
-        private class ValidationSchema : Schema
+        private sealed class ValidationSchema : Schema
         {
             public ValidationSchema()
             {
-                RegisterType<TestField>();
+                RegisterType(typeof(TestField));
                 Query = new ValidationQueryRoot { Name = "Query" };
-                FieldNameConverter = new CamelCaseFieldNameConverter();
+                NameConverter = new CamelCaseNameConverter();
             }
         }
 
-        private class ValidationQueryRoot : ObjectGraphType
+        private sealed class ValidationQueryRoot : ObjectGraphType
         {
             public ValidationQueryRoot()
             {
-                Field<TestField>()
-                    .Name("test")
+                Field<TestField>("test")
                     .Returns<object>()
                     .Resolve(_ => new object());
             }
         }
 
-        private class TestField : ObjectGraphType
+        private sealed class TestField : ObjectGraphType
         {
             public TestField()
             {
-                Field<StringGraphType>()
-                     .Name("NoPermissions")
+                Field<StringGraphType>("NoPermissions")
                      .Returns<string>()
                      .Resolve(_ => "Fantastic Fox Hates Permissions");
 
-                Field<StringGraphType>()
-                    .Name("PermissionOne")
+                Field<StringGraphType>("PermissionOne")
                     .Returns<string>()
                     .RequirePermission(_permissions["permissionOne"])
                     .Resolve(_ => "Fantastic Fox Loves Permission One");
 
-                Field<StringGraphType>()
-                     .Name("PermissionTwo")
+                Field<StringGraphType>("PermissionTwo")
                      .Returns<string>()
                      .RequirePermission(_permissions["permissionTwo"])
                      .Resolve(_ => "Fantastic Fox Loves Permission Two");
 
-                Field<StringGraphType>()
-                     .Name("PermissionMultiple")
+                Field<StringGraphType>("PermissionMultiple")
                      .Returns<string>()
                      .RequirePermission(_permissions["permissionOne"])
                      .RequirePermission(_permissions["permissionTwo"])

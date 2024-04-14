@@ -1,29 +1,25 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 
 namespace OrchardCore.GitHub.Configuration
 {
     public class GitHubHandler : OAuthHandler<GitHubOptions>
     {
-        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        { }
+        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+            : base(options, logger, encoder)
+        {
+        }
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
@@ -48,7 +44,7 @@ namespace OrchardCore.GitHub.Configuration
         /// <summary>
         /// This code was copied from the aspnetcore repository . We should keep it in sync with it.
         /// https://github.com/dotnet/aspnetcore/blob/fcd4ed7c46083cc408417763867637f232928f9b/src/Security/Authentication/OAuth/src/OAuthHandler.cs#L193
-        /// This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved
+        /// This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved.
         /// </summary>
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
         {
@@ -80,12 +76,12 @@ namespace OrchardCore.GitHub.Configuration
                 var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
                 // This was added to support better error messages from the GitHub OAuth provider
-                if(payload.RootElement.TryGetProperty("error", out var error))
+                if (payload.RootElement.TryGetProperty("error", out var error))
                 {
                     var output = new StringBuilder();
                     output.Append(error);
 
-                    if(payload.RootElement.TryGetProperty("error_description", out var description))
+                    if (payload.RootElement.TryGetProperty("error_description", out var description))
                     {
                         output.Append(' ');
                         output.Append(description);

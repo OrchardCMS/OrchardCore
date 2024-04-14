@@ -7,8 +7,8 @@ namespace OrchardCore.Demo.ViewModels
     public class TodoViewModel : ShapeViewModel
     {
         public TodoViewModel()
+            : base("Todo")
         {
-            Metadata.Type = "Todo";
         }
 
         public string TodoId { get; set; }

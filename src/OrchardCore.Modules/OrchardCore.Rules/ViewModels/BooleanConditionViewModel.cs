@@ -8,6 +8,6 @@ namespace OrchardCore.Rules.ViewModels
         public bool Value { get; set; }
 
         [BindNever]
-        public BooleanCondition Condition { get; set; }    
+        public BooleanCondition Condition { get; set; }
     }
 }

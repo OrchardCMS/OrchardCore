@@ -182,7 +182,7 @@ namespace OrchardCore.Contents.TagHelpers
                 }
                 else
                 {
-                    var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                     output.Content.Append(typeDefinition.ToString());
                 }
             }
@@ -190,13 +190,13 @@ namespace OrchardCore.Contents.TagHelpers
             return;
         }
 
-        private void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
+        private static void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
         {
             foreach (var attribute in tagHelperContext.AllAttributes)
             {
                 if (attribute.Name.StartsWith(RoutePrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    route.Add(attribute.Name.Substring(RoutePrefix.Length), attribute.Value);
+                    route.Add(attribute.Name[RoutePrefix.Length..], attribute.Value);
                 }
             }
         }

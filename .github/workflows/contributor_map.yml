@@ -1,0 +1,19 @@
+name: Contributor Map
+
+on:
+  # Running this automatically would require jumping through a lot of hoops because tunaitis/contributor-map commits to
+  # the branch where the workflow was triggered, i.e. `main` for the schedule trigger. So, better to occasionally run
+  # it manually in a PR.
+  workflow_dispatch:
+    
+jobs:
+  update-contributor-map:
+    name: Update Contributor Map
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Update Contributor Map
+        # v1.1
+        uses: tunaitis/contributor-map@bf97d201f9b59abe463fa4ef3b5c4478d22f606d
+        with:
+            output: src/docs/community/contributors/images/contributors-map.svg

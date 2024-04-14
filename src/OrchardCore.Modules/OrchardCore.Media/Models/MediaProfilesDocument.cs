@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 using OrchardCore.Media.Processing;
 
@@ -8,13 +7,12 @@ namespace OrchardCore.Media.Models
 {
     public class MediaProfilesDocument : Document
     {
-        public Dictionary<string, MediaProfile> MediaProfiles { get; } = new Dictionary<string, MediaProfile>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, MediaProfile> MediaProfiles { get; init; } = new Dictionary<string, MediaProfile>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class MediaProfile
     {
         public string Hint { get; set; }
-
         public int Width { get; set; }
         public int Height { get; set; }
         public ResizeMode Mode { get; set; }

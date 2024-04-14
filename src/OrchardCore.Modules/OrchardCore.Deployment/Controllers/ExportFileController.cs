@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/ExportFile/{action}/{id?}", "DeploymentPlanExportFile{action}")]
     public class ExportFileController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;
@@ -35,7 +34,7 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost]
         [DeleteFileResultFilter]
-        public async Task<IActionResult> Execute(int id)
+        public async Task<IActionResult> Execute(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {

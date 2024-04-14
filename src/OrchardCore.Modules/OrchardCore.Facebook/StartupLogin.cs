@@ -13,7 +13,6 @@ using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook
@@ -49,9 +48,7 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, FacebookLoginDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>();
+            services.AddDeployment<FacebookLoginDeploymentSource, FacebookLoginDeploymentStep, FacebookLoginDeploymentStepDriver>();
         }
     }
 }

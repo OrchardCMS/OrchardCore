@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -41,23 +42,22 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            JObject configurations = null;
+            JsonObject configurations = null;
 
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
-
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JObject();
+                    configurations = [];
                 }
 
                 if (!configurations.ContainsKey(tenant))
@@ -69,77 +69,90 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     document.ShellConfigurations = configurations;
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
-            var configuration = configurations.GetValue(tenant) as JObject;
-            if (configuration != null)
+            var configuration = configurations[tenant] as JsonObject;
+            if (configuration is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
+                var configurationString = configuration.ToJsonString(JOptions.Default);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
-                JObject configurations;
-                if (document != null)
+                JsonObject configurations;
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JObject();
+                    configurations = [];
                 }
 
-                var config = configurations.GetValue(tenant) as JObject ?? new JObject();
-
+                var configData = await (configurations[tenant] as JsonObject).ToConfigurationDataAsync();
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
-                        config[key] = data[key];
+                        configData[key] = data[key];
                     }
                     else
                     {
-                        config.Remove(key);
+                        configData.Remove(key);
                     }
                 }
 
-                configurations[tenant] = config;
-
+                configurations[tenant] = configData.ToJsonObject();
                 document.ShellConfigurations = configurations;
 
-                session.Save(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
-        private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)
+        public async Task RemoveAsync(string tenant)
+        {
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+                var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+                if (document is not null)
+                {
+                    document.ShellConfigurations.Remove(tenant);
+                    await session.SaveAsync(document, checkConcurrency: true);
+                }
+            });
+        }
+
+        private async Task<bool> TryMigrateFromFileAsync(string tenant, JsonObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);
-            var appsettings = Path.Combine(tenantFolder, "appsettings.json");
+            var appsettings = Path.Combine(tenantFolder, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
             if (!File.Exists(appsettings))
             {
                 return false;
             }
 
-            using (var file = File.OpenText(appsettings))
-            {
-                var configuration = await file.ReadToEndAsync();
+            using var stream = File.OpenRead(appsettings);
 
-                if (configuration != null)
-                {
-                    configurations[tenant] = JObject.Parse(configuration);
-                }
+            var configuration = await JObject.LoadAsync(stream);
+            if (configuration is JsonObject jsonObject)
+            {
+                configurations[tenant] = jsonObject;
             }
 
             return true;

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Values;
@@ -70,9 +69,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             return false;
         }
 
-        public override IEnumerable<FluidValue> Enumerate()
+        public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
         {
-            return Enumerable.Empty<FluidValue>();
+            return [];
         }
 
         public override bool Equals(object other)

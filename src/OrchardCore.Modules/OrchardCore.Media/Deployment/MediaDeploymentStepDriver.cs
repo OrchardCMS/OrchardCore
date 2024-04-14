@@ -6,7 +6,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment
@@ -42,8 +41,8 @@ namespace OrchardCore.Media.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, IUpdateModel updater)
         {
-            step.FilePaths = Array.Empty<string>();
-            step.DirectoryPaths = Array.Empty<string>();
+            step.FilePaths = [];
+            step.DirectoryPaths = [];
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
@@ -54,8 +53,8 @@ namespace OrchardCore.Media.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.FilePaths = Array.Empty<string>();
-                step.DirectoryPaths = Array.Empty<string>();
+                step.FilePaths = [];
+                step.DirectoryPaths = [];
             }
 
             return Edit(step);
@@ -64,7 +63,7 @@ namespace OrchardCore.Media.Deployment
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
             var mediaStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(path)
-                .SelectAwait(async e => 
+                .SelectAwait(async e =>
                 {
                     var mediaStoreEntry = new MediaStoreEntryViewModel
                     {
@@ -75,9 +74,9 @@ namespace OrchardCore.Media.Deployment
 
                     mediaStoreEntry.Entries = e.IsDirectory
                         ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
-                        : Array.Empty<MediaStoreEntryViewModel>();   
+                        : Array.Empty<MediaStoreEntryViewModel>();
 
-                    return mediaStoreEntry;     
+                    return mediaStoreEntry;
                 }).ToListAsync();
 
             return mediaStoreEntries;

@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <!-- Ctor arguments by position:
+    1: string id
+    2: , string name
+    3: , string baseTheme
+    4: , string category
+    5: , string priority
+    6: , string description
+    7: , string author
+    8: , string semVer
+    9: , string websiteUrl
+    10: , string featureDependencies
+    11: , string tags
+    12: , object defaultTenant
+    13: , object alwaysEnabled
+    14: , object enabledByDependencyOnly
+    -->
+    <!-- TODO: TBD: possible to switch after a sort using MSBuild? -->
+    <!-- TODO: TBD: with of course 'Include' being the 'Id' -->
+    <!-- TODO: TBD: add a Type, i.e. 'Feature' for features, 'Theme' for themes, 'Module' for modules, and literally anything else is a Module -->
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Alpha"
+                           Type="feature"
+                           Name="Alpha"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Dependencies="six;seven;eight"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Bravo"
+                           Type="feature"
+                           Name="Bravo"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Dependencies="seven;eight;nine"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Charlie"
+                           Type="feature"
+                           Name="Charlie"
+                           Category="five"
+                           Priority="6"
+                           Description="seven"
+                           Dependencies="eight;nine;ten"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

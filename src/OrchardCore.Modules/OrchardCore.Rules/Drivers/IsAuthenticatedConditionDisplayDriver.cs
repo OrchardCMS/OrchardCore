@@ -1,6 +1,6 @@
-using OrchardCore.Rules.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Drivers
 {
@@ -18,6 +18,6 @@ namespace OrchardCore.Rules.Drivers
         public override IDisplayResult Edit(IsAuthenticatedCondition condition)
         {
             return View("IsAuthenticatedCondition_Fields_Edit", condition).Location("Content");
-        }   
+        }
     }
 }

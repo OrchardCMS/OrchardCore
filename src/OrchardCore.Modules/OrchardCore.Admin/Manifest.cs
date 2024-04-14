@@ -7,8 +7,8 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Creates an admin section for the site.",
     Category = "Infrastructure",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Settings"
-    }
+    ]
 )]

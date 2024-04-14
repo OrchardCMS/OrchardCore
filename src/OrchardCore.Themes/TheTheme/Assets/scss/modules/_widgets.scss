@@ -1,5 +1,13 @@
+@use 'sass:math';
+@import '../_variables';
+@import "../../../node_modules/bootstrap/scss/mixins/_breakpoints";
+@import "../../../node_modules/bootstrap/scss/mixins/_grid";
+@import "../../../node_modules/bootstrap/scss/mixins/_container";
+
 .widget-container {
     @include make-container;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .widget-image-widget img {
@@ -27,13 +35,12 @@
     @include make-col(12);
 }
 
-
 @each $wsize in (25, 33, 50, 66, 75) {
     .widget-size-#{$wsize} {
         @extend .widget-size-100;
 
         @include media-breakpoint-up(sm) {
-            @include make-col(round($wsize*12/100));
+            @include make-col(round(math.div($wsize * 12, 100)));
         }
     }
 
@@ -41,7 +48,7 @@
         @extend .widget-size-#{$wsize};
 
         @include media-breakpoint-up(md) {
-            @include make-col(round($wsize*12/100));
+            @include make-col(round(math.div($wsize * 12, 100)));
         }
     }
 }

@@ -5,38 +5,41 @@ The auto-setup module allows to automatically install the application/tenants on
 ## JSON Configuration Parameters
 
 Auto-Setup parameters are defined in appsettings.json. Example excerpt:
+
 ```json
 "OrchardCore": {
     "OrchardCore_AutoSetup": {
-    "AutoSetupPath": "",
-    "Tenants": [
-        {
-            "ShellName": "Default",
-            "SiteName": "AutoSetup Example",
-            "SiteTimeZone": "Europe/Amsterdam",
-            "AdminUsername": "admin",
-            "AdminEmail": "info@orchardproject.net",
-            "AdminPassword": "OrchardCoreRules1!",
-            "DatabaseProvider": "Sqlite",
-            "DatabaseConnectionString": "",
-            "DatabaseTablePrefix": "",
-            "RecipeName": "SaaS"
-        },
-        {
-            "ShellName": "AutoSetupTenant",
-            "SiteName": "AutoSetup Tenant",
-            "SiteTimeZone": "Europe/Amsterdam",
-            "AdminUsername": "tenantadmin",
-            "AdminEmail": "tenant@orchardproject.net",
-            "AdminPassword": "OrchardCoreRules1!",
-            "DatabaseProvider": "Sqlite",
-            "DatabaseConnectionString": "",
-            "DatabaseTablePrefix": "tenant",
-            "RecipeName": "Agency",
-            "RequestUrlHost": "",
-            "RequestUrlPrefix": "tenant"
-        }
-    ]
+        "AutoSetupPath": "",
+        "Tenants": [
+            {
+                "ShellName": "Default",
+                "SiteName": "AutoSetup Example",
+                "SiteTimeZone": "Europe/Amsterdam",
+                "AdminUsername": "admin",
+                "AdminEmail": "info@orchardproject.net",
+                "AdminPassword": "OrchardCoreRules1!",
+                "DatabaseProvider": "Sqlite",
+                "DatabaseConnectionString": "",
+                "DatabaseTablePrefix": "",
+                "RecipeName": "SaaS"
+            },
+            {
+                "ShellName": "AutoSetupTenant",
+                "SiteName": "AutoSetup Tenant",
+                "SiteTimeZone": "Europe/Amsterdam",
+                "AdminUsername": "tenantadmin",
+                "AdminEmail": "tenant@orchardproject.net",
+                "AdminPassword": "OrchardCoreRules1!",
+                "DatabaseProvider": "Sqlite",
+                "DatabaseConnectionString": "",
+                "DatabaseTablePrefix": "tenant",
+                "RecipeName": "Agency",
+                "RequestUrlHost": "",
+                "RequestUrlPrefix": "tenant",
+                "FeatureProfile": "my-profile"
+            }
+        ]
+    }
 }
 ```
 
@@ -58,6 +61,7 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 | `RecipeName` | The tenant installation Recipe name. |
 | `RequestUrlHost` | The tenant host url. |
 | `RequestUrlPrefix` | The tenant url prefix. |
+| `FeatureProfile` | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
 
 !!! note
     Tenants array must contain the root tenant with `ShellName` equals to `Default`.  
@@ -102,13 +106,7 @@ For testing purposes, you may add the above environment variables into a "web" p
 Then, start the web app project with the following command:
 
 ```
-dotnet run -f net5.0 --launch-profile web
-```
-
-or 
-
-```
-dotnet run -f netcoreapp3.1 --launch-profile web
+dotnet run --launch-profile web
 ```
 
 ## Enabling Auto Setup Feature
@@ -142,6 +140,7 @@ You should enable the Redis Lock feature in the startup file.
             .AddSetupFeatures("OrchardCore.Redis.Lock", "OrchardCore.AutoSetup");
     }
 ```
+
 Make sure you set the Redis configuration string via an environment variable or a configuration file.
 
 ```
@@ -163,6 +162,7 @@ Lock configuration parameters are optional and can be set via environment variab
 ```
 
 ## Additional information
+
 Please refer to separate sections for additional information on setup:
 
 - [OrchardCore.Setup - setting up an empty site](../Setup/README.md)

@@ -6,6 +6,6 @@ namespace OrchardCore.Rules.ViewModels
     public class SelectStringOperationViewModel
     {
         public string HtmlName { get; set; }
-        public List<SelectListItem> Items { get; set; }  
+        public List<SelectListItem> Items { get; set; }
     }
 }

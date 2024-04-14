@@ -12,7 +12,7 @@ namespace OrchardCore.GitHub.Services
     public class GitHubAuthenticationService : IGitHubAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GitHubAuthenticationService(
             ISiteService siteService,
@@ -36,10 +36,7 @@ namespace OrchardCore.GitHub.Services
 
         public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
@@ -54,17 +51,14 @@ namespace OrchardCore.GitHub.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
-            if (String.IsNullOrWhiteSpace(settings.ClientID))
+            if (string.IsNullOrWhiteSpace(settings.ClientID))
             {
                 yield return new ValidationResult(S["ClientID is required"], new string[] { nameof(settings.ClientID) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.ClientSecret))
+            if (string.IsNullOrWhiteSpace(settings.ClientSecret))
             {
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }

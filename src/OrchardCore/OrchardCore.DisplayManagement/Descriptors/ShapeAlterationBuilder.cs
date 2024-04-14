@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Implementation;
@@ -13,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private IFeatureInfo _feature;
         private readonly string _shapeType;
         private readonly string _bindingName;
-        private readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
+        private readonly List<Action<ShapeDescriptor>> _configurations = [];
 
         public ShapeAlterationBuilder(IFeatureInfo feature, string shapeType)
         {
@@ -27,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else
             {
-                _shapeType = shapeType.Substring(0, delimiterIndex);
+                _shapeType = shapeType[..delimiterIndex];
             }
         }
 
@@ -45,20 +44,21 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public ShapeAlterationBuilder BoundAs(string bindingSource, Func<DisplayContext, Task<IHtmlContent>> bindingDelegate)
         {
-            // schedule the configuration
+            ArgumentException.ThrowIfNullOrEmpty(bindingSource);
+
+            // Schedule the configuration.
             return Configure(descriptor =>
             {
                 var binding = new ShapeBinding
                 {
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
+                    BindingAsync = bindingDelegate,
                 };
 
-                binding.BindingAsync = bindingDelegate;
-
-                // ShapeDescriptor.Bindings is a case insensitive dictionary
+                // ShapeDescriptor.Bindings is a case insensitive dictionary.
                 descriptor.Bindings[_bindingName] = binding;
-                descriptor.BindingSources.Add(bindingSource);
+                descriptor.BindingSources = [..descriptor.BindingSources, bindingSource];
             });
         }
 
@@ -81,8 +81,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.CreatingAsync ?? Enumerable.Empty<Func<ShapeCreatingContext, Task>>();
-                descriptor.CreatingAsync = existing.Concat(new[] { actionAsync });
+                descriptor.CreatingAsync = [.. descriptor.CreatingAsync ?? [], actionAsync];
             });
         }
 
@@ -105,8 +104,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.CreatedAsync ?? Enumerable.Empty<Func<ShapeCreatedContext, Task>>();
-                descriptor.CreatedAsync = existing.Concat(new[] { actionAsync });
+                descriptor.CreatedAsync = [.. descriptor.CreatedAsync ?? [], actionAsync];
             });
         }
 
@@ -129,8 +127,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.DisplayingAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                descriptor.DisplayingAsync = existing.Concat(new[] { actionAsync });
+                descriptor.DisplayingAsync = [.. descriptor.DisplayingAsync ?? [], actionAsync];
             });
         }
 
@@ -153,8 +150,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.ProcessingAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                descriptor.ProcessingAsync = existing.Concat(new[] { actionAsync });
+                descriptor.ProcessingAsync = [.. descriptor.ProcessingAsync ?? [], actionAsync];
             });
         }
 
@@ -177,8 +173,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.DisplayedAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
-                descriptor.DisplayedAsync = existing.Concat(new[] { actionAsync });
+                descriptor.DisplayedAsync = [.. descriptor.DisplayedAsync ?? [], actionAsync];
             });
         }
 

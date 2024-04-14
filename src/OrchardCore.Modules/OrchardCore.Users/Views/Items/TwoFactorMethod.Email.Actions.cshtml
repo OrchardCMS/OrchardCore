@@ -1,0 +1,12 @@
+@using OrchardCore.Users.Models
+
+@model TwoFactorMethod
+
+@if (!Model.IsEnabled)
+{
+    <a asp-action="Index" asp-controller="EmailAuthenticator" class="btn btn-sm btn-primary me-1">@T["Verify Email"]</a>
+}
+else
+{
+    <div class="btn btn-sm btn-success disabled">@T["Verified"]</div>
+}

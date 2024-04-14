@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -17,17 +17,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public string Key { get { return "path"; } }
 
-        public bool IsMatch(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, object expression)
         {
             IEnumerable<string> paths;
 
-            if (expression is JArray)
+            var jsonNode = JNode.FromObject(expression);
+            if (jsonNode is JsonArray jsonArray)
             {
-                paths = expression.Values<string>();
+                paths = jsonArray.Values<string>();
             }
             else
             {
-                paths = new string[] { expression.Value<string>() };
+                paths = new string[] { jsonNode.Value<string>() };
             }
 
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
@@ -38,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                 if (normalizedPath.EndsWith('*'))
                 {
-                    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
+                    var prefix = normalizedPath[..^1];
                     return requestPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
 
@@ -48,11 +49,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             });
         }
 
-        private string NormalizePath(string path)
+        private static string NormalizePath(string path)
         {
             if (path.StartsWith("~/", StringComparison.Ordinal))
             {
-                return path.Substring(1);
+                return path[1..];
             }
             else if (!path.StartsWith('/'))
             {
@@ -64,9 +65,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private string AppendTrailingSlash(string path)
-        {
-            return path.EndsWith('/') ? path : path + "/";
-        }
+        private static string AppendTrailingSlash(string path) => path.EndsWith('/') ? path : path + "/";
     }
 }

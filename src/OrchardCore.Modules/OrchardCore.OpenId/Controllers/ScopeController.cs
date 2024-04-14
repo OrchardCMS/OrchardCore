@@ -3,51 +3,50 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Admin, Feature(OpenIdConstants.Features.Management)]
+    [Feature(OpenIdConstants.Features.Management)]
+    [Admin("OpenId/Scope/{action}/{id?}", "OpenIdScope{action}")]
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
-        private readonly ISiteService _siteService;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        private readonly dynamic New;
+
+        protected readonly IStringLocalizer S;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ScopeController> stringLocalizer,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<ScopeController> htmlLocalizer,
             INotifier notifier,
             ShellDescriptor shellDescriptor,
             ShellSettings shellSettings,
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            New = shapeFactory;
-            _siteService = siteService;
+            _shapeFactory = shapeFactory;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -56,6 +55,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellHost = shellHost;
         }
 
+        [Admin("OpenId/Scope", "OpenIdScope")]
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
@@ -63,13 +63,12 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = await _scopeManager.CountAsync();
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
@@ -96,11 +95,11 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
                     Name = tenant.Name
                 });
             }
@@ -142,7 +141,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.CreateAsync(descriptor);
@@ -183,11 +182,11 @@ namespace OrchardCore.OpenId.Controllers
                 where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {
-                    Current = string.Equals(tenant.Name, _shellSettings.Name),
+                    Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
                     Name = tenant.Name,
                     Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
                 });
@@ -214,9 +213,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !string.Equals(
-                    await _scopeManager.GetIdAsync(other),
-                    await _scopeManager.GetIdAsync(scope)))
+                if (other != null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
                 {
                     ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
@@ -244,7 +241,7 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Resources.UnionWith(model.Tenants
                 .Where(tenant => tenant.Selected)
-                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name))
+                .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
                 .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
             await _scopeManager.UpdateAsync(scope, descriptor);

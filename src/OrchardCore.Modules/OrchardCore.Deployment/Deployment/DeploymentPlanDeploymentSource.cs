@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 
 namespace OrchardCore.Deployment.Deployment
 {
@@ -9,18 +12,21 @@ namespace OrchardCore.Deployment.Deployment
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public DeploymentPlanDeploymentSource(
             IDeploymentPlanService deploymentPlanService,
-            IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
+            IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            if (!(deploymentStep is DeploymentPlanDeploymentStep deploymentPlanStep))
+            if (deploymentStep is not DeploymentPlanDeploymentStep deploymentPlanStep)
             {
                 return;
             }
@@ -45,30 +51,29 @@ namespace OrchardCore.Deployment.Deployment
                                       {
                                           Type = GetStepType(deploymentStepFactories, step),
                                           Step = step
-                                      }).ToArray()
+                                      }).ToArray(),
                          }).ToArray();
 
-            // Adding deployment plans
-            result.Steps.Add(new JObject(
-                new JProperty("name", "deployment"),
-                new JProperty("Plans", JArray.FromObject(plans))
-            ));
+            // Adding deployment plans.
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "deployment",
+                ["Plans"] = JArray.FromObject(plans, _jsonSerializerOptions),
+            });
         }
 
         /// <summary>
         /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
         /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
         /// </summary>
-        private string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
+        private static string GetStepType(Dictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
         {
             if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
             {
                 return deploymentStepFactory.Name;
             }
-            else
-            {
-                return step.GetType().Name;
-            }
+
+            return step.GetType().Name;
         }
     }
 }
