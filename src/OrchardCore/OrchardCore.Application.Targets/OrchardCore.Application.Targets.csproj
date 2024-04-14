@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Build.Tasks\OrchardCore.Build.Tasks.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
   </ItemGroup>
 
