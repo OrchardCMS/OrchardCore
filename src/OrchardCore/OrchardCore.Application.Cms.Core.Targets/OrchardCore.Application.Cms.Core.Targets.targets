@@ -31,7 +31,7 @@
 
   <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
-    <CopyTranslationFilesTask SourceFile="%(PackageTranslationFiles.FullPath)" DestinationFolder="Localization\%(RecursiveDir)" />
+    <CopyTranslationFilesTask Condition="'@(PackageTranslationFiles)' != ''" SourceFile="%(PackageTranslationFiles.FullPath)" DestinationFolder="Localization\%(RecursiveDir)" />
   </Target>
 
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
