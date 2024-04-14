@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.Build.Framework;
 using MSBuildTask = Microsoft.Build.Utilities.Task;
 
@@ -23,9 +24,30 @@ public class CopyTranslationFilesTask : MSBuildTask
         }
 
         var fileInfo = new FileInfo(SourceFile);
+        var destinationFilePath = Path.Combine(DestinationFolder, fileInfo.Name);
 
-        fileInfo.CopyTo(Path.Combine(DestinationFolder, fileInfo.Name), overwrite: true);
+        if (File.Exists(destinationFilePath))
+        {
+            // Skip unchanged files
+            var sourceFileHash = GetFileHashAsync(fileInfo.FullName);
+            var destinationFileHash = GetFileHashAsync(destinationFilePath);
+
+            if (sourceFileHash.Equals(destinationFileHash, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        fileInfo.CopyTo(destinationFilePath, overwrite: true);
 
         return true;
+    }
+
+    private static string GetFileHashAsync(string fileName)
+    {
+        using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+        var hash = SHA256.HashData(stream);
+
+        return Convert.ToBase64String(hash);
     }
 }
