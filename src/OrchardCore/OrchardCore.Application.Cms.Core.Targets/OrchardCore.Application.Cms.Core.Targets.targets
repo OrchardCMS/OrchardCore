@@ -1,11 +1,14 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+     <_OrchardCoreBuildTasksAssembly>..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll</_OrchardCoreBuildTasksAssembly>
+  </PropertyGroup>
 
   <UsingTask TaskName="CopyTranslationFilesTask"
              AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
   <UsingTask TaskName="CreateLocalizationFolderTask" 
              AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
-  <UsingTask TaskName="CreateWebRootFolderTask" 
-             AssemblyFile="..\..\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll" />
+  <UsingTask TaskName="CreateWebRootFolderTask" AssemblyFile="$(_OrchardCoreBuildTasksAssembly)" />
 
   <ItemGroup>
     <Compile Remove="App_Data\**;Localization\**" />
