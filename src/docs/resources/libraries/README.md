@@ -8,7 +8,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.104.11 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.60 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.7 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.10.4 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.11.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Communication Services](https://github.com/Azure/Communication) | Azure Communication Services are cloud-based services with REST APIs and client library SDKs to help you integrate communication into your applications | 1.0.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.3.1/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.3.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.19.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
@@ -27,7 +27,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.4.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.36.2 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
-| [Microsoft.Extensions.Http.Resilience](https://github.com/dotnet/extensions/tree/main/src/Libraries/Microsoft.Extensions.Http.Resilience) | Resilience mechanisms for HttpClient built on the Polly framework. | 8.3.0 | [MIT](https://github.com/dotnet/extensions/blob/main/LICENSE) |
+| [Microsoft.Extensions.Http.Resilience](https://github.com/dotnet/extensions/tree/main/src/Libraries/Microsoft.Extensions.Http.Resilience) | Resilience mechanisms for HttpClient built on the Polly framework. | 8.4.0 | [MIT](https://github.com/dotnet/extensions/blob/main/LICENSE) |
 | [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.17.4 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 8.0.0 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.4.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
@@ -99,6 +99,6 @@ The below table lists the different Tests libraries:
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.20.70 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.9.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
-| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.7.0 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
-| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.11.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
-| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.7 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
+| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.7.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
+| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.12.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
+| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.8 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
