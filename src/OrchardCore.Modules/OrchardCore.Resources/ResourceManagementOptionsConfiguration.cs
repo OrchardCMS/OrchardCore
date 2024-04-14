@@ -1,62 +1,51 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.Resources;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Resources
+namespace OrchardCore.Resources;
+
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    private readonly ResourceOptions _resourceOptions;
+    private readonly IHostEnvironment _env;
+    private readonly PathString _pathBase;
+
+    public ResourceManagementOptionsConfiguration(
+        IOptions<ResourceOptions> resourceOptions,
+        IHostEnvironment env,
+        IHttpContextAccessor httpContextAccessor)
     {
-        private readonly ResourceOptions _resourceOptions;
-        private readonly IHostEnvironment _env;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _tenantPrefix;
-        private readonly PathString _pathBase;
+        _resourceOptions = resourceOptions.Value;
+        _env = env;
+        _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+    }
 
-        // Versions
-        private const string CodeMirrorVersion = "5.65.7";
-        private const string MonacoEditorVersion = "0.46.0";
-        // URLs
-        private const string CloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
-        private const string CodeMirrorUrl = CloudflareUrl + "codemirror/" + CodeMirrorVersion + "/";
+    ResourceManifest BuildManifest() => ResourceManifestGenerator.Build(_pathBase.Value);
 
-        public ResourceManagementOptionsConfiguration(
-            IOptions<ResourceOptions> resourceOptions,
-            IHostEnvironment env,
-            IHttpContextAccessor httpContextAccessor)
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(BuildManifest());
+
+        switch (_resourceOptions.ResourceDebugMode)
         {
-            _resourceOptions = resourceOptions.Value;
-            _env = env;
-            _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
+            case ResourceDebugMode.Enabled:
+                options.DebugMode = true;
+                break;
+
+            case ResourceDebugMode.Disabled:
+                options.DebugMode = false;
+                break;
+
+            case ResourceDebugMode.FromConfiguration:
+                options.DebugMode = !_env.IsProduction();
+                break;
         }
 
-        ResourceManifest BuildManifest() => ResourceManfiestGenerator.Build(_tenantPrefix);
-
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(BuildManifest());
-
-            switch (_resourceOptions.ResourceDebugMode)
-            {
-                case ResourceDebugMode.Enabled:
-                    options.DebugMode = true;
-                    break;
-
-                case ResourceDebugMode.Disabled:
-                    options.DebugMode = false;
-                    break;
-
-                case ResourceDebugMode.FromConfiguration:
-                    options.DebugMode = !_env.IsProduction();
-                    break;
-            }
-
-            options.UseCdn = _resourceOptions.UseCdn;
-            options.CdnBaseUrl = _resourceOptions.CdnBaseUrl;
-            options.AppendVersion = _resourceOptions.AppendVersion;
-            options.ContentBasePath = _pathBase.Value;
-        }
+        options.UseCdn = _resourceOptions.UseCdn;
+        options.CdnBaseUrl = _resourceOptions.CdnBaseUrl;
+        options.AppendVersion = _resourceOptions.AppendVersion;
+        options.ContentBasePath = _pathBase.Value;
     }
 }
