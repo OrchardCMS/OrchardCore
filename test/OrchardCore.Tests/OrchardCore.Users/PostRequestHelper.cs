@@ -22,10 +22,12 @@ public class PostRequestHelper
     private static List<KeyValuePair<string, string>> ToFormPostData(Dictionary<string, string> formPostBodyData)
     {
         var result = new List<KeyValuePair<string, string>>();
-        formPostBodyData.Keys.ToList().ForEach(key =>
+
+        foreach(var key in formPostBodyData.Keys)
         {
             result.Add(new KeyValuePair<string, string>(key, formPostBodyData[key]));
-        });
+        }
+
         return result;
     }
 }
