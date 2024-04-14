@@ -32,7 +32,6 @@
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Build.Tasks\OrchardCore.Build.Tasks.csproj" />
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
 
     <!--
