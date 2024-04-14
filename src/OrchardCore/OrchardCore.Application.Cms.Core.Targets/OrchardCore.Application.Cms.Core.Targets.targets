@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   
   <PropertyGroup>
-     <_OrchardCoreBuildTasksAssembly>$(SolutionDir)\src\OrchardCore.Build.Tasks\bin\Debug\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll</_OrchardCoreBuildTasksAssembly>
+     <_OrchardCoreBuildTasksAssembly>$(SolutionDir)\src\OrchardCore.Build.Tasks\bin\$(Configuration)\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll</_OrchardCoreBuildTasksAssembly>
   </PropertyGroup>
 
   <UsingTask TaskName="CopyTranslationFilesTask" AssemblyFile="$(_OrchardCoreBuildTasksAssembly)" />
