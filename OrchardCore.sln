@@ -526,8 +526,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.SourceGenerators.Resources", "src\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.Resources\OrchardCore.SourceGenerators.Resources.csproj", "{149021E1-2D2C-4727-99FC-BCD22B886C7E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Tests.SourceGenerators", "OrchardCore.Tests.SourceGenerators", "{DF5822F7-EB2D-40B4-ACA0-90E14B4CC7A1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.SourceGenerators", "test\OrchardCore.Tests.SourceGenerators\OrchardCore.Tests.SourceGenerators.csproj", "{6387ACC9-42E2-4D5D-8066-34A07B8C347C}"
 EndProject
 Global
