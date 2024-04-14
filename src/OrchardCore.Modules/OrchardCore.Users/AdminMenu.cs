@@ -93,7 +93,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
