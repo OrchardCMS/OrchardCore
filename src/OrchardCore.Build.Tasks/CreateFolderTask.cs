@@ -12,7 +12,12 @@ public abstract class CreateWebFolderTask : MSBuildTask
         {
             Directory.CreateDirectory(FolderName);
 
-            File.WriteAllText(Path.Combine(FolderName, ".placeholder"), string.Empty);
+            var dummyFilePath = Path.Combine(FolderName, ".placeholder");
+
+            if (!File.Exists(dummyFilePath))
+            {
+                File.WriteAllText(dummyFilePath, string.Empty);
+            }
         }
 
         return true;
