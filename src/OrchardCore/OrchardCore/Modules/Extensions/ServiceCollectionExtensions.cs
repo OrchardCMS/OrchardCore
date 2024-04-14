@@ -156,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddTransient<IConfigureOptions<JsonOptions>, JsonOptionsConfigurations>();
-            services.AddTransient<IConfigureOptions<ContentSerializerJsonOptions>, ContentSerializerJsonOptionsConfiguration>();
+            services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();

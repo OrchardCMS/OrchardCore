@@ -86,57 +86,6 @@ public static class JObject
     public static JsonObject? Clone(this JsonObject? jsonObject) => jsonObject?.DeepClone().AsObject();
 
     /// <summary>
-    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
-    /// </summary>
-    public static JsonNode? SelectNode(this JsonObject? jsonObject, string? path)
-    {
-        path = path.GetNormalizedPath();
-        if (jsonObject is null || path is null)
-        {
-            return null;
-        }
-
-        foreach (var item in jsonObject)
-        {
-            if (item.Value is null)
-            {
-                continue;
-            }
-
-            var itemPath = item.Value.GetNormalizedPath();
-            if (itemPath == path)
-            {
-                return item.Value;
-            }
-
-            if (itemPath is null || !path.Contains(itemPath))
-            {
-                continue;
-            }
-
-            if (item.Value is JsonObject jObject)
-            {
-                var node = jObject.SelectNode(path);
-                if (node is not null)
-                {
-                    return node;
-                }
-            }
-
-            if (item.Value is JsonArray jArray)
-            {
-                var node = jArray.SelectNode(path);
-                if (node is not null)
-                {
-                    return node;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
     public static JsonObject? Merge(this JsonObject? jsonObject, JsonNode? content, JsonMergeSettings? settings = null)

@@ -26,7 +26,7 @@ namespace OrchardCore.Benchmark
         static RuleBenchmark()
         {
             var services = RuleTests.CreateRuleServiceCollection()
-                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>()
+                .AddRuleCondition<HomepageCondition, HomepageConditionEvaluator>()
                 .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
                 .AddMemoryCache()
                 .AddScripting()

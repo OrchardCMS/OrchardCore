@@ -19,7 +19,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             var path = string.Empty;
 
             // This stream will be disposed by the creating stream, or the finally block.
+#pragma warning disable CA1859 // Change type of variable 'inputStream' from 'System.IO.Stream' to 'System.IO.MemoryStream?' for improved performance
             Stream inputStream = null;
+#pragma warning restore CA1859
             try
             {
                 inputStream = new MemoryStream();

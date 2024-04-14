@@ -68,8 +68,8 @@ namespace OrchardCore.AdminMenu.Controllers
             foreach (var factory in _factories)
             {
                 var treeNode = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(treeNode, _updateModelAccessor.ModelUpdater, "TreeThumbnail");
-                thumbnail.TreeNode = treeNode;
+                var thumbnail = await _displayManager.BuildDisplayAsync(treeNode, _updateModelAccessor.ModelUpdater, "TreeThumbnail");
+                thumbnail.Properties["TreeNode"] = treeNode;
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
@@ -138,8 +138,8 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-            editor.TreeNode = treeNode;
+            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            editor.Properties["TreeNode"] = treeNode;
 
             if (ModelState.IsValid)
             {

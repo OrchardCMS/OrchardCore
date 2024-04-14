@@ -41,7 +41,7 @@ namespace OrchardCore.Features.Recipes.Executors
             }
         }
 
-        private class FeatureStepModel
+        private sealed class FeatureStepModel
         {
             public string Name { get; set; }
             public string[] Disable { get; set; }

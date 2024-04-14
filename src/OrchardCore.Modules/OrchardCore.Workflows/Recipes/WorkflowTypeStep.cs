@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Recipes
             ISecurityTokenService securityTokenService,
             IActionContextAccessor actionContextAccessor,
             IUrlHelperFactory urlHelperFactory,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;

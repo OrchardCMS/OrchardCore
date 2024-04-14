@@ -17,7 +17,7 @@ namespace OrchardCore.Deployment.Deployment
         public DeploymentPlanDeploymentSource(
             IDeploymentPlanService deploymentPlanService,
             IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;

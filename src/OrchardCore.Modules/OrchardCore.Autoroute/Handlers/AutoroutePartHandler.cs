@@ -157,7 +157,7 @@ namespace OrchardCore.Autoroute.Handlers
             return context.ForAsync<RouteHandlerAspect>(async aspect =>
             {
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart"));
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
                 if (settings.ManageContainedItemRoutes)
                 {
@@ -425,7 +425,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task<string> GetPatternAsync(AutoroutePart part)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart), StringComparison.Ordinal));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;

@@ -43,23 +43,8 @@ namespace OrchardCore.Documents
 
         private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
 
-        internal static bool IsCompressed(byte[] data)
-        {
-            if (data.Length < _gZipHeaderBytes.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < _gZipHeaderBytes.Length; i++)
-            {
-                if (data[i] != _gZipHeaderBytes[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        internal static bool IsCompressed(byte[] data) =>
+            data.Length < _gZipHeaderBytes.Length && data[0..1] == _gZipHeaderBytes;
 
         internal static byte[] Compress(byte[] data)
         {
@@ -68,6 +53,11 @@ namespace OrchardCore.Documents
             using (var gzip = new GZipStream(output, CompressionMode.Compress))
             {
                 input.CopyTo(gzip);
+            }
+
+            if (output.TryGetBuffer(out var buffer))
+            {
+                return buffer.Array;
             }
 
             return output.ToArray();
@@ -80,6 +70,11 @@ namespace OrchardCore.Documents
             using (var gzip = new GZipStream(input, CompressionMode.Decompress))
             {
                 gzip.CopyTo(output);
+            }
+
+            if (output.TryGetBuffer(out var buffer))
+            {
+                return buffer.Array;
             }
 
             return output.ToArray();

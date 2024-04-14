@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Localization.DataAnnotations
 {
-    internal class LocalizedDataAnnotationsMvcOptions : IConfigureOptions<MvcOptions>
+    internal sealed class LocalizedDataAnnotationsMvcOptions : IConfigureOptions<MvcOptions>
     {
         private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
