@@ -8,7 +8,7 @@ public abstract class CreateWebFolderTask : MSBuildTask
 
     public override bool Execute()
     {
-        if (!File.Exists(FolderName))
+        if (!Directory.Exists(FolderName))
         {
             Directory.CreateDirectory(FolderName);
 

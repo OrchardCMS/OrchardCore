@@ -524,6 +524,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Smtp", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "src\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj", "{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.BuildTasks", "test\OrchardCore.Tests.BuildTasks\OrchardCore.Tests.BuildTasks.csproj", "{94D5435A-2A42-484A-9B89-0E48A0430DB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
