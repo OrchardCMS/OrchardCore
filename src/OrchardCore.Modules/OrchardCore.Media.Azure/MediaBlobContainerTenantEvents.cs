@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using Azure;
-using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
+using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure
@@ -16,18 +16,21 @@ namespace OrchardCore.Media.Azure
         private readonly MediaBlobStorageOptions _options;
         private readonly ShellSettings _shellSettings;
         protected readonly IStringLocalizer S;
+        private readonly BlobContainerClientFactory _blobContainerClientFactory;
         private readonly ILogger _logger;
 
         public MediaBlobContainerTenantEvents(
             IOptions<MediaBlobStorageOptions> options,
             ShellSettings shellSettings,
             IStringLocalizer<MediaBlobContainerTenantEvents> localizer,
+            BlobContainerClientFactory blobContainerClientFactory,
             ILogger<MediaBlobContainerTenantEvents> logger
             )
         {
             _options = options.Value;
             _shellSettings = shellSettings;
             S = localizer;
+            _blobContainerClientFactory = blobContainerClientFactory;
             _logger = logger;
         }
 
@@ -35,8 +38,8 @@ namespace OrchardCore.Media.Azure
         {
             // Only create container if options are valid.
             if (_shellSettings.IsUninitialized() ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName) ||
+                (string.IsNullOrWhiteSpace(_options.ConnectionString) && string.IsNullOrWhiteSpace(_options.AzureClientName)) ||
+                string.IsNullOrWhiteSpace(_options.ContainerName) ||
                 !_options.CreateContainer
                 )
             {
@@ -47,7 +50,7 @@ namespace OrchardCore.Media.Azure
 
             try
             {
-                var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+                var _blobContainer = _blobContainerClientFactory.Create(_options);
                 var response = await _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
                 _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
@@ -62,15 +65,15 @@ namespace OrchardCore.Media.Azure
         {
             // Only remove container if options are valid.
             if (!_options.RemoveContainer ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName))
+                (string.IsNullOrWhiteSpace(_options.ConnectionString) && string.IsNullOrWhiteSpace(_options.AzureClientName)) ||
+                string.IsNullOrWhiteSpace(_options.ContainerName))
             {
                 return;
             }
 
             try
             {
-                var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+                var _blobContainer = _blobContainerClientFactory.Create(_options);
 
                 var response = await _blobContainer.DeleteIfExistsAsync();
                 if (!response.Value)

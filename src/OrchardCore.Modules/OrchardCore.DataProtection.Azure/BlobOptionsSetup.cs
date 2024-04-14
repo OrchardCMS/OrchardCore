@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Fluid;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,17 +19,20 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
     private readonly IShellConfiguration _configuration;
     private readonly ShellOptions _shellOptions;
     private readonly ShellSettings _shellSettings;
+    private readonly IAzureClientFactory<BlobServiceClient> _azureClientFactory;
     private readonly ILogger _logger;
 
     public BlobOptionsSetup(
         IShellConfiguration configuration,
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
+        IAzureClientFactory<BlobServiceClient> azureClientFactory,
         ILogger<BlobOptionsSetup> logger)
     {
         _configuration = configuration;
         _shellOptions = shellOptions.Value;
         _shellSettings = shellSettings;
+        _azureClientFactory = azureClientFactory;
         _logger = logger;
     }
 
@@ -66,13 +70,24 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             try
             {
                 _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
-                var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
+
+                BlobContainerClient blobContainer;
+
+                if (!string.IsNullOrWhiteSpace(options.AzureClientName))
+                {
+                    blobContainer = _azureClientFactory.CreateClient(options.AzureClientName).GetBlobContainerClient(options.ContainerName);
+                }
+                else
+                {
+                    blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
+                }
+
                 var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
                 _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+                _logger.LogCritical(e, "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage ConnectionString or AzureClientName is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
                 throw;
             }
         }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
@@ -46,13 +45,12 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly string _basePrefix = null;
 
-        public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
+        public BlobFileStore(BlobStorageOptions options, BlobContainerClientFactory blobContainerClientFactory, IClock clock, IContentTypeProvider contentTypeProvider)
         {
             _options = options;
             _clock = clock;
             _contentTypeProvider = contentTypeProvider;
-
-            _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+            _blobContainer = blobContainerClientFactory.Create(_options);
 
             if (!string.IsNullOrEmpty(_options.BasePath))
             {

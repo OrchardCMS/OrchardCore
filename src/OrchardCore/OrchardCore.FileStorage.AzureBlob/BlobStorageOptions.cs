@@ -16,5 +16,11 @@ namespace OrchardCore.FileStorage.AzureBlob
         /// The base directory path to use inside the container for this stores contents.
         /// </summary>
         public string BasePath { get; set; }
+
+        /// <summary>
+        /// The Azure Client name. Must be configured by AddAzureClients on Startup.
+        /// https://learn.microsoft.com/en-us/dotnet/azure/sdk/dependency-injection?tabs=web-app-builder#configure-multiple-service-clients-with-different-names
+        /// </summary>
+        public string AzureClientName { get; set; }
     }
 }

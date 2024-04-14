@@ -11,4 +11,6 @@ public class BlobOptions : IAsyncOptions
     public string BlobName { get; set; }
 
     public bool CreateContainer { get; set; } = true;
+
+    public string AzureClientName { get; set; }
 }

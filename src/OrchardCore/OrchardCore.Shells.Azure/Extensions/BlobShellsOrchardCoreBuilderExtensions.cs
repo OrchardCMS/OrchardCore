@@ -23,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var services = builder.ApplicationServices;
 
             services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+            services.TryAddSingleton<BlobContainerClientFactory>();
 
             services.AddSingleton<IShellsFileStore>(sp =>
             {
@@ -34,8 +35,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var clock = sp.GetRequiredService<IClock>();
                 var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();
+                var blobContainerClientFactory = sp.GetRequiredService<BlobContainerClientFactory>();
 
-                var fileStore = new BlobFileStore(blobOptions, clock, contentTypeProvider);
+                var fileStore = new BlobFileStore(blobOptions, blobContainerClientFactory, clock, contentTypeProvider);
 
                 return new BlobShellsFileStore(fileStore);
             });
