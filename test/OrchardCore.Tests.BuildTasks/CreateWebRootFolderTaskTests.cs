@@ -1,15 +1,15 @@
 namespace OrchardCore.Build.Tasks.Tests;
 
-public class CreateLocalizationFolderTaskTests
+public class CreateWebRootFolderTaskTests
 {
-    private const string LocalizationFolder = "Localization";
+    private const string WebRootFolder = "wwwroot";
 
-    private static readonly string _placeholderFile = $"{LocalizationFolder}\\.placeholder";
+    private static readonly string _placeholderFile = $"{WebRootFolder}\\.placeholder";
 
     private readonly Mock<IBuildEngine> _buildEngine;
     private readonly List<BuildErrorEventArgs> _errors = [];
 
-    public CreateLocalizationFolderTaskTests()
+    public CreateWebRootFolderTaskTests()
     {
         _buildEngine = new Mock<IBuildEngine>();
         _buildEngine.Setup(be => be.LogErrorEvent(It.IsAny<BuildErrorEventArgs>()))
@@ -22,7 +22,7 @@ public class CreateLocalizationFolderTaskTests
     public void ShouldCreateLocalizationFolder()
     {
         // Arrange
-        var task = new CreateLocalizationFolderTask
+        var task = new CreateWebRootFolderTask
         {
             BuildEngine = _buildEngine.Object
         };
@@ -33,7 +33,7 @@ public class CreateLocalizationFolderTaskTests
         // Assert
         Assert.True(result);
         Assert.Empty(_errors);
-        Assert.True(Directory.Exists(LocalizationFolder));
+        Assert.True(Directory.Exists(WebRootFolder));
         Assert.True(File.Exists(_placeholderFile));
     }
 
@@ -41,17 +41,17 @@ public class CreateLocalizationFolderTaskTests
     public void ShouldNotCreateLocalizationFolderIfExists()
     {
         // Arrange
-        var task = new CreateLocalizationFolderTask
+        var task = new CreateWebRootFolderTask
         {
             BuildEngine = _buildEngine.Object
         };
-        Directory.CreateDirectory(LocalizationFolder);
+        Directory.CreateDirectory(WebRootFolder);
 
         var createdTime1 = new DirectoryInfo(_placeholderFile).CreationTimeUtc;
 
         // Act & Assert
         task.Execute();
-        Assert.True(Directory.Exists(LocalizationFolder));
+        Assert.True(Directory.Exists(WebRootFolder));
 
         var createdTime2 = new DirectoryInfo(_placeholderFile).CreationTimeUtc;
         Assert.Equal(createdTime1, createdTime2);
@@ -61,7 +61,7 @@ public class CreateLocalizationFolderTaskTests
     public void IgnorePlaceholderFileIfExists()
     {
         // Arrange
-        var task = new CreateLocalizationFolderTask
+        var task = new CreateWebRootFolderTask
         {
             BuildEngine = _buildEngine.Object
         };
@@ -78,9 +78,9 @@ public class CreateLocalizationFolderTaskTests
 
     private static void TryDeleteLocalizationFolder()
     {
-        if (Directory.Exists(LocalizationFolder))
+        if (Directory.Exists(WebRootFolder))
         {
-            Directory.Delete(LocalizationFolder, true);
+            Directory.Delete(WebRootFolder, true);
         }
     }
 }

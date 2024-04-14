@@ -24,6 +24,15 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="ar.po">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fr.po">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
