@@ -21,7 +21,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.AmazonS3.ImageSharpImageCache",
     Name = "Amazon Media ImageSharp Image Cache",
-    Description = "Enables support for storing cached images resized via ImageSharp in Amazon S3.",
+    Description = "Provides storage of ImageSharp-generated images within the Amazon S3 storage service.",
     Dependencies =
     [
         "OrchardCore.Media",
