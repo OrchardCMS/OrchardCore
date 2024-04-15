@@ -7,11 +7,12 @@
 
     TagBuilder tag = Tag(Model, "a");
     tag.Attributes["id"] = null;
-    tag.Attributes["href"] = Model.Href;
 
-    if (Model.Href != null && Model.Href.ToString() == "#")
+    if (Model.Href == null || Model.Href.ToString() == "#")
     {
         tag.Attributes["href"] = "#m" + Model.GetHashCode().ToString();
+    } else {
+        tag.Attributes["href"] = Model.Href;
     }
 
     var prefix = "icon-class-";
