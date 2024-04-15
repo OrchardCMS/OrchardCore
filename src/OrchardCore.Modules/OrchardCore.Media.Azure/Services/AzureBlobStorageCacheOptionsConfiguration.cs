@@ -5,7 +5,7 @@ namespace OrchardCore.Media.Azure.Services;
 
 // Configuration for ImageSharp's own configuration object. We just pass the settings from the Orchard Core
 // configuration.
-internal class AzureBlobStorageCacheOptionsConfiguration : IConfigureOptions<AzureBlobStorageCacheOptions>
+internal sealed class AzureBlobStorageCacheOptionsConfiguration : IConfigureOptions<AzureBlobStorageCacheOptions>
 {
     private readonly ImageSharpBlobImageCacheOptions _options;
 

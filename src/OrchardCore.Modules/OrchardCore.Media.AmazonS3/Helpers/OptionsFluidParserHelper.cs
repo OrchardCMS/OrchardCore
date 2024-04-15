@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Media.AmazonS3.Helpers;
 
 // This is almost the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
-internal class OptionsFluidParserHelper<TOptions> where TOptions : class
+internal sealed class OptionsFluidParserHelper<TOptions> where TOptions : class
 {
     // Local instance since it can be discarded once the startup is over.
     private readonly FluidParser _fluidParser = new();

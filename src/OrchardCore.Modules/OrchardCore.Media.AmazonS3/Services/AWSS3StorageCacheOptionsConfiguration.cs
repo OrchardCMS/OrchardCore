@@ -6,7 +6,7 @@ namespace OrchardCore.Media.AmazonS3.Services;
 
 // Configuration for ImageSharp's own configuration object. We just pass the settings from the Orchard Core
 // configuration.
-internal class AWSS3StorageCacheOptionsConfiguration : IConfigureOptions<AWSS3StorageCacheOptions>
+internal sealed class AWSS3StorageCacheOptionsConfiguration : IConfigureOptions<AWSS3StorageCacheOptions>
 {
     private readonly AwsImageSharpImageCacheOptions _options;
 

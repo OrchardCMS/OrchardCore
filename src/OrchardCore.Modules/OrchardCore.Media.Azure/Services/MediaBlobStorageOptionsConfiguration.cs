@@ -8,7 +8,7 @@ using OrchardCore.Media.Azure.Helpers;
 
 namespace OrchardCore.Media.Azure.Services;
 
-internal class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlobStorageOptions>
+internal sealed class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlobStorageOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
