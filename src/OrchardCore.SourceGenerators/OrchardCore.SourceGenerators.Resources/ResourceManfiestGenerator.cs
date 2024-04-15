@@ -75,9 +75,9 @@ namespace OrchardCore.Resources
                 .SetVersion(MonacoEditorVersion);
 
             return manifest;
-                }
-            }
-        }");
+        }
+    }
+}");
 
         context.AddSource("ResourceManifestGenerator.g.cs", SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
 
@@ -96,7 +96,7 @@ namespace OrchardCore.Resources
 
             if (resource.Dependencies != null)
             {
-                sourceBuilder.AppendLine($@"                .SetDependencies({string.Join(',', resource.Dependencies.Select(d => "\"" + d + "\""))})");
+                sourceBuilder.AppendLine($@"                .SetDependencies({string.Join(", ", resource.Dependencies.Select(d => "\"" + d + "\""))})");
             }
 
             if (!string.IsNullOrEmpty(resource.Url))
@@ -113,19 +113,20 @@ namespace OrchardCore.Resources
 
             if (!string.IsNullOrEmpty(resource.Cdn))
             {
-                if (resource.Cdn.Contains(minificationFileExtension))
+                //if (resource.Cdn.Contains(minificationFileExtension))
+                if (resource.CdnIntegrity.Length == 1)
                 {
-                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"", ""{resource.Cdn.Replace(minificationFileExtension, string.Empty)}"")");
+                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"")");
                 }
                 else
                 {
-                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"")");
+                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"", ""{resource.Cdn.Replace(minificationFileExtension, string.Empty)}"")");
                 }
             }
 
             if (resource.CdnIntegrity != null)
             {
-                sourceBuilder.AppendLine($@"                .SetCdnIntegrity({string.Join(',', resource.CdnIntegrity.Select(c => "\"" + c + "\""))})");
+                sourceBuilder.AppendLine($@"                .SetCdnIntegrity({string.Join(", ", resource.CdnIntegrity.Select(c => "\"" + c + "\""))})");
             }
 
             sourceBuilder.AppendLine($@"                .SetVersion(""{resource.Version}"")");
