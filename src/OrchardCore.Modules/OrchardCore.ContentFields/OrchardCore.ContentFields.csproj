@@ -6,8 +6,7 @@
     <Title>OrchardCore Content Fields</Title>
     <Description>$(OCCMSDescription)
 
-    Provides features to add content fields and indexing them for a content type.
-    </Description>
+    Provides features to add content fields and indexing them for a content type.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
