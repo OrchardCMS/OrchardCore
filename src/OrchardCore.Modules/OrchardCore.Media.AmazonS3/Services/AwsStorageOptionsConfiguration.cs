@@ -8,7 +8,7 @@ using OrchardCore.Media.AmazonS3.Helpers;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
+internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;

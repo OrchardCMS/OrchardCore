@@ -8,7 +8,7 @@ using OrchardCore.Media.AmazonS3.Helpers;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-public class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
+internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
