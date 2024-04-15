@@ -114,9 +114,7 @@
       "Url": "~/OrchardCore.Resources/Scripts/jquery-ui-i18n.min.js",
       "Cdn": "https://code.jquery.com/ui/1.7.2/i18n/jquery-ui-i18n.min.js",
       "CdnIntegrity": [
-        "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd",
-        "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd"
-      ],
+        "sha384-0rV7y4NH7acVmq+7Y9GM6evymvReojk9li+7BYb/ug61uqPSsXJ4uIScVY+N9qtd"],
       "Version": "1.7.2"
     },
     {
@@ -471,7 +469,6 @@
       "Url": "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js",
       "Cdn": "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js",
       "CdnIntegrity": [
-        "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU",
         "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU"
       ],
       "Version": "2.1.6"
