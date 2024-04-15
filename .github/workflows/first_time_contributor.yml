@@ -17,13 +17,14 @@ jobs:
     - uses: OrchardCMS/welcome-action@task/update-to-node-20
       with:
         FIRST_ISSUE_COMMENT: >
-          Thank you for submitting your first issue, awesome! 🚀 If you haven't filled out the template fully already,
-          please be sure to do so. This helps us better understand your feature request/bug report. A core team member 
-          will be with you shortly to review your issue.
+          Thank you for submitting your first issue, awesome! 🚀 We're thrilled to receive your input. If you haven't 
+          completed the template yet, please take a moment to do so. This ensures that we fully understand your feature 
+          request or bug report. A core team member will review your issue and get back to you.
         FIRST_PR_COMMENT: >
-          Thank you for submitting your first pull request, awesome! 🚀 If you haven't read it already, please be sure 
-          to check out our [contribution guide](https://docs.orchardcore.net/en/latest/docs/guides/contributing/). A 
-          core team member will be with you shortly to review your PR.
+          Thank you for submitting your first pull request, awesome! 🚀 If you haven't already, please take a moment 
+          to review our [contribution guide](https://docs.orchardcore.net/en/latest/docs/guides/contributing/). This 
+          guide provides helpful information to ensure your contribution aligns with our standards. A core team member 
+          will review your pull request.
         FIRST_PR_MERGED_COMMENT: >
           Congratulations on your first PR merge! 🎉 Thank you for your contribution! We're looking forward to welcome 
           other contributions of yours in the future. @all-contributors please add @{{ author }} for code.
