@@ -1,6 +1,8 @@
+using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Jint;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -8,7 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Html.Settings
 {
@@ -44,16 +46,27 @@ namespace OrchardCore.Html.Settings
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!model.Options.IsJson())
+                try
                 {
-                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
-                }
-                else
-                {
-                    var jsonSettings = JObject.Parse(model.Options);
-                    jsonSettings["language"] = "html";
-                    settings.Options = jsonSettings.ToString();
+                    var options = model.Options.Trim();
+
+                    if (!options.StartsWith('{') || !options.EndsWith('}'))
+                    {
+                        throw new Exception();
+                    }
+
+                    var engine = new Engine()
+                        .Execute("var config = " + options + "; config.language = 'html';");
+
+                    var jsValue = engine.Evaluate("JSON.stringify(config, null, 4)");
+
+                    settings.Options = jsValue.AsString();
+
                     context.Builder.WithSettings(settings);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
             }
 
