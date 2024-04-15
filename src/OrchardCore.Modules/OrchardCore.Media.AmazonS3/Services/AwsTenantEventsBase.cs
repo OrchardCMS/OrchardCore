@@ -14,7 +14,7 @@ namespace OrchardCore.Media.AmazonS3.Services;
 public abstract class AwsTenantEventsBase : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
-    private readonly IAwsStorageOptions _options;
+    private readonly AwsStorageOptionsBase _options;
     private readonly IAmazonS3 _amazonS3Client;
     private readonly IStringLocalizer S;
     private readonly ILogger _logger;
@@ -22,7 +22,7 @@ public abstract class AwsTenantEventsBase : ModularTenantEvents
     protected AwsTenantEventsBase(
         ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
-        IAwsStorageOptions options,
+        AwsStorageOptionsBase options,
         IStringLocalizer localizer,
         ILogger logger)
     {

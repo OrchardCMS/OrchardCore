@@ -12,7 +12,7 @@ namespace OrchardCore.Media.AmazonS3;
 
 public static class AwsStorageOptionsExtension
 {
-    public static IEnumerable<ValidationResult> Validate(this IAwsStorageOptions options)
+    public static IEnumerable<ValidationResult> Validate(this AwsStorageOptionsBase options)
     {
         if (string.IsNullOrWhiteSpace(options.BucketName))
         {
@@ -28,7 +28,7 @@ public static class AwsStorageOptionsExtension
         }
     }
 
-    public static IAwsStorageOptions BindConfiguration(this IAwsStorageOptions options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
+    public static AwsStorageOptionsBase BindConfiguration(this AwsStorageOptionsBase options, string configSection, IShellConfiguration shellConfiguration, ILogger logger)
     {
         var section = shellConfiguration.GetSection(configSection);
 
