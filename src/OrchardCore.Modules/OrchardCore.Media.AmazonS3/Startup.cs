@@ -41,7 +41,7 @@ public class Startup : Modules.StartupBase
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(Constants.ConfigSections.AmazonS3, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -152,14 +152,14 @@ public class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
 
     // The order should exceed that of the 'OrchardCore.Media' module to substitute the default implementation of 'IImageCache'.
     // there.
-    public override int Order => Media.Constants.StartupOrder + 5;
+    public override int Order => Media.MediaConstants.StartupOrder + 5;
 
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<AwsImageSharpImageCacheOptions>, AwsImageSharpImageCacheOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<AWSS3StorageCacheOptions>, AWSS3StorageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 

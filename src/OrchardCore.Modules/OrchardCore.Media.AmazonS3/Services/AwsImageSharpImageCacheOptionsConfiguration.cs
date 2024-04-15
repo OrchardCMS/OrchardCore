@@ -26,7 +26,7 @@ internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOp
 
     public void Configure(AwsImageSharpImageCacheOptions options)
     {
-        options.BindConfiguration(Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
+        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
 
         var fluidParserHelper = new OptionsFluidParserHelper<AwsImageSharpImageCacheOptions>(_shellSettings);
 

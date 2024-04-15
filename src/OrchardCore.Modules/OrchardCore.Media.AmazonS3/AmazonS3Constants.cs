@@ -1,6 +1,6 @@
 namespace OrchardCore.Media.AmazonS3;
 
-internal static class Constants
+internal static class AmazonS3Constants
 {
     internal static class ValidationMessages
     {

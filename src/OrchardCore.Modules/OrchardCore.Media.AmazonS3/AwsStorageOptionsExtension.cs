@@ -16,14 +16,14 @@ public static class AwsStorageOptionsExtension
     {
         if (string.IsNullOrWhiteSpace(options.BucketName))
         {
-            yield return new ValidationResult(Constants.ValidationMessages.BucketNameIsEmpty);
+            yield return new ValidationResult(AmazonS3Constants.ValidationMessages.BucketNameIsEmpty);
         }
 
         if (options.AwsOptions is not null)
         {
             if (options.AwsOptions.Region is null && options.AwsOptions.DefaultClientConfig.ServiceURL is null)
             {
-                yield return new ValidationResult(Constants.ValidationMessages.RegionAndServiceUrlAreEmpty);
+                yield return new ValidationResult(AmazonS3Constants.ValidationMessages.RegionAndServiceUrlAreEmpty);
             }
         }
     }
@@ -53,8 +53,8 @@ public static class AwsStorageOptionsExtension
             var credentials = section.GetSection("Credentials");
             if (credentials.Exists())
             {
-                var secretKey = credentials.GetValue(Constants.AwsCredentialParamNames.SecretKey, string.Empty);
-                var accessKey = credentials.GetValue(Constants.AwsCredentialParamNames.AccessKey, string.Empty);
+                var secretKey = credentials.GetValue(AmazonS3Constants.AwsCredentialParamNames.SecretKey, string.Empty);
+                var accessKey = credentials.GetValue(AmazonS3Constants.AwsCredentialParamNames.AccessKey, string.Empty);
 
                 if (!string.IsNullOrWhiteSpace(accessKey) ||
                     !string.IsNullOrWhiteSpace(secretKey))

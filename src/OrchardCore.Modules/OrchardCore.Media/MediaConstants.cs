@@ -1,6 +1,6 @@
 namespace OrchardCore.Media;
 
-public static class Constants
+public static class MediaConstants
 {
     /// <summary>
     /// The value the <c>Order</c> set by <see cref="Startup"/>. If you want to run a Startup class before or after

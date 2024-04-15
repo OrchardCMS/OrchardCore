@@ -26,7 +26,7 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
 
     public void Configure(AwsStorageOptions options)
     {
-        options.BindConfiguration(Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
+        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
 
         var fluidParserHelper = new OptionsFluidParserHelper<AwsStorageOptions>(_shellSettings);
 

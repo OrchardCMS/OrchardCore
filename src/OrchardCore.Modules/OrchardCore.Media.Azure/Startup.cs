@@ -36,7 +36,7 @@ namespace OrchardCore.Media.Azure
             _configuration = configuration;
         }
 
-        public override int Order => Constants.StartupOrder + 10;
+        public override int Order => MediaConstants.StartupOrder + 10;
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -158,7 +158,7 @@ namespace OrchardCore.Media.Azure
 
         // The order should exceed that of the 'OrchardCore.Media' module to substitute the default implementation of 'IImageCache'.
         // there.
-        public override int Order => Constants.StartupOrder + 5;
+        public override int Order => MediaConstants.StartupOrder + 5;
 
         public override void ConfigureServices(IServiceCollection services)
         {
