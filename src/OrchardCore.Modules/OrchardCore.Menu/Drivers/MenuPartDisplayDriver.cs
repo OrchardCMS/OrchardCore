@@ -113,9 +113,9 @@ namespace OrchardCore.Menu.Drivers
 
             var newObj = JObject.FromObject(menuItem, JOptions.Default);
 
-            if (newObj[nameof(MenuItemsListPart.MenuItems)] != null)
+            if (newObj[nameof(MenuItemsListPart)] != null)
             {
-                newObj[nameof(MenuItemsListPart.MenuItems)] = new JsonObject
+                newObj[nameof(MenuItemsListPart)] = new JsonObject
                 {
                     [nameof(MenuItemsListPart.MenuItems)] = new JsonArray()
                 };
