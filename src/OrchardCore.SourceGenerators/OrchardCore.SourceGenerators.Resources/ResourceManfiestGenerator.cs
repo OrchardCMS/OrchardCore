@@ -61,7 +61,8 @@ namespace OrchardCore.Resources
             }
         }
 
-        sourceBuilder.Append(@"            manifest
+        sourceBuilder.Append("\t\t\t");
+        sourceBuilder.Append(@"manifest
                 .DefineScript(""monaco-loader"")
                 .SetUrl(""~/OrchardCore.Resources/Scripts/monaco/vs/loader.js"")
                 .SetPosition(ResourcePosition.Last)
@@ -83,53 +84,37 @@ namespace OrchardCore.Resources
 
         void CreateResource(Resource resource)
         {
-            if (resource.Type == ResourceType.Script)
-            {
-                sourceBuilder.AppendLine($@"            manifest
-                .DefineScript(""{resource.Name}"")");
-            }
-            else
-            {
-                sourceBuilder.AppendLine($@"            manifest
-                .DefineStyle(""{resource.Name}"")");
-            }
+            var resourceType = resource.Type == ResourceType.Script
+                ? "Script"
+                : "Style";
+            sourceBuilder.AppendLine("\t\t\tmanifest");
+            sourceBuilder.AppendLine($"\t\t\t\t.Define{resourceType}({GetQuoteString(resource.Name)})");
 
             if (resource.Dependencies != null)
             {
-                sourceBuilder.AppendLine($@"                .SetDependencies({string.Join(", ", resource.Dependencies.Select(d => "\"" + d + "\""))})");
+                sourceBuilder.AppendLine($"\t\t\t\t.SetDependencies({GetArrayElementsAsString(resource.Dependencies)})");
             }
 
             if (!string.IsNullOrEmpty(resource.Url))
             {
-                if (resource.Url.Contains(minificationFileExtension))
-                {
-                    sourceBuilder.AppendLine($@"                .SetUrl(""{resource.Url}"", ""{resource.Url.Replace(minificationFileExtension, string.Empty)}"")");
-                }
-                else
-                {
-                    sourceBuilder.AppendLine($@"                .SetUrl(""{resource.Url}"")");
-                }
+                sourceBuilder.AppendLine(resource.Url.Contains(minificationFileExtension)
+                    ? $"\t\t\t\t.SetUrl({GetQuoteString(resource.Url)}, {GetQuoteString(GetDebugUrl(resource.Url))})"
+                    : $"\t\t\t\t.SetUrl({GetQuoteString(resource.Url)})");
             }
 
             if (!string.IsNullOrEmpty(resource.Cdn))
             {
-                //if (resource.Cdn.Contains(minificationFileExtension))
-                if (resource.CdnIntegrity.Length == 1)
-                {
-                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"")");
-                }
-                else
-                {
-                    sourceBuilder.AppendLine($@"                .SetCdn(""{resource.Cdn}"", ""{resource.Cdn.Replace(minificationFileExtension, string.Empty)}"")");
-                }
+                sourceBuilder.AppendLine(resource.CdnIntegrity.Length == 1
+                    ? $"\t\t\t\t.SetCdn({GetQuoteString(resource.Cdn)})"
+                    : $"\t\t\t\t.SetCdn({GetQuoteString(resource.Cdn)}, {GetQuoteString(GetDebugUrl(resource.Cdn))})");
             }
 
             if (resource.CdnIntegrity != null)
             {
-                sourceBuilder.AppendLine($@"                .SetCdnIntegrity({string.Join(", ", resource.CdnIntegrity.Select(c => "\"" + c + "\""))})");
+                sourceBuilder.AppendLine($"\t\t\t\t.SetCdnIntegrity({GetArrayElementsAsString(resource.CdnIntegrity)})");
             }
 
-            sourceBuilder.AppendLine($@"                .SetVersion(""{resource.Version}"")");
+            sourceBuilder.AppendLine($"\t\t\t\t.SetVersion({GetQuoteString(resource.Version)})");
 
             if (sourceBuilder.ToString().EndsWith(_newLine[0]))
             {
@@ -143,6 +128,12 @@ namespace OrchardCore.Resources
 
             sourceBuilder.AppendLine(";");
             sourceBuilder.AppendLine();
+
+            static string GetDebugUrl(string url) => url.Replace(minificationFileExtension, string.Empty);
+
+            static string GetArrayElementsAsString(string[] array) => string.Join(", ", array.Select(v => GetQuoteString(v)));
+
+            static string GetQuoteString(string value) => "\"" + value + "\"";
         }
     }
 
