@@ -28,4 +28,4 @@ jobs:
         FIRST_PR_MERGED_COMMENT: >
           Congratulations on your first PR merge! 🎉 Thank you for your contribution! We're looking forward to welcome 
           other contributions of yours in the future. @all-contributors please add @{{ author }} for code.
-        STAR_MESSAGE: If you like Orchard Core, please star our repo!
+        STAR_MESSAGE: If you like Orchard Core, please star our repo and join our [community channels ](https://github.com/OrchardCMS/OrchardCore/?tab=readme-ov-file#get-in-touch)
