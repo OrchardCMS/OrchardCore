@@ -57,9 +57,6 @@
     <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
 
-    <!-- "CA1016: Mark assemblies with AssemblyVersionAttribute" is not needed since the Preview and Main CI builds add these. -->
-    <NoWarn>$(NoWarn);CA1016</NoWarn>
-
   </PropertyGroup>
 
 </Project>
