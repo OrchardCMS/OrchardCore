@@ -56,13 +56,13 @@ namespace OrchardCore.Demo.GraphQL
 
                 // Ignore Fields on GraphQL Objects
                 options.HiddenFields = options.HiddenFields.Union(new[] {
-                    new GraphQLField(typeof(TestQueryObjectType), "lineIgnored"),
+                    new GraphQLField<TestQueryObjectType>("lineIgnored"),
                     new GraphQLField<TestQueryObjectType>("lineOtherIgnored")
                 });
 
                 options
-                    .IgnoreField(typeof(TestQueryObjectType), "lineIgnored")
-                    .IgnoreField<TestQueryObjectType>("lineIgnored");
+                    .IgnoreField<TestQueryObjectType>("lineIgnored")
+                    .IgnoreField<TestQueryObjectType>("lineOtherIgnored");
 
                 // Top level Part Options
                 options.PartOptions = options.PartOptions.Union(new[] {

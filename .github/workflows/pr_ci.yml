@@ -17,11 +17,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Build
@@ -37,7 +37,7 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
         name: functional-test-failure

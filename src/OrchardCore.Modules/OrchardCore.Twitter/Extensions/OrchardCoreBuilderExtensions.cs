@@ -10,7 +10,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Twitter");
+                var configuration = serviceProvider.GetRequiredService<IShellConfiguration>();
+                var configurationSection = configuration.GetSection("OrchardCore_X");
+
+                if (configurationSection.Value is null)
+                {
+                    configurationSection = configuration.GetSection("OrchardCore_Twitter");
+                }
 
                 tenantServices.PostConfigure<TwitterSettings>(settings => configurationSection.Bind(settings));
             });
