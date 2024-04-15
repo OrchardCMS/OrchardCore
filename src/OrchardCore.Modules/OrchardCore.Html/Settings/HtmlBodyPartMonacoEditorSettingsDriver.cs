@@ -1,8 +1,6 @@
-using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Jint;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -11,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Html.Settings
 {
@@ -18,9 +17,9 @@ namespace OrchardCore.Html.Settings
     {
         protected readonly IStringLocalizer S;
 
-        public HtmlBodyPartMonacoEditorSettingsDriver(IStringLocalizer<HtmlBodyPartMonacoEditorSettingsDriver> localizer)
+        public HtmlBodyPartMonacoEditorSettingsDriver(IStringLocalizer<HtmlBodyPartMonacoEditorSettingsDriver> stringLocalizer)
         {
-            S = localizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
@@ -42,31 +41,22 @@ namespace OrchardCore.Html.Settings
             if (contentTypePartDefinition.Editor() == "Monaco")
             {
                 var model = new MonacoSettingsViewModel();
-                var settings = new HtmlBodyPartMonacoEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                try
-                {
-                    var options = model.Options.Trim();
-
-                    if (!options.StartsWith('{') || !options.EndsWith('}'))
-                    {
-                        throw new Exception();
-                    }
-
-                    var engine = new Engine()
-                        .Execute("var config = " + options + "; config.language = 'html';");
-
-                    var jsValue = engine.Evaluate("JSON.stringify(config, null, 4)");
-
-                    settings.Options = jsValue.AsString();
-
-                    context.Builder.WithSettings(settings);
-                }
-                catch
+                if (!model.Options.IsJson())
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
+                }
+                else
+                {
+                    var jsonSettings = JObject.Parse(model.Options);
+                    jsonSettings["language"] = "html";
+                    var settings = new HtmlBodyPartMonacoEditorSettings
+                    {
+                        Options = jsonSettings.ToString()
+                    };
+                    context.Builder.WithSettings(settings);
                 }
             }
 

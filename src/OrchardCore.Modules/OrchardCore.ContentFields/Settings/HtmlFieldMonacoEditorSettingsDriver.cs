@@ -1,7 +1,6 @@
-using System;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Jint;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
@@ -9,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Settings
 {
@@ -41,31 +41,22 @@ namespace OrchardCore.ContentFields.Settings
             if (partFieldDefinition.Editor() == "Monaco")
             {
                 var model = new MonacoSettingsViewModel();
-                var settings = new HtmlFieldMonacoEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                try
-                {
-                    var options = model.Options.Trim();
-
-                    if (!options.StartsWith('{') || !options.EndsWith('}'))
-                    {
-                        throw new Exception();
-                    }
-
-                    var engine = new Engine()
-                        .Execute("var config = " + options + "; config.language = 'html';");
-
-                    var jsValue = engine.Evaluate("JSON.stringify(config, null, 4)");
-
-                    settings.Options = jsValue.AsString();
-
-                    context.Builder.WithSettings(settings);
-                }
-                catch
+                if (!model.Options.IsJson())
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
+                }
+                else
+                {
+                    var jsonSettings = JObject.Parse(model.Options);
+                    jsonSettings["language"] = "html";
+                    var settings = new HtmlFieldMonacoEditorSettings
+                    {
+                        Options = jsonSettings.ToString()
+                    };
+                    context.Builder.WithSettings(settings);
                 }
             }
 
