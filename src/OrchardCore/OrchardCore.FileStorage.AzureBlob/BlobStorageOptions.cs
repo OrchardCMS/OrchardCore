@@ -20,7 +20,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         /// <summary>
         /// Returns a value indicating whether the basic state of the configuration is valid.
         /// </summary>
-        public virtual bool IsValid()
+        public virtual bool IsConfigured()
         {
             return !string.IsNullOrEmpty(ConnectionString) && !string.IsNullOrEmpty(ContainerName);
         }
