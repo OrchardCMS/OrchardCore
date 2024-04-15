@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -53,7 +53,7 @@ namespace OrchardCore.ResourceManagement
             return newMeta;
         }
 
-        private static void Merge(IDictionary<string, string> d1, params IDictionary<string, string>[] sources)
+        private static void Merge(AttributeDictionary d1, params AttributeDictionary[] sources)
         {
             foreach (var d in sources)
             {

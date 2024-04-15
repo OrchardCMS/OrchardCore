@@ -38,7 +38,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
+            return Initialize<TwitterSigninSettingsViewModel>("XSigninSettings_Edit", model =>
             {
                 if (settings.CallbackPath.HasValue)
                 {

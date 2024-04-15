@@ -191,7 +191,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.GetLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {
@@ -236,7 +236,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
+                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
                 if (layer == null)
                 {
@@ -264,7 +264,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.LoadLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {

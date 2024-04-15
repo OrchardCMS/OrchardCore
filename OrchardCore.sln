@@ -252,6 +252,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows.Abstr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68F6113F-2F08-4412-B5E7-41B7164A0C7F}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		gulpfile.js = gulpfile.js
 		package.json = package.json
 		README.md = README.md
@@ -519,7 +520,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Azure", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Smtp", "src\OrchardCore.Modules\OrchardCore.Email.Smtp\OrchardCore.Email.Smtp.csproj", "{E8A1097D-A65A-4B17-A3A2-F50D79552732}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Rules.Core", "src\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj", "{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "src\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj", "{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

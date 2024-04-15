@@ -35,7 +35,9 @@ namespace OrchardCore.Modules.Manifest
 
 #pragma warning disable CA1018 // Specify AttributeUsage...
         // No need since the attribute is only here in order to verify Prefix extraction
+#pragma warning disable CA1710 // Rename to end in 'Attribute'
         public class TestAttributePrefix : Attribute { }
+#pragma warning restore CA1710
 #pragma warning restore CA1018
 
         // TODO: MWP: could probably separate this between classes, Theory at one level, InlineData at another...
@@ -644,7 +646,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Contains(features, _ =>
                 _.Id == string.Join(".", baseId, One) &&
                 _.Name == _.Id &&
-                _.Category.Equals(Two, StringComparison.CurrentCultureIgnoreCase) &&
+                _.Category.Equals(Two, StringComparison.OrdinalIgnoreCase) &&
                 _.InternalPriority == _3 &&
                 _.Description == four &&
                 _.Dependencies.SequenceEqual(GetValues(five, six, seven)) &&
