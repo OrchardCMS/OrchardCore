@@ -15,7 +15,6 @@
       This setting changes that so that the .template.config folder will be included.
     -->
     <NoDefaultExcludes>True</NoDefaultExcludes>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <PackageType>Template</PackageType>
     <!--
       The previous code used a nuget package to allow the 'RoslynCodeTaskFactory' (see the ReplaceFileText task definition below) to be used.
