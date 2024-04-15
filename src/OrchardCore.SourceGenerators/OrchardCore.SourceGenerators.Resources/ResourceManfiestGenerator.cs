@@ -27,7 +27,7 @@ namespace OrchardCore.Resources
     {
         private const string CodeMirrorVersion = ""5.65.7"";
         private const string MonacoEditorVersion = ""0.46.0"";
-        private const string CloudflareUrl = ""https: //cdnjs.cloudflare.com/ajax/libs/"";
+        private const string CloudflareUrl = ""https://cdnjs.cloudflare.com/ajax/libs/"";
         private const string CodeMirrorUrl = CloudflareUrl + ""codemirror/"" + CodeMirrorVersion + ""/"";
 
         public static ResourceManifest Build(string tenantPrefix)
