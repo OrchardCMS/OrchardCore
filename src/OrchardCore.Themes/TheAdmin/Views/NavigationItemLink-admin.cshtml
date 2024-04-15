@@ -11,7 +11,9 @@
     if (Model.Href == null || Model.Href.ToString() == "#")
     {
         tag.Attributes["href"] = "#m" + Model.GetHashCode().ToString();
-    } else {
+    } 
+    else 
+    {
         tag.Attributes["href"] = Model.Href;
     }
 
