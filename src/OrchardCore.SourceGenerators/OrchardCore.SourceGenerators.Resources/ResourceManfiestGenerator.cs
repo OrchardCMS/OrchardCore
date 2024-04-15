@@ -87,6 +87,8 @@ namespace OrchardCore.Resources
             var resourceType = resource.Type == ResourceType.Script
                 ? "Script"
                 : "Style";
+            var isCodeMirrorResource = resource.Name.StartsWith("codemirror");
+
             sourceBuilder.AppendLine("\t\t\tmanifest");
             sourceBuilder.AppendLine($"\t\t\t\t.Define{resourceType}({GetQuoteString(resource.Name)})");
 
@@ -104,9 +106,17 @@ namespace OrchardCore.Resources
 
             if (!string.IsNullOrEmpty(resource.Cdn))
             {
+                var cdn = isCodeMirrorResource
+                    ? $"CodeMirrorUrl + {GetQuoteString(resource.Cdn)}"
+                    : GetQuoteString(resource.Cdn);
+
+                var cdnDebug = isCodeMirrorResource
+                    ? $"CodeMirrorUrl + {GetQuoteString(GetDebugUrl(resource.Cdn))}"
+                    : GetQuoteString(GetDebugUrl(resource.Cdn));
+
                 sourceBuilder.AppendLine(resource.CdnIntegrity.Length == 1
-                    ? $"\t\t\t\t.SetCdn({GetQuoteString(resource.Cdn)})"
-                    : $"\t\t\t\t.SetCdn({GetQuoteString(resource.Cdn)}, {GetQuoteString(GetDebugUrl(resource.Cdn))})");
+                    ? $"\t\t\t\t.SetCdn({cdn})"
+                    : $"\t\t\t\t.SetCdn({cdn}, {cdnDebug})");
             }
 
             if (resource.CdnIntegrity != null)
@@ -114,7 +124,7 @@ namespace OrchardCore.Resources
                 sourceBuilder.AppendLine($"\t\t\t\t.SetCdnIntegrity({GetArrayElementsAsString(resource.CdnIntegrity)})");
             }
 
-            sourceBuilder.AppendLine($"\t\t\t\t.SetVersion({GetQuoteString(resource.Version)})");
+            sourceBuilder.AppendLine($"\t\t\t\t.SetVersion({(isCodeMirrorResource ? "CodeMirrorVersion" : GetQuoteString(resource.Version))})");
 
             if (sourceBuilder.ToString().EndsWith(_newLine[0]))
             {
