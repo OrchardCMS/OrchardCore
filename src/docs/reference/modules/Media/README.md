@@ -416,7 +416,7 @@ When specifying a media profile with either the liquid, razor helper, or tag hel
     ```
 
 !!! note
-    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source.md)
 
 ## Media Text
 
@@ -458,7 +458,7 @@ The `Anchors[]` is a less well known property of a `MediaField` and can be acces
 The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.
 
 !!! note
-    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source.md)
 
 ## Query string tokens
 
@@ -478,7 +478,7 @@ When the query string is signed with a token any width, height value may be used
 `<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
 
 !!! note
-    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source.md)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
 ## Media Content Search
