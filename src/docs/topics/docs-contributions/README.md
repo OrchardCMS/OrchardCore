@@ -26,7 +26,7 @@ Do the following if you're adding docs for a newly developed extension, or if yo
 
 With MkDocs you can get the full docs.orchardcore.net experience locally too. If you are looking to contribute substantial amount of docs then please do run the site locally to make sure what you write will actually look like it should.
 
-1. Follow the [MkDocs installation guide](https://www.mkdocs.org/user-guide/installation/) to install Python and PIP if you don't have them yet.
+1. Follow the [MkDocs installation guide](https://www.mkdocs.org/user-guide/installation/) to install Python, PIP and MkDocs. If you already have a fresh enough Python installation, you can simply run `pip install mkdocs`.
 2. Open a command line in the root of your clone of the repository.
 3. Run `pip install -r src/docs/requirements.txt` to install dependencies.
 4. Run `python -m mkdocs serve` to start the site. You'll then be able to browse it under <http://127.0.0.1:8000>.
