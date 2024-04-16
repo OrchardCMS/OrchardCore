@@ -21,8 +21,7 @@ var fs = require("graceful-fs"),
     util = require('gulp-util'),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
-    babel = require('gulp-babel'),
-    sort = require('gulp-sort');
+    babel = require('gulp-babel');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -119,7 +118,8 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     const inputPaths = assetGroup.inputs.map(function (inputPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
-    assetGroup.inputPaths = inputPaths.sort();
+    // get all input paths and then sort them to ensure file concatenation is consistent.
+    assetGroup.inputPaths = glob.sync(inputPaths).sort();
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
@@ -176,7 +176,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !containsLessOrScss)
         generateSourceMaps = false;
 
-    var minifiedStream = gulp.src(assetGroup.inputPaths, { nosort: true }) // Minified output, source mapping completely disabled.
+    var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -210,7 +210,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
-    var devStream = gulp.src(assetGroup.inputPaths, { nosort: true }) // Non-minified output, with source mapping
+    var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -259,7 +259,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
     };
 
     // console.log(assetGroup.inputPaths);
-    return gulp.src(assetGroup.inputPaths, { nosort: true })
+    return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -302,7 +302,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
 }
 
 function buildCopyPipeline(assetGroup, doRebuild) {
-    var stream = gulp.src(assetGroup.inputPaths, { nosort: true });
+    var stream = gulp.src(assetGroup.inputPaths);
 
     if (!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))
