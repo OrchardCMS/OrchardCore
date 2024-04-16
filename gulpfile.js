@@ -176,8 +176,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !containsLessOrScss)
         generateSourceMaps = false;
 
-    var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
-        .pipe(sort())
+    var minifiedStream = gulp.src(assetGroup.inputPaths, { nosort: true }) // Minified output, source mapping completely disabled.
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -211,8 +210,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
-    var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
-        .pipe(sort())
+    var devStream = gulp.src(assetGroup.inputPaths, { nosort: true }) // Non-minified output, with source mapping
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -261,8 +259,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
     };
 
     // console.log(assetGroup.inputPaths);
-    return gulp.src(assetGroup.inputPaths)
-        .pipe(sort())
+    return gulp.src(assetGroup.inputPaths, { nosort: true })
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -305,9 +302,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
 }
 
 function buildCopyPipeline(assetGroup, doRebuild) {
-    var stream = gulp.src(assetGroup.inputPaths);
-
-    stream = stream.pipe(sort());
+    var stream = gulp.src(assetGroup.inputPaths, { nosort: true });
 
     if (!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))
