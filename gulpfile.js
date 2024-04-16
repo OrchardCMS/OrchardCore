@@ -21,7 +21,8 @@ var fs = require("graceful-fs"),
     util = require('gulp-util'),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
-    babel = require('gulp-babel');
+    babel = require('gulp-babel'),
+    sort = require('gulp-sort');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -176,6 +177,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         generateSourceMaps = false;
 
     var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
+        .pipe(sort())
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -210,6 +212,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
+        .pipe(sort())
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
