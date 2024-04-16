@@ -2468,6 +2468,247 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+              toggleButtonStates();
+            }
+          };
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+            if (a == null || b == null) {
+              return false;
+            }
+            if (a.length !== b.length) {
+              return false;
+            }
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+            return true;
+          };
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+              range = t.doc.createRange();
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -2818,247 +3059,6 @@
               });
             }
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(t) {
-          t.$c.off('tbwinit.history tbwchange.history');
-        },
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                  newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-              stack = t.o.plugins.history._stack,
-              latestState = stack.slice(-1)[0] || '<p></p>',
-              prevState = stack[index],
-              newState = t.$ed.html(),
-              focusEl = t.doc.getSelection().focusNode,
-              focusElText = '',
-              latestStateTagsList,
-              newStateTagsList,
-              prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1;
-                // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
-                // now add new state to modified history
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-              toggleButtonStates();
-            }
-          };
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-              stackSize = t.o.plugins.history._stack.length,
-              undoState = index > 0,
-              redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-            if (a == null || b == null) {
-              return false;
-            }
-            if (a.length !== b.length) {
-              return false;
-            }
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-            return true;
-          };
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-              range = t.doc.createRange();
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(i) {
-          i.$c.off("tbwinit.history tbwchange.history");
-        },
-        init: function init(t) {
-          t.o.plugins.history = i.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, t.o.plugins.history || {});
-          var o = {
-              title: t.lang.redo,
-              ico: "redo",
-              key: "Y",
-              fn: function fn() {
-                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                  t.o.plugins.history._index += 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            n = {
-              title: t.lang.undo,
-              ico: "undo",
-              key: "Z",
-              fn: function fn() {
-                if (t.o.plugins.history._index > 0) {
-                  t.o.plugins.history._index -= 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            s = function s() {
-              var i = t.o.plugins.history._index,
-                o = t.o.plugins.history._stack.length,
-                n = 0 !== o && i !== o - 1;
-              e("historyUndo", i > 0), e("historyRedo", n);
-            },
-            e = function e(i, o) {
-              var n = t.$box.find(".trumbowyg-" + i + "-button");
-              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-            },
-            l = function l(i, t) {
-              if (i === t) return !0;
-              if (null == i || null == t) return !1;
-              if (i.length !== t.length) return !1;
-              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
-              return !0;
-            },
-            r = function r() {
-              var i = t.doc.getSelection().focusNode,
-                o = t.doc.createRange();
-              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
-            };
-          t.$c.on("tbwinit.history tbwchange.history", function () {
-            var o,
-              n,
-              e = t.o.plugins.history._index,
-              r = t.o.plugins.history._stack,
-              d = r.slice(-1)[0] || "<p></p>",
-              u = r[e],
-              h = t.$ed.html(),
-              c = t.doc.getSelection().focusNode,
-              g = "",
-              a = t.o.plugins.history._focusEl;
-            o = i("<div>" + d + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = i("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
-          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
         }
       }
     }
@@ -3875,249 +3875,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    proxy: 'https://noembed.com/embed?nowrap=on',
-    urlFiled: 'url',
-    data: [],
-    success: undefined,
-    error: undefined
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        noembed: 'Noembed',
-        noembedError: 'Error'
-      },
-      az: {
-        noembed: 'Noembed',
-        noembedError: 'Xəta'
-      },
-      by: {
-        noembedError: 'Памылка'
-      },
-      cs: {
-        noembedError: 'Chyba'
-      },
-      da: {
-        noembedError: 'Fejl'
-      },
-      et: {
-        noembed: 'Noembed',
-        noembedError: 'Viga'
-      },
-      fr: {
-        noembedError: 'Erreur'
-      },
-      hu: {
-        noembed: 'Noembed',
-        noembedError: 'Hiba'
-      },
-      ja: {
-        noembedError: 'エラー'
-      },
-      ko: {
-        noembed: 'oEmbed 넣기',
-        noembedError: '에러'
-      },
-      pt_br: {
-        noembed: 'Incorporar',
-        noembedError: 'Erro'
-      },
-      ru: {
-        noembedError: 'Ошибка'
-      },
-      sl: {
-        noembed: 'Noembed',
-        noembedError: 'Napaka'
-      },
-      sk: {
-        noembedError: 'Chyba'
-      },
-      tr: {
-        noembedError: 'Hata'
-      },
-      zh_tw: {
-        noembed: '插入影片',
-        noembedError: '錯誤'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      noembed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
-          var btnDef = {
-            fn: function fn() {
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.noembed,
-              // Fields
-              {
-                url: {
-                  label: 'URL',
-                  required: true
-                }
-              },
-              // Callback
-              function (data) {
-                $.ajax({
-                  url: trumbowyg.o.plugins.noembed.proxy,
-                  type: 'GET',
-                  data: data,
-                  cache: false,
-                  dataType: 'json',
-                  success: function success(data) {
-                    if (trumbowyg.o.plugins.noembed.success) {
-                      trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
-                      return;
-                    }
-                    if (!data.html) {
-                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
-                      return;
-                    }
-                    trumbowyg.execCmd('insertHTML', data.html);
-                    setTimeout(function () {
-                      trumbowyg.closeModal();
-                    }, 250);
-                  },
-                  error: trumbowyg.o.plugins.noembed.error || function () {
-                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          trumbowyg.addBtnDef('noembed', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-!function (e) {
-  "use strict";
-
-  var r = {
-    proxy: "https://noembed.com/embed?nowrap=on",
-    urlFiled: "url",
-    data: [],
-    success: void 0,
-    error: void 0
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        noembed: "Noembed",
-        noembedError: "Error"
-      },
-      az: {
-        noembed: "Noembed",
-        noembedError: "Xəta"
-      },
-      by: {
-        noembedError: "Памылка"
-      },
-      cs: {
-        noembedError: "Chyba"
-      },
-      da: {
-        noembedError: "Fejl"
-      },
-      et: {
-        noembed: "Noembed",
-        noembedError: "Viga"
-      },
-      fr: {
-        noembedError: "Erreur"
-      },
-      hu: {
-        noembed: "Noembed",
-        noembedError: "Hiba"
-      },
-      ja: {
-        noembedError: "エラー"
-      },
-      ko: {
-        noembed: "oEmbed 넣기",
-        noembedError: "에러"
-      },
-      pt_br: {
-        noembed: "Incorporar",
-        noembedError: "Erro"
-      },
-      ru: {
-        noembedError: "Ошибка"
-      },
-      sl: {
-        noembed: "Noembed",
-        noembedError: "Napaka"
-      },
-      sk: {
-        noembedError: "Chyba"
-      },
-      tr: {
-        noembedError: "Hata"
-      },
-      zh_tw: {
-        noembed: "插入影片",
-        noembedError: "錯誤"
-      }
-    },
-    plugins: {
-      noembed: {
-        init: function init(o) {
-          o.o.plugins.noembed = e.extend(!0, {}, r, o.o.plugins.noembed || {});
-          var n = {
-            fn: function fn() {
-              var r = o.openModalInsert(o.lang.noembed, {
-                url: {
-                  label: "URL",
-                  required: !0
-                }
-              }, function (n) {
-                e.ajax({
-                  url: o.o.plugins.noembed.proxy,
-                  type: "GET",
-                  data: n,
-                  cache: !1,
-                  dataType: "json",
-                  success: function success(n) {
-                    o.o.plugins.noembed.success ? o.o.plugins.noembed.success(n, o, r) : n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
-                      o.closeModal();
-                    }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
-                  },
-                  error: o.o.plugins.noembed.error || function () {
-                    o.addErrorOnModalField(e("input[type=text]", r), o.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          o.addBtnDef("noembed", n);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.mathMl.js v1.0
  * MathML plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4547,6 +4304,249 @@
               }
             } catch (t) {}
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    proxy: 'https://noembed.com/embed?nowrap=on',
+    urlFiled: 'url',
+    data: [],
+    success: undefined,
+    error: undefined
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        noembed: 'Noembed',
+        noembedError: 'Error'
+      },
+      az: {
+        noembed: 'Noembed',
+        noembedError: 'Xəta'
+      },
+      by: {
+        noembedError: 'Памылка'
+      },
+      cs: {
+        noembedError: 'Chyba'
+      },
+      da: {
+        noembedError: 'Fejl'
+      },
+      et: {
+        noembed: 'Noembed',
+        noembedError: 'Viga'
+      },
+      fr: {
+        noembedError: 'Erreur'
+      },
+      hu: {
+        noembed: 'Noembed',
+        noembedError: 'Hiba'
+      },
+      ja: {
+        noembedError: 'エラー'
+      },
+      ko: {
+        noembed: 'oEmbed 넣기',
+        noembedError: '에러'
+      },
+      pt_br: {
+        noembed: 'Incorporar',
+        noembedError: 'Erro'
+      },
+      ru: {
+        noembedError: 'Ошибка'
+      },
+      sl: {
+        noembed: 'Noembed',
+        noembedError: 'Napaka'
+      },
+      sk: {
+        noembedError: 'Chyba'
+      },
+      tr: {
+        noembedError: 'Hata'
+      },
+      zh_tw: {
+        noembed: '插入影片',
+        noembedError: '錯誤'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      noembed: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
+          var btnDef = {
+            fn: function fn() {
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.noembed,
+              // Fields
+              {
+                url: {
+                  label: 'URL',
+                  required: true
+                }
+              },
+              // Callback
+              function (data) {
+                $.ajax({
+                  url: trumbowyg.o.plugins.noembed.proxy,
+                  type: 'GET',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  success: function success(data) {
+                    if (trumbowyg.o.plugins.noembed.success) {
+                      trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
+                      return;
+                    }
+                    if (!data.html) {
+                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                      return;
+                    }
+                    trumbowyg.execCmd('insertHTML', data.html);
+                    setTimeout(function () {
+                      trumbowyg.closeModal();
+                    }, 250);
+                  },
+                  error: trumbowyg.o.plugins.noembed.error || function () {
+                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          trumbowyg.addBtnDef('noembed', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
+!function (e) {
+  "use strict";
+
+  var r = {
+    proxy: "https://noembed.com/embed?nowrap=on",
+    urlFiled: "url",
+    data: [],
+    success: void 0,
+    error: void 0
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        noembed: "Noembed",
+        noembedError: "Error"
+      },
+      az: {
+        noembed: "Noembed",
+        noembedError: "Xəta"
+      },
+      by: {
+        noembedError: "Памылка"
+      },
+      cs: {
+        noembedError: "Chyba"
+      },
+      da: {
+        noembedError: "Fejl"
+      },
+      et: {
+        noembed: "Noembed",
+        noembedError: "Viga"
+      },
+      fr: {
+        noembedError: "Erreur"
+      },
+      hu: {
+        noembed: "Noembed",
+        noembedError: "Hiba"
+      },
+      ja: {
+        noembedError: "エラー"
+      },
+      ko: {
+        noembed: "oEmbed 넣기",
+        noembedError: "에러"
+      },
+      pt_br: {
+        noembed: "Incorporar",
+        noembedError: "Erro"
+      },
+      ru: {
+        noembedError: "Ошибка"
+      },
+      sl: {
+        noembed: "Noembed",
+        noembedError: "Napaka"
+      },
+      sk: {
+        noembedError: "Chyba"
+      },
+      tr: {
+        noembedError: "Hata"
+      },
+      zh_tw: {
+        noembed: "插入影片",
+        noembedError: "錯誤"
+      }
+    },
+    plugins: {
+      noembed: {
+        init: function init(o) {
+          o.o.plugins.noembed = e.extend(!0, {}, r, o.o.plugins.noembed || {});
+          var n = {
+            fn: function fn() {
+              var r = o.openModalInsert(o.lang.noembed, {
+                url: {
+                  label: "URL",
+                  required: !0
+                }
+              }, function (n) {
+                e.ajax({
+                  url: o.o.plugins.noembed.proxy,
+                  type: "GET",
+                  data: n,
+                  cache: !1,
+                  dataType: "json",
+                  success: function success(n) {
+                    o.o.plugins.noembed.success ? o.o.plugins.noembed.success(n, o, r) : n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
+                      o.closeModal();
+                    }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
+                  },
+                  error: o.o.plugins.noembed.error || function () {
+                    o.addErrorOnModalField(e("input[type=text]", r), o.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          o.addBtnDef("noembed", n);
         }
       }
     }
