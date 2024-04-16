@@ -223,7 +223,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return false;
         }
 
-        internal string GetFieldName(ContentTypePartDefinition definition, string partName, string fieldName)
+        internal static string GetFieldName(ContentTypePartDefinition definition, string partName, string fieldName)
         {
             var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
 
