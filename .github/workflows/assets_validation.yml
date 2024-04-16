@@ -43,7 +43,8 @@ jobs:
             $changedFiles = @()
             $hasNonCrlfChange = $false
         
-            foreach ($line in $changeLines) {
+            foreach ($line in $changeLines)
+            {
                 if ($line -match '^\s?(M|A|\?\?)\s+(.*)$')
                 {
                     $changeType = $matches[1]
