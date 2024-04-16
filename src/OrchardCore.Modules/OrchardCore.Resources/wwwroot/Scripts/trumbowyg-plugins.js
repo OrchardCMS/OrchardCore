@@ -2309,6 +2309,247 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+              toggleButtonStates();
+            }
+          };
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+            if (a == null || b == null) {
+              return false;
+            }
+            if (a.length !== b.length) {
+              return false;
+            }
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+            return true;
+          };
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+              range = t.doc.createRange();
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -2824,628 +3065,6 @@
   });
 }(jQuery);
 /*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(t) {
-          t.$c.off('tbwinit.history tbwchange.history');
-        },
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                  newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-              stack = t.o.plugins.history._stack,
-              latestState = stack.slice(-1)[0] || '<p></p>',
-              prevState = stack[index],
-              newState = t.$ed.html(),
-              focusEl = t.doc.getSelection().focusNode,
-              focusElText = '',
-              latestStateTagsList,
-              newStateTagsList,
-              prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1;
-                // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
-                // now add new state to modified history
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-              toggleButtonStates();
-            }
-          };
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-              stackSize = t.o.plugins.history._stack.length,
-              undoState = index > 0,
-              redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-            if (a == null || b == null) {
-              return false;
-            }
-            if (a.length !== b.length) {
-              return false;
-            }
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-            return true;
-          };
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-              range = t.doc.createRange();
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(i) {
-          i.$c.off("tbwinit.history tbwchange.history");
-        },
-        init: function init(t) {
-          t.o.plugins.history = i.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, t.o.plugins.history || {});
-          var o = {
-              title: t.lang.redo,
-              ico: "redo",
-              key: "Y",
-              fn: function fn() {
-                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                  t.o.plugins.history._index += 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            n = {
-              title: t.lang.undo,
-              ico: "undo",
-              key: "Z",
-              fn: function fn() {
-                if (t.o.plugins.history._index > 0) {
-                  t.o.plugins.history._index -= 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            s = function s() {
-              var i = t.o.plugins.history._index,
-                o = t.o.plugins.history._stack.length,
-                n = 0 !== o && i !== o - 1;
-              e("historyUndo", i > 0), e("historyRedo", n);
-            },
-            e = function e(i, o) {
-              var n = t.$box.find(".trumbowyg-" + i + "-button");
-              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-            },
-            l = function l(i, t) {
-              if (i === t) return !0;
-              if (null == i || null == t) return !1;
-              if (i.length !== t.length) return !1;
-              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
-              return !0;
-            },
-            r = function r() {
-              var i = t.doc.getSelection().focusNode,
-                o = t.doc.createRange();
-              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
-            };
-          t.$c.on("tbwinit.history tbwchange.history", function () {
-            var o,
-              n,
-              e = t.o.plugins.history._index,
-              r = t.o.plugins.history._stack,
-              d = r.slice(-1)[0] || "<p></p>",
-              u = r[e],
-              h = t.$ed.html(),
-              c = t.doc.getSelection().focusNode,
-              g = "",
-              a = t.o.plugins.history._focusEl;
-            o = i("<div>" + d + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = i("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
-          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        lineheight: 'Line height',
-        lineheights: {
-          '0.9': 'Small',
-          'normal': 'Regular',
-          '1.5': 'Large',
-          '2.0': 'Extra large'
-        }
-      },
-      az: {
-        lineheight: 'Sətir yüksəkliyi',
-        lineheights: {
-          '0.9': 'Kiçik',
-          'normal': 'Normal',
-          '1.5': 'Böyük',
-          '2.0': 'Daha böyük'
-        }
-      },
-      by: {
-        lineheight: 'Міжрадковы інтэрвал',
-        lineheights: {
-          '0.9': 'Маленькі',
-          'normal': 'Звычайны',
-          '1.5': 'Вялікі',
-          '2.0': 'Вельмі вялікі'
-        }
-      },
-      da: {
-        lineheight: 'Linjehøjde',
-        lineheights: {
-          '0.9': 'Lille',
-          'normal': 'Normal',
-          '1.5': 'Stor',
-          '2.0': 'Ekstra stor'
-        }
-      },
-      et: {
-        lineheight: 'Reavahe',
-        lineheights: {
-          '0.9': 'Väike',
-          'normal': 'Tavaline',
-          '1.5': 'Suur',
-          '2.0': 'Väga suur'
-        }
-      },
-      fr: {
-        lineheight: 'Hauteur de ligne',
-        lineheights: {
-          '0.9': 'Petite',
-          'normal': 'Normale',
-          '1.5': 'Grande',
-          '2.0': 'Très grande'
-        }
-      },
-      hu: {
-        lineheight: 'Line height',
-        lineheights: {
-          '0.9': 'Small',
-          'normal': 'Regular',
-          '1.5': 'Large',
-          '2.0': 'Extra large'
-        }
-      },
-      it: {
-        lineheight: 'Altezza linea',
-        lineheights: {
-          '0.9': 'Bassa',
-          'normal': 'Normale',
-          '1.5': 'Alta',
-          '2.0': 'Molto alta'
-        }
-      },
-      ko: {
-        lineheight: '줄 간격',
-        lineheights: {
-          '0.9': '좁게',
-          'normal': '보통',
-          '1.5': '넓게',
-          '2.0': '아주 넓게'
-        }
-      },
-      nl: {
-        lineheight: 'Regelhoogte',
-        lineheights: {
-          '0.9': 'Klein',
-          'normal': 'Normaal',
-          '1.5': 'Groot',
-          '2.0': 'Extra groot'
-        }
-      },
-      pt_br: {
-        lineheight: 'Altura de linha',
-        lineheights: {
-          '0.9': 'Pequena',
-          'normal': 'Regular',
-          '1.5': 'Grande',
-          '2.0': 'Extra grande'
-        }
-      },
-      ru: {
-        lineheight: 'Межстрочный интервал',
-        lineheights: {
-          '0.9': 'Маленький',
-          'normal': 'Обычный',
-          '1.5': 'Большой',
-          '2.0': 'Очень большой'
-        }
-      },
-      sl: {
-        lineheight: 'Višina vrstice',
-        lineheights: {
-          '0.9': 'Majhna',
-          'normal': 'Navadna',
-          '1.5': 'Velika',
-          '2.0': 'Ekstra velika'
-        }
-      },
-      tr: {
-        lineheight: 'Satır yüksekliği',
-        lineheights: {
-          '0.9': 'Küçük',
-          'normal': 'Normal',
-          '1.5': 'Büyük',
-          '2.0': 'Çok Büyük'
-        }
-      },
-      zh_tw: {
-        lineheight: '文字間距',
-        lineheights: {
-          '0.9': '小',
-          'normal': '正常',
-          '1.5': '大',
-          '2.0': '特大'
-        }
-      }
-    }
-  });
-  // jshint camelcase:true
-
-  var defaultOptions = {
-    sizeList: ['0.9', 'normal', '1.5', '2.0']
-  };
-
-  // Add dropdown with font sizes
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      lineheight: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
-          trumbowyg.addBtnDef('lineheight', {
-            dropdown: buildDropdown(trumbowyg)
-          });
-        }
-      }
-    }
-  });
-
-  // Build the dropdown
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
-      trumbowyg.addBtnDef('lineheight_' + size, {
-        text: trumbowyg.lang.lineheights[size] || size,
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.saveRange();
-          var text = trumbowyg.getRangeText();
-          if (text.replace(/\s/g, '') !== '') {
-            try {
-              var parent = getSelectionParentElement();
-              $(parent).css('lineHeight', size);
-            } catch (e) {}
-          }
-        }
-      });
-      dropdown.push('lineheight_' + size);
-    });
-    return dropdown;
-  }
-
-  // Get the selection's parent
-  function getSelectionParentElement() {
-    var parentEl = null,
-      selection;
-    if (window.getSelection) {
-      selection = window.getSelection();
-      if (selection.rangeCount) {
-        parentEl = selection.getRangeAt(0).commonAncestorContainer;
-        if (parentEl.nodeType !== 1) {
-          parentEl = parentEl.parentNode;
-        }
-      }
-    } else if ((selection = document.selection) && selection.type !== 'Control') {
-      parentEl = selection.createRange().parentElement();
-    }
-    return parentEl;
-  }
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        lineheight: "Line height",
-        lineheights: {
-          .9: "Small",
-          normal: "Regular",
-          1.5: "Large",
-          "2.0": "Extra large"
-        }
-      },
-      az: {
-        lineheight: "Sətir yüksəkliyi",
-        lineheights: {
-          .9: "Kiçik",
-          normal: "Normal",
-          1.5: "Böyük",
-          "2.0": "Daha böyük"
-        }
-      },
-      by: {
-        lineheight: "Міжрадковы інтэрвал",
-        lineheights: {
-          .9: "Маленькі",
-          normal: "Звычайны",
-          1.5: "Вялікі",
-          "2.0": "Вельмі вялікі"
-        }
-      },
-      da: {
-        lineheight: "Linjehøjde",
-        lineheights: {
-          .9: "Lille",
-          normal: "Normal",
-          1.5: "Stor",
-          "2.0": "Ekstra stor"
-        }
-      },
-      et: {
-        lineheight: "Reavahe",
-        lineheights: {
-          .9: "Väike",
-          normal: "Tavaline",
-          1.5: "Suur",
-          "2.0": "Väga suur"
-        }
-      },
-      fr: {
-        lineheight: "Hauteur de ligne",
-        lineheights: {
-          .9: "Petite",
-          normal: "Normale",
-          1.5: "Grande",
-          "2.0": "Très grande"
-        }
-      },
-      hu: {
-        lineheight: "Line height",
-        lineheights: {
-          .9: "Small",
-          normal: "Regular",
-          1.5: "Large",
-          "2.0": "Extra large"
-        }
-      },
-      it: {
-        lineheight: "Altezza linea",
-        lineheights: {
-          .9: "Bassa",
-          normal: "Normale",
-          1.5: "Alta",
-          "2.0": "Molto alta"
-        }
-      },
-      ko: {
-        lineheight: "줄 간격",
-        lineheights: {
-          .9: "좁게",
-          normal: "보통",
-          1.5: "넓게",
-          "2.0": "아주 넓게"
-        }
-      },
-      nl: {
-        lineheight: "Regelhoogte",
-        lineheights: {
-          .9: "Klein",
-          normal: "Normaal",
-          1.5: "Groot",
-          "2.0": "Extra groot"
-        }
-      },
-      pt_br: {
-        lineheight: "Altura de linha",
-        lineheights: {
-          .9: "Pequena",
-          normal: "Regular",
-          1.5: "Grande",
-          "2.0": "Extra grande"
-        }
-      },
-      ru: {
-        lineheight: "Межстрочный интервал",
-        lineheights: {
-          .9: "Маленький",
-          normal: "Обычный",
-          1.5: "Большой",
-          "2.0": "Очень большой"
-        }
-      },
-      sl: {
-        lineheight: "Višina vrstice",
-        lineheights: {
-          .9: "Majhna",
-          normal: "Navadna",
-          1.5: "Velika",
-          "2.0": "Ekstra velika"
-        }
-      },
-      tr: {
-        lineheight: "Satır yüksekliği",
-        lineheights: {
-          .9: "Küçük",
-          normal: "Normal",
-          1.5: "Büyük",
-          "2.0": "Çok Büyük"
-        }
-      },
-      zh_tw: {
-        lineheight: "文字間距",
-        lineheights: {
-          .9: "小",
-          normal: "正常",
-          1.5: "大",
-          "2.0": "特大"
-        }
-      }
-    }
-  });
-  var i = {
-    sizeList: ["0.9", "normal", "1.5", "2.0"]
-  };
-  function n(i) {
-    var n = [];
-    return e.each(i.o.plugins.lineheight.sizeList, function (t, l) {
-      i.addBtnDef("lineheight_" + l, {
-        text: i.lang.lineheights[l] || l,
-        hasIcon: !1,
-        fn: function fn() {
-          if (i.saveRange(), "" !== i.getRangeText().replace(/\s/g, "")) try {
-            var n = function () {
-              var e,
-                i = null;
-              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (i = e.getRangeAt(0).commonAncestorContainer).nodeType && (i = i.parentNode) : (e = document.selection) && "Control" !== e.type && (i = e.createRange().parentElement());
-              return i;
-            }();
-            e(n).css("lineHeight", l);
-          } catch (e) {}
-        }
-      }), n.push("lineheight_" + l);
-    }), n;
-  }
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      lineheight: {
-        init: function init(t) {
-          t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
-            dropdown: n(t)
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/*/* ===========================================================
  * trumbowyg.insertaudio.js v1.0
  * InsertAudio plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -3944,6 +3563,387 @@
               l.onclick = t;
             });
           }), l.addBtnDef("mathml", r);
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        lineheight: 'Line height',
+        lineheights: {
+          '0.9': 'Small',
+          'normal': 'Regular',
+          '1.5': 'Large',
+          '2.0': 'Extra large'
+        }
+      },
+      az: {
+        lineheight: 'Sətir yüksəkliyi',
+        lineheights: {
+          '0.9': 'Kiçik',
+          'normal': 'Normal',
+          '1.5': 'Böyük',
+          '2.0': 'Daha böyük'
+        }
+      },
+      by: {
+        lineheight: 'Міжрадковы інтэрвал',
+        lineheights: {
+          '0.9': 'Маленькі',
+          'normal': 'Звычайны',
+          '1.5': 'Вялікі',
+          '2.0': 'Вельмі вялікі'
+        }
+      },
+      da: {
+        lineheight: 'Linjehøjde',
+        lineheights: {
+          '0.9': 'Lille',
+          'normal': 'Normal',
+          '1.5': 'Stor',
+          '2.0': 'Ekstra stor'
+        }
+      },
+      et: {
+        lineheight: 'Reavahe',
+        lineheights: {
+          '0.9': 'Väike',
+          'normal': 'Tavaline',
+          '1.5': 'Suur',
+          '2.0': 'Väga suur'
+        }
+      },
+      fr: {
+        lineheight: 'Hauteur de ligne',
+        lineheights: {
+          '0.9': 'Petite',
+          'normal': 'Normale',
+          '1.5': 'Grande',
+          '2.0': 'Très grande'
+        }
+      },
+      hu: {
+        lineheight: 'Line height',
+        lineheights: {
+          '0.9': 'Small',
+          'normal': 'Regular',
+          '1.5': 'Large',
+          '2.0': 'Extra large'
+        }
+      },
+      it: {
+        lineheight: 'Altezza linea',
+        lineheights: {
+          '0.9': 'Bassa',
+          'normal': 'Normale',
+          '1.5': 'Alta',
+          '2.0': 'Molto alta'
+        }
+      },
+      ko: {
+        lineheight: '줄 간격',
+        lineheights: {
+          '0.9': '좁게',
+          'normal': '보통',
+          '1.5': '넓게',
+          '2.0': '아주 넓게'
+        }
+      },
+      nl: {
+        lineheight: 'Regelhoogte',
+        lineheights: {
+          '0.9': 'Klein',
+          'normal': 'Normaal',
+          '1.5': 'Groot',
+          '2.0': 'Extra groot'
+        }
+      },
+      pt_br: {
+        lineheight: 'Altura de linha',
+        lineheights: {
+          '0.9': 'Pequena',
+          'normal': 'Regular',
+          '1.5': 'Grande',
+          '2.0': 'Extra grande'
+        }
+      },
+      ru: {
+        lineheight: 'Межстрочный интервал',
+        lineheights: {
+          '0.9': 'Маленький',
+          'normal': 'Обычный',
+          '1.5': 'Большой',
+          '2.0': 'Очень большой'
+        }
+      },
+      sl: {
+        lineheight: 'Višina vrstice',
+        lineheights: {
+          '0.9': 'Majhna',
+          'normal': 'Navadna',
+          '1.5': 'Velika',
+          '2.0': 'Ekstra velika'
+        }
+      },
+      tr: {
+        lineheight: 'Satır yüksekliği',
+        lineheights: {
+          '0.9': 'Küçük',
+          'normal': 'Normal',
+          '1.5': 'Büyük',
+          '2.0': 'Çok Büyük'
+        }
+      },
+      zh_tw: {
+        lineheight: '文字間距',
+        lineheights: {
+          '0.9': '小',
+          'normal': '正常',
+          '1.5': '大',
+          '2.0': '特大'
+        }
+      }
+    }
+  });
+  // jshint camelcase:true
+
+  var defaultOptions = {
+    sizeList: ['0.9', 'normal', '1.5', '2.0']
+  };
+
+  // Add dropdown with font sizes
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
+          trumbowyg.addBtnDef('lineheight', {
+            dropdown: buildDropdown(trumbowyg)
+          });
+        }
+      }
+    }
+  });
+
+  // Build the dropdown
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
+      trumbowyg.addBtnDef('lineheight_' + size, {
+        text: trumbowyg.lang.lineheights[size] || size,
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.saveRange();
+          var text = trumbowyg.getRangeText();
+          if (text.replace(/\s/g, '') !== '') {
+            try {
+              var parent = getSelectionParentElement();
+              $(parent).css('lineHeight', size);
+            } catch (e) {}
+          }
+        }
+      });
+      dropdown.push('lineheight_' + size);
+    });
+    return dropdown;
+  }
+
+  // Get the selection's parent
+  function getSelectionParentElement() {
+    var parentEl = null,
+      selection;
+    if (window.getSelection) {
+      selection = window.getSelection();
+      if (selection.rangeCount) {
+        parentEl = selection.getRangeAt(0).commonAncestorContainer;
+        if (parentEl.nodeType !== 1) {
+          parentEl = parentEl.parentNode;
+        }
+      }
+    } else if ((selection = document.selection) && selection.type !== 'Control') {
+      parentEl = selection.createRange().parentElement();
+    }
+    return parentEl;
+  }
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
+      },
+      az: {
+        lineheight: "Sətir yüksəkliyi",
+        lineheights: {
+          .9: "Kiçik",
+          normal: "Normal",
+          1.5: "Böyük",
+          "2.0": "Daha böyük"
+        }
+      },
+      by: {
+        lineheight: "Міжрадковы інтэрвал",
+        lineheights: {
+          .9: "Маленькі",
+          normal: "Звычайны",
+          1.5: "Вялікі",
+          "2.0": "Вельмі вялікі"
+        }
+      },
+      da: {
+        lineheight: "Linjehøjde",
+        lineheights: {
+          .9: "Lille",
+          normal: "Normal",
+          1.5: "Stor",
+          "2.0": "Ekstra stor"
+        }
+      },
+      et: {
+        lineheight: "Reavahe",
+        lineheights: {
+          .9: "Väike",
+          normal: "Tavaline",
+          1.5: "Suur",
+          "2.0": "Väga suur"
+        }
+      },
+      fr: {
+        lineheight: "Hauteur de ligne",
+        lineheights: {
+          .9: "Petite",
+          normal: "Normale",
+          1.5: "Grande",
+          "2.0": "Très grande"
+        }
+      },
+      hu: {
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
+      },
+      it: {
+        lineheight: "Altezza linea",
+        lineheights: {
+          .9: "Bassa",
+          normal: "Normale",
+          1.5: "Alta",
+          "2.0": "Molto alta"
+        }
+      },
+      ko: {
+        lineheight: "줄 간격",
+        lineheights: {
+          .9: "좁게",
+          normal: "보통",
+          1.5: "넓게",
+          "2.0": "아주 넓게"
+        }
+      },
+      nl: {
+        lineheight: "Regelhoogte",
+        lineheights: {
+          .9: "Klein",
+          normal: "Normaal",
+          1.5: "Groot",
+          "2.0": "Extra groot"
+        }
+      },
+      pt_br: {
+        lineheight: "Altura de linha",
+        lineheights: {
+          .9: "Pequena",
+          normal: "Regular",
+          1.5: "Grande",
+          "2.0": "Extra grande"
+        }
+      },
+      ru: {
+        lineheight: "Межстрочный интервал",
+        lineheights: {
+          .9: "Маленький",
+          normal: "Обычный",
+          1.5: "Большой",
+          "2.0": "Очень большой"
+        }
+      },
+      sl: {
+        lineheight: "Višina vrstice",
+        lineheights: {
+          .9: "Majhna",
+          normal: "Navadna",
+          1.5: "Velika",
+          "2.0": "Ekstra velika"
+        }
+      },
+      tr: {
+        lineheight: "Satır yüksekliği",
+        lineheights: {
+          .9: "Küçük",
+          normal: "Normal",
+          1.5: "Büyük",
+          "2.0": "Çok Büyük"
+        }
+      },
+      zh_tw: {
+        lineheight: "文字間距",
+        lineheights: {
+          .9: "小",
+          normal: "正常",
+          1.5: "大",
+          "2.0": "特大"
+        }
+      }
+    }
+  });
+  var i = {
+    sizeList: ["0.9", "normal", "1.5", "2.0"]
+  };
+  function n(i) {
+    var n = [];
+    return e.each(i.o.plugins.lineheight.sizeList, function (t, l) {
+      i.addBtnDef("lineheight_" + l, {
+        text: i.lang.lineheights[l] || l,
+        hasIcon: !1,
+        fn: function fn() {
+          if (i.saveRange(), "" !== i.getRangeText().replace(/\s/g, "")) try {
+            var n = function () {
+              var e,
+                i = null;
+              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (i = e.getRangeAt(0).commonAncestorContainer).nodeType && (i = i.parentNode) : (e = document.selection) && "Control" !== e.type && (i = e.createRange().parentElement());
+              return i;
+            }();
+            e(n).css("lineHeight", l);
+          } catch (e) {}
+        }
+      }), n.push("lineheight_" + l);
+    }), n;
+  }
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(t) {
+          t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
+            dropdown: n(t)
+          });
         }
       }
     }
@@ -4874,6 +4874,172 @@
     }
   });
 }(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
 ;
 (function ($) {
   'use strict';
@@ -5258,167 +5424,179 @@
     }
   });
 }(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-
 (function ($) {
   'use strict';
 
-  var defaultOptions = {
-    symbolList: [
-    // currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
-    // legal signs
-    '00A9', '00AE', '2122', null,
-    // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
-    //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
+  // Adds the language variables
   $.extend(true, $.trumbowyg, {
     langs: {
+      // jshint camelcase:false
       en: {
-        specialChars: 'Special characters'
+        template: 'Template'
       },
       az: {
-        specialChars: 'Xüsusi simvollar'
+        template: 'Şablon'
       },
       by: {
-        specialChars: 'Спецыяльныя сімвалы'
+        template: 'Шаблон'
+      },
+      da: {
+        template: 'Skabelon'
+      },
+      de: {
+        template: 'Vorlage'
       },
       et: {
-        specialChars: 'Erimärgid'
+        template: 'Mall'
       },
       fr: {
-        specialChars: 'Caractères spéciaux'
+        template: 'Patron'
       },
       hu: {
-        specialChars: 'Speciális karakterek'
+        template: 'Sablon'
+      },
+      ja: {
+        template: 'テンプレート'
       },
       ko: {
-        specialChars: '특수문자'
+        template: '서식'
+      },
+      nl: {
+        template: 'Sjabloon'
+      },
+      pt_br: {
+        template: 'Modelo'
       },
       ru: {
-        specialChars: 'Специальные символы'
+        template: 'Шаблон'
       },
       sl: {
-        specialChars: 'Posebni znaki'
+        template: 'Predloga'
       },
       tr: {
-        specialChars: 'Özel karakterler'
+        template: 'Şablon'
+      },
+      zh_tw: {
+        template: '模板'
       }
-    },
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
     plugins: {
-      specialchars: {
+      template: {
+        shouldInit: function shouldInit(trumbowyg) {
+          return trumbowyg.o.plugins.hasOwnProperty('templates');
+        },
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+          trumbowyg.addBtnDef('template', {
+            dropdown: templateSelector(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.template
+          });
         }
       }
     }
   });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-      var btn = symbol.replace(/:/g, ''),
-        defaultSymbolBtnName = 'symbol-' + btn,
-        defaultSymbolBtnDef = {
-          text: symbol,
-          hasIcon: false,
-          fn: function fn() {
-            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-            trumbowyg.execCmd('insertText', encodedSymbol);
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
+
+  // Creates the template-selector dropdown.
+  function templateSelector(trumbowyg) {
+    var available = trumbowyg.o.plugins.templates;
+    var templates = [];
+    $.each(available, function (index, template) {
+      trumbowyg.addBtnDef('template_' + index, {
+        fn: function fn() {
+          trumbowyg.html(template.html);
+        },
+        hasIcon: false,
+        title: template.name
+      });
+      templates.push('template_' + index);
     });
-    return dropdown;
+    return templates;
   }
 })(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-!function (a) {
+!function (t) {
   "use strict";
 
-  var s = {
-    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
-  };
-  function r(s) {
-    var r = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
-      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
-        l = {
-          text: e,
-          hasIcon: !1,
-          fn: function fn() {
-            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
-            return s.execCmd("insertText", a), !0;
-          }
-        };
-      s.addBtnDef(i, l), r.push(i);
-    }), r;
+  function e(e) {
+    var a = e.o.plugins.templates,
+      l = [];
+    return t.each(a, function (t, a) {
+      e.addBtnDef("template_" + t, {
+        fn: function fn() {
+          e.html(a.html);
+        },
+        hasIcon: !1,
+        title: a.name
+      }), l.push("template_" + t);
+    }), l;
   }
-  a.extend(!0, a.trumbowyg, {
+  t.extend(!0, t.trumbowyg, {
     langs: {
       en: {
-        specialChars: "Special characters"
+        template: "Template"
       },
       az: {
-        specialChars: "Xüsusi simvollar"
+        template: "Şablon"
       },
       by: {
-        specialChars: "Спецыяльныя сімвалы"
+        template: "Шаблон"
+      },
+      da: {
+        template: "Skabelon"
+      },
+      de: {
+        template: "Vorlage"
       },
       et: {
-        specialChars: "Erimärgid"
+        template: "Mall"
       },
       fr: {
-        specialChars: "Caractères spéciaux"
+        template: "Patron"
       },
       hu: {
-        specialChars: "Speciális karakterek"
+        template: "Sablon"
+      },
+      ja: {
+        template: "テンプレート"
       },
       ko: {
-        specialChars: "특수문자"
+        template: "서식"
+      },
+      nl: {
+        template: "Sjabloon"
+      },
+      pt_br: {
+        template: "Modelo"
       },
       ru: {
-        specialChars: "Специальные символы"
+        template: "Шаблон"
       },
       sl: {
-        specialChars: "Posebni znaki"
+        template: "Predloga"
       },
       tr: {
-        specialChars: "Özel karakterler"
+        template: "Şablon"
+      },
+      zh_tw: {
+        template: "模板"
       }
-    },
+    }
+  }), t.extend(!0, t.trumbowyg, {
     plugins: {
-      specialchars: {
-        init: function init(a) {
-          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var e = {
-            dropdown: r(a)
-          };
-          a.addBtnDef("specialChars", e);
+      template: {
+        shouldInit: function shouldInit(t) {
+          return t.o.plugins.hasOwnProperty("templates");
+        },
+        init: function init(t) {
+          t.addBtnDef("template", {
+            dropdown: e(t),
+            hasIcon: !1,
+            text: t.lang.template
+          });
         }
       }
     }
@@ -7750,184 +7928,6 @@
             t.o.plugins.table.colorList.indexOf(s) >= 0 ? a.push("tableCellBackgroundColor" + s) : a.push("freeTableCellBackgroundColor");
           }
           return a;
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  // Adds the language variables
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        template: 'Template'
-      },
-      az: {
-        template: 'Şablon'
-      },
-      by: {
-        template: 'Шаблон'
-      },
-      da: {
-        template: 'Skabelon'
-      },
-      de: {
-        template: 'Vorlage'
-      },
-      et: {
-        template: 'Mall'
-      },
-      fr: {
-        template: 'Patron'
-      },
-      hu: {
-        template: 'Sablon'
-      },
-      ja: {
-        template: 'テンプレート'
-      },
-      ko: {
-        template: '서식'
-      },
-      nl: {
-        template: 'Sjabloon'
-      },
-      pt_br: {
-        template: 'Modelo'
-      },
-      ru: {
-        template: 'Шаблон'
-      },
-      sl: {
-        template: 'Predloga'
-      },
-      tr: {
-        template: 'Şablon'
-      },
-      zh_tw: {
-        template: '模板'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(trumbowyg) {
-          return trumbowyg.o.plugins.hasOwnProperty('templates');
-        },
-        init: function init(trumbowyg) {
-          trumbowyg.addBtnDef('template', {
-            dropdown: templateSelector(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.template
-          });
-        }
-      }
-    }
-  });
-
-  // Creates the template-selector dropdown.
-  function templateSelector(trumbowyg) {
-    var available = trumbowyg.o.plugins.templates;
-    var templates = [];
-    $.each(available, function (index, template) {
-      trumbowyg.addBtnDef('template_' + index, {
-        fn: function fn() {
-          trumbowyg.html(template.html);
-        },
-        hasIcon: false,
-        title: template.name
-      });
-      templates.push('template_' + index);
-    });
-    return templates;
-  }
-})(jQuery);
-!function (t) {
-  "use strict";
-
-  function e(e) {
-    var a = e.o.plugins.templates,
-      l = [];
-    return t.each(a, function (t, a) {
-      e.addBtnDef("template_" + t, {
-        fn: function fn() {
-          e.html(a.html);
-        },
-        hasIcon: !1,
-        title: a.name
-      }), l.push("template_" + t);
-    }), l;
-  }
-  t.extend(!0, t.trumbowyg, {
-    langs: {
-      en: {
-        template: "Template"
-      },
-      az: {
-        template: "Şablon"
-      },
-      by: {
-        template: "Шаблон"
-      },
-      da: {
-        template: "Skabelon"
-      },
-      de: {
-        template: "Vorlage"
-      },
-      et: {
-        template: "Mall"
-      },
-      fr: {
-        template: "Patron"
-      },
-      hu: {
-        template: "Sablon"
-      },
-      ja: {
-        template: "テンプレート"
-      },
-      ko: {
-        template: "서식"
-      },
-      nl: {
-        template: "Sjabloon"
-      },
-      pt_br: {
-        template: "Modelo"
-      },
-      ru: {
-        template: "Шаблон"
-      },
-      sl: {
-        template: "Predloga"
-      },
-      tr: {
-        template: "Şablon"
-      },
-      zh_tw: {
-        template: "模板"
-      }
-    }
-  }), t.extend(!0, t.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(t) {
-          return t.o.plugins.hasOwnProperty("templates");
-        },
-        init: function init(t) {
-          t.addBtnDef("template", {
-            dropdown: e(t),
-            hasIcon: !1,
-            text: t.lang.template
-          });
         }
       }
     }

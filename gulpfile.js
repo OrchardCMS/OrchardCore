@@ -108,15 +108,17 @@ function getAssetGroups() {
             assetGroups.push(assetGroup);
         });
     });
+
     return assetGroups;
 }
 
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.manifestPath = assetManifestPath;
     assetGroup.basePath = path.dirname(assetManifestPath);
-    assetGroup.inputPaths = assetGroup.inputs.map(function (inputPath) {
+    const inputPaths = assetGroup.inputs.map(function (inputPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
+    assetGroup.inputPaths = inputPaths.sort();
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
