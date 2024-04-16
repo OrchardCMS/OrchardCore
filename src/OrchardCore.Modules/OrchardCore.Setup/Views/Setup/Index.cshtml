@@ -247,8 +247,8 @@
         </div>
     </div>
 </form>
-<script src="~/OrchardCore.Setup/Scripts/setup.min.js"></script>
-<script>
+<script asp-src="~/OrchardCore.Setup/Scripts/setup.min.js" debug-src="~/OrchardCore.Setup/Scripts/setup.js" depends-on="jquery"></script>
+<script depends-on="jquery">
     $(function () {
         $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
