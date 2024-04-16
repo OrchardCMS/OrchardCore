@@ -199,6 +199,8 @@ namespace OrchardCore.Media
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
+            // TODO: Move middleware into SecureMediaStartup if it is possible to insert it between the users and media
+            // module. See issue https://github.com/OrchardCMS/OrchardCore/issues/15716.
             // Secure media file middleware, but only if the feature is enabled.
             if (serviceProvider.IsSecureMediaEnabled())
             {
