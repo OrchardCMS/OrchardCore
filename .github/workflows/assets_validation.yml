@@ -32,9 +32,9 @@ jobs:
     - name: Check if git has changes
       shell: pwsh
       run: |
-        $changes = git status --porcelain
+        $changes = git status --porcelain | wc -l
 
-        if ($changes)
+        if ($changes != 0)
         {
             Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
             Write-Output 'The following files changed:'
