@@ -47,9 +47,7 @@
     "postcss-rtl": "^2.0.0",
     "rtlcss": "4.1.0",
     "source-map": "^0.7.4",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {
+    "typescript": "^5.2.2",
     "gulp-sort": "^2.0.0"
   }
 }
