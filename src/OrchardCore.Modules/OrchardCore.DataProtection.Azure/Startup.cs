@@ -26,8 +26,9 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
+        var azureClientName = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:AzureClientName");
 
-        if (!string.IsNullOrWhiteSpace(connectionString))
+        if (!string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(azureClientName))
         {
             services
                 .Configure<BlobOptions, BlobOptionsSetup>()
