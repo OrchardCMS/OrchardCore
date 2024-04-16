@@ -36,12 +36,12 @@ jobs:
 
         if ([string]::IsNullOrEmpty($changes))
         {
+            Write-Host "No uncommitted changes found. Repository is clean."
+        } 
+        else 
+        {
             Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
             Write-Output 'The following files changed:'
             Write-Output $changes
             exit -1
-        }
-        else
-        {
-            Write-Host "No uncommitted changes found. Repository is clean."
         }
