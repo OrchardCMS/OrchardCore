@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
-    <PackageReference Include="MimeKit" />
+    <PackageReference Include="MimeKit" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

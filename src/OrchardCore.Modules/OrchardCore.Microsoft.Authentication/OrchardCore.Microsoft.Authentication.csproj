@@ -28,7 +28,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
-      <PackageReference Include="Microsoft.Identity.Web" />
+      <PackageReference Include="Microsoft.Identity.Web" Version="2.17.5" />
     </ItemGroup>
 
   </Project>

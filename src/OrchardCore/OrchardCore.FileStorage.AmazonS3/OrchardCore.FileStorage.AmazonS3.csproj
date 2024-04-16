@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" />
-    <PackageReference Include="AWSSDK.SecurityToken" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.307.16" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.76" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />
   </ItemGroup>
 
   <ItemGroup>
