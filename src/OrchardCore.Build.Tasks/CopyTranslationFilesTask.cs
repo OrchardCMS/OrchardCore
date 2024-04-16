@@ -6,25 +6,25 @@ namespace OrchardCore.Build.Tasks;
 
 public class CopyTranslationFilesTask : MSBuildTask
 {
-    public string SourceFile { get; set; }
+    public string SourceFilePath { get; set; }
 
     [Required]
-    public string DestinationFolder { get; set; }
+    public string DestinationFolderPath { get; set; }
 
     public override bool Execute()
     {
-        if (string.IsNullOrEmpty(SourceFile))
+        if (string.IsNullOrEmpty(SourceFilePath))
         {
             return true;
         }
 
-        if (!Directory.Exists(DestinationFolder))
+        if (!Directory.Exists(DestinationFolderPath))
         {
-            Directory.CreateDirectory(DestinationFolder);
+            Directory.CreateDirectory(DestinationFolderPath);
         }
 
-        var fileInfo = new FileInfo(SourceFile);
-        var destinationFilePath = Path.Combine(DestinationFolder, fileInfo.Name);
+        var fileInfo = new FileInfo(SourceFilePath);
+        var destinationFilePath = Path.Combine(DestinationFolderPath, fileInfo.Name);
 
         if (File.Exists(destinationFilePath))
         {

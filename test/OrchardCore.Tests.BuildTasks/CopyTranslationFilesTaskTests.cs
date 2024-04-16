@@ -24,8 +24,8 @@ public class CopyTranslationFilesTaskTests
         var task = new CopyTranslationFilesTask
         {
             BuildEngine = _buildEngine.Object,
-            SourceFile = file,
-            DestinationFolder = LocalizationFolder,
+            SourceFilePath = file,
+            DestinationFolderPath = LocalizationFolder,
         };
 
         TryCreateLocalizationFolder();
