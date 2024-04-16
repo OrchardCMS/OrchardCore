@@ -260,8 +260,9 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         target: "es5",
     };
 
-    console.log(assetGroup.inputPaths);
+    // console.log(assetGroup.inputPaths);
     return gulp.src(assetGroup.inputPaths)
+        .pipe(sort())
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
                 newer(assetGroup.outputPath),
@@ -305,6 +306,8 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
 
 function buildCopyPipeline(assetGroup, doRebuild) {
     var stream = gulp.src(assetGroup.inputPaths);
+
+    stream = stream.pipe(sort());
 
     if (!doRebuild) {
         stream = stream.pipe(newer(assetGroup.outputDir))

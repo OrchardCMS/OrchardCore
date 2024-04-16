@@ -2905,6 +2905,380 @@
     }
   });
 }(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        indent: 'Indent',
+        outdent: 'Outdent'
+      },
+      az: {
+        indent: 'Girinti',
+        outdent: 'Çıxıntı'
+      },
+      by: {
+        indent: 'Водступ',
+        outdent: 'Выступ'
+      },
+      et: {
+        indent: 'Taande suurendamine',
+        outdent: 'Taande vähendamine'
+      },
+      fr: {
+        indent: 'Augmenter le retrait',
+        outdent: 'Diminuer le retrait'
+      },
+      pt_br: {
+        indent: 'Aumentar Recuo',
+        outdent: 'Diminuir Recuo'
+      },
+      ru: {
+        indent: 'Отступ',
+        outdent: 'Выступ'
+      },
+      sl: {
+        indent: 'Povečaj zamik',
+        outdent: 'Zmanjšaj zamik'
+      },
+      tr: {
+        indent: 'Girinti',
+        outdent: 'Çıkıntı'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(trumbowyg) {
+          var indentBtnDef = {
+            fn: 'indent',
+            title: trumbowyg.lang.indent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
+            },
+            ico: 'indent'
+          };
+          var outdentBtnDef = {
+            fn: 'outdent',
+            title: trumbowyg.lang.outdent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
+            },
+            ico: 'outdent'
+          };
+          trumbowyg.addBtnDef('indent', indentBtnDef);
+          trumbowyg.addBtnDef('outdent', outdentBtnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+!function (n) {
+  "use strict";
+
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        indent: "Indent",
+        outdent: "Outdent"
+      },
+      az: {
+        indent: "Girinti",
+        outdent: "Çıxıntı"
+      },
+      by: {
+        indent: "Водступ",
+        outdent: "Выступ"
+      },
+      et: {
+        indent: "Taande suurendamine",
+        outdent: "Taande vähendamine"
+      },
+      fr: {
+        indent: "Augmenter le retrait",
+        outdent: "Diminuer le retrait"
+      },
+      pt_br: {
+        indent: "Aumentar Recuo",
+        outdent: "Diminuir Recuo"
+      },
+      ru: {
+        indent: "Отступ",
+        outdent: "Выступ"
+      },
+      sl: {
+        indent: "Povečaj zamik",
+        outdent: "Zmanjšaj zamik"
+      },
+      tr: {
+        indent: "Girinti",
+        outdent: "Çıkıntı"
+      }
+    }
+  }), n.extend(!0, n.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(n) {
+          var t = {
+              fn: "indent",
+              title: n.lang.indent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+              },
+              ico: "indent"
+            },
+            e = {
+              fn: "outdent",
+              title: n.lang.outdent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
+              },
+              ico: "outdent"
+            };
+          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      az: {
+        insertAudio: 'Səs yerləşdir'
+      },
+      by: {
+        insertAudio: 'Уставіць аўдыё'
+      },
+      ca: {
+        insertAudio: 'Inserir Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
+      },
+      et: {
+        insertAudio: 'Lisa helifail'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      hu: {
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      sl: {
+        insertAudio: 'Vstavi zvočno datoteko'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+                if (v.muted) {
+                  html += ' muted';
+                }
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+!function (e) {
+  "use strict";
+
+  var i = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(r) {
+          var t = {
+            fn: function fn() {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
+                var t = "<audio controls";
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
+              });
+            }
+          };
+          r.addBtnDef("insertAudio", t);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -3281,380 +3655,6 @@
           t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
             dropdown: n(t)
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        indent: 'Indent',
-        outdent: 'Outdent'
-      },
-      az: {
-        indent: 'Girinti',
-        outdent: 'Çıxıntı'
-      },
-      by: {
-        indent: 'Водступ',
-        outdent: 'Выступ'
-      },
-      et: {
-        indent: 'Taande suurendamine',
-        outdent: 'Taande vähendamine'
-      },
-      fr: {
-        indent: 'Augmenter le retrait',
-        outdent: 'Diminuer le retrait'
-      },
-      pt_br: {
-        indent: 'Aumentar Recuo',
-        outdent: 'Diminuir Recuo'
-      },
-      ru: {
-        indent: 'Отступ',
-        outdent: 'Выступ'
-      },
-      sl: {
-        indent: 'Povečaj zamik',
-        outdent: 'Zmanjšaj zamik'
-      },
-      tr: {
-        indent: 'Girinti',
-        outdent: 'Çıkıntı'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(trumbowyg) {
-          var indentBtnDef = {
-            fn: 'indent',
-            title: trumbowyg.lang.indent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
-            },
-            ico: 'indent'
-          };
-          var outdentBtnDef = {
-            fn: 'outdent',
-            title: trumbowyg.lang.outdent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
-            },
-            ico: 'outdent'
-          };
-          trumbowyg.addBtnDef('indent', indentBtnDef);
-          trumbowyg.addBtnDef('outdent', outdentBtnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-!function (n) {
-  "use strict";
-
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        indent: "Indent",
-        outdent: "Outdent"
-      },
-      az: {
-        indent: "Girinti",
-        outdent: "Çıxıntı"
-      },
-      by: {
-        indent: "Водступ",
-        outdent: "Выступ"
-      },
-      et: {
-        indent: "Taande suurendamine",
-        outdent: "Taande vähendamine"
-      },
-      fr: {
-        indent: "Augmenter le retrait",
-        outdent: "Diminuer le retrait"
-      },
-      pt_br: {
-        indent: "Aumentar Recuo",
-        outdent: "Diminuir Recuo"
-      },
-      ru: {
-        indent: "Отступ",
-        outdent: "Выступ"
-      },
-      sl: {
-        indent: "Povečaj zamik",
-        outdent: "Zmanjšaj zamik"
-      },
-      tr: {
-        indent: "Girinti",
-        outdent: "Çıkıntı"
-      }
-    }
-  }), n.extend(!0, n.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(n) {
-          var t = {
-              fn: "indent",
-              title: n.lang.indent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
-              },
-              ico: "indent"
-            },
-            e = {
-              fn: "outdent",
-              title: n.lang.outdent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
-              },
-              ico: "outdent"
-            };
-          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
-        }
-      }
-    }
-  });
-}(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-
-(function ($) {
-  'use strict';
-
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        insertAudio: 'Insert Audio'
-      },
-      az: {
-        insertAudio: 'Səs yerləşdir'
-      },
-      by: {
-        insertAudio: 'Уставіць аўдыё'
-      },
-      ca: {
-        insertAudio: 'Inserir Audio'
-      },
-      da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      es: {
-        insertAudio: 'Insertar Audio'
-      },
-      et: {
-        insertAudio: 'Lisa helifail'
-      },
-      fr: {
-        insertAudio: 'Insérer un son'
-      },
-      hu: {
-        insertAudio: 'Audio beszúrás'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
-      },
-      ko: {
-        insertAudio: '소리 넣기'
-      },
-      pt_br: {
-        insertAudio: 'Inserir áudio'
-      },
-      ru: {
-        insertAudio: 'Вставить аудио'
-      },
-      sl: {
-        insertAudio: 'Vstavi zvočno datoteko'
-      },
-      tr: {
-        insertAudio: 'Ses Ekle'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      insertAudio: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-                if (v.muted) {
-                  html += ' muted';
-                }
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
-          };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-!function (e) {
-  "use strict";
-
-  var i = {
-    src: {
-      label: "URL",
-      required: !0
-    },
-    autoplay: {
-      label: "AutoPlay",
-      required: !1,
-      type: "checkbox"
-    },
-    muted: {
-      label: "Muted",
-      required: !1,
-      type: "checkbox"
-    },
-    preload: {
-      label: "preload options",
-      required: !1
-    }
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        insertAudio: "Insert Audio"
-      },
-      az: {
-        insertAudio: "Səs yerləşdir"
-      },
-      by: {
-        insertAudio: "Уставіць аўдыё"
-      },
-      ca: {
-        insertAudio: "Inserir Audio"
-      },
-      da: {
-        insertAudio: "Indsæt lyd"
-      },
-      es: {
-        insertAudio: "Insertar Audio"
-      },
-      et: {
-        insertAudio: "Lisa helifail"
-      },
-      fr: {
-        insertAudio: "Insérer un son"
-      },
-      hu: {
-        insertAudio: "Audio beszúrás"
-      },
-      ja: {
-        insertAudio: "音声の挿入"
-      },
-      ko: {
-        insertAudio: "소리 넣기"
-      },
-      pt_br: {
-        insertAudio: "Inserir áudio"
-      },
-      ru: {
-        insertAudio: "Вставить аудио"
-      },
-      sl: {
-        insertAudio: "Vstavi zvočno datoteko"
-      },
-      tr: {
-        insertAudio: "Ses Ekle"
-      }
-    },
-    plugins: {
-      insertAudio: {
-        init: function init(r) {
-          var t = {
-            fn: function fn() {
-              r.openModalInsert(r.lang.insertAudio, i, function (i) {
-                var t = "<audio controls";
-                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
-                var o = e(t += "></audio>")[0];
-                return r.range.deleteContents(), r.range.insertNode(o), !0;
-              });
-            }
-          };
-          r.addBtnDef("insertAudio", t);
         }
       }
     }
@@ -4164,152 +4164,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.pasteembed.js v1.0
- * Url paste to iframe with noembed. Plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Max Seelig
- *          Facebook : https://facebook.com/maxse
- *          Website : https://www.maxmade.nl/
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    enabled: true,
-    endpoints: ['https://noembed.com/embed?nowrap=on', 'https://api.maxmade.nl/url2iframe/embed']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteEmbed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
-          if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
-            return;
-          }
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                pastedData = clipboardData.getData('Text'),
-                endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
-                request = null;
-              if (pastedData.startsWith('http')) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-                var query = {
-                  url: pastedData.trim()
-                };
-                var content = '';
-                var index = 0;
-                if (request && request.transport) {
-                  request.transport.abort();
-                }
-                request = $.ajax({
-                  crossOrigin: true,
-                  url: endpoints[index],
-                  type: 'GET',
-                  data: query,
-                  cache: false,
-                  dataType: 'jsonp',
-                  success: function success(res) {
-                    if (res.html) {
-                      index = 0;
-                      content = res.html;
-                    } else {
-                      index += 1;
-                    }
-                  },
-                  error: function error() {
-                    index += 1;
-                  },
-                  complete: function complete() {
-                    if (content.length === 0 && index < endpoints.length - 1) {
-                      this.url = endpoints[index];
-                      this.data = query;
-                      $.ajax(this);
-                    }
-                    if (index === endpoints.length - 1) {
-                      content = $('<a>', {
-                        href: pastedData,
-                        text: pastedData
-                      }).prop('outerHTML');
-                    }
-                    if (content.length > 0) {
-                      index = 0;
-                      trumbowyg.execCmd('insertHTML', content);
-                    }
-                  }
-                });
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.pasteembed.js v1.0
- * Url paste to iframe with noembed. Plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Max Seelig
- *          Facebook : https://facebook.com/maxse
- *          Website : https://www.maxmade.nl/
- */
-!function (t) {
-  "use strict";
-
-  var e = {
-    enabled: !0,
-    endpoints: ["https://noembed.com/embed?nowrap=on", "https://api.maxmade.nl/url2iframe/embed"]
-  };
-  t.extend(!0, t.trumbowyg, {
-    plugins: {
-      pasteEmbed: {
-        init: function init(n) {
-          n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
-            try {
-              var a = (e.originalEvent || e).clipboardData.getData("Text"),
-                r = n.o.plugins.pasteEmbed.endpoints,
-                s = null;
-              if (a.startsWith("http")) {
-                e.stopPropagation(), e.preventDefault();
-                var i = {
-                    url: a.trim()
-                  },
-                  o = "",
-                  p = 0;
-                s && s.transport && s.transport.abort(), s = t.ajax({
-                  crossOrigin: !0,
-                  url: r[p],
-                  type: "GET",
-                  data: i,
-                  cache: !1,
-                  dataType: "jsonp",
-                  success: function success(t) {
-                    t.html ? (p = 0, o = t.html) : p += 1;
-                  },
-                  error: function error() {
-                    p += 1;
-                  },
-                  complete: function complete() {
-                    0 === o.length && p < r.length - 1 && (this.url = r[p], this.data = i, t.ajax(this)), p === r.length - 1 && (o = t("<a>", {
-                      href: a,
-                      text: a
-                    }).prop("outerHTML")), o.length > 0 && (p = 0, n.execCmd("insertHTML", o));
-                  }
-                });
-              }
-            } catch (t) {}
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.noembed.js v1.0
  * noEmbed plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4547,6 +4401,152 @@
             }
           };
           o.addBtnDef("noembed", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteembed.js v1.0
+ * Url paste to iframe with noembed. Plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Max Seelig
+ *          Facebook : https://facebook.com/maxse
+ *          Website : https://www.maxmade.nl/
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    enabled: true,
+    endpoints: ['https://noembed.com/embed?nowrap=on', 'https://api.maxmade.nl/url2iframe/embed']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteEmbed: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
+          if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
+            return;
+          }
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                pastedData = clipboardData.getData('Text'),
+                endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
+                request = null;
+              if (pastedData.startsWith('http')) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+                var query = {
+                  url: pastedData.trim()
+                };
+                var content = '';
+                var index = 0;
+                if (request && request.transport) {
+                  request.transport.abort();
+                }
+                request = $.ajax({
+                  crossOrigin: true,
+                  url: endpoints[index],
+                  type: 'GET',
+                  data: query,
+                  cache: false,
+                  dataType: 'jsonp',
+                  success: function success(res) {
+                    if (res.html) {
+                      index = 0;
+                      content = res.html;
+                    } else {
+                      index += 1;
+                    }
+                  },
+                  error: function error() {
+                    index += 1;
+                  },
+                  complete: function complete() {
+                    if (content.length === 0 && index < endpoints.length - 1) {
+                      this.url = endpoints[index];
+                      this.data = query;
+                      $.ajax(this);
+                    }
+                    if (index === endpoints.length - 1) {
+                      content = $('<a>', {
+                        href: pastedData,
+                        text: pastedData
+                      }).prop('outerHTML');
+                    }
+                    if (content.length > 0) {
+                      index = 0;
+                      trumbowyg.execCmd('insertHTML', content);
+                    }
+                  }
+                });
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteembed.js v1.0
+ * Url paste to iframe with noembed. Plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Max Seelig
+ *          Facebook : https://facebook.com/maxse
+ *          Website : https://www.maxmade.nl/
+ */
+!function (t) {
+  "use strict";
+
+  var e = {
+    enabled: !0,
+    endpoints: ["https://noembed.com/embed?nowrap=on", "https://api.maxmade.nl/url2iframe/embed"]
+  };
+  t.extend(!0, t.trumbowyg, {
+    plugins: {
+      pasteEmbed: {
+        init: function init(n) {
+          n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
+            try {
+              var a = (e.originalEvent || e).clipboardData.getData("Text"),
+                r = n.o.plugins.pasteEmbed.endpoints,
+                s = null;
+              if (a.startsWith("http")) {
+                e.stopPropagation(), e.preventDefault();
+                var i = {
+                    url: a.trim()
+                  },
+                  o = "",
+                  p = 0;
+                s && s.transport && s.transport.abort(), s = t.ajax({
+                  crossOrigin: !0,
+                  url: r[p],
+                  type: "GET",
+                  data: i,
+                  cache: !1,
+                  dataType: "jsonp",
+                  success: function success(t) {
+                    t.html ? (p = 0, o = t.html) : p += 1;
+                  },
+                  error: function error() {
+                    p += 1;
+                  },
+                  complete: function complete() {
+                    0 === o.length && p < r.length - 1 && (this.url = r[p], this.data = i, t.ajax(this)), p === r.length - 1 && (o = t("<a>", {
+                      href: a,
+                      text: a
+                    }).prop("outerHTML")), o.length > 0 && (p = 0, n.execCmd("insertHTML", o));
+                  }
+                });
+              }
+            } catch (t) {}
+          });
         }
       }
     }
