@@ -86,7 +86,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
         };
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
             if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
             {
@@ -96,7 +96,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             var fieldDescriptor = value;
             return new FieldType
             {
-                Name = field.Name,
+                Name = customFieldName ?? field.Name,
                 Description = fieldDescriptor.Description,
                 Type = fieldDescriptor.FieldType,
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
@@ -115,6 +115,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 }),
             };
         }
+
+        public bool HasField(ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
         private sealed class FieldTypeDescriptor
         {
