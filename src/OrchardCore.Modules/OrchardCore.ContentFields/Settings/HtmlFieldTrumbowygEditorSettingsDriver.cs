@@ -37,7 +37,6 @@ namespace OrchardCore.ContentFields.Settings
             if (partFieldDefinition.Editor() == "Trumbowyg")
             {
                 var model = new TrumbowygSettingsViewModel();
-                var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -53,8 +52,12 @@ namespace OrchardCore.ContentFields.Settings
                     var parser = new JavaScriptParser();
 
                     var optionsScript = parser.ParseScript("var config = " + options);
-                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-                    settings.Options = options;
+
+                    var settings = new HtmlFieldTrumbowygEditorSettings
+                    {
+                        InsertMediaWithUrl = model.InsertMediaWithUrl,
+                        Options = options
+                    };
 
                     context.Builder.WithSettings(settings);
                 }
