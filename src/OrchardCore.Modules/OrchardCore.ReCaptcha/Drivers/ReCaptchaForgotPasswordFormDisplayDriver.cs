@@ -25,6 +25,6 @@ public class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPass
             return null;
         }
 
-        return View("FormReCaptcha_Edit", model).Location("Content:after");
+        return View("FormReCaptcha", model).Location("Content:after");
     }
 }

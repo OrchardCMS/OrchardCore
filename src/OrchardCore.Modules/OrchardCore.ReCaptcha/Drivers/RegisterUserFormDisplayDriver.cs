@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -25,6 +25,6 @@ public class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
             return null;
         }
 
-        return View("FormReCaptcha_Edit", model).Location("Content:after");
+        return View("FormReCaptcha", model).Location("Content:after");
     }
 }

@@ -24,6 +24,6 @@ public class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
             return null;
         }
 
-        return View("LoginFormRegisterUser_Edit", model).Location("Links:10");
+        return View("LoginFormRegisterUser", model).Location("Links:10");
     }
 }

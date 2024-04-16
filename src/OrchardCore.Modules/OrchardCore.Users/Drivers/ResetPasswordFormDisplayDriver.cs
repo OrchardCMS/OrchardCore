@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -11,7 +11,7 @@ public class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
 {
     public override IDisplayResult Edit(ResetPasswordForm model)
     {
-        return Initialize<ResetPasswordViewModel>("ResetPasswordFormIdentifier_Edit", vm =>
+        return Initialize<ResetPasswordViewModel>("ResetPasswordFormIdentifier", vm =>
         {
             vm.Identifier = model.Identifier;
             vm.NewPassword = model.NewPassword;

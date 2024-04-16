@@ -31,7 +31,7 @@ public class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
 
     public override IDisplayResult Edit(RegisterUserForm model)
     {
-        return Initialize<RegisterViewModel>("RegisterUserFormIdentifier_Edit", vm =>
+        return Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
         {
             vm.UserName = model.UserName;
             vm.Email = model.Email;

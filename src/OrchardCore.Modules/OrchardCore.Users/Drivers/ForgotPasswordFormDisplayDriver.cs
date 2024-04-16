@@ -11,7 +11,7 @@ public class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
     public override IDisplayResult Edit(ForgotPasswordForm model)
     {
-        return Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier_Edit", vm =>
+        return Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier", vm =>
         {
             vm.Identifier = model.Identifier;
         }).Location("Content");

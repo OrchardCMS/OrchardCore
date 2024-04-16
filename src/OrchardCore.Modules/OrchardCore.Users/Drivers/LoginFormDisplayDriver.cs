@@ -11,7 +11,7 @@ public class LoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     public override IDisplayResult Edit(LoginForm model)
     {
-        return Initialize<LoginViewModel>("LoginFormCredentials_Edit", vm =>
+        return Initialize<LoginViewModel>("LoginFormCredentials", vm =>
         {
             vm.UserName = model.UserName;
             vm.RememberMe = model.RememberMe;

@@ -24,6 +24,6 @@ public class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
             return null;
         }
 
-        return View("LoginFormForgotPassword_Edit", model).Location("Links:5");
+        return View("LoginFormForgotPassword", model).Location("Links:5");
     }
 }
