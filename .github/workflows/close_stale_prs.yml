@@ -14,7 +14,8 @@ jobs:
         with:
           stale-pr-message: >
             It seems that this pull request didn't really move for quite a while. Is this something you'd like to 
-            revisit any time soon or should we close?
+            revisit any time soon or should we close? Pleaes comment if you'd like to pick it up and remove the 
+            "stale" label.
           stale-pr-label: stale
           # Not marking issues as stale.
           days-before-issue-stale: -1
