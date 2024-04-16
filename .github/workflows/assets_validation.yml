@@ -32,6 +32,7 @@ jobs:
     - name: Check if git has changes
       shell: pwsh
       run: |
+        git status
         $changes = git status --porcelain
 
         if ([string]::IsNullOrEmpty($changes))
