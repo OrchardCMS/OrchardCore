@@ -37,7 +37,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 ManageMediaFolder,
@@ -47,7 +47,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
                 ManageMedia,
@@ -56,12 +56,12 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions = _generalPermissions,
         },
     ];

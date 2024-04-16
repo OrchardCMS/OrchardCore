@@ -131,8 +131,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal) &&
+               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
                 return Task.FromResult(default(IDisplayResult));
             }
@@ -160,8 +160,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal) &&
+                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
                 return Task.FromResult(default(IDisplayResult));
             }
@@ -190,8 +190,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal) &&
+                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }

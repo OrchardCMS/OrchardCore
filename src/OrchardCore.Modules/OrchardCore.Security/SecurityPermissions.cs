@@ -20,7 +20,7 @@ public class SecurityPermissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
         },
     ];

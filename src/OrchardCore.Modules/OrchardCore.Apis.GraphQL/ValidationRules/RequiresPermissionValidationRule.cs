@@ -69,7 +69,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             }
         }
 
-        private async Task AuthorizeNodePermissionAsync(ASTNode node, IFieldType fieldType, ValidationContext validationContext, GraphQLUserContext userContext)
+        private async Task AuthorizeNodePermissionAsync(ASTNode node, FieldType fieldType, ValidationContext validationContext, GraphQLUserContext userContext)
         {
             var permissions = fieldType?.GetPermissions();
 

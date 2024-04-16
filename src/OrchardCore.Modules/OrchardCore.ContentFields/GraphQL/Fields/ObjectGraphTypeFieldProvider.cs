@@ -37,7 +37,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                         // Check if part has been collapsed by trying to get the parent part.
-                        var contentPart = context.Source.Get(typeof(ContentPart), namedPartTechnicalName);
+                        ContentElement contentPart = context.Source.Get<ContentPart>(field.PartDefinition.Name);
 
                         // Part is not collapsed, access field directly.
                         contentPart ??= context.Source;
