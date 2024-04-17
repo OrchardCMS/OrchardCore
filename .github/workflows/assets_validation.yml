@@ -10,9 +10,9 @@ on:
   pull_request:
     branches: [ main, release/** ]
 
-# concurrency:
-#   group: ${{ github.head_ref || github.run_id }}-assets_validation
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-assets_validation
+  cancel-in-progress: true
 
 jobs:
   test-npm-build:
