@@ -17,14 +17,14 @@ namespace OrchardCore.Contents.Sitemaps
 
         public override Task UnpublishedAsync(PublishContentContext context) => UpdateSitemapAsync(context);
 
-        private async Task UpdateSitemapAsync(ContentContextBase context)
+        private Task UpdateSitemapAsync(ContentContextBase context)
         {
             var updateContext = new SitemapUpdateContext
             {
                 UpdateObject = context.ContentItem,
             };
 
-            await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
+            return _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
         }
     }
 }
