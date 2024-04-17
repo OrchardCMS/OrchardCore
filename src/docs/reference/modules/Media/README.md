@@ -509,7 +509,11 @@ To set up indexing for Media do the following:
 
 The Secure Media feature enhances security and control over media files within the Media module. 
 
-When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders. New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders.
+
+New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. You can manage these among the other permissions with the [Roles module](../Roles/README.md).
+
+Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
 
 ### Handling Unauthorized Access
 
@@ -517,7 +521,7 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 ### Configurable Cache-Control for Secured Files
 
-The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. 
+The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
 ## Videos
 

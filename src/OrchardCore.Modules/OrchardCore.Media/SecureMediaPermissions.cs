@@ -55,8 +55,8 @@ namespace OrchardCore.Media
             return await _cache.GetOrCreateAsync(nameof(SecureMediaPermissions), async (entry) =>
             {
                 // Ensure to rebuild at least after some time, to detect directory changes from outside of
-                // the media module. The signal gets set if a directory is created or deleted in the media
-                // libary directly.
+                // the media module. The signal gets set if a directory is created or deleted in the Media
+                // Library directly.
                 entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5))
                      .AddExpirationToken(_signal.GetToken(nameof(SecureMediaPermissions)));
 
