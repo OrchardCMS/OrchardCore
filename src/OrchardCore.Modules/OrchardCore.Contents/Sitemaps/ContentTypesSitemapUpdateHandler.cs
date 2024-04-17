@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Locking.Distributed;
@@ -28,7 +27,7 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var timeout = TimeSpan.FromMilliseconds(20_000);
             (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
-            Debug.WriteLine($"Lock acquired: {DateTime.Now}");
+
             if (!locked)
             {
                 throw new TimeoutException($"Couldn't acquire a lock to update the sitemap within {timeout.Seconds} seconds.");
