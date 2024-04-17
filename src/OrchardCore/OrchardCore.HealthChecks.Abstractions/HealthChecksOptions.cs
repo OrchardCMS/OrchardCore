@@ -1,7 +1,7 @@
 namespace OrchardCore.HealthChecks;
 
 /// <summary>
-/// Represents a programmable health chekcs options.
+/// Represents options for health checks.
 /// </summary>
 public class HealthChecksOptions
 {
