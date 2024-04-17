@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Sitemaps.Handlers;
+using YesSql;
 
 namespace OrchardCore.Contents.Sitemaps
 {
@@ -36,6 +37,7 @@ namespace OrchardCore.Contents.Sitemaps
                 {
                     using (locker)
                     {
+                        await scope.ServiceProvider.GetRequiredService<ISession>().BeginTransactionAsync();
                         var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                         var sitemapUpdateHandler = scope.ServiceProvider.GetRequiredService<ISitemapUpdateHandler>();
 
