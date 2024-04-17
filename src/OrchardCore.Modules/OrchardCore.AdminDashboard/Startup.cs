@@ -15,6 +15,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard
@@ -41,7 +42,10 @@ namespace OrchardCore.AdminDashboard
                 .UseDisplayDriver<DashboardPartDisplayDriver>();
 
             services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
-
+            services.Configure<RecipeOptions>(options =>
+            {
+                options.Recipes.Add("dashboard-widgets-samples", "Recipes/dashboard-widgets-samples.recipe.json");
+            });
             services.AddDataMigration<Migrations>();
         }
 
