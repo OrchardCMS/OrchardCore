@@ -44,7 +44,7 @@ namespace OrchardCore.HealthChecks
                     {
                         [HealthStatus.Healthy] = StatusCodes.Status200OK,
                         [HealthStatus.Degraded] = StatusCodes.Status200OK,
-                        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
+                        [HealthStatus.Unhealthy] = StatusCodes.Status200OK
                     },
                     ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
                 });
