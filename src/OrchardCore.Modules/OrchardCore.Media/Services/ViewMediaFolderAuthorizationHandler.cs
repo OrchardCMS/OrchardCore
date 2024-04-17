@@ -69,6 +69,8 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
+            path = Uri.UnescapeDataString(path);
+
             path = _fileStore.NormalizePath(path);
 
             // Permissions are only set for the root and the first folder tier. Only for users and
