@@ -188,11 +188,6 @@ The following example processes all files with a `.js` extension in the `Assets`
 ]
 ```
 
-!!! warning
-    When using wildcards, the order in which files are processed can be nondeterministic due to Gulp's parallelization. This can e.g. cause the concatenated output file to change on a rebuild, without changing the input files. This is a [known behavior of Gulp](https://github.com/gulpjs/gulp/issues/687) but the recommended plugins to fix this are unmaintained.
-
-    If you run into this issue, manually declarate the input files in a static order instead.
-
 ## Separate output files for each input file
 
 In many cases you will want to process many input files in the exact same way but keep them in separate output files. You could do this by declaring a separate asset group for each pair of input/output files. However this can be extremely tedious and error prone to write, and even more so to maintain over time as you add or remove assets to your extention, especially if you have a large number of asset files.
