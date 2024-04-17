@@ -11,39 +11,33 @@ namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapUpdateHandler : ContentHandlerBase
     {
-        private readonly IDistributedLock _distributedLock;
-
-        public ContentTypesSitemapUpdateHandler(IDistributedLock distributedLock)
-        {
-            _distributedLock = distributedLock;
-        }
-
         public override Task PublishedAsync(PublishContentContext context) => UpdateSitemapDeferredAsync(context);
 
         public override Task UnpublishedAsync(PublishContentContext context) => UpdateSitemapDeferredAsync(context);
 
         // Doing the update in a deferred and synchronized way makes sure that two simultaneous content item updates
         // don't cause a ConcurrencyException due to the same sitemap document being updated.
-        private async Task UpdateSitemapDeferredAsync(ContentContextBase context)
+        private static Task UpdateSitemapDeferredAsync(ContentContextBase context)
         {
             var contentItemId = context.ContentItem.ContentItemId;
 
-            var timeout = TimeSpan.FromMilliseconds(20_000);
-            (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
-            if (!locked)
+            ShellScope.AddDeferredTask(async scope =>
             {
-                throw new TimeoutException($"Couldn't acquire a lock to update the sitemap within {timeout.Seconds} seconds.");
-            }
-            else
-            {
-                using (locker)
-                {
-                    ShellScope.AddDeferredTask(async scope =>
-                    {
-                        await using var subScope = await ShellScope.CreateChildScopeAsync();
+                var distributedLock = scope.ServiceProvider.GetRequiredService<IDistributedLock>();
 
-                        var contentManager = subScope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var sitemapUpdateHandler = subScope.ServiceProvider.GetRequiredService<ISitemapUpdateHandler>();
+                var timeout = TimeSpan.FromMilliseconds(20_000);
+                (var locker, var locked) = await distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
+
+                if (!locked)
+                {
+                    throw new TimeoutException($"Couldn't acquire a lock to update the sitemap within {timeout.Seconds} seconds.");
+                }
+                else
+                {
+                    using (locker)
+                    {
+                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                        var sitemapUpdateHandler = scope.ServiceProvider.GetRequiredService<ISitemapUpdateHandler>();
 
                         var updateContext = new SitemapUpdateContext
                         {
@@ -51,9 +45,11 @@ namespace OrchardCore.Contents.Sitemaps
                         };
 
                         await sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
-                    });
+                    }
                 }
-            }
+            });
+
+            return Task.CompletedTask;
         }
     }
 }
