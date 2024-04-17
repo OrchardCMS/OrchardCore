@@ -113,13 +113,15 @@ function getAssetGroups() {
 }
 
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
-    assetGroup.manifestPath = assetManifestPath;
-    assetGroup.basePath = path.dirname(assetManifestPath);
-    const inputPaths = assetGroup.inputs.map(function (inputPath) {
+    assetGroup.manifestPath = assetManifestPath.replace(/\\/g, '/');
+    assetGroup.basePath = path.dirname(assetGroup.manifestPath);
+    var inputPaths = assetGroup.inputs.map(function (inputPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
+
     // get all input paths and then sort them to ensure file concatenation is consistent.
-    assetGroup.inputPaths = glob.sync(inputPaths).sort();
+    assetGroup.inputPaths = glob.sync(inputPaths, {}).sort();
+
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
