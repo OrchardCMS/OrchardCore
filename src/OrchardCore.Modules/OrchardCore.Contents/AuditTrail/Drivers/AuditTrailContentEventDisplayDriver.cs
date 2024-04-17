@@ -110,7 +110,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             );
         }
 
-        private void BuildSummaryViewModel(AuditTrailContentEventViewModel m, AuditTrailEvent model, AuditTrailContentEvent contentEvent, AuditTrailEventDescriptor descriptor, string latestVersionId)
+        private static void BuildSummaryViewModel(AuditTrailContentEventViewModel m, AuditTrailEvent model, AuditTrailContentEvent contentEvent, AuditTrailEventDescriptor descriptor, string latestVersionId)
         {
             m.AuditTrailEvent = model;
             m.Descriptor = descriptor;
