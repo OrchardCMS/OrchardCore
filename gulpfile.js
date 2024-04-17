@@ -118,12 +118,9 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
 
-    console.log('Input paths: %o', inputPaths);
-
     // For wildcard input paths also sortthem to ensure file concatenation is consistent.
     if (inputPaths.some(path => path.includes('*'))) {
         inputPaths = glob.sync(inputPaths, {}).sort();
-        console.log('Input paths contain a wildcard and thus will be loaded with blog, in alphabetic order.');
     }
 
     assetGroup.inputPaths = inputPaths;
