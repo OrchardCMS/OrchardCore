@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Services
                 EmailConfirmed = true
             };
 
-            user.RoleNames.Add("Administrator");
+            user.RoleNames.Add(OrchardCoreConstants.Roles.Administrator);
 
             return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
             {

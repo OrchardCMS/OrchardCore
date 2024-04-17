@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Boolean field",
                     FieldType = typeof(BooleanGraphType),
                     UnderlyingType = typeof(BooleanField),
-                    FieldAccessor = field => field.Content.Value,
+                    FieldAccessor = field => ((BooleanField)field).Value,
                 }
             },
             {
@@ -31,7 +31,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date field",
                     FieldType = typeof(DateGraphType),
                     UnderlyingType = typeof(DateField),
-                    FieldAccessor = field => field.Content.Value,
+                    FieldAccessor = field => ((DateField)field).Value,
                 }
             },
             {
@@ -41,7 +41,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date & time field",
                     FieldType = typeof(DateTimeGraphType),
                     UnderlyingType = typeof(DateTimeField),
-                    FieldAccessor = field => field.Content.Value,
+                    FieldAccessor = field => ((DateTimeField)field).Value,
                 }
             },
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Numeric field",
                     FieldType = typeof(DecimalGraphType),
                     UnderlyingType = typeof(NumericField),
-                    FieldAccessor = field => field.Content.Value,
+                    FieldAccessor = field => ((NumericField)field).Value,
                 }
             },
             {
@@ -61,7 +61,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => field.Content.Text,
+                    FieldAccessor = field => ((TextField)field).Text,
                 }
             },
             {
@@ -71,7 +71,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Time field",
                     FieldType = typeof(TimeSpanGraphType),
                     UnderlyingType = typeof(TimeField),
-                    FieldAccessor = field => field.Content.Value,
+                    FieldAccessor = field => ((TimeField)field).Value,
                 }
             },
             {
@@ -81,12 +81,12 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => field.Content.Values,
+                    FieldAccessor = field => ((MultiTextField)field).Values,
                 }
             }
         };
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
             if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
             {
@@ -96,7 +96,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             var fieldDescriptor = value;
             return new FieldType
             {
-                Name = field.Name,
+                Name = customFieldName ?? field.Name,
                 Description = fieldDescriptor.Description,
                 Type = fieldDescriptor.FieldType,
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
@@ -115,6 +115,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 }),
             };
         }
+
+        public bool HasField(ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
         private sealed class FieldTypeDescriptor
         {
