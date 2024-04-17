@@ -32,17 +32,15 @@ namespace OrchardCore.Contents.Sitemaps
             {
                 throw new TimeoutException($"Couldn't acquire a lock to update the sitemap within {timeout.Seconds} seconds.");
             }
-            else
-            {
-                using (locker)
-                {
-                    var updateContext = new SitemapUpdateContext
-                    {
-                        UpdateObject = context.ContentItem,
-                    };
 
-                    await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
-                }
+            using (locker)
+            {
+                var updateContext = new SitemapUpdateContext
+                {
+                    UpdateObject = context.ContentItem,
+                };
+
+                await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
             }
         }
     }
