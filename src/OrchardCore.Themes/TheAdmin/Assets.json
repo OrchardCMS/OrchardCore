@@ -24,16 +24,7 @@
   },
   {
     "inputs": [
-      "Assets/js/header/global/constants.js",
-      "Assets/js/header/main/userPreferencesLoader.js",
-      "Assets/js/header/theme/themeLoader.js",
-      "Assets/js/header/theme/toggleTheme.js",
-      "Assets/js/admin.js",
-      "Assets/js/menu.js",
-      "Assets/js/removeDiacritics.js",
-      "Assets/js/resizeDetector.js",
-      "Assets/js/Sortable.js",
-      "Assets/js/userPreferencesPersistor.js"
+      "Assets/js/*.js"
     ],
     "watch": [
       "Assets/js/*.js"

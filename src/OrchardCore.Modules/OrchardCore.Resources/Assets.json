@@ -187,13 +187,7 @@
   {
     "generateRTL": true,
     "inputs": [
-      "Assets/trumbowyg/plugins/colors/ui/sass/trumbowyg.colors.scss",
-      "Assets/trumbowyg/plugins/emoji/ui/sass/trumbowyg.emoji.scss",
-      "Assets/trumbowyg/plugins/giphy/ui/sass/trumbowyg.giphy.scss",
-      "Assets/trumbowyg/plugins/mathml/ui/sass/trumbowyg.mathml.scss",
-      "Assets/trumbowyg/plugins/mention/ui/sass/trumbowyg.mention.scss",
-      "Assets/trumbowyg/plugins/specialchars/ui/sass/trumbowyg.specialchars.scss",
-      "Assets/trumbowyg/plugins/table/ui/sass/trumbowyg.table.scss"
+      "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg-plugins.css"
   },

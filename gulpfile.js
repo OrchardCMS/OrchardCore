@@ -112,11 +112,22 @@ function getAssetGroups() {
 }
 
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
-    assetGroup.manifestPath = assetManifestPath;
-    assetGroup.basePath = path.dirname(assetManifestPath);
-    assetGroup.inputPaths = assetGroup.inputs.map(function (inputPath) {
+    assetGroup.manifestPath = assetManifestPath.replace(/\\/g, '/');
+    assetGroup.basePath = path.dirname(assetGroup.manifestPath);
+    var inputPaths = assetGroup.inputs.map(function (inputPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
+
+    console.log('Input paths: %o', inputPaths);
+
+    // For wildcard input paths also sortthem to ensure file concatenation is consistent.
+    if (inputPaths.some(path => path.includes('*'))) {
+        inputPaths = glob.sync(inputPaths, {}).sort();
+        console.log('Input paths contain a wildcard and thus will be loaded with blog, in alphabetic order.');
+    }
+
+    assetGroup.inputPaths = inputPaths;
+
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
