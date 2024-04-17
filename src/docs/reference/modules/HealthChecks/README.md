@@ -25,6 +25,6 @@ The supported extensions described as following:
 
 | Extension | Description |
 | --- | --- |
-| `Url` | The health checks endpoint |
+| `Url` | The relative URL of the health checks endpoint |
 | `ShowDetails` | Whether or not to display a detailed information about each health check provider registered in the system, this including: name, description and status. |
 
