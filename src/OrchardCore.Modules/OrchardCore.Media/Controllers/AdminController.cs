@@ -112,7 +112,7 @@ namespace OrchardCore.Media.Controllers
                     Name = folder.Name,
                     Path = folder.Path,
                     DirectoryPath = folder.DirectoryPath,
-                    IsDirectory = folder.IsDirectory,
+                    IsDirectory = true,
                     LastModifiedUtc = folder.LastModifiedUtc,
                     Length = folder.Length,
                     CanCreateFolder = !isSpecial,
