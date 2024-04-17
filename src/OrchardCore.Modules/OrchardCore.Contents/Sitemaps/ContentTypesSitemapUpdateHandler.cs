@@ -21,8 +21,8 @@ namespace OrchardCore.Contents.Sitemaps
 
         public override Task UnpublishedAsync(PublishContentContext context) => UpdateSitemapDeferredAsync(context);
 
-        // Doing the update in a deferred and synchronized way makes sure that two simultaneous content item updates
-        // don't cause a ConcurrencyException due to the same sitemap document being updated.
+        // Doing the update in a synchronized way makes sure that two simultaneous content item updates don't cause a
+        // ConcurrencyException due to the same sitemap document being updated.
         private async Task UpdateSitemapDeferredAsync(ContentContextBase context)
         {
             var timeout = TimeSpan.FromMilliseconds(20_000);
