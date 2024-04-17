@@ -1,9 +1,8 @@
 [
-  {
-    "generateSourceMaps": true,
-    "inputs": [
-      "Assets/scss/dashboard.scss"
-    ],
-    "output": "wwwroot/Styles/dashboard.css"
-  }
-]
+    {
+        "inputs": [
+        "Assets/scss/dashboard.scss"
+      ],
+      "output": "wwwroot/Styles/dashboard.css"
+    }
+  ]
