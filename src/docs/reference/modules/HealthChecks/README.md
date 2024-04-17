@@ -12,7 +12,7 @@ More information about health checks in ASP.NET Core can be found here: <https:/
 
 ## Health Checks Configuration
 
-The following configuration values are used by default and can be customized:
+The following configurations are available and can be customized:
 
 ```json
     "OrchardCore_HealthChecks": {
