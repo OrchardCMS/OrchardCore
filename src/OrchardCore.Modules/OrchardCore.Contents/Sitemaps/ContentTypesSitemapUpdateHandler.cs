@@ -1,10 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Sitemaps.Handlers;
 
@@ -13,10 +10,12 @@ namespace OrchardCore.Contents.Sitemaps
     public class ContentTypesSitemapUpdateHandler : ContentHandlerBase
     {
         private readonly IDistributedLock _distributedLock;
+        private readonly ISitemapUpdateHandler _sitemapUpdateHandler;
 
-        public ContentTypesSitemapUpdateHandler(IDistributedLock distributedLock)
+        public ContentTypesSitemapUpdateHandler(IDistributedLock distributedLock, ISitemapUpdateHandler sitemapUpdateHandler)
         {
             _distributedLock = distributedLock;
+            _sitemapUpdateHandler = sitemapUpdateHandler;
         }
 
         public override Task PublishedAsync(PublishContentContext context) => UpdateSitemapDeferredAsync(context);
@@ -27,8 +26,6 @@ namespace OrchardCore.Contents.Sitemaps
         // don't cause a ConcurrencyException due to the same sitemap document being updated.
         private async Task UpdateSitemapDeferredAsync(ContentContextBase context)
         {
-            var contentItemId = context.ContentItem.ContentItemId;
-
             var timeout = TimeSpan.FromMilliseconds(20_000);
             (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
             Debug.WriteLine($"Lock acquired: {DateTime.Now}");
@@ -38,22 +35,15 @@ namespace OrchardCore.Contents.Sitemaps
             }
             else
             {
-
-                ShellScope.AddDeferredTask(async scope =>
+                using (locker)
                 {
-                    using (locker)
+                    var updateContext = new SitemapUpdateContext
                     {
-                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                        var sitemapUpdateHandler = scope.ServiceProvider.GetRequiredService<ISitemapUpdateHandler>();
+                        UpdateObject = context.ContentItem,
+                    };
 
-                        var updateContext = new SitemapUpdateContext
-                        {
-                            UpdateObject = await contentManager.GetAsync(contentItemId),
-                        };
-
-                        await sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
-                    }
-                });
+                    await _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
+                }
             }
         }
     }
