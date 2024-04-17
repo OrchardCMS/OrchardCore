@@ -1,4 +1,4 @@
-name: Frontend Assets Build Validation
+name: Validating the Building of Public Assets
 
 on: 
   push:
