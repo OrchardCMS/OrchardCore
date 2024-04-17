@@ -529,6 +529,8 @@ The `Cache-Control` header for secured files is set to `no-store` by default, pr
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/monQap7FuiU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/LVsdTvurGEY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Media Indexing
 
 The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
