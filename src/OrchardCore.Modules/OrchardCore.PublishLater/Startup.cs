@@ -17,7 +17,6 @@ namespace OrchardCore.PublishLater
 {
     public class Startup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
