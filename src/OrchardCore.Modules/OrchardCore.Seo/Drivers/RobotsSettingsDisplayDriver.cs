@@ -60,7 +60,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

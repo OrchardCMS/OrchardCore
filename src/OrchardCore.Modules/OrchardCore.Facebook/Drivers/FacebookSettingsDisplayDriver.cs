@@ -73,7 +73,7 @@ namespace OrchardCore.Facebook.Drivers
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Core)
             {
