@@ -7,7 +7,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 
-public class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
+public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
 {
     private readonly ISiteService _siteService;
 

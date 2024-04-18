@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
 

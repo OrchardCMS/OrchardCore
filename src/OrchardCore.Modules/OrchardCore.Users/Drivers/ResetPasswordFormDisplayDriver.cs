@@ -7,7 +7,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
+public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
 {
     public override IDisplayResult Edit(ResetPasswordForm model)
     {

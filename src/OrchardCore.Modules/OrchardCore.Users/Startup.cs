@@ -53,7 +53,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Users
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
 
@@ -200,7 +200,7 @@ namespace OrchardCore.Users
     }
 
     [RequireFeatures("OrchardCore.Roles")]
-    public class RolesStartup : StartupBase
+    public sealed class RolesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -214,7 +214,7 @@ namespace OrchardCore.Users
     }
 
     [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
+    public sealed class LiquidStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -267,7 +267,7 @@ namespace OrchardCore.Users
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class LoginDeploymentStartup : StartupBase
+    public sealed class LoginDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -276,7 +276,7 @@ namespace OrchardCore.Users
     }
 
     [Feature(UserConstants.Features.UserEmailConfirmation)]
-    public class EmailConfirmationStartup : StartupBase
+    public sealed class EmailConfirmationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -287,7 +287,7 @@ namespace OrchardCore.Users
     }
 
     [Feature("OrchardCore.Users.ChangeEmail")]
-    public class ChangeEmailStartup : StartupBase
+    public sealed class ChangeEmailStartup : StartupBase
     {
         private const string ChangeEmailPath = "ChangeEmail";
         private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
@@ -329,7 +329,7 @@ namespace OrchardCore.Users
 
     [Feature("OrchardCore.Users.ChangeEmail")]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class ChangeEmailDeploymentStartup : StartupBase
+    public sealed class ChangeEmailDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -338,7 +338,7 @@ namespace OrchardCore.Users
     }
 
     [Feature(UserConstants.Features.UserRegistration)]
-    public class RegistrationStartup : StartupBase
+    public sealed class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = nameof(RegistrationController.Register);
         private const string ConfirmEmailSent = nameof(RegistrationController.ConfirmEmailSent);
@@ -385,7 +385,7 @@ namespace OrchardCore.Users
 
     [Feature(UserConstants.Features.UserRegistration)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class RegistrationDeploymentStartup : StartupBase
+    public sealed class RegistrationDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -394,7 +394,7 @@ namespace OrchardCore.Users
     }
 
     [Feature(UserConstants.Features.ResetPassword)]
-    public class ResetPasswordStartup : StartupBase
+    public sealed class ResetPasswordStartup : StartupBase
     {
         private const string ForgotPasswordPath = "ForgotPassword";
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
@@ -452,7 +452,7 @@ namespace OrchardCore.Users
 
     [Feature(UserConstants.Features.ResetPassword)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class ResetPasswordDeploymentStartup : StartupBase
+    public sealed class ResetPasswordDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -461,7 +461,7 @@ namespace OrchardCore.Users
     }
 
     [Feature("OrchardCore.Users.CustomUserSettings")]
-    public class CustomUserSettingsStartup : StartupBase
+    public sealed class CustomUserSettingsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -483,7 +483,7 @@ namespace OrchardCore.Users
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class UserDeploymentStartup : StartupBase
+    public sealed class UserDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

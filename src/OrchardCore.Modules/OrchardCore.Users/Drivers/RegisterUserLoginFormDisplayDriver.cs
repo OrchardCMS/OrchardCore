@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
 

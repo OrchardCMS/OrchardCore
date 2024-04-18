@@ -7,7 +7,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class LoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     public override IDisplayResult Edit(LoginForm model)
     {

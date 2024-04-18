@@ -7,7 +7,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 
-public class ReCaptchaResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
+public sealed class ReCaptchaResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
 {
     private readonly ISiteService _siteService;
 

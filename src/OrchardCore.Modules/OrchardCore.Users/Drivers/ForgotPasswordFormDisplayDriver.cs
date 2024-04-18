@@ -7,7 +7,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
+public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
     public override IDisplayResult Edit(ForgotPasswordForm model)
     {

@@ -11,12 +11,12 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
+public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
 
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public RegisterUserFormDisplayDriver(
         UserManager<IUser> userManager,

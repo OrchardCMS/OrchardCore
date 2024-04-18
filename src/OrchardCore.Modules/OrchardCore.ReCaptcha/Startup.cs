@@ -16,7 +16,7 @@ using OrchardCore.Users.Models;
 namespace OrchardCore.ReCaptcha
 {
     [Feature("OrchardCore.ReCaptcha")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -30,7 +30,7 @@ namespace OrchardCore.ReCaptcha
 
     [Feature("OrchardCore.ReCaptcha")]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -39,7 +39,7 @@ namespace OrchardCore.ReCaptcha
     }
 
     [Feature("OrchardCore.ReCaptcha.Users")]
-    public class UsersStartup : StartupBase
+    public sealed class UsersStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -52,7 +52,7 @@ namespace OrchardCore.ReCaptcha
 
     [Feature("OrchardCore.ReCaptcha.Users")]
     [RequireFeatures(UserConstants.Features.ResetPassword)]
-    public class UsersResetPasswordStartup : StartupBase
+    public sealed class UsersResetPasswordStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -63,7 +63,7 @@ namespace OrchardCore.ReCaptcha
 
     [Feature("OrchardCore.ReCaptcha.Users")]
     [RequireFeatures(UserConstants.Features.UserRegistration)]
-    public class UsersRegistrationStartup : StartupBase
+    public sealed class UsersRegistrationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
