@@ -95,7 +95,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

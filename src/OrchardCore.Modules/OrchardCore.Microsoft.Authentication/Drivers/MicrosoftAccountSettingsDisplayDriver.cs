@@ -76,7 +76,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
