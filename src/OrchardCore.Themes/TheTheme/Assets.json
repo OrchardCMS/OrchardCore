@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "watch": [
       "Assets/scss/**/*.scss"
     ],
