@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
+[Feature(GoogleConstants.Features.GoogleAuthentication)]
 public class GoogleAuthenticationPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageGoogleAuthentication = Permissions.ManageGoogleAuthentication;

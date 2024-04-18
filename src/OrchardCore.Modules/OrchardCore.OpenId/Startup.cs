@@ -53,11 +53,11 @@ namespace OrchardCore.OpenId
                 });
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-            services.TryAddEnumerable(new[]
-            {
+            services.TryAddEnumerable(
+            [
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-            });
+            ]);
         }
     }
 

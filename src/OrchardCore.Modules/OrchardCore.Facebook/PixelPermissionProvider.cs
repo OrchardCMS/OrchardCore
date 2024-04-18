@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
 
+[Feature(FacebookConstants.Features.Pixel)]
 public class PixelPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageFacebookPixelPermission = FacebookConstants.ManageFacebookPixelPermission;

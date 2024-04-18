@@ -3,10 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users;
 
+[Feature("OrchardCore.Users.CustomUserSettings")]
 public class CustomUserSettingsPermissions : IPermissionProvider
 {
     // This permission is never checked it is only used as a template.

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Shortcodes;
 
+[Feature("OrchardCore.Shortcodes.Templates")]
 public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);

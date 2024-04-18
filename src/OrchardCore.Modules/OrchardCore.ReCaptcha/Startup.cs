@@ -15,7 +15,6 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha
 {
-    [Feature("OrchardCore.ReCaptcha")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -28,7 +27,6 @@ namespace OrchardCore.ReCaptcha
         }
     }
 
-    [Feature("OrchardCore.ReCaptcha")]
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {

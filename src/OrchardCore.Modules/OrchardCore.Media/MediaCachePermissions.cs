@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media;
 
+[Feature("OrchardCore.Media.Cache")]
 public class MediaCachePermissions : IPermissionProvider
 {
     public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
