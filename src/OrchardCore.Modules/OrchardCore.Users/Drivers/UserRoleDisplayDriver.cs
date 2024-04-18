@@ -103,7 +103,7 @@ namespace OrchardCore.Users.Drivers
 
             var model = new EditUserRoleViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix)
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
 
                 var roles = await GetRoleAsync();
