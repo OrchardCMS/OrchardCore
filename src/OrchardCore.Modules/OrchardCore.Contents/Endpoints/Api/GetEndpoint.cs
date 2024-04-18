@@ -26,11 +26,6 @@ public static class GetEndpoint
         IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.ViewContent))
-        {
-            return httpContext.ChallengeOrForbid("Api");
-        }
-
         var contentItem = await contentManager.GetAsync(contentItemId);
 
         if (contentItem == null)
