@@ -2,6 +2,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
@@ -131,7 +132,6 @@ public class RegistrationControllerTests
         Assert.Contains("A user with the same email address already exists.", await responseFromPost2.Content.ReadAsStringAsync());
     }
 
-    /*
     [Fact]
     public async Task Register_WhenRequireUniqueEmailIsFalse_AllowRegisteringMultipleUsersWithTheSameEmails()
     {
@@ -172,7 +172,6 @@ public class RegistrationControllerTests
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
 
-
         var responseFromPost2 = await context.Client.SendAsync(requestForPost2);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost2.StatusCode);
@@ -181,7 +180,6 @@ public class RegistrationControllerTests
 
         Assert.DoesNotContain("A user with the same email address already exists.", body);
     }
-    */
 
     [Fact]
     public async Task Register_WhenModeration_RedirectToRegistrationPending()
@@ -281,12 +279,33 @@ public class RegistrationControllerTests
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true)
     {
         var context = new SiteContext();
+
         await context.InitializeAsync();
+
         await context.UsingTenantScopeAsync(async scope =>
         {
+            if (!requireUniqueEmail)
+            {
+                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
+                var recipeCollections = await Task.WhenAll(
+                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
+
+                var recipe = recipeCollections.SelectMany(recipeCollection => recipeCollection)
+                    .FirstOrDefault(recipe => recipe.Name == "UserSettingsTest");
+
+                var executionId = Guid.NewGuid().ToString("n");
+
+                await recipeExecutor.ExecuteAsync(
+                    executionId,
+                    recipe,
+                    new Dictionary<string, object>(),
+                    CancellationToken.None);
+            }
+
             if (enableRegistrationFeature)
             {
                 var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
