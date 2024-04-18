@@ -331,7 +331,7 @@ An array of additional files to be monitored for changes. Paths are relative to 
 
 ### `generateSourceMaps`
 
-`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `true`.
+`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `false`.
 
 ### `flatten`
 
