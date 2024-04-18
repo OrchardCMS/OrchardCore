@@ -3,6 +3,8 @@
 
 # Except src for building
 !./src/*
+!Directory.Build.props
+
 # TODO : Remove this line when Docker Buildkit works in Windows
 !/.build/release/*
 

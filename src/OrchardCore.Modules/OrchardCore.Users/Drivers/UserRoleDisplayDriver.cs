@@ -19,8 +19,6 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
-
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
@@ -105,9 +103,10 @@ namespace OrchardCore.Users.Drivers
 
             var model = new EditUserRoleViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix)
 
-            var roles = await GetRoleAsync();
+
+                var roles = await GetRoleAsync();
             // Authorize each role in the model to prevent html injection.
             var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
             var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
@@ -140,9 +139,9 @@ namespace OrchardCore.Users.Drivers
 
                 foreach (var role in rolesToRemove)
                 {
-                    if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(role, OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                     {
-                        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
                             .Cast<User>()
                             .Where(user => user.IsEnabled)
                             .ToList();
@@ -150,7 +149,7 @@ namespace OrchardCore.Users.Drivers
                         // Make sure we always have at least one enabled administrator account.
                         if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                         {
-                            await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
+                            await _notifier.WarningAsync(H[$"Cannot remove {OrchardCoreConstants.Roles.Administrator} role from the only enabled administrator."]);
 
                             continue;
                         }
