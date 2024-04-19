@@ -78,7 +78,7 @@ namespace OrchardCore.AuditTrail.Drivers
             }).Location("Content:1#Events").OnGroup(AuditTrailSettingsGroup.Id);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, UpdateEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
             {
