@@ -47,13 +47,12 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
+            await updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+            var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+
+            if (settings.Required && string.IsNullOrWhiteSpace(field.Text))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                if (settings.Required && string.IsNullOrWhiteSpace(field.Text))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

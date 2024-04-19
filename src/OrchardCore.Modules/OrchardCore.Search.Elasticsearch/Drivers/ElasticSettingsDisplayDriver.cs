@@ -73,7 +73,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, UpdateEditorContext context)
     {
         if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {
