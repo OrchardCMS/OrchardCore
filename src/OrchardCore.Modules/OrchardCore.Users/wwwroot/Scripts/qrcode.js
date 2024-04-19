@@ -720,9 +720,7 @@ var QRCode;
       this.clear();
       function makeSVG(tag, attrs) {
         var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-        for (var k in attrs) {
-          if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
-        }
+        for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
         return el;
       }
       var svg = makeSVG("svg", {
@@ -758,9 +756,7 @@ var QRCode;
       }
     };
     Drawing.prototype.clear = function () {
-      while (this._el.hasChildNodes()) {
-        this._el.removeChild(this._el.lastChild);
-      }
+      while (this._el.hasChildNodes()) this._el.removeChild(this._el.lastChild);
     };
     return Drawing;
   }();
