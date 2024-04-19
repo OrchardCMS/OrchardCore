@@ -35,7 +35,7 @@ jobs:
     - name: Build
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
