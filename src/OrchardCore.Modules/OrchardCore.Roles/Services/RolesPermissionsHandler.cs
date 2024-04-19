@@ -35,14 +35,14 @@ namespace OrchardCore.Roles
             }
 
             var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
+            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
             {
                 claims.Add(claim);
             }
 
             if (context.User.Identity.IsAuthenticated)
             {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
+                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
                 {
                     claims.Add(claim);
                 }

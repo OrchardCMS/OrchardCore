@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    internal class StartupActions
+    internal sealed class StartupActions
     {
         public StartupActions(int order)
         {

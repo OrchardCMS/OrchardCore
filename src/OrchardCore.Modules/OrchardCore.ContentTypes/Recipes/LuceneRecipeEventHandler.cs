@@ -78,7 +78,7 @@ namespace OrchardCore.ContentTypes
             return Task.CompletedTask;
         }
 
-        private class ContentDefinitionStepModel
+        private sealed class ContentDefinitionStepModel
         {
             public string Name { get; set; }
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];

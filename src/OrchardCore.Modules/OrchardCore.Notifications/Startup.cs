@@ -4,6 +4,7 @@ using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
@@ -23,6 +24,13 @@ namespace OrchardCore.Notifications;
 
 public class Startup : StartupBase
 {
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<INotificationService, NotificationService>();
@@ -51,6 +59,8 @@ public class Startup : StartupBase
 
             return new DefaultNotificationAdminListFilterParser(parser);
         });
+
+        services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
 
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();

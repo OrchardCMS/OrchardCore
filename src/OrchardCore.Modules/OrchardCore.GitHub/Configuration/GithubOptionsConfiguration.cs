@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
@@ -51,7 +52,7 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
+            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

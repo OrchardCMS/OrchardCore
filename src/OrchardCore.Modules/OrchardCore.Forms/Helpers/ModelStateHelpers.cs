@@ -38,7 +38,7 @@ namespace OrchardCore.Forms.Helpers
             return modelState;
         }
 
-        private class ModelStateTransferValue
+        private sealed class ModelStateTransferValue
         {
             public string Key { get; set; }
             public string AttemptedValue { get; set; }
