@@ -54,5 +54,11 @@ namespace OrchardCore.Users.Handlers
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
         Task EnabledAsync(UserContext context);
+
+        /// <summary>
+        /// Occurs when a user is confirmed.
+        /// </summary>
+        /// <param name="context">The <see cref="UserContext"/>.</param>
+        Task ConfirmedAsync(UserContext context);
     }
 }

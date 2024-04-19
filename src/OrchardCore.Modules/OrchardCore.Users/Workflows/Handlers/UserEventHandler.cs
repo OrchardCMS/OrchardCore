@@ -49,5 +49,10 @@ namespace OrchardCore.Users.Workflows.Handlers
                 correlationId: user.UserId
             );
         }
+
+        public override Task ConfirmedAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserConfirmedEvent), (User)context.User);
+        }
     }
 }

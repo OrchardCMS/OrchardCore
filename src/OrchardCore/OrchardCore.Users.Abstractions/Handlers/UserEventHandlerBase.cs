@@ -27,5 +27,8 @@ namespace OrchardCore.Users.Handlers
 
         /// <inheritdocs />
         public virtual Task EnabledAsync(UserContext context) => Task.CompletedTask;
+
+        /// <inheritdocs />
+        public virtual Task ConfirmedAsync(UserContext context) => Task.CompletedTask;
     }
 }

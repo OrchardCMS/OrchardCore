@@ -75,6 +75,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         public Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
         public Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
         public Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
+        public Task ConfirmedAsync(UserContext context) => Task.CompletedTask;
 
         #endregion
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers
@@ -27,6 +29,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         protected readonly IStringLocalizer S;
+        private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
@@ -38,7 +41,8 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<RegisterUserForm> registerUserDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer)
+            IStringLocalizer<RegistrationController> stringLocalizer,
+            IEnumerable<IUserEventHandler> userEventHandlers)
         {
             _userManager = userManager;
             _authorizationService = authorizationService;
@@ -49,6 +53,7 @@ namespace OrchardCore.Users.Controllers
             _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
             S = stringLocalizer;
+            _userEventHandlers = userEventHandlers;
         }
 
         [AllowAnonymous]
@@ -131,6 +136,9 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
+                var userContext = new UserContext(user);
+                await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
+
                 return View();
             }
 
