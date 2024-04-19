@@ -77,7 +77,7 @@ namespace OrchardCore.Security.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

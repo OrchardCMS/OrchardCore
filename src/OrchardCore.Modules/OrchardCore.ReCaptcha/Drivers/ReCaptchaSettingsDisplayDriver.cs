@@ -58,7 +58,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -71,14 +71,13 @@ namespace OrchardCore.ReCaptcha.Drivers
             {
                 var model = new ReCaptchaSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-                {
-                    section.SiteKey = model.SiteKey?.Trim();
-                    section.SecretKey = model.SecretKey?.Trim();
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                    // Release the tenant to apply settings.
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                section.SiteKey = model.SiteKey?.Trim();
+                section.SecretKey = model.SecretKey?.Trim();
+
+                // Release the tenant to apply settings.
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(section, context);

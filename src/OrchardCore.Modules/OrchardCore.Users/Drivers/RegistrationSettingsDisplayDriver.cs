@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "Assets/js/coordinate-leaflet-field.js"
