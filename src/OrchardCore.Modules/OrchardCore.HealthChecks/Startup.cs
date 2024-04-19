@@ -33,19 +33,26 @@ namespace OrchardCore.HealthChecks
         {
             var healthChecksOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
 
-            var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
-
-            app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+            if (healthChecksOptions.ShowDetails)
             {
-                AllowCachingResponses = false,
-                ResultStatusCodes =
+                var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
+
+                app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+                {
+                    AllowCachingResponses = false,
+                    ResultStatusCodes =
                     {
                         [HealthStatus.Healthy] = StatusCodes.Status200OK,
                         [HealthStatus.Degraded] = StatusCodes.Status200OK,
                         [HealthStatus.Unhealthy] = StatusCodes.Status200OK
                     },
-                ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
-            });
+                    ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
+                });
+            }
+            else
+            {
+                app.UseHealthChecks(healthChecksOptions.Url);
+            }
         }
     }
 }

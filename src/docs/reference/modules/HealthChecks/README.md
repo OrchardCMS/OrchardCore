@@ -1,4 +1,4 @@
-# Health Checks (`OrchardCore.HealthChecks`)
+# Health Check (`OrchardCore.HealthChecks`)
 
 This module enables the health checks feature from ASP.NET Core.
 
@@ -16,7 +16,8 @@ The following configurations are available and can be customized:
 
 ```json
     "OrchardCore_HealthChecks": {
-      "Url": "/health/live"
+      "Url": "/health/live",
+      "ShowDetails": true
     },
 ```
 
@@ -25,4 +26,5 @@ The supported extensions described as following:
 | Extension | Description |
 | --- | --- |
 | `Url` | The relative URL of the health checks endpoint |
+| `ShowDetails` | Whether or not to display a detailed information about each health check provider registered in the system, this including: name, description and status. |
 
