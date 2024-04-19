@@ -53,7 +53,7 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Users.ResetPassword",
+    Id = UserConstants.Features.ResetPassword,
     Name = "Users Reset Password",
     Description = "The reset password feature allows users to reset their password.",
     Dependencies =

@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
 
@@ -24,6 +24,6 @@ public class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
             return null;
         }
 
-        return View("LoginFormRegisterUser_Edit", model).Location("Links:10");
+        return View("LoginFormRegisterUser", model).Location("Links:10");
     }
 }
