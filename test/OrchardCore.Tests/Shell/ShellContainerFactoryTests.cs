@@ -154,14 +154,14 @@ namespace OrchardCore.Tests.Shell
             {
                 Settings = new ShellSettings(),
                 Descriptor = new ShellDescriptor(),
-                Dependencies = new Dictionary<Type, FeatureEntry>()
+                Dependencies = new Dictionary<Type, IFeatureInfo>()
             };
         }
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
             var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
-            shellBlueprint.Dependencies.Add(startupType, new FeatureEntry(featureInfo));
+            shellBlueprint.Dependencies.Add(startupType, featureInfo);
 
             return featureInfo;
         }

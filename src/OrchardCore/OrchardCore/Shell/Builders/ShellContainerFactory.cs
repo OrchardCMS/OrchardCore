@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.Id == _applicationFeature.Id)
                 {
                     continue;
                 }
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value;
 
                 // If the startup is not coming from an extension, associate it to the application feature.
                 // For instance when Startup classes are registered with Configure<Startup>() from the application.

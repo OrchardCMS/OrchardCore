@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Extensions
 
         private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
-        private Dictionary<string, FeatureEntry> _features;
+        private Dictionary<string, IFeatureInfo> _features;
         private IFeatureInfo[] _featureInfos;
 
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
@@ -102,20 +102,20 @@ namespace OrchardCore.Environment.Extensions
             return Task.FromResult(extension);
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        public async Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
         {
             await EnsureInitializedAsync();
             return _features.Values;
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        public async Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             await EnsureInitializedAsync();
 
             var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
 
             var loadedFeatures = _features.Values
-                .Where(f => features.Contains(f.FeatureInfo.Id));
+                .Where(f => features.Contains(f.Id));
 
             return loadedFeatures;
         }
@@ -131,9 +131,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetFeatureDependencies(feature, _featureInfos);
+                return GetFeatureDependencies(entry, _featureInfos);
             })).Value;
         }
 
@@ -148,9 +146,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetDependentFeatures(feature, _featureInfos);
+                return GetDependentFeatures(entry, _featureInfos);
             })).Value;
         }
 
@@ -323,7 +319,7 @@ namespace OrchardCore.Environment.Extensions
                     return Task.CompletedTask;
                 });
 
-                var loadedFeatures = new Dictionary<string, FeatureEntry>();
+                var loadedFeatures = new Dictionary<string, IFeatureInfo>();
 
                 // Get all valid types from any extension
                 var allTypesByExtension = loadedExtensions.SelectMany(extension =>
@@ -356,17 +352,13 @@ namespace OrchardCore.Environment.Extensions
                                 _typeFeatureProvider.TryAdd(type, feature);
                             }
                         }
-                        else
-                        {
-                            featureTypes = [];
-                        }
 
-                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, feature);
                     }
                 }
 
                 // Feature infos and entries are ordered by priority and dependencies.
-                _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));
+                _featureInfos = Order(loadedFeatures.Values);
                 _features = _featureInfos.ToDictionary(f => f.Id, f => loadedFeatures[f.Id]);
 
                 // Extensions are also ordered according to the weight of their first features.

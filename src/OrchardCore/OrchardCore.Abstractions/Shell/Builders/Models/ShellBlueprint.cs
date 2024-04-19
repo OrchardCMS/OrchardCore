@@ -15,6 +15,6 @@ namespace OrchardCore.Environment.Shell.Builders.Models
         public ShellSettings Settings { get; set; }
         public ShellDescriptor Descriptor { get; set; }
 
-        public IDictionary<Type, FeatureEntry> Dependencies { get; set; }
+        public IDictionary<Type, IFeatureInfo> Dependencies { get; set; }
     }
 }
