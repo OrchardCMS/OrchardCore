@@ -43,7 +43,7 @@ namespace OrchardCore.Admin.Drivers
             }).Location("Content:3").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

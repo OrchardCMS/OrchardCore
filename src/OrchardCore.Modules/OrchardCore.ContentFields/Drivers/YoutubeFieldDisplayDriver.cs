@@ -51,46 +51,45 @@ namespace OrchardCore.ContentFields.Drivers
         {
             var model = new EditYoutubeFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
-                else
-                {
-                    if (model.RawAddress != null)
-                    {
-                        var uri = new Uri(model.RawAddress);
+            await updater.TryUpdateModelAsync(model, Prefix);
+            var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
-                        // If it is a url with QueryString.
-                        if (!string.IsNullOrWhiteSpace(uri.Query))
+            if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                if (model.RawAddress != null)
+                {
+                    var uri = new Uri(model.RawAddress);
+
+                    // If it is a url with QueryString.
+                    if (!string.IsNullOrWhiteSpace(uri.Query))
+                    {
+                        var query = QueryHelpers.ParseQuery(uri.Query);
+                        if (query.TryGetValue("v", out var values))
                         {
-                            var query = QueryHelpers.ParseQuery(uri.Query);
-                            if (query.TryGetValue("v", out var values))
-                            {
-                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{values}";
-                            }
-                            else
-                            {
-                                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
-                            }
+                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{values}";
                         }
                         else
                         {
-                            var path = uri.AbsolutePath.Split('?')[0];
-                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
+                            updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                         }
-
-                        field.RawAddress = model.RawAddress;
-                        field.EmbeddedAddress = model.EmbeddedAddress;
                     }
                     else
                     {
-                        field.RawAddress = null;
-                        field.EmbeddedAddress = null;
+                        var path = uri.AbsolutePath.Split('?')[0];
+                        model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                     }
+
+                    field.RawAddress = model.RawAddress;
+                    field.EmbeddedAddress = model.EmbeddedAddress;
+                }
+                else
+                {
+                    field.RawAddress = null;
+                    field.EmbeddedAddress = null;
                 }
             }
 
