@@ -2,7 +2,7 @@ using OrchardCore.OpenId.Abstractions.Descriptors;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
-    internal class OpenIdApplicationStepTestsData
+    internal sealed class OpenIdApplicationStepTestsData
         : TheoryData<string, OpenIdApplicationDescriptor>
     {
         public OpenIdApplicationStepTestsData()

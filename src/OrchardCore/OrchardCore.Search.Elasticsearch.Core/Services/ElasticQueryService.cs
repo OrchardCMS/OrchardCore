@@ -33,6 +33,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             if (_elasticClient == null)
             {
                 _logger.LogWarning("Elasticsearch Client is not setup, please validate your Elasticsearch Configurations");
+
+                return elasticTopDocs;
             }
 
             try

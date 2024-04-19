@@ -900,7 +900,7 @@ namespace OrchardCore.Tests.ResourceManagement
         #endregion
 
         #region Stubs
-        private class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
+        private sealed class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
         {
             private readonly Action<ResourceManagementOptions> _configureManifestAction;
 
@@ -915,7 +915,7 @@ namespace OrchardCore.Tests.ResourceManagement
             }
         }
 
-        private class StubFileVersionProvider : IFileVersionProvider
+        private sealed class StubFileVersionProvider : IFileVersionProvider
         {
             public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
 

@@ -37,7 +37,7 @@ namespace OrchardCore.Google.TagManager.Drivers
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleTagManager);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GoogleConstants.Features.GoogleTagManager)
             {

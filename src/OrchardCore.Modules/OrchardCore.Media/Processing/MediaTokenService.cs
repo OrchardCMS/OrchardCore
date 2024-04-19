@@ -165,8 +165,6 @@ namespace OrchardCore.Media.Processing
 
                 entry.SlidingExpiration = TimeSpan.FromHours(5);
 
-                using var hmac = new HMACSHA256(_hashKey);
-
                 // 'queryStringTokenKey' also contains prefix.
                 var chars = queryStringTokenKey.AsSpan(TokenCacheKeyPrefix.Length);
 
@@ -177,11 +175,11 @@ namespace OrchardCore.Media.Processing
                     : new byte[requiredLength];
 
                 // 256 for SHA-256, fits in stack nicely.
-                Span<byte> hashBytes = stackalloc byte[hmac.HashSize];
+                Span<byte> hashBytes = stackalloc byte[HMACSHA256.HashSizeInBytes];
 
                 var stringBytesLength = Encoding.UTF8.GetBytes(chars, stringBytes);
 
-                hmac.TryComputeHash(stringBytes[..stringBytesLength], hashBytes, out var hashBytesLength);
+                HMACSHA256.TryHashData(_hashKey, stringBytes[..stringBytesLength], hashBytes, out var hashBytesLength);
 
                 entry.Value = result = Convert.ToBase64String(hashBytes[..hashBytesLength]);
             }

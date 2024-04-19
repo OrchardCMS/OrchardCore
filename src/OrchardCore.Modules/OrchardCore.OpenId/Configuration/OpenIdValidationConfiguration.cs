@@ -20,6 +20,7 @@ using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Security;
+using SystemEnvironment = System.Environment;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
@@ -180,7 +181,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -202,7 +203,7 @@ namespace OrchardCore.OpenId.Configuration
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
@@ -235,7 +236,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 return ShellScope.Current;
             }
@@ -246,14 +247,23 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)
         {
             var settings = await service.GetSettingsAsync();
-            if ((await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+
+            var result = await service.ValidateSettingsAsync(settings);
+
+            if (result.Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.IsRunning())
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success)
+                            .Select(x => x.ErrorMessage);
 
-                return null;
+                        _logger.LogWarning("The OpenID server settings are invalid: {Errors}", string.Join(SystemEnvironment.NewLine, errors));
+                    }
+
+                    return null;
+                }
             }
 
             return settings;
@@ -262,14 +272,23 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdValidationSettings> GetValidationSettingsAsync()
         {
             var settings = await _validationService.GetSettingsAsync();
-            if ((await _validationService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+
+            var result = await _validationService.ValidateSettingsAsync(settings);
+
+            if (result.Any(x => x != ValidationResult.Success))
             {
                 if (_shellSettings.IsRunning())
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success)
+                            .Select(x => x.ErrorMessage);
 
-                return null;
+                        _logger.LogWarning("The OpenID validation settings are invalid: {Errors}", string.Join(SystemEnvironment.NewLine, errors));
+                    }
+
+                    return null;
+                }
             }
 
             return settings;

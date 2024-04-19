@@ -45,7 +45,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Login)
             {

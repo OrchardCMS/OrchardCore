@@ -1,0 +1,13 @@
+{
+  "name": "UserSettingsTest",
+  "steps": [
+    {
+      "name": "settings",
+      "IdentitySettings": {
+        "UserSettings": {
+          "RequireUniqueEmail": false
+        }
+      }
+    }
+  ]
+}

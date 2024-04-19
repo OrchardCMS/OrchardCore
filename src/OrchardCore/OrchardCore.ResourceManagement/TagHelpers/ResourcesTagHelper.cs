@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -36,7 +36,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             try
             {
-                using var sw = new StringWriter();
+                using var sw = new ZStringWriter();
 
                 switch (Type)
                 {

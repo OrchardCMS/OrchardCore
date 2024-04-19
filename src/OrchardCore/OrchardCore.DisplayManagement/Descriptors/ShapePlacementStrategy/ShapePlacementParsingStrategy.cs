@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         {
             if (placementMatchProviders != null)
             {
-                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
+                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key, StringComparison.Ordinal));
                 if (providersForTerm.Any())
                 {
                     var expression = term.Value;

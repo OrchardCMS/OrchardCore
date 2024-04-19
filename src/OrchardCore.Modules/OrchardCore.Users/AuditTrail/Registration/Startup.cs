@@ -6,7 +6,7 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.Registration
 {
-    [RequireFeatures("OrchardCore.Users.AuditTrail", "OrchardCore.Users.Registration")]
+    [RequireFeatures("OrchardCore.Users.AuditTrail", UserConstants.Features.UserRegistration)]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Shell.Distributed
     /// <summary>
     /// Isolated context based on the default tenant settings used to resolve the <see cref="IDistributedCache"/>.
     /// </summary>
-    internal class DistributedContext : IDisposable, IAsyncDisposable
+    internal sealed class DistributedContext : IDisposable, IAsyncDisposable
     {
         private readonly ShellContext _context;
         private volatile int _count;

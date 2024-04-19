@@ -54,7 +54,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             }
         }
 
-        private class CommandStepModel
+        private sealed class CommandStepModel
         {
             public string[] Commands { get; set; }
         }

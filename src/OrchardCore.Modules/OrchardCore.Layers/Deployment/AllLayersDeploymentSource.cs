@@ -19,7 +19,7 @@ namespace OrchardCore.Layers.Deployment
         public AllLayersDeploymentSource(
             ILayerService layerService,
             ISiteService siteService,
-            IOptions<ContentSerializerJsonOptions> serializationOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _layerService = layerService;
             _siteService = siteService;

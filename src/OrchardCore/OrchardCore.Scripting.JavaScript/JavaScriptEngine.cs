@@ -23,40 +23,7 @@ namespace OrchardCore.Scripting.JavaScript
 
         public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
-            var engine = new Engine(options =>
-            {
-                // Make JsonArray behave like JS array.
-                options.SetWrapObjectHandler(static (e, target, type) =>
-                {
-                    if (target is JsonArray)
-                    {
-                        var wrapped = new ObjectWrapper(e, target)
-                        {
-                            Prototype = e.Intrinsics.Array.PrototypeObject
-                        };
-                        return wrapped;
-                    }
-
-                    return new ObjectWrapper(e, target);
-                });
-
-                options.AddObjectConverter<JsonValueConverter>();
-
-                // We cannot access this[string] with anything else than JsonObject, otherwise itw will throw.
-                options.SetTypeResolver(new TypeResolver
-                {
-                    MemberFilter = static info =>
-                    {
-                        if (info.ReflectedType != typeof(JsonObject) && info.Name == "Item" && info is PropertyInfo p)
-                        {
-                            var parameters = p.GetIndexParameters();
-                            return parameters.Length != 1 || parameters[0].ParameterType != typeof(string);
-                        }
-
-                        return true;
-                    }
-                });
-            });
+            var engine = new Engine();
 
             foreach (var method in methods)
             {
@@ -78,7 +45,7 @@ namespace OrchardCore.Scripting.JavaScript
                 ThrowInvalidScopeTypeException();
             }
 
-            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string) entry.Key));
 
             var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
