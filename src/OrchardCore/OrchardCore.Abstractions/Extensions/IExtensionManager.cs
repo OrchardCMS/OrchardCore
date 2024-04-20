@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
@@ -8,6 +9,7 @@ namespace OrchardCore.Environment.Extensions
     {
         IExtensionInfo GetExtension(string extensionId);
         IEnumerable<IExtensionInfo> GetExtensions();
+        IEnumerable<Type> GetExportedExtensionTypes(IExtensionInfo extensionInfo);
         Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
         IEnumerable<IFeatureInfo> GetFeatures();

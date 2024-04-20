@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 
@@ -28,19 +27,7 @@ namespace OrchardCore.Environment.Extensions
 
         public void TryAdd(Type type, IFeatureInfo feature)
         {
-            _ = _features.AddOrUpdate(type, (t, f) => f, (curType, curFeature, newFeature) =>
-            {
-                // If the type is currently only mapped to the module, update it with the more specific feature.
-                if (curFeature != newFeature &&
-                    curFeature.Extension.Manifest.ModuleInfo.Id == curFeature.Id &&
-                    curFeature.Extension.Features.Contains(newFeature))
-                {
-                    Debug.WriteLine($"TypeFeatureProvider changed mapping of type '{curType}' from '{curFeature.Id}' to '{newFeature.Id}'.");
-                    return newFeature;
-                }
-
-                return curFeature;
-            }, feature);
+            _features.TryAdd(type, feature);
         }
     }
 }
