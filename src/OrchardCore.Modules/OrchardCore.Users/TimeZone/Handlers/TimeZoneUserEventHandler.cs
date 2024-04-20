@@ -15,13 +15,7 @@ public class TimeZoneUserEventHandler : UserEventHandlerBase
 
     public TimeZoneUserEventHandler(UserTimeZoneService userTimeZoneService) => _userTimeZoneService = userTimeZoneService;
 
-    public override async Task DeletedAsync(UserDeleteContext context)
-    {
-        await _userTimeZoneService.UpdateUserTimeZoneAsync(context.User);
-    }
+    public override async Task DeletedAsync(UserDeleteContext context) => await _userTimeZoneService.UpdateUserTimeZoneAsync(context.User);
 
-    public override async Task UpdatedAsync(UserUpdateContext context)
-    {
-        await _userTimeZoneService.UpdateUserTimeZoneAsync(context.User);
-    }
+    public override async Task UpdatedAsync(UserUpdateContext context) => await _userTimeZoneService.UpdateUserTimeZoneAsync(context.User);
 }
