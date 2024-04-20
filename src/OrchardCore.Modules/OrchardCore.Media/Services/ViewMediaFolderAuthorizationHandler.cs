@@ -46,7 +46,6 @@ namespace OrchardCore.Media.Services
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _contentManager = contentManager;
             _mediaOptions = options.Value;
-
             _mediaFieldsFolder = EnsureTrailingSlash(attachedMediaFieldFileService.MediaFieldsFolder);
             _usersFolder = EnsureTrailingSlash(_mediaOptions.AssetsUsersFolder);
         }
@@ -77,7 +76,6 @@ namespace OrchardCore.Media.Services
             // media fields we will check sub folders too.
             var i = path.IndexOf(PathSeparator);
             var folderPath = i >= 0 ? path[..i] : path;
-
             var directory = await _fileStore.GetDirectoryInfoAsync(folderPath);
             if (directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
             {
@@ -96,18 +94,21 @@ namespace OrchardCore.Media.Services
             if (IsAuthorizedFolder("/", path))
             {
                 await AuthorizeAsync(context, requirement, SecureMediaPermissions.ViewRootMedia);
+
                 return;
             }
 
             if (IsAuthorizedFolder(_mediaFieldsFolder, path) || IsDescendantOfAuthorizedFolder(_mediaFieldsFolder, path))
             {
                 await AuthorizeAttachedMediaFieldsFolderAsync(context, requirement, path);
+
                 return;
             }
 
             if (IsAuthorizedFolder(_usersFolder, path) || IsDescendantOfAuthorizedFolder(_usersFolder, path))
             {
                 await AuthorizeUsersFolderAsync(context, requirement, path);
+
                 return;
             }
 
@@ -218,13 +219,12 @@ namespace OrchardCore.Media.Services
         {
             // Ensure end trailing slash. childPath is already normalized.
             childPath += PathSeparator;
+
             return childPath.Equals(authorizedFolder, StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsDescendantOfAuthorizedFolder(string authorizedFolder, string childPath)
-        {
-            return childPath.StartsWith(authorizedFolder, StringComparison.OrdinalIgnoreCase);
-        }
+            => childPath.StartsWith(authorizedFolder, StringComparison.OrdinalIgnoreCase);
 
         private string EnsureTrailingSlash(string path) => _fileStore.NormalizePath(path) + PathSeparator;
     }

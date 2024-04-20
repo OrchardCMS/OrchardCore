@@ -18,7 +18,6 @@ namespace OrchardCore.Media.Services
             IOptions<MediaOptions> mediaOptions)
         {
             _next = next;
-
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
         }
 
@@ -28,6 +27,7 @@ namespace OrchardCore.Media.Services
             if (!validateAssetsRequestPath)
             {
                 await _next(context);
+
                 return;
             }
 

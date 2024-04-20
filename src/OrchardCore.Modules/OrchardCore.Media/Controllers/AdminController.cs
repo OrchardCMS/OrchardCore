@@ -578,8 +578,6 @@ namespace OrchardCore.Media.Controllers
         }
 
         private bool IsSpecialFolder(string path)
-        {
-            return string.Equals(path, _mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase) || string.Equals(path, _attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
-        }
+           => string.Equals(path, _mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase) || string.Equals(path, _attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -93,7 +93,6 @@ namespace OrchardCore.Media.Services
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
             options.MaxSecureFilesBrowserCacheDays = section.GetValue("MaxSecureFilesBrowserCacheDays", DefaultSecureFilesMaxBrowserCacheDays);
-
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
             options.ResizedCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.ResizedCacheMaxStale));
             options.RemoteCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.RemoteCacheMaxStale));

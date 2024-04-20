@@ -134,7 +134,6 @@ namespace OrchardCore.Media
         {
             // The ViewRootMedia permission must be implied by any subfolder permission.
             var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
-
             var result = new List<Permission>()
             {
                 ViewMedia,

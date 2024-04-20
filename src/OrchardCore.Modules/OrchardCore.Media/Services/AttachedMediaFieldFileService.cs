@@ -75,9 +75,7 @@ namespace OrchardCore.Media.Services
         /// </summary>
         /// <returns></returns>
         public string GetMediaFieldsTempSubFolder()
-        {
-            return _fileStore.Combine(MediaFieldsTempSubFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(_httpContextAccessor.HttpContext.User));
-        }
+            => _fileStore.Combine(MediaFieldsTempSubFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(_httpContextAccessor.HttpContext.User));
 
         private async Task EnsureGlobalDirectoriesAsync()
         {
