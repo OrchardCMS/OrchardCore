@@ -76,7 +76,7 @@ namespace OrchardCore.Google.Authentication.Drivers
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
             {

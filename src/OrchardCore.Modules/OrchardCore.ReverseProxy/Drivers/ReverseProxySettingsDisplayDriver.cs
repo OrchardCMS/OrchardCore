@@ -60,7 +60,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
