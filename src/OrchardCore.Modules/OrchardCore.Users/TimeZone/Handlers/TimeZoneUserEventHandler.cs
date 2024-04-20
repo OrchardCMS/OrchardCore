@@ -9,7 +9,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.TimeZone.Services;
 
 namespace OrchardCore.Users.TimeZone.Handlers;
-internal class TimeZoneUserEventHandler : UserEventHandlerBase
+public class TimeZoneUserEventHandler : UserEventHandlerBase
 {
     private readonly UserTimeZoneService _userTimeZoneService;
 
