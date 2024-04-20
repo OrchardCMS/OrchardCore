@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.ReCaptcha.Drivers;
 
-public class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
     private readonly ReCaptchaService _reCaptchaService;
@@ -30,6 +30,6 @@ public class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
             return null;
         }
 
-        return View("LoginFormReCaptcha_Edit", model).Location("Content:after");
+        return View("FormReCaptcha", model).Location("Content:after");
     }
 }

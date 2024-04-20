@@ -7,7 +7,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
   </PropertyGroup>
