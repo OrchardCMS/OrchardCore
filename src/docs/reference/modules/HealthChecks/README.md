@@ -1,4 +1,4 @@
-# Health Check (`OrchardCore.HealthChecks`)
+# Health Checks (`OrchardCore.HealthChecks`)
 
 This module enables the health checks feature from ASP.NET Core.
 
