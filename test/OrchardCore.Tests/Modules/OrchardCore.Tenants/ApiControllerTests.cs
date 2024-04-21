@@ -180,7 +180,7 @@ public class ApiControllerTests
         };
     }
 
-    private static HttpContext CreateHttpContext()
+    private static DefaultHttpContext CreateHttpContext()
     {
         var httpContext = new DefaultHttpContext
         {
@@ -197,7 +197,7 @@ public class ApiControllerTests
         return httpContext;
     }
 
-    private class FakeDataProtector : IDataProtector
+    private sealed class FakeDataProtector : IDataProtector
     {
         public IDataProtector CreateProtector(string purpose) => this;
 

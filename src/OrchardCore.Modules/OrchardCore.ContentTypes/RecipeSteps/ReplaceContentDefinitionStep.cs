@@ -81,7 +81,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private class ReplaceContentDefinitionStepModel
+        private sealed class ReplaceContentDefinitionStepModel
         {
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];

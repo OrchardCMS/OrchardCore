@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Drivers
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

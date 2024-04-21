@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
@@ -25,6 +27,7 @@ namespace OrchardCore.DisplayManagement
 
     public static class ShapeFactoryExtensions
     {
+        private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
         private static readonly ProxyGenerator _proxyGenerator = new();
         private static readonly Func<ValueTask<IShape>> _newShape = () => new(new Shape());
 
@@ -42,18 +45,27 @@ namespace OrchardCore.DisplayManagement
 
         private static IShape CreateShape(Type baseType)
         {
+            var shapeType = baseType;
+
             // Don't generate a proxy for shape types
-            if (typeof(IShape).IsAssignableFrom(baseType))
+            if (typeof(IShape).IsAssignableFrom(shapeType))
             {
-                var shape = Activator.CreateInstance(baseType) as IShape;
-                return shape;
+                return (IShape)Activator.CreateInstance(baseType);
             }
-            else
+
+            if (_proxyTypesCache.TryGetValue(baseType, out var proxyType))
             {
-                var options = new ProxyGenerationOptions();
-                options.AddMixinInstance(new ShapeViewModel());
-                return (IShape)_proxyGenerator.CreateClassProxy(baseType, options);
+                var model = new ShapeViewModel();
+                return (IShape)Activator.CreateInstance(proxyType, model, model, Array.Empty<IInterceptor>());
             }
+
+            var options = new ProxyGenerationOptions();
+            options.AddMixinInstance(new ShapeViewModel());
+            var shape = (IShape)_proxyGenerator.CreateClassProxy(baseType, options);
+
+            _proxyTypesCache.TryAdd(baseType, shape.GetType());
+
+            return shape;
         }
 
         public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)

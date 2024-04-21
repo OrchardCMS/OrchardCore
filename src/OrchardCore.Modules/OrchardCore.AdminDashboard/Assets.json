@@ -1,7 +1,6 @@
 [
     {
-      "generateSourceMaps": false,
-      "inputs": [
+        "inputs": [
         "Assets/scss/dashboard.scss"
       ],
       "output": "wwwroot/Styles/dashboard.css"

@@ -2,7 +2,7 @@ using Nest;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Mappings
 {
-    internal class ContainedPartModel
+    internal sealed class ContainedPartModel
     {
         [Keyword(Name = "Ids")]
         public string Ids { get; set; }

@@ -161,7 +161,9 @@ namespace OrchardCore.Tests.Apis.Context
             return Client.DeleteAsync("api/content/" + contentItemId);
         }
 
+#pragma warning disable CA1816 // Change SiteContext.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.
         public void Dispose()
+#pragma warning restore CA1816
         {
             Client?.Dispose();
         }
