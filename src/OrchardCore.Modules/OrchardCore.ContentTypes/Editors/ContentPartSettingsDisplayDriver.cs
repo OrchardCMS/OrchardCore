@@ -26,13 +26,12 @@ namespace OrchardCore.ContentTypes.Editors
         {
             var model = new ContentPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                context.Builder.Attachable(model.Attachable);
-                context.Builder.Reusable(model.Reusable);
-                context.Builder.WithDescription(model.Description);
-                context.Builder.WithDisplayName(model.DisplayName);
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.Attachable(model.Attachable);
+            context.Builder.Reusable(model.Reusable);
+            context.Builder.WithDescription(model.Description);
+            context.Builder.WithDisplayName(model.DisplayName);
 
             return Edit(contentPartDefinition);
         }

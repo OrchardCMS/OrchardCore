@@ -442,12 +442,11 @@ namespace OrchardCore.Users.Controllers
 
                     if (noInformationRequired)
                     {
-                        iUser = await this.RegisterUser(new RegisterViewModel()
+                        iUser = await this.RegisterUser(new RegisterUserForm()
                         {
                             UserName = externalLoginViewModel.UserName,
                             Email = externalLoginViewModel.Email,
                             Password = null,
-                            ConfirmPassword = null
                         }, S["Confirm your account"], _logger);
 
                         // If the registration was successful we can link the external provider and redirect the user.
@@ -559,12 +558,11 @@ namespace OrchardCore.Users.Controllers
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(
-                    new RegisterViewModel()
+                    new RegisterUserForm()
                     {
                         UserName = model.UserName,
                         Email = model.Email,
                         Password = model.Password,
-                        ConfirmPassword = model.ConfirmPassword
                     }, S["Confirm your account"], _logger);
 
                 if (iUser is null)
