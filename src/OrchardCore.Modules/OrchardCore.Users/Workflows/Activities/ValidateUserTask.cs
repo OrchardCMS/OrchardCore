@@ -73,10 +73,10 @@ namespace OrchardCore.Users.Workflows.Activities
                     }
                 }
 
-                return Outcomes("Authenticated");
+                return Outcomes(OrchardCoreConstants.Roles.Authenticated);
             }
 
-            return Outcomes("Anonymous");
+            return Outcomes(OrchardCoreConstants.Roles.Anonymous);
         }
     }
 }

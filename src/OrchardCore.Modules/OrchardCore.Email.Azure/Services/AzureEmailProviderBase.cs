@@ -210,7 +210,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             {
                 var data = new byte[attachment.Stream.Length];
 
-                attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
+                attachment.Stream.ReadExactly(data);
 
                 emailMessage.Attachments.Add(new EmailAttachment(attachment.Filename, contentType, new BinaryData(data)));
             }

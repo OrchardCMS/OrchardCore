@@ -58,7 +58,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SmsSettings.GroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -70,20 +70,19 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
         var model = new SmsSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-        {
-            if (string.IsNullOrEmpty(model.DefaultProvider))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
-            }
-            else
-            {
-                if (settings.DefaultProviderName != model.DefaultProvider)
-                {
-                    settings.DefaultProviderName = model.DefaultProvider;
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+        if (string.IsNullOrEmpty(model.DefaultProvider))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
+        }
+        else
+        {
+            if (settings.DefaultProviderName != model.DefaultProvider)
+            {
+                settings.DefaultProviderName = model.DefaultProvider;
+
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
         }
 

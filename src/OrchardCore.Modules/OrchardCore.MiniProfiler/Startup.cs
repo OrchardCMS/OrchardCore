@@ -19,7 +19,7 @@ namespace OrchardCore.MiniProfiler
         {
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(MiniProfilerFilter));
+                options.Filters.Add<MiniProfilerFilter>();
             });
 
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();

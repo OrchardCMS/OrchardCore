@@ -19,14 +19,13 @@ namespace OrchardCore.Workflows.Drivers
             }).Location("Content:before");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ActivityMetadata section, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ActivityMetadata section, IUpdateModel updater, UpdateEditorContext context)
         {
             var viewModel = new ActivityMetadataEditViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                section.Title = viewModel.Title?.Trim();
-            }
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            section.Title = viewModel.Title?.Trim();
 
             return await EditAsync(section, context);
         }

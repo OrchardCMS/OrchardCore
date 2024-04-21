@@ -101,17 +101,17 @@ namespace OrchardCore.DisplayManagement.Entities
             return null;
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TModel model, TSection section, IUpdateModel updater, BuildEditorContext context)
+        public virtual Task<IDisplayResult> UpdateAsync(TModel model, TSection section, IUpdateModel updater, UpdateEditorContext context)
         {
             return UpdateAsync(section, updater, context);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, BuildEditorContext context)
+        public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, UpdateEditorContext context)
         {
             return UpdateAsync(section, context);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TSection section, BuildEditorContext context)
+        public virtual Task<IDisplayResult> UpdateAsync(TSection section, UpdateEditorContext context)
         {
             return UpdateAsync(section, context.Updater, context.GroupId);
         }
