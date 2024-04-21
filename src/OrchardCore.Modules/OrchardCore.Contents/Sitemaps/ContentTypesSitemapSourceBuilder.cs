@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -118,7 +119,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType, StringComparison.Ordinal));
 
                     changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
                 }
@@ -138,7 +139,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType, StringComparison.Ordinal));
 
                     priorityIntValue = sitemapEntry.Priority;
                 }

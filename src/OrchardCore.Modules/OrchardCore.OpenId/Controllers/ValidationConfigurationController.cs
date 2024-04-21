@@ -47,6 +47,7 @@ namespace OrchardCore.OpenId.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
+        [Admin("OpenId/ValidationConfiguration", "OpenIdValidationConfiguration")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))

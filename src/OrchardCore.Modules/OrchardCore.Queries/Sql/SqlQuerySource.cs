@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
@@ -9,6 +10,7 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
+using OrchardCore.Json;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -19,17 +21,20 @@ namespace OrchardCore.Queries.Sql
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly TemplateOptions _templateOptions;
 
         public SqlQuerySource(
             ILiquidTemplateManager liquidTemplateManager,
             IDbConnectionAccessor dbConnectionAccessor,
             ISession session,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _templateOptions = templateOptions.Value;
         }
 
@@ -82,7 +87,7 @@ namespace OrchardCore.Queries.Sql
                 var results = new List<JsonObject>();
                 foreach (var document in queryResults)
                 {
-                    results.Add(JObject.FromObject(document));
+                    results.Add(JObject.FromObject(document, _jsonSerializerOptions));
                 }
 
                 sqlQueryResults.Items = results;

@@ -36,22 +36,22 @@ namespace OrchardCore.ContentFields.Settings
             var model = new MultiTextFieldSettingsViewModel();
             var settings = new MultiTextFieldSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.Required = model.Required;
-                settings.Hint = model.Hint;
-                try
-                {
-                    settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
-                }
-                catch
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                    return Edit(partFieldDefinition);
-                }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
+            settings.Required = model.Required;
+            settings.Hint = model.Hint;
+
+            try
+            {
+                settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
             }
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                return Edit(partFieldDefinition);
+            }
+
+            context.Builder.WithSettings(settings);
 
             return Edit(partFieldDefinition);
         }

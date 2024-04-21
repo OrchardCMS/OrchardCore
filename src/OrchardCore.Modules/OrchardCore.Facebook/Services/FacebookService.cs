@@ -12,6 +12,7 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public FacebookService(

@@ -60,25 +60,25 @@ namespace OrchardCore.Deployment.Steps
         {
             var model = new JsonRecipeDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            try
             {
-                try
+                var jObject = JObject.Parse(model.Json);
+                if (!jObject.ContainsKey("name"))
                 {
-                    var jObject = JObject.Parse(model.Json);
-                    if (!jObject.ContainsKey("name"))
-                    {
 
-                        updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
-                    }
-
+                    updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
                 }
-                catch (Exception)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
 
-                }
-                step.Json = model.Json;
             }
+            catch (Exception)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
+
+            }
+
+            step.Json = model.Json;
 
             return Edit(step);
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -43,7 +44,7 @@ namespace OrchardCore.Contents.Sitemaps
             {
                 // Test that content type is still valid to include in sitemap.
                 var typeIsValid = routeableContentTypeDefinitions
-                    .Any(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
+                    .Any(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
                 if (typeIsValid)
                 {
@@ -61,7 +62,7 @@ namespace OrchardCore.Contents.Sitemaps
             {
                 // Test that content types are still valid to include in sitemap.
                 var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
+                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, StringComparison.Ordinal)))
                     .Select(x => x.Name);
 
                 var queryResults = await _session.Query<ContentItem>()

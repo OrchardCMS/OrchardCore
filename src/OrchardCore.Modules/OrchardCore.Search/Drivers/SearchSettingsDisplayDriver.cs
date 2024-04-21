@@ -57,7 +57,7 @@ namespace OrchardCore.Search.Drivers
             .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, UpdateEditorContext context)
         {
             if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
             {
@@ -73,12 +73,11 @@ namespace OrchardCore.Search.Drivers
 
             var model = new SearchSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                section.ProviderName = model.ProviderName;
-                section.Placeholder = model.Placeholder;
-                section.PageTitle = model.PageTitle;
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            section.ProviderName = model.ProviderName;
+            section.Placeholder = model.Placeholder;
+            section.PageTitle = model.PageTitle;
 
             return await EditAsync(section, context);
         }

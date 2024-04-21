@@ -28,6 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
@@ -120,12 +121,11 @@ namespace OrchardCore.Taxonomies.Drivers
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
-                if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
+                await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+
+                if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                 {
-                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
-                    {
-                        model.RouteValues.TryAdd("Taxonomy" + contentItemId + ".SelectedContentItemId", viewModel.SelectedContentItemId);
-                    }
+                    model.RouteValues.TryAdd("Taxonomy" + contentItemId + ".SelectedContentItemId", viewModel.SelectedContentItemId);
                 }
             }
 

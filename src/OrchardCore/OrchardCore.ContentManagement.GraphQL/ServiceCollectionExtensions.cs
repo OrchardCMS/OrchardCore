@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
             services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
-            services.AddSingleton<ContentItemInterface>();
+            services.AddTransient<ContentItemInterface>();
 
             services.AddTransient<ContentItemType>();
 
@@ -32,10 +32,10 @@ namespace OrchardCore.ContentManagement.GraphQL
             return services;
         }
 
-        public static void AddWhereInputIndexPropertyProvider<IIndexType>(this IServiceCollection services)
-            where IIndexType : MapIndex
+        public static void AddWhereInputIndexPropertyProvider<TIndexType>(this IServiceCollection services)
+            where TIndexType : MapIndex
         {
-            services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<IIndexType>>();
+            services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<TIndexType>>();
         }
 
         /// <summary>

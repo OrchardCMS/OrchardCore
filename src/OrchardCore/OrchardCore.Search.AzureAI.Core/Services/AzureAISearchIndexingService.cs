@@ -73,11 +73,6 @@ public class AzureAISearchIndexingService
             lastTaskId = Math.Min(lastTaskId, taskId);
         }
 
-        if (indexSettings.Count == 0)
-        {
-            return;
-        }
-
         var tasks = new List<IndexingTask>();
 
         var allContentTypes = indexSettings.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToList();

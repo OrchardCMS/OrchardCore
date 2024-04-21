@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -18,6 +19,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Recipes.Controllers
 {
+    [Admin("Recipes/{action}", "Recipes{action}")]
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
@@ -55,6 +57,7 @@ namespace OrchardCore.Recipes.Controllers
             _logger = logger;
         }
 
+        [Admin("Recipes", "Recipes")]
         public async Task<ActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))

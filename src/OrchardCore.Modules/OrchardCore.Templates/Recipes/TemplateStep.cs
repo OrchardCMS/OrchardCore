@@ -15,7 +15,8 @@ namespace OrchardCore.Templates.Recipes
     {
         private readonly TemplatesManager _templatesManager;
 
-        public TemplateStep(TemplatesManager templatesManager)
+        public TemplateStep(
+            TemplatesManager templatesManager)
         {
             _templatesManager = templatesManager;
         }

@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : BackgroundService
+    internal sealed class ModularBackgroundService : BackgroundService
     {
         private static readonly TimeSpan _pollingTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(10);
@@ -325,7 +325,7 @@ namespace OrchardCore.Modules
                         }
 
                         settings ??= task.GetDefaultSettings();
-                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
+                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule, StringComparison.Ordinal))
                         {
                             scheduler.ReferenceTime = referenceTime;
                         }
