@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
@@ -39,6 +40,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
@@ -62,6 +64,7 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
+            IShellFeaturesManager shellFeaturesManager,
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
@@ -76,6 +79,7 @@ namespace OrchardCore.Users.Controllers
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellFeaturesManager = shellFeaturesManager;
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
@@ -438,12 +442,11 @@ namespace OrchardCore.Users.Controllers
 
                     if (noInformationRequired)
                     {
-                        iUser = await this.RegisterUser(new RegisterViewModel()
+                        iUser = await this.RegisterUser(new RegisterUserForm()
                         {
                             UserName = externalLoginViewModel.UserName,
                             Email = externalLoginViewModel.Email,
                             Password = null,
-                            ConfirmPassword = null
                         }, S["Confirm your account"], _logger);
 
                         // If the registration was successful we can link the external provider and redirect the user.
@@ -555,12 +558,11 @@ namespace OrchardCore.Users.Controllers
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(
-                    new RegisterViewModel()
+                    new RegisterUserForm()
                     {
                         UserName = model.UserName,
                         Email = model.Email,
                         Password = model.Password,
-                        ConfirmPassword = model.ConfirmPassword
                     }, S["Confirm your account"], _logger);
 
                 if (iUser is null)
@@ -859,6 +861,14 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
         {
+            var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+
+            if (!registrationFeatureIsAvailable)
+            {
+                return false;
+            }
+
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail)
             {

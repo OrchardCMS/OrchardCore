@@ -44,10 +44,9 @@ namespace OrchardCore.Lists.Drivers
             }
 
             var viewModel = new EditContainedPartViewModel();
+            await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container.
                 // Render the container id as part of the form. The content type, and the enable ordering setting.
@@ -74,12 +73,11 @@ namespace OrchardCore.Lists.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var viewModel = new EditContainedPartViewModel();
+            await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 await model.AlterAsync<ContainedPart>(async part =>
                 {
