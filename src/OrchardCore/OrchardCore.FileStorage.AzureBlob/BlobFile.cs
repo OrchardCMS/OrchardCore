@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 namespace OrchardCore.FileStorage.AzureBlob
 {
@@ -25,6 +26,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 _directoryPath = _path[..^(_name.Length + 1)];
             }
 
+            _name = WebUtility.UrlDecode(_name);
             _length = length;
             _lastModified = lastModified;
         }
