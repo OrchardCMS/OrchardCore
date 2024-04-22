@@ -56,7 +56,7 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the claims to be removed from the user claims.
         /// </summary>
-        public IDictionary<string, string> ClaimsToRemove { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ClaimsToRemove { get; set; } = new();
 
         /// <summary>
         /// Gets the user properties to update the user
