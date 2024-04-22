@@ -32,9 +32,9 @@ namespace OrchardCore.Twitter
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), twitter => twitter
-                        .AddClass("twitter")
-                        .Id("twitter")
+                    .Add(S["Sign in with X"], S["Sign in with X"].PrefixPosition(), x => x
+                        .AddClass("x")
+                        .Id("x")
                         .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageTwitterSignin)
                         .LocalNav())
@@ -71,8 +71,8 @@ namespace OrchardCore.Twitter
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Twitter"], S["Twitter"].PrefixPosition(), twitter => twitter
-                            .AddClass("twitter").Id("twitter")
+                        .Add(S["X"], S["X"].PrefixPosition(), twitter => twitter
+                            .AddClass("x").Id("x")
                             .Action("Index", "Admin", _routeValues)
                             .Permission(Permissions.ManageTwitter)
                             .LocalNav()

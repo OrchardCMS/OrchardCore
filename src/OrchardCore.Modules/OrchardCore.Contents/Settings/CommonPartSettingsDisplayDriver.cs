@@ -24,10 +24,9 @@ namespace OrchardCore.Lists.Settings
         {
             var model = new CommonPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                context.Builder.WithSettings(new CommonPartSettings { DisplayDateEditor = model.DisplayDateEditor, DisplayOwnerEditor = model.DisplayOwnerEditor });
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.WithSettings(new CommonPartSettings { DisplayDateEditor = model.DisplayDateEditor, DisplayOwnerEditor = model.DisplayOwnerEditor });
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
