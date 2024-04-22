@@ -243,7 +243,7 @@ namespace OrchardCore.Roles.Controllers
             var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
+                var feature = _typeFeatureProvider.GetFeaturesForDependency(permissionProvider.GetType());
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)

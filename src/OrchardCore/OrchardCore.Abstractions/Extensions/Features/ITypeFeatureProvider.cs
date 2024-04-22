@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
@@ -9,7 +10,8 @@ namespace OrchardCore.Environment.Extensions
     /// </summary>
     public interface ITypeFeatureProvider
     {
-        IFeatureInfo GetFeatureForDependency(Type dependency);
+        IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency);
+
         void TryAdd(Type type, IFeatureInfo feature);
     }
 }

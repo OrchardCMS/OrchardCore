@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions
 {
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
-        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features = new();
+        private readonly ConcurrentDictionary<Type, ConcurrentBag<IFeatureInfo>> _features = new();
 
-        public IFeatureInfo GetFeatureForDependency(Type dependency)
+        public IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency)
         {
             if (_features.TryGetValue(dependency, out var feature))
             {
@@ -20,7 +21,12 @@ namespace OrchardCore.Environment.Extensions
 
         public void TryAdd(Type type, IFeatureInfo feature)
         {
-            _features.TryAdd(type, feature);
+            _features.AddOrUpdate(type, (t) => [feature], (key, existing) =>
+            {
+                existing.Add(feature);
+
+                return existing;
+            });
         }
     }
 }

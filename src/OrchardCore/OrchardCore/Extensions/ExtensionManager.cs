@@ -6,10 +6,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Extensions.Utility;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -21,11 +26,16 @@ namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
+        private IFeatureInfo _applicationFeature;
+
         private readonly IApplicationContext _applicationContext;
 
         private readonly IExtensionDependencyStrategy[] _extensionDependencyStrategies;
         private readonly IExtensionPriorityStrategy[] _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IHostEnvironment _hostingEnvironment;
+        private readonly IServiceCollection _applicationServices;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IFeaturesProvider _featuresProvider;
 
         private FrozenDictionary<string, ExtensionEntry> _extensions;
@@ -44,6 +54,9 @@ namespace OrchardCore.Environment.Extensions
             IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
             IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
+            IHostEnvironment hostingEnvironment,
+            IServiceCollection applicationServices,
+            IServiceProvider serviceProvider,
             IFeaturesProvider featuresProvider,
             ILogger<ExtensionManager> logger)
         {
@@ -51,6 +64,9 @@ namespace OrchardCore.Environment.Extensions
             _extensionDependencyStrategies = extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray();
             _extensionPriorityStrategies = extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray();
             _typeFeatureProvider = typeFeatureProvider;
+            _hostingEnvironment = hostingEnvironment;
+            _applicationServices = applicationServices;
+            _serviceProvider = serviceProvider;
             _featuresProvider = featuresProvider;
             L = logger;
         }
@@ -288,7 +304,6 @@ namespace OrchardCore.Environment.Extensions
             await _semaphore.WaitAsync();
             try
             {
-
                 if (_isInitialized)
                 {
                     return;
@@ -323,9 +338,11 @@ namespace OrchardCore.Environment.Extensions
                     return Task.CompletedTask;
                 });
 
-                var loadedFeatures = new Dictionary<string, FeatureEntry>();
-
                 // Get all valid types from any extension
+
+                var allComponentTypes = loadedExtensions.SelectMany(extension =>
+                    extension.Value.ExportedTypes.Where(IsComponentType)).ToArray();
+
                 var allTypesByExtension = loadedExtensions.SelectMany(extension =>
                     extension.Value.ExportedTypes.Where(IsComponentType)
                     .Select(type => new
@@ -342,12 +359,128 @@ namespace OrchardCore.Environment.Extensions
                         group => group.Key,
                         group => group.Select(typesByExtension => typesByExtension.Type).ToArray());
 
+                var startupByFeatureTypes = typesByFeature.ToDictionary(x => x.Key, x => x.Value.Where(IsComponentType).Where(x => x.Name == "Startup" || typeof(IStartup).IsAssignableFrom(x)));
+
+                var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
+
+                var settings = new ShellSettings();
+
+                tenantServiceCollection.AddSingleton(settings);
+                tenantServiceCollection.AddSingleton(sp =>
+                {
+                    // Resolve it lazily as it's constructed lazily
+                    var shellSettings = sp.GetRequiredService<ShellSettings>();
+                    return shellSettings.ShellConfiguration;
+                });
+
+                // To not trigger features loading before it is normally done by 'ShellHost',
+                // init here the application feature in place of doing it in the constructor.
+                _applicationFeature = loadedExtensions.SelectMany(x => x.Value.ExtensionInfo.Features)
+                    .FirstOrDefault(x => x.Id == _hostingEnvironment.ApplicationName);
+
+                var applicationTypes = allTypesByExtension.Where(x => x.ExtensionEntry.ExtensionInfo.Id == _applicationFeature.Id)
+                    .Select(x => x.Type)
+                    .ToArray();
+
+                foreach (var startup in allComponentTypes.Where(t => typeof(IStartup).IsAssignableFrom(t)))
+                {
+                    tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), startup));
+                }
+
+                foreach (var rawStartup in allComponentTypes.Where(t => t.Name == "Startup"))
+                {
+                    // Startup classes inheriting from IStartup are already treated
+                    if (typeof(IStartup).IsAssignableFrom(rawStartup))
+                    {
+                        continue;
+                    }
+
+                    // Ignore Startup class from main application
+                    if (applicationTypes.Contains(rawStartup))
+                    {
+                        continue;
+                    }
+
+                    // Create a wrapper around this method
+                    var configureServicesMethod = rawStartup.GetMethod(
+                        nameof(IStartup.ConfigureServices),
+                        BindingFlags.Public | BindingFlags.Instance,
+                        null,
+                        CallingConventions.Any,
+                        [typeof(IServiceCollection)],
+                        null);
+
+                    var configureMethod = rawStartup.GetMethod(
+                        nameof(IStartup.Configure),
+                        BindingFlags.Public | BindingFlags.Instance);
+
+                    var orderProperty = rawStartup.GetProperty(
+                        nameof(IStartup.Order),
+                        BindingFlags.Public | BindingFlags.Instance);
+
+                    var configureOrderProperty = rawStartup.GetProperty(
+                        nameof(IStartup.ConfigureOrder),
+                        BindingFlags.Public | BindingFlags.Instance);
+
+                    // Add the startup class to the DI so we can instantiate it with
+                    // valid ctor arguments
+                    tenantServiceCollection.AddSingleton(rawStartup);
+
+                    tenantServiceCollection.AddSingleton<IStartup>(sp =>
+                    {
+                        var startupInstance = sp.GetService(rawStartup);
+                        return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
+                    });
+                }
+
+                var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+
+                var startups = shellServiceProvider.GetServices<IStartup>();
+
+                var loadedFeatures = new Dictionary<string, FeatureEntry>();
+
+                var typesByExtension = new Dictionary<string, Type[]>();
+
                 foreach (var loadedExtension in loadedExtensions)
                 {
-                    var extension = loadedExtension.Value;
-
-                    foreach (var feature in extension.ExtensionInfo.Features)
+                    foreach (var feature in loadedExtension.Value.ExtensionInfo.Features)
                     {
+                        if (startupByFeatureTypes.TryGetValue(feature.Id, out var loadedExtensionStartupTypes))
+                        {
+                            var resolvedStartups = startups.Where(x => loadedExtensionStartupTypes.Contains(x.GetType()));
+
+                            foreach (var resolvedStartup in resolvedStartups)
+                            {
+                                var serviceCollection = new ServiceCollection();
+
+                                resolvedStartup.ConfigureServices(serviceCollection);
+
+                                var attribute = resolvedStartup.GetType().GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+                                var exportedTypes = serviceCollection.Select(x => x.GetImplementationType())
+                                    .Where(x => x != null && x.IsClass && !x.IsAbstract && x.IsPublic)
+                                    .ToArray();
+
+                                foreach (var exportedType in exportedTypes)
+                                {
+                                    _typeFeatureProvider.TryAdd(exportedType, feature);
+                                }
+
+                                var featureId = attribute?.FeatureName ?? loadedExtension.Key;
+
+                                if (loadedFeatures.TryGetValue(featureId, out var entry))
+                                {
+                                    loadedFeatures[featureId] = new FeatureEntry(feature, entry.ExportedTypes.Concat(exportedTypes));
+                                }
+                                else
+                                {
+                                    loadedFeatures[featureId] = new FeatureEntry(feature, exportedTypes);
+                                }
+                            }
+
+                            continue;
+                        }
+
                         // Features can have no types
                         if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                         {
@@ -356,14 +489,12 @@ namespace OrchardCore.Environment.Extensions
                                 _typeFeatureProvider.TryAdd(type, feature);
                             }
                         }
-                        else
-                        {
-                            featureTypes = [];
-                        }
 
-                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes ?? []));
                     }
                 }
+
+                await shellServiceProvider.DisposeAsync();
 
                 // Feature infos and entries are ordered by priority and dependencies.
                 _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));

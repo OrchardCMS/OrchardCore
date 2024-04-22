@@ -51,11 +51,15 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var occurrence = iter;
                 var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
-                builder.Describe(shapeType)
-                    .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
+
+                foreach (var feature in _typeFeatureProvider.GetFeaturesForDependency(occurrence.ServiceType))
+                {
+                    builder.Describe(shapeType)
+                    .From(feature)
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
                         CreateDelegate(occurrence));
+                }
             }
 
             return ValueTask.CompletedTask;

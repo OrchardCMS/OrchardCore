@@ -27,29 +27,41 @@ namespace OrchardCore.Tests.Extensions
 
         public ExtensionManagerTests()
         {
+            var applicationCollection = new ServiceCollection();
+            var applicationProvider = applicationCollection.BuildServiceProvider();
+
             _moduleScopedExtensionManager = new ExtensionManager(
                 _applicationContext,
-                new[] { new ExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+                [new ExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 new TypeFeatureProvider(),
+                new StubHostingEnvironment(),
+                applicationCollection,
+                applicationProvider,
                 _moduleFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
 
             _themeScopedExtensionManager = new ExtensionManager(
                 _applicationContext,
-                new[] { new ExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+                [new ExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 new TypeFeatureProvider(),
+                new StubHostingEnvironment(),
+                applicationCollection,
+                applicationProvider,
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
 
             _moduleThemeScopedExtensionManager = new ExtensionManager(
                 _applicationContext,
-                new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+                [new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 new TypeFeatureProvider(),
+                new StubHostingEnvironment(),
+                applicationCollection,
+                applicationProvider,
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );

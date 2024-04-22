@@ -42,7 +42,7 @@ namespace OrchardCore.Mvc
             foreach (var controller in context.Result.Controllers)
             {
                 var controllerType = controller.ControllerType.AsType();
-                var blueprint = _typeFeatureProvider.GetFeatureForDependency(controllerType);
+                var blueprint = _typeFeatureProvider.GetFeaturesForDependency(controllerType);
 
                 if (blueprint != null)
                 {
