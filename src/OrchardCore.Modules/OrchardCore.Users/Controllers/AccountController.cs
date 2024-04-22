@@ -310,7 +310,7 @@ namespace OrchardCore.Users.Controllers
             {
                 try
                 {
-                    await item.UpdateUser(context);
+                    await item.UpdateUserAsync(context);
                 }
                 catch (Exception ex)
                 {
