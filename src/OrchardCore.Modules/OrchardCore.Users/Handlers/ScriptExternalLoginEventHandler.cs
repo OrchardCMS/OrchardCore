@@ -61,7 +61,8 @@ namespace OrchardCore.Users.Handlers
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
-                if (evaluationResult.propertiesToUpdate != null)
+
+                if (evaluationResult.propertiesToUpdate is not null)
                 {
                     var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
                     if (context.PropertiesToUpdate is not null)
