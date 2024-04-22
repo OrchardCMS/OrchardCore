@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Handlers
         /// Occurs when the user updated.
         /// </summary>
         /// <param name="context">The <see cref="UpdateUserContext"/>.</param>
-        Task UpdateUser(UpdateUserContext context);
+        Task UpdateUserAsync(UpdateUserContext context);
        
     }
 }
