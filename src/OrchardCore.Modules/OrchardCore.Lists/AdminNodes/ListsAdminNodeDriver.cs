@@ -31,10 +31,10 @@ namespace OrchardCore.Lists.AdminNodes
 
         public override IDisplayResult Edit(ListsAdminNode treeNode)
         {
-            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", model =>
+            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
             {
                 model.ContentType = treeNode.ContentType;
-                model.ContentTypes = GetContenTypesSelectList();
+                model.ContentTypes = await GetContentTypesSelectListAsync();
                 model.IconForContentItems = treeNode.IconForContentItems;
                 model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
                 model.IconForParentLink = treeNode.IconForParentLink;
@@ -45,23 +45,22 @@ namespace OrchardCore.Lists.AdminNodes
         {
             var model = new ListsAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix,
+            await updater.TryUpdateModelAsync(model, Prefix,
                 x => x.ContentType, x => x.IconForContentItems,
-                x => x.AddContentTypeAsParent, x => x.IconForParentLink))
-            {
-                treeNode.ContentType = model.ContentType;
-                treeNode.IconForContentItems = model.IconForContentItems;
-                treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
-                treeNode.IconForParentLink = model.IconForParentLink;
-            };
+                x => x.AddContentTypeAsParent, x => x.IconForParentLink);
+
+            treeNode.ContentType = model.ContentType;
+            treeNode.IconForContentItems = model.IconForContentItems;
+            treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
+            treeNode.IconForParentLink = model.IconForParentLink;
 
             return Edit(treeNode);
         }
 
-        private List<SelectListItem> GetContenTypesSelectList()
+        private async Task<List<SelectListItem>> GetContentTypesSelectListAsync()
         {
-            return _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(typeof(ListPart).Name, StringComparison.OrdinalIgnoreCase)))
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(ctd => ctd.DisplayName)
                 .Select(ctd => new SelectListItem { Value = ctd.Name, Text = ctd.DisplayName })
                 .ToList();

@@ -5,7 +5,7 @@
     <Title>OrchardCore ResourceManagement</Title>
     <Description>$(OCFrameworkDescription)
 
-    Provides Resource Management capabilities and useful TagHelpers for commonly used resources like JavaScript libraries and CSS files.</Description>
+      Provides Resource Management capabilities and useful TagHelpers for commonly used resources like JavaScript libraries and CSS files.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj" />
   </ItemGroup>
 
 </Project>

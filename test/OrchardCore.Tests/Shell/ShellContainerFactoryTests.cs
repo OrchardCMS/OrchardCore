@@ -1,23 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Modules;
 using OrchardCore.Tests.Stubs;
-using Xunit;
+using StartupBase = OrchardCore.Modules.StartupBase;
 
 namespace OrchardCore.Tests.Shell
 {
     public class ShellContainerFactoryTests
     {
-        private readonly IShellContainerFactory _shellContainerFactory;
+        private static readonly ShellSettings _uninitializedDefaultShell = new ShellSettings()
+            .AsDefaultShell()
+            .AsUninitialized();
+
+        private readonly ShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;
 
         public ShellContainerFactoryTests()
@@ -44,13 +42,17 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void CanRegisterDefaultServiceWithFeatureInfo()
+        public async Task CanRegisterDefaultServiceWithFeatureInfo()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
+
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
@@ -58,14 +60,18 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void CanReplaceDefaultServiceWithCustomService()
+        public async Task CanReplaceDefaultServiceWithCustomService()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(ReplaceServiceStartup));
             AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
+
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
@@ -74,10 +80,13 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void HostServiceLifeTimesShouldBePreserved()
+        public async Task HostServiceLifeTimesShouldBePreserved()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var singleton1 = container.GetRequiredService<ITestSingleton>();
             var singleton2 = container.GetRequiredService<ITestSingleton>();
@@ -107,11 +116,15 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
+        public async Task WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
         {
             var shellBlueprint = CreateBlueprint();
             AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
 
@@ -119,10 +132,14 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
+        public async Task WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
 
@@ -131,7 +148,7 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
-        private ShellBlueprint CreateBlueprint()
+        private static ShellBlueprint CreateBlueprint()
         {
             return new ShellBlueprint
             {
@@ -143,7 +160,7 @@ namespace OrchardCore.Tests.Shell
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false);
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
             shellBlueprint.Dependencies.Add(startupType, new FeatureEntry(featureInfo));
 
             return featureInfo;
@@ -153,15 +170,15 @@ namespace OrchardCore.Tests.Shell
         {
         }
 
-        private class TestService : ITestService
+        private sealed class TestService : ITestService
         {
         }
 
-        private class CustomTestService : ITestService
+        private sealed class CustomTestService : ITestService
         {
         }
 
-        private class RegisterServiceStartup : StartupBase
+        private sealed class RegisterServiceStartup : StartupBase
         {
             public override int Order => 1;
 
@@ -171,7 +188,7 @@ namespace OrchardCore.Tests.Shell
             }
         }
 
-        private class ReplaceServiceStartup : StartupBase
+        private sealed class ReplaceServiceStartup : StartupBase
         {
             public override int Order => 2;
 
@@ -187,31 +204,31 @@ namespace OrchardCore.Tests.Shell
 
         private interface ITestScoped { }
 
-        private class TestSingleton : ITestSingleton { }
+        private sealed class TestSingleton : ITestSingleton { }
 
-        private class TestTransient : ITestTransient { }
+        private sealed class TestTransient : ITestTransient { }
 
-        private class TestScoped : ITestScoped { }
+        private sealed class TestScoped : ITestScoped { }
 
         private interface ITwoHostSingletonsOfTheSameType { }
 
-        private class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private sealed class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
 
-        private class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private sealed class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
         private interface IHostSingletonAndScopedOfTheSameType { }
 
-        private class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
+        private sealed class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
 
-        private class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
+        private sealed class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
 
-        private class ServicesOfTheSameTypeStartup : StartupBase
+        private sealed class ServicesOfTheSameTypeStartup : StartupBase
         {
             public override int Order => 1;
 

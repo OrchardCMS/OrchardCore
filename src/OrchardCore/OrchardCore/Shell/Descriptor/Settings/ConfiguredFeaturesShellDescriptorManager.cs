@@ -63,9 +63,9 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             return Task.CompletedTask;
         }
 
-        private class ConfiguredFeatures
+        private sealed class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = new string[] { };
+            public string[] Features { get; set; } = [];
         }
     }
 }

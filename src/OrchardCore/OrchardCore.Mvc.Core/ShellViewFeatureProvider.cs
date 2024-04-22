@@ -31,7 +31,22 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
-            PopulateFeatureInternal(parts, feature);
+            // Check if the feature can be retrieved from the shell scope.
+            var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
+            if (viewsFeature is not null)
+            {
+                foreach (var descriptor in viewsFeature.ViewDescriptors)
+                {
+                    feature.ViewDescriptors.Add(descriptor);
+                }
+
+                return;
+            }
+
+            // Set it as a shell scope feature to be used later on.
+            ShellScope.SetFeature(feature);
+
+            PopulateFeatureInternal(feature);
 
             // Apply views feature providers registered at the tenant level.
             foreach (var provider in _featureProviders)
@@ -51,7 +66,7 @@ namespace OrchardCore.Mvc
             if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 var viewsFeature = new ViewsFeature();
-                PopulateFeatureInternal(parts, viewsFeature);
+                PopulateFeatureInternal(viewsFeature);
 
                 // Apply views feature providers registered at the tenant level.
                 foreach (var provider in _featureProviders)
@@ -66,7 +81,7 @@ namespace OrchardCore.Mvc
             }
         }
 
-        private void PopulateFeatureInternal(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
+        private void PopulateFeatureInternal(ViewsFeature feature)
         {
             // Retrieve mvc views feature providers but not this one.
             var mvcFeatureProviders = _applicationPartManager.FeatureProviders
@@ -115,8 +130,7 @@ namespace OrchardCore.Mvc
                     }
                 }
 
-                // Look for compiled views in the same assembly as the module
-
+                // Look for compiled views in the same assembly as the module.
                 if (module.Assembly.GetCustomAttributes<RazorCompiledItemAttribute>().Any())
                 {
                     assembliesWithViews.Add(module.Assembly);
@@ -124,7 +138,7 @@ namespace OrchardCore.Mvc
 
                 foreach (var assembly in assembliesWithViews)
                 {
-                    var applicationPart = new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) };
+                    var applicationPart = new ApplicationPart[] { new TenantCompiledRazorAssemblyPart(assembly) };
 
                     foreach (var provider in mvcFeatureProviders)
                     {

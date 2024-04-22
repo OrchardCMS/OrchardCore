@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.Contents.AuditTrail.Settings;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -24,7 +23,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private HashSet<string> _restoring = new HashSet<string>();
+        private readonly HashSet<string> _restoring = [];
 
         public AuditTrailContentHandler(
             YesSql.ISession session,
@@ -66,7 +65,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task RestoredAsync(RestoreContentContext context)
             => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Restored, context.ContentItem);
 
-        private async Task RecordAuditTrailEventAsync(string name, IContent content)
+        private async Task RecordAuditTrailEventAsync(string name, ContentItem content)
         {
             if (name != ContentAuditTrailEventConfiguration.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
             {

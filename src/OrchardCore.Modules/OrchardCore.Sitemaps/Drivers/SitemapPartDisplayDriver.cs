@@ -19,25 +19,24 @@ namespace OrchardCore.Sitemaps.Drivers
         {
             var viewModel = new SitemapPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel,
+            await updater.TryUpdateModelAsync(viewModel,
                 Prefix,
                 t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
                 t => t.Exclude,
                 t => t.Priority
-                ))
-            {
-                model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
-                model.ChangeFrequency = viewModel.ChangeFrequency;
-                model.Exclude = viewModel.Exclude;
-                model.Priority = viewModel.Priority;
-            }
+                );
+
+            model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
+            model.ChangeFrequency = viewModel.ChangeFrequency;
+            model.Exclude = viewModel.Exclude;
+            model.Priority = viewModel.Priority;
 
             return Edit(model);
         }
 
 
-        private void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
+        private static void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
         {
             model.OverrideSitemapConfig = part.OverrideSitemapConfig;
             model.ChangeFrequency = part.ChangeFrequency;

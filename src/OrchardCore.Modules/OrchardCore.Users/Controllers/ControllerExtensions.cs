@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
-using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -23,7 +23,7 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var smtpService = controller.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
+            var emailService = controller.HttpContext.RequestServices.GetRequiredService<IEmailService>();
             var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
             var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
             var body = string.Empty;
@@ -40,36 +40,53 @@ namespace OrchardCore.Users.Controllers
                 To = email,
                 Subject = subject,
                 Body = body,
-                IsBodyHtml = true
+                IsHtmlBody = true
             };
 
-            var result = await smtpService.SendAsync(message);
+            var result = await emailService.SendAsync(message);
 
             return result.Succeeded;
         }
 
         /// <summary>
-        /// Returns the created user, otherwise returns null
+        /// Returns the created user, otherwise returns null.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="model"></param>
         /// <param name="confirmationEmailSubject"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        internal static async Task<IUser> RegisterUser(this Controller controller, RegisterViewModel model, string confirmationEmailSubject, ILogger logger)
+        internal static async Task<IUser> RegisterUser(this Controller controller, RegisterUserForm model, string confirmationEmailSubject, ILogger logger)
         {
-            var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IEnumerable<IRegistrationFormEvents>>();
-            var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
+            var shellFeaturesManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
+
+            var registrationFeatureIsAvailable = (await shellFeaturesManager.GetAvailableFeaturesAsync())
+               .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+
+            if (!registrationFeatureIsAvailable)
+            {
+                return null;
+            }
+
             var settings = (await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSiteSettingsAsync()).As<RegistrationSettings>();
-            var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
 
             if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
             {
+                var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
+
                 await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
 
                 if (controller.ModelState.IsValid)
                 {
-                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
+                    var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
+
+                    var user = await userService.CreateUserAsync(new User
+                    {
+                        UserName = model.UserName,
+                        Email = model.Email,
+                        EmailConfirmed = !settings.UsersMustValidateEmail,
+                        IsEnabled = !settings.UsersAreModerated
+                    }, model.Password, controller.ModelState.AddModelError) as User;
 
                     if (user != null && controller.ModelState.IsValid)
                     {
@@ -81,6 +98,8 @@ namespace OrchardCore.Users.Controllers
                         }
                         else if (!(settings.UsersAreModerated && !user.IsEnabled))
                         {
+                            var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
+
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
                         logger.LogInformation(3, "User created a new account with password.");
@@ -90,6 +109,7 @@ namespace OrchardCore.Users.Controllers
                     }
                 }
             }
+
             return null;
         }
 

@@ -1,31 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
 using OrchardCore.Email;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
 {
     public class EmailTaskTests
     {
-        private static readonly IDictionary<string, object> EmptyDictionary = new Dictionary<string, object>();
+        private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
+
         [Fact]
-        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
+        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFail()
         {
             // Arrange
-            var smtpService = CreateSmtpService(new SmtpSettings());
+            var emailService = CreateSmtpService(new SmtpOptions()
+            {
+                IsEnabled = true,
+            });
+
             var task = new EmailTask(
-                smtpService,
+                emailService,
                 new SimpleWorkflowExpressionEvaluator(),
                 Mock.Of<IStringLocalizer<EmailTask>>(),
                 HtmlEncoder.Default)
@@ -37,12 +33,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             var executionContext = new WorkflowExecutionContext(
                 new WorkflowType(),
                 new Workflow(),
-                EmptyDictionary,
-                EmptyDictionary,
-                EmptyDictionary,
-                new List<ExecutedActivity>(),
+                _emptyDictionary,
+                _emptyDictionary,
+                _emptyDictionary,
+                [],
                 default,
-                Enumerable.Empty<ActivityContext>());
+                []);
             var activityContext = Mock.Of<ActivityContext>();
 
             // Act
@@ -52,19 +48,38 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             Assert.Equal("Failed", result.Outcomes.First());
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static DefaultEmailService CreateSmtpService(SmtpOptions smtpOptions)
         {
-            var options = new Mock<IOptions<SmtpSettings>>();
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var options = new Mock<IOptions<SmtpOptions>>();
+            var logger = new Mock<ILogger<SmtpEmailProvider>>();
+            var logger2 = new Mock<ILogger<DefaultEmailService>>();
 
-            options.Setup(o => o.Value).Returns(settings);
+            var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
+            var emailServiceLocalizer = new Mock<IStringLocalizer<DefaultEmailService>>();
+            var emailValidator = new Mock<IEmailAddressValidator>();
 
-            return smtp;
+            emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
+                .Returns(true);
+
+            options.Setup(o => o.Value)
+                .Returns(smtpOptions);
+
+            var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
+
+            var resolver = new Mock<IEmailProviderResolver>();
+            resolver.Setup(x => x.GetAsync(It.IsAny<string>()))
+                .ReturnsAsync(smtp);
+
+            var emailService = new Mock<IEmailService>();
+
+            return new DefaultEmailService(
+                resolver.Object,
+                [],
+                logger2.Object,
+                emailServiceLocalizer.Object);
         }
 
-        private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
+        private sealed class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {
             public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
                 => await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T)));

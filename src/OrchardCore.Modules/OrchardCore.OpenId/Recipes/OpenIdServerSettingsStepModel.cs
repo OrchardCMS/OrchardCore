@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
@@ -20,6 +19,8 @@ namespace OrchardCore.OpenId.Recipes
         public bool EnableAuthorizationEndpoint { get; set; }
         public bool EnableLogoutEndpoint { get; set; }
         public bool EnableUserInfoEndpoint { get; set; }
+        public bool EnableIntrospectionEndpoint { get; set; }
+        public bool EnableRevocationEndpoint { get; set; }
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
@@ -27,6 +28,7 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool DisableRollingRefreshTokens { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public bool UseReferenceAccessTokens { get; set; }
     }

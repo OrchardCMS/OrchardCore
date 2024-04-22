@@ -14,7 +14,7 @@ namespace OrchardCore.Localization
     {
         private const string CacheKeyPrefix = "CultureDictionary-";
 
-        private static readonly PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
+        private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n != 1 ? 1 : 0);
 
         private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
         private readonly IEnumerable<ITranslationProvider> _translationProviders;
@@ -41,7 +41,7 @@ namespace OrchardCore.Localization
         {
             var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
             {
-                var rule = DefaultPluralRule;
+                var rule = _defaultPluralRule;
 
                 foreach (var provider in _pluralRuleProviders)
                 {
@@ -51,7 +51,7 @@ namespace OrchardCore.Localization
                     }
                 }
 
-                var dictionary = new CultureDictionary(culture.Name, rule ?? DefaultPluralRule);
+                var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
                 foreach (var translationProvider in _translationProviders)
                 {
                     translationProvider.LoadTranslations(culture.Name, dictionary);

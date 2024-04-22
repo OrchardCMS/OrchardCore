@@ -4,9 +4,11 @@ using System.Collections.Specialized;
 
 namespace OrchardCore.ResourceManagement
 {
+#pragma warning disable CA1010 // Type 'ResourceDictionary' directly or indirectly inherits 'ICollection' without implementing any of 'ICollection<T>', 'IReadOnlyCollection<T>'. Publicly-visible types should implement the generic version to broaden usability.
     public class ResourceDictionary : OrderedDictionary
+#pragma warning restore CA1010
     {
-        private readonly Stack<ResourceDefinition> _expanding = new Stack<ResourceDefinition>();
+        private readonly Stack<ResourceDefinition> _expanding = new();
 
         public int FirstCount { get; private set; }
         public int LastCount { get; private set; }

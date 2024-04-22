@@ -2,15 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Json;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.UserTasks.Activities;
@@ -25,7 +29,9 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHtmlLocalizer H;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        protected readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,
@@ -33,6 +39,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _workflowStore = workflowStore;
@@ -40,6 +47,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             _workflowManager = workflowManager;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
 
             H = localizer;
         }
@@ -63,7 +71,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
             if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
-                action = action.Substring("user-task.".Length);
+                action = action["user-task.".Length..];
 
                 var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
 
@@ -77,7 +85,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         Name = nameof(UserTaskEvent),
                         ContentType = model.ContentType,
-                        ContentItemId = model.ContentItemId
+                        ContentItemId = model.ContentItemId,
+                        ContentItemVersionId = model.ContentItemVersionId,
                     };
 
                     var input = new Dictionary<string, object>
@@ -101,7 +110,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
             var actionsQuery =
                 from workflow in workflows
-                let workflowState = workflow.State.ToObject<WorkflowState>()
+                let workflowState = workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions)
                 from blockingActivity in workflow.BlockingActivities
                 where blockingActivity.Name == nameof(UserTaskEvent)
                 from action in GetUserTaskActions(workflowState, blockingActivity.ActivityId, userRoles)
@@ -116,7 +125,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             {
                 var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 
-                if (activity.Roles.Any() && !userRoles.Any(x => activity.Roles.Contains(x)))
+                if (activity.Roles.Count > 0 && !userRoles.Any(activity.Roles.Contains))
                     yield break;
 
                 foreach (var action in activity.Actions)

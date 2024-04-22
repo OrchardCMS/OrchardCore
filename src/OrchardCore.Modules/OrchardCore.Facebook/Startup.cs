@@ -9,6 +9,7 @@ using OrchardCore.Facebook.Drivers;
 using OrchardCore.Facebook.Filters;
 using OrchardCore.Facebook.Recipes;
 using OrchardCore.Facebook.Services;
+using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -35,10 +36,11 @@ namespace OrchardCore.Facebook
             services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+            services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(FBInitFilter));
+                options.Filters.Add<FBInitFilter>();
             });
         }
     }

@@ -1,21 +1,23 @@
+using System;
 using System.Threading.Tasks;
+using Esprima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> localizer)
+        public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> stringLocalizer)
         {
-            S = localizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
@@ -35,20 +37,33 @@ namespace OrchardCore.ContentFields.Settings
             if (partFieldDefinition.Editor() == "Trumbowyg")
             {
                 var model = new TrumbowygSettingsViewModel();
-                var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!model.Options.IsJson())
+                try
                 {
-                    context.Updater.ModelState.AddModelError(Prefix + '.' + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
-                }
-                else
-                {
-                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-                    settings.Options = model.Options;
+                    var options = model.Options.Trim();
+
+                    if (!options.StartsWith('{') || !options.EndsWith('}'))
+                    {
+                        throw new Exception();
+                    }
+
+                    var parser = new JavaScriptParser();
+
+                    var optionsScript = parser.ParseScript("var config = " + options);
+
+                    var settings = new HtmlFieldTrumbowygEditorSettings
+                    {
+                        InsertMediaWithUrl = model.InsertMediaWithUrl,
+                        Options = options
+                    };
 
                     context.Builder.WithSettings(settings);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
             }
 

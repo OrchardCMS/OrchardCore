@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +29,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -39,16 +40,16 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }

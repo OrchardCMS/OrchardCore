@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Rules.Drivers;
@@ -17,8 +16,7 @@ namespace OrchardCore.Rules
             services.AddOptions<ConditionOptions>();
 
             // Rule services.
-            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>()
-                .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
+            services
                 .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
                 .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
@@ -28,60 +26,49 @@ namespace OrchardCore.Rules
                 .AddScoped<IRuleMigrator, RuleMigrator>();
 
             // All condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, AllConditionDisplayDriver>()
-                .AddCondition<AllConditionGroup, AllConditionEvaluator, ConditionFactory<AllConditionGroup>>();
+            services.AddRule<AllConditionGroup, AllConditionEvaluator, AllConditionDisplayDriver>();
 
             // Any condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, AnyConditionDisplayDriver>()
-                .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>();
+            services.AddRule<AnyConditionGroup, AnyConditionEvaluator, AnyConditionDisplayDriver>();
 
             // Boolean condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
-                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+            services.AddRule<BooleanCondition, BooleanConditionEvaluator, BooleanConditionDisplayDriver>();
 
             // Homepage condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, HomepageConditionDisplayDriver>()
-                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
+            services.AddRule<HomepageCondition, HomepageConditionEvaluator, HomepageConditionDisplayDriver>();
 
             // Url condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
-                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
+            services.AddRule<UrlCondition, UrlConditionEvaluator, UrlConditionDisplayDriver>();
 
             // Culture condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, CultureConditionDisplayDriver>()
-                .AddCondition<CultureCondition, CultureConditionEvaluator, ConditionFactory<CultureCondition>>();
+            services.AddRule<CultureCondition, CultureConditionEvaluator, CultureConditionDisplayDriver>();
 
             // Role condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
-                .AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
+            services.AddRule<RoleCondition, RoleConditionEvaluator, RoleConditionDisplayDriver>();
 
-            // Javascript condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
-                .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>();
+            // JavaScript condition.
+            services.AddRule<JavascriptCondition, JavascriptConditionEvaluator, JavascriptConditionDisplayDriver>();
 
             // Is authenticated condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, IsAuthenticatedConditionDisplayDriver>()
-                .AddCondition<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, ConditionFactory<IsAuthenticatedCondition>>();
+            services.AddRule<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, IsAuthenticatedConditionDisplayDriver>();
 
             // Is anonymous condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
-                .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();
+            services.AddRule<IsAnonymousCondition, IsAnonymousConditionEvaluator, IsAnonymousConditionDisplayDriver>();
 
             // Content type condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
-                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
-                .AddScoped<IContentDisplayDriver>(sp => (IContentDisplayDriver)sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
+            services.AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
+                .AddRuleCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
+                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
+
+            // Allows to serialize 'ConditionOperator' derived types
+            services.AddRuleConditionOperator<StringEqualsOperator>()
+                .AddRuleConditionOperator<StringNotEqualsOperator>()
+                .AddRuleConditionOperator<StringStartsWithOperator>()
+                .AddRuleConditionOperator<StringNotStartsWithOperator>()
+                .AddRuleConditionOperator<StringEndsWithOperator>()
+                .AddRuleConditionOperator<StringNotEndsWithOperator>()
+                .AddRuleConditionOperator<StringContainsOperator>()
+                .AddRuleConditionOperator<StringNotContainsOperator>();
         }
     }
 }

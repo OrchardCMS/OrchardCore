@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ namespace OrchardCore.Users.Drivers
     public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
     {
         public const string GroupId = "userLogin";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -22,15 +24,9 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(LoginSettings settings, BuildEditorContext context)
+
+        public override IDisplayResult Edit(LoginSettings settings)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
-            {
-                return null;
-            }
-
             return Initialize<LoginSettings>("LoginSettings_Edit", model =>
             {
                 model.UseSiteTheme = settings.UseSiteTheme;
@@ -38,22 +34,23 @@ namespace OrchardCore.Users.Drivers
                 model.DisableLocalLogin = settings.DisableLocalLogin;
                 model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
                 model.SyncRolesScript = settings.SyncRolesScript;
-            }).Location("Content:5").OnGroup(GroupId);
+                model.AllowChangingEmail = settings.AllowChangingEmail;
+                model.AllowChangingUsername = settings.AllowChangingUsername;
+                model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
+            }).Location("Content:5#General")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
+            .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, UpdateEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
+                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }
 
-            if (context.GroupId == GroupId)
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
 
             return await EditAsync(section, context);
         }

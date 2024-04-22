@@ -22,7 +22,7 @@ namespace OrchardCore.Forms.Filters
             base.OnActionExecuted(context);
         }
 
-        private bool IsRedirect(ActionExecutedContext context)
+        private static bool IsRedirect(ActionExecutedContext context)
         {
             var result = context.Result;
             var statusCode = context.HttpContext.Response.StatusCode;

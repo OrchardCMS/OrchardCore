@@ -6,6 +6,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 {
     public class DynamicCacheTagHelperService
     {
-        public ConcurrentDictionary<string, Task<IHtmlContent>> Workers = new ConcurrentDictionary<string, Task<IHtmlContent>>();
+        public ConcurrentDictionary<string, Task<IHtmlContent>> Workers = new();
     }
 }

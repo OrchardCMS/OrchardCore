@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -14,9 +12,9 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
-    /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
+    /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files.
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableHarvester
+    public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarvester
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -25,7 +23,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public ShapePlacementParsingStrategy(
             IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -33,18 +30,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             _placementParseMatchProviders = placementParseMatchProviders;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
             {
-                ProcessFeatureDescriptor(builder, featureDescriptor);
+                await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
             }
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
@@ -53,19 +50,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             if (virtualFileInfo.Exists)
             {
-                using (var stream = virtualFileInfo.CreateReadStream())
+                using var stream = virtualFileInfo.CreateReadStream();
+
+                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JOptions.Default);
+                if (placementFile is not null)
                 {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        using (var jtr = new JsonTextReader(reader))
-                        {
-                            JsonSerializer serializer = new JsonSerializer();
-                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                            ProcessPlacementFile(builder, featureDescriptor, placementFile);
-                        }
-                    }
+                    ProcessPlacementFile(builder, featureDescriptor, placementFile);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
@@ -80,14 +74,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
 
-                    if (matches.Any())
+                    if (matches.Count > 0)
                     {
                         predicate = matches.Aggregate(predicate, BuildPredicate);
                     }
 
-                    var placement = new PlacementInfo();
+                    var placement = new PlacementInfo
+                    {
+                        Location = filter.Location,
+                    };
 
-                    placement.Location = filter.Location;
                     if (filter.Alternates?.Length > 0)
                     {
                         placement.Alternates = new AlternatesCollection(filter.Alternates);
@@ -109,12 +105,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
         {
-            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
+            if (!string.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
             {
                 return false;
             }
 
-            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
+            if (!string.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
             {
                 return false;
             }
@@ -123,17 +119,17 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         }
 
         private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, JToken> term)
+              KeyValuePair<string, object> term)
         {
             return BuildPredicate(predicate, term, _placementParseMatchProviders);
         }
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
+                KeyValuePair<string, object> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
             if (placementMatchProviders != null)
             {
-                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
+                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key, StringComparison.Ordinal));
                 if (providersForTerm.Any())
                 {
                     var expression = term.Value;

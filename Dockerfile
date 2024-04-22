@@ -1,13 +1,21 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM --platform=$BUILDPLATFORM golang:alpine AS build
+ARG TARGETOS
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 LABEL stage=build-env
 WORKDIR /app
 
 # Copy and build
 COPY ./src /app
-RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release --framework net6.0
+COPY Directory.Build.props /
+
+RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release --framework net8.0 /p:RunAnalyzers=false
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS build_linux
+FROM build_${TARGETOS} AS aspnet
+
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app

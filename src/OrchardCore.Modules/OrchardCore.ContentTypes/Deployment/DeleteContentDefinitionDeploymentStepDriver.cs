@@ -10,6 +10,8 @@ namespace OrchardCore.ContentTypes.Deployment
 {
     public class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, DeleteContentDefinitionDeploymentStep>
     {
+        private static readonly char[] _separator = [' ', ','];
+
         public override IDisplayResult Display(DeleteContentDefinitionDeploymentStep step)
         {
             return
@@ -23,8 +25,8 @@ namespace OrchardCore.ContentTypes.Deployment
         {
             return Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
             {
-                model.ContentParts = String.Join(", ", step.ContentParts);
-                model.ContentTypes = String.Join(", ", step.ContentTypes);
+                model.ContentParts = string.Join(", ", step.ContentParts);
+                model.ContentTypes = string.Join(", ", step.ContentTypes);
             }).Location("Content");
         }
 
@@ -32,11 +34,10 @@ namespace OrchardCore.ContentTypes.Deployment
         {
             var model = new DeleteContentDefinitionStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                step.ContentTypes = model.ContentTypes.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                step.ContentParts = model.ContentParts.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-            }
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
             return Edit(step);
         }

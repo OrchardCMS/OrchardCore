@@ -17,7 +17,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILocalClock _localClock;
 
         public DateTimeFieldDisplayDriver(ILocalClock localClock,
@@ -55,23 +55,22 @@ namespace OrchardCore.ContentFields.Drivers
         {
             var model = new EditDateTimeFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime))
+            await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime);
+            var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
+
+            if (settings.Required && model.LocalDateTime == null)
             {
-                var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
-                if (settings.Required && model.LocalDateTime == null)
+                updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                if (model.LocalDateTime == null)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    field.Value = null;
                 }
                 else
                 {
-                    if (model.LocalDateTime == null)
-                    {
-                        field.Value = null;
-                    }
-                    else
-                    {
-                        field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
-                    }
+                    field.Value = await _localClock.ConvertToUtcAsync(model.LocalDateTime.Value);
                 }
             }
 

@@ -1,0 +1,7 @@
+@model ShapeViewModel<ShellSettingsEntry>
+@using OrchardCore.Environment.Shell
+
+@if (!Model.Value.ShellSettings.IsDefaultShell() && Model.Value.ShellSettings.IsRunning())
+{
+    <a asp-action="Features" asp-controller="Admin" asp-route-tenant="@Model.Value.Name" asp-route-returnUrl="" asp-area="OrchardCore.Features" class="btn btn-primary btn-sm enable">@T["Features"]</a>
+}

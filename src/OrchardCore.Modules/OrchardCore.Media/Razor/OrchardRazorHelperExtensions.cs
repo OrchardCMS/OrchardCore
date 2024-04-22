@@ -8,7 +8,9 @@ using OrchardCore.Media.Fields;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class OrchardRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns the relative URL of the specified asset path with optional resizing parameters.

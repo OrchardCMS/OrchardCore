@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Shell
         private readonly ShellSettings _shellSettings;
 
         // Cached across requests as this is called a lot and can be calculated once.
-        private readonly Dictionary<string, bool> _allowed = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, bool> _allowed = new(StringComparer.OrdinalIgnoreCase);
         private (bool NotFound, FeatureProfile FeatureProfile) _featureProfileLookup;
 
         public FeatureProfilesValidationProvider(
@@ -33,28 +33,32 @@ namespace OrchardCore.Environment.Shell
 
         public async ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            var featureProfileName = _shellSettings["FeatureProfile"];
-            if (String.IsNullOrEmpty(featureProfileName))
+            var profileNames = _shellSettings["FeatureProfile"];
+
+            if (string.IsNullOrWhiteSpace(profileNames))
             {
                 return true;
             }
 
             if (!_featureProfileLookup.NotFound)
             {
-                var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await scope.UsingAsync(async (scope) =>
                 {
                     var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
 
-                    var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
+                    var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    if (feauterProfiles.TryGetValue(featureProfileName, out var featureProfile))
+                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                     {
-                        _featureProfileLookup = (false, featureProfile);
-                    }
-                    else
-                    {
+                        if (featureProfiles.TryGetValue(profileName, out var featureProfile))
+                        {
+                            _featureProfileLookup = (false, featureProfile);
+
+                            continue;
+                        }
+
                         _featureProfileLookup = (true, null);
                     }
                 });

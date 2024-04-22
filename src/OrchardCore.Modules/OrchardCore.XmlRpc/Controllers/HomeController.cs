@@ -50,18 +50,16 @@ namespace OrchardCore.XmlRpc.Controllers
                 Indent = true
             };
 
-            // save to an intermediate MemoryStream to preserve the encoding declaration
-            using (var stream = new MemoryStream())
+            // Save to an intermediate MemoryStream to preserve the encoding declaration.
+            using var stream = new MemoryStream();
+            using (var w = XmlWriter.Create(stream, settings))
             {
-                using (XmlWriter w = XmlWriter.Create(stream, settings))
-                {
-                    var result = _writer.MapMethodResponse(methodResponse);
-                    result.Save(w);
-                }
-
-                var content = Encoding.UTF8.GetString(stream.ToArray());
-                return Content(content, "text/xml");
+                var result = _writer.MapMethodResponse(methodResponse);
+                result.Save(w);
             }
+
+            var content = Encoding.UTF8.GetString(stream.ToArray());
+            return Content(content, "text/xml");
         }
 
         private async Task<XRpcMethodResponse> DispatchAsync(XRpcMethodCall request)
@@ -83,8 +81,8 @@ namespace OrchardCore.XmlRpc.Controllers
             }
             catch (Exception e)
             {
-                // if a core exception is raised, report the error message, otherwise signal a 500
-                context.RpcMethodResponse = context.RpcMethodResponse ?? new XRpcMethodResponse();
+                // If a core exception is raised, report the error message, otherwise signal a 500.
+                context.RpcMethodResponse ??= new XRpcMethodResponse();
                 context.RpcMethodResponse.Fault = new XRpcFault(0, e.Message);
             }
 

@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
@@ -49,48 +49,47 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
+            var model = new EditYoutubeFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+            var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
+
+            if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
             {
-                var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
+                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                if (model.RawAddress != null)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
-                }
-                else
-                {
-                    if (model.RawAddress != null)
-                    {
-                        var uri = new Uri(model.RawAddress);
+                    var uri = new Uri(model.RawAddress);
 
-                        // if it is a url with QueryString
-                        if (!String.IsNullOrWhiteSpace(uri.Query))
+                    // If it is a url with QueryString.
+                    if (!string.IsNullOrWhiteSpace(uri.Query))
+                    {
+                        var query = QueryHelpers.ParseQuery(uri.Query);
+                        if (query.TryGetValue("v", out var values))
                         {
-                            var query = QueryHelpers.ParseQuery(uri.Query);
-                            if (query.ContainsKey("v"))
-                            {
-                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
-                            }
-                            else
-                            {
-                                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
-                            }
+                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{values}";
                         }
                         else
                         {
-                            var path = uri.AbsolutePath.Split('?')[0];
-                            model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
+                            updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                         }
-
-                        field.RawAddress = model.RawAddress;
-                        field.EmbeddedAddress = model.EmbeddedAddress;
                     }
                     else
                     {
-                        field.RawAddress = null;
-                        field.EmbeddedAddress = null;
+                        var path = uri.AbsolutePath.Split('?')[0];
+                        model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{path}";
                     }
+
+                    field.RawAddress = model.RawAddress;
+                    field.EmbeddedAddress = model.EmbeddedAddress;
+                }
+                else
+                {
+                    field.RawAddress = null;
+                    field.EmbeddedAddress = null;
                 }
             }
 

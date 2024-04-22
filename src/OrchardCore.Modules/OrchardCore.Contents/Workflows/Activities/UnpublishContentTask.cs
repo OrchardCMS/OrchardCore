@@ -12,7 +12,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class UnpublishContentTask : ContentTask
     {
-        public UnpublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UnpublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public UnpublishContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<UnpublishContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
@@ -29,14 +33,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var content = await GetContentAsync(workflowContext);
+            var content = (await GetContentAsync(workflowContext))
+                ?? throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
 
-            if (content == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
-            }
-
-            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }

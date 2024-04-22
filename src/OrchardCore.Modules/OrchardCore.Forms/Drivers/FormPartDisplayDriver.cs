@@ -18,6 +18,7 @@ namespace OrchardCore.Forms.Drivers
                 m.WorkflowTypeId = part.WorkflowTypeId;
                 m.EncType = part.EncType;
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
+                m.SaveFormLocation = part.SaveFormLocation;
             });
         }
 
@@ -25,14 +26,14 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new FormPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.Action = viewModel.Action?.Trim();
-                part.Method = viewModel.Method;
-                part.WorkflowTypeId = viewModel.WorkflowTypeId;
-                part.EncType = viewModel.EncType;
-                part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.Action = viewModel.Action?.Trim();
+            part.Method = viewModel.Method;
+            part.WorkflowTypeId = viewModel.WorkflowTypeId;
+            part.EncType = viewModel.EncType;
+            part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
+            part.SaveFormLocation = viewModel.SaveFormLocation;
 
             return Edit(part);
         }

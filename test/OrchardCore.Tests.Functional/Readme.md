@@ -1,6 +1,6 @@
 # Cypress e2e testing suite
 
-Run `npm install` followed by `npm run test` to build and host Orchard and run execute the functional tests.
+Run `npm install` followed by `npm run cms:test` to build and host Orchard and run execute the functional tests.
 
 To see use the cypress user interface, run these scripts
 ```bash

@@ -71,7 +71,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Factory(shapeType,
                 async ctx =>
                 {
-                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
                     await initializeAsync(shape);
                     return shape;
                 });
@@ -85,7 +85,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Factory(shapeType,
                 async ctx =>
                 {
-                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
                     initialize(shape);
                     return shape;
                 });
@@ -144,14 +144,8 @@ namespace OrchardCore.DisplayManagement.Handlers
                 .Prefix(Prefix);
         }
 
-        public CombinedResult Combine(params IDisplayResult[] results)
-        {
-            return new CombinedResult(results);
-        }
+        public static CombinedResult Combine(params IDisplayResult[] results) => new(results);
 
-        public CombinedResult Combine(IEnumerable<IDisplayResult> results)
-        {
-            return new CombinedResult(results);
-        }
+        public static CombinedResult Combine(IEnumerable<IDisplayResult> results) => new(results);
     }
 }

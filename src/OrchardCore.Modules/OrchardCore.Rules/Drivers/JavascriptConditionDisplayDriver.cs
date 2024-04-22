@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -10,13 +9,6 @@ namespace OrchardCore.Rules.Drivers
 {
     public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
-        private readonly ConditionOperatorOptions _options;
-
-        public JavascriptConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
-        {
-            _options = options.Value;
-        }
-
         public override IDisplayResult Display(JavascriptCondition condition)
         {
             return
@@ -38,11 +30,10 @@ namespace OrchardCore.Rules.Drivers
         public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, IUpdateModel updater)
         {
             var model = new JavascriptConditionViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                // TODO is empty.
-                condition.Script = model.Script;
-            }
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            // TODO is empty.
+            condition.Script = model.Script;
 
             return Edit(condition);
         }

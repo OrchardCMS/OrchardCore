@@ -16,9 +16,9 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private static IList<IFileProvider> _pageFileProviders;
+        private static List<IFileProvider> _pageFileProviders;
         private static Dictionary<string, string> _roots;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new();
 
         public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
         {
@@ -33,7 +33,7 @@ namespace OrchardCore.Mvc
                 {
                     var application = applicationContext.Application;
 
-                    _pageFileProviders = new List<IFileProvider>();
+                    _pageFileProviders = [];
                     var roots = new Dictionary<string, string>();
 
                     // Resolve all module projects roots.
@@ -57,8 +57,8 @@ namespace OrchardCore.Mvc
                             var index = asset.ModuleAssetPath.IndexOf(module.Root, StringComparison.Ordinal);
 
                             // Resolve the physical "{ModuleProjectDirectory}" from the project asset.
-                            var filePath = asset.ModuleAssetPath.Substring(index + module.Root.Length);
-                            var root = asset.ProjectAssetPath.Substring(0, asset.ProjectAssetPath.Length - filePath.Length);
+                            var filePath = asset.ModuleAssetPath[(index + module.Root.Length)..];
+                            var root = asset.ProjectAssetPath[..^filePath.Length];
 
                             // Get the first module project asset which is under a "Pages" folder.
                             var page = assets.FirstOrDefault(a => a.ProjectAssetPath.Contains("/Pages/"));
@@ -103,22 +103,22 @@ namespace OrchardCore.Mvc
             if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 // Remove "Areas/" from the folder path.
-                folder = folder.Substring(Application.ModulesRoot.Length);
+                folder = folder[Application.ModulesRoot.Length..];
                 var index = folder.IndexOf('/');
 
                 // "{ModuleId}/**".
                 if (index != -1)
                 {
                     // Resolve the module id.
-                    var module = folder.Substring(0, index);
+                    var module = folder[..index];
 
-                    // Try to get the module project root and
+                    // Try to get the module project root.
                     if (_roots.TryGetValue(module, out var root) &&
-                        // check for a final or an intermadiate "Pages" segment.
+                        // Check for a final or an intermadiate "Pages" segment.
                         (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
                     {
                         // Resolve the subpath relative to "{ModuleProjectDirectory}".
-                        folder = root + folder.Substring(module.Length + 1);
+                        folder = string.Concat(root, folder.AsSpan(module.Length + 1));
 
                         if (Directory.Exists(folder))
                         {
@@ -145,24 +145,24 @@ namespace OrchardCore.Mvc
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 // Skip the "Areas/" root folder.
-                path = path.Substring(Application.ModulesRoot.Length);
+                path = path[Application.ModulesRoot.Length..];
                 var index = path.IndexOf('/');
 
                 // "{ModuleId}/**/*.*".
                 if (index != -1)
                 {
                     // Resolve the module id.
-                    var module = path.Substring(0, index);
+                    var module = path[..index];
 
                     // Get the module root folder.
                     if (_roots.TryGetValue(module, out var root))
                     {
-                        // Resolve "{ModuleProjectDirectory}**/*.*"
-                        var filePath = root + path.Substring(module.Length + 1);
+                        // Resolve "{ModuleProjectDirectory}**/*.*".
+                        var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
 
                         if (File.Exists(filePath))
                         {
-                            //Serve the file from the physical file system.
+                            // Serve the file from the physical file system.
                             return new PhysicalFileInfo(new FileInfo(filePath));
                         }
                     }
@@ -185,20 +185,20 @@ namespace OrchardCore.Mvc
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal) && !path.Contains('*'))
             {
                 // Skip the "Areas/" root folder.
-                path = path.Substring(Application.ModulesRoot.Length);
+                path = path[Application.ModulesRoot.Length..];
                 var index = path.IndexOf('/');
 
                 // "{ModuleId}/**/*.*".
                 if (index != -1)
                 {
                     // Resolve the module id.
-                    var module = path.Substring(0, index);
+                    var module = path[..index];
 
                     // Get the module root folder.
                     if (_roots.TryGetValue(module, out var root))
                     {
-                        // Resolve "{ModuleProjectDirectory}**/*.*"
-                        var filePath = root + path.Substring(module.Length + 1);
+                        // Resolve "{ModuleProjectDirectory}**/*.*".
+                        var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
 
                         var directory = Path.GetDirectoryName(filePath);
                         var fileName = Path.GetFileNameWithoutExtension(filePath);
@@ -216,7 +216,7 @@ namespace OrchardCore.Mvc
 
             // The view engine uses a watch on "Pages/**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
-            else if (path.Equals("Pages/**/*.cshtml"))
+            else if (path.Equals("Pages/**/*.cshtml", StringComparison.Ordinal))
             {
                 var changeTokens = new List<IChangeToken>();
 
@@ -247,9 +247,6 @@ namespace OrchardCore.Mvc
             return NullChangeToken.Singleton;
         }
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/');
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/');
     }
 }

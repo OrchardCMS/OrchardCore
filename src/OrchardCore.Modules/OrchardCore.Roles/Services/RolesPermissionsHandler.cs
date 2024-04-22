@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -36,14 +35,14 @@ namespace OrchardCore.Roles
             }
 
             var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
+            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
             {
                 claims.Add(claim);
             }
 
             if (context.User.Identity.IsAuthenticated)
             {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
+                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
                 {
                     claims.Add(claim);
                 }
@@ -64,10 +63,8 @@ namespace OrchardCore.Roles
             {
                 return ((Role)role).RoleClaims;
             }
-            else
-            {
-                return Enumerable.Empty<RoleClaim>();
-            }
+
+            return [];
         }
     }
 }

@@ -8,7 +8,9 @@ namespace OrchardCore.PublishLater.ViewModels
     {
         [BindNever]
         public ContentItem ContentItem { get; set; }
+
         public DateTime? ScheduledPublishUtc { get; set; }
+
         public DateTime? ScheduledPublishLocalDateTime { get; set; }
     }
 }

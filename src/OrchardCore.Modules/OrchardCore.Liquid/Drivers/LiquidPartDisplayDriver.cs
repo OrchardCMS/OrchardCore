@@ -12,7 +12,7 @@ namespace OrchardCore.Liquid.Drivers
     public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
         {
@@ -24,9 +24,9 @@ namespace OrchardCore.Liquid.Drivers
         {
             return Combine(
                 Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 
@@ -39,22 +39,21 @@ namespace OrchardCore.Liquid.Drivers
         {
             var viewModel = new LiquidPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Liquid = viewModel.Liquid;
             }
 
             return Edit(model);
         }
 
-        private void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)
+        private static void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)
         {
             model.Liquid = liquidPart.Liquid;
             model.LiquidPart = liquidPart;

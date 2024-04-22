@@ -19,8 +19,8 @@ namespace OrchardCore.Mvc
     public class ShellFileVersionProvider : IFileVersionProvider
     {
         private const string VersionKey = "v";
-        private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
-        private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
+        private static readonly char[] _queryStringAndFragmentTokens = ['?', '#'];
+        private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
 
         private readonly IFileProvider[] _fileProviders;
         private readonly IMemoryCache _cache;
@@ -39,17 +39,14 @@ namespace OrchardCore.Mvc
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
             var resolvedPath = path;
 
-            var queryStringOrFragmentStartIndex = path.IndexOfAny(QueryStringAndFragmentTokens);
+            var queryStringOrFragmentStartIndex = path.IndexOfAny(_queryStringAndFragmentTokens);
             if (queryStringOrFragmentStartIndex != -1)
             {
-                resolvedPath = path.Substring(0, queryStringOrFragmentStartIndex);
+                resolvedPath = path[..queryStringOrFragmentStartIndex];
             }
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
@@ -72,7 +69,7 @@ namespace OrchardCore.Mvc
             // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
             {
-                if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))
+                if (_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
                 {
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
                 }
@@ -91,7 +88,7 @@ namespace OrchardCore.Mvc
                     requestPathBase.HasValue &&
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    resolvedPath = resolvedPath.Substring(requestPathBase.Value.Length);
+                    resolvedPath = resolvedPath[requestPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                     fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
@@ -102,7 +99,7 @@ namespace OrchardCore.Mvc
                     virtualPathBaseProvider.VirtualPathBase.HasValue &&
                     resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    resolvedPath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Value.Length);
+                    resolvedPath = resolvedPath[virtualPathBaseProvider.VirtualPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                     fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
@@ -128,20 +125,16 @@ namespace OrchardCore.Mvc
 
             // If the file is not in the current server, set cache so no further checks are done.
             cacheEntryOptions.SetSize(0);
-            _cache.Set(cacheKey, String.Empty, cacheEntryOptions);
+            _cache.Set(cacheKey, string.Empty, cacheEntryOptions);
             return path;
         }
 
         private static string GetHashForFile(IFileInfo fileInfo)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                using (var readStream = fileInfo.CreateReadStream())
-                {
-                    var hash = sha256.ComputeHash(readStream);
-                    return WebEncoders.Base64UrlEncode(hash);
-                }
-            }
+            using var sha256 = SHA256.Create();
+            using var readStream = fileInfo.CreateReadStream();
+            var hash = sha256.ComputeHash(readStream);
+            return WebEncoders.Base64UrlEncode(hash);
         }
     }
 }

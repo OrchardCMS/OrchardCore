@@ -25,21 +25,20 @@ namespace OrchardCore.ContentLocalization.Services
         public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
         {
             var viewModel = new LocalizationContentsAdminFilterViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, "Localization"))
-            {
-                // Show localization content items
-                // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
-                if (viewModel.ShowLocalizedContentTypes)
-                {
-                    var localizedTypes = _contentDefinitionManager
-                        .ListTypeDefinitions()
-                        .Where(x =>
-                            x.Parts.Any(p =>
-                                p.PartDefinition.Name == nameof(LocalizationPart)))
-                        .Select(x => x.Name);
+            await updater.TryUpdateModelAsync(viewModel, "Localization");
 
-                    query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));
-                }
+            // Show localization content items
+            // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
+            if (viewModel.ShowLocalizedContentTypes)
+            {
+                var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                    .Where(x =>
+                        x.Parts.Any(p =>
+                            p.PartDefinition.Name == nameof(LocalizationPart)))
+                    .Select(x => x.Name);
+
+                query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));
+
             }
         }
     }

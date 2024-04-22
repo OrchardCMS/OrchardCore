@@ -1,30 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
-using Xunit;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
     public class ResourceManagerTests
     {
-        private const string basePath = "http://host";
+        private const string BasePath = "http://host";
 
-        private readonly IBrowsingContext browsingContext;
+        private readonly IBrowsingContext _browsingContext;
 
         public ResourceManagerTests()
         {
-            browsingContext = BrowsingContext.New();
+            _browsingContext = BrowsingContext.New();
         }
 
         [Fact]
@@ -51,6 +41,38 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.Equal("bar2", resourceDefinition.Name);
             Assert.Contains("bar2", ((IDictionary<string, string>)resourceDefinition.Attributes).Values);
             Assert.Contains("attr", ((IDictionary<string, string>)resourceDefinition.Attributes).Keys);
+        }
+
+        [Fact]
+        public void FindHighestVersionedResourceFromManifest()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar1.js");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar2.js")
+                .SetVersion("1.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar3.js")
+                .SetVersion("2.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar4.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager(
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar" });
+            Assert.NotNull(resourceDefinition);
+            Assert.Equal("foo", resourceDefinition.Type);
+            Assert.Equal("bar", resourceDefinition.Name);
+            Assert.Contains("~/bar3.js", resourceDefinition.Url);
+            Assert.Contains("2.0.0", resourceDefinition.Version);
         }
 
         [Fact]
@@ -187,7 +209,7 @@ namespace OrchardCore.Tests.ResourceManagement
             manifest.DefineResource("foo", "required")
                 .SetDependencies("dependency");
             manifest.DefineResource("foo", "dependency")
-                .SetDependencies("required"); ;
+                .SetDependencies("required");
 
             options.ResourceManifests.Add(manifest);
 
@@ -553,8 +575,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlLinkElement>("link");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{basePath}/favicon.ico");
-            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{basePath}/pdf");
+            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico");
+            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{BasePath}/pdf");
         }
 
         [Fact]
@@ -596,18 +618,18 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlStyleElement>("style");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Href == $"{basePath}/dependency.css");
-            Assert.Contains(links, link => link.Href == $"{basePath}/required.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/dependency.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/required.css");
             Assert.Single(styles);
             Assert.Contains(styles, style => style.InnerHtml == customStyle);
             // Required stylesheet after its dependency
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/dependency.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/dependency.css")
                 .CompareDocumentPosition(
-                    links.First(link => link.Href == $"{basePath}/required.css")
+                    links.First(link => link.Href == $"{BasePath}/required.css")
                 )
             );
             // Custom style after resources
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/required.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/required.css")
                 .CompareDocumentPosition(
                     styles.First(style => style.InnerHtml == customStyle)
                 )
@@ -868,18 +890,17 @@ namespace OrchardCore.Tests.ResourceManagement
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
-            }
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath));
         }
 
         #endregion
 
         #region Stubs
-        private class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
+        private sealed class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
         {
             private readonly Action<ResourceManagementOptions> _configureManifestAction;
 
@@ -894,7 +915,7 @@ namespace OrchardCore.Tests.ResourceManagement
             }
         }
 
-        private class StubFileVersionProvider : IFileVersionProvider
+        private sealed class StubFileVersionProvider : IFileVersionProvider
         {
             public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
 

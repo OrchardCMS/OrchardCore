@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.Security
                     : context.Resource.ToString()
                     ;
 
-                if (!String.IsNullOrEmpty(contentType))
+                if (!string.IsNullOrEmpty(contentType))
                 {
                     permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
                 }

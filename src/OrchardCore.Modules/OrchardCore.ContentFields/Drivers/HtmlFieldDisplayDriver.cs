@@ -25,7 +25,7 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
@@ -84,18 +84,20 @@ namespace OrchardCore.ContentFields.Drivers
             var viewModel = new EditHtmlFieldViewModel();
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+            await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html))
+            if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
-                {
-                    var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
-                }
-                else
-                {
-                    field.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
-                }
+                var fieldName = context.PartFieldDefinition.DisplayName();
+                context.Updater.ModelState.AddModelError(
+                    Prefix,
+                    nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}",
+                    fieldName,
+                    string.Join(' ', errors)]);
+            }
+            else
+            {
+                field.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
             }
 
             return Edit(field, context);
