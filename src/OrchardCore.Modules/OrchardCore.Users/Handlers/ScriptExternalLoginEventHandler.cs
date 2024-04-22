@@ -52,7 +52,7 @@ namespace OrchardCore.Users.Handlers
             return string.Empty;
         }
 
-        public async Task UpdateUser(UpdateUserContext context)
+        public async Task UpdateUserAsync(UpdateUserContext context)
         {
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
