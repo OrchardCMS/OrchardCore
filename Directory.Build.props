@@ -33,7 +33,7 @@
     <!-- Avoid using cref tags with a prefix -->
     <NoWarn>$(NoWarn);CA1200</NoWarn>
 
-    <!--Rename type name X so that it does not end in 'Delegate', 'EventHandler', 'Permission' etc -->
+    <!-- Rename type name X so that it does not end in 'Delegate', 'EventHandler', 'Permission' etc -->
     <NoWarn>$(NoWarn);CA1711</NoWarn>
 
     <!-- Parameter name differs from original overriden implemented name -->
@@ -54,7 +54,7 @@
     <!-- Use PascalCase for named placeholders in the logging message template -->
     <NoWarn>$(NoWarn);CA1727</NoWarn>
 
-    <!--CA1861 : Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
+    <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
 
   </PropertyGroup>

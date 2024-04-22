@@ -49,7 +49,8 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
             catch (Exception e)
             {
                 _logger.LogError(e, "Unable to connect to Redis.");
-                throw;
+
+                return null;
             }
         })).Value;
 
