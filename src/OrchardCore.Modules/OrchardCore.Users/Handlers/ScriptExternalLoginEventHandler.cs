@@ -64,7 +64,7 @@ namespace OrchardCore.Users.Handlers
                 if (evaluationResult.propertiesToUpdate != null)
                 {
                     var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
-                    if (context.PropertiesToUpdate != null)
+                    if (context.PropertiesToUpdate is not null)
                     {
                         // Perhaps other provider will fill some values. we should keep exists value.
                         context.PropertiesToUpdate.Merge(result, _jsonMergeSettings);
