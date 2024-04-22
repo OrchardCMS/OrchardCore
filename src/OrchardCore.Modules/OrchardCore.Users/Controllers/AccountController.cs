@@ -330,6 +330,7 @@ namespace OrchardCore.Users.Controllers
                     MergeArrayHandling = MergeArrayHandling.Replace,
                     MergeNullValueHandling = MergeNullValueHandling.Merge
                 });
+
                 await _userManager.UpdateAsync(user);
             }
 
