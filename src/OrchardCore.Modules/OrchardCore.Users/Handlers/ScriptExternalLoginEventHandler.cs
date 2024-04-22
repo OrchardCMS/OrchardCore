@@ -21,6 +21,7 @@ namespace OrchardCore.Users.Handlers
             MergeArrayHandling = MergeArrayHandling.Union,
             MergeNullValueHandling = MergeNullValueHandling.Merge
         };
+
         public ScriptExternalLoginEventHandler(
             ISiteService siteService,
             IScriptingManager scriptingManager,
