@@ -51,32 +51,31 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+        
+        if (!_liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
         {
-            if (!_liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
-            }
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
+        }
 
-            if (!_liquidTemplateManager.Validate(viewModel.Summary, out var summaryErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
-            }
+        if (!_liquidTemplateManager.Validate(viewModel.Summary, out var summaryErrors))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
+        }
 
-            if (!_liquidTemplateManager.Validate(viewModel.TextBody, out var textBodyErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
-            }
+        if (!_liquidTemplateManager.Validate(viewModel.TextBody, out var textBodyErrors))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
+        }
 
-            if (!_liquidTemplateManager.Validate(viewModel.HtmlBody, out var htmlBodyErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
-            }
+        if (!_liquidTemplateManager.Validate(viewModel.HtmlBody, out var htmlBodyErrors))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
+        }
 
-            if (updater.ModelState.IsValid)
-            {
-                await UpdateActivityAsync(viewModel, model);
-            }
+        if (updater.ModelState.IsValid)
+        {
+            await UpdateActivityAsync(viewModel, model);
         }
 
         return Edit(model);

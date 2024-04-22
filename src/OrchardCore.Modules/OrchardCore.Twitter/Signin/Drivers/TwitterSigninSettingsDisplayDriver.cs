@@ -38,7 +38,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
+            return Initialize<TwitterSigninSettingsViewModel>("XSigninSettings_Edit", model =>
             {
                 if (settings.CallbackPath.HasValue)
                 {
@@ -48,7 +48,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Signin)
             {

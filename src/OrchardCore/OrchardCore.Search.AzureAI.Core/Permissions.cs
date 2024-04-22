@@ -30,7 +30,7 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
