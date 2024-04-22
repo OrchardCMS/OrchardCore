@@ -38,7 +38,7 @@ public class UserType : ObjectGraphType<User>
                     if (context.Source is User user &&
                         user.Properties.ContainsKey(context.FieldDefinition.ResolvedType.Name))
                     {
-                        var customUserSettingsService = context.RequestServices!.GetRequiredService<CustomUserSettingsService>();
+                        var customUserSettingsService = context.RequestServices.GetRequiredService<CustomUserSettingsService>();
                         var settingsType = await customUserSettingsService.GetSettingsTypeAsync(context.FieldDefinition.ResolvedType.Name);
 
                         return await customUserSettingsService.GetSettingsAsync(user, settingsType);
