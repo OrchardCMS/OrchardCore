@@ -7,11 +7,16 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+  <!-- For Unit Tests-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
 
   <!-- Watcher include and excludes -->
   <ItemGroup>

@@ -25,7 +25,8 @@ namespace OrchardCore.Lists.AdminNodes
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
-        private const int MaxItemsInNode = 100; // security check
+        // Security check.
+        private const int MaxItemsInNode = 100;
 
         public ListsAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
@@ -39,18 +40,18 @@ namespace OrchardCore.Lists.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ListsAdminNode).Name;
+        public string Name => nameof(ListsAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             _node = menuItem as ListsAdminNode;
 
-            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
+            if (_node == null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
 
-            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+            _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType);
 
             if (_node.AddContentTypeAsParent)
             {
@@ -72,12 +73,12 @@ namespace OrchardCore.Lists.AdminNodes
                 await AddContentItemsAsync(builder);
             }
 
-            // Add external children
+            // Add external children.
             foreach (var childNode in _node.Items)
             {
                 try
                 {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
                     await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)
@@ -89,11 +90,11 @@ namespace OrchardCore.Lists.AdminNodes
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
         {
-            foreach (var ci in await getContentItemsAsync())
+            foreach (var ci in await GetContentItemsAsync())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
-                if (cim.AdminRouteValues.Any() && ci.DisplayText != null)
+                if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {
@@ -111,7 +112,7 @@ namespace OrchardCore.Lists.AdminNodes
             }
         }
 
-        private async Task<List<ContentItem>> getContentItemsAsync()
+        private async Task<List<ContentItem>> GetContentItemsAsync()
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
@@ -121,13 +122,13 @@ namespace OrchardCore.Lists.AdminNodes
                 .ToList();
         }
 
-        private List<string> AddPrefixToClasses(string unprefixed)
+        private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
                 .ToList()
                 .Select(c => "icon-class-" + c)
-                .ToList<string>()
-                ?? new List<string>();
+                .ToList()
+                ?? [];
         }
     }
 }

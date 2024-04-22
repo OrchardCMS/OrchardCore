@@ -23,7 +23,7 @@ These parameters can be used in the recipe using a scripted value like `[js: par
 
 Custom configuration keys can also be used in the recipe, using a scripted key value like `[js: configuration('CustomConfigurationKey')]`.
 
-The key will be retrieved from the current [IShellConfiguration](../../core/Configuration/README.md). 
+The key will be retrieved from the current [IShellConfiguration](../../core/Configuration/README.md).
 
 For example to provide a key for a tenant
 
@@ -36,7 +36,7 @@ For example to provide a key for a tenant
     }
 ```
 
-Other configuration keys can also be used, i.e. from the hosts `appsettings.json` 
+Other configuration keys can also be used, i.e. from the hosts `appsettings.json`
 
 `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]`
 
@@ -107,12 +107,15 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
-    
+
 ## Additional information
+
 Please refer to separate sections for additional information on setup:
 
 - [Auto Setup - how to predefine setup parameters when deploying an empty site](../AutoSetup/README.md)
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/usjGbjwbmNo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cQJeS21wZHw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,7 +9,7 @@ namespace OrchardCore.Queries.Sql.Drivers
 {
     public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
         {
@@ -38,7 +37,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 model.Query = query.Template;
                 model.ReturnDocuments = query.ReturnDocuments;
 
-                // Extract query from the query string if we come from the main query editor
+                // Extract query from the query string if we come from the main query editor.
                 if (string.IsNullOrEmpty(query.Template))
                 {
                     updater.TryUpdateModelAsync(model, "", m => m.Query);
@@ -49,13 +48,12 @@ namespace OrchardCore.Queries.Sql.Drivers
         public override async Task<IDisplayResult> UpdateAsync(SqlQuery model, IUpdateModel updater)
         {
             var viewModel = new SqlQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments))
-            {
-                model.Template = viewModel.Query;
-                model.ReturnDocuments = viewModel.ReturnDocuments;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments);
 
-            if (String.IsNullOrWhiteSpace(model.Template))
+            model.Template = viewModel.Query;
+            model.ReturnDocuments = viewModel.ReturnDocuments;
+
+            if (string.IsNullOrWhiteSpace(model.Template))
             {
                 updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
             }

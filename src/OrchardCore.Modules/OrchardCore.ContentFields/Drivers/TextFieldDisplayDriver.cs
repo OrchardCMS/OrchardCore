@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -15,7 +14,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
         {
@@ -38,7 +37,8 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Text = field.Text;
+                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+                model.Text = context.IsNew && field.Text == null ? settings.DefaultValue : field.Text;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -47,13 +47,12 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
+            await updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+            var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+
+            if (settings.Required && string.IsNullOrWhiteSpace(field.Text))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

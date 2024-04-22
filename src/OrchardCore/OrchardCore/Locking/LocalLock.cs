@@ -11,11 +11,11 @@ namespace OrchardCore.Locking
     /// <summary>
     /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
     /// </summary>
-    public class LocalLock : IDistributedLock, ILocalLock, IDisposable
+    public sealed class LocalLock : IDistributedLock, ILocalLock, IDisposable
     {
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, Semaphore> _semaphores = new Dictionary<string, Semaphore>();
+        private readonly Dictionary<string, Semaphore> _semaphores = [];
 
         public LocalLock(ILogger<LocalLock> logger)
         {
@@ -87,7 +87,7 @@ namespace OrchardCore.Locking
             }
         }
 
-        private class Semaphore
+        private sealed class Semaphore
         {
             public Semaphore(string key, SemaphoreSlim value)
             {
@@ -101,7 +101,7 @@ namespace OrchardCore.Locking
             internal int RefCount { get; set; }
         }
 
-        private class Locker : ILocker
+        private sealed class Locker : ILocker
         {
             private readonly LocalLock _localLock;
             private readonly Semaphore _semaphore;

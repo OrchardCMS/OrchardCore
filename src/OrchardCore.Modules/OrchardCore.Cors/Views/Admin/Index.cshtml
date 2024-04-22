@@ -1,14 +1,9 @@
-@using Newtonsoft.Json
 @model CorsSettingsViewModel
-
-@{
-    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml };
-}
 
 <script asp-name="vuejs" at="Foot"></script>
 <script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
-    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies, settings));
+    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
 </script>
 <style>
     [v-cloak] {
@@ -19,30 +14,33 @@
 <zone Name="Title">
     <h1>@T["CORS Settings"]</h1>
 </zone>
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the CORS is executed."]</p>
 <div class="alert alert-info">@T["CORS stands for Cross-Origin Resource Sharing. More information can be found here:"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></div>
 <form id="corsForm" asp-action="Index" method="post" class="no-multisubmit">
-    <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
+    <input type="hidden" name="corsSettings" id="corsSettings" value='@Html.Raw(Json.Serialize(Model.Policies))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">
-            <div class="card mb-3 position-sticky action-bar">
-                <div class="card-body bg-primary p-3">
-                    <div class="mb-0">
-                        <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                            <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
-                            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            <div class="card mb-3 text-bg-theme position-sticky action-bar">
+                <div class="card-body">
+                    <div class="row gx-3">
+                        <div class="col">
+                            <div class="has-search">
+                                <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                            </div>
                         </div>
-                        <div class="btn-group float-end">
-                            <button class="btn btn-sm btn-secondary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
+                        <div class="col-auto">
+                            <button class="btn btn-secondary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
                         </div>
                     </div>
                 </div>
             </div>
             <ul class="list-group mb-2" v-cloak v-if="policies.length > 0">
-                <li class="list-group-item" v-for="policy in policies" :data-filter-value="policy.Name">
+                <li class="list-group-item" v-for="policy in policies" :data-filter-value="policy.name">
                     <div class="d-flex">
-                        <div class="align-self-center me-auto">{{ policy.Name }}</div>
+                        <div class="align-self-center me-auto">{{ policy.name }}</div>
                         <div class="align-self-center">
-                            <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
+                            <span v-if="policy.isDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
                             <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
                             <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
                         </div>
@@ -62,33 +60,31 @@
 
 <script type="text/x-template" id="policy-details">
     <div>
-        <h3>{{ policy.Name }}</h3>
+        <h3>{{ policy.name }}</h3>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Details"]
+                <h5 class="card-title">@T["Details"]
                     <span class="hint dashed">@T["Provide policy details."]</span>
                 </h5>
                 <div class="mb-3">
                     <label>@T["Policy name"]</label>
-                    <input v-model="policy.Name" type="text" class="form-control" />
+                    <input v-model="policy.name" type="text" class="form-control" />
                     <span class="hint">@T["The name of the policy."]</span>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" id="set-default-policy" v-model="policy.IsDefaultPolicy" type="checkbox">
+                    <input class="form-check-input" id="set-default-policy" v-model="policy.isDefaultPolicy" type="checkbox">
                     <label class="form-check-label" for="set-default-policy">@T["Set as default policy"]</label>
                 </div>
             </div>
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Credentials"]
+                <h5 class="card-title">@T["Credentials"]
                     <span class="hint dashed">@T["Configure the credentials behavior."]</span>
                 </h5>
 
                 <div class="form-check">
-                    <input class="form-check-input" id="allow-credentials" v-model="policy.AllowCredentials" type="checkbox" />
+                    <input class="form-check-input" id="allow-credentials" v-model="policy.allowCredentials" type="checkbox" />
                     <label class="form-check-label" for="allow-credentials">@T["Allow credentials"]</label>
                     <span class="hint dashed">@T["Allows credentials to be transported in requests. This setting is not allowed in combination with Allow Any Origin."]</span>
                 </div>
@@ -96,52 +92,49 @@
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Origins"]
+                <h5 class="card-title">@T["Origins"]
                     <span class="hint dashed">@T["Configure the origins behavior."]</span>
                 </h5>
 
                 <div class="">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-origins" v-model="policy.AllowAnyOrigin" type="checkbox" />
+                        <input class="form-check-input" id="allowed-origins" v-model="policy.allowAnyOrigin" type="checkbox" />
                         <label class="form-check-label" for="allowed-origins">@T["Allow any origin"]</label>
                         <span class="hint dashed">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
                     </div>
-                    <options-list v-bind:options="policy.AllowedOrigins" optionType="@T["Origin"]" title="@T["Allowed origins"]" subTitle="" />
+                    <options-list v-bind:options="policy.allowedOrigins" optionType="@T["Origin"]" title="@T["Allowed origins"]" subTitle="" />
                 </div>
             </div>
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Headers"]
+                <h5 class="card-title">@T["Headers"]
                     <span class="hint dashed">@T["Allow certain or all headers to be used by the external client."]</span>
                 </h5>
 
                 <div class="">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-headers" v-model="policy.AllowAnyHeader" type="checkbox" />
+                        <input class="form-check-input" id="allowed-headers" v-model="policy.allowAnyHeader" type="checkbox" />
                         <label class="form-check-label" for="allowed-headers">@T["Allow any header"]</label>
                         <span class="hint dashed">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
                     </div>
-                    <options-list v-bind:options="policy.AllowedHeaders" optionType="@T["Header"]" title="@T["Allowed headers"]" subTitle="" />
+                    <options-list v-bind:options="policy.allowedHeaders" optionType="@T["Header"]" title="@T["Allowed headers"]" subTitle="" />
                 </div>
             </div>
         </div>
         <div class="card mb-2">
             <div class="card-body">
-                <h5 class="card-title">
-                    @T["Methods"]
+                <h5 class="card-title">@T["Methods"]
                     <span class="hint dashed">@T["Configure the methods behavior (POST, PUT, DELETE, GET, etc)."]</span>
                 </h5>
 
                 <div class="">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-methods" v-model="policy.AllowAnyMethod" type="checkbox" />
+                        <input class="form-check-input" id="allowed-methods" v-model="policy.allowAnyMethod" type="checkbox" />
                         <label class="form-check-label" for="allowed-methods">@T["Allow any method"]</label>
                         <span class="hint dashed">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
                     </div>
-                    <options-list v-bind:options="policy.AllowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
+                    <options-list v-bind:options="policy.allowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
                 </div>
             </div>
         </div>
@@ -154,7 +147,7 @@
 
 <script type="text/x-template" id="options-list">
     <div>
-        <label>{{ title }}</label>
+        <label class="form-label">{{ title }}</label>
         <span class="hint" v-if="subTitle">{{ subTitle }}</span>
         <div class="input-group input-group-sm mb-2 w-50">
             <input type="text" class="form-control" v-model="newOption">

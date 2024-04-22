@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +18,7 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
@@ -67,24 +66,23 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new EditTaxonomyFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+
+            field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+            field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+            if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                field.TermContentItemIds = [model.UniqueValue];
+            }
 
-                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
-
-                if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
-                {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
-                }
-
-                if (settings.Required && field.TermContentItemIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(
-                        nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
-                }
+            if (settings.Required && field.TermContentItemIds.Length == 0)
+            {
+                updater.ModelState.AddModelError(
+                    nameof(EditTaxonomyFieldViewModel.TermEntries),
+                    S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

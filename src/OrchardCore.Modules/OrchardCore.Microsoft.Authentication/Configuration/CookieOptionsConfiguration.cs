@@ -1,22 +1,24 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-
-#pragma warning disable CS0618
-// The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
-// The build warning is disabled temporarily until the code can be migrated.
+using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    internal class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
+    internal sealed class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly string _tenantPrefix;
 
-        public CookieOptionsConfiguration(ShellSettings shellSettings)
+        public CookieOptionsConfiguration(IHttpContextAccessor httpContextAccessor)
         {
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+            var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+            if (!pathBase.HasValue)
+            {
+                pathBase = "/";
+            }
+
+            _tenantPrefix = pathBase;
         }
 
         public void Configure(string name, CookieAuthenticationOptions options)
@@ -27,14 +29,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             options.Cookie.Path = _tenantPrefix;
-            options.LoginPath = $"~/AzureAD/Account/SignIn/{AzureADDefaults.AuthenticationScheme}";
-            options.LogoutPath = $"~/AzureAD/Account/SignOut/{AzureADDefaults.AuthenticationScheme}";
+            options.LoginPath = $"~/AzureAD/Account/SignIn/{MicrosoftIdentityDefaults.AzureAd}";
+            options.LogoutPath = $"~/AzureAD/Account/SignOut/{MicrosoftIdentityDefaults.AzureAd}";
             options.AccessDeniedPath = "~/AzureAD/Account/AccessDenied";
         }
 
         public void Configure(CookieAuthenticationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }
 }
-
-// Restore the obsolete warning disabled above
-#pragma warning restore CS0618

@@ -10,13 +10,13 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider
+    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileStoreCacheFileProvider
     {
         /// <summary>
         /// The path in the wwwroot folder containing the asset cache.
-        /// The tenants name will be appended to this path.
+        /// The tenants name will be prepended to this path.
         /// </summary>
-        public static readonly string AssetsCachePath = "ms-cache";
+        public const string AssetsCachePath = "ms-cache";
 
         // Use default stream copy buffer size to stay in gen0 garbage collection.
         private const int StreamCopyBufferSize = 81920;
@@ -47,8 +47,8 @@ namespace OrchardCore.Media.Core
 
         public async Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken)
         {
-            // File store semantics include a leading slash.
-            var cachePath = Path.Combine(Root, fileStoreEntry.Path.Substring(1));
+            // File store semantics may include a leading slash.
+            var cachePath = Path.Combine(Root, fileStoreEntry.Path.TrimStart('/'));
             var directory = Path.GetDirectoryName(cachePath);
 
             if (!Directory.Exists(directory))
@@ -64,15 +64,14 @@ namespace OrchardCore.Media.Core
                 {
                     File.Delete(cachePath);
                 }
-                using (var fileStream = File.Create(cachePath))
-                {
-                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize);
-                    await stream.FlushAsync();
 
-                    if (fileStream.Length == 0)
-                    {
-                        throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
-                    }
+                using var fileStream = File.Create(cachePath);
+                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None);
+                await stream.FlushAsync(CancellationToken.None);
+
+                if (fileStream.Length == 0)
+                {
+                    throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
                 }
             }
             catch (Exception ex)
@@ -97,7 +96,7 @@ namespace OrchardCore.Media.Core
         public Task<bool> PurgeAsync()
         {
             var hasErrors = false;
-            var folders = GetDirectoryContents(String.Empty);
+            var folders = GetDirectoryContents(string.Empty);
             foreach (var fileInfo in folders)
             {
                 if (fileInfo.IsDirectory)

@@ -1,5 +1,4 @@
 using OrchardCore.Email;
-using Xunit;
 
 namespace OrchardCore.Tests.Email
 {
@@ -32,7 +31,7 @@ namespace OrchardCore.Tests.Email
             Assert.Equal(isValid, emailAddressValidator.Validate(address));
         }
 
-        private class OrchardCoreEmailValidator : IEmailAddressValidator
+        private sealed class OrchardCoreEmailValidator : IEmailAddressValidator
         {
             public bool Validate(string emailAddress)
                 => emailAddress.EndsWith("@orchardcore.net");

@@ -1,8 +1,8 @@
-@using OrchardCore.Users.Models;
+@using OrchardCore.Users.Models
 @model RegistrationSettings
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -10,29 +10,19 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <div class="mb-3" asp-validation-class-for="UsersCanRegister">
-    <label asp-for="UsersCanRegister">@T["Configure users registration."]</label>
+    <label asp-for="UsersCanRegister" class="form-label">@T["Configure users registration."]</label>
     <select asp-for="UsersCanRegister" class="form-select">
-        @foreach (UserRegistrationType option in Enum.GetValues(typeof(UserRegistrationType)))
-        {
-            <option value="@option" selected="@(Model.UsersCanRegister == option)">
-                @{
-                    switch (option)
-                    {
-                        case UserRegistrationType.NoRegistration: @T["NoRegistration"]; break;
-                        case UserRegistrationType.AllowRegistration: @T["AllowRegistration"]; break;
-                        case UserRegistrationType.AllowOnlyExternalUsers: @T["AllowOnlyExternalUsers"]; break;
-                    }
-                }
-            </option>
-        }
+        <option value="@UserRegistrationType.NoRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.NoRegistration)">@T["No Registration"]</option>
+        <option value="@UserRegistrationType.AllowRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowRegistration)">@T["Allow Registration"]</option>
+        <option value="@UserRegistrationType.AllowOnlyExternalUsers" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowOnlyExternalUsers)">@T["Allow Only External Users"]</option>
     </select>
     <span asp-validation-for="UsersCanRegister"></span>
 
     <div class="hint">
         <ul>
-            <li>@T["when NoRegistration is selected, no new users can register"]</li>
-            <li>@T["when AllowRegistration is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
-            <li>@T["when AllowOnlyExternalUsers is selected, only users authenticated with external providers can register on the site"]</li>
+            <li>@T["when 'No Registration' is selected, no new users can register"]</li>
+            <li>@T["when 'Allow Registration' is selected, a link is displayed to allow the users to register on the site. If there are external providers, once authenticated the user can register"]</li>
+            <li>@T["when 'Allow Only External Users' is selected, only users authenticated with external providers can register on the site"]</li>
         </ul>
     </div>
 </div>
@@ -146,11 +136,11 @@
         var editor = $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor');
         if (!keepText) {
             editor.doc.setValue(
-                '/* Uncomment to map AzureAD\n' +
+                '/* Uncomment to map AzureAd\n' +
                 '// Uncomment to output the context variable in the logs\n' +
                 '// log("warning", JSON.stringify(context));\n' +
                 'switch (context.loginProvider) {\n' +
-                '    case "AzureAD":\n' +
+                '    case "AzureAd":\n' +
                 '        context.userName = "azad" + uuid();\n' +
                 '        break;\n' +
                 '    default:\n' +
@@ -164,7 +154,7 @@
         }
     }
 
-    window.onload=function () {
+    window.onload = function () {
         refresh();
 
         $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {

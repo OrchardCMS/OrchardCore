@@ -35,7 +35,7 @@ namespace OrchardCore.Liquid.Services
 
         public Task<string> RenderStringAsync(string source, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
         {
-            if (String.IsNullOrWhiteSpace(source))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return Task.FromResult((string)null);
             }
@@ -56,7 +56,7 @@ namespace OrchardCore.Liquid.Services
 
         public async Task<IHtmlContent> RenderHtmlContentAsync(string source, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
         {
-            if (String.IsNullOrWhiteSpace(source))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return HtmlString.Empty;
             }
@@ -81,7 +81,7 @@ namespace OrchardCore.Liquid.Services
 
         public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
         {
-            if (String.IsNullOrWhiteSpace(source))
+            if (string.IsNullOrWhiteSpace(source))
             {
                 return Task.CompletedTask;
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.Liquid.Services
                 if (!_liquidViewParser.TryParse(source, out var parsed, out var error))
                 {
                     // If the source string cannot be parsed, create a template that contains the parser errors
-                    _liquidViewParser.TryParse(String.Join(System.Environment.NewLine, errors), out parsed, out error);
+                    _liquidViewParser.TryParse(string.Join(System.Environment.NewLine, errors), out parsed, out error);
                 }
 
                 // Define a default sliding expiration to prevent the

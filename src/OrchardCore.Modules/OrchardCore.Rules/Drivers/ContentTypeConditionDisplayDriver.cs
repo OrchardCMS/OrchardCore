@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
@@ -43,13 +42,12 @@ namespace OrchardCore.Rules.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeCondition condition, IUpdateModel updater)
         {
             var model = new ContentTypeConditionViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            condition.Value = model.Value;
+            if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
             {
-                condition.Value = model.Value;
-                if (!String.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
-                {
-                    condition.Operation = factory.Create() as StringOperator;
-                }
+                condition.Operation = factory.Create();
             }
 
             return Edit(condition);

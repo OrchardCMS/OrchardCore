@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -38,7 +33,7 @@ namespace OrchardCore.Tests.Security
             await handler.HandleAsync(context);
         }
 
-        private class FakePermissionHandler : AuthorizationHandler<PermissionRequirement>
+        private sealed class FakePermissionHandler : AuthorizationHandler<PermissionRequirement>
         {
             private readonly HashSet<string> _permissionNames;
 

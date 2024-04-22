@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Security;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 {
@@ -24,17 +20,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
-                    }
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
+                    RoleClaims =
+                    [
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
+                    ]
                 },
                 new Role
                 {
-                    RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
-                    }
+                    RoleName = OrchardCoreConstants.Roles.Authenticated,
+                    RoleClaims =
+                    [
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
+                    ]
                 }
             );
 
@@ -49,7 +47,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         public async Task DontRevokeExistingGrants()
         {
             // Arrange
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
 
             var permissionHandler = CreatePermissionHandler();
 
@@ -75,10 +73,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
-                    }
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
+                    RoleClaims =
+                    [
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
+                    ]
                 }
             );
 
@@ -100,17 +99,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
-                    }
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
+                    RoleClaims =
+                    [
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
+                    ]
                 },
                 new Role
                 {
-                    RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
-                    }
+                    RoleName = OrchardCoreConstants.Roles.Authenticated,
+                    RoleClaims =
+                    [
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
+                    ]
                 }
             );
 

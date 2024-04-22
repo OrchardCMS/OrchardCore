@@ -7,17 +7,15 @@
             <span class="hint dashed">@T["Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."]</span>
         </div>
     </div>
-    <div class="mb-3 row">
-        <div class="col-large">
-            <label asp-for="Options">@T["Enter the editor options"]</label>
-            <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
-            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
-        </div>
+    <div class="mb-3">
+        <label asp-for="Options" class="form-label">@T["Enter the editor options"]</label>
+        <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
+        <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
     </div>
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">

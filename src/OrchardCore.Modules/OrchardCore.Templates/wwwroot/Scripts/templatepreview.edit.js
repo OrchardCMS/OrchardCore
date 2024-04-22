@@ -4,20 +4,18 @@
 */
 
 var editor;
-
 function initializeTemplatePreview(nameElement, editorElement) {
   var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
-
   sendFormData = function sendFormData(nameElement) {
     var formData = {
       'Name': nameElement.value,
       'Content': editor.getValue(),
       '__RequestVerificationToken': antiforgerytoken
-    }; // store the form data to pass it in the event handler
+    };
 
+    // store the form data to pass it in the event handler
     localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
   };
-
   editor = CodeMirror.fromTextArea(editorElement, {
     autoRefresh: true,
     lineNumbers: true,
@@ -41,9 +39,9 @@ function initializeTemplatePreview(nameElement, editorElement) {
   });
   window.addEventListener('storage', function (ev) {
     if (ev.key != 'OrchardCore.templates:ready') return; // ignore other keys
+
     // triggered by the preview window the first time it is loaded in order
     // to pre-render the view even if no contentpreview:render is already sent
-
     sendFormData(nameElement);
   }, false);
   $(nameElement).on('input', function () {
@@ -59,8 +57,8 @@ function initializeTemplatePreview(nameElement, editorElement) {
     }
   });
   $(window).on('unload', function () {
-    localStorage.removeItem('OrchardCore.templates'); // this will raise an event in the preview window to notify that the live preview is no longer active.
-
+    localStorage.removeItem('OrchardCore.templates');
+    // this will raise an event in the preview window to notify that the live preview is no longer active.
     localStorage.setItem('OrchardCore.templates:not-connected', '');
     localStorage.removeItem('OrchardCore.templates:not-connected');
   });

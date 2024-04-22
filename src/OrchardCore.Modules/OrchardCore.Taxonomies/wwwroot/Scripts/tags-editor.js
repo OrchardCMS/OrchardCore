@@ -14,23 +14,25 @@ function initializeTagsEditor(element) {
       },
       data: function data() {
         // All terms generate a model binding.
-        var allTagTerms = JSON.parse(element.dataset.allTagTerms || "[]"); // Selectable terms are shown in options list.
+        var allTagTerms = JSON.parse(element.dataset.allTagTerms || "[]");
 
-        var selectableTagTerms = allTagTerms; // Leaves only filters selectableTerms.
+        // Selectable terms are shown in options list.
+        var selectableTagTerms = allTagTerms;
 
+        // Leaves only filters selectableTerms.
         if (element.dataset.leavesOnly == 'true') {
           selectableTagTerms = selectableTagTerms.filter(function (tagTerm) {
             return tagTerm.isLeaf;
-          }); // Self heal when leaves only value is updated.
-
+          });
+          // Self heal when leaves only value is updated.
           allTagTerms.forEach(function (tagTerm) {
             if (!selectableTagTerms.includes(tagTerm)) {
               tagTerm.selected = false;
             }
           });
-        } // Selected terms are show in selected tags field.
+        }
 
-
+        // Selected terms are show in selected tags field.
         selectedTagTerms = allTagTerms.filter(function (tagTerm) {
           return tagTerm.selected;
         });
@@ -49,14 +51,12 @@ function initializeTagsEditor(element) {
           if (this.open == 'false' && this.selectableTagTerms.length === 0) {
             return true;
           }
-
           return false;
         },
         selectedTagTermsIds: function selectedTagTermsIds() {
           if (!this.selectedTagTerms) {
             return [];
           }
-
           if (Array.isArray(this.selectedTagTerms)) {
             return this.selectedTagTerms.map(function (tagTerm) {
               return tagTerm.contentItemId;
@@ -82,10 +82,11 @@ function initializeTagsEditor(element) {
                 contentItemId: data.contentItemId,
                 displayText: data.displayText,
                 selected: true
-              }; // Add to allTagTerms array so model binding will save tag as selected.
+              };
+              // Add to allTagTerms array so model binding will save tag as selected.
+              self.allTagTerms.push(tagTerm);
 
-              self.allTagTerms.push(tagTerm); // Add to selectedTerms to display in vue-multi-select.
-
+              // Add to selectedTerms to display in vue-multi-select.
               self.selectedTagTerms.push(tagTerm);
             },
             error: function error() {

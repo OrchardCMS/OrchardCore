@@ -1,8 +1,11 @@
-@using OrchardCore.Forms.ViewModels;
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
 @model FormElementPartEditViewModel
 
-<div class="mb-3">
-    <label asp-for="Id">@T["ID"]</label>
-    <input asp-for="Id" type="text" class="form-control content-preview-text" />
-    <span class="hint">@T["The ID to render on this form element."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Id" class="@Orchard.GetLabelClasses()">@T["ID"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Id" type="text" class="form-control content-preview-text" />
+        <span class="hint">@T["The ID to render on this form element."]</span>
+    </div>
 </div>

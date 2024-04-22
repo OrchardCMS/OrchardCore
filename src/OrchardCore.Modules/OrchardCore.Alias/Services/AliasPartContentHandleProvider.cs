@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Services
         {
             if (handle.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
             {
-                handle = handle.Substring(6);
+                handle = handle[6..];
 
                 var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(_session, handle);
                 return aliasPartIndex?.ContentItemId;
@@ -31,9 +31,11 @@ namespace OrchardCore.Alias.Services
         }
     }
 
-    internal class AliasPartContentHandleHelper
+    internal sealed class AliasPartContentHandleHelper
     {
+#pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
         internal static Task<ContentItem> QueryAliasIndex(ISession session, string alias) =>
             session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
+#pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
     }
 }

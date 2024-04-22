@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
@@ -15,8 +16,7 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             Name = nameof(ContentPickerField);
 
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
-                .Name("contentItemIds")
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("contentItemIds")
                 .Description("content item ids")
                 .PagingArguments()
                 .Resolve(x =>
@@ -24,15 +24,17 @@ namespace OrchardCore.ContentFields.GraphQL
                     return x.Page(x.Source.ContentItemIds);
                 });
 
-            Field<ListGraphType<ContentItemInterface>, ContentItem[]>()
-                .Name("contentItems")
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
                 .Description("the content items")
                 .PagingArguments()
-                .ResolveAsync(async x =>
+                .ResolveAsync(x =>
                 {
                     var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
-                    var items = await contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds));
-                    return items.Where(item => item != null).ToArray();
+
+                    return (contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds))).Then(itemResultSet =>
+                    {
+                        return itemResultSet.SelectMany(x => x);
+                    });
                 });
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -8,7 +7,7 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class EditMultiTextFieldViewModel
     {
-        public string[] Values { get; set; } = Array.Empty<string>();
+        public string[] Values { get; set; } = [];
 
         [BindNever]
         public MultiTextField Field { get; set; }

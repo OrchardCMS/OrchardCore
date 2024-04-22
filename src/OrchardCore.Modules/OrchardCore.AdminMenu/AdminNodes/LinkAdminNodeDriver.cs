@@ -56,19 +56,18 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
         {
             var model = new LinkAdminNodeViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass, x => x.SelectedPermissionNames))
-            {
-                treeNode.LinkText = model.LinkText;
-                treeNode.LinkUrl = model.LinkUrl;
-                treeNode.IconClass = model.IconClass;
+            await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass, x => x.SelectedPermissionNames);
 
-                var selectedPermissions = (model.SelectedPermissionNames == null ? Array.Empty<string>() : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            treeNode.LinkText = model.LinkText;
+            treeNode.LinkUrl = model.LinkUrl;
+            treeNode.IconClass = model.IconClass;
 
-                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-                treeNode.PermissionNames = permissions
-                    .Where(p => selectedPermissions.Contains(p.Name))
-                    .Select(p => p.Name).ToArray();
-            }
+            var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+            treeNode.PermissionNames = permissions
+                .Where(p => selectedPermissions.Contains(p.Name))
+                .Select(p => p.Name).ToArray();
 
             return Edit(treeNode);
         }

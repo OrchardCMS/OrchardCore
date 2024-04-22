@@ -16,6 +16,7 @@ namespace OrchardCore.Layers.Drivers
         public const string GroupId = "zones";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private static readonly char[] _separator = [' ', ','];
 
         public LayerSiteSettingsDisplayDriver(
             IHttpContextAccessor httpContextAccessor,
@@ -36,11 +37,11 @@ namespace OrchardCore.Layers.Drivers
 
             return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
                 {
-                    model.Zones = String.Join(", ", settings.Zones);
+                    model.Zones = string.Join(", ", settings.Zones);
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -49,13 +50,13 @@ namespace OrchardCore.Layers.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new LayerSettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.Zones = (model.Zones ?? String.Empty).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return await EditAsync(settings, context);

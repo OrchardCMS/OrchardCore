@@ -6,19 +6,24 @@
     var datepickerId = Html.IdFor(m => m.Value);
 }
 
-<div class="mb-3">
-    <div class="row">
-        <div class="col-md-6 col-lg-4">
-            <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
-            <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
+                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" />
+                <span asp-validation-for="Value"></span>
+            </div>
         </div>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
 </div>
 
+<style asp-name="jQuery-ui" at="Head"></style>
+<script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <script at="Foot">
     $(function () {
         $('#@datepickerId').datepicker($.datepicker.regional['@language']);

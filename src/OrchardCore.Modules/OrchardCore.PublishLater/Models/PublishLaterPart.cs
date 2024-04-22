@@ -1,10 +1,9 @@
 using System;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.PublishLater.Models
+namespace OrchardCore.PublishLater.Models;
+
+public class PublishLaterPart : ContentPart
 {
-    public class PublishLaterPart : ContentPart
-    {
-        public DateTime? ScheduledPublishUtc { get; set; }
-    }
+    public DateTime? ScheduledPublishUtc { get; set; }
 }

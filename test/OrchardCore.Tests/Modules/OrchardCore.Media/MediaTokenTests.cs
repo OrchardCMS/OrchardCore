@@ -1,14 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
-using SixLabors.ImageSharp.Web.Processors;
-using Xunit;
+using OrchardCore.Tests.Utilities;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -18,16 +11,79 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         // use static value for repeatable tests
         private readonly byte[] _hashKey =
-        {
-            88, 204, 124, 2, 54, 72, 44, 8, 207, 85, 88, 9, 245, 129, 200, 41, 13, 169, 54, 213, 202, 118, 197, 9, 26,
-            20, 108, 197, 123, 168, 140, 79, 32, 184, 144, 72, 254, 201, 91, 73, 230, 56, 190, 40, 11, 21, 229, 94, 118,
-            120, 84, 75, 174, 181, 168, 94, 30, 191, 169, 41, 222, 12, 239, 106
-        };
+        [
+            88,
+            204,
+            124,
+            2,
+            54,
+            72,
+            44,
+            8,
+            207,
+            85,
+            88,
+            9,
+            245,
+            129,
+            200,
+            41,
+            13,
+            169,
+            54,
+            213,
+            202,
+            118,
+            197,
+            9,
+            26,
+            20,
+            108,
+            197,
+            123,
+            168,
+            140,
+            79,
+            32,
+            184,
+            144,
+            72,
+            254,
+            201,
+            91,
+            73,
+            230,
+            56,
+            190,
+            40,
+            11,
+            21,
+            229,
+            94,
+            118,
+            120,
+            84,
+            75,
+            174,
+            181,
+            168,
+            94,
+            30,
+            191,
+            169,
+            41,
+            222,
+            12,
+            239,
+            106
+        ];
 
         public MediaTokenTests()
         {
-            _mediaTokenSettings = new MediaTokenSettings();
-            _mediaTokenSettings.HashKey = _hashKey;
+            _mediaTokenSettings = new MediaTokenSettings
+            {
+                HashKey = _hashKey,
+            };
         }
 
         [Theory]
@@ -38,7 +94,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             var serviceProvider = CreateServiceProvider();
             var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
 
-            // make sure we also hit cache
+            // Make sure we also hit cache.
             for (var i = 0; i < 2; ++i)
             {
                 var tokenizedPath = mediaTokenService.AddTokenToPath(path);
@@ -72,19 +128,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             Assert.Equal(tokenizedPath1, tokenizedPath2);
         }
 
-        private IServiceProvider CreateServiceProvider()
+        private ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }))
-                )
-            );
+            var mockSite = SiteMockHelper.GetSite(_mediaTokenSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
 
             services.AddMemoryCache();
 
-            services.AddSingleton<ISiteService>(mockSiteService);
+            services.AddSingleton(mockSiteService);
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();

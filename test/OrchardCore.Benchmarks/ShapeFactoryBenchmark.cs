@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Fluid;
@@ -12,7 +11,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
@@ -23,7 +21,7 @@ namespace OrchardCore.Benchmark
     public class ShapeFactoryBenchmark
     {
         private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-        private static readonly FluidValue input = StringValue.Create("DateTime");
+        private static readonly FluidValue _input = StringValue.Create("DateTime");
         private static readonly TemplateContext _templateContext;
 
         static ShapeFactoryBenchmark()
@@ -37,18 +35,20 @@ namespace OrchardCore.Benchmark
 
             var shapeFactory = new DefaultShapeFactory(
                 serviceProvider: new ServiceCollection().BuildServiceProvider(),
-                events: Enumerable.Empty<IShapeFactoryEvents>(),
+                events: [],
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => Enumerable.Empty<IFeatureInfo>())));
+                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
 
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }
 
         // TODO this benchmark is meaningless as the benchmark noops as the input is not a shape.
         [Benchmark(Baseline = true)]
+#pragma warning disable CA1822 // Mark members as static
         public async Task OriginalShapeRender()
+#pragma warning restore CA1822 // Mark members as static
         {
-            await ShapeRenderOriginal(input, _filterArguments, _templateContext);
+            await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
         }
 
 
@@ -58,7 +58,7 @@ namespace OrchardCore.Benchmark
         //     await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
         // }
 
-        private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments arguments, TemplateContext context)
+        private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments _, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {

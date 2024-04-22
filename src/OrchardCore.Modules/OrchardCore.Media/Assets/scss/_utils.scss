@@ -1,7 +1,7 @@
 // media item title. Shared by grid and table-view
 .media-container-main-item-title {
-    border-top: solid 1px $gray-300;
-    padding-top: 24px;
+    border-top: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
+    padding-top: 15px;
     position: relative;
     overflow: hidden;
 

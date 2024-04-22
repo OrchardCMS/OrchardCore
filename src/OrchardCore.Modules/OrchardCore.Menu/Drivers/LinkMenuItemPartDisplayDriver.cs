@@ -20,7 +20,7 @@ namespace OrchardCore.Menu.Drivers
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LinkMenuItemPartDisplayDriver(
             IUrlHelperFactory urlHelperFactory,
@@ -31,7 +31,7 @@ namespace OrchardCore.Menu.Drivers
             )
         {
             _urlHelperFactory = urlHelperFactory;
-            _actionContextAccessor = actionContextAccessor; 
+            _actionContextAccessor = actionContextAccessor;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlencoder = htmlencoder;
             S = localizer;
@@ -67,42 +67,41 @@ namespace OrchardCore.Menu.Drivers
         {
             var model = new LinkMenuItemPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                part.Url = model.Url;
-                part.ContentItem.DisplayText = model.Name;
+            await updater.TryUpdateModelAsync(model, Prefix);
 
-                // This code can be removed in a later release.
+            part.Url = model.Url;
+            part.ContentItem.DisplayText = model.Name;
+
+            // This code can be removed in a later release.
 #pragma warning disable 0618
-                part.Name = model.Name;
+            part.Name = model.Name;
 #pragma warning restore 0618
 
-                var urlToValidate = part.Url;
+            var urlToValidate = part.Url;
 
-                if (!String.IsNullOrEmpty(urlToValidate))
+            if (!string.IsNullOrEmpty(urlToValidate))
+            {
+                urlToValidate = urlToValidate.Split('#', 2)[0];
+
+                if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    urlToValidate = urlToValidate.Split('#', 2)[0];
+                    var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+                    urlToValidate = urlHelper.Content(urlToValidate);
+                }
 
-                    if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
-                    {
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-                        urlToValidate = urlHelper.Content(urlToValidate);
-                    }
+                urlToValidate = urlToValidate.ToUriComponents();
 
-                    urlToValidate = urlToValidate.ToUriComponents();
+                if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                {
+                    updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                }
+                else
+                {
+                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
 
-                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                    if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
                         updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                    }
-                    else
-                    {
-                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                        if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
-                        {
-                            updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                        }
                     }
                 }
             }

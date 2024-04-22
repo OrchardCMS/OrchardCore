@@ -6,35 +6,37 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationController : Controller
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
-            IEmailAddressValidator emailAddressValidator,
             ILogger<RegistrationController> logger,
+            IDisplayManager<RegisterUserForm> registerUserDisplayManager,
+            IUpdateModelAccessor updateModelAccessor,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
         {
@@ -42,13 +44,13 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             _logger = logger;
+            _registerUserDisplayManager = registerUserDisplayManager;
+            _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
@@ -58,14 +60,18 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            var shape = await _registerUserDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+
+            return View(shape);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        [ActionName(nameof(Register))]
+        public async Task<IActionResult> RegisterPOST(string returnUrl = null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
@@ -74,49 +80,35 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (string.IsNullOrEmpty(model.Email))
-            {
-                ModelState.AddModelError("Email", S["Email is required."]);
-            }
+            var model = new RegisterUserForm();
 
-            if (_emailAddressValidator.Validate(model.Email))
-            {
-                // Check if user with same email already exists
-                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
-
-                if (userWithEmail != null)
-                {
-                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
-                }
-            }
-            else
-            {
-                ModelState.AddModelError("Email", S["Invalid email."]);
-            }
+            var shape = await _registerUserDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
+
                 // If we get a user, redirect to returnUrl
                 if (iUser is User user)
                 {
                     if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                     {
-                        return RedirectToAction("ConfirmEmailSent", new { ReturnUrl = returnUrl });
+                        return RedirectToAction(nameof(ConfirmEmailSent), new { ReturnUrl = returnUrl });
                     }
+
                     if (settings.UsersAreModerated && !user.IsEnabled)
                     {
-                        return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
+                        return RedirectToAction(nameof(RegistrationPending), new { ReturnUrl = returnUrl });
                     }
 
                     return RedirectToLocal(returnUrl.ToUriComponents());
                 }
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            // If we got this far, something failed. Let's redisplay form.
+            return View(shape);
         }
 
         [HttpGet]
@@ -125,7 +117,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (userId == null || code == null)
             {
-                return RedirectToAction(nameof(RegistrationController.Register), "Registration");
+                return RedirectToAction(nameof(Register));
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -160,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }
@@ -176,16 +168,14 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private RedirectResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return Redirect("~/");
-            }
+
+            return Redirect("~/");
         }
     }
 }

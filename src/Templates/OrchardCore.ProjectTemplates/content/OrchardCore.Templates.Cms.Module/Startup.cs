@@ -1,5 +1,6 @@
-using System;
+#if (AddPart)
 using Fluid;
+#endif
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,7 @@ namespace OrchardCore.Templates.Cms.Module
                 .AddHandler<MyTestPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 #endif
         }
 

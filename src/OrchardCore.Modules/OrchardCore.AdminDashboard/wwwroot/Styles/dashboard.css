@@ -1,28 +1,28 @@
-@media (max-width: 567.98px) {
+@media (min-width: 576px) and (max-width: 767.98px) {
   :root {
     --dashboard-columns: 1;
     --dashboard-columns-default: 1;
   }
 }
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
   :root {
     --dashboard-columns: 2;
     --dashboard-columns-default: 2;
   }
 }
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 992px) and (max-width: 1199.98px) {
   :root {
     --dashboard-columns: 3;
     --dashboard-columns-default: 3;
   }
 }
-@media (min-width: 992px) and (max-width: 1199.98px) {
+@media (min-width: 1200px) and (max-width: 1399.98px) {
   :root {
     --dashboard-columns: 4;
     --dashboard-columns-default: 4;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   :root {
     --dashboard-columns: 6;
     --dashboard-columns-default: 6;
@@ -38,7 +38,7 @@
   grid-column: span var(--dashboard-width);
   overflow-x: hidden;
   grid-row: span var(--dashboard-height);
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 .dashboard-container .dashboard-wrapper .card .card-header {
   border-bottom: none !important;
@@ -46,27 +46,23 @@
 .dashboard-container .dashboard-wrapper .card .card-footer {
   border-top: none !important;
 }
+.dashboard-container .dashboard-wrapper.ui-resizable {
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+.dashboard-container .dashboard-wrapper:not(.ui-resizable) {
+  scrollbar-width: thin;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.dashboard-body-container {
+  scrollbar-width: thin;
+  overflow-y: auto;
+}
 
 .dashboard-meta {
-  padding-left: 20px;
-  padding-right: 20px;
-}
-.dashboard-meta:first-child {
-  padding-top: 12px;
-}
-
-:root[data-theme=default] .dashboard-wrapper .card .card-header {
-  background-color: #fff !important;
-}
-:root[data-theme=default] .dashboard-wrapper .card .card-footer {
-  background-color: #fff !important;
-}
-
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
-  background-color: #181a1b !important;
-}
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
-  background-color: #181a1b !important;
+  padding: 0.5rem !important;
 }
 
 .dashboard-handle {

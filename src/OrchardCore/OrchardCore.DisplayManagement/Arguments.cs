@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement
 {
     public static class Arguments
     {
-        private static ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>>();
+        private static readonly ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new();
 
         public static INamedEnumerable<T> FromT<T>(IEnumerable<T> arguments, IEnumerable<string> names)
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement
             return propertiesAccessor(propertyObject);
         }
 
-        private class NamedEnumerable<T> : INamedEnumerable<T>
+        private sealed class NamedEnumerable<T> : INamedEnumerable<T>
         {
             private readonly List<T> _arguments;
             private readonly List<string> _names;
@@ -58,15 +58,12 @@ namespace OrchardCore.DisplayManagement
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
-                if (arguments.Count() < names.Count())
-                {
-                    throw new ArgumentException("arguments.Count() < names.Count()");
-                }
-
                 _arguments = arguments.ToList();
                 _names = names.ToList();
 
-                _positional = Array.Empty<T>();
+                ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Count, _names.Count);
+
+                _positional = [];
 
                 if (_arguments.Count != _names.Count)
                 {
@@ -91,10 +88,10 @@ namespace OrchardCore.DisplayManagement
 
             IDictionary<string, T> INamedEnumerable<T>.Named
             {
-                get { return _named ?? (_named = new Named(_arguments, _names)); }
+                get { return _named ??= new Named(_arguments, _names); }
             }
 
-            private class Named : IDictionary<string, T>
+            private sealed class Named : IDictionary<string, T>
             {
                 private readonly IList<T> _arguments;
                 private readonly IList<string> _names;
@@ -116,7 +113,7 @@ namespace OrchardCore.DisplayManagement
 
                 private IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
                 {
-                    return _enumerable ?? (_enumerable = _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg)));
+                    return _enumerable ??= _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg));
                 }
 
                 IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
@@ -190,18 +187,18 @@ namespace OrchardCore.DisplayManagement
                     return pair.Key != null;
                 }
 
-                //TBD
+                // TBD
                 T IDictionary<string, T>.this[string key]
                 {
                     get
                     {
-                        if (((IDictionary<string, T>)this).TryGetValue(key, out T result))
+                        if (((IDictionary<string, T>)this).TryGetValue(key, out var result))
                         {
                             return result;
                         }
                         else
                         {
-                            return default(T);
+                            return default;
                         }
                     }
                     set { throw new NotImplementedException(); }
@@ -222,6 +219,6 @@ namespace OrchardCore.DisplayManagement
             }
         }
 
-        public static INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
+        public static readonly INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
     }
 }

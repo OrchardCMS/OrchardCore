@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -13,7 +12,7 @@ namespace OrchardCore.Users.Workflows.Drivers
 {
     public class RegisterUserTaskDisplayDriver : ActivityDisplayDriver<RegisterUserTask, RegisterUserTaskViewModel>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public RegisterUserTaskDisplayDriver(IStringLocalizer<RegisterUserTaskDisplayDriver> localizer)
         {
@@ -31,24 +30,23 @@ namespace OrchardCore.Users.Workflows.Drivers
         public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, IUpdateModel updater)
         {
             var viewModel = new RegisterUserTaskViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            model.SendConfirmationEmail = viewModel.SendConfirmationEmail;
+            model.RequireModeration = viewModel.RequireModeration;
+            model.ConfirmationEmailSubject = new WorkflowExpression<string>(viewModel.ConfirmationEmailSubject);
+            model.ConfirmationEmailTemplate = new WorkflowExpression<string>(viewModel.ConfirmationEmailTemplate);
+
+            if (model.SendConfirmationEmail)
             {
-                model.SendConfirmationEmail = viewModel.SendConfirmationEmail;
-                model.RequireModeration = viewModel.RequireModeration;
-                model.ConfirmationEmailSubject = new WorkflowExpression<string>(viewModel.ConfirmationEmailSubject);
-                model.ConfirmationEmailTemplate = new WorkflowExpression<string>(viewModel.ConfirmationEmailTemplate);
-
-                if (model.SendConfirmationEmail)
+                if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailSubject))
                 {
-                    if (String.IsNullOrWhiteSpace(viewModel.ConfirmationEmailSubject))
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
-                    }
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
+                }
 
-                    if (String.IsNullOrWhiteSpace(viewModel.ConfirmationEmailTemplate))
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
-                    }
+                if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailTemplate))
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
                 }
             }
 

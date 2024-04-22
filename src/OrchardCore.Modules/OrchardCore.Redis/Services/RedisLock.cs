@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +17,13 @@ namespace OrchardCore.Redis.Services
     {
         private readonly IRedisService _redis;
         private readonly ILogger _logger;
-
         private readonly string _hostName;
         private readonly string _prefix;
 
         public RedisLock(IRedisService redis, ShellSettings shellSettings, ILogger<RedisLock> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
+            _hostName = Dns.GetHostName() + ':' + System.Environment.ProcessId;
             _prefix = redis.InstancePrefix + shellSettings.Name + ':';
             _logger = logger;
         }
@@ -148,7 +146,7 @@ namespace OrchardCore.Redis.Services
             }
         }
 
-        private class Locker : ILocker
+        private sealed class Locker : ILocker
         {
             private readonly RedisLock _lock;
             private readonly string _key;

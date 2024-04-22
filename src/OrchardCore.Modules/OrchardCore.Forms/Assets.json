@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/SelectOptionsEditor/selectOptionsEditor.scss"
     ],
@@ -11,5 +10,11 @@
       "Assets/js/SelectOptionsEditor/selectOptionsEditor.js"
     ],
     "output": "wwwroot/Scripts/selectOptionsEditor.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/formElementLabelManager.js"
+    ],
+    "output": "wwwroot/Scripts/formElementLabelManager.js"
   }
 ]

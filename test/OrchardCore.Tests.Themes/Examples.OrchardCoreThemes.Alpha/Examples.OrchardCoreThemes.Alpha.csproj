@@ -32,7 +32,8 @@
                            Dependencies="ten;eleven;twelve"
                            Tags="eleven;twelve;thirteen"
                            DefaultTenant="true"
-                           AlwaysEnabled="true" />
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <ItemGroup>

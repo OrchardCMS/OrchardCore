@@ -245,8 +245,7 @@
                 },
                 "FacebookPluginPartSettings": {
                   "Liquid": "<div class=\"fb-customerchat\"\r\n page_id=\"<PAGE_ID>\">\r\n</div>"
-                },
-                "ContentIndexSettings": {}
+                }
               }
             }
           ]

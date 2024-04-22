@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment
@@ -8,16 +8,17 @@ namespace OrchardCore.ContentTypes.Deployment
     {
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep))
+            if (step is not DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep)
             {
                 return Task.CompletedTask;
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "DeleteContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(deleteContentDefinitionStep.ContentTypes)),
-                new JProperty("ContentParts", JArray.FromObject(deleteContentDefinitionStep.ContentParts))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "DeleteContentDefinition",
+                ["ContentTypes"] = JArray.FromObject(deleteContentDefinitionStep.ContentTypes),
+                ["ContentParts"] = JArray.FromObject(deleteContentDefinitionStep.ContentParts),
+            });
 
             return Task.CompletedTask;
         }
