@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
@@ -15,27 +14,37 @@ using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchIndexManager(
-    AzureAIClientFactory clientFactory,
-    ILogger<AzureAISearchIndexManager> logger,
-    IOptions<AzureAISearchDefaultOptions> azureAIOptions,
-    IEnumerable<IAzureAISearchIndexEvents> indexEvents,
-    IMemoryCache memoryCache,
-    ShellSettings shellSettings)
+public class AzureAISearchIndexManager
 {
     public const string OwnerKey = "Content__ContentItem__Owner";
     public const string AuthorKey = "Content__ContentItem__Author";
     public const string FullTextKey = "Content__ContentItem__FullText";
     public const string DisplayTextAnalyzedKey = "Content__ContentItem__DisplayText__Analyzed";
 
-    private const string _prefixCacheKey = "AzureAISearchIndexesPrefix";
+    private readonly AzureAIClientFactory _clientFactory;
+    private readonly ILogger _logger;
+    private readonly IEnumerable<IAzureAISearchIndexEvents> _indexEvents;
+    private readonly IMemoryCache _memoryCache;
+    private readonly ShellSettings _shellSettings;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions;
+    private readonly string _prefixCacheKey;
 
-    private readonly AzureAIClientFactory _clientFactory = clientFactory;
-    private readonly ILogger _logger = logger;
-    private readonly IEnumerable<IAzureAISearchIndexEvents> _indexEvents = indexEvents;
-    private readonly IMemoryCache _memoryCache = memoryCache;
-    private readonly ShellSettings _shellSettings = shellSettings;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
+    public AzureAISearchIndexManager(
+        AzureAIClientFactory clientFactory,
+        ILogger<AzureAISearchIndexManager> logger,
+        IEnumerable<IAzureAISearchIndexEvents> indexEvents,
+        IMemoryCache memoryCache,
+        ShellSettings shellSettings,
+        IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+    {
+        _clientFactory = clientFactory;
+        _logger = logger;
+        _indexEvents = indexEvents;
+        _memoryCache = memoryCache;
+        _shellSettings = shellSettings;
+        _azureAIOptions = azureAIOptions.Value;
+        _prefixCacheKey = $"AzureAISearchIndexesPrefix_{shellSettings.Name}";
+    }
 
     public async Task<bool> CreateAsync(AzureAISearchIndexSettings settings)
     {
@@ -54,7 +63,7 @@ public class AzureAISearchIndexManager(
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            var response = client.CreateIndexAsync(searchIndex);
+            await client.CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
 
@@ -62,7 +71,7 @@ public class AzureAISearchIndexManager(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to create index in Azure AI Search.");
+            _logger.LogError(ex, "Unable to create index in Azure AI Search. Message: {Message}", ex.Message);
         }
 
         return false;
@@ -113,7 +122,7 @@ public class AzureAISearchIndexManager(
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            var response = await client.DeleteIndexAsync(context.IndexFullName);
+            await client.DeleteIndexAsync(context.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
 
@@ -144,7 +153,7 @@ public class AzureAISearchIndexManager(
 
             var searchIndex = GetSearchIndex(context.IndexFullName, settings);
 
-            var response = await client.CreateIndexAsync(searchIndex);
+            await client.CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
         }
@@ -165,20 +174,21 @@ public class AzureAISearchIndexManager(
     {
         if (!_memoryCache.TryGetValue<string>(_prefixCacheKey, out var value))
         {
-            var builder = new StringBuilder();
+            var prefix = _shellSettings.Name.ToLowerInvariant();
 
             if (!string.IsNullOrWhiteSpace(_azureAIOptions.IndexesPrefix))
             {
-                builder.Append(_azureAIOptions.IndexesPrefix.ToLowerInvariant());
-                builder.Append('-');
+                prefix = $"{_azureAIOptions.IndexesPrefix.ToLowerInvariant()}-{prefix}";
             }
 
-            builder.Append(_shellSettings.Name.ToLowerInvariant());
-
-            if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(builder.ToString(), out var safePrefix))
+            if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(prefix, out var safePrefix))
             {
                 value = safePrefix;
                 _memoryCache.Set(_prefixCacheKey, safePrefix);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Unable to create a safe index prefix for AI Search. Attempted to created a safe name using '{safePrefix}'.");
             }
         }
 

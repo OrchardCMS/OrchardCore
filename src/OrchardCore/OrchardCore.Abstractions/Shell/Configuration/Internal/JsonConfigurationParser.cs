@@ -17,24 +17,42 @@ public sealed class JsonConfigurationParser
     private readonly Dictionary<string, string?> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly Stack<string> _paths = new();
 
-    public static IDictionary<string, string?> Parse(Stream input)
-        => new JsonConfigurationParser().ParseStream(input);
+    public static IDictionary<string, string?> Parse(Stream utf8Json)
+        => new JsonConfigurationParser().ParseStream(utf8Json);
 
-    public static Task<IDictionary<string, string?>> ParseAsync(Stream input)
-        => new JsonConfigurationParser().ParseStreamAsync(input);
+    public static IDictionary<string, string?> Parse(string document)
+        => new JsonConfigurationParser().ParseDocument(document);
 
-    private Dictionary<string, string?> ParseStream(Stream input)
+    public static Task<IDictionary<string, string?>> ParseAsync(Stream utf8Json)
+        => new JsonConfigurationParser().ParseStreamAsync(utf8Json);
+
+    private Dictionary<string, string?> ParseStream(Stream utf8Json)
     {
-        var jsonDocumentOptions = new JsonDocumentOptions
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        };
-
         try
         {
-            using (var reader = new StreamReader(input))
-            using (var doc = JsonDocument.Parse(reader.ReadToEnd(), jsonDocumentOptions))
+            using (var doc = JsonDocument.Parse(utf8Json, JOptions.Document))
+            {
+                if (doc.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");
+                }
+
+                VisitObjectElement(doc.RootElement);
+            }
+
+            return _data;
+        }
+        catch (JsonException e)
+        {
+            throw new FormatException("Could not parse the JSON document.", e);
+        }
+    }
+
+    private Dictionary<string, string?> ParseDocument(string document)
+    {
+        try
+        {
+            using (var doc = JsonDocument.Parse(document, JOptions.Document))
             {
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {

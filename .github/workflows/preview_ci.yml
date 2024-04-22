@@ -21,11 +21,11 @@ jobs:
         Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
         $shouldPublish = $hasCommitFromLastDay -and '${{ github.event_name }}' -eq 'schedule'
         "should-publish=$($shouldPublish ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
         dotnet-version: '8.0.x'
@@ -35,7 +35,7 @@ jobs:
     - name: Build
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
-        dotnet build -c Release
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
@@ -47,7 +47,7 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: Functional Test failure

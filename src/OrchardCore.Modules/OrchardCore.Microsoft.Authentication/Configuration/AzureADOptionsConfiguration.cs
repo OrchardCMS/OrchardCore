@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -56,7 +57,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, MicrosoftIdentityOptions options)
         {
-            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
             {
                 return;
             }
@@ -81,7 +82,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
             {
                 return;
             }

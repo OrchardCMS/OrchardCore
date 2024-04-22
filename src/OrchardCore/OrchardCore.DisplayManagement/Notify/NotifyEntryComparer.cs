@@ -4,7 +4,7 @@ using System.Text.Encodings.Web;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    internal class NotifyEntryComparer : IEqualityComparer<NotifyEntry>
+    internal sealed class NotifyEntryComparer : IEqualityComparer<NotifyEntry>
     {
         private readonly HtmlEncoder _htmlEncoder;
 

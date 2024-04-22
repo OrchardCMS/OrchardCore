@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -220,6 +221,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             }
 
             return false;
+        }
+
+        internal static string GetFieldName(ContentTypePartDefinition definition, string partName, string fieldName)
+        {
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
+
+            if (settings.PreventFieldNameCollision)
+            {
+                return partName.ToFieldName() + fieldName.ToPascalCase();
+            }
+
+            return fieldName;
         }
     }
 }

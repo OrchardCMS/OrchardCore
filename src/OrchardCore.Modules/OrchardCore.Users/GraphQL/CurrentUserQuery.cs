@@ -18,11 +18,11 @@ namespace OrchardCore.Users.GraphQL;
 /// <summary>
 /// Registers the current user including its custom user settings as a query.
 /// </summary>
-internal class CurrentUserQuery : ISchemaBuilder
+internal sealed class CurrentUserQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public CurrentUserQuery(
         IHttpContextAccessor httpContextAccessor,
