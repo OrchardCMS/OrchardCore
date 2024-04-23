@@ -4,4 +4,3 @@ mkdocs-git-authors-plugin>=0.8.0
 mkdocs-git-revision-date-localized-plugin>=1.2.4
 pymdown-extensions>=10.8.0
 mkdocs-exclude>=1.0.2
-mdx_truly_sane_lists>=1.2
