@@ -5395,7 +5395,6 @@ var iconPickerVue = new Vue({
         search: '<input type="search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
       }
     });
-
     $('#inline-picker').on('iconpickerSelected', function (e) {
       var selected = e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue);
       if (self.targetInputField) {
