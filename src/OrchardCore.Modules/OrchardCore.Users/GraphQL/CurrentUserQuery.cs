@@ -36,7 +36,7 @@ internal sealed class CurrentUserQuery : ISchemaBuilder
             Type = typeof(UserType),
             Resolver = new FuncFieldResolver<User>(async context =>
             {
-                var userService = context.RequestServices!.GetRequiredService<IUserService>();
+                var userService = context.RequestServices.GetRequiredService<IUserService>();
                 var user = await userService.GetAuthenticatedUserAsync(((GraphQLUserContext)context.UserContext).User);
 
                 return user as User;
@@ -50,7 +50,7 @@ internal sealed class CurrentUserQuery : ISchemaBuilder
 
     public Task<string> GetIdentifierAsync()
     {
-        var contentDefinitionManager = _httpContextAccessor.HttpContext!.RequestServices.GetRequiredService<IContentDefinitionManager>();
+        var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentDefinitionManager>();
         return contentDefinitionManager.GetIdentifierAsync();
     }
 }
