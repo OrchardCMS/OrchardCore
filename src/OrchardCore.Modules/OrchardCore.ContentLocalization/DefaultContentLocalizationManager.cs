@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
@@ -101,6 +102,12 @@ namespace OrchardCore.ContentLocalization
             clonedPart.Culture = targetCulture;
             clonedPart.LocalizationSet = localizationPart.LocalizationSet;
             clonedPart.Apply();
+
+            // Clearing the autopart path to regenerate the permalink automatically 
+            if (cloned.Has<AutoroutePart>())
+            {
+                cloned.Content.AutoroutePart.Path = null;
+            }
 
             var context = new LocalizationContentContext(cloned, content, localizationPart.LocalizationSet, targetCulture);
 
