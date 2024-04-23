@@ -32,9 +32,9 @@ We warmly welcome fixes and features! Here are some resources to help you get st
 
 ## Identifying the scale
 
-First identify the scale of what you would like to contribute. If it is small (grammar/spelling or a bug fix) feel free to start working on a fix. If you are submitting a feature or other substantial code contribution, please discuss it with the team first and ensure it follows the roadmap and fits into the bigger picture. We'd hate to see your work go to waste! The best is if you work on open issues, and open an issue for your idea too, before starting coding.
+First, identify the scale of what you would like to contribute. If it is small (grammar/spelling or a bug fix) feel free to start working on a fix. If you are submitting a feature or other substantial code contribution, please discuss it with the team first and ensure it follows the roadmap and fits into the bigger picture. We'd hate to see your work go to waste! The best is if you work on open issues, and open an issue for your idea too, before starting coding.
 
-You might also read these two blogs posts on contributing code: [Open Source Contribution Etiquette](http://tirania.org/blog/archive/2010/Dec-31.html) by Miguel de Icaza and [Don't "Push" Your Pull Requests](https://www.igvita.com/2011/12/19/dont-push-your-pull-requests/) by Ilya Grigorik.
+You might also read these two blog posts on contributing code: [Open Source Contribution Etiquette](http://tirania.org/blog/archive/2010/Dec-31.html) by Miguel de Icaza and [Don't "Push" Your Pull Requests](https://www.igvita.com/2011/12/19/dont-push-your-pull-requests/) by Ilya Grigorik.
 
 ## Submitting a pull request (PR)
 
@@ -42,7 +42,7 @@ You might also read these two blogs posts on contributing code: [Open Source Con
     If you don't know what a pull request is, read [this article](https://help.github.com/articles/using-pull-requests).
 
 - Familiarize yourself with the project and our coding conventions, as you can see in the repository. We follow the [ASP.NET Core Engineering guidelines](https://github.com/dotnet/aspnetcore/wiki/Engineering-guidelines).
-- Make sure the repository can build and all tests pass. This is also checked by the CI workflows.
+- Make sure the repository can be built and all tests pass. This is also checked by the CI workflows.
 - If you change CSS or JavaScript files, be sure to run [the Gulp pipeline](../../guides/gulp-pipeline/README.md).
 - If you want to start a conversation with other community members or run the CI workflows but you're not done yet, open your PR as a [draft](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests). Then, [change it to ready for review](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - If your PR addresses an issue, be sure to [link them](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue). This helps everyone find their way around contributions, and merging your PR will automatically close the issue too.
