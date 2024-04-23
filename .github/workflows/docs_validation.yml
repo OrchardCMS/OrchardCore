@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        # Necessary to avoid mkdocs-git-revision-date-localized-plugin warnings.
+        fetch-depth: 0
 
     - name: Install Dependencies
       # Installing pip v22.0.3 is only necessary because unbuntu-latest runners include v22.0.2, which has a bug. See:
