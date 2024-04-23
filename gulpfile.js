@@ -118,12 +118,23 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
 
-    // For wildcard input paths also sortthem to ensure file concatenation is consistent.
-    if (inputPaths.some(path => path.includes('*'))) {
-        inputPaths = glob.sync(inputPaths, {}).sort();
-    }
+    var finalSorted = [];
 
-    assetGroup.inputPaths = inputPaths;
+    // The inputPaths can contain either a physical path to a file or a path with a wildcard.
+    // It's crucial to maintain the order of each file based on its position in the assets.json file.
+    // When a path contains a wildcard, we need to convert the wildcard to physical paths
+    // and sort them independently of the previous paths to ensure consistent concatenation.
+    inputPaths.forEach(path => {
+        if (path.includes('*')) {
+            glob.sync(path, {}).sort().forEach(p => {
+                finalSorted.push(p);
+            });
+        } else {
+            finalSorted.push(path);
+        }
+    });
+
+    assetGroup.inputPaths = finalSorted;
 
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
@@ -263,7 +274,6 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         target: "es5",
     };
 
-    console.log(assetGroup.inputPaths);
     return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
