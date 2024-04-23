@@ -1,0 +1,32 @@
+name: Validating Building the Documentation
+
+on: 
+  push:
+    paths:
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main ]
+  pull_request:
+    branches: [ main, release/** ]
+    paths:
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-docs_validation
+  cancel-in-progress: true
+
+jobs:
+  validate-building-documentation:
+    name: Validating Building the Documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      shell: pwsh
+      run: pip install -r src/docs/requirements.txt
+
+    - name: Build Documentation
+      shell: pwsh
+      run: python -m mkdocs build --strict
