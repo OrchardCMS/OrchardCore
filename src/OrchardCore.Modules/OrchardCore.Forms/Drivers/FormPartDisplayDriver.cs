@@ -26,15 +26,14 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new FormPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.Action = viewModel.Action?.Trim();
-                part.Method = viewModel.Method;
-                part.WorkflowTypeId = viewModel.WorkflowTypeId;
-                part.EncType = viewModel.EncType;
-                part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
-                part.SaveFormLocation = viewModel.SaveFormLocation;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.Action = viewModel.Action?.Trim();
+            part.Method = viewModel.Method;
+            part.WorkflowTypeId = viewModel.WorkflowTypeId;
+            part.EncType = viewModel.EncType;
+            part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
+            part.SaveFormLocation = viewModel.SaveFormLocation;
 
             return Edit(part);
         }

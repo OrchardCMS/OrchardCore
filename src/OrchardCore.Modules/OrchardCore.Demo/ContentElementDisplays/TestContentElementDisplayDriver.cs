@@ -69,16 +69,15 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            if (await updater.TryUpdateModelAsync(testContentPart, ""))
+            await updater.TryUpdateModelAsync(testContentPart, "");
+
+            if (testContentPart.Line.EndsWith(' '))
             {
-                if (testContentPart.Line.EndsWith(' '))
-                {
-                    updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
-                }
-                else
-                {
-                    contentItem.Apply(testContentPart);
-                }
+                updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
+            }
+            else
+            {
+                contentItem.Apply(testContentPart);
             }
 
             return Copy("TestContentPartA_Edit", testContentPart).Location("Content");

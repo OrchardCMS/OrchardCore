@@ -37,7 +37,7 @@ namespace OrchardCore.Google.Analytics.Drivers
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAnalytics);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleAnalyticsSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GoogleConstants.Features.GoogleAnalytics)
             {

@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Lucene.Drivers
                 .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, UpdateEditorContext context)
         {
             if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
             {
