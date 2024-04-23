@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'mkdocs.yml'
-      - 'src/docs/**/*'
+      - 'src/docs/**'
     branches: [ main ]
   pull_request:
     branches:
@@ -12,7 +12,7 @@ on:
       - 'release/**'
     paths:
       - 'mkdocs.yml'
-      - 'src/docs/**/*'
+      - 'src/docs/**'
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}-docs_validation
