@@ -67,6 +67,7 @@ All code submissions will be reviewed and tested by the core team, and only thos
 - Feel free to mark conversations that you addressed to keep track of them with an emoji or otherwise, just don't resolve them.
 - Please keep conversations happening in line comments in those convos, otherwise, communication will be a mess. If you have trouble finding them, see [this video](https://github.com/OrchardCMS/OrchardCore/pull/14749#issuecomment-1917976028).
 - When you're done addressing all feedback of a review, click ["Re-request review"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#re-requesting-a-review) in the top-right corner for each reviewer when you're ready for another round of review, so they know that you're done.
+- We're using [CodeRabbit](https://coderabbit.ai/) for AI code reviews. Please take the bot's feedback like a human's, and address them as well or dispute them by replying to the comments. You can have a conversation with it. Please be patient; AI code reviews help, but can frequently be incorrect. Use your best judgement.
 
 !!! tip
     Do you want to demo what you've done to others, to showcase your work and to gather feedback? Join one of [our meetings](../../resources/meeting/README.md).
