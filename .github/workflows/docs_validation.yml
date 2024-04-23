@@ -7,9 +7,6 @@ on:
       - 'src/docs/**'
     branches: [ main ]
   pull_request:
-    branches:
-      - 'main'
-      - 'release/**'
     paths:
       - 'mkdocs.yml'
       - 'src/docs/**'
