@@ -19,14 +19,14 @@ concurrency:
 jobs:
   validate-building-documentation:
     name: Validating Building the Documentation
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
 
     - uses: actions/setup-python@v5 
     
     - name: Install Dependencies
-      run: sudo pip install -r src/docs/requirements.txt -v
+      run: pip install -r src/docs/requirements.txt -v
 
     - name: Build Documentation
       run: python -m mkdocs build --strict
