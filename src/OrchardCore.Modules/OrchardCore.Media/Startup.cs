@@ -326,7 +326,7 @@ namespace OrchardCore.Media
         public override void ConfigureServices(IServiceCollection services)
         {
             // Marker service to easily detect if the feature has been enabled.
-            services.AddSingleton<SecureMediaMarkerService>();
+            services.AddSingleton<SecureMediaMarker>();
             services.AddScoped<IPermissionProvider, SecureMediaPermissions>();
             services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
