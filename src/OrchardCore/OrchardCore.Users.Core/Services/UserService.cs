@@ -256,8 +256,8 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier)
-            => _userManager.FindByIdAsync(userIdentifier);
+        public Task<IUser> GetUserByUniqueIdAsync(string userId)
+            => _userManager.FindByIdAsync(userId);
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
