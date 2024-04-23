@@ -252,6 +252,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Workflows.Abstr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68F6113F-2F08-4412-B5E7-41B7164A0C7F}"
 	ProjectSection(SolutionItems) = preProject
+		.coderabbit.yaml = .coderabbit.yaml
 		.editorconfig = .editorconfig
 		gulpfile.js = gulpfile.js
 		package.json = package.json
@@ -500,7 +501,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications", "src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj", "{19594A96-A033-4820-820B-C6186D00D507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.HealthChecks.Abstractions", "src\OrchardCore\OrchardCore.HealthChecks.Abstractions\OrchardCore.HealthChecks.Abstractions.csproj", "{91CED599-45B1-474D-A7F2-231BF857A5F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.HealthChecks.Abstractions", "src\OrchardCore\OrchardCore.HealthChecks.Abstractions\OrchardCore.HealthChecks.Abstractions.csproj", "{91CED599-45B1-474D-A7F2-231BF857A5F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Seo.Abstractions", "src\OrchardCore\OrchardCore.Seo.Abstractions\OrchardCore.Seo.Abstractions.csproj", "{C61CC748-39BD-4900-9FEE-A2483259573D}"
 EndProject

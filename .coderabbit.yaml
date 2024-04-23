@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/coderabbit-overrides.v2.json
+
+# Schema with docs on the properties: https://coderabbit.ai/integrations/coderabbit-overrides.v2.json. Docs:
+# https://docs.coderabbit.ai/guides/configure-coderabbit. This only includes overrides for defaults and mandatory
+# elements.
+# The chat and auto_review sections just repeat the defaults because they're required. That's a bug that'll be fixed:
+# https://discord.com/channels/1134356397673414807/1134356398260629598/1190412620755374172.
+
+early_access: true
+reviews:
+  request_changes_workflow: true
+  # Very rarely contains useful info, mostly is just noise.
+  high_level_summary: false
+  poem: false
+  # Comments useful for debugging but not otherwise.
+  review_status: false
+  # The code walkthrough's text may take a lot of space, so collapsing it is nicer UX.
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
+chat:
+  auto_reply: true
