@@ -4,5 +4,5 @@ namespace OrchardCore.Users.Models;
 
 public class ForgotPasswordForm : Entity
 {
-    public string Identifier { get; set; }
+    public string UsernameOrEmail { get; set; }
 }

@@ -45,7 +45,7 @@ namespace OrchardCore.Users.Services
             _logger = logger;
         }
 
-        public async Task<IUser> AuthenticateAsync(string identifier, string password, Action<string, string> reportError)
+        public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
         {
             var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(identifier))
+            if (string.IsNullOrWhiteSpace(usernameOrEmail))
             {
                 reportError("Username", S["A user name is required."]);
                 return null;
@@ -67,7 +67,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await GetUserAsync(identifier);
+            var user = await GetUserAsync(usernameOrEmail);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -184,12 +184,12 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        public async Task<bool> ResetPasswordAsync(string identifier, string resetToken, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ResetPasswordAsync(string usernameOrEmail, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(identifier))
+            if (string.IsNullOrWhiteSpace(usernameOrEmail))
             {
-                reportError(nameof(ResetPasswordForm.Identifier), S["A username or email address is required."]);
+                reportError(nameof(ResetPasswordForm.UsernameOrEmail), S["A username or email address is required."]);
                 result = false;
             }
 
@@ -210,7 +210,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await GetUserAsync(identifier) as User;
+            var user = await GetUserAsync(usernameOrEmail) as User;
 
             if (user == null)
             {
@@ -244,19 +244,20 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<IUser> GetUserAsync(string identifier)
+        public async Task<IUser> GetUserAsync(string usernameOrEmail)
         {
-            var user = await _userManager.FindByNameAsync(identifier);
+            var user = await _userManager.FindByNameAsync(usernameOrEmail);
 
             if (user is null && _identityOptions.User.RequireUniqueEmail)
             {
-                user = await _userManager.FindByEmailAsync(identifier);
+                user = await _userManager.FindByEmailAsync(usernameOrEmail);
             }
 
             return user;
         }
 
-        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
+        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier)
+            => _userManager.FindByIdAsync(userIdentifier);
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
