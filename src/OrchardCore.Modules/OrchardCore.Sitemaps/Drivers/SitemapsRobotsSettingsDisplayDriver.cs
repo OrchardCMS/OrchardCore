@@ -40,7 +40,7 @@ public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, S
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SitemapsRobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SitemapsRobotsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
                     RoleClaims =
                     [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 },
                 new Role
                 {
-                    RoleName = "Authenticated",
+                    RoleName = OrchardCoreConstants.Roles.Authenticated,
                     RoleClaims =
                     [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
@@ -73,7 +73,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
                     RoleClaims =
                     [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
@@ -99,7 +99,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var permissionHandler = CreatePermissionHandler(
                 new Role
                 {
-                    RoleName = "Anonymous",
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
                     RoleClaims =
                     [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
@@ -107,7 +107,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 },
                 new Role
                 {
-                    RoleName = "Authenticated",
+                    RoleName = OrchardCoreConstants.Roles.Authenticated,
                     RoleClaims =
                     [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }

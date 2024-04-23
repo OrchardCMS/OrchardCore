@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Extensions.Features
             {
                 var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
 
-                enabled = enabledFeatures.Any(x => x.Id.Equals(featureId));
+                enabled = enabledFeatures.Any(x => x.Id.Equals(featureId, StringComparison.Ordinal));
 
                 _memoryCache.Set(cacheKey, enabled);
             }

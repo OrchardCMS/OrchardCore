@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         public void Configure(string name, FacebookOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme))
+            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

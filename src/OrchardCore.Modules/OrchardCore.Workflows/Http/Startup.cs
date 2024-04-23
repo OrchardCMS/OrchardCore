@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Http
         {
             services.Configure<MvcOptions>(o =>
             {
-                o.Filters.Add(typeof(WorkflowActionFilter));
+                o.Filters.Add<WorkflowActionFilter>();
             });
 
             services.AddHttpClient();

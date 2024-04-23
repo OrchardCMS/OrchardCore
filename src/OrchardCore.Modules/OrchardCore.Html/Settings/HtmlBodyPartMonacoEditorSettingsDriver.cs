@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Html.Settings
@@ -16,9 +17,9 @@ namespace OrchardCore.Html.Settings
     {
         protected readonly IStringLocalizer S;
 
-        public HtmlBodyPartMonacoEditorSettingsDriver(IStringLocalizer<HtmlBodyPartMonacoEditorSettingsDriver> localizer)
+        public HtmlBodyPartMonacoEditorSettingsDriver(IStringLocalizer<HtmlBodyPartMonacoEditorSettingsDriver> stringLocalizer)
         {
-            S = localizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
@@ -40,19 +41,21 @@ namespace OrchardCore.Html.Settings
             if (contentTypePartDefinition.Editor() == "Monaco")
             {
                 var model = new MonacoSettingsViewModel();
-                var settings = new HtmlBodyPartMonacoEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (!model.Options.IsJson())
                 {
-                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
                 else
                 {
                     var jsonSettings = JObject.Parse(model.Options);
                     jsonSettings["language"] = "html";
-                    settings.Options = jsonSettings.ToString();
+                    var settings = new HtmlBodyPartMonacoEditorSettings
+                    {
+                        Options = jsonSettings.ToString()
+                    };
                     context.Builder.WithSettings(settings);
                 }
             }

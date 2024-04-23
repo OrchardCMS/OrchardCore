@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -50,7 +51,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
+            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

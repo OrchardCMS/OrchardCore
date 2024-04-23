@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Indexes
                         return new UserByRoleNameIndex[]
                         {
                             new() {
-                                RoleName = NormalizeKey("Authenticated"),
+                                RoleName = NormalizeKey(OrchardCoreConstants.Roles.Authenticated),
                                 Count = 1
                             }
                         };

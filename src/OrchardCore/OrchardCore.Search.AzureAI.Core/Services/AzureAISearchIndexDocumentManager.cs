@@ -220,7 +220,7 @@ public class AzureAIIndexDocumentManager(
         return mapping;
     }
 
-    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
+    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -228,7 +228,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
+    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
         var doc = new SearchDocument()
         {

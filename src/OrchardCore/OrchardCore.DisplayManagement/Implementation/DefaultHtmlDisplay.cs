@@ -1,4 +1,6 @@
 using System;
+using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -14,6 +16,7 @@ namespace OrchardCore.DisplayManagement.Implementation
     public class DefaultHtmlDisplay : IHtmlDisplay
     {
         private const string _separator = "__";
+        private static readonly ConcurrentDictionary<string, string[]> _alternateShapeTypes = [];
 
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
@@ -237,15 +240,29 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             // When no alternates matches, the shapeType is used to find the longest matching binding,
-            // the shape-type name can break itself into shorter fallbacks at double-underscore marks,
-            // so the shape-type itself may contain a longer alternate forms that falls back to a shorter one.
-            var shapeTypeScan = shapeType;
+            // the shapetype name can break itself into shorter fallbacks at double-underscore marks,
+            // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one.
 
-            do
+            // Build a cache of such values
+            var alternateShapeTypes = _alternateShapeTypes.GetOrAdd(shapeType, shapeType =>
             {
+                var segments = new List<string>(2);
+
+                var alternate = shapeType;
+
+                do
+                {
+                    segments.Add(alternate);
+                } while (TryGetParentShapeTypeName(alternate, out alternate));
+
+                return segments.ToArray();
+            });
+
+            foreach (var shapeTypeSegment in alternateShapeTypes)
+            { 
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
-                    var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeScan);
+                    var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeSegment);
 
                     if (binding != null)
                     {
@@ -253,22 +270,23 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }
 
-                if (shapeTable.Bindings.TryGetValue(shapeTypeScan, out var shapeBinding))
+                if (shapeTable.Bindings.TryGetValue(shapeTypeSegment, out var shapeBinding))
                 {
                     return shapeBinding;
                 }
             }
-            while (TryGetParentShapeTypeName(ref shapeTypeScan));
 
             return null;
         }
 
-        private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
+        private static bool TryGetParentShapeTypeName(string shapeTypeScan, out string parentType)
         {
+            parentType = shapeTypeScan;
+
             var delimiterIndex = shapeTypeScan.LastIndexOf(_separator, StringComparison.Ordinal);
             if (delimiterIndex > 0)
             {
-                shapeTypeScan = shapeTypeScan[..delimiterIndex];
+                parentType = shapeTypeScan[..delimiterIndex];
                 return true;
             }
 

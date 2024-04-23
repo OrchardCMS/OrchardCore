@@ -59,15 +59,14 @@ namespace OrchardCore.ContentFields.Fields
         public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             var viewModel = new EditMultiTextFieldViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                field.Values = viewModel.Values;
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-                var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                if (settings.Required && viewModel.Values.Length == 0)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+            field.Values = viewModel.Values;
+
+            var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+            if (settings.Required && viewModel.Values.Length == 0)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);
