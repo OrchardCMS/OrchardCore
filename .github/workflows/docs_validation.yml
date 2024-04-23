@@ -26,7 +26,9 @@ jobs:
     - uses: actions/setup-python@v5 
     
     - name: Install Dependencies
+      shell: pwsh
       run: pip install -r src/docs/requirements.txt
 
     - name: Build Documentation
+      shell: pwsh
       run: python -m mkdocs build --strict
