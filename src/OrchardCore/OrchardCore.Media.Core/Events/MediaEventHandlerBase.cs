@@ -35,14 +35,8 @@ namespace OrchardCore.Media.Core.Events
             return Task.CompletedTask;
         }
 
-        public virtual Task MediaCreatingDirectoryAsync(MediaCreatingContext context)
-        {
-            return Task.CompletedTask;
-        }
+        public virtual Task MediaCreatingDirectoryAsync(MediaCreatingContext context) => Task.CompletedTask;
 
-        public virtual Task MediaCreatedDirectoryAsync(MediaCreatedContext context)
-        {
-            return Task.CompletedTask;
-        }
+        public virtual Task MediaCreatedDirectoryAsync(MediaCreatedContext context) => Task.CompletedTask;
     }
 }
