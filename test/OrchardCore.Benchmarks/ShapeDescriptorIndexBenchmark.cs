@@ -28,7 +28,8 @@ public class ShapeDescriptorIndexBenchmark
             var typeFeatureProvider = scope.ServiceProvider.GetRequiredService<ITypeFeatureProvider>();
             foreach (var bindingStrategy in bindingStrategies)
             {
-                var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                var strategyFeature = typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()).First();
+
                 var builder = new ShapeTableBuilder(strategyFeature, []);
                 await bindingStrategy.DiscoverAsync(builder);
                 BuildDescriptors(bindingStrategy, builder.BuildAlterations());

@@ -38,7 +38,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
-            var entries = new Dictionary<Type, IFeatureInfo>();
+            var entries = new Dictionary<Type, IEnumerable<IFeatureInfo>>();
 
             foreach (var feature in features)
             {
@@ -48,7 +48,16 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     if (requiredFeatures.All(x => featureNames.Contains(x)))
                     {
-                        entries.Add(exportedType, feature);
+                        if (entries.TryGetValue(exportedType, out var featureDependencies))
+                        {
+                            featureDependencies = featureDependencies.Append(feature).ToArray();
+                        }
+                        else
+                        {
+                            featureDependencies = [feature];
+                        }
+
+                        entries[exportedType] = featureDependencies;
                     }
                 }
             }

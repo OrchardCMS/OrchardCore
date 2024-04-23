@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
@@ -42,10 +43,11 @@ namespace OrchardCore.Mvc
             foreach (var controller in context.Result.Controllers)
             {
                 var controllerType = controller.ControllerType.AsType();
-                var blueprint = _typeFeatureProvider.GetFeatureForDependency(controllerType);
+
+                var blueprint = _typeFeatureProvider.GetFeaturesForDependency(controllerType).FirstOrDefault();
 
                 if (blueprint != null)
-                {
+                { 
                     if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
                     {
                         // Don't serve any action of the application'module which is enabled during a setup.

@@ -8,26 +8,26 @@ namespace OrchardCore.Environment.Extensions
 {
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
-        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features = new();
+        private readonly ConcurrentDictionary<Type, IEnumerable<IFeatureInfo>> _features = new();
 
-        public IFeatureInfo GetFeatureForDependency(Type dependency)
+        public IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency)
         {
-            if (_features.TryGetValue(dependency, out var feature))
+            if (_features.TryGetValue(dependency, out var features))
             {
-                return feature;
+                return features;
             }
 
-            throw new InvalidOperationException($"Could not resolve feature for type {dependency.Name}");
+            throw new InvalidOperationException($"Could not resolve features for type {dependency.Name}");
         }
 
         public IEnumerable<Type> GetTypesForFeature(IFeatureInfo feature)
         {
-            return _features.Where(kv => kv.Value == feature).Select(kv => kv.Key);
+            return _features.Where(kv => kv.Value.Contains(feature)).Select(kv => kv.Key);
         }
 
         public void TryAdd(Type type, IFeatureInfo feature)
         {
-            _features.TryAdd(type, feature);
+            _features.AddOrUpdate(type, (key, value) => [value], (key, features, value) => features.Contains(value) ? features : features.Append(value).ToArray(), feature);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace OrchardCore.Tests.Shell
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeaturesForDependency(typeof(TestService)).FirstOrDefault());
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace OrchardCore.Tests.Shell
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
             Assert.IsType<CustomTestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeaturesForDependency(typeof(CustomTestService)).FirstOrDefault());
         }
 
         [Fact]
@@ -154,14 +154,14 @@ namespace OrchardCore.Tests.Shell
             {
                 Settings = new ShellSettings(),
                 Descriptor = new ShellDescriptor(),
-                Dependencies = new Dictionary<Type, IFeatureInfo>()
+                Dependencies = new Dictionary<Type, IEnumerable<IFeatureInfo>>()
             };
         }
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
             var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
-            shellBlueprint.Dependencies.Add(startupType, featureInfo);
+            shellBlueprint.Dependencies.Add(startupType, [featureInfo]);
 
             return featureInfo;
         }

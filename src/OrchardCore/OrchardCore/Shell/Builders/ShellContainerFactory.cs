@@ -68,7 +68,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.Id == _applicationFeature.Id)
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
                 {
                     continue;
                 }
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // Let any module add custom service descriptors to the tenant
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();
 
                 // If the startup is not coming from an extension, associate it to the application feature.
                 // For instance when Startup classes are registered with Configure<Startup>() from the application.
@@ -152,35 +152,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
         {
-            // Register all DIed types in ITypeFeatureProvider first. These are then already feature specific.
-            foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
-            {
-                foreach (var serviceDescriptor in featureServiceCollection.Value)
-                {
-                    var type = serviceDescriptor.GetImplementationType();
-
-                    if (type is not null)
-                    {
-                        var feature = featureServiceCollection.Key;
-
-                        if (feature == _applicationFeature)
-                        {
-                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-
-                            if (attribute is not null)
-                            {
-                                feature = featureServiceCollection.Key.Extension.Features
-                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
-                                    ?? feature;
-                            }
-                        }
-
-                        typeFeatureProvider.TryAdd(type, feature);
-                    }
-                }
-            }
-
-            // Get all other valid types from all extension and add them to the type feature provider as well.
+            // Get all types from all extension and add them to the type feature provider.
             var extensions = _extensionManager.GetExtensions();
 
             var allTypesByExtension = extensions
@@ -211,6 +183,34 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             typeFeatureProvider.TryAdd(type, feature);
                         }
+                    }
+                }
+            }
+
+            // Register all DIed types in ITypeFeatureProvider
+            foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
+            {
+                foreach (var serviceDescriptor in featureServiceCollection.Value)
+                {
+                    var type = serviceDescriptor.GetImplementationType();
+
+                    if (type is not null)
+                    {
+                        var feature = featureServiceCollection.Key;
+
+                        if (feature == _applicationFeature)
+                        {
+                            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+                            if (attribute is not null)
+                            {
+                                feature = featureServiceCollection.Key.Extension.Features
+                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
+                                    ?? feature;
+                            }
+                        }
+
+                        typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
             }

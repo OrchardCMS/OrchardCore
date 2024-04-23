@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Extensions
     /// </summary>
     public interface ITypeFeatureProvider
     {
-        IFeatureInfo GetFeatureForDependency(Type dependency);
+        IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency);
         IEnumerable<Type> GetTypesForFeature(IFeatureInfo feature);
         void TryAdd(Type type, IFeatureInfo feature);
     }

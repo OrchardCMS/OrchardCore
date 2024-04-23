@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
             foreach (var bindingStrategy in bindingStrategies)
             {
-                var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                var strategyFeature = typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()).First();
 
                 var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                 await bindingStrategy.DiscoverAsync(builder);
