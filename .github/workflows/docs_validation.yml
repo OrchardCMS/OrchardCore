@@ -25,7 +25,7 @@ jobs:
 
     - name: Install Dependencies
       shell: pwsh
-      run: pip install -r src/docs/requirements.txt
+      run: pip3 install -r src/docs/requirements.txt
 
     - name: Build Documentation
       shell: pwsh
