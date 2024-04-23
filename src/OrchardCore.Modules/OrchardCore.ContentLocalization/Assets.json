@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/contentLocalization.scss"
     ],

@@ -4,7 +4,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RootNamespace>OrchardCore</RootNamespace>
   </PropertyGroup>
 

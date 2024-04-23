@@ -75,7 +75,7 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {

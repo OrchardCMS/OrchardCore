@@ -58,7 +58,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 PublishContent,
@@ -73,7 +73,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
                 PublishContent,
@@ -86,7 +86,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions =
             [
                 PublishOwnContent,
@@ -98,7 +98,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions =
             [
                 EditOwnContent,
@@ -108,12 +108,12 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Authenticated",
+            Name = OrchardCoreConstants.Roles.Authenticated,
             Permissions = _readerPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Anonymous",
+            Name = OrchardCoreConstants.Roles.Anonymous,
             Permissions = _readerPermissions,
         },
     ];
