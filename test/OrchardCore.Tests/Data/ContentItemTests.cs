@@ -212,7 +212,6 @@ namespace OrchardCore.Tests.Data
                 x.Alter<MyTextField>("myField", f => f.Text = "This is a test field entry");
             });
 
-
             var json = JConvert.SerializeObject(contentItem);
 
             var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);

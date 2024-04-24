@@ -8,7 +8,7 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueMustConvertToBool()
     {
-        var bool expectedValue = true;
+        var expectedValue = true;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
         Assert.Equal(expectedValue, (bool)myDynamic);
