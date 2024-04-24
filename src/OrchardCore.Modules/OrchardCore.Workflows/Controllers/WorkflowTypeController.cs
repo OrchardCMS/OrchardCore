@@ -24,6 +24,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -572,33 +573,20 @@ namespace OrchardCore.Workflows.Controllers
 
         private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
         {
-            var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
-            var packageName = itemIds.Length == 1
-                           ? workflowTypes.FirstOrDefault().Name
-                           : S["Workflow Types"];
-
-            var data = new JsonArray();
-            foreach (var workflow in workflowTypes)
-            {
-                var objectData = JObject.FromObject(workflow, _jsonSerializerOptions);
-                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
-                objectData.Remove(nameof(workflow.Id));
-                data.Add(objectData);
-            }
-
             using var fileBuilder = new TemporaryFileBuilder();
             var archiveFileName = fileBuilder.Folder + ".zip";
             var recipeDescriptor = new RecipeDescriptor();
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-            deploymentPlanResult.Steps.Add(new JsonObject
-            {
-                ["name"] = "WorkflowType",
-                ["data"] = data
-            });
+            var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
+
+            AllWorkflowTypeDeploymentSource.ProcessWorkflowTypeDeploymentStep(deploymentPlanResult, workflowTypes, _jsonSerializerOptions);
 
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
 
+            var packageName = itemIds.Length == 1
+                           ? workflowTypes.FirstOrDefault().Name
+                           : S["Workflow Types"];
             return new PhysicalFileResult(archiveFileName, "application/zip")
             {
                 FileDownloadName = packageName + ".zip"
