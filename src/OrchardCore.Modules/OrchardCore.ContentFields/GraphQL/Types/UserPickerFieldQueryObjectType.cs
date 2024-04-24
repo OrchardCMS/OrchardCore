@@ -52,20 +52,22 @@ namespace OrchardCore.ContentFields.GraphQL
                     });
                 });
         }
-        public static IDataLoader<string, IEnumerable<User>> GetOrAddUserProfileByIdDataLoader<T>(IResolveFieldContext<T> context)
+
+        private static IDataLoader<string, IEnumerable<User>> GetOrAddUserProfileByIdDataLoader<T>(IResolveFieldContext<T> context)
         {
-            IDataLoaderContextAccessor requiredService = context.RequestServices.GetRequiredService<IDataLoaderContextAccessor>();
-            var session = context.RequestServices.GetService<ISession>();
-            return requiredService.Context.GetOrAddCollectionBatchLoader("GetOrAddUserByIds", async (IEnumerable<string> userIds) =>
+            var dataLoaderContextAccessor = context.RequestServices.GetRequiredService<IDataLoaderContextAccessor>();
+
+            return dataLoaderContextAccessor.Context.GetOrAddCollectionBatchLoader("GetOrAddUserByIds", async (IEnumerable<string> userIds) =>
             {
                 if (userIds == null || !userIds.Any())
                 {
                     return null;
                 }
+
+                var session = context.RequestServices.GetService<ISession>();
                 var users = await session.Query<User, UserIndex>(y => y.UserId.IsIn(userIds)).ListAsync();
 
                 return users.ToLookup((User k) => k.UserId, (User user) => user);
             });
         }
-    }
 }
