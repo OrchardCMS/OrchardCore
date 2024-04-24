@@ -38,7 +38,7 @@ namespace OrchardCore.ContentFields.GraphQL
                     var userLoader = GetOrAddUserProfileByIdDataLoader(resolve);
                     return userLoader.LoadAsync(resolve.Page(resolve.Source.UserIds)).Then(itemResultSet =>
                     {
-                        return itemResultSet.SelectMany(x => x);
+                        return itemResultSet.SelectMany(users => users);
                     });
                 });
 
