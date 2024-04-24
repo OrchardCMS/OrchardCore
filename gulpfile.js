@@ -114,27 +114,27 @@ function getAssetGroups() {
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.manifestPath = assetManifestPath.replace(/\\/g, '/');
     assetGroup.basePath = path.dirname(assetGroup.manifestPath);
-    var inputPaths = assetGroup.inputs.map(function (inputPath) {
-        return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
-    });
 
-    var finalSorted = [];
+    var inputPaths = [];
 
     // The inputPaths can contain either a physical path to a file or a path with a wildcard.
     // It's crucial to maintain the order of each file based on its position in the assets.json file.
     // When a path contains a wildcard, we need to convert the wildcard to physical paths
     // and sort them independently of the previous paths to ensure consistent concatenation.
-    inputPaths.forEach(path => {
-        if (path.includes('*')) {
-            glob.sync(path, {}).sort().forEach(p => {
-                finalSorted.push(p);
+    assetGroup.inputs.forEach(inputPath => {
+
+        var resolvedPath = path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
+
+        if (resolvedPath.includes('*')) {
+            glob.sync(resolvedPath, {}).sort().forEach(p => {
+                inputPaths.push(p);
             });
         } else {
-            finalSorted.push(path);
+            inputPaths.push(resolvedPath);
         }
     });
 
-    assetGroup.inputPaths = finalSorted;
+    assetGroup.inputPaths = inputPaths;
 
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
