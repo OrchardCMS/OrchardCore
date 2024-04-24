@@ -154,6 +154,51 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 }
 ```
 
+## Configuring a Local Emulator
+
+During development, instead of using an online S3 resource, you can use a local storage emulator too. This is especially important for development teams since you don't want to step on each others' feet by using a shared storage.
+
+For emulators, you'll need to configure a `ServiceURL`. Instead of the default [virtual host addressing of buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html), you'll also need to enable path-style addressing (i.e. instead of `http://mybucket.localhost`, the local bucket will be accessible under `http://localhost/mybucket`).
+
+```json
+{
+    "OrchardCore": {
+        "OrchardCore_Media_AmazonS3": {
+            // Note how we use ServiceURL, just with emulators. There should be no Region specified.
+            "ServiceURL": "http://localhost:9444/",
+            "Profile": "default",
+            "ProfilesLocation": "",
+            // Providing some credentials is required but emulators don't actually use them.
+            "Credentials": {
+                "SecretKey": "dummy",
+                "AccessKey": "dummy"
+            },
+            // BasePath and BucketName can be templated too, as usual.
+            "BasePath": "/media",
+            "CreateBucket": true,
+            "RemoveBucket": true,
+            "BucketName": "media",
+            // This is required for all emulators.
+            "ForcePathStyle": true
+        }
+    }
+}
+```
+
+The following tools are known to be working with the above settings. Be sure to explore further configuration of these tools, the commands below are just provided for your convenience as a general recommendation.
+
+- [LocalS3](https://github.com/Robothy/local-s3) with Docker:
+
+```
+docker run -d -e MODE=IN_MEMORY -p 9444:80 luofuxiang/local-s3
+```
+
+- [S3Mock](https://github.com/adobe/S3Mock) with Docker:
+
+```
+docker run -p 9444:9090 -t adobe/s3mock
+```
+
 ## Media Cache
 
 The Media Cache feature will automatically be enabled when Amazon Media Storage is enabled.

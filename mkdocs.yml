@@ -80,12 +80,16 @@ plugins:
       glob:
         # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
         - "*node_modules*"
+  - redirects:
+      redirect_maps:
+        'docs/topics/docs-contributions/README.md': 'docs/guides/contributing/contributing-documentation.md'
 
 # Page tree
 nav:
   - About Orchard Core: README.md
   - Getting started:
       - Create a CMS Web application: docs/getting-started/README.md
+      - Test drive Orchard Core: docs/getting-started/test-drive-orchard-core.md
       - Configure Preview package source: docs/getting-started/preview-package-source.md
       - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
       - Code Generation Templates: docs/getting-started/templates/README.md
@@ -112,6 +116,11 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: docs/guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
+      - Contributing:
+          - Contributing to Orchard Core: docs/guides/contributing/README.md
+          - Contributing code: docs/guides/contributing/contributing-code.md
+          - Contributing documentation: docs/guides/contributing/contributing-documentation.md
+          - Reviewing pull requests: docs/guides/contributing/reviewing-pull-requests.md
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: docs/topics/content-management/README.md
@@ -125,7 +134,6 @@ nav:
       #        - Data: docs/topics/data/README.md
       #        - Configuration: docs/topics/configuration/README.md
       - Workflows: docs/topics/workflows/README.md
-      - Contributing to the docs: docs/topics/docs-contributions/README.md
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md
@@ -183,7 +191,7 @@ nav:
           - Authentication:
               - Microsoft: docs/reference/modules/Microsoft.Authentication/README.md
               - Facebook: docs/reference/modules/Facebook/README.md
-              - Twitter: docs/reference/modules/Twitter/README.md
+              - X (Twitter): docs/reference/modules/X/README.md
               - GitHub: docs/reference/modules/GitHub/README.md
               - Google: docs/reference/modules/Google/README.md
           - Users:

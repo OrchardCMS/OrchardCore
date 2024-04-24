@@ -41,9 +41,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     services.Configure<MvcOptions>((options) =>
                     {
-                        options.Filters.Add(typeof(ModelBinderAccessorFilter));
-                        options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(RazorViewActionFilter));
+                        options.Filters.Add<ModelBinderAccessorFilter>();
+                        options.Filters.Add<NotifyFilter>();
+                        options.Filters.Add<RazorViewActionFilter>();
                     });
 
                     services.AddTransient<IConfigureOptions<NotifyJsonSerializerOptions>, NotifyJsonSerializerOptionsConfiguration>();
@@ -54,7 +54,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
                     services.AddScoped<ViewContextAccessor>();
 
-                    services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+                    services.AddScoped<RazorShapeTemplateViewEngine>();
+                    services.AddScoped<IShapeTemplateViewEngine>(sp => sp.GetService<RazorShapeTemplateViewEngine>());
+
                     services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
                     services.AddScoped<IViewLocationExpanderProvider, ThemeViewLocationExpanderProvider>();
 

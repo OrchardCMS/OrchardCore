@@ -5,7 +5,7 @@
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /**
- * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.28.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link https://alex-d.github.io/Trumbowyg/
@@ -223,19 +223,15 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
         var div = t.doc.createElement('div');
         div.id = trumbowygIconsId;
         t.doc.body.insertBefore(div, t.doc.body.childNodes[0]);
-        $.ajax({
-          async: true,
-          type: 'GET',
-          contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-          dataType: 'xml',
-          crossDomain: true,
-          url: svgPathOption,
-          data: null,
-          beforeSend: null,
-          complete: null,
-          success: function success(data) {
-            div.innerHTML = new XMLSerializer().serializeToString(data.documentElement);
+        fetch(svgPathOption, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
+        }).then(function (response) {
+          response.text().then(function (svg) {
+            div.innerHTML = svg;
+          });
         });
       }
     }
@@ -1495,7 +1491,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
               values[n] = $field.filter(':checked').val();
               break;
             default:
-              values[n] = $.trim($field.val());
+              values[n] = $field.val().trim();
               break;
           }
           // Validate value
@@ -1525,12 +1521,10 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       var prefix = this.o.prefix,
         spanErrorClass = prefix + 'msg-error',
         $row = $field.closest('.' + prefix + 'input-row');
-      $field.on('change keyup', function () {
+      $field.one('change keyup', function () {
         $row.removeClass(prefix + 'input-error');
-        setTimeout(function () {
-          $row.find('.' + spanErrorClass).remove();
-        }, 150);
       });
+      $row.find('.' + spanErrorClass).remove();
       $row.addClass(prefix + 'input-error').find('.' + prefix + 'input-infos label').append($('<span/>', {
         "class": spanErrorClass,
         text: err

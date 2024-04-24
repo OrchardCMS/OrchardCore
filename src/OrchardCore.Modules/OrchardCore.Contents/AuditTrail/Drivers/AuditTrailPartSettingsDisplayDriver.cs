@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
@@ -13,7 +14,10 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
     {
         public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
+            {
+                return null;
+            }
 
             return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
             {
@@ -24,17 +28,19 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
+            {
+                return null;
+            }
 
             var viewModel = new AuditTrailPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
+
+            context.Builder.WithSettings(new AuditTrailPartSettings
             {
-                context.Builder.WithSettings(new AuditTrailPartSettings
-                {
-                    ShowCommentInput = viewModel.ShowCommentInput
-                });
-            }
+                ShowCommentInput = viewModel.ShowCommentInput
+            });
 
             return Edit(model, context.Updater);
         }

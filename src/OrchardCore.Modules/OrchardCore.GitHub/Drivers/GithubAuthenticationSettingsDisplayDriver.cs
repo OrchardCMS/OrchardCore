@@ -76,7 +76,7 @@ namespace OrchardCore.GitHub.Drivers
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {

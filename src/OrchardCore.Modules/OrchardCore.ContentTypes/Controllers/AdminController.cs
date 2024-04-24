@@ -115,7 +115,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !char.IsLetter(viewModel.Name[0]))
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
@@ -366,7 +366,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("DisplayName", S["A part with the same Display Name already exists."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !char.IsLetter(viewModel.Name[0]))
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
@@ -479,7 +479,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["A part with the same Technical Name already exists."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !char.IsLetter(viewModel.Name[0]))
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
@@ -674,7 +674,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["A field with the same Technical Name already exists."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !char.IsLetter(viewModel.Name[0]))
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }

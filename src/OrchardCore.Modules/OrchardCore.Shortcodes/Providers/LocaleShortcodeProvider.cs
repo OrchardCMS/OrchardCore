@@ -31,7 +31,7 @@ namespace OrchardCore.Shortcodes.Providers
                 // Fallback to parent culture, if the current culture is en-CA and the shortcode targets en, the html will be output.
                 do
                 {
-                    if (currentCulture.Name.Equals(language, StringComparison.InvariantCultureIgnoreCase))
+                    if (currentCulture.Name.Equals(language, StringComparison.OrdinalIgnoreCase))
                     {
                         return new ValueTask<string>(content);
                     }
@@ -42,7 +42,7 @@ namespace OrchardCore.Shortcodes.Providers
             }
             else
             {
-                if (currentCulture.Name.Equals(language, StringComparison.InvariantCultureIgnoreCase))
+                if (currentCulture.Name.Equals(language, StringComparison.OrdinalIgnoreCase))
                 {
                     return new ValueTask<string>(content);
                 }
