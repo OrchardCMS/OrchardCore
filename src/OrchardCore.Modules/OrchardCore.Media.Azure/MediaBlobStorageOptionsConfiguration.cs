@@ -37,6 +37,7 @@ namespace OrchardCore.Media.Azure
             options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
             options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
+            options.AzureClientName = section.GetValue(nameof(options.AzureClientName), string.Empty);
 
             var templateOptions = new TemplateOptions();
             var templateContext = new TemplateContext(templateOptions);

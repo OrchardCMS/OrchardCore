@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,8 +26,9 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
+        var azureClientName = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:AzureClientName");
 
-        if (!string.IsNullOrWhiteSpace(connectionString))
+        if (!string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(azureClientName))
         {
             services
                 .Configure<BlobOptions, BlobOptionsSetup>()
@@ -34,6 +36,14 @@ public class Startup : StartupBase
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
                     var options = sp.GetRequiredService<BlobOptions>();
+
+                    if (!string.IsNullOrWhiteSpace(options.AzureClientName))
+                    {
+                        var azureClientFactory = sp.GetRequiredService<IAzureClientFactory<BlobServiceClient>>();
+
+                        return azureClientFactory.CreateClient(options.AzureClientName).GetBlobContainerClient(options.ContainerName).GetBlobClient(options.BlobName);
+                    }
+
                     return new BlobClient(
                         options.ConnectionString,
                         options.ContainerName,

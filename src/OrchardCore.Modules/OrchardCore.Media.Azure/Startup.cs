@@ -40,12 +40,10 @@ namespace OrchardCore.Media.Azure
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
-            // Only replace default implementation if options are valid.
-            var connectionString = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
-            var containerName = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
-
-            if (CheckOptions(connectionString, containerName, _logger))
+            if (CheckOptions(_configuration, _logger))
             {
+                services.TryAddSingleton<BlobContainerClientFactory>();
+
                 // Register a media cache file provider.
                 services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
                 {
@@ -57,7 +55,6 @@ namespace OrchardCore.Media.Azure
                     }
 
                     var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                    var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
@@ -91,9 +88,10 @@ namespace OrchardCore.Media.Azure
                     var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                     var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                     var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                    var blobContainerClientFactory = serviceProvider.GetRequiredService<BlobContainerClientFactory>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                    var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
+                    var fileStore = new BlobFileStore(blobStorageOptions, blobContainerClientFactory, clock, contentTypeProvider);
                     var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                     var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
@@ -117,13 +115,18 @@ namespace OrchardCore.Media.Azure
         private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
             => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 
-        private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
+        private static bool CheckOptions(IShellConfiguration configuration, ILogger logger)
         {
             var optionsAreValid = true;
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            // Only replace default implementation if options are valid.
+            var connectionString = configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
+            var containerName = configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+            var azureClientName = configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.AzureClientName)}"];
+
+            if (string.IsNullOrWhiteSpace(azureClientName) && string.IsNullOrWhiteSpace(connectionString))
             {
-                logger.LogError("Azure Media Storage is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
+                logger.LogError("Azure Media Storage is enabled but not active because either 'ConnectionString' or 'AzureClientName' must be set in application configuration.");
                 optionsAreValid = false;
             }
 
