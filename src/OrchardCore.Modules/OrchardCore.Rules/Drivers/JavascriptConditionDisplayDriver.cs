@@ -57,11 +57,12 @@ namespace OrchardCore.Rules.Drivers
             var model = new JavascriptConditionViewModel();
             await updater.TryUpdateModelAsync(model, Prefix);
 
+            // CodeMirror hides the textarea which displays the error when updater.ModelState.AddModelError() is used,
+            // that's why a notifier is used to show validation errors.
             if (string.IsNullOrWhiteSpace(model.Script))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script is required"]);
-                // Codemirror hides the textarea which displays the error when updater.ModelState.AddModelError is used, that's why a notifier is used to show the error to user
-                await _notifier.ErrorAsync(H["The script is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
+                await _notifier.ErrorAsync(H["Please provide a script."]);
                 return Edit(condition);
             }
 
