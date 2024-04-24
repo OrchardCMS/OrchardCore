@@ -4,6 +4,7 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -17,36 +18,36 @@ namespace OrchardCore.ContentFields.GraphQL
 {
     public class UserPickerFieldQueryObjectType : ObjectGraphType<UserPickerField>
     {
-        public UserPickerFieldQueryObjectType()
+        public UserPickerFieldQueryObjectType(IStringLocalizer<UserPickerFieldQueryObjectType> S)
         {
             Name = nameof(UserPickerField);
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("userIds")
-                .Description("user ids")
+                .Description(S["user ids"])
                 .PagingArguments()
-                .Resolve(x =>
+                .Resolve(resolve =>
                 {
-                    return x.Page(x.Source.UserIds);
+                    return resolve.Page(resolve.Source.UserIds);
                 });
 
             Field<ListGraphType<UserType>, IEnumerable<User>>("users")
-                .Description("the user items")
+                .Description(S["the user items"])
                 .PagingArguments()
-                .ResolveAsync(x =>
+                .ResolveAsync(resolve =>
                 {
-                    var userLoader = GetOrAddUserProfileByIdDataLoader(x);
-                    return userLoader.LoadAsync(x.Page(x.Source.UserIds)).Then(itemResultSet =>
+                    var userLoader = GetOrAddUserProfileByIdDataLoader(resolve);
+                    return userLoader.LoadAsync(resolve.Page(resolve.Source.UserIds)).Then(itemResultSet =>
                     {
                         return itemResultSet.SelectMany(x => x);
                     });
                 });
 
             Field<UserType, User>("firstUser")
-                .Description("the first user")
-                .ResolveAsync(x =>
+                .Description(S["the first user"])
+                .ResolveAsync(resolve =>
                 {
-                    var userLoader = GetOrAddUserProfileByIdDataLoader(x);
-                    return userLoader.LoadAsync(x.Source.UserIds.FirstOrDefault()).Then(itemResultSet =>
+                    var userLoader = GetOrAddUserProfileByIdDataLoader(resolve);
+                    return userLoader.LoadAsync(resolve.Source.UserIds.FirstOrDefault()).Then(itemResultSet =>
                     {
                         return itemResultSet.FirstOrDefault();
                     });
@@ -61,13 +62,14 @@ namespace OrchardCore.ContentFields.GraphQL
             {
                 if (userIds == null || !userIds.Any())
                 {
-                    return null;
+                    return default;
                 }
 
                 var session = context.RequestServices.GetService<ISession>();
-                var users = await session.Query<User, UserIndex>(y => y.UserId.IsIn(userIds)).ListAsync();
+                var users = await session.Query<User, UserIndex>(user => user.UserId.IsIn(userIds)).ListAsync();
 
-                return users.ToLookup((User k) => k.UserId, (User user) => user);
+                return users.ToLookup(user => user.UserId);
             });
         }
+    }
 }
