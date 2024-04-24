@@ -30,10 +30,10 @@ namespace OrchardCore.Workflows.Deployment
                 return;
             }
 
-            ProcessWorkflowTypeDeploymentStep(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
+            ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
         }
 
-        public static void ProcessWorkflowTypeDeploymentStep(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
+        public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
         {
             var data = new JsonArray();
             foreach (var workflowType in workflowTypes)

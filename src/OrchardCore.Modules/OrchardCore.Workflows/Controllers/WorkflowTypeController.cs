@@ -579,7 +579,7 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
 
-            AllWorkflowTypeDeploymentSource.ProcessWorkflowTypeDeploymentStep(deploymentPlanResult, workflowTypes, _jsonSerializerOptions);
+            AllWorkflowTypeDeploymentSource.ProcessWorkflowType(deploymentPlanResult, workflowTypes, _jsonSerializerOptions);
 
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
