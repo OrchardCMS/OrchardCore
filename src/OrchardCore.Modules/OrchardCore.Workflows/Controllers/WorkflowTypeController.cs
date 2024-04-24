@@ -200,6 +200,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
                     case WorkflowTypeBulkAction.Export:
                         var archiveFileName = await ExportWorkflows(itemIds.ToArray());
+
                         return await ExportWorkflows(itemIds.ToArray());
 
                     case WorkflowTypeBulkAction.Delete:
