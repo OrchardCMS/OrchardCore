@@ -48,7 +48,7 @@
                                 @T["Actions"]
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="Export" data-title="@T["Bulk Action"]" >Export</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="Export" data-title="@T["Bulk Action"]">Export</a></li>
                                 @foreach (var item in Model.Options.WorkflowTypesBulkAction)
                                 {
                                     <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
@@ -123,19 +123,21 @@
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                switch ($this.data("action")){
-                case "Delete":
-                     confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }});
-                    break;
-                case "Export":
-                    $("[name='Options.BulkAction']").val($this.data("action"));
-                    $("[name='submit.BulkAction']").click();
-                    break;
+                switch ($this.data("action")) {
+                    case "Delete":
+                        confirmDialog({
+                            title: $this.data('title'), message: $this.data('message'), callback: function (r) {
+                                if (r) {
+                                    $("[name='Options.BulkAction']").val($this.data("action"));
+                                    $("[name='submit.BulkAction']").click();
+                                }
+                            }
+                        });
+                        break;
+                    case "Export":
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                        break;
                 }
             }
         });
