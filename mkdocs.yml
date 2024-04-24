@@ -117,6 +117,7 @@ nav:
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
       - Contributing:
+          - Opening and managing issues: docs/guides/contributing/managing-issues.md
           - Contributing to Orchard Core: docs/guides/contributing/README.md
           - Contributing code: docs/guides/contributing/contributing-code.md
           - Contributing documentation: docs/guides/contributing/contributing-documentation.md
