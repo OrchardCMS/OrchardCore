@@ -415,9 +415,6 @@ When specifying a media profile with either the liquid, razor helper, or tag hel
     <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
     ```
 
-!!! note
-    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Media Text
 
 Media text is an optional setting, on by default, on the `MediaField`.
@@ -457,9 +454,6 @@ The `Anchors[]` is a less well known property of a `MediaField` and can be acces
 
 The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.
 
-!!! note
-    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Query string tokens
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
@@ -478,8 +472,7 @@ When the query string is signed with a token any width, height value may be used
 `<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
 
 !!! note
-    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-    Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+    Prior to tokens the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
 ## Media Content Search
 

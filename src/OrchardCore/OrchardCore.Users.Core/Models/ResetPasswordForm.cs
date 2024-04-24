@@ -4,7 +4,7 @@ namespace OrchardCore.Users.Models;
 
 public class ResetPasswordForm : Entity
 {
-    public string Identifier { get; set; }
+    public string UsernameOrEmail { get; set; }
 
     public string NewPassword { get; set; }
 
