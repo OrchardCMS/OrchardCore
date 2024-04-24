@@ -66,7 +66,6 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor,
@@ -200,8 +199,6 @@ namespace OrchardCore.Workflows.Controllers
                     case WorkflowTypeBulkAction.None:
                         break;
                     case WorkflowTypeBulkAction.Export:
-                        var archiveFileName = await ExportWorkflows(itemIds.ToArray());
-
                         return await ExportWorkflows(itemIds.ToArray());
 
                     case WorkflowTypeBulkAction.Delete:
