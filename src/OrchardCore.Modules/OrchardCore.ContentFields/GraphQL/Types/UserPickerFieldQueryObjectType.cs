@@ -41,17 +41,6 @@ namespace OrchardCore.ContentFields.GraphQL
                         return itemResultSet.SelectMany(users => users);
                     });
                 });
-
-            Field<UserType, User>("firstUser")
-                .Description(S["the first user"])
-                .ResolveAsync(resolve =>
-                {
-                    var userLoader = GetOrAddUserProfileByIdDataLoader(resolve);
-                    return userLoader.LoadAsync(resolve.Source.UserIds.FirstOrDefault()).Then(itemResultSet =>
-                    {
-                        return itemResultSet.FirstOrDefault();
-                    });
-                });
         }
 
         private static IDataLoader<string, IEnumerable<User>> GetOrAddUserProfileByIdDataLoader<T>(IResolveFieldContext<T> context)
