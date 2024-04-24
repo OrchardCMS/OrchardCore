@@ -1,5 +1,6 @@
 # Labels PRs without updates for 60 days as stale, then closes them 15 days later.
-name: Close stale PRs
+# Labels issues that are labeled with "feedback requested" without updates for 15 days as stale, then closes them 7 days later.
+name: Close Stale PRs and Issues
 
 on:
   schedule:
@@ -7,20 +8,24 @@ on:
     - cron: '39 1 * * *'
 
 jobs:
-  close-stale-prs:
+  close-stale-prs-issues:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v9
         with:
           stale-pr-message: >
             It seems that this pull request didn't really move for quite a while. Is this something you'd like to 
-            revisit any time soon or should we close? Pleaes comment if you'd like to pick it up and remove the 
-            "stale" label.
+            revisit any time soon or should we close? Please comment if you'd like to pick it up.
           stale-pr-label: stale
-          # Not marking issues as stale.
-          days-before-issue-stale: -1
           # Close the PR 15 days after marking it as stale.
-          days-before-close: 15
+          days-before-pr-close: 15
           close-pr-message: >
             Closing this pull request because it has been stale for very long. If you think this is still relevant, 
             feel free to reopen it.
+          stale-issue-message: >
+            It seems that this issue didn't really move for quite a while. Is this something you'd like to revisit 
+            any time soon or should we close? Please reply.
+          stale-issue-label: stale
+          days-before-issue-stale: 15
+          days-before-issue-close: 7
+          only-issue-labels: feedback requested
