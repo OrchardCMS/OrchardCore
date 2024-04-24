@@ -41,7 +41,7 @@ namespace OrchardCore.ContentFields.GraphQL
                     });
                 });
 
-            Field<UserType, User>("user")
+            Field<UserType, User>("firstUser")
                 .Description("the first user")
                 .ResolveAsync(x =>
                 {
