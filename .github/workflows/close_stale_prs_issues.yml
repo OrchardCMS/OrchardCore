@@ -1,5 +1,5 @@
 # Labels PRs without updates for 60 days as stale, then closes them 15 days later.
-# Labels issues that are labeled with "feedback requested" without updates for 15 days as stale, then closes them 7 days later.
+# Labels issues that are labeled with "needs author feedback" without updates for 15 days as stale, then closes them 7 days later.
 name: Close Stale PRs and Issues
 
 on:
@@ -28,7 +28,7 @@ jobs:
           stale-issue-label: stale
           days-before-issue-stale: 15
           days-before-issue-close: 7
-          only-issue-labels: feedback requested
+          only-issue-labels: needs author feedback
           close-issue-message: >
             Closing this issue because it has been stale for very long. If you think this is still relevant, 
             feel free to reopen it.

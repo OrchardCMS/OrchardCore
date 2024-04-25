@@ -33,4 +33,4 @@ Some tips on issue management:
 
 - Set the milestone according to the above logic, or close the issue with a comment elaborating the reason.
 - Add further labels for categorization (external contributors can't add labels).
-- If you asked the author something and the issue should be closed if they don't reply, add the `feedback requested` label. This will automatically mark the issue as stale after 15 days, and then close it after another 7.
+- If you asked the author something and the issue should be closed if they don't reply, add the `needs author feedback` label. This will automatically mark the issue as stale after 15 days, and then close it after another 7.
