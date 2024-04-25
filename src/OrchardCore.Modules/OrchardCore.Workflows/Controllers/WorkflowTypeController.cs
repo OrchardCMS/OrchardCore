@@ -69,7 +69,7 @@ namespace OrchardCore.Workflows.Controllers
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor,
-            IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
