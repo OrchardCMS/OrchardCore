@@ -9,7 +9,7 @@ If you found a bug in Orchard Core, or have an idea for a new or improved featur
 - Please select the appropriate type, bug or feature request. This helps us assess your issue better!
 - Fill out the template, and please add as many details as possible. If you don't do this, then both you and another contributor will have to take time discussing what your issue is about.
 
-## What happens after you opened an issue
+## What happens after you open an issue
 
 We triage issues every week on [the triage meeting](../../resources/meeting/README.md), as well as core contributors may comment on your issue before that. Please reply to any inquiries.
 
