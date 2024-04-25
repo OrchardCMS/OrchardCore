@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Handlers
 {
@@ -51,12 +52,12 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the claims to be added from the user claims.
         /// </summary>
-        public Dictionary<string, string> ClaimsToUpdate { get; set; } = new();
+        public List<UserClaim> ClaimsToUpdate { get; set; } = [];
 
         /// <summary>
         /// Gets the claims to be removed from the user claims.
         /// </summary>
-        public Dictionary<string, string> ClaimsToRemove { get; set; } = new();
+        public List<UserClaim> ClaimsToRemove { get; set; } = [];
 
         /// <summary>
         /// Gets the user properties to update the user

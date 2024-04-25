@@ -56,10 +56,10 @@ public class AccountControllerTests
 
             var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
 
-            context.ClaimsToUpdate.Add("displayName", "Sam Zhang(CEO)");
-            context.ClaimsToUpdate.Add("firstName", "Sam");
-            context.ClaimsToUpdate.Add("lastName", "Zhang");
-            context.ClaimsToUpdate.Add("jobTitle", "CEO");
+            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "displayName", ClaimValue = "Sam Zhang(CEO)" });
+            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "firstName", ClaimValue = "Sam" });
+            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "lastName", ClaimValue = "Zhang" });
+            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "jobTitle", ClaimValue = "CEO" });
 
             context.RolesToAdd.Add("Administrator");
             context.PropertiesToUpdate = JObject.Parse(@"{
@@ -110,8 +110,8 @@ public class AccountControllerTests
 
 
             var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
-            updateContext.ClaimsToUpdate.Add("displayName", "Sam Zhang");
-            updateContext.ClaimsToRemove.Add("jobTitle", "CEO");
+            updateContext.ClaimsToUpdate.Add(new UserClaim { ClaimType = "displayName", ClaimValue = "Sam Zhang" });
+            updateContext.ClaimsToRemove.Add(new UserClaim { ClaimType = "jobTitle", ClaimValue = "CEO" });
 
             updateContext.RolesToRemove.Add("Administrator");
 

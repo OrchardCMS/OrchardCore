@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Handlers
         private readonly ILogger _logger;
         private readonly IScriptingManager _scriptingManager;
         private readonly ISiteService _siteService;
-        private static JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
+        private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
         {
             MergeArrayHandling = MergeArrayHandling.Union,
             MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -62,16 +62,16 @@ namespace OrchardCore.Users.Handlers
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
 
-                var claimToAdDict = (evaluationResult.claimsToAdd as IDictionary<string, object>)?.ToDictionary(x => x.Key, v => v.Value.ToString());
-                foreach (var key in claimToAdDict.Keys)
+                if (evaluationResult.claimsToUpdate is not null)
                 {
-                    context.ClaimsToUpdate[key] = claimToAdDict[key];
+                    var claimsToUpdate = ((JsonObject)JObject.FromObject(evaluationResult.claimsToUpdate)).Deserialize<List<UserClaim>>();
+                    context.ClaimsToUpdate.AddRange(claimsToUpdate);
                 }
 
-                var claimToRemoveDict = (evaluationResult.claimsToRemove as IDictionary<string, object>)?.ToDictionary(x => x.Key, v => v.Value.ToString());
-                foreach (var key in claimToRemoveDict.Keys)
+                if (evaluationResult.claimsToRemove is not null)
                 {
-                    context.ClaimsToRemove[key] = claimToRemoveDict[key];
+                    var claimsToRemove = ((JsonObject)JObject.FromObject(evaluationResult.claimsToRemove)).Deserialize<List<UserClaim>>();
+                    context.ClaimsToRemove.AddRange(claimsToRemove);
                 }
 
                 if (evaluationResult.propertiesToUpdate is not null)

@@ -808,7 +808,7 @@ namespace OrchardCore.Users.Controllers
                 var claimsToRemove = context.ClaimsToRemove.ToHashSet();
                 foreach (var item in claimsToRemove)
                 {
-                    var exists = currentClaims.FirstOrDefault(c => c.ClaimType == item.Key && c.ClaimValue == item.Value);
+                    var exists = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
                     if (exists is not null)
                     {
                         currentClaims.Remove(exists);
@@ -821,19 +821,14 @@ namespace OrchardCore.Users.Controllers
             {
                 foreach (var item in context.ClaimsToUpdate)
                 {
-                    var existing = currentClaims.FirstOrDefault(x => x.ClaimType == item.Key);
-                    if (existing != null)
+                    var existing = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
+                    if (existing is null)
                     {
-                        existing.ClaimValue = item.Value;
+                        currentClaims.Add(item);
+                        claimsChanged = true;
                     }
-                    else
-                    {
-                        currentClaims.Add(new UserClaim { ClaimType = item.Key, ClaimValue = item.Value });
-                    }
-                    claimsChanged = true;
                 }
             }
-
 
             if (claimsChanged)
             {
