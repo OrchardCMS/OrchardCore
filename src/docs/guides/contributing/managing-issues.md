@@ -1,6 +1,6 @@
 # Opening and managing issues
 
-The [issue tracker on GitHub](https://github.com/OrchardCMS/OrchardCore/issues) is where we keep track of bug reports, feature requests, or items for other tasks. We ask you to choose a task from there when you [contribute](README.md); but opening an issue is contribution too, so let's see some tips on that!
+The [issue tracker on GitHub](https://github.com/OrchardCMS/OrchardCore/issues) is where we keep track of bug reports, feature requests, or items for other tasks. We ask you to choose a task from there when you [contribute](README.md), but opening an issue is contribution too, so let's see some tips on that!
 
 ## How to open an issue
 
