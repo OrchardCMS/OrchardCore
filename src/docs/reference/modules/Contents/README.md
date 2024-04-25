@@ -235,8 +235,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| name | path |  | Yes | string |
-| parameters | query | The name of the query available in the Query panel | No | string |
+| name | path | The name of the query available in the Query panel | Yes | string |
 
 ##### Responses
 
