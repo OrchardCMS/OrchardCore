@@ -6,7 +6,7 @@ labels: release
 assignees: ''
 
 ---
-<!-- While the checklist is in a recommended order not every step depends strictly on the previous ones.  
+<!-- Be sure to also read https://docs.orchardcore.net/en/latest/docs/topics/publishing-releases/. While the checklist is in a recommended order not every step depends strictly on the previous ones.  
 `<version name>` should be replaced with the current version, e.g. "1.8.0.". -->
 
 ### Prepare the project
