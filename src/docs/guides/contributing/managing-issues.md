@@ -25,12 +25,13 @@ This is what [issue milestones](https://github.com/OrchardCMS/OrchardCore/milest
 - The next patch version (`1.2.something`, e.g. if the current version is `1.2.3`, then `1.2.4`) indicates the highest priority for serious regressions and other urgent bug fixes that we intend to fix ASAP and publish in a patch release.
 - The next minor version (`1.something`, e.g. `1.3` if the current version if `1.2.0`) is for less urgent bug fixes and feature requests that we still think should be addressed in the next planned release. Regressions since the last release found by those from the community who live on the edge and use the [preview releases](../../getting-started/preview-package-source.md) are marked as such too.
 - Some later minor version (literally `1.x` if the current version is `1.anything`) is for issues that we intend to address eventually, maybe.
-- The `backlog` milestone is for everything else that we think is a valid request, but won't work on it any time soon.
+- The `backlog` milestone is for everything else that we think is a valid request, but we won't work on it any time soon.
 
 ## Managing issues as a core contributor
 
 Some tips on issue management:
 
+- An issue should be about a concrete task, some change in Orchard Core or how we run the project. If it's a question or discussion, then [convert it into a discussion](https://docs.github.com/en/discussions/managing-discussions-for-your-community/moderating-discussions#converting-an-issue-to-a-discussion).
 - Set the milestone according to the above logic, or close the issue with a comment elaborating the reason.
 - Add further labels for categorization (external contributors can't add labels). E.g.:
     - Add "good first issue" if the issue looks suitable for a novice contributor.
