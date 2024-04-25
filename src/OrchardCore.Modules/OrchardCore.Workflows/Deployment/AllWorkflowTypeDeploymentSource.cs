@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Deployment
             
             foreach (var workflowType in workflowTypes)
             {
-                var objectData = JObject.FromObject(workflowType, _jsonSerializerOptions);
+                var objectData = JObject.FromObject(workflowType, jsonSerializerOptions);
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(workflowType.Id));
