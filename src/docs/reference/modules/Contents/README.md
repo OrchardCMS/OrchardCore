@@ -199,8 +199,6 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ##### Body payload example
 
-This payload example was obtained using the GraphiQL, panel available in the Admin backoffice: _Configuration_ > _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview. 
-
 ```json
 {
   "contentItem": "string",
@@ -218,6 +216,8 @@ This payload example was obtained using the GraphiQL, panel available in the Adm
   "displayText": "string"
 }
 ```
+
+> This payload example was obtained using the GraphiQL, panel available in the Admin backoffice: _Configuration_ > _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview on how to use GraphiQL. 
 
 ##### Responses
 
