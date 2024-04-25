@@ -66,21 +66,19 @@
     <div class="mb-3" id="doc_editor" asp-for="Text" style="min-height: 500px;" class="form-control"></div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SyncRolesScript">
-    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript(false)">@T["Reset Script"]</button>
+<div class="mb-3" asp-validation-class-for="SyncRolesScript" id="SyncRolesScript_wrapper">
+    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
     <div class="mb-3" asp-validation-class-for="SyncRolesScript"
          id="@Html.IdFor(x => x.SyncRolesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
     <textarea asp-for="SyncRolesScript" hidden>@Html.Raw(Model.SyncRolesScript)</textarea>
-
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
 
-    function resetScript(editor) {
-        editor.getModel().setValue(
-            '/* Uncomment to map AzureAd\n' +
-            'switch (context.loginProvider) {\n' +
+    function resetScript() {
+        codeEditor.getModel().setValue(
+            '/* Uncomment to map AzureAd\n' +'switch (context.loginProvider) {\n' +
             '    case "AzureAd":\n' +
             '        context.claimsToUpdate={"displayName":"UserDisplayName"}' +
             '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}' +
@@ -132,6 +130,7 @@ type Context = {
         properties: { [key: string]: string };
     }]
 }`
+    var codeEditor;
     document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
 
@@ -153,6 +152,7 @@ type Context = {
                 automaticLayout: true,
                 language: "javascript"
             });
+            codeEditor = editor;
             monaco.languages.typescript.javascriptDefaults.addExtraLib(suggestion + "const context = {} as Context", 'suggestion.d.ts');
 
             var docEditor = monaco.editor.create(document.getElementById('doc_editor'), {
@@ -170,7 +170,7 @@ type Context = {
 
             var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
             if (!textArea.value) {
-                resetScript(editor);
+                resetScript();
             } else {
                 editor.getModel().setValue(textArea.value);
             }
@@ -186,30 +186,19 @@ type Context = {
 <script at="Foot">
     function toggleEditorState() {
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
-        var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
+
         if (syncRolesCheckbox.checked) {
-            editor.options.readOnly = false;
+            $("#SyncRolesScript_wrapper,#doc_editor").show()
+
         } else {
-            editor.options.readOnly = "nocursor";
+            $("#SyncRolesScript_wrapper,#doc_editor").hide()
         }
     }
-    // $(function () {
-    //     var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
-    //     var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
-    //     if (textArea == null) {
-    //         return;
-    //     }
-    //     var editor = CodeMirror.fromTextArea(textArea, {
-    //         autoRefresh: true,
-    //         lineNumbers: true,
-    //         styleActiveLine: true,
-    //         matchBrackets: true,
-    //         autoCloseTags: true,
-    //         mode: "javascript"
-    //     });
-    //     $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    //     resetScript(editor.doc.getValue() != '');
-    //     syncRolesCheckbox.addEventListener("change", toggleEditorState);
-    //     toggleEditorState();
-    // });
+
+    $(function () {
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
+
+        syncRolesCheckbox.addEventListener("change", toggleEditorState);
+        toggleEditorState();
+    });
 </script>
