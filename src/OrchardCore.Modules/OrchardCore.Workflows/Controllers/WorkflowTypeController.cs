@@ -69,7 +69,7 @@ namespace OrchardCore.Workflows.Controllers
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor,
-            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
+            IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -84,7 +84,7 @@ namespace OrchardCore.Workflows.Controllers
             _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+            _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         [Admin("Workflows/Types", "WorkflowTypes")]
@@ -576,7 +576,7 @@ namespace OrchardCore.Workflows.Controllers
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
             var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
 
-            AllWorkflowTypeDeploymentSource.ProcessWorkflowType(deploymentPlanResult, workflowTypes, _jsonSerializerOptions);
+            AllWorkflowTypeDeploymentSource.ProcessWorkflowType(deploymentPlanResult, workflowTypes, _documentJsonSerializerOptions);
 
             await deploymentPlanResult.FinalizeAsync();
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
