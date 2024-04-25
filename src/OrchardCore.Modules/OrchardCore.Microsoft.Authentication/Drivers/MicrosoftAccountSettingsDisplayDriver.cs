@@ -92,9 +92,9 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
 
                     settings.AppSecret = protector.Protect(model.AppSecret);
-
-                    site.QueueReleaseShellContext();
                 }
+
+                site.QueueReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

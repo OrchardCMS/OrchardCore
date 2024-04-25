@@ -33,11 +33,6 @@ public static class SiteExtensions
     {
         public bool Release { get; set; }
 
-        public ReleaseShellContextCommand()
-        {
-
-        }
-
         public static ReleaseShellContextCommand ReleaseInstance = new()
         {
             Release = true,
