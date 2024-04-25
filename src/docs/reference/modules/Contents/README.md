@@ -129,7 +129,7 @@ Well known properties include
     To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
     This will allow the shape to execute, and populate the alternates for any child shapes.
 
-## Contents Module API Controller
+## Contents Module RESTful Web API
 
 The `OrchardCore.Contents` module provides RESTful API endpoints via [`ApiController`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs)) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
 
