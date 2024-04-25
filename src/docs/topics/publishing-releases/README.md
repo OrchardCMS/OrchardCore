@@ -64,10 +64,10 @@ Do the harder parts of making the release public. This should come after everyth
 - [ ] Merge `release/<version name>` to `main`.
     - You'll need to create a pull request.
     - Merge it as a merge commit, not squash merge.
+    - If there are merge conflicts, then create a `release/<version name>-integration` branch and fix them there.
 - [ ] Create and publish a release [on GitHub](https://github.com/OrchardCMS/OrchardCore/releases/new).
-    - Set the title as the version, e.g. `v1.8.0`.
-    - Auto-generate release notes.
-    - Add a link to the release notes in the docs (something like `For details on this version see the [release notes in the documentation](link here).`).
+    - Generate release notes.
+    - Add a link to the release notes in the docs (something like `For details on this version see the [release notes in the documentation](link here).`). Note that the docs will only be built once the branch is merged to `main`.
 - [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the packages now automatically published to NuGet. Test at least the following guides:
     - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/docs/guides/create-modular-application-mvc/)
     - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/)
@@ -84,7 +84,7 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 
 ### After the release is done
 
-- [ ] Create a new milestone with the next release number.
+- [ ] Create a new milestone with the next release number and close the old milestone.
 - [ ] Create a new release notes documentation file for the next version in the OrchardCore.Docs project. (e.g, `/releases/1.8.0.md`).
 - [ ] Update the `OrchardCore.Commons.props` file with the next release number, and `<VersionSuffix>preview</VersionSuffix>` such that preview builds use the new one.
 
