@@ -32,5 +32,9 @@ This is what [issue milestones](https://github.com/OrchardCMS/OrchardCore/milest
 Some tips on issue management:
 
 - Set the milestone according to the above logic, or close the issue with a comment elaborating the reason.
-- Add further labels for categorization (external contributors can't add labels).
+- Add further labels for categorization (external contributors can't add labels). E.g.:
+    - Add "good first issue" if the issues looks suitable for a novice contributor.
+    - Add "perf" if it's about performance.
+    - Add module/feature set-related labels, like "Media" or "OpenId".
+    - Add "security" for security issues.
 - If you asked the author something and the issue should be closed if they don't reply, add the `needs author feedback` label. This will automatically mark the issue as stale after 15 days, and then close it after another 7.
