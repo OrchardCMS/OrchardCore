@@ -819,16 +819,16 @@ namespace OrchardCore.Users.Controllers
 
             if (context.ClaimsToUpdate != null)
             {
-                foreach (var (cKey, cValue) in context.ClaimsToUpdate)
+                foreach (var item in context.ClaimsToUpdate)
                 {
-                    var existing = currentClaims.FirstOrDefault(x => x.ClaimType == cKey);
+                    var existing = currentClaims.FirstOrDefault(x => x.ClaimType == item.Key);
                     if (existing != null)
                     {
-                        existing.ClaimValue = cValue;
+                        existing.ClaimValue = item.Value;
                     }
                     else
                     {
-                        currentClaims.Add(new UserClaim { ClaimType = cKey, ClaimValue = cValue });
+                        currentClaims.Add(new UserClaim { ClaimType = item.Key, ClaimValue = item.Value });
                     }
                     claimsChanged = true;
                 }

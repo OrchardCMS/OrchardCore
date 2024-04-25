@@ -96,10 +96,86 @@
 </pre>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SyncRolesScript">
+@* <div class="mb-3" asp-validation-class-for="SyncRolesScript">
     <button type="button" class="btn btn-secondary mb-2" onclick="resetScript(false)">@T["Reset Script"]</button>
     <textarea asp-for="SyncRolesScript" rows="1" class="form-control content-preview-text"></textarea>
-</div>
+</div> *@
+<div class="mb-3" asp-validation-class-for="SyncRolesScript"
+     id="@Html.IdFor(x => x.SyncRolesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
+<textarea asp-for="SyncRolesScript" hidden>@Html.Raw(SyncRolesScript)</textarea>
+
+<script asp-name="monaco" at="Foot"></script>
+<script at="Foot" depends-on="monaco">
+
+    function resetScript(keepText) {
+        var editor = $('#@Html.IdFor(x => x.SyncRolesScript)');
+
+        if (!keepText) {
+            editor.doc.setValue(
+                '/* Uncomment to map AzureAd\n' +
+                'switch (context.loginProvider) {\n' +
+                '    case "AzureAd":\n' +
+                '        context.claimsToUpdate={"displayName":"UserDisplayName"}' +
+                '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}' +
+                '        context.externalClaims.forEach(claim => {\n' +
+                '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+                '                switch (claim.value) {\n' +
+                '                    case "Writer":\n' +
+                '                        context.rolesToAdd.push("Author");\n' +
+                '                        break;\n' +
+                '                    case "Admin":\n' +
+                '                        context.rolesToAdd.push("Administrator");\n' +
+                '                        break;\n' +
+                '                    default:\n' +
+                '                        log("Warning", "Role " + claim.value + " was not handled");\n' +
+                '                        break;\n' +
+                '                }\n' +
+                '            }\n' +
+                '        });\n' +
+                '        break;\n' +
+                '    default:\n' +
+                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+                '        break;\n' +
+                '}\n' +
+                '*/\n'
+            );
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        require(['vs/editor/editor.main'], function () {
+            var settings = {
+                "automaticLayout": true,
+                "language": "javascript"
+            };
+            const html = document.documentElement;
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    monaco.editor.setTheme('vs-dark')
+                } else {
+                    monaco.editor.setTheme('vs')
+                }
+            }
+
+            setTheme();
+            
+            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.SyncRolesScript)_editor'), settings);
+            var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
+
+            editor.getModel().setValue(textArea.value);
+            resetScript(editor.doc.getValue() != '');
+
+            window.addEventListener("submit", function () {
+                textArea.value = editor.getValue();
+            });
+        });
+    }); 
+    
+</script>
 
 <script at="Foot">
     function resetScript(keepText) {
