@@ -41,12 +41,10 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         private async Task BuildViewModelAsync(FacebookPluginPartViewModel model, FacebookPluginPart part)
         {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
+            ArgumentNullException.ThrowIfNull(model);
+            ArgumentNullException.ThrowIfNull(part);
 
-            model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
+            model.FacebookPluginPart = part;
             model.Settings = await GetFacebookPluginPartSettingsAsync(part);
             model.Liquid = part.Liquid;
             model.ContentItem = part.ContentItem;
@@ -64,13 +62,10 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         private async Task<FacebookPluginPartSettings> GetFacebookPluginPartSettingsAsync(FacebookPluginPart part)
         {
-            if (part == null)
-            {
-                throw new ArgumentNullException(nameof(part));
-            }
+            ArgumentNullException.ThrowIfNull(part);
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart), StringComparison.Ordinal));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
@@ -78,16 +73,15 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             var viewModel = new FacebookPluginPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Liquid = viewModel.Liquid;
             }
 
             return Edit(model);

@@ -12,7 +12,7 @@ public static class UserRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
-    /// Returns a <see cref="User"/> by its <see cref="User.UserId"/>
+    /// Returns a <see cref="User"/> by its <see cref="User.UserId"/>.
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="userId">The <see cref="User.UserId"/>.</param>
@@ -24,7 +24,7 @@ public static class UserRazorHelperExtensions
     }
 
     /// <summary>
-    /// Loads a list of users by their user ids./>
+    /// Loads a list of users by their user ids./>.
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="userIds">The user ids to load.</param>

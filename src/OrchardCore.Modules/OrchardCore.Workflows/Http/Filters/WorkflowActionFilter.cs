@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Filters
 {
-    internal class WorkflowActionFilter : IAsyncActionFilter
+    internal sealed class WorkflowActionFilter : IAsyncActionFilter
     {
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeRouteEntries _workflowTypeRouteEntries;

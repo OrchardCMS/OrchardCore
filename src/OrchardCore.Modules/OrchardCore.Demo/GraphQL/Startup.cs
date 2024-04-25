@@ -21,7 +21,7 @@ namespace OrchardCore.Demo.GraphQL
                             Hidden = false,
                             PartOptions = new GraphQLContentPartOption[] {
                                 // Content Part options attached to Content Type
-                                new GraphQLContentPartOption("TestContentPartA")
+                                new("TestContentPartA")
                                 {
                                     Collapse = false,
                                     Hidden = false
@@ -56,13 +56,13 @@ namespace OrchardCore.Demo.GraphQL
 
                 // Ignore Fields on GraphQL Objects
                 options.HiddenFields = options.HiddenFields.Union(new[] {
-                    new GraphQLField(typeof(TestQueryObjectType), "lineIgnored"),
+                    new GraphQLField<TestQueryObjectType>("lineIgnored"),
                     new GraphQLField<TestQueryObjectType>("lineOtherIgnored")
                 });
 
                 options
-                    .IgnoreField(typeof(TestQueryObjectType), "lineIgnored")
-                    .IgnoreField<TestQueryObjectType>("lineIgnored");
+                    .IgnoreField<TestQueryObjectType>("lineIgnored")
+                    .IgnoreField<TestQueryObjectType>("lineOtherIgnored");
 
                 // Top level Part Options
                 options.PartOptions = options.PartOptions.Union(new[] {

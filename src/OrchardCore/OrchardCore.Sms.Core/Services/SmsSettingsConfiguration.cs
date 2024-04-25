@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Sms.Services;

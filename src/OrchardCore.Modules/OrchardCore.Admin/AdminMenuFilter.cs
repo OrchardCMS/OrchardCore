@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
@@ -57,7 +58,7 @@ namespace OrchardCore.Admin
             var menuShape = await _shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
-                    MenuName = "admin",
+                    MenuName = NavigationConstants.AdminId,
                     filterContext.RouteData,
                 }));
 

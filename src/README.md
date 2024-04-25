@@ -1,6 +1,6 @@
 # Orchard Core
 
-Orchard Core is a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/). 
+Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core. It's a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/). 
 
 Orchard Core consists of two different targets:
 
@@ -8,17 +8,6 @@ Orchard Core consists of two different targets:
 - **Orchard Core CMS**: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
 
 It’s important to note the differences between the framework and the CMS. Some developers who want to develop SaaS applications will only be interested in the modular framework. Others who want to build administrable websites will focus on the CMS and build modules to enhance their sites or the whole ecosystem.
-
-[![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE)
-[![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
-[![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
-
-## Local communities
-
-中文资源
-
-[![Orchard Core CN 中文讨论组](docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
@@ -33,8 +22,9 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 - **Performance**. This might the most obvious change when you start using Orchard Core CMS. It’s extremely fast for a CMS. So fast that we haven’t even cared about working on an output cache module. To give you an idea, without caching Orchard Core CMS is around 20 times faster than the previous version.
 
 - **Portable**. You can now develop and deploy Orchard Core CMS on Windows, Linux and macOS. We also have Docker images ready for use.
+- **Database Support**. SQL Server, MySQL, MariaDB, PostgreSQL, and SQLite. For MariaDB, select MySQL as the database type and follow all MySQL rules.
 
-- **Document database** abstraction. Orchard Core CMS still requires a relational database, and is compatible with SQL Server, MySQL, PostgreSQL and SQLite, but it’s now using a document abstraction (YesSql) that provides a document database API to store and query documents. This is a much better approach for CMS systems and helps performance significantly.
+- **Document database abstraction**. Orchard Core CMS still requires a relational database and is compatible with SQL Server, MySQL, PostgreSQL, and SQLite, but it’s now using a document abstraction (YesSql) that provides a document database API to store and query documents. This is a much better approach for CMS systems and helps performance significantly.
 
 - **NuGet Packages**. Modules and themes are now shared as NuGet packages. Creating a new website with Orchard Core CMS is actually as simple as referencing a single meta package from the NuGet gallery. It also means that updating to a newer version only involves updating the version number of this package.
 
@@ -52,57 +42,31 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 - **GraphQL**. We provide a very flexible GraphQL API, such that any authorized external application can reuse your content, like SPA applications or static site generators.
 
-### Different website building strategies
+
+!!! tip
+    Check out [the Reference of Built-in Modules](docs/reference/README.md) to see what kind of features Orchard Core provides built-in.
+
+## Different website building strategies
 
 Orchard Core CMS supports all major site building strategies:
 
 - **Full CMS**. In this mode, the website uses a theme and templates to render your content, aiming for little to no custom development at all.
 
-- **Decoupled CMS**. The site starts off blank, apart from the content management back-end. You create all the templates you need with Razor Pages or MVC actions and access your content via the content services. Ref: <https://www.youtube.com/watch?v=yWpz8p-oaKg>
+- **Decoupled CMS**. The site starts off blank, apart from the content management back-end. You create all the templates you need with Razor Pages or MVC actions and access your content via the content services. See [Using Orchard Core as a Decoupled CMS on YouTube](https://www.youtube.com/watch?v=yWpz8p-oaKg).
 
-- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs. Ref: <https://www.youtube.com/watch?v=4o9zG17cfa0>
+- **Headless CMS**. The site only manages the content, and you create a separate application that will fetch the managed content using GraphQL or REST APIs. See [Sebastien Ros on Headless CMS with Orchard Core on YouTube](https://www.youtube.com/watch?v=4o9zG17cfa0).
 
 ## Status
 
-The latest released version of Orchard Core is `1.8.3`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.8.3>
-
-Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
+The latest released version of Orchard Core is `1.8.3`. The release notes can be found under [Releases](docs/releases/1.8.3.md).
 
 ## Getting Started
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch for the latest release, or the `dev` branch for the cutting-edge version.
-
-- Watch the ASP.NET Community Standup video where Orchard Core was demonstrated: <https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24>
-
+- See [our getting started guide](docs/getting-started/README.md) or [test drive Orchard Core](docs/getting-started/test-drive-orchard-core.md).
+- Watch the [ASP.NET Community Standup video where Orchard Core was demonstrated](https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24).
 - Follow the samples on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications
-
 - Follow the tutorial inside the [Training Demo Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) to learn how to develop Orchard Core modules.
-
-### Command line
-
-- Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
-- Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
-- Call `dotnet run`.
-- Then open the `http://localhost:5000` URL in your browser.
-
-You can also read the [Code Generation Templates documentation](docs/getting-started/templates/README.md) to create new applications from predefined templates.
-
-### Visual Studio
-
-For more details on the various development tools we recommend for using with Orchard Core check out [the Development Tools documentation page](docs/resources/development-tools/README.md).
-
-- Download Visual Studio 2022 (any edition) from <https://www.visualstudio.com/downloads/>.
-- Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
-- Ensure `OrchardCore.Cms.Web` is the startup project and run it.
-- Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
-- Optionally install the [code snippets from the Orchard Dojo Library](https://orcharddojo.net/orchard-resources/CoreLibrary/Utilities/VisualStudioSnippets/) to quickly generate code in some common scenarios during module and theme development.
-
-### Docker
-
-- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
-
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+- Follow [Dojo Course 3 - the full Orchard Core tutorial](https://orcharddojo.net/orchard-training/dojo-course-3-the-full-orchard-core-tutorial).
 
 ## Showcasing Orchard Core CMS
 

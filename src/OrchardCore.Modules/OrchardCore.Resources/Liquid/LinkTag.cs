@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -37,7 +36,7 @@ namespace OrchardCore.Resources.Liquid
                     case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 

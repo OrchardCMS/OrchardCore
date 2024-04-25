@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Source = GetSource(settings);
                 model.DisplayedContentTypes = settings.DisplayedContentTypes;
                 model.TitlePattern = settings.TitlePattern;
-                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
+                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
             }).Location("Content");
         }
 
@@ -41,33 +41,32 @@ namespace OrchardCore.ContentFields.Settings
         {
             var model = new ContentPickerFieldSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = new ContentPickerFieldSettings
             {
-                var settings = new ContentPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple,
-                    TitlePattern = model.TitlePattern,
-                };
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple,
+                TitlePattern = model.TitlePattern,
+            };
 
-                switch (model.Source)
-                {
-                    case ContentPickerSettingType.ContentTypes:
-                        SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
-                        break;
-                    case ContentPickerSettingType.Stereotypes:
-                        SetStereoTypes(context.Updater, model.Stereotypes, settings);
-                        break;
-                    default:
-                        settings.DisplayAllContentTypes = true;
-                        break;
-                }
+            switch (model.Source)
+            {
+                case ContentPickerSettingType.ContentTypes:
+                    SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                    break;
+                case ContentPickerSettingType.Stereotypes:
+                    SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                    break;
+                default:
+                    settings.DisplayAllContentTypes = true;
+                    break;
+            }
 
-                if (IsValidTitlePattern(context, model))
-                {
-                    context.Builder.WithSettings(settings);
-                }
+            if (IsValidTitlePattern(context, model))
+            {
+                context.Builder.WithSettings(settings);
             }
 
             return Edit(partFieldDefinition);

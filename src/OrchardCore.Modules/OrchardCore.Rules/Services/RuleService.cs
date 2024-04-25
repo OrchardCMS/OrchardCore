@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Rules.Services
@@ -17,13 +16,13 @@ namespace OrchardCore.Rules.Services
             foreach (var childCondition in rule.Conditions)
             {
                 var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-                if (!await evaluator.EvaluateAsync(childCondition))
+                if (evaluator is null || !await evaluator.EvaluateAsync(childCondition))
                 {
                     return false;
                 }
             }
 
-            if (rule.Conditions.Any())
+            if (rule.Conditions.Count > 0)
             {
                 return true;
             }

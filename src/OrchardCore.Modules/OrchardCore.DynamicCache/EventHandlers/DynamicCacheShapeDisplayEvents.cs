@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -15,8 +15,8 @@ namespace OrchardCore.DynamicCache.EventHandlers
     /// </summary>
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
     {
-        private readonly Dictionary<string, CacheContext> _cached = new();
-        private readonly Dictionary<string, CacheContext> _openScopes = new();
+        private readonly Dictionary<string, CacheContext> _cached = [];
+        private readonly Dictionary<string, CacheContext> _openScopes = [];
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
@@ -37,6 +37,11 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return;
+            }
+
             // The shape has cache settings and no content yet.
             if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
@@ -62,6 +67,11 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public async Task DisplayedAsync(ShapeDisplayContext context)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return;
+            }
+
             var cacheContext = context.Shape.Metadata.Cache();
 
             // If the shape is not configured to be cached, continue as usual.
@@ -96,6 +106,11 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
         public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return Task.CompletedTask;
+            }
+
             var cacheContext = context.Shape.Metadata.Cache();
 
             if (cacheContext != null && _openScopes.ContainsKey(cacheContext.CacheId))

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -17,16 +16,18 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
 {
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+
     protected readonly IStringLocalizer S;
 
     public SmsTaskDisplayDriver(
         IPhoneFormatValidator phoneFormatValidator,
-        IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer,
-        ILiquidTemplateManager liquidTemplateManager)
+        ILiquidTemplateManager liquidTemplateManager,
+        IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer
+        )
     {
         _phoneFormatValidator = phoneFormatValidator;
-        S = stringLocalizer;
         _liquidTemplateManager = liquidTemplateManager;
+        S = stringLocalizer;
     }
 
     protected override void EditActivity(SmsTask activity, SmsTaskViewModel model)
@@ -39,29 +40,28 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
     {
         var viewModel = new SmsTaskViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
         {
-            if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
-            }
-            else if (!_phoneFormatValidator.IsValid(viewModel.PhoneNumber))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(viewModel.Body))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
-            }
-            else if (!_liquidTemplateManager.Validate(viewModel.Body, out var bodyErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), string.Join(' ', bodyErrors));
-            }
-
-            activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);
-            activity.Body = new WorkflowExpression<string>(viewModel.Body);
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
         }
+        else if (!_phoneFormatValidator.IsValid(viewModel.PhoneNumber))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(viewModel.Body))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
+        }
+        else if (!_liquidTemplateManager.Validate(viewModel.Body, out var bodyErrors))
+        {
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), string.Join(' ', bodyErrors));
+        }
+
+        activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);
+        activity.Body = new WorkflowExpression<string>(viewModel.Body);
 
         return Edit(activity);
     }

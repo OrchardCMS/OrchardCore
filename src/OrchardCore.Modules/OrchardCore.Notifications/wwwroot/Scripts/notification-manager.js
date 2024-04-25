@@ -10,50 +10,51 @@ notificationManager = function () {
       return;
     }
     var elements = document.getElementsByClassName('mark-notification-as-read');
-    var _loop = function _loop() {
-      var element = elements[i];
-      element.addEventListener('click', function () {
-        if (element.getAttribute('data-is-read') != "false") {
-          return;
-        }
-        var messageId = element.getAttribute('data-message-id');
-        if (!messageId) {
-          return;
-        }
-        fetch(readUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            messageId: messageId
-          })
-        }).then(function (response) {
-          return response.json();
-        }).then(function (result) {
-          if (result.updated) {
-            if (wrapperSelector) {
-              var wrapper = element.closest(wrapperSelector);
-              if (wrapper) {
-                wrapper.classList.remove('notification-is-unread');
-                wrapper.classList.add('notification-is-read');
-                wrapper.setAttribute('data-is-read', true);
+    var _loop = function _loop(i) {
+      ['click', 'mouseover'].forEach(function (evt) {
+        elements[i].addEventListener(evt, function (e) {
+          if (e.target.getAttribute('data-is-read') != "false") {
+            return;
+          }
+          var messageId = e.target.getAttribute('data-message-id');
+          if (!messageId) {
+            return;
+          }
+          fetch(readUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messageId: messageId
+            })
+          }).then(function (response) {
+            return response.json();
+          }).then(function (result) {
+            if (result.updated) {
+              if (wrapperSelector) {
+                var wrapper = e.target.closest(wrapperSelector);
+                if (wrapper) {
+                  wrapper.classList.remove('notification-is-unread');
+                  wrapper.classList.add('notification-is-read');
+                  wrapper.setAttribute('data-is-read', true);
+                }
+              } else {
+                e.target.classList.remove('notification-is-unread');
+                e.target.classList.add('notification-is-read');
+                e.target.setAttribute('data-is-read', true);
               }
-            } else {
-              element.classList.remove('notification-is-unread');
-              element.classList.add('notification-is-read');
-              element.setAttribute('data-is-read', true);
             }
-          }
-          var targetUrl = element.getAttribute('data-target-url');
-          if (targetUrl) {
-            window.location.href = targetUrl;
-          }
+            var targetUrl = e.target.getAttribute('data-target-url');
+            if (targetUrl) {
+              window.location.href = targetUrl;
+            }
+          });
         });
       });
     };
     for (var i = 0; i < elements.length; i++) {
-      _loop();
+      _loop(i);
     }
   };
   return {

@@ -62,7 +62,7 @@ namespace OrchardCore.Alias
         {
             // Can't be fully created on existing databases where the 'Alias' may be of 767 chars.
             await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
-                //.CreateIndex("IDX_AliasPartIndex_DocumentId",
+                // .CreateIndex("IDX_AliasPartIndex_DocumentId",
                 //    "DocumentId",
                 //    "Alias",
                 //    "ContentItemId",

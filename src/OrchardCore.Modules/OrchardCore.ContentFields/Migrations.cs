@@ -14,7 +14,9 @@ namespace OrchardCore.ContentFields
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shellDescriptor = shellDescriptor;

@@ -12,7 +12,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Roles",
     Name = "Roles",
     Description = "Provides permissions to assign roles to users. Additionally, it updates default roles with default permissions provided by features.",
-    Dependencies = new[] { "OrchardCore.Roles.Core" },
+    Dependencies = ["OrchardCore.Roles.Core"],
     Category = "Security"
 )]
 

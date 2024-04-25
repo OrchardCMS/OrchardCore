@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -98,17 +97,16 @@ namespace OrchardCore.Markdown.Drivers
         {
             var viewModel = new EditMarkdownFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
+            await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
+
+            if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
-                {
-                    var fieldName = context.PartFieldDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
-                }
-                else
-                {
-                    field.Markdown = viewModel.Markdown;
-                }
+                var fieldName = context.PartFieldDefinition.DisplayName();
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+            }
+            else
+            {
+                field.Markdown = viewModel.Markdown;
             }
 
             return Edit(field, context);

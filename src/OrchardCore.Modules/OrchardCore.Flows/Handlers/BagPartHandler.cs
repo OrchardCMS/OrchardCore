@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Flows.Models;
@@ -12,11 +12,11 @@ namespace OrchardCore.Flows.Handlers
         {
             return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
-                aspect.Accessors.Add((jObject) =>
+                aspect.Accessors.Add((jsonObject) =>
                 {
                     // Content.Path contains the accessor for named bag parts and typed bag parts.
-                    var jContent = part.Content as JObject;
-                    return jObject[jContent.Path]["ContentItems"] as JArray;
+                    var jContent = (JsonObject)part.Content;
+                    return jsonObject[jContent.GetNormalizedPath()]["ContentItems"] as JsonArray;
                 });
 
                 return Task.CompletedTask;

@@ -14,7 +14,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -29,8 +28,9 @@ namespace OrchardCore.Users.Controllers;
 [Authorize, Feature(UserConstants.Features.SmsAuthenticator)]
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
+    private readonly IdentityOptions _identityOptions;
     private readonly IUserService _userService;
-    private readonly ISmsProvider _smsProvider;
+    private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly HtmlEncoder _htmlEncoder;
@@ -42,10 +42,11 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
+        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         IUserService userService,
-        ISmsProvider smsProvider,
+        ISmsService smsService,
         ILiquidTemplateManager liquidTemplateManager,
         IPhoneFormatValidator phoneFormatValidator,
         HtmlEncoder htmlEncoder,
@@ -61,14 +62,15 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
+        _identityOptions = identityOptions.Value;
         _userService = userService;
-        _smsProvider = smsProvider;
+        _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
         _phoneFormatValidator = phoneFormatValidator;
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin]
+    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator")]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -129,7 +131,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(smsSettings, user, code),
         };
 
-        var result = await _smsProvider.SendAsync(message);
+        var result = await _smsService.SendAsync(message);
 
         if (!result.Succeeded)
         {
@@ -145,6 +147,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return RedirectToAction(nameof(ValidateCode));
     }
 
+    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode")]
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -220,7 +223,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultPhoneProvider);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, _identityOptions.Tokens.ChangePhoneNumberTokenProvider);
 
         var message = new SmsMessage()
         {
@@ -228,7 +231,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(settings, user, code),
         };
 
-        var result = await _smsProvider.SendAsync(message);
+        var result = await _smsService.SendAsync(message);
 
         return Ok(new
         {

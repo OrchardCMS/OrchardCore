@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
                 var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                    .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
                     .Select(roleName => new RoleEntry
                     {
                         Role = roleName,
@@ -45,31 +45,30 @@ namespace OrchardCore.ContentFields.Settings
         {
             var model = new UserPickerFieldSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = new UserPickerFieldSettings
             {
-                var settings = new UserPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple
-                };
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple
+            };
 
-                var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+            var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
 
-                if (model.DisplayAllUsers || selectedRoles.Length == 0)
-                {
-                    // No selected role should have the same effect as display all users
-                    settings.DisplayedRoles = Array.Empty<string>();
-                    settings.DisplayAllUsers = true;
-                }
-                else
-                {
-                    settings.DisplayedRoles = selectedRoles;
-                    settings.DisplayAllUsers = false;
-                }
-
-                context.Builder.WithSettings(settings);
+            if (model.DisplayAllUsers || selectedRoles.Length == 0)
+            {
+                // No selected role should have the same effect as display all users
+                settings.DisplayedRoles = [];
+                settings.DisplayAllUsers = true;
             }
+            else
+            {
+                settings.DisplayedRoles = selectedRoles;
+                settings.DisplayAllUsers = false;
+            }
+
+            context.Builder.WithSettings(settings);
 
             return Edit(partFieldDefinition, context.Updater);
         }

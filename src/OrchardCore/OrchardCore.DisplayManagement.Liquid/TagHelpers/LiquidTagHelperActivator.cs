@@ -145,8 +145,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
             out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
         {
-            contextAttributes = new TagHelperAttributeList();
-            outputAttributes = new TagHelperAttributeList();
+            contextAttributes = [];
+            outputAttributes = [];
 
             ITagHelper tagHelper;
 
@@ -214,7 +214,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return tagHelper;
         }
 
-        private class ReusableTagHelperFactory<T> where T : class, ITagHelper
+        private sealed class ReusableTagHelperFactory<T> where T : class, ITagHelper
         {
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {
@@ -227,7 +227,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
             var setterAsAction = prop.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, prop.PropertyType));
             var setterClosedGenericMethod = _callPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
-            var setterDelegate = setterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), setterAsAction);
+            var setterDelegate = setterClosedGenericMethod.CreateDelegate<Action<object, object>>(setterAsAction);
 
             return (Action<object, object>)setterDelegate;
         }
@@ -243,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
             var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
             var getterClosedGenericMethod = _callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
-            var getterDelegate = getterClosedGenericMethod.CreateDelegate(typeof(Func<object, object>), getterAsFunc);
+            var getterDelegate = getterClosedGenericMethod.CreateDelegate<Func<object, object>>(getterAsFunc);
 
             return (Func<object, object>)getterDelegate;
         }

@@ -12,7 +12,7 @@ using OrchardCore.Mvc;
 
 namespace OrchardCore.Admin
 {
-    internal class AdminPageRouteModelProvider : IPageRouteModelProvider
+    internal sealed class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;
@@ -27,10 +27,7 @@ namespace OrchardCore.Admin
 
         public void OnProvidersExecuting(PageRouteModelProviderContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             IEnumerable<CompiledViewDescriptor> descriptors;
 
@@ -77,10 +74,7 @@ namespace OrchardCore.Admin
         private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager)
             where T : ViewsFeature, new()
         {
-            if (applicationManager == null)
-            {
-                throw new ArgumentNullException(nameof(applicationManager));
-            }
+            ArgumentNullException.ThrowIfNull(applicationManager);
 
             var viewsFeature = GetViewFeature<T>(applicationManager);
 

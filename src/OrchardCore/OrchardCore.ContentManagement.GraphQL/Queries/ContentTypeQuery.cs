@@ -75,8 +75,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                // Only add queries over standard content types
-                if (!typeDefinition.HasStereotype())
+                // Limit queries to standard content types or those content types that are explicitly configured.
+                if (!typeDefinition.TryGetStereotype(out var stereotype) || _contentOptionsAccessor.Value.DiscoverableSterotypes.Contains(stereotype))
                 {
                     schema.Query.AddField(query);
                 }
@@ -84,6 +84,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     // Register the content item type explicitly since it won't be discovered from the root 'query' type.
                     schema.RegisterType(typeType);
+                }
+
+                if (!string.IsNullOrEmpty(stereotype))
+                {
+                    typeType.Metadata["Stereotype"] = stereotype;
                 }
             }
 

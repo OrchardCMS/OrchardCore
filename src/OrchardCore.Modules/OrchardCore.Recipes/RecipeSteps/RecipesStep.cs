@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -34,23 +35,23 @@ namespace OrchardCore.Recipes.RecipeSteps
             var innerRecipes = new List<RecipeDescriptor>();
             foreach (var recipe in step.Values)
             {
-                if (!recipes.ContainsKey(recipe.Name))
+                if (!recipes.TryGetValue(recipe.Name, out var value))
                 {
                     throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
                 }
 
-                innerRecipes.Add(recipes[recipe.Name]);
+                innerRecipes.Add(value);
             }
 
             context.InnerRecipes = innerRecipes;
         }
 
-        private class InternalStep
+        private sealed class InternalStep
         {
             public InternalStepValue[] Values { get; set; }
         }
 
-        private class InternalStepValue
+        private sealed class InternalStepValue
         {
             public string ExecutionId { get; set; }
             public string Name { get; set; }

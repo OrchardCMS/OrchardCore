@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
@@ -31,25 +30,24 @@ namespace OrchardCore.Taxonomies.Services
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
-                if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
+                await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+
+                // Show all items categorized by the taxonomy
+                if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                 {
-                    // Show all items categorized by the taxonomy
-                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
-                            query.All(
-                                x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
-                            );
-                        }
-                        else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
-                            query.All(
-                                x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
-                            );
-                        }
+                        viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
+                        query.All(
+                            x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
+                        );
+                    }
+                    else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
+                        query.All(
+                            x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
+                        );
                     }
                 }
             }

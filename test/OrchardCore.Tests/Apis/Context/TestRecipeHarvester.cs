@@ -13,10 +13,11 @@ namespace OrchardCore.Tests.Apis.Context
         }
 
         public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => HarvestRecipesAsync(new[]
-            {
-                "Apis/Lucene/Recipes/luceneQueryTest.json"
-            });
+            => HarvestRecipesAsync(
+            [
+                "Apis/Lucene/Recipes/luceneQueryTest.json",
+                "OrchardCore.Users/Recipes/UserSettingsTest.json"
+            ]);
 
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
         {

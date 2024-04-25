@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
 
@@ -12,8 +12,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     {
         private string _name;
         private string _displayName;
-        private readonly IList<ContentTypePartDefinition> _parts;
-        private readonly JObject _settings;
+        private readonly List<ContentTypePartDefinition> _parts;
+        private readonly JsonObject _settings;
 
         public ContentTypeDefinition Current { get; }
 
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _parts = new List<ContentTypePartDefinition>();
+                _parts = [];
                 _settings = [];
             }
             else
@@ -36,13 +36,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
                 _parts = existing.Parts.ToList();
-                _settings = new JObject(existing.Settings);
+                _settings = existing.Settings.Clone();
             }
         }
 
         public ContentTypeDefinition Build()
         {
-            if (!_name[0].IsLetter())
+            if (!char.IsLetter(_name[0]))
             {
                 throw new ArgumentException("Content type name must start with a letter", "name");
             }
@@ -73,11 +73,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentTypeDefinitionBuilder WithSetting(string name, object value)
         {
-            _settings[name] = JToken.FromObject(value);
+            _settings[name] = JNode.FromObject(value);
             return this;
         }
 
-        public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
+        public ContentTypeDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
@@ -85,7 +85,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
@@ -101,10 +101,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -140,7 +137,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
                 {
                     ContentTypeDefinition = Current,
                 };
@@ -163,6 +160,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
             => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
+            => WithPart(typeof(TPart).Name, configuration);
 
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
             => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        private class PartConfigurerImpl : ContentTypePartDefinitionBuilder
+        private sealed class PartConfigurerImpl : ContentTypePartDefinitionBuilder
         {
             private readonly ContentPartDefinition _partDefinition;
 
@@ -208,7 +208,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentTypePartDefinition Build()
             {
-                if (!Current.Name[0].IsLetter())
+                if (!char.IsLetter(Current.Name[0]))
                 {
                     throw new ArgumentException("Content part name must start with a letter", "name");
                 }

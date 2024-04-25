@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             );
-            _additionalBindings = new TestShapeBindingsDictionary();
+            _additionalBindings = [];
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        private class TestDisplayEvents : IShapeDisplayEvents
+        private sealed class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };

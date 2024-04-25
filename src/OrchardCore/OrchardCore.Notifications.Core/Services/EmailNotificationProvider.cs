@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
@@ -8,18 +7,18 @@ namespace OrchardCore.Notifications.Services;
 
 public class EmailNotificationProvider : INotificationMethodProvider
 {
-    private readonly ISmtpService _smtpService;
+    private readonly IEmailService _emailService;
     protected readonly IStringLocalizer S;
 
     public EmailNotificationProvider(
-        ISmtpService smtpService,
+        IEmailService emailService,
         IStringLocalizer<EmailNotificationProvider> stringLocalizer)
     {
-        _smtpService = smtpService;
+        _emailService = emailService;
         S = stringLocalizer;
     }
 
-    public string Method => "Email";
+    public string Method { get; } = "Email";
 
     public LocalizedString Name => S["Email Notifications"];
 
@@ -35,7 +34,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
         var mailMessage = new MailMessage()
         {
             To = user.Email,
-            Subject = message.Summary,
+            Subject = message.Subject,
         };
 
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
@@ -49,7 +48,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             mailMessage.IsHtmlBody = false;
         }
 
-        var result = await _smtpService.SendAsync(mailMessage);
+        var result = await _emailService.SendAsync(mailMessage);
 
         return result.Succeeded;
     }

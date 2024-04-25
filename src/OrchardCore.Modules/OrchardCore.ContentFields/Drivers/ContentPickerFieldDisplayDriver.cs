@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -12,7 +14,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Models;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -26,15 +28,21 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly IContentManager _contentManager;
         private readonly ILiquidTemplateManager _templateManager;
         protected readonly IStringLocalizer S;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
             IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
-            ILiquidTemplateManager templateManager)
+            ILiquidTemplateManager templateManager,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentManager = contentManager;
             S = localizer;
             _templateManager = templateManager;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
@@ -59,7 +67,7 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                model.SelectedItems = [];
                 var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
                 foreach (var contentItemId in field.ContentItemIds)
@@ -80,9 +88,12 @@ namespace OrchardCore.ContentFields.Drivers
                             Id = contentItemId,
                             DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
                                 new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
-                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
+                            IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem),
+                            IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem)
                         });
                     }
+
                 }
             });
         }
@@ -99,7 +110,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.ContentItemIds = viewModel.ContentItemIds == null
-                ? Array.Empty<string>() : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 

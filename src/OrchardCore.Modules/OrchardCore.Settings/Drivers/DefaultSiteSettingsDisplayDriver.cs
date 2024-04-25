@@ -35,7 +35,7 @@ namespace OrchardCore.Settings.Drivers
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
@@ -61,28 +61,27 @@ namespace OrchardCore.Settings.Drivers
 
             var model = new SiteSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                site.SiteName = model.SiteName;
-                site.PageTitleFormat = model.PageTitleFormat;
-                site.BaseUrl = model.BaseUrl;
-                site.TimeZoneId = model.TimeZone;
-                site.PageSize = model.PageSize.Value;
-                site.UseCdn = model.UseCdn;
-                site.CdnBaseUrl = model.CdnBaseUrl;
-                site.ResourceDebugMode = model.ResourceDebugMode;
-                site.AppendVersion = model.AppendVersion;
-                site.CacheMode = model.CacheMode;
-                
-                if (model.PageSize.Value < 1)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
-                }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
-                }
+            site.SiteName = model.SiteName;
+            site.PageTitleFormat = model.PageTitleFormat;
+            site.BaseUrl = model.BaseUrl;
+            site.TimeZoneId = model.TimeZone;
+            site.PageSize = model.PageSize.Value;
+            site.UseCdn = model.UseCdn;
+            site.CdnBaseUrl = model.CdnBaseUrl;
+            site.ResourceDebugMode = model.ResourceDebugMode;
+            site.AppendVersion = model.AppendVersion;
+            site.CacheMode = model.CacheMode;
+
+            if (model.PageSize.Value < 1)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
+            }
+
+            if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
             }
 
             if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))

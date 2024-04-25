@@ -52,12 +52,12 @@ namespace OrchardCore.Workflows.Expressions
 
         public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)
         {
-            if (!dictionary.ContainsKey(key))
+            if (!dictionary.TryGetValue(key, out var value))
             {
                 return Task.FromResult<FluidValue>(NilValue.Instance);
             }
 
-            return Task.FromResult(FluidValue.Create(dictionary[key], context.Options));
+            return Task.FromResult(FluidValue.Create(value, context.Options));
         }
     }
 }

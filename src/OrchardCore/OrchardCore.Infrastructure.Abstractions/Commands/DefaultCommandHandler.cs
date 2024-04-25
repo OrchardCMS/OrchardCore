@@ -43,9 +43,9 @@ namespace OrchardCore.Environment.Commands
                 .GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                 ?? throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
 
-            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
+            if (propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Length == 0)
             {
-                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, nameof(OrchardSwitchAttribute)]);
             }
 
             // Set the value.
@@ -70,7 +70,7 @@ namespace OrchardCore.Environment.Commands
         {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
-            var arguments = (context.Arguments ?? Enumerable.Empty<string>()).ToArray();
+            var arguments = (context.Arguments ?? []).ToArray();
             var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
                 ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
 
@@ -95,7 +95,7 @@ namespace OrchardCore.Environment.Commands
             }
         }
 
-        private static object[] GetInvokeParametersForMethod(MethodInfo methodInfo, IList<string> arguments)
+        private static object[] GetInvokeParametersForMethod(MethodInfo methodInfo, string[] arguments)
         {
             var invokeParameters = new List<object>();
             var args = new List<string>(arguments);
@@ -130,7 +130,7 @@ namespace OrchardCore.Environment.Commands
                     break;
                 }
 
-                if (i < arguments.Count)
+                if (i < arguments.Length)
                 {
                     var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
                     if (val == null) return null;

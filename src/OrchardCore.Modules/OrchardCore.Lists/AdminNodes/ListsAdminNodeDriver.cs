@@ -45,15 +45,14 @@ namespace OrchardCore.Lists.AdminNodes
         {
             var model = new ListsAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix,
+            await updater.TryUpdateModelAsync(model, Prefix,
                 x => x.ContentType, x => x.IconForContentItems,
-                x => x.AddContentTypeAsParent, x => x.IconForParentLink))
-            {
-                treeNode.ContentType = model.ContentType;
-                treeNode.IconForContentItems = model.IconForContentItems;
-                treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
-                treeNode.IconForParentLink = model.IconForParentLink;
-            };
+                x => x.AddContentTypeAsParent, x => x.IconForParentLink);
+
+            treeNode.ContentType = model.ContentType;
+            treeNode.IconForContentItems = model.IconForContentItems;
+            treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
+            treeNode.IconForParentLink = model.IconForParentLink;
 
             return Edit(treeNode);
         }
@@ -61,7 +60,7 @@ namespace OrchardCore.Lists.AdminNodes
         private async Task<List<SelectListItem>> GetContentTypesSelectListAsync()
         {
             return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(typeof(ListPart).Name, StringComparison.OrdinalIgnoreCase)))
+                .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(ctd => ctd.DisplayName)
                 .Select(ctd => new SelectListItem { Value = ctd.Name, Text = ctd.DisplayName })
                 .ToList();

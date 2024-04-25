@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using NJsonSchema;
 using OrchardCore.Environment.Shell.Models;
 
@@ -49,7 +48,7 @@ namespace OrchardCore.Tenants.Services
 
             if (_hostEnvironment.IsDevelopment())
             {
-                return schema.ToJson(Formatting.Indented);
+                return schema.ToJson();
             }
 
             return schema.ToJson();

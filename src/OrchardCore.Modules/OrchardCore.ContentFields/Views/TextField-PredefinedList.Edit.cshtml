@@ -17,7 +17,7 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         @if (listSettings.Editor == EditorOption.Radio)
         {
@@ -35,7 +35,7 @@
         {
             <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
         }
-
+        <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -24,7 +25,7 @@ public class CustomUserSettingsService
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
+        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(GetContentTypeAsync);
         _session = session;
     }
 
@@ -79,7 +80,7 @@ public class CustomUserSettingsService
         var settingsType = await GetSettingsTypeAsync(settingsTypeName);
         if (settingsType == null)
         {
-            return new Dictionary<string, ContentItem>();
+            return [];
         }
 
         return await GetSettingsAsync(settingsType, factoryAsync);
@@ -105,7 +106,7 @@ public class CustomUserSettingsService
     {
         ContentItem contentItem;
 
-        if (user.Properties.TryGetValue(settingsType.Name, out var property))
+        if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
         {
             var existing = property.ToObject<ContentItem>();
 

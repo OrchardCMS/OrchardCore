@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 
 namespace OrchardCore.Media.Settings
@@ -17,6 +16,6 @@ namespace OrchardCore.Media.Settings
 
         public bool AllowAnchors { get; set; }
 
-        public string[] AllowedExtensions { get; set; } = Array.Empty<string>();
+        public string[] AllowedExtensions { get; set; } = [];
     }
 }

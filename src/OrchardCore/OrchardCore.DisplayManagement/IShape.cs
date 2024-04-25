@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -99,17 +98,15 @@ namespace OrchardCore.DisplayManagement
 
             var tagBuilder = new TagBuilder(tagName);
 
-            if (shape.Attributes != null)
+            if (shape.Attributes?.Count > 0)
             {
                 tagBuilder.MergeAttributes(shape.Attributes, false);
             }
 
-            if (shape.Classes != null)
+            if (shape.Classes?.Count > 0)
             {
-                foreach (var cssClass in shape.Classes)
-                {
-                    tagBuilder.AddCssClass(cssClass);
-                }
+                // Faster than AddCssClass which will do twice as many concatenations as classes.
+                tagBuilder.Attributes["class"] = string.Join(' ', shape.Classes);
             }
 
             if (!string.IsNullOrWhiteSpace(shape.Id))
@@ -120,7 +117,7 @@ namespace OrchardCore.DisplayManagement
             return tagBuilder;
         }
 
-        public static JObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
+        public static JsonObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
 
     }
 }
