@@ -4,32 +4,31 @@ using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Media.AmazonS3.Services;
 
-public class MediaS3BucketTenantEvents : ModularTenantEvents
+public abstract class AwsTenantEventsBase : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
-    private readonly AwsStorageOptions _options;
+    private readonly AwsStorageOptionsBase _options;
     private readonly IAmazonS3 _amazonS3Client;
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
-    public MediaS3BucketTenantEvents(
+    protected AwsTenantEventsBase(
         ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
-        IOptions<AwsStorageOptions> options,
-        IStringLocalizer<MediaS3BucketTenantEvents> localizer,
-        ILogger<MediaS3BucketTenantEvents> logger)
+        AwsStorageOptionsBase options,
+        IStringLocalizer localizer,
+        ILogger logger)
     {
         _shellSettings = shellSettings;
         _amazonS3Client = amazonS3Client;
-        _options = options.Value;
+        _options = options;
         S = localizer;
         _logger = logger;
     }
