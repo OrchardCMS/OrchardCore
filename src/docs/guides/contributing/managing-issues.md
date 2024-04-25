@@ -1,10 +1,10 @@
 # Opening and managing issues
 
-The [issue tracker on GitHub](https://github.com/OrchardCMS/OrchardCore/issues) is where we keep track of bug reports, feature requests, or items for other tasks. We ask you to choose a task from there when you [contribute](README.md), but opening an issue is contribution too, so let's see some tips on that!
+The [issue tracker on GitHub](https://github.com/OrchardCMS/OrchardCore/issues) is where we keep track of bug reports, feature requests, or items for other tasks. We ask you to choose a task from there when you [contribute](README.md), but opening an issue is a contribution too, so let's see some tips on that!
 
 ## How to open an issue
 
-If you found a bug in Orchard Core, or have an idea for a new or improved feature, please open an issue [on GitHub](https://github.com/OrchardCMS/OrchardCore/issues/new/choose).
+If you find a bug in Orchard Core, or have an idea for a new or improved feature, please open an issue [on GitHub](https://github.com/OrchardCMS/OrchardCore/issues/new/choose).
 
 - Please select the appropriate type, bug or feature request. This helps us assess your issue better!
 - Fill out the template, and please add as many details as possible. If you don't do this, then both you and another contributor will have to take time discussing what your issue is about.
@@ -33,7 +33,7 @@ Some tips on issue management:
 
 - Set the milestone according to the above logic, or close the issue with a comment elaborating the reason.
 - Add further labels for categorization (external contributors can't add labels). E.g.:
-    - Add "good first issue" if the issues looks suitable for a novice contributor.
+    - Add "good first issue" if the issue looks suitable for a novice contributor.
     - Add "perf" if it's about performance.
     - Add module/feature set-related labels, like "Media" or "OpenId".
     - Add "security" for security issues.
