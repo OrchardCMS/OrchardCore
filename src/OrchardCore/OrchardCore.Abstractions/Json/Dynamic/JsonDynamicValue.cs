@@ -15,11 +15,11 @@ public class JsonDynamicValue : DynamicObject, IConvertible
 
     public JsonValue? JsonValue { get; }
 
-    public override DynamicMetaObject GetMetaObject(Expression parameter)
-        => new JsonDynamicMetaObject(parameter, this);
-
     public object? Value
         => JsonValue?.GetObjectValue();
+
+    public override DynamicMetaObject GetMetaObject(Expression parameter)
+        => new JsonDynamicMetaObject(parameter, this);
 
     public override string ToString()
         => JsonValue?.ToString() ?? string.Empty;
