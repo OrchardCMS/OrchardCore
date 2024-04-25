@@ -29,6 +29,7 @@ We warmly welcome fixes and features! Here are some resources to help you get st
 - Check out [the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues) for open bug reports and feature requests. Prefer to select issues [scheduled for the upcoming release](https://github.com/OrchardCMS/OrchardCore/milestones) (see the [issue management docs](managing-issues.md#issue-milestones) on what the milestones mean). You can [sort issues by most commented](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Acomments-desc) and [most thumbs up](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) (as well as other reactions similarly). These correlate with popularity, i.e. we can see what the community most wants.
 - ["Good first issue" issues](https://github.com/OrchardCMS/OrchardCore/labels/good%20first%20issue): We think these are a good for newcomers.
 - ["Help wanted" issues](https://github.com/OrchardCMS/OrchardCore/labels/help%20wanted): These issues are up for grabs. Comment on an issue if you want to create a fix.
+- [Documentation issues](https://github.com/OrchardCMS/OrchardCore/labels/documentation) are quite suitable for newcomers too. See the [docs on contributing documentation](contributing-documentation.md).
 
 ## Identifying the scale
 

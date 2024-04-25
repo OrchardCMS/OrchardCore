@@ -7,6 +7,9 @@ The [Orchard Core documentation site](https://docs.orchardcore.net/) is built wi
 !!! info
     Are you looking for information on contributing code? Head over to [here](contributing-code.md) instead.
 
+!!! tip
+    If you're looking for ideas on what to improve in the Orchard Core documentation, check out the [documentation issues](https://github.com/OrchardCMS/OrchardCore/labels/documentation).
+
 ## Editing documentation pages
 
 First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. You can find the documentation files under the `src/docs` folder.
