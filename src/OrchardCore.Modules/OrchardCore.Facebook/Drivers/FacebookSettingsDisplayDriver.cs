@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
 using OrchardCore.Settings;
@@ -19,24 +19,18 @@ namespace OrchardCore.Facebook.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<FacebookSettingsDisplayDriver> logger
             )
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -73,7 +67,7 @@ namespace OrchardCore.Facebook.Drivers
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Core)
             {
@@ -87,19 +81,23 @@ namespace OrchardCore.Facebook.Drivers
                 var model = new FacebookSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.AppId = model.AppId;
+                settings.FBInit = model.FBInit;
+                settings.SdkJs = model.SdkJs;
+                settings.Version = model.Version;
+
+                if (!string.IsNullOrWhiteSpace(model.FBInitParams))
+                {
+                    settings.FBInitParams = model.FBInitParams;
+                }
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-                    settings.AppId = model.AppId;
                     settings.AppSecret = protector.Protect(model.AppSecret);
-                    settings.FBInit = model.FBInit;
-                    settings.SdkJs = model.SdkJs;
-                    if (!string.IsNullOrWhiteSpace(model.FBInitParams))
-                        settings.FBInitParams = model.FBInitParams;
-                    settings.Version = model.Version;
-
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
+
+                site.QueueReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

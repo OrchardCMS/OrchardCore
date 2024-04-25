@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
@@ -27,8 +26,6 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly INotifier _notifier;
 
     protected readonly IHtmlLocalizer H;
@@ -39,8 +36,6 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         INotifier notifier,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
@@ -49,8 +44,6 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -140,9 +133,9 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             }
         }
 
-        if (context.Updater.ModelState.IsValid && hasChanges)
+        if (hasChanges)
         {
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            site.QueueReleaseShellContext();
         }
 
         return Edit(settings);

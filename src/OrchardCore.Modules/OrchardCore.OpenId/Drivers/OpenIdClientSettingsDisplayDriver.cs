@@ -10,8 +10,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
@@ -30,8 +30,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOpenIdClientService _clientService;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
@@ -39,16 +38,12 @@ namespace OrchardCore.OpenId.Drivers
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             S = stringLocalizer;
         }
 
@@ -109,7 +104,7 @@ namespace OrchardCore.OpenId.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
@@ -205,11 +200,7 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                site.QueueReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

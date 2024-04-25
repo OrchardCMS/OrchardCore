@@ -13,7 +13,6 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -26,8 +25,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     public const string GroupId = EmailSettings.GroupId;
 
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
@@ -37,8 +34,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
     public SmtpSettingsDisplayDriver(
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
@@ -46,8 +41,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
         _authorizationService = authorizationService;
@@ -200,8 +193,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (hasChanges)
             {
-                // Release the tenant to apply the settings when something changed.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                // Queue reloading shell context when something changed.
+                site.QueueReleaseShellContext();
             }
         }
 

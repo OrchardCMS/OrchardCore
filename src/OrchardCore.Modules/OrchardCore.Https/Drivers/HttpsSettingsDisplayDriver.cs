@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
 using OrchardCore.Modules;
@@ -22,22 +22,17 @@ namespace OrchardCore.Https.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         protected readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             H = htmlLocalizer;
         }
 
@@ -75,7 +70,7 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
@@ -94,11 +89,7 @@ namespace OrchardCore.Https.Drivers
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
                 settings.SslPort = model.SslPort;
 
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                site.QueueReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

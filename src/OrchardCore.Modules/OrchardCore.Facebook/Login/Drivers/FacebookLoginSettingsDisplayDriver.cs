@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Login.ViewModels;
 using OrchardCore.Settings;
@@ -15,19 +15,13 @@ namespace OrchardCore.Facebook.Login.Drivers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public FacebookLoginSettingsDisplayDriver(
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
@@ -45,7 +39,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Login)
             {
@@ -56,15 +50,15 @@ namespace OrchardCore.Facebook.Login.Drivers
                 }
 
                 var model = new FacebookLoginSettingsViewModel();
+
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
+                site.QueueReleaseShellContext();
             }
+
             return await EditAsync(settings, context);
         }
     }

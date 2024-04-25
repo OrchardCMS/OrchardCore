@@ -9,9 +9,9 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Modules;
@@ -27,8 +27,6 @@ namespace OrchardCore.Localization.Drivers
         public const string GroupId = "localization";
 
         private readonly INotifier _notifier;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly CultureOptions _cultureOptions;
@@ -38,8 +36,6 @@ namespace OrchardCore.Localization.Drivers
 
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptions<CultureOptions> cultureOptions,
@@ -48,8 +44,6 @@ namespace OrchardCore.Localization.Drivers
         )
         {
             _notifier = notifier;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _cultureOptions = cultureOptions.Value;
@@ -95,7 +89,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, LocalizationSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -119,26 +113,26 @@ namespace OrchardCore.Localization.Drivers
                 if (context.Updater.ModelState.IsValid)
                 {
                     // Invariant culture name is empty so a null value is bound.
-                    section.DefaultCulture = model.DefaultCulture ?? "";
-                    section.SupportedCultures = supportedCulture;
+                    settings.DefaultCulture = model.DefaultCulture ?? "";
+                    settings.SupportedCultures = supportedCulture;
 
-                    if (!section.SupportedCultures.Contains(section.DefaultCulture))
+                    if (!settings.SupportedCultures.Contains(settings.DefaultCulture))
                     {
-                        section.DefaultCulture = section.SupportedCultures[0];
+                        settings.DefaultCulture = settings.SupportedCultures[0];
                     }
 
                     // We always release the tenant for the default culture and also supported cultures to take effect.
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                    site.QueueReleaseShellContext();
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
-                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
+                    using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
                     {
                         await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                     }
                 }
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

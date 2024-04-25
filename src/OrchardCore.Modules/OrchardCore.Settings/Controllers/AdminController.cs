@@ -8,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
@@ -21,6 +22,9 @@ namespace OrchardCore.Settings.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -28,9 +32,11 @@ namespace OrchardCore.Settings.Controllers
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
             IOptions<CultureOptions> cultureOptions,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
@@ -38,7 +44,9 @@ namespace OrchardCore.Settings.Controllers
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
             _cultureOptions = cultureOptions.Value;
-            H = h;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
+            H = htmlLocalizer;
         }
 
         [Admin("Settings/{groupId}", "AdminSettings")]
@@ -54,7 +62,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
             };
 
             return View(viewModel);
@@ -74,11 +82,14 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
             };
 
             if (ModelState.IsValid)
             {
+                // Dequeue release-shell command before updating the shell to avoid saving the command in the database.
+                var releaseShell = site.DequeueReleaseShellContext();
+
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 string culture = null;
@@ -91,6 +102,11 @@ namespace OrchardCore.Settings.Controllers
                 using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
+                }
+
+                if (releaseShell)
+                {
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

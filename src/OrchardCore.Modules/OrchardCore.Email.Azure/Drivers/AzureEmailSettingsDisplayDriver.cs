@@ -15,7 +15,6 @@ using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -27,8 +26,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IEmailAddressValidator _emailValidator;
 
     protected IStringLocalizer S;
@@ -37,16 +34,12 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IEmailAddressValidator emailValidator,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _emailValidator = emailValidator;
         S = stringLocalizer;
     }
@@ -150,8 +143,8 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             if (hasChanges)
             {
-                // Release the tenant to apply the settings when something changed.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                // Queue reloading shell context when something changed.
+                site.QueueReleaseShellContext();
             }
         }
 

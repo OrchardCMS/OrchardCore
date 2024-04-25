@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
 using OrchardCore.Settings;
@@ -19,23 +19,17 @@ namespace OrchardCore.GitHub.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GitHubAuthenticationSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -76,7 +70,7 @@ namespace OrchardCore.GitHub.Drivers
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {
@@ -97,9 +91,11 @@ namespace OrchardCore.GitHub.Drivers
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackUrl;
                     settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    site.QueueReleaseShellContext();
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

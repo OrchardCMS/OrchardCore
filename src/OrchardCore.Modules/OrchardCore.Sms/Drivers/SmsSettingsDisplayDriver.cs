@@ -9,8 +9,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.ViewModels;
@@ -21,8 +21,6 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
 
     protected IStringLocalizer S;
 
@@ -31,16 +29,12 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
     public SmsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<SmsProviderOptions> smsProviders,
-        ShellSettings shellSettings,
         IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _smsProviderOptions = smsProviders.Value;
-        _shellSettings = shellSettings;
         S = stringLocalizer;
     }
 
@@ -58,7 +52,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SmsSettings.GroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsSettings settings, IUpdateModel updater, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -82,7 +76,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             {
                 settings.DefaultProviderName = model.DefaultProvider;
 
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                site.QueueReleaseShellContext();
             }
         }
 

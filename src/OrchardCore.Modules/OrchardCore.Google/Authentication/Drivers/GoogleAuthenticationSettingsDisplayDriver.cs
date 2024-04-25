@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -19,23 +19,17 @@ namespace OrchardCore.Google.Authentication.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GoogleAuthenticationSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -76,7 +70,7 @@ namespace OrchardCore.Google.Authentication.Drivers
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
             {
@@ -97,9 +91,11 @@ namespace OrchardCore.Google.Authentication.Drivers
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackPath;
                     settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    site.QueueReleaseShellContext();
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
@@ -16,19 +16,14 @@ namespace OrchardCore.ReCaptcha.Drivers
     public class ReCaptchaSettingsDisplayDriver : SectionDisplayDriver<ISite, ReCaptchaSettings>
     {
         public const string GroupId = "recaptcha";
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReCaptchaSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -58,7 +53,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ReCaptchaSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -73,14 +68,13 @@ namespace OrchardCore.ReCaptcha.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.SiteKey = model.SiteKey?.Trim();
-                section.SecretKey = model.SecretKey?.Trim();
+                settings.SiteKey = model.SiteKey?.Trim();
+                settings.SecretKey = model.SecretKey?.Trim();
 
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                site.QueueReleaseShellContext();
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

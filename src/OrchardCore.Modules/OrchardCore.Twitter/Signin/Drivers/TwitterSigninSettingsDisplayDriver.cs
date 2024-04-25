@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
@@ -15,19 +15,13 @@ namespace OrchardCore.Twitter.Signin.Drivers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public TwitterSigninSettingsDisplayDriver(
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(TwitterSigninSettings settings, BuildEditorContext context)
@@ -47,8 +41,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
-
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Signin)
             {
@@ -61,13 +54,12 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 var model = new TwitterSigninSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
+                site.QueueReleaseShellContext();
             }
+
             return await EditAsync(settings, context);
         }
     }

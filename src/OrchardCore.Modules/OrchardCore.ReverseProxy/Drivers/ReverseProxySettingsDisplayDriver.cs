@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
@@ -18,19 +18,13 @@ namespace OrchardCore.ReverseProxy.Drivers
     {
         public const string GroupId = "ReverseProxy";
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -60,7 +54,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -75,25 +69,27 @@ namespace OrchardCore.ReverseProxy.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.ForwardedHeaders = ForwardedHeaders.None;
+                settings.ForwardedHeaders = ForwardedHeaders.None;
 
                 if (model.EnableXForwardedFor)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
+                {
+                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
+                }
 
                 if (model.EnableXForwardedHost)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+                {
+                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+                }
 
                 if (model.EnableXForwardedProto)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
-
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
                 }
+
+                site.QueueReleaseShellContext();
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

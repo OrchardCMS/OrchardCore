@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -15,19 +15,13 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public AzureADSettingsDisplayDriver(
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(AzureADSettings settings, BuildEditorContext context)
@@ -50,7 +44,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AzureADSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
             {
@@ -59,8 +53,11 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 {
                     return null;
                 }
+
                 var model = new AzureADSettingsViewModel();
+
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     settings.DisplayName = model.DisplayName;
@@ -68,9 +65,11 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.TenantId = model.TenantId;
                     settings.CallbackPath = model.CallbackPath;
                     settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    site.QueueReleaseShellContext();
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

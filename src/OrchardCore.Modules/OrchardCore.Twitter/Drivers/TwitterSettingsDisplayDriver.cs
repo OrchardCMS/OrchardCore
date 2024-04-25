@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
@@ -19,23 +19,17 @@ namespace OrchardCore.Twitter.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public TwitterSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<TwitterSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -91,7 +85,7 @@ namespace OrchardCore.Twitter.Drivers
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Twitter)
             {
@@ -104,17 +98,20 @@ namespace OrchardCore.Twitter.Drivers
                 var model = new TwitterSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.ConsumerKey = model.APIKey;
+                settings.AccessToken = model.AccessToken;
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
-                    settings.ConsumerKey = model.APIKey;
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
-                    settings.AccessToken = model.AccessToken;
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    site.QueueReleaseShellContext();
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

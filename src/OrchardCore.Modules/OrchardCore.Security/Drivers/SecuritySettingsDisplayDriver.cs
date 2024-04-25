@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
@@ -19,21 +19,15 @@ namespace OrchardCore.Security.Drivers
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly SecuritySettings _securitySettings;
 
         public SecuritySettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptionsSnapshot<SecuritySettings> securitySettings)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _securitySettings = securitySettings.Value;
@@ -77,7 +71,7 @@ namespace OrchardCore.Security.Drivers
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, SecuritySettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -94,18 +88,15 @@ namespace OrchardCore.Security.Drivers
 
                 PrepareContentSecurityPolicyValues(model);
 
-                section.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-                section.ContentSecurityPolicy = model.ContentSecurityPolicy;
-                section.PermissionsPolicy = model.PermissionsPolicy;
-                section.ReferrerPolicy = model.ReferrerPolicy;
+                settings.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
+                settings.ContentSecurityPolicy = model.ContentSecurityPolicy;
+                settings.PermissionsPolicy = model.PermissionsPolicy;
+                settings.ReferrerPolicy = model.ReferrerPolicy;
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                site.QueueReleaseShellContext();
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
 
         private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)
