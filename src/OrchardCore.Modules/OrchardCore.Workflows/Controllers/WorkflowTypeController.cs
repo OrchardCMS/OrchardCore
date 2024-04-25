@@ -582,8 +582,9 @@ namespace OrchardCore.Workflows.Controllers
             ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
 
             var packageName = itemIds.Length == 1
-                           ? workflowTypes.FirstOrDefault().Name
-                           : S["Workflow Types"];
+                ? workflowTypes.FirstOrDefault().Name
+                : S["Workflow Types"];
+
             return new PhysicalFileResult(archiveFileName, "application/zip")
             {
                 FileDownloadName = packageName + ".zip"
