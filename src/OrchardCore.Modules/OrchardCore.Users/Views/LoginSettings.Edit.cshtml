@@ -78,7 +78,7 @@
 
     function resetScript() {
         codeEditor.getModel().setValue(
-            '/* Uncomment to map AzureAd\n' +'switch (context.loginProvider) {\n' +
+            '/* Uncomment to map AzureAd\n' + 'switch (context.loginProvider) {\n' +
             '    case "AzureAd":\n' +
             '        context.claimsToUpdate={"displayName":"UserDisplayName"}\n' +
             '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}\n' +
@@ -106,7 +106,8 @@
         );
     }
 
-    const suggestion = `/**
+// donn't format here.
+const suggestion = `/**                                                                     
 * Use the loginProvider and externalClaims properties of the context variable to inspect
 * who authenticated the user and with what claims. Check currentRoles property and apply
 * your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update
