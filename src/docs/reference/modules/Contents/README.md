@@ -143,7 +143,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 - View and edit the OpenID Connect server settings
 - View and edit the OpenID Connect validation settings
 - View, add, edit, and remove the OpenID Connect applications
-- View, add, edit, and remove the OpenID Connect scopes.
+- View, add, edit, and remove the OpenID Connect scopes
 
 ### Contents API Controller Endpoints
 
