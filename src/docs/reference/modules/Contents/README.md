@@ -133,6 +133,12 @@ Well known properties include
 
 The `OrchardCore.Contents` module provides RESTful API endpoints via [`ApiController`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
 
+### Useful modules and libraries
+
+1. We suggest to use the docs about the [GraphQL module](https://docs.orchardcore.net/en/main/docs/reference/modules/Apis.GraphQL/), to be used for querying content items.
+2. There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community and allows you to create APIs documentations using Swagger.
+3. Lombiq provide [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
+
 ### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
 
 To utilize the Orchard Core ApiController endpoints, user accounts must authenticate using the OAuth 2 standard by activating and configuring the "OpenId Authorization Server" and "OpenId Token Validation" features. Detailed configuration steps can be found in the [OpenId Authorization Server documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) and the [OpenId Token Validation documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation).
@@ -148,6 +154,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ### Contents API Controller Endpoints
 
 #### <span style="color:blue">GET /api/content/{contentItemId} </span>
+
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
@@ -163,10 +170,11 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ***
 
 #### <span style="color:blue">GET /api/queries/{name} </span>
+
 ##### Parameters
 
 !!! note
-    This endpoint can only be used when the GraphQL feature is active
+    This endpoint can only be used when the GraphQL feature is active.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
@@ -182,6 +190,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ***
 
 #### <span style="color:green">POST /api/content </span>
+
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
@@ -189,6 +198,8 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | draft | query |  | No | boolean |
 
 ##### Body payload example
+
+This payload example was obtained using the GraphiQL, panel available in the Admin backoffice: _Configuration_ > _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview. 
 
 ```json
 {
@@ -217,6 +228,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ***
 
 #### <span style="color:green">POST /api/queries/{name} </span>
+
 ##### Parameters
 
 !!! note
@@ -236,6 +248,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ***
 
 #### <span style="color:red">DELETE /api/content/{contentItemId}</span>
+
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
