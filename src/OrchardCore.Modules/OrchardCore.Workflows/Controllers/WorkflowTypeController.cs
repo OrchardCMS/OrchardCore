@@ -49,7 +49,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly JsonSerializerOptions _documentJsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
