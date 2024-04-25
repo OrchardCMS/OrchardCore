@@ -314,7 +314,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.UpdateRoles threw an exception", item.GetType());
+                    _logger.LogError(ex, "{ExternalLoginHandler}.UpdateRoles threw an exception", item.GetType());
                 }
             }
 
