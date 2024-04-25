@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Deployment
                 return;
             }
 
-            ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _documentJsonSerializerOptions);
+            ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
         }
 
         public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.Deployment
             
             foreach (var workflowType in workflowTypes)
             {
-                var objectData = JObject.FromObject(workflowType, _documentJsonSerializerOptions);
+                var objectData = JObject.FromObject(workflowType, _jsonSerializerOptions);
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(workflowType.Id));
