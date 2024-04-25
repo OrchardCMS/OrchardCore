@@ -373,7 +373,7 @@ namespace OrchardCore.Workflows.Controllers
 
             return RedirectToAction(nameof(Edit), new
             {
-                workflowType.Id
+                workflowType.Id,
             });
         }
 
@@ -508,7 +508,7 @@ namespace OrchardCore.Workflows.Controllers
 
             return RedirectToAction(nameof(Edit), new
             {
-                id = model.Id
+                id = model.Id,
             });
         }
 
@@ -587,7 +587,7 @@ namespace OrchardCore.Workflows.Controllers
 
             return new PhysicalFileResult(archiveFileName, "application/zip")
             {
-                FileDownloadName = packageName + ".zip"
+                FileDownloadName = packageName + ".zip",
             };
         }
     }
