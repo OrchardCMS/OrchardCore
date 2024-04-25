@@ -109,12 +109,13 @@
                 '/* Uncomment to map AzureAd\n' +
                 'switch (context.loginProvider) {\n' +
                 '    case "AzureAd":\n' +
+                '        context.claimsToUpdate={"displayName":"UserDisplayName"}' +
+                '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}' +
                 '        context.externalClaims.forEach(claim => {\n' +
                 '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
                 '                switch (claim.value) {\n' +
                 '                    case "Writer":\n' +
                 '                        context.rolesToAdd.push("Author");\n' +
-                '                        context.claimsToUpdate={"displayName":"UserDisplayName"}' +
                 '                        break;\n' +
                 '                    case "Admin":\n' +
                 '                        context.rolesToAdd.push("Administrator");\n' +
