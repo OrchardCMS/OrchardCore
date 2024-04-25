@@ -1,3 +1,6 @@
+using System.Text.Json.Nodes;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -7,13 +10,145 @@ using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Tests.OrchardCore.Users;
 
-public class RegistrationControllerTests
+public class AccountControllerTests
 {
+    [Fact]
+    public async Task ExternalLoginSignIn_Test()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings()
+        {
+            UsersCanRegister = UserRegistrationType.AllowRegistration,
+        });
+
+        var responseFromGet = await context.Client.GetAsync("Register");
+
+        Assert.True(responseFromGet.IsSuccessStatusCode);
+
+        // Act
+        var model = new RegisterViewModel()
+        {
+            UserName = "TestUserName",
+            Email = "test@orchardcore.com",
+            Password = "test@OC!123",
+            ConfirmPassword = "test@OC!123",
+        };
+
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
+
+            var externalClaims = new List<SerializableClaim>();
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
+
+            context.ClaimsToUpdate.Add("displayName", "Sam Zhang(CEO)");
+            context.ClaimsToUpdate.Add("firstName", "Sam");
+            context.ClaimsToUpdate.Add("lastName", "Zhang");
+            context.ClaimsToUpdate.Add("jobTitle", "CEO");
+
+            context.RolesToAdd.Add("Administrator");
+            context.PropertiesToUpdate = JObject.Parse(@"{
+                                  ""UserProfile"": {
+                                    ""UserProfile"": {
+                                      ""DisplayName"": {
+                                        ""Text"": ""Sam Zhang(CEO)""
+                                      }
+                                    }
+                                  }
+                                }");
+
+            if (await AccountController.UpdateUserPropertiesAsync(userManager, user, context))
+            {
+                await userManager.UpdateAsync(user);
+            }
+
+            // validate user claims
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+            var sam = await session.Query<User, UserByClaimIndex>()
+                    .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang(CEO)")
+                    .FirstOrDefaultAsync();
+            Assert.NotNull(sam);
+            var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
+
+            Assert.Equal("Sam", claimsDict["firstName"]);
+            Assert.Equal("Zhang", claimsDict["lastName"]);
+            Assert.Equal("CEO", claimsDict["jobTitle"]);
+
+            // validate user roles
+            Assert.Contains("Administrator", sam.RoleNames.FirstOrDefault());
+
+            // validate user properties
+            Assert.Equal("Sam Zhang(CEO)", sam.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
+
+        });
+
+
+        // TestUpdate
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            var user = await userManager.FindByNameAsync(model.UserName);
+
+            var externalClaims = new List<SerializableClaim>();
+            var userRoles = await userManager.GetRolesAsync(user);
+
+
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
+            updateContext.ClaimsToUpdate.Add("displayName", "Sam Zhang");
+            updateContext.ClaimsToRemove.Add("jobTitle", "CEO");
+
+            updateContext.RolesToRemove.Add("Administrator");
+
+            updateContext.PropertiesToUpdate = JObject.Parse(@"{
+                                  ""UserProfile"": {
+                                    ""UserProfile"": {
+                                      ""DisplayName"": {
+                                        ""Text"": ""Sam Zhang""
+                                      }
+                                    }
+                                  }
+                                }");
+
+            if (await AccountController.UpdateUserPropertiesAsync(userManager, user as User, updateContext))
+            {
+                await userManager.UpdateAsync(user);
+            }
+
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+            var userFromDb = await session.Query<User, UserByClaimIndex>()
+                         .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang")
+                         .FirstOrDefaultAsync();
+
+            // validate user roles
+            Assert.DoesNotContain("Administrator", userFromDb.RoleNames);
+
+            // validate user claims
+            Assert.DoesNotContain(userFromDb.UserClaims, x => x.ClaimType == "jobTitle" && x.ClaimValue == "CEO");
+
+            // validate user properties
+            Assert.Equal("Sam Zhang", userFromDb.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
+        });
+
+    }
+
     [Fact]
     public async Task Register_WhenAllowed_RegisterUser()
     {

@@ -51,7 +51,7 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the claims to be added from the user claims.
         /// </summary>
-        public Dictionary<string, string> ClaimsToAdd { get; set; } = new();
+        public Dictionary<string, string> ClaimsToUpdate { get; set; } = new();
 
         /// <summary>
         /// Gets the claims to be removed from the user claims.

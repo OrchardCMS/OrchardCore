@@ -62,6 +62,18 @@ namespace OrchardCore.Users.Handlers
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
 
+                var claimToAdDict = (evaluationResult.claimsToAdd as IDictionary<string, object>)?.ToDictionary(x => x.Key, v => v.Value.ToString());
+                foreach (var key in claimToAdDict.Keys)
+                {
+                    context.ClaimsToUpdate[key] = claimToAdDict[key];
+                }
+
+                var claimToRemoveDict = (evaluationResult.claimsToRemove as IDictionary<string, object>)?.ToDictionary(x => x.Key, v => v.Value.ToString());
+                foreach (var key in claimToRemoveDict.Keys)
+                {
+                    context.ClaimsToRemove[key] = claimToRemoveDict[key];
+                }
+
                 if (evaluationResult.propertiesToUpdate is not null)
                 {
                     var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
