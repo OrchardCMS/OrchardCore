@@ -21,9 +21,9 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
           # The double empty lines in the body are necessary; it'll show up as a single empty line in the comment.
           BODY: >
-            Thank you for submitting this issue! We triaged it and set the milestone according to the priority we think 
-            is appropriate (see [the docs](https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/) 
-            on how we triage and prioritize issues).
+            We triaged this issue and set the milestone according to the priority we think is appropriate (see 
+            [the docs](https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/) on how we 
+            triage and prioritize issues).
 
 
             This indicates when the core team may start working on it. However, if you'd like to contribute, we'd 
