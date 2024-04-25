@@ -16,7 +16,7 @@ In this guide we will use our "Code Generation Templates". You can install the l
 ```dotnet new install OrchardCore.ProjectTemplates::1.8.2-*```
 
 !!! note
-    To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
+    To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`.
 
 Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run the following command:
 

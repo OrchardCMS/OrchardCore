@@ -15,11 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Jint" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Rules.Abstractions\OrchardCore.Rules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj" />
   </ItemGroup>
 
 </Project>

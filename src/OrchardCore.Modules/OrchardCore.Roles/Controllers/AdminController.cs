@@ -283,8 +283,8 @@ namespace OrchardCore.Roles.Controllers
         {
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
-            var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
+            var fakeIdentity = new ClaimsIdentity([new Claim(ClaimTypes.Role, role.RoleName)],
+                !string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
 
             // Add role claims
             fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));

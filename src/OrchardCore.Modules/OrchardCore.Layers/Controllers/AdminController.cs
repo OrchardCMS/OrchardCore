@@ -191,23 +191,23 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.GetLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {
                 return NotFound();
             }
 
-            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
-            rule.ConditionId = layer.LayerRule.ConditionId;
+            var rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.Properties["ConditionId"] = layer.LayerRule.ConditionId;
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _conditionFactories)
             {
                 var condition = factory.Create();
-                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.Condition = condition;
-                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
+                var thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Properties["Condition"] = condition;
+                thumbnail.Properties["TargetUrl"] = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
@@ -236,7 +236,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
+                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
                 if (layer == null)
                 {
@@ -264,7 +264,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.LoadLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {

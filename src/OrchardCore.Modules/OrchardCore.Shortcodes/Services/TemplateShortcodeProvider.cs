@@ -65,7 +65,7 @@ namespace OrchardCore.Shortcodes.Services
             return result;
         }
 
-        internal class Content : LiquidContentAccessor
+        internal sealed class Content : LiquidContentAccessor
         {
             public readonly string _content;
             public Content(string content) => _content = content;

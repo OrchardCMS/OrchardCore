@@ -1,6 +1,6 @@
 name: Functional Tests - all Databases
 on:
-  # manual trigger
+  # Manual trigger.
   workflow_dispatch:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -13,12 +13,12 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: "15"
     - name: Functional Tests
@@ -26,7 +26,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-mvc-screenshots
@@ -39,9 +39,9 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Functional Tests
@@ -49,7 +49,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-sqlite-failure
@@ -80,9 +80,9 @@ jobs:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Functional Tests
@@ -90,7 +90,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-postgresql-failure
@@ -117,9 +117,9 @@ jobs:
       OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Functional Tests
@@ -127,7 +127,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-mysql-failure
@@ -153,9 +153,9 @@ jobs:
       OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Functional Tests
@@ -163,7 +163,7 @@ jobs:
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-mssql-failure

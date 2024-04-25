@@ -7,7 +7,7 @@ namespace OrchardCore.Rules.Services
     {
         public override bool Compare(StringOperator conditionOperator, string a, string b)
             => conditionOperator.CaseSensitive ?
-                string.Equals(a, b) :
+                string.Equals(a, b, StringComparison.Ordinal) :
                 string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -15,7 +15,7 @@ namespace OrchardCore.Rules.Services
     {
         public override bool Compare(StringOperator conditionOperator, string a, string b)
             => conditionOperator.CaseSensitive ?
-                !string.Equals(a, b) :
+                !string.Equals(a, b, StringComparison.Ordinal) :
                 !string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 

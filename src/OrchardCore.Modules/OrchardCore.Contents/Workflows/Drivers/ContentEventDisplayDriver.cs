@@ -28,10 +28,10 @@ namespace OrchardCore.Contents.Workflows.Drivers
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
-            {
-                model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames);
+
+            model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
+            
             return Edit(model);
         }
 

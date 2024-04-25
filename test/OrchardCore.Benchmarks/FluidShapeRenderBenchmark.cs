@@ -28,7 +28,7 @@ namespace OrchardCore.Benchmark
 
             _serviceProvider = new ServiceCollection()
                 .AddScoped<IDisplayHelper>(sp => new DisplayHelper(htmlDisplay, null, null))
-                .AddTransient(typeof(ShapeRenderFilter))
+                .AddTransient<ShapeRenderFilter>()
                 .BuildServiceProvider();
 
             _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();

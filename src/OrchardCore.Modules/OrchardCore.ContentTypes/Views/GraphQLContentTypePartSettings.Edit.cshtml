@@ -11,29 +11,52 @@
     var hidden = hiddenByDefault ? true : settings.Hidden;
 }
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="Settings.Collapse" checked="@collapsed" asp-is-disabled="@collapsedByDefault" />
-        <label class="form-check-label" asp-for="Settings.Collapse">@T["Collapse"]</label>
-        @if (collapsedByDefault)
-        {
-            <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
-        }
-        else
-        {
-            <span class="hint">@T["Check to collapse fields in the GraphQL schema."]</span>
-        }
-    </div>
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="Settings.Hidden" checked="@hidden" asp-is-disabled="@hiddenByDefault" />
-        <label class="form-check-label" asp-for="Settings.Hidden">@T["Hide"]</label>
-        @if (hiddenByDefault)
-        {
-            <span class="hint">@T["Setting is hidden by default, and cannot be overwritten."]</span>
-        }
-        else
-        {
-            <span class="hint">@T["Check to hide part from the GraphQL schema."]</span>
-        }
-    </div>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" asp-for="Settings.Collapse" checked="@collapsed" asp-is-disabled="@collapsedByDefault" />
+    <label class="form-check-label" asp-for="Settings.Collapse">@T["Collapse"]</label>
+    @if (collapsedByDefault)
+    {
+        <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
+    }
+    else
+    {
+        <span class="hint">@T["Check to collapse fields in the GraphQL schema."]</span>
+    }
 </div>
+
+<div class="form-check mb-3 mt-3">
+    <input type="checkbox" class="form-check-input" asp-for="Settings.PreventFieldNameCollision" checked="@settings.PreventFieldNameCollision" />
+    <label class="form-check-label" asp-for="Settings.PreventFieldNameCollision">@T["Prevent Field Name Collision"]</label>
+    <span class="hint">@T["Check to prevent fields' names collisions in the GraphQL schema when they are collapsed."]</span>
+</div>
+
+<div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" asp-for="Settings.Hidden" checked="@hidden" asp-is-disabled="@hiddenByDefault" />
+    <label class="form-check-label" asp-for="Settings.Hidden">@T["Hide"]</label>
+    @if (hiddenByDefault)
+    {
+        <span class="hint">@T["Setting is hidden by default, and cannot be overwritten."]</span>
+    }
+    else
+    {
+        <span class="hint">@T["Check to hide part from the GraphQL schema."]</span>
+    }
+</div>
+
+<script at="Foot">
+    (function () {
+        const collapseCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.Collapse))");
+        const preventFieldNameCollisionCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.PreventFieldNameCollision))");
+        const setFieldVisibility = (checked) => {
+            preventFieldNameCollisionCheckbox.parentElement.style.display = checked ? 'block' : 'none';
+
+            if (!checked) {
+                preventFieldNameCollisionCheckbox.checked = false;
+            }            
+        };
+        collapseCheckbox.addEventListener('change', (e) => setFieldVisibility(e.target.checked));
+
+        setFieldVisibility(@(collapsed.ToString().ToLower()));
+    })();
+</script>

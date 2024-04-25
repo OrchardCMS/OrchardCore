@@ -21,7 +21,6 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
         private readonly UserManager<IUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
@@ -113,7 +112,7 @@ namespace OrchardCore.Users.Drivers
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
                     .Cast<User>()
                     .Where(user => user.IsEnabled)
                     .ToList();
