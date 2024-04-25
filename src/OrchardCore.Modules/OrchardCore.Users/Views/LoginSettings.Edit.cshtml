@@ -80,8 +80,8 @@
         codeEditor.getModel().setValue(
             '/* Uncomment to map AzureAd\n' +'switch (context.loginProvider) {\n' +
             '    case "AzureAd":\n' +
-            '        context.claimsToUpdate={"displayName":"UserDisplayName"}' +
-            '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}' +
+            '        context.claimsToUpdate={"displayName":"UserDisplayName"}\n' +
+            '        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}\n' +
             '        context.externalClaims.forEach(claim => {\n' +
             '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
             '                switch (claim.value) {\n' +
