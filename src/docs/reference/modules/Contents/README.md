@@ -159,7 +159,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path |  | Yes | string |
+| contentItemId | path | The ID of the Content Item to be retrieved | Yes | string |
 
 ##### Responses
 
@@ -178,8 +178,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| name | path |  | Yes | string |
-| parameters | query |  | No | string |
+| name | path | The name of the query available in the Query panel | Yes | string |
 
 ##### Responses
 
@@ -195,7 +194,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| draft | query |  | No | boolean |
+|  | payload | The content item model to be updated | Yes | Json |
 
 ##### Body payload example
 
@@ -217,7 +216,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 }
 ```
 
-> This payload example was obtained using the GraphiQL, panel available in the Admin backoffice: _Configuration_ > _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview on how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL, panel available in the Admin backoffice: _Configuration_ > _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview on how to use GraphiQL. 
 
 ##### Responses
 
@@ -237,7 +236,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | name | path |  | Yes | string |
-| parameters | query |  | No | string |
+| parameters | query | The name of the query available in the Query panel | No | string |
 
 ##### Responses
 
@@ -253,7 +252,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path |  | Yes | string |
+| contentItemId | path | The ID of the Content Item to be deleted | Yes | string |
 
 ##### Responses
 
