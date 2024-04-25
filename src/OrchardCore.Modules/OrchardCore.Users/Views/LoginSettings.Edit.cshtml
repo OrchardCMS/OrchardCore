@@ -65,7 +65,7 @@
     </div>
     <pre>
 *************************************************************************************************
-* context           : {user,loginProvider,claims[],currentRoles[],rolesToRemove[],rolesToAdd[]} *
+* context           : {user,loginProvider,claims[],currentRoles[],rolesToRemove[],rolesToAdd[],claimsToUpdate{},claimsToRemove{},propertiesToUpdate{}} *
 * ============================================================================================= *
 * -user               : {userName}                                                              *
 *  -userName          : String                                                                  *
@@ -82,8 +82,8 @@
 *  -valueType         : String                                                                  *
 * -rolesToAdd         : [String]                                                                *
 * -rolesToRemove      : [String]                                                                *
-* -claimsToUpdate     : [{key,value}]                                                                *
-* -claimsToRemove     : [{key,value}]                                                                *
+* -claimsToUpdate     : {key,value}                                                             *
+* -claimsToRemove     : {key,value}                                                             *
 * -propertiesToUpdate : {key:value}                                                             *
 * ============================================================================================= *
 *    Description                                                                                *
