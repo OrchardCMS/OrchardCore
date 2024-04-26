@@ -71,9 +71,11 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         var culture = CultureInfo.CurrentUICulture;
 
-        return includeParentCultures
-            ? GetAllStringsFromCultureHierarchyAsync(culture).GetAwaiter().GetResult()
-            : GetAllStringsAsync(culture).ToEnumerable();
+        var localizedStrings = includeParentCultures
+            ? GetAllStringsFromCultureHierarchyAsync(culture)
+            : GetAllStringsAsync(culture);
+
+        return localizedStrings.ToEnumerable();
     }
 
     /// <inheritdocs />
@@ -120,7 +122,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         }
     }
 
-    private async Task<List<LocalizedString>> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
+    private async IAsyncEnumerable<LocalizedString> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
     {
         var currentCulture = culture;
         var allLocalizedStrings = new List<LocalizedString>();
@@ -135,15 +137,13 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                 {
                     if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
                     {
-                        allLocalizedStrings.Add(localizedString);
+                        yield return localizedString;
                     }
                 }
             }
 
             currentCulture = currentCulture.Parent;
         } while (currentCulture != currentCulture.Parent);
-
-        return allLocalizedStrings;
     }
 
     [Obsolete("This method is deprecated, please use GetTranslationAsync instead.")]
