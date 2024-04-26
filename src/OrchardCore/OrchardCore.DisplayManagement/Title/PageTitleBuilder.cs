@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
@@ -89,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Title
         }
     }
 
-    internal class PositionalTitlePart : IPositioned
+    internal sealed class PositionalTitlePart : IPositioned
     {
         public string Position { get; set; }
         public IHtmlContent Value { get; set; }

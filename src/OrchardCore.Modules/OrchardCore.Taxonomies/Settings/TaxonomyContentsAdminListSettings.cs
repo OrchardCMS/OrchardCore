@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Taxonomies.Settings
 {
     public class TaxonomyContentsAdminListSettings

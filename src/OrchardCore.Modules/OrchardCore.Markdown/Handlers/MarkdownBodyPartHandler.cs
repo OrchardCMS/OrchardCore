@@ -50,7 +50,7 @@ namespace OrchardCore.Markdown.Handlers
                 try
                 {
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
                     var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
                     // The default Markdown option is to entity escape html

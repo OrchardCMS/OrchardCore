@@ -160,16 +160,20 @@ public class AwsFileStore : IFileStore
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path))
         });
 
-        var deleteObjectsRequest = new DeleteObjectsRequest
+        if (listObjectsResponse.S3Objects.Count > 0)
         {
-            BucketName = _options.BucketName,
-            Objects = listObjectsResponse.S3Objects
-                .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
-        };
+            var deleteObjectsRequest = new DeleteObjectsRequest
+            {
+                BucketName = _options.BucketName,
+                Objects = listObjectsResponse.S3Objects
+                    .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
+            };
 
-        var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
+            var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
+            return response.IsSuccessful();
+        }
 
-        return response.IsSuccessful();
+        return listObjectsResponse.IsSuccessful();
     }
 
     public async Task MoveFileAsync(string oldPath, string newPath)

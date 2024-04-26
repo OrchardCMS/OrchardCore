@@ -1,7 +1,7 @@
 /*!
- * Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
- * Copyright 2023 Fonticons, Inc.
+ * Copyright 2024 Fonticons, Inc.
  */
 .fa {
   font-family: var(--fa-style-family, "Font Awesome 6 Free");
@@ -463,8 +463,8 @@
           transform: scale(-1, -1); }
 
 .fa-rotate-by {
-  -webkit-transform: rotate(var(--fa-rotate-angle, none));
-          transform: rotate(var(--fa-rotate-angle, none)); }
+  -webkit-transform: rotate(var(--fa-rotate-angle, 0));
+          transform: rotate(var(--fa-rotate-angle, 0)); }
 
 .fa-stack {
   display: inline-block;
@@ -2768,6 +2768,9 @@ readers do not read off random characters that represent icons */
 .fa-italic::before {
   content: "\f033"; }
 
+.fa-table-cells-column-lock::before {
+  content: "\e678"; }
+
 .fa-church::before {
   content: "\f51d"; }
 
@@ -4939,6 +4942,9 @@ readers do not read off random characters that represent icons */
 
 .fa-font::before {
   content: "\f031"; }
+
+.fa-table-cells-row-lock::before {
+  content: "\e67a"; }
 
 .fa-rupiah-sign::before {
   content: "\e23d"; }

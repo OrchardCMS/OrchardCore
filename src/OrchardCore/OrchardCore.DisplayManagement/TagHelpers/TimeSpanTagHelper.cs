@@ -28,9 +28,9 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var shapeType = "TimeSpan";
-            dynamic shape = await _shapeFactory.CreateAsync(shapeType);
-            shape.Utc = Utc;
-            shape.Origin = Origin;
+            var shape = await _shapeFactory.CreateAsync(shapeType);
+            shape.Properties["Utc"] = Utc;
+            shape.Properties["Origin"] = Origin;
 
             output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 

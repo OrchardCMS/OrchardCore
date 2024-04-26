@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -28,6 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
+    [Admin("Users/{action}/{id?}", "Users{action}")]
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
@@ -119,7 +121,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -175,7 +177,7 @@ namespace OrchardCore.Users.Controllers
             options.UserRoleFilters =
             [
                 new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = OrchardCoreConstants.Roles.Authenticated, Selected = string.Equals(options.SelectedRole, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase) },
                 // TODO Candidate for dynamic localization.
                 .. roleNames.Select(roleName =>
                     new SelectListItem
@@ -183,16 +185,15 @@ namespace OrchardCore.Users.Controllers
                         Text = roleName,
                         Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
                         Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
-                    })
-,
+                    }),
             ];
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+            var startIndex = (pager.Page - 1) * pager.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + userEntries.Count - 1;
             options.UsersCount = userEntries.Count;
-            options.TotalItemCount = pagerShape.TotalItemCount;
+            options.TotalItemCount = count;
 
             var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
@@ -498,7 +499,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var model = new ResetPasswordViewModel { Email = user.Email };
+            var model = new ResetPasswordViewModel { UsernameOrEmail = user.UserName };
 
             return View(model);
         }
@@ -506,7 +507,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
         {
-            if (await _userManager.FindByEmailAsync(model.Email) is not User user)
+            if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
             {
                 return NotFound();
             }
@@ -520,7 +521,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
+                if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
                 {
                     await _notifier.SuccessAsync(H["Password updated correctly."]);
 

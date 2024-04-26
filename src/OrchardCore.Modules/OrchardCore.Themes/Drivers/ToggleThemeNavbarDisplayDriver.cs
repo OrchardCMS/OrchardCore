@@ -1,7 +1,6 @@
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Drivers;

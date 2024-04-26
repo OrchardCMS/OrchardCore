@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -10,16 +13,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Json;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -30,7 +35,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Workflows.Controllers
 {
-    [Admin]
+    [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
     public class WorkflowTypeController : Controller
     {
         private readonly PagerOptions _pagerOptions;
@@ -42,9 +47,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly JsonSerializerOptions _documentJsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -61,10 +66,10 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -75,13 +80,14 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
+        [Admin("Workflows/Types", "WorkflowTypes")]
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -121,7 +127,8 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            using var connection = await _session.CreateConnectionAsync();
+            // The existing session's connection is returned, don't dispose it
+            var connection = await _session.CreateConnectionAsync();
 
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
@@ -191,6 +198,9 @@ namespace OrchardCore.Workflows.Controllers
                 {
                     case WorkflowTypeBulkAction.None:
                         break;
+                    case WorkflowTypeBulkAction.Export:
+                        return await ExportWorkflows(itemIds.ToArray());
+
                     case WorkflowTypeBulkAction.Delete:
                         foreach (var entry in checkedEntries)
                         {
@@ -205,14 +215,26 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> EditProperties(long? id, string returnUrl = null)
+        [HttpPost]
+        public async Task<IActionResult> Export(int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Forbid();
+            }
+
+            return await ExportWorkflows(id);
+        }
+
+        public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
+
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -417,13 +439,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowTypeViewModel
             {
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(
-                    workflowTypeData,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    }),
+                WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
@@ -444,9 +460,11 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(model.Id);
-            dynamic state = JObject.Parse(model.State);
+            var state = JObject.Parse(model.State);
             var currentActivities = workflowType.Activities.ToDictionary(x => x.ActivityId);
-            var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (string)x.id);
+            var activities = state["activities"] as JsonArray;
+
+            var postedActivities = JArray.FromObject(activities).ToDictionary(x => x["id"]?.ToString());
             var removedActivityIdsQuery =
                 from activityId in currentActivities.Keys
                 where !postedActivities.ContainsKey(activityId)
@@ -462,23 +480,26 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             // Update activities.
-            foreach (var activityState in state.activities)
+            foreach (var activityState in activities)
             {
-                var activity = currentActivities[(string)activityState.id];
-                activity.X = activityState.x;
-                activity.Y = activityState.y;
-                activity.IsStart = activityState.isStart;
+                var activity = currentActivities[activityState["id"].ToString()];
+                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString());
+                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString());
+                activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 
             // Update transitions.
             workflowType.Transitions.Clear();
-            foreach (var transitionState in state.transitions)
+
+            var transitions = state["transitions"] as JsonArray;
+
+            foreach (var transitionState in transitions)
             {
                 workflowType.Transitions.Add(new Transition
                 {
-                    SourceActivityId = transitionState.sourceActivityId,
-                    DestinationActivityId = transitionState.destinationActivityId,
-                    SourceOutcomeName = transitionState.sourceOutcomeName,
+                    SourceActivityId = transitionState["sourceActivityId"]?.ToString(),
+                    DestinationActivityId = transitionState["destinationActivityId"]?.ToString(),
+                    SourceOutcomeName = transitionState["sourceOutcomeName"]?.ToString(),
                 });
             }
 
@@ -515,14 +536,12 @@ namespace OrchardCore.Workflows.Controllers
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, long workflowTypeId,
             string localId, string displayType)
         {
-            dynamic activityShape =
-                await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater,
-                    displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
-            activityShape.Activity = activity;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            activityShape.Properties["Activity"] = activity;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["Index"] = index;
+            activityShape.Properties["ReturnUrl"] = Url.Action(nameof(Edit), new
             {
                 id = workflowTypeId,
                 localId,
@@ -534,20 +553,42 @@ namespace OrchardCore.Workflows.Controllers
         private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, long workflowTypeId,
             string localId, string displayType)
         {
-            dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity,
-                _updateModelAccessor.ModelUpdater, displayType);
+            var activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}";
-            activityShape.Activity = activityContext.Activity;
-            activityShape.ActivityRecord = activityContext.ActivityRecord;
-            activityShape.WorkflowTypeId = workflowTypeId;
-            activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new
+            activityShape.Properties["Activity"] = activityContext.Activity;
+            activityShape.Properties["ActivityRecord"] = activityContext.ActivityRecord;
+            activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
+            activityShape.Properties["Index"] = index;
+            activityShape.Properties["ReturnUrl"] = Url.Action(nameof(Edit), new
             {
                 id = workflowTypeId,
                 localId,
             });
 
             return activityShape;
+        }
+
+        private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
+        {
+            using var fileBuilder = new TemporaryFileBuilder();
+            var archiveFileName = fileBuilder.Folder + ".zip";
+            var recipeDescriptor = new RecipeDescriptor();
+            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
+
+            AllWorkflowTypeDeploymentSource.ProcessWorkflowType(deploymentPlanResult, workflowTypes, _documentJsonSerializerOptions);
+
+            await deploymentPlanResult.FinalizeAsync();
+            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+
+            var packageName = itemIds.Length == 1
+                ? workflowTypes.FirstOrDefault().Name
+                : S["Workflow Types"];
+
+            return new PhysicalFileResult(archiveFileName, "application/zip")
+            {
+                FileDownloadName = packageName + ".zip",
+            };
         }
     }
 }

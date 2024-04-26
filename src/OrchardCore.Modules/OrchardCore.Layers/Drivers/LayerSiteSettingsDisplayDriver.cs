@@ -16,6 +16,7 @@ namespace OrchardCore.Layers.Drivers
         public const string GroupId = "zones";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private static readonly char[] _separator = [' ', ','];
 
         public LayerSiteSettingsDisplayDriver(
             IHttpContextAccessor httpContextAccessor,
@@ -40,7 +41,7 @@ namespace OrchardCore.Layers.Drivers
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -55,7 +56,7 @@ namespace OrchardCore.Layers.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.Zones = (model.Zones ?? string.Empty).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return await EditAsync(settings, context);

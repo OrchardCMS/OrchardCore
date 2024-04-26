@@ -3,9 +3,8 @@
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
 <h3>@T["Endpoints"]</h3>
+
 <div class="mb-3" asp-validation-class-for="EnableTokenEndpoint">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
@@ -131,7 +130,7 @@
     <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
-        @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
+        @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
         {
             <option value="@location" selected="@(Model.EncryptionCertificateStoreLocation == location)">@location.ToString()</option>
         }
@@ -145,7 +144,7 @@
     <select asp-for="EncryptionCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
-        @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
+        @foreach (StoreName store in Enum.GetValues<StoreName>())
         {
             <option value="@store" selected="@(Model.EncryptionCertificateStoreName == store)">@store.ToString()</option>
         }
@@ -195,7 +194,7 @@
     <select asp-for="SigningCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
-        @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
+        @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
         {
             <option value="@location" selected="@(Model.SigningCertificateStoreLocation == location)">@location.ToString()</option>
         }
@@ -209,7 +208,7 @@
     <select asp-for="SigningCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
-        @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
+        @foreach (StoreName store in Enum.GetValues<StoreName>())
         {
             <option value="@store" selected="@(Model.SigningCertificateStoreName == store)">@store.ToString()</option>
         }

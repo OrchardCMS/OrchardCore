@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -31,16 +30,15 @@ namespace OrchardCore.Forms.Drivers
         {
             var viewModel = new FormInputElementPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                if (string.IsNullOrWhiteSpace(viewModel.Name))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
-                }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-                part.Name = viewModel.Name?.Trim();
-                part.ContentItem.DisplayText = part.Name;
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
             }
+
+            part.Name = viewModel.Name?.Trim();
+            part.ContentItem.DisplayText = part.Name;
 
             return Edit(part);
         }

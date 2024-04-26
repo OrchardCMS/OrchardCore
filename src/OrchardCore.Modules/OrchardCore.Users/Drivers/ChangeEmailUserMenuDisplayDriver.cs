@@ -1,6 +1,5 @@
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 

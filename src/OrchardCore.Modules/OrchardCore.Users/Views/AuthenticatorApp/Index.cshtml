@@ -20,7 +20,7 @@
         </li>
         <li>
             <p>
-                @T["Scan the QR Code below, or enter this key {0} into your two-factor authenticator app. You may ignore spaces and casing.", $"<kbd>{Model.SharedKey}</kbd>"]
+                @T["Scan the QR Code below, or enter the key <kbd>{0}</kbd> into your two-factor authenticator app. You may ignore spaces and casing.", Model.SharedKey]
             </p>
             <div id="qrCode" class="mb-3"></div>
             <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>

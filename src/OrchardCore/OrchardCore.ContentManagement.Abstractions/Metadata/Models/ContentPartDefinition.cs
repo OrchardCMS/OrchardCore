@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -13,11 +13,11 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             Settings = [];
         }
 
-        public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JObject settings)
+        public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JsonObject settings)
         {
             Name = name;
             Fields = fields.ToList();
-            Settings = new JObject(settings);
+            Settings = settings.Clone();
 
             foreach (var field in Fields)
             {
