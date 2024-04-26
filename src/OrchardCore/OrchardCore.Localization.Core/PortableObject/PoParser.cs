@@ -24,8 +24,8 @@ public class PoParser
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
-    [Obsolete("This method has been deprecated, please use ParseAsync instead.")]
-    public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader) => ParseAsync(reader).GetAwaiter().GetResult();
+    [Obsolete("This methos has been deprecated, please use ParseAsync instead.")]
+    public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader) => ParseAsync(reader).ToEnumerable();
 
     /// <summary>
     /// Parses a .po file.
@@ -33,11 +33,10 @@ public class PoParser
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
 #pragma warning disable CA1822 // Mark members as static
-    public async Task<IEnumerable<CultureDictionaryRecord>> ParseAsync(TextReader reader)
+    public async IAsyncEnumerable<CultureDictionaryRecord> ParseAsync(TextReader reader)
 #pragma warning restore CA1822 // Mark members as static
     {
         var entryBuilder = new DictionaryRecordBuilder();
-        var cultureDictionaryRecords = new List<CultureDictionaryRecord>();
         string line;
         while ((line = await reader.ReadLineAsync()) != null)
         {
@@ -51,7 +50,7 @@ public class PoParser
             // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
             if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushRecord)
             {
-                cultureDictionaryRecords.Add(entryBuilder.BuildRecordAndReset());
+                yield return entryBuilder.BuildRecordAndReset();
             }
 
             entryBuilder.Set(context, content);
@@ -59,10 +58,8 @@ public class PoParser
 
         if (entryBuilder.ShouldFlushRecord)
         {
-            cultureDictionaryRecords.Add(entryBuilder.BuildRecordAndReset());
+            yield return entryBuilder.BuildRecordAndReset();
         }
-
-        return cultureDictionaryRecords;
     }
 
     private static string Unescape(string str)

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -40,7 +38,7 @@ public class LocalizationManager : ILocalizationManager
     /// <inheritdoc />
     public async Task<CultureDictionary> GetDictionaryAsync(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<Task<CultureDictionary>>(async () =>
+        var cachedDictionary = await _cache.GetOrCreateAsync(CacheKeyPrefix + culture.Name, async (e) =>
         {
             var rule = _defaultPluralRule;
 
@@ -59,8 +57,8 @@ public class LocalizationManager : ILocalizationManager
             }
 
             return dictionary;
-        }, LazyThreadSafetyMode.ExecutionAndPublication));
+        });
 
-        return await cachedDictionary.Value;
+        return cachedDictionary;
     }
 }

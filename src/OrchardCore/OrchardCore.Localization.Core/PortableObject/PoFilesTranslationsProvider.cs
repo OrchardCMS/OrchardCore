@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
@@ -37,7 +38,7 @@ public class PoFilesTranslationsProvider : ITranslationProvider
         {
             using var stream = fileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
-            dictionary.MergeTranslations(await _parser.ParseAsync(reader));
+            dictionary.MergeTranslations(await _parser.ParseAsync(reader).ToListAsync());
         }
     }
 }

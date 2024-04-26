@@ -209,7 +209,7 @@ namespace OrchardCore.Tests.Localization
             using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
             using var reader = new StreamReader(resource);
 
-            return (await parser.ParseAsync(reader)).ToArray();
+            return (await parser.ParseAsync(reader).ToListAsync()).ToArray();
         }
     }
 }
