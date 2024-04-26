@@ -194,7 +194,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (hasChanges)
             {
-                // Queue reloading shell context when something changed.
                 _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
         }

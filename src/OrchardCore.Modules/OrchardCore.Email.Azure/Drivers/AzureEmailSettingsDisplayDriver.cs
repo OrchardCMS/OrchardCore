@@ -144,7 +144,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             if (hasChanges)
             {
-                // Queue reloading shell context when something changed.
                 _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
         }
