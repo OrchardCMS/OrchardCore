@@ -44,6 +44,15 @@ edit_uri: edit/main/src/
 
 # Options
 docs_dir: src/docs
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+# Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
+not_in_nav: |
+  samples/
+  releases/1.9.0.md
 
 # Extensions
 markdown_extensions:

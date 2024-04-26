@@ -242,7 +242,7 @@ The available options depend on the scalar and part fields defined on the type i
 ##### Single Filters
 
 If you supply exactly one parameter to the `where` argument, the query response will only contain content items that adhere to this constraint.  
-Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-and-or) for more details.
+Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-or-and-not) for more details.
 
 ##### Filtering by a publication status
 
