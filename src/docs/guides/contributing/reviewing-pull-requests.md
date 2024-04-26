@@ -16,9 +16,10 @@ If the PR is coming from a fork, working with its code locally won't be as trivi
 ## Tips on managing pull requests
 
 !!! note
-    Adding labels and merging pull requests is only available for core contributors. Otherwise, anybody can review pull requests.
+    Adding labels and otherwise updating a pull request, as well as merging them are only available for core contributors. Otherwise, anybody can review the changes in pull requests and comment on them.
 
-- [Here's a list](https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+is%3Aopen+reviewed-by%3A%40me) of open PRs reviewed by you. Maybe check them because perhaps it's time to ping the authors since maybe they forgot to follow up. Or maybe you forgot to merge a PR? 
+- [Here's a list](https://github.com/OrchardCMS/OrchardCore/pulls?q=is%3Apr+is%3Aopen+reviewed-by%3A%40me) of open PRs reviewed by you. Maybe check them because perhaps it's time to ping the authors since maybe they forgot to follow up. Or maybe you forgot to merge a PR?
+- Change the PR's title if it contains errors or is unclear/incorrect.
 - Add the "don't merge" label on PRs that are ready for review, approved by you and/or others, but you asked more people for feedback before it can be merged.
 - Add the "needs triage" label on PRs that you think should be checked by others during the weekly triage meeting too. Explain in a comment why you deem this is necessary.
 - Be sure to merge PRs that don't need a second opinion. This is especially important for external contributors who can't merge their PRs. Keeping PRs open will make them collect merge conflicts and make the contributor demotivated.

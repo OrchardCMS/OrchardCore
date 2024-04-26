@@ -38,4 +38,5 @@ Some tips on issue management:
     - Add "perf" if it's about performance.
     - Add module/feature set-related labels, like "Media" or "OpenId".
     - Add "security" for security issues.
+- Change the issue's title if it contains errors or is unclear/incorrect.
 - If you asked the author something and the issue should be closed if they don't reply, add the `needs author feedback` label. This will automatically mark the issue as stale after 15 days, and then close it after another 7.
