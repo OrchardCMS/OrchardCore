@@ -102,7 +102,7 @@ Each of these drivers return one or more shapes that are added to named zones (o
 
 For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [`TitlePartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs)
 
-Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [BagPartDisplayDriver](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs).
+Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [`BagPartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs).
 
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
 Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.  
