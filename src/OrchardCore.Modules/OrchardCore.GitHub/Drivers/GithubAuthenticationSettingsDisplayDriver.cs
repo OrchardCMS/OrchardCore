@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Drivers
@@ -70,7 +71,7 @@ namespace OrchardCore.GitHub.Drivers
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {
@@ -92,7 +93,7 @@ namespace OrchardCore.GitHub.Drivers
                     settings.CallbackPath = model.CallbackUrl;
                     settings.SaveTokens = model.SaveTokens;
 
-                    site.QueueReleaseShellContext();
+                    _httpContextAccessor.HttpContext.SignalReleaseShellContext();
                 }
             }
 

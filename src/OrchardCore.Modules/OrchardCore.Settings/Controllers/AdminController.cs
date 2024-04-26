@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
@@ -8,7 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Infrastructure;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
@@ -22,8 +23,6 @@ namespace OrchardCore.Settings.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         protected readonly IHtmlLocalizer H;
 
@@ -34,8 +33,6 @@ namespace OrchardCore.Settings.Controllers
             INotifier notifier,
             IOptions<CultureOptions> cultureOptions,
             IUpdateModelAccessor updateModelAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
@@ -44,8 +41,6 @@ namespace OrchardCore.Settings.Controllers
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
             _cultureOptions = cultureOptions.Value;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             H = htmlLocalizer;
         }
 
@@ -87,9 +82,6 @@ namespace OrchardCore.Settings.Controllers
 
             if (ModelState.IsValid)
             {
-                // Dequeue release-shell command before updating the shell to avoid saving the command in the database.
-                var releaseShell = site.DequeueReleaseShellContext();
-
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 string culture = null;
@@ -103,11 +95,11 @@ namespace OrchardCore.Settings.Controllers
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }
-
-                if (releaseShell)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+            }
+            else
+            {
+                // If the model state is invalid, Conceal the release shell signal so that the tenant is not reloaded.
+                HttpContext.ConcealReleaseShellContext();
             }
 
             return View(viewModel);

@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
@@ -54,7 +55,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -86,7 +87,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                     settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
                 }
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

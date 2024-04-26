@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers
@@ -67,7 +68,7 @@ namespace OrchardCore.Facebook.Drivers
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Core)
             {
@@ -97,7 +98,7 @@ namespace OrchardCore.Facebook.Drivers
                     settings.AppSecret = protector.Protect(model.AppSecret);
                 }
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

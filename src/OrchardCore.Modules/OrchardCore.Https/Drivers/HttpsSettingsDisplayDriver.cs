@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -70,7 +71,7 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
@@ -89,7 +90,7 @@ namespace OrchardCore.Https.Drivers
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
                 settings.SslPort = model.SslPort;
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

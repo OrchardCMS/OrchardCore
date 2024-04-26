@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Login.ViewModels;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Login.Drivers
@@ -39,7 +40,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Login)
             {
@@ -56,7 +57,7 @@ namespace OrchardCore.Facebook.Login.Drivers
                 settings.CallbackPath = model.CallbackPath;
                 settings.SaveTokens = model.SaveTokens;
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

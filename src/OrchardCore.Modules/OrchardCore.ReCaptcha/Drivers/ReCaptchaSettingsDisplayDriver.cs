@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
@@ -53,7 +54,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, ReCaptchaSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -71,7 +72,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 settings.SiteKey = model.SiteKey?.Trim();
                 settings.SecretKey = model.SecretKey?.Trim();
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
@@ -136,7 +137,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
              _searchOptions.IdentityClientId != settings.IdentityClientId ||
              useCustomConfigurationChanged))
         {
-            site.QueueReleaseShellContext();
+            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
         }
 
         return Edit(settings);

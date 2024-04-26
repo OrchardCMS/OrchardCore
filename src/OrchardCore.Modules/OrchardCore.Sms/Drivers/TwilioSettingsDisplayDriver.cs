@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Infrastructure;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
@@ -135,7 +136,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         if (hasChanges)
         {
-            site.QueueReleaseShellContext();
+            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
         }
 
         return Edit(settings);

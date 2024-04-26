@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -70,7 +71,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
@@ -94,7 +95,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.AppSecret = protector.Protect(model.AppSecret);
                 }
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

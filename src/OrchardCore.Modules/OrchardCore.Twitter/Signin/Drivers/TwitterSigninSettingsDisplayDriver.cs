@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
@@ -41,7 +42,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Signin)
             {
@@ -57,7 +58,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 settings.CallbackPath = model.CallbackPath;
                 settings.SaveTokens = model.SaveTokens;
 
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

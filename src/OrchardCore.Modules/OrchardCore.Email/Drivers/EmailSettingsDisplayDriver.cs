@@ -14,6 +14,7 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -72,7 +73,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         .OnGroup(EmailSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, IUpdateModel updater, UpdateEditorContext context)
     {
         if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {
@@ -92,7 +93,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         {
             settings.DefaultProviderName = model.DefaultProvider;
 
-            site.QueueReleaseShellContext();
+            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
         }
 
         return await EditAsync(settings, context);

@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -58,16 +59,13 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.DisplayName = model.DisplayName;
-                    settings.AppId = model.AppId;
-                    settings.TenantId = model.TenantId;
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
+                settings.DisplayName = model.DisplayName;
+                settings.AppId = model.AppId;
+                settings.TenantId = model.TenantId;
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
 
-                    site.QueueReleaseShellContext();
-                }
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

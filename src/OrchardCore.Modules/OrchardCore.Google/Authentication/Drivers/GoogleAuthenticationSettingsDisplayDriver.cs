@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Drivers
@@ -83,17 +84,18 @@ namespace OrchardCore.Google.Authentication.Drivers
                 var model = new GoogleAuthenticationSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.ClientID = model.ClientID;
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
 
-                    settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-
-                    site.QueueReleaseShellContext();
                 }
+
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
 
             return await EditAsync(settings, context);

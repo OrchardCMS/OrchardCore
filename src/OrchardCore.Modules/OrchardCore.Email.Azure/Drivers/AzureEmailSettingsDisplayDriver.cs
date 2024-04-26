@@ -15,6 +15,7 @@ using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
+using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -144,7 +145,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             if (hasChanges)
             {
                 // Queue reloading shell context when something changed.
-                site.QueueReleaseShellContext();
+                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
             }
         }
 

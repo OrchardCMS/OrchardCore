@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -155,11 +155,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
-            services.AddTransient<IConfigureOptions<JsonOptions>, JsonOptionsConfigurations>();
+            services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>, JsonOptionsConfigurations>();
             services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<ISlugService, SlugService>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
@@ -172,7 +173,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
 
-            services.AddSingleton<ISlugService, SlugService>();
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add<ShellSettingsReleaseFilter>();
+            });
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)

@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Modules;
@@ -89,7 +90,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, LocalizationSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings settings, IUpdateModel updater, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -122,7 +123,7 @@ namespace OrchardCore.Localization.Drivers
                     }
 
                     // We always release the tenant for the default culture and also supported cultures to take effect.
-                    site.QueueReleaseShellContext();
+                    _httpContextAccessor.HttpContext.SignalReleaseShellContext();
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
                     using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
