@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+    if: github.event.issue.state == 'open'
     steps:
       - name: Add Comment
         run: gh issue comment "$NUMBER" --body "$BODY"
