@@ -41,7 +41,7 @@ namespace OrchardCore.Localization.PortableObject
                 if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Length == 1 && arguments[0] is PluralizationArgument)
                 {
                     // Get an unformatted string and all non plural arguments (1st one is the plural count).
-                    var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
+                    var (translation, argumentsWithCount) = pluralLocalizer.GetTranslationAsync(name, arguments).GetAwaiter().GetResult();
 
                     // Formatting will use non plural arguments if any.
                     return ToHtmlString(translation, argumentsWithCount);
