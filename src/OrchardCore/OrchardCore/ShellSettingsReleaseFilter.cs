@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Infrastructure;
 
@@ -19,7 +20,10 @@ public class ShellSettingsReleaseFilter : IResultFilter
             request is ShellSettingsReleaseRequest shellSettingsReleaseRequest &&
             shellSettingsReleaseRequest.Release)
             {
-                await scope.ShellContext.ReleaseAsync();
+                var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+                var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+
+                await shellHost.ReleaseShellContextAsync(shellSettings);
             }
         });
     }
