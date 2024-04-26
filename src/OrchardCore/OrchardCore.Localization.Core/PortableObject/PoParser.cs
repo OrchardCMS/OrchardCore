@@ -24,7 +24,7 @@ public class PoParser
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
-    [Obsolete("This methos has been deprecated, please use ParseAsync instead.")]
+    [Obsolete("This method has been deprecated, please use ParseAsync instead.")]
     public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader) => ParseAsync(reader).GetAwaiter().GetResult();
 
     /// <summary>

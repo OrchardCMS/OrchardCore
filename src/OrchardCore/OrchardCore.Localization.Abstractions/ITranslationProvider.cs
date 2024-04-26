@@ -13,7 +13,7 @@ public interface ITranslationProvider
     /// </summary>
     /// <param name="cultureName">The culture name.</param>
     /// <param name="dictionary">The <see cref="CultureDictionary"/> that will contains all loaded translations.</param>
-    [Obsolete("This method has been deprectaed, please use LoadTranslationsAsync instead.")]
+    [Obsolete("This method has been deprecated, please use LoadTranslationsAsync instead.")]
     void LoadTranslations(string cultureName, CultureDictionary dictionary)
         => LoadTranslationsAsync(cultureName, dictionary).GetAwaiter().GetResult();
 
