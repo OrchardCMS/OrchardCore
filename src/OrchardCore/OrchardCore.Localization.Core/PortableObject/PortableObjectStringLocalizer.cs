@@ -71,8 +71,8 @@ namespace OrchardCore.Localization.PortableObject
             var culture = CultureInfo.CurrentUICulture;
 
             return includeParentCultures
-                ? GetAllStringsFromCultureHierarchy(culture)
-                : GetAllStrings(culture);
+                ? GetAllStringsFromCultureHierarchyAsync(culture)
+                : GetAllStringsAsync(culture).ToEnumerable();
         }
 
         /// <inheritdocs />
@@ -109,9 +109,9 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
+        private async IAsyncEnumerable<LocalizedString> GetAllStringsAsync(CultureInfo culture)
         {
-            var dictionary = _localizationManager.GetDictionary(culture);
+            var dictionary = await _localizationManager.GetDictionaryAsync(culture);
 
             foreach (var translation in dictionary.Translations)
             {
@@ -119,14 +119,14 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private List<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+        private List<LocalizedString> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
         {
             var currentCulture = culture;
             var allLocalizedStrings = new List<LocalizedString>();
 
             do
             {
-                var localizedStrings = GetAllStrings(currentCulture);
+                var localizedStrings = GetAllStringsAsync(currentCulture).ToEnumerable();
 
                 if (localizedStrings != null)
                 {
@@ -147,7 +147,7 @@ namespace OrchardCore.Localization.PortableObject
 
         protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
-            var dictionary = _localizationManager.GetDictionary(culture);
+            var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
             var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
 
@@ -190,7 +190,7 @@ namespace OrchardCore.Localization.PortableObject
 
                 string ExtractTranslation()
                 {
-                    var dictionary = _localizationManager.GetDictionary(culture);
+                    var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
                     if (dictionary != null)
                     {
