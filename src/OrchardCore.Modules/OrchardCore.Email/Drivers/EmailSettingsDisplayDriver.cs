@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
@@ -73,7 +72,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         .OnGroup(EmailSettings.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, UpdateEditorContext context)
     {
         if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {

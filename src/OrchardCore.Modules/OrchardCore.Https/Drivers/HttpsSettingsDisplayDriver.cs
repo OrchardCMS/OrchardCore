@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Https.Settings;
@@ -71,7 +70,7 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {

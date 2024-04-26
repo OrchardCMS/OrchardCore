@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
@@ -71,7 +70,7 @@ namespace OrchardCore.Google.Authentication.Drivers
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
             {

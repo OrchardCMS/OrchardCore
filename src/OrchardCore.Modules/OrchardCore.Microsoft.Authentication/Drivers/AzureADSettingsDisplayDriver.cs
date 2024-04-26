@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Microsoft.Authentication.Settings;
@@ -45,7 +44,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AzureADSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
             {

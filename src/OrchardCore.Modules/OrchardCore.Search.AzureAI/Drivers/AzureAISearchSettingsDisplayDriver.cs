@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
@@ -54,7 +53,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings settings, UpdateEditorContext context)
     {
         if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {

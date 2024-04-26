@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
@@ -86,7 +85,7 @@ namespace OrchardCore.Twitter.Drivers
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Twitter)
             {

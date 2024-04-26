@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
@@ -55,7 +54,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

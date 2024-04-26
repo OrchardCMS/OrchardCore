@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
@@ -68,7 +67,7 @@ namespace OrchardCore.Facebook.Drivers
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Core)
             {

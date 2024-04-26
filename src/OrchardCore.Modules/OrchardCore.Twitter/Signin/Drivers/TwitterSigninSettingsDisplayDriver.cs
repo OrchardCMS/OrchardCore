@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
@@ -42,7 +41,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Signin)
             {

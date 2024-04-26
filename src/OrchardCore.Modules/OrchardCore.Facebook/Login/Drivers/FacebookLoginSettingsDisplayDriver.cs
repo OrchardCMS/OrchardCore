@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Login.ViewModels;
@@ -40,7 +39,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == FacebookConstants.Features.Login)
             {

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
@@ -71,7 +70,7 @@ namespace OrchardCore.GitHub.Drivers
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {

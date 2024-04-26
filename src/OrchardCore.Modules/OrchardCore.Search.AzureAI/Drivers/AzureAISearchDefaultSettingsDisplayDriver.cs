@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
@@ -73,7 +72,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchDefaultSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, UpdateEditorContext context)
     {
         if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || _searchOptions.DisableUIConfiguration)
         {
