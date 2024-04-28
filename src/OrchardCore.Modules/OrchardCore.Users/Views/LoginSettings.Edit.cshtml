@@ -63,7 +63,7 @@
         <label class="form-check-label" asp-for="UseScriptToSyncRoles">@T["Use a script to set user roles, user claims and user properties based on external provider claims"]</label>
         <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
     </div>
-    <div class="mb-3" id="doc_editor" asp-for="Text" style="min-height: 500px;" class="form-control"></div>
+    <div class="mb-3" id="doc_editor" asp-for="Text" style="min-height: 500px;max-width:750px" class="form-control"></div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="SyncRolesScript" id="SyncRolesScript_wrapper">
@@ -167,8 +167,10 @@ type Context = {
                 minimap: { enabled: false }, // hide the minimap
                 scrollbar: { horizontal: "hidden", vertical: "hidden" }, // hide the scrollbar
                 overviewRuler: { visible: false }, // hide the overview ruler
-            });
-
+                scrollbar: {
+                    handleMouseWheel:false
+                }
+            }); 
             var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
             if (!textArea.value) {
                 resetScript();
