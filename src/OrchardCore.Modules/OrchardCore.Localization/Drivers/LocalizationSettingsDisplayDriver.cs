@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
 using OrchardCore.Modules;
@@ -25,7 +25,7 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -35,6 +35,7 @@ namespace OrchardCore.Localization.Drivers
         protected readonly IStringLocalizer S;
 
         public LocalizationSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             INotifier notifier,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
@@ -43,6 +44,7 @@ namespace OrchardCore.Localization.Drivers
             IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
         )
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -113,7 +115,7 @@ namespace OrchardCore.Localization.Drivers
                 if (context.Updater.ModelState.IsValid)
                 {
                     // Invariant culture name is empty so a null value is bound.
-                    settings.DefaultCulture = model.DefaultCulture ?? "";
+                    settings.DefaultCulture = model.DefaultCulture ?? string.Empty;
                     settings.SupportedCultures = supportedCulture;
 
                     if (!settings.SupportedCultures.Contains(settings.DefaultCulture))
@@ -122,7 +124,7 @@ namespace OrchardCore.Localization.Drivers
                     }
 
                     // We always release the tenant for the default culture and also supported cultures to take effect.
-                    _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                    _shellContextReleaseService.RequestRelease();
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
                     using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))

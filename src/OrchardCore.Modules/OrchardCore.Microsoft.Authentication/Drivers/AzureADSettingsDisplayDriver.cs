@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
 using OrchardCore.Settings;
@@ -13,13 +13,16 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 {
     public class AzureADSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureADSettings>
     {
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AzureADSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -64,7 +67,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 settings.CallbackPath = model.CallbackPath;
                 settings.SaveTokens = model.SaveTokens;
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);

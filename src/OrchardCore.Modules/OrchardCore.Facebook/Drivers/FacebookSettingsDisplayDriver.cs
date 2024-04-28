@@ -7,27 +7,30 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
-using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers
 {
     public class FacebookSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookSettings>
     {
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public FacebookSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ILogger<FacebookSettingsDisplayDriver> logger
             )
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -97,7 +100,7 @@ namespace OrchardCore.Facebook.Drivers
                     settings.AppSecret = protector.Protect(model.AppSecret);
                 }
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings.ViewModels;
 
@@ -14,14 +14,17 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         protected readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _httpContextAccessor = httpContextAccessor;
             S = stringLocalizer;
         }
@@ -87,7 +90,7 @@ namespace OrchardCore.Settings.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
             }
 
-            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+            _shellContextReleaseService.RequestRelease();
 
             return await EditAsync(site, context);
         }

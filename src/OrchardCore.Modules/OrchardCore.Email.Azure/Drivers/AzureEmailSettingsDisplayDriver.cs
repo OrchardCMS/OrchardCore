@@ -15,7 +15,7 @@ using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -24,6 +24,7 @@ namespace OrchardCore.Azure.Email.Drivers;
 
 public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureEmailSettings>
 {
+    private readonly IShellContextReleaseService _shellContextReleaseService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -32,12 +33,14 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     protected IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
+        IShellContextReleaseService shellContextReleaseService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IEmailAddressValidator emailValidator,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
+        _shellContextReleaseService = shellContextReleaseService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
@@ -144,7 +147,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             if (hasChanges)
             {
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
         }
 

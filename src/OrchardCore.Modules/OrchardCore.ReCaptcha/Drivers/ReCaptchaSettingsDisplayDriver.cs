@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
@@ -17,13 +17,16 @@ namespace OrchardCore.ReCaptcha.Drivers
     {
         public const string GroupId = "recaptcha";
 
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReCaptchaSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -71,7 +74,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 settings.SiteKey = model.SiteKey?.Trim();
                 settings.SecretKey = model.SecretKey?.Trim();
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);

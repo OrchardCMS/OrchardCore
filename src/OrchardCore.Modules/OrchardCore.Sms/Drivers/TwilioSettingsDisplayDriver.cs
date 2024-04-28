@@ -12,7 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
@@ -23,6 +23,7 @@ namespace OrchardCore.Sms.Drivers;
 
 public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
 {
+    private readonly IShellContextReleaseService _shellContextReleaseService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -33,6 +34,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
+        IShellContextReleaseService shellContextReleaseService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
@@ -41,6 +43,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
+        _shellContextReleaseService = shellContextReleaseService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
@@ -136,7 +139,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         if (hasChanges)
         {
-            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+            _shellContextReleaseService.RequestRelease();
         }
 
         return Edit(settings);

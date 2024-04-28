@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
@@ -13,13 +13,16 @@ namespace OrchardCore.Twitter.Signin.Drivers
 {
     public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
     {
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TwitterSigninSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -57,7 +60,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 settings.CallbackPath = model.CallbackPath;
                 settings.SaveTokens = model.SaveTokens;
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);

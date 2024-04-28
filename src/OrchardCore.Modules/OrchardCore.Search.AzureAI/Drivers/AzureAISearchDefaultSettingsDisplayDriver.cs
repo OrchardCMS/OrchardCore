@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
@@ -27,6 +27,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchDefaultOptions _searchOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IShellContextReleaseService _shellContextReleaseService;
 
     protected readonly IStringLocalizer S;
 
@@ -35,6 +36,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
+        IShellContextReleaseService shellContextReleaseService,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
         )
     {
@@ -42,6 +44,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         _authorizationService = authorizationService;
         _searchOptions = searchOptions.Value;
         _dataProtectionProvider = dataProtectionProvider;
+        _shellContextReleaseService = shellContextReleaseService;
         S = stringLocalizer;
     }
 
@@ -136,7 +139,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
              _searchOptions.IdentityClientId != settings.IdentityClientId ||
              useCustomConfigurationChanged))
         {
-            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+            _shellContextReleaseService.RequestRelease();
         }
 
         return Edit(settings);

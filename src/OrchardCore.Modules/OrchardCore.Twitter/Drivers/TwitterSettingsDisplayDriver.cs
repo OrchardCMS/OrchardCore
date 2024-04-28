@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
@@ -16,17 +16,20 @@ namespace OrchardCore.Twitter.Drivers
 {
     public class TwitterSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSettings>
     {
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public TwitterSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ILogger<TwitterSettingsDisplayDriver> logger)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -108,7 +111,7 @@ namespace OrchardCore.Twitter.Drivers
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
 
-                    _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                    _shellContextReleaseService.RequestRelease();
                 }
             }
 

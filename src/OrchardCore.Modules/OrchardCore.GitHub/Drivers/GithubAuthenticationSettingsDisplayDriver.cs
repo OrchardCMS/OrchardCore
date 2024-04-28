@@ -7,26 +7,29 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
-using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Drivers
 {
     public class GitHubAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GitHubAuthenticationSettings>
     {
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public GitHubAuthenticationSettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -92,7 +95,7 @@ namespace OrchardCore.GitHub.Drivers
                     settings.CallbackPath = model.CallbackUrl;
                     settings.SaveTokens = model.SaveTokens;
 
-                    _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                    _shellContextReleaseService.RequestRelease();
                 }
             }
 

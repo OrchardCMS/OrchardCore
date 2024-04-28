@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
@@ -9,7 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
@@ -18,6 +17,7 @@ namespace OrchardCore.Settings.Controllers
     public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -27,6 +27,7 @@ namespace OrchardCore.Settings.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
+            IShellContextReleaseService shellContextReleaseService,
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
@@ -36,6 +37,7 @@ namespace OrchardCore.Settings.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
+            _shellContextReleaseService = shellContextReleaseService;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
@@ -99,7 +101,7 @@ namespace OrchardCore.Settings.Controllers
             else
             {
                 // If the model state is invalid, Conceal the release shell signal so that the tenant is not reloaded.
-                HttpContext.ConcealReleaseShellContext();
+                _shellContextReleaseService.SuspendReleaseRequest();
             }
 
             return View(viewModel);

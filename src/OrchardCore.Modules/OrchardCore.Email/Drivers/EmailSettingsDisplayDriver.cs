@@ -13,7 +13,6 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -23,10 +22,9 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
     private readonly EmailOptions _emailOptions;
     private readonly IEmailProviderResolver _emailProviderResolver;
-    private readonly ShellSettings _shellSettings;
+    private readonly IShellContextReleaseService _shellContextReleaseService;
     private readonly EmailProviderOptions _emailProviders;
 
     protected readonly IStringLocalizer S;
@@ -34,20 +32,18 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
         IEmailProviderResolver emailProviderResolver,
-        ShellSettings shellSettings,
+        IShellContextReleaseService shellContextReleaseService,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _emailOptions = emailOptions.Value;
         _emailProviderResolver = emailProviderResolver;
         _emailProviders = emailProviders.Value;
-        _shellSettings = shellSettings;
+        _shellContextReleaseService = shellContextReleaseService;
         S = stringLocalizer;
     }
     public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
@@ -92,7 +88,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         {
             settings.DefaultProviderName = model.DefaultProvider;
 
-            _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+            _shellContextReleaseService.RequestRelease();
         }
 
         return await EditAsync(settings, context);

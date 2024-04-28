@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
@@ -19,15 +19,18 @@ namespace OrchardCore.Security.Drivers
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly SecuritySettings _securitySettings;
 
         public SecuritySettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptionsSnapshot<SecuritySettings> securitySettings)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _securitySettings = securitySettings.Value;
@@ -93,7 +96,7 @@ namespace OrchardCore.Security.Drivers
                 settings.PermissionsPolicy = model.PermissionsPolicy;
                 settings.ReferrerPolicy = model.ReferrerPolicy;
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);

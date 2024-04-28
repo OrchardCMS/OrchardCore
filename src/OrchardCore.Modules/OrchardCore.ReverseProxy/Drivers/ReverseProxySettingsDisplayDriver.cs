@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
@@ -18,13 +18,16 @@ namespace OrchardCore.ReverseProxy.Drivers
     {
         public const string GroupId = "ReverseProxy";
 
+        private readonly IShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
+            IShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
+            _shellContextReleaseService = shellContextReleaseService;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -86,7 +89,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                     settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
                 }
 
-                _httpContextAccessor.HttpContext.SignalReleaseShellContext();
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);
