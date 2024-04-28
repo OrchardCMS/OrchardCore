@@ -199,10 +199,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 Application.DefaultFeatureId, alwaysEnabled: true)
             );
 
-            services.AddScoped<IShellContextReleaseService, ShellContextReleaseService>();
-
             builder.ConfigureServices(shellServices =>
             {
+                shellServices.AddScoped<IShellContextReleaseService, ShellContextReleaseService>();
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();

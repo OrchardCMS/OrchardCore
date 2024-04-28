@@ -19,12 +19,12 @@ public class ShellContextReleaseService : IShellContextReleaseService
 
     public void SuspendReleaseRequest()
     {
-        _release = true;
+        _release = false;
     }
 
     public void RequestRelease()
     {
-        _release = false;
+        _release = true;
     }
 
     public async Task<bool> ProcessAsync()
