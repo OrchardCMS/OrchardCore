@@ -207,46 +207,46 @@
 	.palette-color-5 { fill: #47A042 !important; }
 	.palette-color-6 { fill: #328533 !important; }
 	.palette-color-7 { fill: #1D6A23 !important; }
-	.cy { fill: #D9E887; }
-	.ru { fill: #D9E887; }
-	.im { fill: #D9E887; }
-	.dk { fill: #D9E887; }
-	.no { fill: #D9E887; }
-	.bg { fill: #D9E887; }
-	.ro { fill: #D9E887; }
-	.sg { fill: #D9E887; }
-	.ee { fill: #D9E887; }
-	.ba { fill: #D9E887; }
-	.vn { fill: #D9E887; }
-	.tr { fill: #D9E887; }
-	.rs { fill: #B3D778; }
-	.at { fill: #B3D778; }
-	.it { fill: #B3D778; }
-	.pk { fill: #B3D778; }
-	.ua { fill: #B3D778; }
-	.ch { fill: #B3D778; }
-	.jp { fill: #B3D778; }
-	.pl { fill: #B3D778; }
-	.za { fill: #B3D778; }
-	.in { fill: #B3D778; }
-	.es { fill: #B3D778; }
-	.tn { fill: #8CC569; }
-	.pt { fill: #8CC569; }
-	.th { fill: #8CC569; }
-	.de { fill: #8CC569; }
-	.be { fill: #6AB356; }
-	.fi { fill: #6AB356; }
-	.se { fill: #6AB356; }
-	.nl { fill: #6AB356; }
-	.nz { fill: #47A042; }
-	.cn { fill: #47A042; }
-	.au { fill: #47A042; }
-	.hu { fill: #47A042; }
 	.us { fill: #328533; }
-	.ye { fill: #328533; }
 	.ca { fill: #328533; }
+	.ye { fill: #328533; }
 	.gb { fill: #328533; }
 	.fr { fill: #1D6A23; }
+	.no { fill: #D9E887; }
+	.im { fill: #D9E887; }
+	.vn { fill: #D9E887; }
+	.cy { fill: #D9E887; }
+	.ee { fill: #D9E887; }
+	.ro { fill: #D9E887; }
+	.bg { fill: #D9E887; }
+	.ru { fill: #D9E887; }
+	.ba { fill: #D9E887; }
+	.dk { fill: #D9E887; }
+	.tr { fill: #D9E887; }
+	.sg { fill: #D9E887; }
+	.at { fill: #B3D778; }
+	.za { fill: #B3D778; }
+	.ch { fill: #B3D778; }
+	.in { fill: #B3D778; }
+	.ua { fill: #B3D778; }
+	.jp { fill: #B3D778; }
+	.pl { fill: #B3D778; }
+	.it { fill: #B3D778; }
+	.es { fill: #B3D778; }
+	.rs { fill: #B3D778; }
+	.pk { fill: #B3D778; }
+	.th { fill: #8CC569; }
+	.de { fill: #8CC569; }
+	.pt { fill: #8CC569; }
+	.tn { fill: #8CC569; }
+	.fi { fill: #6AB356; }
+	.se { fill: #6AB356; }
+	.be { fill: #6AB356; }
+	.nl { fill: #6AB356; }
+	.cn { fill: #47A042; }
+	.nz { fill: #47A042; }
+	.hu { fill: #47A042; }
+	.au { fill: #47A042; }
 #legend7 { display: inline !important; }</style>
 
   <path
@@ -7538,7 +7538,7 @@
      class="landxx coastxx cn"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title8623">China (38 contributions)
+       id="title8623">China (37 contributions)
 </title>
     <g
        id="cnx"
@@ -9617,7 +9617,7 @@
            id="tspan29698"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">38</tspan></text>
+           y="1542.4438">37</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9832,7 +9832,7 @@
            id="tspan102022"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">38</tspan></text>
+           y="1542.4438">37</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10028,7 +10028,7 @@
            id="tspan104720"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">38</tspan></text>
+           y="1542.4438">37</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10201,7 +10201,7 @@
            id="tspan106790"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">38</tspan></text>
+           y="1542.4438">37</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10351,7 +10351,7 @@
            id="tspan108954"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">38</tspan></text>
+           y="1542.4438">37</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10693,7 +10693,7 @@
            id="tspan113674"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">38</tspan></text>
+           y="1542.444">37</tspan></text>
     </g>
   </g>
   <g
