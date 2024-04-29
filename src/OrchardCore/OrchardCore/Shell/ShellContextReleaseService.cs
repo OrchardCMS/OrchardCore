@@ -15,8 +15,6 @@ public class ShellContextReleaseService : IShellContextReleaseService
         _shellHost = shellHost;
         _shellSettings = shellSettings;
     }
-
-
     public void SuspendReleaseRequest()
     {
         _release = false;
