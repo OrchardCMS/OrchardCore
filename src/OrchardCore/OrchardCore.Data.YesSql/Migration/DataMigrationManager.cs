@@ -123,7 +123,18 @@ namespace OrchardCore.Data.Migration
             }
         }
 
-        public async Task UpdateAsync(string featureId)
+        public async Task UpdateAsync(params string[] featureIds)
+        {
+            foreach (var featureId in featureIds)
+            {
+                if (!_processedFeatures.Contains(featureId))
+                {
+                    await UpdateAsync(featureId);
+                }
+            }
+        }
+
+        private async Task UpdateAsync(string featureId)
         {
             if (_processedFeatures.Contains(featureId))
             {
