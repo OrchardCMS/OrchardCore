@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Data.Migration
@@ -30,13 +31,7 @@ namespace OrchardCore.Data.Migration
         /// </summary>
         /// <param name="features">The features to be updated.</param>
         [Obsolete("This method has been deprecated and moved into an extension method.")]
-        async Task UpdateAsync(IEnumerable<string> features)
-        {
-            foreach (var feature in features)
-            {
-                await UpdateAsync(feature);
-            }
-        }
+        async Task UpdateAsync(IEnumerable<string> features) => await Task.WhenAll(features.Select(UpdateAsync));
 
         /// <summary>
         /// Execute a script to delete any information relative to the feature.
