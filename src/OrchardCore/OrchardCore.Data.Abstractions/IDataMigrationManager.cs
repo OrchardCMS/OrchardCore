@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,7 +29,14 @@ namespace OrchardCore.Data.Migration
         /// Updates the database to the latest version for the specified features.
         /// </summary>
         /// <param name="features">The features to be updated.</param>
-        Task UpdateAsync(IEnumerable<string> features);
+        [Obsolete("This method has been deprecated and moved into an extension method.")]
+        async Task UpdateAsync(IEnumerable<string> features)
+        {
+            foreach (var feature in features)
+            {
+                await UpdateAsync(feature);
+            }
+        }
 
         /// <summary>
         /// Execute a script to delete any information relative to the feature.

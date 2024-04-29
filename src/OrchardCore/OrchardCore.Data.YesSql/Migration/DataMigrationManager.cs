@@ -123,17 +123,6 @@ namespace OrchardCore.Data.Migration
             }
         }
 
-        public async Task UpdateAsync(IEnumerable<string> featureIds)
-        {
-            foreach (var featureId in featureIds)
-            {
-                if (!_processedFeatures.Contains(featureId))
-                {
-                    await UpdateAsync(featureId);
-                }
-            }
-        }
-
         public async Task UpdateAsync(string featureId)
         {
             if (_processedFeatures.Contains(featureId))
@@ -152,7 +141,10 @@ namespace OrchardCore.Data.Migration
                 .Where(x => x.Id != featureId)
                 .Select(x => x.Id);
 
-            await UpdateAsync(dependencies);
+            foreach (var dependency in dependencies)
+            {
+                await UpdateAsync(dependency);
+            }
 
             var migrations = GetDataMigrations(featureId);
 
