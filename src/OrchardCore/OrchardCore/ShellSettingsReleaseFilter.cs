@@ -15,12 +15,7 @@ public class ShellSettingsReleaseFilter : IResultFilter
 
     public void OnResultExecuted(ResultExecutedContext context)
     {
-        ShellScope.AddDeferredTask(async scope =>
-        {
-            // var shellContextReleaseService = scope.ServiceProvider.GetService<IShellContextReleaseService>();
-
-            await _shellContextReleaseService.ProcessAsync();
-        });
+        ShellScope.AddDeferredTask(scope => _shellContextReleaseService.ProcessAsync());
     }
 
     public void OnResultExecuting(ResultExecutingContext context)
