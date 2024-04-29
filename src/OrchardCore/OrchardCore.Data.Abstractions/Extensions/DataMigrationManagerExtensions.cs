@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Data.Migration;
@@ -19,9 +20,6 @@ public static class DataMigrationManagerExtensions
         ArgumentNullException.ThrowIfNull(dataMigrationManager, nameof(dataMigrationManager));
         ArgumentNullException.ThrowIfNull(features, nameof(features));
 
-        foreach (var feature in features)
-        {
-            await dataMigrationManager.UpdateAsync(feature);
-        }
+        await Task.WhenAll(features.Select(dataMigrationManager.UpdateAsync));
     }
 }
