@@ -25,7 +25,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellContextReleaseService _shellContextReleaseService;
+    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
 
     protected readonly IStringLocalizer S;
 
@@ -33,7 +33,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellContextReleaseService shellContextReleaseService,
+        IDeferredShellContextReleaseService shellContextReleaseService,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
         )
     {

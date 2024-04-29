@@ -16,14 +16,14 @@ namespace OrchardCore.Google.Authentication.Drivers
 {
     public class GoogleAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAuthenticationSettings>
     {
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public GoogleAuthenticationSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,

@@ -19,7 +19,7 @@ namespace OrchardCore.Sms.Drivers;
 
 public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 {
-    private readonly IShellContextReleaseService _shellContextReleaseService;
+    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -28,7 +28,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
     private readonly SmsProviderOptions _smsProviderOptions;
 
     public SmsSettingsDisplayDriver(
-        IShellContextReleaseService shellContextReleaseService,
+        IDeferredShellContextReleaseService shellContextReleaseService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<SmsProviderOptions> smsProviders,

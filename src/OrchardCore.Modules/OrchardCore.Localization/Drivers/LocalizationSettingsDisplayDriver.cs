@@ -25,7 +25,7 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -35,7 +35,7 @@ namespace OrchardCore.Localization.Drivers
         protected readonly IStringLocalizer S;
 
         public LocalizationSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             INotifier notifier,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,

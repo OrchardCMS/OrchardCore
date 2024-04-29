@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
         private readonly AsyncServiceScope _serviceScope;
         private readonly Dictionary<object, object> _items = [];
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = [];
+        private readonly List<Func<ShellScope, Task>> _beforeDispose;
         private readonly HashSet<string> _deferredSignals = [];
         private readonly List<Func<ShellScope, Task>> _deferredTasks = [];
         private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = [];
@@ -52,6 +52,15 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _serviceScope = shellContext.ServiceProvider.CreateAsyncScope();
             ServiceProvider = _serviceScope.ServiceProvider;
+
+            _beforeDispose = [
+                async scope =>
+                {
+                    var shellContextReleaseService = scope.ServiceProvider.GetRequiredService<IDeferredShellContextReleaseService>();
+
+                    await shellContextReleaseService.ProcessAsync();
+                }
+            ];
         }
 
         /// <summary>
@@ -430,7 +439,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
+                    // Use 'UsingAsync()' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                     // trigger another one, but still prevent the shell to be activated in a deferred task.
                     await scope.UsingAsync(async scope =>
                     {

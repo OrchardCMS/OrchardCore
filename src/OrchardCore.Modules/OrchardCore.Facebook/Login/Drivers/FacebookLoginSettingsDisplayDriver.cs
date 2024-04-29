@@ -13,12 +13,12 @@ namespace OrchardCore.Facebook.Login.Drivers
 {
     public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
     {
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public FacebookLoginSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {

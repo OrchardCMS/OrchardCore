@@ -13,12 +13,12 @@ namespace OrchardCore.Twitter.Signin.Drivers
 {
     public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
     {
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TwitterSigninSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {

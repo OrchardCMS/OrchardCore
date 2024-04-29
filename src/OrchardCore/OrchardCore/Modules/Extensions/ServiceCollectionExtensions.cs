@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -172,11 +171,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
-
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add<ShellSettingsReleaseFilter>();
-            });
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -201,7 +195,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(shellServices =>
             {
-                shellServices.AddScoped<IShellContextReleaseService, ShellContextReleaseService>();
+                shellServices.AddScoped<IDeferredShellContextReleaseService, DeferredShellContextReleaseService>();
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();

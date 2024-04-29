@@ -24,7 +24,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly IAuthorizationService _authorizationService;
     private readonly EmailOptions _emailOptions;
     private readonly IEmailProviderResolver _emailProviderResolver;
-    private readonly IShellContextReleaseService _shellContextReleaseService;
+    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
     private readonly EmailProviderOptions _emailProviders;
 
     protected readonly IStringLocalizer S;
@@ -35,7 +35,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
         IEmailProviderResolver emailProviderResolver,
-        IShellContextReleaseService shellContextReleaseService,
+        IDeferredShellContextReleaseService shellContextReleaseService,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;

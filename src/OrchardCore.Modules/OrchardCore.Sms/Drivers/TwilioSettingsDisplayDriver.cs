@@ -23,7 +23,7 @@ namespace OrchardCore.Sms.Drivers;
 
 public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
 {
-    private readonly IShellContextReleaseService _shellContextReleaseService;
+    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -34,7 +34,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
-        IShellContextReleaseService shellContextReleaseService,
+        IDeferredShellContextReleaseService shellContextReleaseService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,

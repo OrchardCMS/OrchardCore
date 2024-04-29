@@ -13,12 +13,12 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 {
     public class AzureADSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureADSettings>
     {
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AzureADSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {

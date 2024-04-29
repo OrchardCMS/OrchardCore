@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell;
 
-public interface IShellContextReleaseService
+public interface IDeferredShellContextReleaseService
 {
     /// <summary>
     /// Adds a pending request to release the shell upon completion of the current HTTP-request.

@@ -24,7 +24,7 @@ namespace OrchardCore.Azure.Email.Drivers;
 
 public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureEmailSettings>
 {
-    private readonly IShellContextReleaseService _shellContextReleaseService;
+    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -33,7 +33,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     protected IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
-        IShellContextReleaseService shellContextReleaseService,
+        IDeferredShellContextReleaseService shellContextReleaseService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,

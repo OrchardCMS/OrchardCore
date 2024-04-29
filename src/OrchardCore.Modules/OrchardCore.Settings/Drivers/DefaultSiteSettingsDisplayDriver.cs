@@ -14,13 +14,13 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         protected readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {

@@ -2,19 +2,21 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Shell;
 
-public class ShellContextReleaseService : IShellContextReleaseService
+public class DeferredShellContextReleaseService : IDeferredShellContextReleaseService
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private bool _release { get; set; }
 
-    public ShellContextReleaseService(
+    private bool _release;
+
+    public DeferredShellContextReleaseService(
         IShellHost shellHost,
         ShellSettings shellSettings)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
     }
+
     public void SuspendReleaseRequest()
     {
         _release = false;
@@ -27,15 +29,15 @@ public class ShellContextReleaseService : IShellContextReleaseService
 
     public async Task<bool> ProcessAsync()
     {
-        if (_release)
+        if (!_release)
         {
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
-
-            _release = false;
-
-            return true;
+            return false;
         }
 
-        return false;
+        _release = false;
+
+        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+        return true;
     }
 }

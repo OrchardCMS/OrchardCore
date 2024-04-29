@@ -17,12 +17,12 @@ namespace OrchardCore.ReCaptcha.Drivers
     {
         public const string GroupId = "recaptcha";
 
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReCaptchaSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {

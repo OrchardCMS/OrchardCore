@@ -19,13 +19,13 @@ namespace OrchardCore.Security.Drivers
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly SecuritySettings _securitySettings;
 
         public SecuritySettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptionsSnapshot<SecuritySettings> securitySettings)

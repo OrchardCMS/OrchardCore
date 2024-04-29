@@ -19,7 +19,7 @@ namespace OrchardCore.Https.Drivers
     {
         public const string GroupId = "Https";
 
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -27,7 +27,7 @@ namespace OrchardCore.Https.Drivers
         protected readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             INotifier notifier,

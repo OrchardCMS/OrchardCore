@@ -17,7 +17,7 @@ namespace OrchardCore.Settings.Controllers
     public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
-        private readonly IShellContextReleaseService _shellContextReleaseService;
+        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IShellContextReleaseService shellContextReleaseService,
+            IDeferredShellContextReleaseService shellContextReleaseService,
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
