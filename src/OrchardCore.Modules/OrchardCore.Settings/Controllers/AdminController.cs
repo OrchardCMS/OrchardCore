@@ -100,7 +100,7 @@ namespace OrchardCore.Settings.Controllers
             }
             else
             {
-                // If the model state is invalid, Conceal the release shell signal so that the tenant is not reloaded.
+                // If the model state is invalid, suspend the request to release the shell so that the tenant is not reloaded.
                 _shellContextReleaseService.SuspendReleaseRequest();
             }
 

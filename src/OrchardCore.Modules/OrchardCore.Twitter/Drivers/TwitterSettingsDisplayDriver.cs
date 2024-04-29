@@ -110,9 +110,9 @@ namespace OrchardCore.Twitter.Drivers
 
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-
-                    _shellContextReleaseService.RequestRelease();
                 }
+
+                _shellContextReleaseService.RequestRelease();
             }
 
             return await EditAsync(settings, context);
