@@ -2,5 +2,5 @@ namespace OrchardCore.Autoroute;
 
 public class AutorouteConstants
 {
-    public const string HandlePrefix = "slug:";
+    public const string SlugPrefix = "slug:";
 }

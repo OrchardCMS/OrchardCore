@@ -25,7 +25,7 @@ public static class AutoroutePartRazorHelperExtensions
         }
 
         // Provided for backwards compatability and avoiding confusion.
-        if (slug.StartsWith(AutorouteConstants.HandlePrefix, StringComparison.OrdinalIgnoreCase))
+        if (slug.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
         {
             slug = slug[5..];
         }

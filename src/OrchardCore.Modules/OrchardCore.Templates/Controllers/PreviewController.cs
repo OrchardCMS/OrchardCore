@@ -81,7 +81,7 @@ namespace OrchardCore.Templates.Controllers
                 handle = (index < 0 ? handle : handle[_homeUrl.Length..])
                     .ToUriComponents(UriFormat.SafeUnescaped);
 
-                contentItemId = await _contentHandleManager.GetContentItemIdAsync(AutorouteConstants.HandlePrefix + handle);
+                contentItemId = await _contentHandleManager.GetContentItemIdAsync(AutorouteConstants.SlugPrefix + handle);
             }
 
             if (string.IsNullOrEmpty(contentItemId))
