@@ -1,21 +1,12 @@
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell;
 
 public class DeferredShellContextReleaseService : IDeferredShellContextReleaseService
 {
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
-
     private bool _release;
-
-    public DeferredShellContextReleaseService(
-        IShellHost shellHost,
-        ShellSettings shellSettings)
-    {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
-    }
+    private bool _deferredTaskAdded;
 
     public void SuspendReleaseRequest()
     {
@@ -25,19 +16,27 @@ public class DeferredShellContextReleaseService : IDeferredShellContextReleaseSe
     public void RequestRelease()
     {
         _release = true;
-    }
 
-    public async Task<bool> ProcessAsync()
-    {
-        if (!_release)
+        if (_deferredTaskAdded)
         {
-            return false;
+            return;
         }
 
-        _release = false;
+        _deferredTaskAdded = true;
 
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            if (!_release)
+            {
+                return;
+            }
 
-        return true;
+            _release = false;
+
+            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+
+            await shellHost.ReleaseShellContextAsync(shellSettings);
+        });
     }
 }
