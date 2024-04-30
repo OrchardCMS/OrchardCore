@@ -42,13 +42,12 @@ namespace OrchardCore.Rules.Drivers
         public override async Task<IDisplayResult> UpdateAsync(CultureCondition condition, IUpdateModel updater)
         {
             var model = new CultureConditionViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            condition.Value = model.Value;
+            if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
             {
-                condition.Value = model.Value;
-                if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
-                {
-                    condition.Operation = factory.Create();
-                }
+                condition.Operation = factory.Create();
             }
 
             return Edit(condition);

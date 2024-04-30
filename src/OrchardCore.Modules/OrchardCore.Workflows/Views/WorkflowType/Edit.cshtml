@@ -11,6 +11,7 @@
         </ol>
     </nav>
 </zone>
+
 <div class="card text-bg-theme mb-3">
     <div class="card-body">
         <div class="d-flex justify-content-between">
@@ -23,6 +24,7 @@
                 </button>
             </div>
             <div>
+                <a class="btn btn-sm btn-secondary" asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Export"]</a>
                 <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
                 <a class="btn btn-sm btn-secondary" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
             </div>

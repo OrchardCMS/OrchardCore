@@ -64,8 +64,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | font-awesome          | Script | 6.5.2         | -              |
 | font-awesome-v4-shims | Script | 6.5.2         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Style  | 2.27.3        | -              |
-| trumbowyg             | Script | 2.27.3        | -              |
+| trumbowyg             | Style  | 2.28.0        | -              |
+| trumbowyg             | Script | 2.28.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
 | monaco-loader         | Script | 0.46.0        | -              |
@@ -466,7 +466,7 @@ The style block will only be injected once based on its name and can optionally 
 
 #### Link tag
 
-A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script).
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script-or-stylesheet).
 
 === "Liquid"
 

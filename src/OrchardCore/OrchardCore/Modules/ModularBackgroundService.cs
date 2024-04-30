@@ -325,7 +325,7 @@ namespace OrchardCore.Modules
                         }
 
                         settings ??= task.GetDefaultSettings();
-                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
+                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule, StringComparison.Ordinal))
                         {
                             scheduler.ReferenceTime = referenceTime;
                         }

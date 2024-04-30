@@ -1,6 +1,5 @@
 @charset "UTF-8";
-/* Import variables first */
-/* 
+/* Import variables first */ /* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
 */

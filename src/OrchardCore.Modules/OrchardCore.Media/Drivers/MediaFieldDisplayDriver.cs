@@ -78,7 +78,7 @@ namespace OrchardCore.Media.Drivers
                 }
 
                 model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
-                model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
+                model.TempUploadFolder = _attachedMediaFieldFileService.GetMediaFieldsTempSubFolder();
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -91,72 +91,71 @@ namespace OrchardCore.Media.Drivers
         {
             var model = new EditMediaFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
+            await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths);
+
+            // Deserializing an empty string doesn't return an array
+            var items = string.IsNullOrWhiteSpace(model.Paths)
+                ? []
+                : JConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
+
+            // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
+            if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
             {
-                // Deserializing an empty string doesn't return an array
-                var items = string.IsNullOrWhiteSpace(model.Paths)
-                    ? []
-                    : JConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
-
-                // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
-                if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    try
-                    {
-                        field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
-                        await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
-                    }
-                    catch (Exception e)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
-                        _logger.LogError(e, "Error handling attached media files for field '{Field}'", context.PartFieldDefinition.DisplayName());
-                    }
+                    field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
+                    await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                 }
-
-                field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? [];
-
-                var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
-
-                if (settings.AllowedExtensions?.Length > 0)
+                catch (Exception e)
                 {
-                    for (var i = 0; i < field.Paths.Length; i++)
-                    {
-                        var extension = Path.GetExtension(field.Paths[i]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
+                    _logger.LogError(e, "Error handling attached media files for field '{Field}'", context.PartFieldDefinition.DisplayName());
+                }
+            }
 
-                        if (!settings.AllowedExtensions.Contains(extension))
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
-                        }
+            field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? [];
+
+            var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
+
+            if (settings.AllowedExtensions?.Length > 0)
+            {
+                for (var i = 0; i < field.Paths.Length; i++)
+                {
+                    var extension = Path.GetExtension(field.Paths[i]);
+
+                    if (!settings.AllowedExtensions.Contains(extension))
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
                     }
                 }
+            }
 
-                if (settings.Required && field.Paths.Length < 1)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+            if (settings.Required && field.Paths.Length < 1)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+            }
 
-                if (field.Paths.Length > 1 && !settings.Multiple)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
-                }
+            if (field.Paths.Length > 1 && !settings.Multiple)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
+            }
 
-                if (settings.AllowMediaText)
-                {
-                    field.MediaTexts = items.Select(t => t.MediaText).ToArray();
-                }
-                else
-                {
-                    field.MediaTexts = [];
-                }
+            if (settings.AllowMediaText)
+            {
+                field.MediaTexts = items.Select(t => t.MediaText).ToArray();
+            }
+            else
+            {
+                field.MediaTexts = [];
+            }
 
-                if (settings.AllowAnchors)
-                {
-                    field.SetAnchors(items.Select(t => t.Anchor).ToArray());
-                }
-                else if (field.Content.ContainsKey("Anchors")) // Less well known properties should be self healing.
-                {
-                    field.Content.Remove("Anchors");
-                }
+            if (settings.AllowAnchors)
+            {
+                field.SetAnchors(items.Select(t => t.Anchor).ToArray());
+            }
+            else if (field.Content.ContainsKey("Anchors")) // Less well known properties should be self healing.
+            {
+                field.Content.Remove("Anchors");
             }
 
             return Edit(field, context);
