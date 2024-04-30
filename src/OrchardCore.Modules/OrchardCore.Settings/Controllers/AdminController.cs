@@ -97,6 +97,8 @@ namespace OrchardCore.Settings.Controllers
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }
+
+                return RedirectToAction(nameof(Index), new { groupId });
             }
             else
             {
