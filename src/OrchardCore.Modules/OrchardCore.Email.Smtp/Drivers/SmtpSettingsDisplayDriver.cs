@@ -25,7 +25,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
 
-    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
@@ -35,7 +35,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     protected readonly IStringLocalizer S;
 
     public SmtpSettingsDisplayDriver(
-        IDeferredShellContextReleaseService shellContextReleaseService,
+        IShellReleaseManager shellReleaseManager,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
@@ -43,7 +43,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         IEmailAddressValidator emailAddressValidator,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
-        _shellContextReleaseService = shellContextReleaseService;
+        _shellReleaseManager = shellReleaseManager;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
@@ -197,7 +197,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (hasChanges)
             {
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
         }
 

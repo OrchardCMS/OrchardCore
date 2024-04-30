@@ -19,18 +19,18 @@ namespace OrchardCore.Security.Drivers
     {
         internal const string SettingsGroupId = "SecurityHeaders";
 
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly SecuritySettings _securitySettings;
 
         public SecuritySettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptionsSnapshot<SecuritySettings> securitySettings)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _securitySettings = securitySettings.Value;
@@ -96,7 +96,7 @@ namespace OrchardCore.Security.Drivers
                 settings.PermissionsPolicy = model.PermissionsPolicy;
                 settings.ReferrerPolicy = model.ReferrerPolicy;
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

@@ -3,7 +3,7 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell;
 
-public class DeferredShellContextReleaseService : IDeferredShellContextReleaseService
+public class DefaultShellReleaseManager : IShellReleaseManager
 {
     private bool _release;
     private bool _deferredTaskAdded;

@@ -195,7 +195,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(shellServices =>
             {
-                shellServices.AddScoped<IDeferredShellContextReleaseService, DeferredShellContextReleaseService>();
+                shellServices.AddScoped<IShellReleaseManager, DefaultShellReleaseManager>();
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();

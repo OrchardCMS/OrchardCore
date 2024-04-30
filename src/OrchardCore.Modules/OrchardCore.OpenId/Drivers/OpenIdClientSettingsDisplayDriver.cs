@@ -26,7 +26,7 @@ namespace OrchardCore.OpenId.Drivers
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
         private static readonly char[] _separator = [' ', ','];
 
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -35,14 +35,14 @@ namespace OrchardCore.OpenId.Drivers
         protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
@@ -203,7 +203,7 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

@@ -19,7 +19,7 @@ namespace OrchardCore.Https.Drivers
     {
         public const string GroupId = "Https";
 
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -27,13 +27,13 @@ namespace OrchardCore.Https.Drivers
         protected readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -93,7 +93,7 @@ namespace OrchardCore.Https.Drivers
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
                 settings.SslPort = model.SslPort;
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

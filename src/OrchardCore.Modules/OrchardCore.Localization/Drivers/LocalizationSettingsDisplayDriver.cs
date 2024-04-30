@@ -25,7 +25,7 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -35,7 +35,7 @@ namespace OrchardCore.Localization.Drivers
         protected readonly IStringLocalizer S;
 
         public LocalizationSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             INotifier notifier,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
@@ -44,7 +44,7 @@ namespace OrchardCore.Localization.Drivers
             IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
         )
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -124,7 +124,7 @@ namespace OrchardCore.Localization.Drivers
                     }
 
                     // We always release the tenant for the default culture and also supported cultures to take effect.
-                    _shellContextReleaseService.RequestRelease();
+                    _shellReleaseManager.RequestRelease();
 
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
                     using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))

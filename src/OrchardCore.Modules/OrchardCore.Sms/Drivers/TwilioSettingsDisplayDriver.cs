@@ -23,7 +23,7 @@ namespace OrchardCore.Sms.Drivers;
 
 public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
 {
-    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -34,7 +34,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
-        IDeferredShellContextReleaseService shellContextReleaseService,
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
@@ -43,7 +43,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
-        _shellContextReleaseService = shellContextReleaseService;
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
@@ -139,7 +139,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         if (hasChanges)
         {
-            _shellContextReleaseService.RequestRelease();
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(settings);

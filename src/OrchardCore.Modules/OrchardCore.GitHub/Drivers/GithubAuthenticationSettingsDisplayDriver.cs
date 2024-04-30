@@ -16,20 +16,20 @@ namespace OrchardCore.GitHub.Drivers
 {
     public class GitHubAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GitHubAuthenticationSettings>
     {
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public GitHubAuthenticationSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -95,7 +95,7 @@ namespace OrchardCore.GitHub.Drivers
                     settings.CallbackPath = model.CallbackUrl;
                     settings.SaveTokens = model.SaveTokens;
 
-                    _shellContextReleaseService.RequestRelease();
+                    _shellReleaseManager.RequestRelease();
                 }
             }
 

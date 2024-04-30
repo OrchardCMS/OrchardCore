@@ -24,7 +24,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly IAuthorizationService _authorizationService;
     private readonly EmailOptions _emailOptions;
     private readonly IEmailProviderResolver _emailProviderResolver;
-    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly EmailProviderOptions _emailProviders;
 
     protected readonly IStringLocalizer S;
@@ -35,7 +35,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
         IEmailProviderResolver emailProviderResolver,
-        IDeferredShellContextReleaseService shellContextReleaseService,
+        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -43,7 +43,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         _emailOptions = emailOptions.Value;
         _emailProviderResolver = emailProviderResolver;
         _emailProviders = emailProviders.Value;
-        _shellContextReleaseService = shellContextReleaseService;
+        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
     public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
@@ -88,7 +88,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         {
             settings.DefaultProviderName = model.DefaultProvider;
 
-            _shellContextReleaseService.RequestRelease();
+            _shellReleaseManager.RequestRelease();
         }
 
         return await EditAsync(settings, context);

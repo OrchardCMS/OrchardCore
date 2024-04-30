@@ -16,20 +16,20 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 {
     public class MicrosoftAccountSettingsDisplayDriver : SectionDisplayDriver<ISite, MicrosoftAccountSettings>
     {
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public MicrosoftAccountSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
@@ -97,7 +97,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.AppSecret = protector.Protect(model.AppSecret);
                 }
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

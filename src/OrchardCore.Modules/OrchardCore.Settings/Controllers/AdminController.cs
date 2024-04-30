@@ -17,7 +17,7 @@ namespace OrchardCore.Settings.Controllers
     public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
@@ -37,7 +37,7 @@ namespace OrchardCore.Settings.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
@@ -101,7 +101,7 @@ namespace OrchardCore.Settings.Controllers
             else
             {
                 // If the model state is invalid, suspend the request to release the shell so that the tenant is not reloaded.
-                _shellContextReleaseService.SuspendReleaseRequest();
+                _shellReleaseManager.SuspendReleaseRequest();
             }
 
             return View(viewModel);

@@ -18,16 +18,16 @@ namespace OrchardCore.ReverseProxy.Drivers
     {
         public const string GroupId = "ReverseProxy";
 
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -89,7 +89,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                     settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
                 }
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

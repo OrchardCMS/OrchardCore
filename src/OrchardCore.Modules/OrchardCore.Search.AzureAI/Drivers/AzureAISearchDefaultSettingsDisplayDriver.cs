@@ -27,24 +27,24 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchDefaultOptions _searchOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
     protected readonly IStringLocalizer S;
 
     public AzureAISearchDefaultSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
-        IDeferredShellContextReleaseService shellContextReleaseService,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
         )
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _searchOptions = searchOptions.Value;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellContextReleaseService = shellContextReleaseService;
         S = stringLocalizer;
     }
 
@@ -139,7 +139,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
              _searchOptions.IdentityClientId != settings.IdentityClientId ||
              useCustomConfigurationChanged))
         {
-            _shellContextReleaseService.RequestRelease();
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(settings);

@@ -13,16 +13,16 @@ namespace OrchardCore.Facebook.Login.Drivers
 {
     public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
     {
-        private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public FacebookLoginSettingsDisplayDriver(
-            IDeferredShellContextReleaseService shellContextReleaseService,
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
-            _shellContextReleaseService = shellContextReleaseService;
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -59,7 +59,7 @@ namespace OrchardCore.Facebook.Login.Drivers
                 settings.CallbackPath = model.CallbackPath;
                 settings.SaveTokens = model.SaveTokens;
 
-                _shellContextReleaseService.RequestRelease();
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

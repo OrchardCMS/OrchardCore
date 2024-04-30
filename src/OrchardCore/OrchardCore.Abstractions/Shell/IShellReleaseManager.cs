@@ -1,6 +1,6 @@
 namespace OrchardCore.Environment.Shell;
 
-public interface IDeferredShellContextReleaseService
+public interface IShellReleaseManager
 {
     /// <summary>
     /// Adds a pending request to release the shell upon completion of the current HTTP-request.

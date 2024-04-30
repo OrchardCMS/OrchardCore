@@ -25,7 +25,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDeferredShellContextReleaseService _shellContextReleaseService;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
     protected readonly IStringLocalizer S;
 
@@ -33,14 +33,14 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IDeferredShellContextReleaseService shellContextReleaseService,
+        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
         )
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellContextReleaseService = shellContextReleaseService;
+        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
@@ -94,7 +94,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             settings.SearchIndex = model.SearchIndex;
             settings.DefaultSearchFields = fields;
 
-            _shellContextReleaseService.RequestRelease();
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(settings);
