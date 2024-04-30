@@ -19,7 +19,7 @@ Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/
 
 ### Prepare the code and documentation
 
-Update the source so everything looks like on the new version.
+Update the source, so everything looks like on the new version.
 
 - [ ] Create a `release/<version name>` (e.g. `release/1.8.0``) branch out of `main` or the previous release branch. This is needed so we can target pull requests on it.
 - [ ] Create an issue branch out of this branch as usual.
