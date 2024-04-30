@@ -91,7 +91,12 @@ namespace OrchardCore.Media.Services
 
             if (await authorizationService.AuthorizeAsync(context.User, permission))
             {
-                context.Succeed(requirement);
+                // Check if viewing is allowed for this folder, if secure media is also enabled.
+                if (!_serviceProvider.IsSecureMediaEnabled() ||
+                    await authorizationService.AuthorizeAsync(context.User, SecureMediaPermissions.ViewMedia, (object)path))
+                {
+                    context.Succeed(requirement);
+                }
             }
         }
 

@@ -12,6 +12,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 !!! tip
     You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
 
+<!-- This is for the auto-generated All Contributors badge to point somewhere. -->
+<a id="contributors-"></a>
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
