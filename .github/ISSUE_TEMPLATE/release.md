@@ -27,10 +27,11 @@ Update the source, so everything looks like on the new version.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
 - [ ] Create a new milestone.
-- [ ] Create release notes in a specific documentation section. You can take the previous release notes as a template.
+- [ ] Add final updates the to the release notes in the documentation. It should include the following, at least:
     - Overview of the release's highlights and goals. What do you want people to remember this release for?
     - Prerequisites. What framework version do you need, anything else to work with Orchard?
     - Upgrade steps, any migration necessary from previous versions, breaking changes.
+- [ ] Add the release notes documentation page to the documentation site's navigation in `mkdocs.yml` and remove it from `not_in_nav`.
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/latest/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 
 ### Test the release
@@ -81,5 +82,5 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 ### After the release is done
 
 - [ ] Create a new milestone with the next release number and close the old milestone.
-- [ ] Create a new release notes documentation file for the next version in the OrchardCore.Docs project. (e.g, `/releases/1.8.0.md`).
+- [ ] Create a new release notes documentation file for the next version in the `OrchardCore.Docs` project. (e.g., `/releases/1.8.0.md`). Don't add it to the docs navigation and exclude it from validation under `not_in_nav` with `mkdocs.yml`.
 - [ ] Update the `OrchardCore.Commons.props` file with the next release number, and `<VersionSuffix>preview</VersionSuffix>` such that preview builds use the new one.
