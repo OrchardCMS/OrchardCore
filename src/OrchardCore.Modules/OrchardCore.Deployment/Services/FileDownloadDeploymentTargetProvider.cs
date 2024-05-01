@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 
@@ -16,9 +17,7 @@ namespace OrchardCore.Deployment
 
         public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
-            return Task.FromResult<IEnumerable<DeploymentTarget>>(
-                new[] {
-                    new DeploymentTarget(
+            var target = new DeploymentTarget(
                         name: S["File Download"],
                         description: S["Download a deployment plan locally."],
                         route: new RouteValueDictionary(new
@@ -28,8 +27,15 @@ namespace OrchardCore.Deployment
                             action = "Execute"
                         })
                     )
-                }
-            );
+            {
+                Formats =
+                [
+                    new SelectListItem(S["Compressed"], "zip"),
+                    new SelectListItem(S["Uncompressed"], "json"),
+                ]
+            };
+
+            return Task.FromResult<IEnumerable<DeploymentTarget>>([target]);
         }
     }
 }
