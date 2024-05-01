@@ -476,7 +476,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
+                    // Use 'UsingAsync()' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                     // trigger another one, but still prevent the shell to be activated in a deferred task.
                     await scope.UsingAsync(async scope =>
                     {

@@ -26,29 +26,27 @@ namespace OrchardCore.OpenId.Drivers
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
         private static readonly char[] _separator = [' ', ','];
 
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOpenIdClientService _clientService;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             S = stringLocalizer;
         }
 
@@ -205,11 +203,7 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);
