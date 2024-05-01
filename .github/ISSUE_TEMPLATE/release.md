@@ -43,7 +43,7 @@ Make sure everything works all right.
     - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
     - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
     - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
-- [ ] If there's a more recent major version of Red Hat Enterprise Linux (like v10 after v9) that Orchard Core was certified for, then re-certify it. See Orchard's [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797) for the version it was certified for, the [Red hat Customer Portal](https://access.redhat.com/articles/3078) for the latest released version, and [https://docs.orchardcore.net/en/latest/topics/red-hat-ecosystem-catalog-certification/](our certification guide) for the steps to renew the certification.
+- [ ] Re-certify Orchard Core for the latest major version of Red Hat Enterprise Linux if a new version has been released (e.g., v10 after v9). Refer to Orchard's [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797) for the previously certified version, the [Red Hat Customer Portal](https://access.redhat.com/articles/3078) for the latest version, and [our certification guide](https://docs.orchardcore.net/en/latest/topics/red-hat-ecosystem-catalog-certification/) for the certification steps.
 
 ### Prepare and publish Orchard Core Translations
 
