@@ -44,7 +44,7 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It’s no
 
 
 !!! tip
-    Check out [the Reference of Built-in Modules](docs/reference/README.md) to see what kind of features Orchard Core provides built-in.
+    Check out [the Reference of Built-in Modules](reference/README.md) to see what kind of features Orchard Core provides built-in.
 
 ## Different website building strategies
 
@@ -58,11 +58,11 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.8.2`. The release notes can be found under [Releases](docs/releases/1.8.2.md).
+The latest released version of Orchard Core is `1.8.3`. The release notes can be found under [Releases](releases/1.8.3.md).
 
 ## Getting Started
 
-- See [our getting started guide](docs/getting-started/README.md) or [test drive Orchard Core](docs/getting-started/test-drive-orchard-core.md).
+- See [our getting started guide](getting-started/README.md) or [test drive Orchard Core](getting-started/test-drive-orchard-core.md).
 - Watch the [ASP.NET Community Standup video where Orchard Core was demonstrated](https://www.youtube.com/watch?v=HeDjv3blBjQ&t=2246s&list=PL1rZQsJPBU2StolNg0aqvQswETPcYnNKL&index=24).
 - Follow the samples on <https://github.com/OrchardCMS/OrchardCore.Samples> that will guide you on how to build **modular** and **multi-tenant** applications
 - Follow the tutorial inside the [Training Demo Module](https://github.com/Lombiq/Orchard-Training-Demo-Module) to learn how to develop Orchard Core modules.

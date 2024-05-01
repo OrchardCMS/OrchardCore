@@ -36,6 +36,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IChunkFileUploadService _chunkFileUploadService;
         private readonly IFileVersionProvider _fileVersionProvider;
         private readonly IServiceProvider _serviceProvider;
+        private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -48,7 +49,8 @@ namespace OrchardCore.Media.Controllers
             IUserAssetFolderNameProvider userAssetFolderNameProvider,
             IChunkFileUploadService chunkFileUploadService,
             IFileVersionProvider fileVersionProvider,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            AttachedMediaFieldFileService attachedMediaFieldFileService)
         {
             _mediaFileStore = mediaFileStore;
             _mediaNameNormalizerService = mediaNameNormalizerService;
@@ -61,6 +63,7 @@ namespace OrchardCore.Media.Controllers
             _chunkFileUploadService = chunkFileUploadService;
             _fileVersionProvider = fileVersionProvider;
             _serviceProvider = serviceProvider;
+            _attachedMediaFieldFileService = attachedMediaFieldFileService;
         }
 
         [Admin("Media", "Media.Index")]
@@ -74,7 +77,7 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
+        public async Task<ActionResult<IEnumerable<MediaFolderViewModel>>> GetFolders(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
@@ -101,7 +104,21 @@ namespace OrchardCore.Media.Controllers
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
                 .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path));
 
-            return Ok(await allowed.ToListAsync());
+            return Ok(await allowed.Select(folder =>
+            {
+                var isSpecial = IsSpecialFolder(folder.Path);
+                return new MediaFolderViewModel()
+                {
+                    Name = folder.Name,
+                    Path = folder.Path,
+                    DirectoryPath = folder.DirectoryPath,
+                    IsDirectory = true,
+                    LastModifiedUtc = folder.LastModifiedUtc,
+                    Length = folder.Length,
+                    CanCreateFolder = !isSpecial,
+                    CanDeleteFolder = !isSpecial
+                };
+            }).ToListAsync());
         }
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
@@ -136,7 +153,8 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
             {
                 return Forbid();
             }
@@ -160,7 +178,8 @@ namespace OrchardCore.Media.Controllers
         [MediaSizeLimit]
         public async Task<IActionResult> Upload(string path, string extensions)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
             {
                 return Forbid();
             }
@@ -308,7 +327,8 @@ namespace OrchardCore.Media.Controllers
         public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)oldPath))
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)oldPath)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)newPath))
             {
                 return Forbid();
             }
@@ -482,8 +502,11 @@ namespace OrchardCore.Media.Controllers
             };
         }
 
-        public IActionResult MediaApplication(MediaApplicationViewModel model)
+        public async Task<IActionResult> MediaApplication(MediaApplicationViewModel model)
         {
+            // Check if the user has access to new folders. If not, we hide the "create folder" button from the root folder.
+            model.AllowNewRootFolders = !HttpContext.IsSecureMediaEnabled() || await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)"_non-existent-path-87FD1922-8F88-4A33-9766-DA03E6E6F7BA");
+
             return View(model);
         }
 
@@ -553,5 +576,8 @@ namespace OrchardCore.Media.Controllers
                 localStream?.Dispose();
             }
         }
+
+        private bool IsSpecialFolder(string path)
+           => string.Equals(path, _mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase) || string.Equals(path, _attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
     }
 }
