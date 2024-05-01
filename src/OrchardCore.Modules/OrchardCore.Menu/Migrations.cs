@@ -15,7 +15,9 @@ namespace OrchardCore.Menu
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly ISession _session;
 
-        public Migrations(IRecipeMigrator recipeMigrator, ISession session)
+        public Migrations(
+            IRecipeMigrator recipeMigrator,
+            ISession session)
         {
             _recipeMigrator = recipeMigrator;
             _session = session;
