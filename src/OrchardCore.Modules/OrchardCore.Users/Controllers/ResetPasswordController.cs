@@ -93,7 +93,7 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await _userService.GetForgotPasswordUserAsync(model.Identifier) as User;
+                var user = await _userService.GetForgotPasswordUserAsync(model.UsernameOrEmail) as User;
                 if (user == null || await MustValidateEmailAsync(user))
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
@@ -166,7 +166,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var token = Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken));
 
-                if (await _userService.ResetPasswordAsync(model.Identifier, token, model.NewPassword, ModelState.AddModelError))
+                if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
                 {
                     return RedirectToAction(nameof(ResetPasswordConfirmation));
                 }
