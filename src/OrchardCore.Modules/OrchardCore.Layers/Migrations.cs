@@ -60,11 +60,7 @@ namespace OrchardCore.Layers
                 layer.LayerRule = new Rule();
                 _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
-#pragma warning disable 0618
-                _ruleMigrator.Migrate(layer.Rule, layer.LayerRule);
-
-                layer.Rule = string.Empty;
-#pragma warning restore 0618
+                _ruleMigrator.Migrate(layer.LayerRule.Name, layer.LayerRule);
             }
 
             await _layerService.UpdateAsync(layers);
