@@ -75,36 +75,33 @@ namespace OrchardCore.Media.Settings
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             var model = new MediaFieldSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            var settings = new MediaFieldSettings()
             {
-                var settings = new MediaFieldSettings()
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple,
+                AllowMediaText = model.AllowMediaText,
+                AllowAnchors = model.AllowAnchors,
+            };
+
+            if (!model.AllowAllDefaultMediaTypes)
+            {
+                var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
+                    .Select(x => x.Extension)
+                    .ToArray();
+
+                if (selectedExtensions.Length == 0)
                 {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple,
-                    AllowMediaText = model.AllowMediaText,
-                    AllowAnchors = model.AllowAnchors,
-                };
-
-                if (!model.AllowAllDefaultMediaTypes)
-                {
-                    var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
-                        .Select(x => x.Extension)
-                        .ToArray();
-
-                    if (selectedExtensions.Length == 0)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
-                    }
-
-                    settings.AllowedExtensions = selectedExtensions;
+                    context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
                 }
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    context.Builder.WithSettings(settings);
-                }
+                settings.AllowedExtensions = selectedExtensions;
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                context.Builder.WithSettings(settings);
             }
 
             return Edit(partFieldDefinition);

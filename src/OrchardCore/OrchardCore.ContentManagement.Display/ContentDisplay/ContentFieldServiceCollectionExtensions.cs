@@ -36,8 +36,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         public static ContentFieldOptionBuilder UseDisplayDriver<TContentFieldDisplayDriver>(this ContentFieldOptionBuilder builder, Func<string, bool> predicate)
             where TContentFieldDisplayDriver : class, IContentFieldDisplayDriver
         {
-            return builder.ForDisplayMode(typeof(TContentFieldDisplayDriver), predicate)
-                .ForEditor(typeof(TContentFieldDisplayDriver), predicate);
+            return builder.ForDisplayMode<TContentFieldDisplayDriver>(predicate)
+                .ForEditor<TContentFieldDisplayDriver>(predicate);
         }
 
         /// <summary>

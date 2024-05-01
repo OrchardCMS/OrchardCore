@@ -112,11 +112,19 @@ function getAssetGroups() {
 }
 
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
-    assetGroup.manifestPath = assetManifestPath;
-    assetGroup.basePath = path.dirname(assetManifestPath);
-    assetGroup.inputPaths = assetGroup.inputs.map(function (inputPath) {
+    assetGroup.manifestPath = assetManifestPath.replace(/\\/g, '/');
+    assetGroup.basePath = path.dirname(assetGroup.manifestPath);
+    var inputPaths = assetGroup.inputs.map(function (inputPath) {
         return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
     });
+
+    // For wildcard input paths also sortthem to ensure file concatenation is consistent.
+    if (inputPaths.some(path => path.includes('*'))) {
+        inputPaths = glob.sync(inputPaths, {}).sort();
+    }
+
+    assetGroup.inputPaths = inputPaths;
+
     assetGroup.watchPaths = [];
     if (!!assetGroup.watch) {
         assetGroup.watchPaths = assetGroup.watch.map(function (watchPath) {
@@ -163,7 +171,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         if (ext !== ".scss" && ext !== ".less" && ext !== ".css")
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
-    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : false;
     var generateRTL = assetGroup.hasOwnProperty("generateRTL") ? assetGroup.generateRTL : false;
     var containsLessOrScss = assetGroup.inputPaths.some(function (inputPath) {
         var ext = path.extname(inputPath).toLowerCase();
@@ -203,7 +211,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(rename({
             suffix: ".min"
         }))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
@@ -224,7 +232,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(gulpif(generateRTL, postcss([rtl()])))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir));
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));
@@ -237,7 +245,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         if (ext !== ".ts" && ext !== ".js")
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
-    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : false;
     // Source maps are useless if neither concatenating nor transforming.
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !assetGroup.inputPaths.some(function (inputPath) { return path.extname(inputPath).toLowerCase() === ".ts"; }))
         generateSourceMaps = false;
@@ -292,7 +300,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(rename({
             suffix: ".min"
         }))
-        .pipe(eol())
+        .pipe(eol('\n'))
         .pipe(gulp.dest(assetGroup.outputDir))
     // Uncomment to copy assets to wwwroot
     //.pipe(gulp.dest(assetGroup.webroot));

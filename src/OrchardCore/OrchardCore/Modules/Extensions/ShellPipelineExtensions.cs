@@ -73,7 +73,7 @@ public static class ShellPipelineExtensions
     /// <summary>
     /// Configures the tenant pipeline.
     /// </summary>
-    private static async ValueTask ConfigurePipelineAsync(IApplicationBuilder builder)
+    private static async ValueTask ConfigurePipelineAsync(ApplicationBuilder builder)
     {
         // 'IStartup' instances are ordered by module dependencies with a 'ConfigureOrder' of 0 by default.
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
