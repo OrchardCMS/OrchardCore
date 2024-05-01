@@ -324,7 +324,7 @@ namespace OrchardCore.Data.Migration
                 return methodInfo;
             }
 
-            // At this point, try to find a method that match the given name and ends with Async. (Ex. CreateAsync())
+            // At this point, try to find a method that matches the given name and ends with Async. (Ex. CreateAsync())
             methodInfo = dataMigration.GetType().GetMethod(name + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
 
             if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
