@@ -312,7 +312,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the method from a data migration class that match the given name if found.
+        /// Returns the method from a data migration class that matches the given name if found.
         /// </summary>
         private static MethodInfo GetMethod(IDataMigration dataMigration, string name)
         {
