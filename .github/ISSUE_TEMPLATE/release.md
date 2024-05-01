@@ -21,7 +21,7 @@ Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/
 
 Update the source, so everything looks like on the new version.
 
-- [ ] Create a `release/<version name>` (e.g. `release/1.8.0`) branch out of `main` or the previous release branch. This is needed so we can target pull requests on it.
+- [ ] Create a `release/<version name>` branch (e.g., `release/1.8.0`) from `main` or the previous release branch. This is necessary to target pull requests for the upcoming release.
 - [ ] Create an issue branch out of this branch as usual.
 - [ ] Check the [release_ci](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/workflows/release_ci.yml) workflow is using the expected .NET version to build the Docker images.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
