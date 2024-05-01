@@ -10,7 +10,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  build:
+  generate-community-metrics:
     name: Generate Community Metrics
     runs-on: ubuntu-latest
     steps:
