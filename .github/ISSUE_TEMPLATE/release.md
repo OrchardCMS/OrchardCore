@@ -30,7 +30,7 @@ Update the source, so everything looks like on the new version.
 - [ ] Add final updates the to the release notes in the documentation. It should include the following, at least:
     - Overview of the release's highlights and goals. What do you want people to remember this release for?
     - Prerequisites. What framework version do you need, anything else to work with Orchard?
-    - Upgrade steps, any migration necessary from previous versions, breaking changes.
+    - Upgrade steps, any migration necessary from previous versions, and any breaking changes.
 - [ ] Add the release notes documentation page to the documentation site's navigation in `mkdocs.yml` and remove it from `not_in_nav`.
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/latest/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 
