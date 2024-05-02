@@ -169,25 +169,6 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ***
 
-#### GET /api/queries/{name}
-
-##### Parameters
-
-!!! note
-    This endpoint can only be used when the GraphQL feature is active.
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| name | path | The name of the query available in the Query panel. | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Success |
-
-***
-
 #### POST /api/content
 
 ##### Parameters
@@ -217,25 +198,6 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ```
 
 > This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Success |
-
-***
-
-#### POST /api/queries/{name}
-
-##### Parameters
-
-!!! note
-    This endpoint can only be used when the GraphQL feature is active.
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| name | path | The name of the query available in the Query panel. | Yes | string |
 
 ##### Responses
 
