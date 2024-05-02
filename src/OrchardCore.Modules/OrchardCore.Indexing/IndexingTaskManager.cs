@@ -130,15 +130,15 @@ namespace OrchardCore.Indexing.Services
                 // Page delete statements to prevent the limits from IN sql statements.
                 var pageSize = 100;
 
-                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} ";
 
                 do
                 {
-                    var pageOfIds = ids.Take(pageSize).ToArray();
+                    var pageOfIds = string.Join(',', ids.Take(pageSize).Select(id => $"'{id}'").ToArray());
 
                     if (pageOfIds.Length > 0)
                     {
-                        await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                        await transaction.Connection.ExecuteAsync(deleteCmd + $" {dialect.InOperator(pageOfIds)};", transaction: transaction);
                         ids = ids.Skip(pageSize).ToArray();
                     }
                 } while (ids.Length > 0);
