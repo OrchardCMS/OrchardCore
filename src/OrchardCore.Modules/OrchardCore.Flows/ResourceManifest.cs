@@ -25,6 +25,4 @@ namespace OrchardCore.Flows
             options.ResourceManifests.Add(_manifest);
         }
     }
-
-
 }
