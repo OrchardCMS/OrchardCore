@@ -23,34 +23,26 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 {
     public const string GroupId = "azureAISearch";
 
-    private static readonly char[] _separator = [',', ' '];
-
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ShellSettings _shellSettings;
-    private readonly IShellHost _shellHost;
     private readonly AzureAISearchDefaultOptions _searchOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
     protected readonly IStringLocalizer S;
 
     public AzureAISearchDefaultSettingsDisplayDriver(
-        AzureAISearchIndexSettingsService indexSettingsService,
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
-        ShellSettings shellSettings,
-        IShellHost shellHost,
         IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
         )
     {
-        _indexSettingsService = indexSettingsService;
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellSettings = shellSettings;
-        _shellHost = shellHost;
         _searchOptions = searchOptions.Value;
         _dataProtectionProvider = dataProtectionProvider;
         S = stringLocalizer;
@@ -65,12 +57,12 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
         {
-            model.AuthenticationTypes = new[]
-            {
+            model.AuthenticationTypes =
+            [
                 new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
                 new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
                 new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
-            };
+            ];
 
             model.ConfigurationsAreOptional = _searchOptions.FileConfigurationExists();
             model.AuthenticationType = settings.AuthenticationType;
@@ -141,13 +133,13 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
         if (context.Updater.ModelState.IsValid &&
-            (_searchOptions.Credential?.Key != model.ApiKey
-            || _searchOptions.Endpoint != settings.Endpoint
-            || _searchOptions.AuthenticationType != settings.AuthenticationType
-            || _searchOptions.IdentityClientId != settings.IdentityClientId
-            || useCustomConfigurationChanged))
+            (_searchOptions.Credential?.Key != model.ApiKey ||
+             _searchOptions.Endpoint != settings.Endpoint ||
+             _searchOptions.AuthenticationType != settings.AuthenticationType ||
+             _searchOptions.IdentityClientId != settings.IdentityClientId ||
+             useCustomConfigurationChanged))
         {
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(settings);
