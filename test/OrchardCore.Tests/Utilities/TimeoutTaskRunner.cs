@@ -9,7 +9,7 @@ public class TimeoutTaskRunner
         {
             if (timeoutTask.IsCompleted)
             {
-                Assert.Fail(option.TimeoutMessage);
+                throw new TimeoutException(option.TimeoutMessage);
             }
             await Task.Delay(option.Interval);
             if (!await option.CanNextLoop.Invoke())
