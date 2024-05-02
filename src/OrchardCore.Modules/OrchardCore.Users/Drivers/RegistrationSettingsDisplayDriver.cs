@@ -15,6 +15,7 @@ namespace OrchardCore.Users.Drivers
     public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
     {
         public const string GroupId = "userRegistration";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 

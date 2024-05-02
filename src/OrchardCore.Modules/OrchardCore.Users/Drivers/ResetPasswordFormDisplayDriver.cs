@@ -13,7 +13,7 @@ public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPassword
     {
         return Initialize<ResetPasswordViewModel>("ResetPasswordFormIdentifier", vm =>
         {
-            vm.Identifier = model.Identifier;
+            vm.UsernameOrEmail = model.UsernameOrEmail;
             vm.NewPassword = model.NewPassword;
             vm.ResetToken = model.ResetToken;
         }).Location("Content");
@@ -25,7 +25,7 @@ public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPassword
 
         await updater.TryUpdateModelAsync(vm, Prefix);
 
-        model.Identifier = vm.Identifier;
+        model.UsernameOrEmail = vm.UsernameOrEmail;
         model.NewPassword = vm.NewPassword;
         model.ResetToken = vm.ResetToken;
 

@@ -295,11 +295,11 @@ namespace OrchardCore.Environment.Extensions
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                await modules.ForEachAsync((module) =>
+                Parallel.ForEach(modules, (module, cancellationToken) =>
                 {
                     if (!module.ModuleInfo.Exists)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
@@ -316,8 +316,6 @@ namespace OrchardCore.Environment.Extensions
                     };
 
                     loadedExtensions.TryAdd(module.Name, entry);
-
-                    return Task.CompletedTask;
                 });
 
                 var loadedFeatures = new Dictionary<string, IFeatureInfo>();
