@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
@@ -14,15 +13,11 @@ namespace OrchardCore.AdminMenu.Deployment
         private readonly IAdminMenuService _adminMenuService;
         private readonly JsonSerializerOptions _serializationOptions;
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService, IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService,
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
-
-            // The recipe step contains polymorphic types which need to be resolved
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

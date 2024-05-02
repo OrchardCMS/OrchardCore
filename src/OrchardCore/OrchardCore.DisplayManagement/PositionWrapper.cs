@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -8,7 +9,7 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
 {
-    public class PositionWrapper : IHtmlContent, IPositioned, IShape
+    public sealed class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
         private readonly IHtmlContent _value;
         public string Position { get; set; }
@@ -29,13 +30,13 @@ namespace OrchardCore.DisplayManagement
 
         public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();
 
-        public PositionWrapper(IHtmlContent value, string position)
+        private PositionWrapper(IHtmlContent value, string position)
         {
             _value = value;
             Position = position;
         }
 
-        public PositionWrapper(string value, string position)
+        private PositionWrapper(string value, string position)
         {
             _value = new HtmlContentString(value);
             Position = position;
@@ -50,5 +51,33 @@ namespace OrchardCore.DisplayManagement
         {
             throw new System.NotImplementedException();
         }
+
+        public static IPositioned TryWrap(object value, string position)
+        {
+            if (value is IPositioned wrapper)
+            {
+                // Update the new Position
+                if (position != null)
+                {
+                    wrapper.Position = position;
+                }
+                return wrapper;
+            }
+            else if (value is IHtmlContent content)
+            {
+                return new PositionWrapper(content, position);
+            }
+            else if (value is string stringContent)
+            {
+                return new PositionWrapper(stringContent, position);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static IHtmlContent UnWrap(PositionWrapper wrapper)
+            => wrapper._value;
     }
 }

@@ -12,7 +12,7 @@ The module contains the following features apart from the base feature:
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
 - [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
-- Two-Factor Authentication Services: Provices Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
+- Two-Factor Authentication Services: Provides Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
 - Two-Factor Email Method: Allows users to two-factor authenticate using an email.
 - Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
 - User Localization: Allows ability to configure user culture per user from admin UI.
@@ -54,3 +54,7 @@ If you want to specify custom paths to access the authentication related urls, y
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/83-6Kj-IXPw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BbJG_wdHbak" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

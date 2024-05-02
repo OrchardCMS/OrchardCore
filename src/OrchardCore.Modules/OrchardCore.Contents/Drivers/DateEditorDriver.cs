@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -28,7 +27,7 @@ namespace OrchardCore.Contents.Drivers
                 return Initialize<DateEditorViewModel>("CommonPart_Edit__Date", async model =>
                 {
                     model.LocalDateTime = part.ContentItem.CreatedUtc.HasValue
-                    ? (DateTime?)(await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime
+                    ? (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime
                     : null;
                 });
             }

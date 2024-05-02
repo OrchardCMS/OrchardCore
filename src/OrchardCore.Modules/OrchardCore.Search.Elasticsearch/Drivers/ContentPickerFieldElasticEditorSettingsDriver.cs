@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -13,7 +14,8 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+        public ContentPickerFieldElasticEditorSettingsDriver(
+            ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
@@ -47,7 +49,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return string.Equals("ContentPickerField", model.FieldDefinition.Name);
+            return string.Equals("ContentPickerField", model.FieldDefinition.Name, StringComparison.Ordinal);
         }
     }
 }

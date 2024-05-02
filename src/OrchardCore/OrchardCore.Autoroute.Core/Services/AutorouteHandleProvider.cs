@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
@@ -14,7 +15,7 @@ namespace OrchardCore.Autoroute.Core.Services
 
         public async Task<string> GetContentItemIdAsync(string handle)
         {
-            if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 handle = handle[5..];
 

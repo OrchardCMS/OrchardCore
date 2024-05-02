@@ -48,31 +48,30 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new TaxonomyPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType);
+
+            if (string.IsNullOrWhiteSpace(model.TermContentType))
             {
-                if (string.IsNullOrWhiteSpace(model.TermContentType))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
-                }
-
-                if (!string.IsNullOrWhiteSpace(model.Hierarchy))
-                {
-                    var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
-
-                    var newHierarchy = JsonNode.Parse(model.Hierarchy).AsArray();
-
-                    var taxonomyItems = new JsonArray();
-
-                    foreach (var item in newHierarchy)
-                    {
-                        taxonomyItems.Add(ProcessItem(originalTaxonomyItems, item as JsonObject));
-                    }
-
-                    part.Terms = taxonomyItems.ToObject<List<ContentItem>>();
-                }
-
-                part.TermContentType = model.TermContentType;
+                updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
             }
+
+            if (!string.IsNullOrWhiteSpace(model.Hierarchy))
+            {
+                var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
+
+                var newHierarchy = JsonNode.Parse(model.Hierarchy).AsArray();
+
+                var taxonomyItems = new JsonArray();
+
+                foreach (var item in newHierarchy)
+                {
+                    taxonomyItems.Add(ProcessItem(originalTaxonomyItems, item as JsonObject));
+                }
+
+                part.Terms = taxonomyItems.ToObject<List<ContentItem>>();
+            }
+
+            part.TermContentType = model.TermContentType;
 
             return Edit(part);
         }

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Cysharp.Text;
@@ -501,11 +502,11 @@ namespace OrchardCore.Mvc.Utilities
         /// <summary>
         /// Tests if a string is valid json.
         /// </summary>
-        public static bool IsJson(this string json)
+        public static bool IsJson(this string json, JsonDocumentOptions jsonDocumentOptions = default)
         {
             try
             {
-                JsonNode.Parse(json);
+                JsonNode.Parse(json, null, jsonDocumentOptions);
                 return true;
             }
             catch

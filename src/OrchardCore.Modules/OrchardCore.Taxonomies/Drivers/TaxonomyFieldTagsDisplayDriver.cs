@@ -21,14 +21,15 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
+            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> stringLocalizer)
         {
             _contentManager = contentManager;
-            S = s;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
@@ -75,43 +76,42 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new EditTagTaxonomyFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, f => f.TermContentItemIds))
+            await updater.TryUpdateModelAsync(model, Prefix, f => f.TermContentItemIds);
+
+            var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+
+            field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+
+            field.TermContentItemIds = model.TermContentItemIds == null
+                ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            if (settings.Required && field.TermContentItemIds.Length == 0)
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-
-                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-
-                field.TermContentItemIds = model.TermContentItemIds == null
-                    ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-                if (settings.Required && field.TermContentItemIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(
-                        nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
-                }
-
-                // Update display text for tags.
-                var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
-
-                if (taxonomy == null)
-                {
-                    return null;
-                }
-
-                var terms = new List<ContentItem>();
-
-                foreach (var termContentItemId in field.TermContentItemIds)
-                {
-                    var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                        (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                        termContentItemId);
-
-                    terms.Add(term);
-                }
-
-                field.SetTagNames(terms.Select(t => t.DisplayText).ToArray());
+                updater.ModelState.AddModelError(
+                    nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
+                    S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
+
+            // Update display text for tags.
+            var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+
+            if (taxonomy == null)
+            {
+                return null;
+            }
+
+            var terms = new List<ContentItem>();
+
+            foreach (var termContentItemId in field.TermContentItemIds)
+            {
+                var term = TaxonomyOrchardHelperExtensions.FindTerm(
+                    (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
+                    termContentItemId);
+
+                terms.Add(term);
+            }
+
+            field.SetTagNames(terms.Select(t => t.DisplayText).ToArray());
 
             return Edit(field, context);
         }

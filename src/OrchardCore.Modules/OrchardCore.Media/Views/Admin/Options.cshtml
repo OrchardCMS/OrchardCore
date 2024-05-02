@@ -7,7 +7,7 @@
 
 <p class="alert alert-secondary">
     @T["Media is configured with appsettings.json."]
-    <a class="seedoc" href="https://docs.orchardcore.net/en/latest/docs/reference/modules/Media/#configuration" target="_blank">@T["See documentation"]</a>
+    <a class="seedoc" href="https://docs.orchardcore.net/en/latest/reference/modules/Media/#configuration" target="_blank">@T["See documentation"]</a>
 </p>
 
 <div class="mb-3 row">
@@ -31,6 +31,14 @@
     <div class="col-sm-10">
         <code><input asp-for="MaxBrowserCacheDays" type="text" class="form-control-plaintext" readonly /></code>
         <span class="hint">@T["The default number of days for the media cache control header."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="MaxSecureFilesBrowserCacheDays" class="col-sm-2 col-form-label">@T["Max secure files browser cache days"]</label>
+    <div class="col-sm-10">
+        <code><input asp-for="MaxSecureFilesBrowserCacheDays" type="text" class="form-control-plaintext" readonly /></code>
+        <span class="hint">@T["The default number of days for the media cache control header for secure files."]</span>
     </div>
 </div>
 
@@ -92,5 +100,5 @@
     <div class="col-sm-10">
         <code><input asp-for="AssetsUsersFolder" type="text" class="form-control-plaintext" readonly /></code>
         <span class="hint">@T["The folder under AssetsPath used to store users own media assets."]</span>
-    </div>   
+    </div>
 </div>

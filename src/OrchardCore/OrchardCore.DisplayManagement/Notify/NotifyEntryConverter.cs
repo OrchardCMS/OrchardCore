@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -48,18 +46,11 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            var o = new JsonObject();
-
-            // Serialize the message as it's an IHtmlContent
-            var stringBuilder = new StringBuilder();
-            using (var stringWriter = new StringWriter(stringBuilder))
+            var o = new JsonObject
             {
-                notifyEntry.Message.WriteTo(stringWriter, _htmlEncoder);
-            }
-
-            // Write all well-known properties
-            o.Add(nameof(NotifyEntry.Type), notifyEntry.Type.ToString());
-            o.Add(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder));
+                { nameof(NotifyEntry.Type), notifyEntry.Type.ToString() },
+                { nameof(NotifyEntry.Message), notifyEntry.ToHtmlString(_htmlEncoder) }
+            };
 
             o.WriteTo(writer);
         }

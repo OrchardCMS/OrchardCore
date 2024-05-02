@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
@@ -32,17 +31,13 @@ namespace OrchardCore.Layers.Recipes
             IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
-
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = serializationOptions.Value.SerializerOptions;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)

@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
 using OrchardCore.Settings;
@@ -15,31 +16,36 @@ namespace OrchardCore.ReCaptcha.Drivers
     public class ReCaptchaSettingsDisplayDriver : SectionDisplayDriver<ISite, ReCaptchaSettings>
     {
         public const string GroupId = "recaptcha";
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReCaptchaSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
+            IShellReleaseManager shellReleaseManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
 
         public override async Task<IDisplayResult> EditAsync(ReCaptchaSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
                 {
@@ -50,7 +56,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReCaptchaSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -59,21 +65,19 @@ namespace OrchardCore.ReCaptcha.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
             {
                 var model = new ReCaptchaSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-                {
-                    section.SiteKey = model.SiteKey?.Trim();
-                    section.SecretKey = model.SecretKey?.Trim();
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                    // Release the tenant to apply settings.
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.SiteKey = model.SiteKey?.Trim();
+                settings.SecretKey = model.SecretKey?.Trim();
+
+                _shellReleaseManager.RequestRelease();
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

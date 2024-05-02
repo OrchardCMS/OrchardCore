@@ -19,28 +19,25 @@ namespace OrchardCore.Sms.Drivers;
 
 public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
 
     protected IStringLocalizer S;
 
     private readonly SmsProviderOptions _smsProviderOptions;
 
     public SmsSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<SmsProviderOptions> smsProviders,
-        ShellSettings shellSettings,
         IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _smsProviderOptions = smsProviders.Value;
-        _shellSettings = shellSettings;
         S = stringLocalizer;
     }
 
@@ -58,7 +55,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SmsSettings.GroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -70,20 +67,19 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
         var model = new SmsSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-        {
-            if (string.IsNullOrEmpty(model.DefaultProvider))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
-            }
-            else
-            {
-                if (settings.DefaultProviderName != model.DefaultProvider)
-                {
-                    settings.DefaultProviderName = model.DefaultProvider;
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+        if (string.IsNullOrEmpty(model.DefaultProvider))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
+        }
+        else
+        {
+            if (settings.DefaultProviderName != model.DefaultProvider)
+            {
+                settings.DefaultProviderName = model.DefaultProvider;
+
+                _shellReleaseManager.RequestRelease();
             }
         }
 

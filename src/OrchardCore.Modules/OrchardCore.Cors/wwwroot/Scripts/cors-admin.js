@@ -42,7 +42,7 @@ var corsApp = new Vue({
   },
   data: {
     selectedPolicy: null,
-    policies: [],
+    policies: null,
     defaultPolicyName: null
   },
   updated: function updated() {
@@ -76,9 +76,9 @@ var corsApp = new Vue({
       this.save();
     },
     updatePolicy: function updatePolicy(policy, event) {
-      if (policy.IsDefaultPolicy) {
+      if (policy.isDefaultPolicy) {
         this.policies.forEach(function (p) {
-          return p.IsDefaultPolicy = false;
+          return p.isDefaultPolicy = false;
         });
       }
       if (policy.originalName) {
@@ -93,7 +93,7 @@ var corsApp = new Vue({
       this.back();
     },
     save: function save() {
-      document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+      document.getElementById('corsSettings').value = JSON.stringify(this.policies);
       document.getElementById('corsForm').submit();
     },
     back: function back() {
