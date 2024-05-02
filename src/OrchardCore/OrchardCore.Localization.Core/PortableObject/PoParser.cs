@@ -86,7 +86,7 @@ namespace OrchardCore.Localization.PortableObject
                     else
                     {
                         // General rule: \x ==> x
-                        builder.Append(c);
+                        TryAppend(builder, c);
                     }
                     escaped = false;
                 }
@@ -98,12 +98,22 @@ namespace OrchardCore.Localization.PortableObject
                     }
                     else
                     {
-                        builder.Append(c);
+                        TryAppend(builder, c);
                     }
                 }
             }
 
-            return builder.ToString() ?? str;
+            return builder.Equals(default(Utf16ValueStringBuilder))
+                ? str
+                : builder.ToString();
+
+            static void TryAppend(Utf16ValueStringBuilder builder, char c)
+            {
+                if (!builder.Equals(default(Utf16ValueStringBuilder)))
+                {
+                    builder.Append(c);
+                }
+            }
         }
 
         private static string TrimQuote(string str)
