@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -13,12 +14,17 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Json;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -41,9 +47,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
-        private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly JsonSerializerOptions _documentJsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -60,10 +66,10 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             IShapeFactory shapeFactory,
             INotifier notifier,
-            ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> stringLocalizer,
             IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -74,11 +80,11 @@ namespace OrchardCore.Workflows.Controllers
             _authorizationService = authorizationService;
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
-            _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         [Admin("Workflows/Types", "WorkflowTypes")]
@@ -192,6 +198,9 @@ namespace OrchardCore.Workflows.Controllers
                 {
                     case WorkflowTypeBulkAction.None:
                         break;
+                    case WorkflowTypeBulkAction.Export:
+                        return await ExportWorkflows(itemIds.ToArray());
+
                     case WorkflowTypeBulkAction.Delete:
                         foreach (var entry in checkedEntries)
                         {
@@ -213,7 +222,19 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> EditProperties(long? id, string returnUrl = null)
+        [HttpPost]
+        public async Task<IActionResult> Export(int id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Forbid();
+            }
+
+            return await ExportWorkflows(id);
+        }
+
+        public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
+
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -545,6 +566,29 @@ namespace OrchardCore.Workflows.Controllers
             });
 
             return activityShape;
+        }
+
+        private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
+        {
+            using var fileBuilder = new TemporaryFileBuilder();
+            var archiveFileName = fileBuilder.Folder + ".zip";
+            var recipeDescriptor = new RecipeDescriptor();
+            var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+            var workflowTypes = await _workflowTypeStore.GetAsync(itemIds);
+
+            AllWorkflowTypeDeploymentSource.ProcessWorkflowType(deploymentPlanResult, workflowTypes, _documentJsonSerializerOptions);
+
+            await deploymentPlanResult.FinalizeAsync();
+            ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+
+            var packageName = itemIds.Length == 1
+                ? workflowTypes.FirstOrDefault().Name
+                : S["Workflow Types"];
+
+            return new PhysicalFileResult(archiveFileName, "application/zip")
+            {
+                FileDownloadName = packageName + ".zip",
+            };
         }
     }
 }

@@ -12,11 +12,11 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Authenticates the user credentials.
         /// </summary>
-        /// <param name="identifier">The username or email address.</param>
+        /// <param name="usernameOrEmail">The username or email address.</param>
         /// <param name="password">The user password.</param>
         /// <param name="reportError">The error reported in case failure happened during the authentication process.</param>
         /// <returns>A <see cref="IUser"/> that represents an authenticated user.</returns>
-        Task<IUser> AuthenticateAsync(string identifier, string password, Action<string, string> reportError);
+        Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError);
 
         /// <summary>
         /// Creates a user.
@@ -56,9 +56,9 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Gets the user with a specified username or email address.
         /// </summary>
-        /// <param name="identifier">The username or email address.</param>
+        /// <param name="usernameOrEmail">The username or email address.</param>
         /// <returns>The <see cref="IUser"/> represents the retrieved user.</returns>
-        Task<IUser> GetUserAsync(string identifier);
+        Task<IUser> GetUserAsync(string usernameOrEmail);
 
         /// <summary>
         /// Gets the user with a specified ID.
@@ -77,12 +77,12 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Resets the user password.
         /// </summary>
-        /// <param name="identifier">The username or email address.</param>
+        /// <param name="usernameOrEmail">The username or email address.</param>
         /// <param name="resetToken">The token used to reset the password.</param>
         /// <param name="newPassword">The new password.</param>
         /// <param name="reportError">The error reported in case failure happened during the reset process.</param>
         /// <returns>Returns <c>true</c> if the password reset, otherwise <c>false</c>.</returns>
-        Task<bool> ResetPasswordAsync(string identifier, string resetToken, string newPassword, Action<string, string> reportError);
+        Task<bool> ResetPasswordAsync(string usernameOrEmail, string resetToken, string newPassword, Action<string, string> reportError);
 
         /// <summary>
         /// Creates a <see cref="ClaimsPrincipal"/> for a given user.

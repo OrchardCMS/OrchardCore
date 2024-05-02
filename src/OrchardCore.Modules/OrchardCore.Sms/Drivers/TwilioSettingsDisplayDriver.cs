@@ -23,34 +23,31 @@ namespace OrchardCore.Sms.Drivers;
 
 public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly INotifier _notifier;
 
     protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         INotifier notifier,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -140,9 +137,9 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             }
         }
 
-        if (context.Updater.ModelState.IsValid && hasChanges)
+        if (hasChanges)
         {
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(settings);

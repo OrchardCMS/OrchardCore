@@ -30,7 +30,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         name: $('#t-mediaLibrary').text(),
         path: '',
         folder: '',
-        isDirectory: true
+        isDirectory: true,
+        canCreateFolder: $('#allowNewRootFolders').val() === 'true'
       };
       mediaApp = new Vue({
         el: '#mediaApp',
@@ -545,7 +546,7 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 // <folder> component
 Vue.component('folder', {
-  template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i v-if=\"open\" class=\"fa-solid fa-chevron-").concat(document.dir == "ltr" ? "right" : "left", "\"></i></span> \n                  <div class=\"folder-name ms-2\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-if=\"isSelected || isRoot\"><i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-if=\"isSelected && !isRoot\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
+  template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i v-if=\"open\" class=\"fa-solid fa-chevron-").concat(document.dir == "ltr" ? "right" : "left", "\"></i></span> \n                  <div class=\"folder-name ms-2\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-if=\"canCreateFolder && (isSelected || isRoot)\"><i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-if=\"canDeleteFolder && isSelected && !isRoot\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
   props: {
     model: Object,
     selectedInMediaApp: Object,
@@ -570,6 +571,12 @@ Vue.component('folder', {
     },
     isRoot: function isRoot() {
       return this.model.path === '';
+    },
+    canCreateFolder: function canCreateFolder() {
+      return this.model.canCreateFolder !== undefined ? this.model.canCreateFolder : true;
+    },
+    canDeleteFolder: function canDeleteFolder() {
+      return this.model.canDeleteFolder !== undefined ? this.model.canDeleteFolder : true;
     }
   },
   mounted: function mounted() {
