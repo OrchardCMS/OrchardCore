@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Cysharp.Text;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -11,12 +12,17 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PoParser
     {
-        private static readonly Dictionary<char, char> _escapeTranslations = new()
+        private static readonly FrozenDictionary<char, char> _escapeTranslations;
+
+        static PoParser()
         {
-            { 'n', '\n' },
-            { 'r', '\r' },
-            { 't', '\t' },
-        };
+            _escapeTranslations = new Dictionary<char, char>()
+            {
+                { 'n', '\n' },
+                { 'r', '\r' },
+                { 't', '\t' }
+            }.ToFrozenDictionary();
+        }
 
         /// <summary>
         /// Parses a .po file.
@@ -55,31 +61,32 @@ namespace OrchardCore.Localization.PortableObject
 
         private static string Unescape(string str)
         {
-            StringBuilder sb = null;
+            var builder = default(Utf16ValueStringBuilder);
             var escaped = false;
             for (var i = 0; i < str.Length; i++)
             {
                 var c = str[i];
                 if (escaped)
                 {
-                    if (sb == null)
+                    if (builder.Equals(default(Utf16ValueStringBuilder)))
                     {
-                        sb = new StringBuilder(str.Length);
+                        builder = ZString.CreateStringBuilder();
+
                         if (i > 1)
                         {
-                            sb.Append(str[..(i - 1)]);
+                            builder.Append(str[..(i - 1)]);
                         }
                     }
 
                     char unescaped;
                     if (_escapeTranslations.TryGetValue(c, out unescaped))
                     {
-                        sb.Append(unescaped);
+                        builder.Append(unescaped);
                     }
                     else
                     {
                         // General rule: \x ==> x
-                        sb.Append(c);
+                        builder.Append(c);
                     }
                     escaped = false;
                 }
@@ -91,12 +98,12 @@ namespace OrchardCore.Localization.PortableObject
                     }
                     else
                     {
-                        sb?.Append(c);
+                        builder.Append(c);
                     }
                 }
             }
 
-            return sb?.ToString() ?? str;
+            return builder.ToString() ?? str;
         }
 
         private static string TrimQuote(string str)
