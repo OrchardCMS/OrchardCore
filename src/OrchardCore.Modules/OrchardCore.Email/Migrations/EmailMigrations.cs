@@ -16,7 +16,7 @@ public class EmailMigrations : DataMigration
     public int Create()
 #pragma warning restore CA1822
     {
-        // In version 1.9, the OrchardCore.Email.Smtp was split from OrchardCore.Email. To ensure we keep the change
+        // In version 2.0, the OrchardCore.Email.Smtp was split from OrchardCore.Email. To ensure we keep the change
         // backward compatible, we added this migration step to auto-enable the new SMTP feature for sites that use the
         // Email service and have SmtpSettings.
         ShellScope.AddDeferredTask(async scope =>

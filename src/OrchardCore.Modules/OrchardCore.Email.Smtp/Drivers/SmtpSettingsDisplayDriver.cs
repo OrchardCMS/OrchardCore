@@ -25,9 +25,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
 
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
@@ -36,18 +35,16 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     protected readonly IStringLocalizer S;
 
     public SmtpSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
         _authorizationService = authorizationService;
@@ -200,8 +197,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (hasChanges)
             {
-                // Release the tenant to apply the settings when something changed.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                _shellReleaseManager.RequestRelease();
             }
         }
 
