@@ -153,7 +153,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ### Contents API Controller Endpoints
 
-#### <span style="color:blue">GET /api/content/{contentItemId} </span>
+#### GET /api/content/{contentItemId}
 
 ##### Parameters
 
@@ -169,7 +169,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ***
 
-#### <span style="color:blue">GET /api/queries/{name} </span>
+#### GET /api/queries/{name}
 
 ##### Parameters
 
@@ -188,7 +188,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ***
 
-#### <span style="color:green">POST /api/content </span>
+#### POST /api/content
 
 ##### Parameters
 
@@ -226,7 +226,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ***
 
-#### <span style="color:green">POST /api/queries/{name} </span>
+#### POST /api/queries/{name}
 
 ##### Parameters
 
@@ -245,7 +245,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 ***
 
-#### <span style="color:red">DELETE /api/content/{contentItemId}</span>
+#### DELETE /api/content/{contentItemId}
 
 ##### Parameters
 
