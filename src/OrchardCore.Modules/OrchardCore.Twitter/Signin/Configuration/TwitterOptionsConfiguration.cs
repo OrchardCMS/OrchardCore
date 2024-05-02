@@ -59,6 +59,14 @@ namespace OrchardCore.Twitter.Signin.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
+                string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
+            {
+                _logger.LogWarning("The Twitter login provider is enabled but not configured.");
+
+                return;
+            }
+
             options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Twitter";
@@ -68,7 +76,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
 
         public void Configure(string name, TwitterOptions options)
         {
-            if (!string.Equals(name, TwitterDefaults.AuthenticationScheme))
+            if (!string.Equals(name, TwitterDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

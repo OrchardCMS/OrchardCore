@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             requiredAttributeParser.AddRequiredAttributes(ruleBuilder);
         }
 
-        private class DefaultRequiredAttributeParser
+        private sealed class DefaultRequiredAttributeParser
         {
             private const char RequiredAttributeWildcardSuffix = '*';
 

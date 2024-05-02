@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
 
@@ -72,7 +72,10 @@ namespace OrchardCore.Workflows.Http.Scripting
             _responseWriteMethod = new GlobalMethod
             {
                 Name = "responseWrite",
-                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult()),
+                Method = serviceProvider => (Action<string>)(text => {
+                    httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+                    httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult();
+                })
             };
 
             _absoluteUrlMethod = new GlobalMethod
@@ -183,7 +186,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                                 try
                                 {
-                                    result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                                    result = JConvert.DeserializeObject<Dictionary<string, object>>(json);
                                 }
                                 catch
                                 {
@@ -222,7 +225,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         {
             try
             {
-                JToken token = JObject.Parse(json);
+                var token = JObject.Parse(json);
                 return true;
             }
             catch

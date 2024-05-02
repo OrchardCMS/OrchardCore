@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
@@ -52,7 +53,7 @@ namespace OrchardCore.Search.Lucene.Recipes
             }
         }
 
-        private class LuceneIndexResetStepModel
+        private sealed class LuceneIndexResetStepModel
         {
             public bool IncludeAll { get; set; } = false;
             public string[] Indices { get; set; } = [];

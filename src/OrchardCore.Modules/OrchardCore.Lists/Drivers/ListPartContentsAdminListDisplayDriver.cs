@@ -23,17 +23,16 @@ namespace OrchardCore.Lists.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
             var viewModel = new ListPartContentsAdminFilterViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
-            {
-                if (viewModel.ShowListContentTypes)
-                {
-                    model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
-                }
+            await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
-                if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
-                {
-                    model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
-                }
+            if (viewModel.ShowListContentTypes)
+            {
+                model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
+            }
+
+            if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
+            {
+                model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
             }
 
             return Edit(model, updater);

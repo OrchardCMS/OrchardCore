@@ -9,8 +9,8 @@
         .OrderBy(category => category)
         .ToList();
 
-    var jCategories = JsonConvert.SerializeObject(categories);
-    var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
+    var jCategories = JConvert.SerializeObject(categories);
+    var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
 }
 
 <style asp-name="codemirror"></style>
@@ -96,8 +96,8 @@
             <div id="shortcodePreview" style="display: none;">
                 @{
                     var descriptor = new ShortcodeDescriptor();
-                    dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                    shape.Actions = null;
+                    var shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                    shape.Properties["Actions"] = null;
                     @await DisplayAsync(shape)
                 }
             </div>

@@ -33,7 +33,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Authentication:
   - [Microsoft](modules/Microsoft.Authentication/README.md)
   - [Facebook](modules/Facebook/README.md)
-  - [Twitter](modules/Twitter/README.md)
+  - [X (Twitter)](modules/X/README.md)
   - [GitHub](modules/GitHub/README.md)
   - [Google](modules/Google/README.md)
 - Users:
@@ -115,6 +115,8 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
+- [SMTP Provider](modules/Email.Smtp/README.md)
+- [Azure Email Provider](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
@@ -136,7 +138,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 ### Search, Indexing, Querying
 
 - [Azure AI Search](modules/AzureAISearch/README.md)
-- [SQL](modules/SQLIndexing/README.md)
+- [SQL Indexing](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
 - [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)

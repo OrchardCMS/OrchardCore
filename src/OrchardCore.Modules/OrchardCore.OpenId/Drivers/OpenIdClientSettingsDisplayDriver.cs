@@ -1,18 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -24,44 +24,46 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        };
+        private static readonly char[] _separator = [' ', ','];
 
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOpenIdClientService _clientService;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             S = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
@@ -101,11 +103,11 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
+                model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
@@ -113,7 +115,7 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var previousClientSecret = settings.ClientSecret;
                 var model = new OpenIdClientSettingsViewModel();
@@ -122,7 +124,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
-                settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
@@ -169,7 +171,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
                         ? []
-                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {
@@ -201,11 +203,7 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
@@ -49,11 +48,10 @@ namespace OrchardCore.Queries.Sql.Drivers
         public override async Task<IDisplayResult> UpdateAsync(SqlQuery model, IUpdateModel updater)
         {
             var viewModel = new SqlQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments))
-            {
-                model.Template = viewModel.Query;
-                model.ReturnDocuments = viewModel.ReturnDocuments;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments);
+
+            model.Template = viewModel.Query;
+            model.ReturnDocuments = viewModel.ReturnDocuments;
 
             if (string.IsNullOrWhiteSpace(model.Template))
             {

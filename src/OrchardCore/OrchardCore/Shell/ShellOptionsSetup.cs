@@ -1,7 +1,7 @@
-using System;
 using System.IO;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -10,10 +10,6 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellOptionsSetup : IConfigureOptions<ShellOptions>
     {
-        private const string OrchardAppData = "ORCHARD_APP_DATA";
-        private const string DefaultAppDataPath = "App_Data";
-        private const string DefaultSitesPath = "Sites";
-
         private readonly IHostEnvironment _hostingEnvironment;
 
         public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
@@ -23,7 +19,7 @@ namespace OrchardCore.Environment.Shell
 
         public void Configure(ShellOptions options)
         {
-            var appData = System.Environment.GetEnvironmentVariable(OrchardAppData);
+            var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
 
             if (!string.IsNullOrEmpty(appData))
             {
@@ -31,10 +27,10 @@ namespace OrchardCore.Environment.Shell
             }
             else
             {
-                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, DefaultAppDataPath);
+                options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, ShellOptionConstants.DefaultAppDataPath);
             }
 
-            options.ShellsContainerName = DefaultSitesPath;
+            options.ShellsContainerName = ShellOptionConstants.DefaultSitesPath;
         }
     }
 }

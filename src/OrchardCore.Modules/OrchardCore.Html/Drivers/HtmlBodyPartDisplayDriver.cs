@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -65,17 +64,16 @@ namespace OrchardCore.Html.Drivers
 
             var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
+            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
+
+            if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
-                {
-                    var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
-                }
+                var partName = context.TypePartDefinition.DisplayName();
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
             }
 
             return Edit(model, context);

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
@@ -39,10 +38,10 @@ namespace OrchardCore.Layers.Drivers
             if (layerMetadata == null)
             {
                 layerMetadata = new LayerMetadata();
+                await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position);
 
                 // Are we loading an editor that requires layer metadata?
-                if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
-                    && !string.IsNullOrEmpty(layerMetadata.Zone))
+                if (!string.IsNullOrEmpty(layerMetadata.Zone))
                 {
                     model.Weld(layerMetadata);
                 }

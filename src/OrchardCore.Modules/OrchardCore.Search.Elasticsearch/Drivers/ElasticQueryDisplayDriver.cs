@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -53,12 +52,11 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ElasticQuery model, IUpdateModel updater)
         {
             var viewModel = new ElasticQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems))
-            {
-                model.Template = viewModel.Query;
-                model.Index = viewModel.Index;
-                model.ReturnContentItems = viewModel.ReturnContentItems;
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems);
+
+            model.Template = viewModel.Query;
+            model.Index = viewModel.Index;
+            model.ReturnContentItems = viewModel.ReturnContentItems;
 
             if (string.IsNullOrWhiteSpace(model.Template))
             {

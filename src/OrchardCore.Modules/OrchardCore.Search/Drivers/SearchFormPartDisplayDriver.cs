@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -29,11 +28,10 @@ public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPa
     {
         var model = new SearchPartViewModel();
 
-        if (await updater.TryUpdateModelAsync(model, Prefix))
-        {
-            part.Placeholder = model.Placeholder;
-            part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
-        }
+        await updater.TryUpdateModelAsync(model, Prefix);
+
+        part.Placeholder = model.Placeholder;
+        part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
 
         return Edit(part);
     }

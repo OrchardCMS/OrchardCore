@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Shell.Distributed
     /// <summary>
     /// Keep in sync tenants by sharing shell identifiers through an <see cref="IDistributedCache"/>.
     /// </summary>
-    internal class DistributedShellHostedService : BackgroundService
+    internal sealed class DistributedShellHostedService : BackgroundService
     {
         private const string DistributedFeatureId = "OrchardCore.Tenants.Distributed";
 

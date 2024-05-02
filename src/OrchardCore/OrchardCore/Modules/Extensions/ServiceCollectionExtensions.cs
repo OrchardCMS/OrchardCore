@@ -28,6 +28,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Extensions;
+using OrchardCore.Json;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -152,8 +154,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
+            services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>, JsonOptionsConfigurations>();
+            services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
+
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<ISlugService, SlugService>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
@@ -165,8 +171,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
-
-            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -191,6 +195,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(shellServices =>
             {
+                shellServices.AddScoped<IShellReleaseManager, DefaultShellReleaseManager>();
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();
@@ -517,7 +522,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure(app =>
             {
                 app.UseAuthentication();
-            });
+            }, order: -150);
         }
 
         /// <summary>

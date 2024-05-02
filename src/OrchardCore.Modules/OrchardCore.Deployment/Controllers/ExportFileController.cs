@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/ExportFile/{action}/{id?}", "DeploymentPlanExportFile{action}")]
     public class ExportFileController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;

@@ -1,5 +1,4 @@
-using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -13,9 +12,9 @@ namespace OrchardCore.ContentFields.Fields
         /// </remarks>
         public static string[] GetUserNames(this UserPickerField userPickerField)
         {
-            var userNames = userPickerField.Content["UserNames"] as JArray;
+            var userNames = (JsonArray)userPickerField.Content["UserNames"];
 
-            return userNames != null ? userNames.ToObject<string[]>() : [];
+            return userNames is not null ? userNames.ToObject<string[]>() : [];
         }
 
         /// <summary>

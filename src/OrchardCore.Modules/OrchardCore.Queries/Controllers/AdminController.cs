@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,6 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Admin("Queries/{action}/{id?}", "Queries{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -90,7 +92,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesIndexViewModel
             {
-                Queries = new List<QueryEntry>(),
+                Queries = [],
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()

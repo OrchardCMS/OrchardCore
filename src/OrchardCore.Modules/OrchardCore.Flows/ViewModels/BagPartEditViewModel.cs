@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -26,5 +25,8 @@ namespace OrchardCore.Flows.ViewModels
 
         [BindNever]
         public IEnumerable<BagPartWidgetViewModel> AccessibleWidgets { get; set; }
+
+        [BindNever]
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
     }
 }

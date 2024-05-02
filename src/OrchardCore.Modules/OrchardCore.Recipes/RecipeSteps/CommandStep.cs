@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.Extensions.Logging;
@@ -53,7 +54,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             }
         }
 
-        private class CommandStepModel
+        private sealed class CommandStepModel
         {
             public string[] Commands { get; set; }
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,15 +52,14 @@ namespace OrchardCore.ContentLocalization.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
             var viewModel = new LocalizationContentsAdminFilterViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, "Localization"))
-            {
-                if (viewModel.ShowLocalizedContentTypes)
-                {
-                    model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
-                }
+            await updater.TryUpdateModelAsync(viewModel, "Localization");
 
-                model.FilterResult.MapFrom(viewModel);
+            if (viewModel.ShowLocalizedContentTypes)
+            {
+                model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
             }
+
+            model.FilterResult.MapFrom(viewModel);
 
             return Edit(model, updater);
         }

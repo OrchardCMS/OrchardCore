@@ -16,8 +16,7 @@ namespace OrchardCore.ContentFields.GraphQL
         {
             Name = nameof(ContentPickerField);
 
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
-                .Name("contentItemIds")
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("contentItemIds")
                 .Description("content item ids")
                 .PagingArguments()
                 .Resolve(x =>
@@ -25,8 +24,7 @@ namespace OrchardCore.ContentFields.GraphQL
                     return x.Page(x.Source.ContentItemIds);
                 });
 
-            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
-                .Name("contentItems")
+            Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
                 .Description("the content items")
                 .PagingArguments()
                 .ResolveAsync(x =>

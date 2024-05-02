@@ -28,6 +28,7 @@ namespace OrchardCore.Users.Controllers;
 [Authorize, Feature(UserConstants.Features.SmsAuthenticator)]
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
+    private readonly IdentityOptions _identityOptions;
     private readonly IUserService _userService;
     private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -41,6 +42,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
+        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         IUserService userService,
@@ -60,6 +62,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
+        _identityOptions = identityOptions.Value;
         _userService = userService;
         _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
@@ -67,7 +70,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin]
+    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator")]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -144,6 +147,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return RedirectToAction(nameof(ValidateCode));
     }
 
+    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode")]
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -219,7 +223,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultPhoneProvider);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, _identityOptions.Tokens.ChangePhoneNumberTokenProvider);
 
         var message = new SmsMessage()
         {

@@ -172,9 +172,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             return 2;
         }
 
-        private class OpenIdApplicationByPostLogoutRedirectUriIndex { }
-        private class OpenIdApplicationByRedirectUriIndex { }
-        private class OpenIdApplicationByRoleNameIndex { }
+        private sealed class OpenIdApplicationByPostLogoutRedirectUriIndex { }
+        private sealed class OpenIdApplicationByRedirectUriIndex { }
+        private sealed class OpenIdApplicationByRoleNameIndex { }
 
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
