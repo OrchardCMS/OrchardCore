@@ -125,7 +125,7 @@ namespace OrchardCore.Workflows.Controllers
             sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
-            // The existing session's connection is returned, don't dispose it
+            // Use existing session connection. Do not use 'using' or dispose the connection.
             var connection = await _session.CreateConnectionAsync();
             var workflowTypeIdsWithInstances = (await connection.QueryAsync<string>(sqlBuilder.ToSqlString(), param: null, _session.CurrentTransaction)).ToList();
 
