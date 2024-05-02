@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
@@ -92,9 +91,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             await context.UsingTenantScopeAsync(async scope =>
             {
+                var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
 
 
-                var luceneQuerySource = scope.ServiceProvider.GetRequiredService<LuceneQuerySource>();
                 var luceneQuery = new LuceneQuery
                 {
                     Index = "Search",
@@ -119,42 +118,37 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     ["contentItemId"] = context.OriginalBlogPost.ContentItemId
                 };
 
-                var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
-                var checkIndexingTaskQuery = new SqlQuery
-                {
-                    Name = "CheckIndexingTask",
-                    Template = "Select Count(1) as Total from IndexingTask"
-                };
-                var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
+                var loopCount = 4;
+                var luceneQuerySource = scope.ServiceProvider.GetRequiredService<LuceneQuerySource>();
                 await TimeoutTaskRunner.RunAsync(new TimeoutTaskOption
                 {
-                    Timeout = TimeSpan.FromSeconds(15),
-                    Interval = 1000,// Set large interval
+                    Timeout = TimeSpan.FromSeconds(5),
+                    Interval = 500,
                     TimeoutMessage = "The Lucene index wasn't updated after the import within 5s and thus the test timed out.",
                     CanNextLoop = async () =>
                                        {
-                                           // check all tasks completed.
-                                           var result = await queryManager.ExecuteQueryAsync(checkIndexingTaskQuery, new Dictionary<string, object>());
-
-                                           if (JObject.FromObject(result).SelectNode("$.items[0].Total").Value<long>() != 0)
+                                           loopCount++;
+                                           // Ensure adequate waiting time.
+                                           if (loopCount < 4)
                                            {
-                                               return true;
+                                               return true; 
                                            }
-                                           //var result = (LuceneQueryResults)await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
-                                           //if (result is not null)
-                                           //{
-                                           //    if (result.Count > 1)
-                                           //    {
-                                           //        Assert.Fail("The Lucene index should only index latest version on BlogPost type.");
-                                           //        return false;
-                                           //    }
-                                           //    if (result.Count == 1
-                                           //         && JObject.FromObject(result).SelectNode("$.items[0].ContentItemVersionId").ToString() == secondcontentitemversionid)
-                                           //    {
-                                           //        return false;
-                                           //    }
-                                           //}
+                                           var result = await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+
+                                           if (result is not null)
+                                           {
+                                               if (result.Items.Count() > 1)
+                                               {
+                                                   Assert.Fail("The Lucene index should only index latest version on BlogPost type.");
+                                                   return false;
+                                               }
+                                               if (result.Items.Count() == 1
+                                                    && JObject.FromObject(result).SelectNode("$.items[0].ContentItemVersionId").ToString() == secondcontentitemversionid)
+                                               {
+                                                   return false;
+                                               }
+                                           }
                                            return true; // continue;
                                        }
                 });
