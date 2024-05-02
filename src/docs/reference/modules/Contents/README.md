@@ -251,7 +251,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path | The ID of the Content Item to be deleted | Yes | string |
+| contentItemId | path | The ID of the Content Item to be deleted. | Yes | string |
 
 ##### Responses
 
