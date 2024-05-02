@@ -231,7 +231,7 @@ It is usually better to create a dedicated user for performing API calls, to mai
 ##### Parameters
 
 !!! note
-    This endpoint can only be used when the GraphQL feature is active
+    This endpoint can only be used when the GraphQL feature is active.
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
