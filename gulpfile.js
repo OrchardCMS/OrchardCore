@@ -126,7 +126,11 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
         var resolvedPath = path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
 
         if (resolvedPath.includes('*')) {
-            glob.sync(resolvedPath, {}).sort().forEach(sortedPath => {
+            var sortedPaths = glob.sync(resolvedPath, {});
+
+            sortedPaths.sort();
+
+            sortedPaths.forEach(sortedPath => {
                 inputPaths.push(sortedPath.replace(/\\/g, '/'));
             });
         } else {
