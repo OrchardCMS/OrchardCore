@@ -101,8 +101,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var analyzersDescriptor = new AnalyzersDescriptor();
             var indexSettingsDescriptor = new IndexSettingsDescriptor();
 
-            // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
-            var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer" ? null : elasticIndexSettings.AnalyzerName) ?? "standard";
+            var analyzerName = elasticIndexSettings.AnalyzerName ?? "standard";
 
             if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
             {
@@ -123,7 +122,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 .Map(m => m
                     .SourceField(s => s
                         .Enabled(elasticIndexSettings.StoreSourceData)
-                        .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
+                        .Excludes([IndexingConstants.DisplayTextAnalyzedKey]))
                     .Meta(me => IndexingState));
 
             var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);

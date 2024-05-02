@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Services;
-using OrchardCore.Rules;
 using OrchardCore.Rules.Services;
 using YesSql.Sql;
 
@@ -12,16 +11,13 @@ namespace OrchardCore.Layers
     {
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
-        private readonly IRuleMigrator _ruleMigrator;
 
         public Migrations(
             ILayerService layerService,
-            IConditionIdGenerator conditionIdGenerator,
-            IRuleMigrator ruleMigrator)
+            IConditionIdGenerator conditionIdGenerator)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
-            _ruleMigrator = ruleMigrator;
         }
 
         public async Task<int> CreateAsync()
@@ -49,22 +45,8 @@ namespace OrchardCore.Layers
                 "Zone")
             );
 
-            return 2;
-        }
-
-        public async Task<int> UpdateFrom2Async()
-        {
-            var layers = await _layerService.LoadLayersAsync();
-            foreach (var layer in layers.Layers)
-            {
-                layer.LayerRule = new Rule();
-                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
-
-                _ruleMigrator.Migrate(layer.LayerRule.Name, layer.LayerRule);
-            }
-
-            await _layerService.UpdateAsync(layers);
-
+            // Migration was cleaned up in version 2.0.
+            // Jump to step 3 during create.
             return 3;
         }
     }
