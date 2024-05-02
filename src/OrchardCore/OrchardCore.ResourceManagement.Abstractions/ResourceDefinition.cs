@@ -338,7 +338,7 @@ namespace OrchardCore.ResourceManagement
                 return Cultures[selectedIndex];
             }
             // Try parent culture if any.
-            var cultureInfo = new CultureInfo(culture);
+            var cultureInfo = CultureInfo.GetCultureInfo(culture);
             if (cultureInfo.Parent.Name != culture)
             {
                 var selectedCulture = FindNearestCulture(cultureInfo.Parent.Name);
