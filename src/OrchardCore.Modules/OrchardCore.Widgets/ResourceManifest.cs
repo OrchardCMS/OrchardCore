@@ -25,6 +25,4 @@ namespace OrchardCore.Widgets
             options.ResourceManifests.Add(_manifest);
         }
     }
-
-
 }
