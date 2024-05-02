@@ -337,7 +337,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
 
             var localizer = new PortableObjectStringLocalizer("context", _localizationManager.Object, true, _logger.Object);
-            CultureInfo.CurrentUICulture = new CultureInfo(culture);
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
 
             // Act
             var translation = localizer["Hello"];
