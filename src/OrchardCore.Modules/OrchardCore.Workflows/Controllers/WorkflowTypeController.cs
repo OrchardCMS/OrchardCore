@@ -101,23 +101,14 @@ namespace OrchardCore.Workflows.Controllers
 
             var query = _session.Query<WorkflowType, WorkflowTypeIndex>();
 
-            switch (options.Filter)
-            {
-                case WorkflowTypeFilter.All:
-                default:
-                    break;
-            }
-
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 query = query.Where(x => x.Name.Contains(options.Search));
             }
 
-            switch (options.Order)
+            if (options.Order == WorkflowTypeOrder.Name)
             {
-                case WorkflowTypeOrder.Name:
-                    query = query.OrderBy(u => u.Name);
-                    break;
+                query = query.OrderBy(u => u.Name);
             }
 
             var count = await query.CountAsync();
@@ -127,9 +118,6 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            // The existing session's connection is returned, don't dispose it
-            var connection = await _session.CreateConnectionAsync();
-
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
@@ -137,7 +125,9 @@ namespace OrchardCore.Workflows.Controllers
             sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
-            var workflowTypeIdsWithInstances = await connection.QueryAsync<string>(sqlBuilder.ToSqlString());
+            // The existing session's connection is returned, don't dispose it
+            var connection = await _session.CreateConnectionAsync();
+            var workflowTypeIdsWithInstances = (await connection.QueryAsync<string>(sqlBuilder.ToSqlString(), param: null, _session.CurrentTransaction)).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
