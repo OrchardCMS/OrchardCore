@@ -136,14 +136,14 @@ The `OrchardCore.Contents` module provides RESTful API endpoints via [`ApiContro
 ### Useful modules and libraries
 
 - We suggest you to read the docs about the [GraphQL module](../Apis.GraphQL/), to be used for querying content items.
-- There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community that allows you to create APIs documentation using Swagger.
+- There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community, that allows you to create APIs documentation using Swagger.
 - Lombiq provide a [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
 
 ### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
 
 To utilize the Orchard Core Contents API endpoints, user accounts must authenticate using the OAuth 2 standard by activating and configuring the "OpenId Authorization Server" and "OpenId Token Validation" features. Detailed configuration steps can be found in the [OpenId Authorization Server documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) and the [OpenId Token Validation documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation).
 
-It is usually better to create a dedicated user for performing API calls, to maintain control over user rights, and to easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)":
+It is usually better to **create a dedicated user for performing API calls**, to maintain control over user rights, and to easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)". Those are the available permissions:
 
 - View and edit the OpenID Connect client settings
 - View and edit the OpenID Connect server settings
