@@ -135,9 +135,9 @@ The `OrchardCore.Contents` module provides RESTful API endpoints via [`ApiContro
 
 ### Useful modules and libraries
 
-1. We suggest to use the docs about the [GraphQL module](https://docs.orchardcore.net/en/main/docs/reference/modules/Apis.GraphQL/), to be used for querying content items.
-2. There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community and allows you to create APIs documentations using Swagger.
-3. Lombiq provide [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
+- We suggest you to read the docs about the [GraphQL module](https://docs.orchardcore.net/en/main/docs/reference/modules/Apis.GraphQL/), to be used for querying content items.
+- There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community that allows you to create APIs documentation using Swagger.
+- Lombiq provide a [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
 
 ### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
 
