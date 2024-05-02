@@ -14,6 +14,7 @@ using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -111,6 +112,15 @@ namespace OrchardCore.Autoroute
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Autoroute")]
+    public class AutoPartStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentLocalizationHandler, AutorouteContentLocalizationHandler>();
         }
     }
 }

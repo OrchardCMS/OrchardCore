@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization.Handlers;
 
-public class AutoroutePartContentLocalizationHandler : IContentLocalizationHandler
+public class AutorouteContentLocalizationHandler : IContentLocalizationHandler
 {
     public Task LocalizedAsync(LocalizationContentContext context) => Task.CompletedTask;
 

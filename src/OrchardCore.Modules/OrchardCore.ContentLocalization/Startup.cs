@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
@@ -92,14 +91,5 @@ public class SitemapsStartup : StartupBase
     {
         services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
         services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
-    }
-}
-
-[Feature("OrchardCore.Autoroute")]
-public class AutoPartStartup : StartupBase
-{
-	public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddScoped<IContentLocalizationHandler, AutoPartContentLocalizationHandler>();
     }
 }
