@@ -1,9 +1,7 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.Indexing;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Sql;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.Utilities;
@@ -56,8 +54,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
         }
 
-
-
         [Fact]
         public async Task ShouldLuceneIndexOnlyIndexesTheLatestVersionOnImport()
         {
@@ -91,9 +87,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             await context.UsingTenantScopeAsync(async scope =>
             {
-                var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
-
-
                 var luceneQuery = new LuceneQuery
                 {
                     Index = "Search",
