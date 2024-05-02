@@ -8,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
@@ -16,29 +17,33 @@ namespace OrchardCore.Settings.Controllers
     public class AdminController : Controller
     {
         private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
+
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
+            IShellReleaseManager shellReleaseManager,
             ISiteService siteService,
             IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
             IOptions<CultureOptions> cultureOptions,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
+            _shellReleaseManager = shellReleaseManager;
             _siteService = siteService;
             _notifier = notifier;
             _authorizationService = authorizationService;
             _updateModelAccessor = updateModelAccessor;
             _cultureOptions = cultureOptions.Value;
-            H = h;
+            H = htmlLocalizer;
         }
 
         [Admin("Settings/{groupId}", "AdminSettings")]
@@ -54,7 +59,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
             };
 
             return View(viewModel);
@@ -74,7 +79,7 @@ namespace OrchardCore.Settings.Controllers
             var viewModel = new AdminIndexViewModel
             {
                 GroupId = groupId,
-                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, "")
+                Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
             };
 
             if (ModelState.IsValid)
@@ -92,6 +97,13 @@ namespace OrchardCore.Settings.Controllers
                 {
                     await _notifier.SuccessAsync(H["Site settings updated successfully."]);
                 }
+
+                return RedirectToAction(nameof(Index), new { groupId });
+            }
+            else
+            {
+                // If the model state is invalid, suspend the request to release the shell so that the tenant is not reloaded.
+                _shellReleaseManager.SuspendReleaseRequest();
             }
 
             return View(viewModel);

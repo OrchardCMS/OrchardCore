@@ -22,7 +22,7 @@ jobs:
           request or bug report. A core team member will review your issue and get back to you.
         FIRST_PR_COMMENT: >
           Thank you for submitting your first pull request, awesome! 🚀 If you haven't already, please take a moment 
-          to review our [contribution guide](https://docs.orchardcore.net/en/latest/docs/guides/contributing/). This 
+          to review our [contribution guide](https://docs.orchardcore.net/en/latest/guides/contributing/). This 
           guide provides helpful information to ensure your contribution aligns with our standards. A core team member 
           will review your pull request.
         FIRST_PR_MERGED_COMMENT: >
