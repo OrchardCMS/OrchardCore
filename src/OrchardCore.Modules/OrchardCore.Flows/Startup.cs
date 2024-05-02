@@ -49,7 +49,6 @@ namespace OrchardCore.Flows
             services.AddDataMigration<Migrations>();
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-
         }
     }
 }
