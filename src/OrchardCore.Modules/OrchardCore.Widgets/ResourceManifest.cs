@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Widgets
-{
+namespace OrchardCore.Widgets;
+
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private static ResourceManifest _manifest;
@@ -25,4 +25,4 @@ namespace OrchardCore.Widgets
             options.ResourceManifests.Add(_manifest);
         }
     }
-}
+
