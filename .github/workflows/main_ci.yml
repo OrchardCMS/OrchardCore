@@ -1,14 +1,19 @@
 name: Main - CI
+
 on:
+  # Run CI on main pushes too, in case we merge from a branch that's not up-to-date with main and breaks something
+  # after merge (or if we push to main).
   push:
     paths-ignore:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
     branches: [ main ]
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
