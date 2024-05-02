@@ -25,24 +25,22 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
+    private readonly IShellReleaseManager _shellReleaseManager;
+
     protected readonly IStringLocalizer S;
 
     public AzureAISearchSettingsDisplayDriver(
         AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
+        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
         )
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
+        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
@@ -58,7 +56,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings settings, UpdateEditorContext context)
     {
         if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {
@@ -91,18 +89,15 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
         var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
-        if (section.SearchIndex != model.SearchIndex || !AreTheSame(section.DefaultSearchFields, fields))
+        if (settings.SearchIndex != model.SearchIndex || !AreTheSame(settings.DefaultSearchFields, fields))
         {
-            section.SearchIndex = model.SearchIndex;
-            section.DefaultSearchFields = fields;
+            settings.SearchIndex = model.SearchIndex;
+            settings.DefaultSearchFields = fields;
 
-            if (context.Updater.ModelState.IsValid)
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            _shellReleaseManager.RequestRelease();
         }
 
-        return Edit(section);
+        return Edit(settings);
     }
 
     private static bool AreTheSame(string[] a, string[] b)

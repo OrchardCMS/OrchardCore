@@ -140,7 +140,7 @@ namespace OrchardCore.Data.Migration
             }
         }
 
-        public async Task UpdateAsync(IEnumerable<string> featureIds)
+        public async Task UpdateAsync(params string[] featureIds)
         {
             foreach (var featureId in featureIds)
             {
@@ -151,7 +151,7 @@ namespace OrchardCore.Data.Migration
             }
         }
 
-        public async Task UpdateAsync(string featureId)
+        private async Task UpdateAsync(string featureId)
         {
             if (_processedFeatures.Contains(featureId))
             {
@@ -164,12 +164,14 @@ namespace OrchardCore.Data.Migration
 
             // proceed with dependent features first, whatever the module it's in
             var dependencies = _extensionManager
-                .GetFeatureDependencies(
-                    featureId)
+                .GetFeatureDependencies(featureId)
                 .Where(x => x.Id != featureId)
                 .Select(x => x.Id);
 
-            await UpdateAsync(dependencies);
+            foreach (var dependency in dependencies)
+            {
+                await UpdateAsync(dependency);
+            }
 
             var migrations = GetDataMigrations(featureId);
 
@@ -284,14 +286,12 @@ namespace OrchardCore.Data.Migration
         /// Create a list of all available Update methods from a data migration class, indexed by the version number.
         /// </summary>
         private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
-        {
-            return dataMigration
+            => dataMigration
                 .GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Select(GetUpdateFromMethod)
                 .Where(tuple => tuple != null)
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
-        }
 
         private static Tuple<int, MethodInfo> GetUpdateFromMethod(MethodInfo methodInfo)
         {
