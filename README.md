@@ -27,13 +27,13 @@ Nightly (`main`):
 
 The software is production-ready, and capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
-Check out [the Reference of Built-in Modules](https://docs.orchardcore.net/en/latest/docs/reference/) to see what kind of features Orchard Core provides built-in.
+Check out [the Reference of Built-in Modules](https://docs.orchardcore.net/en/latest/reference/) to see what kind of features Orchard Core provides built-in.
 
 See the [issue milestones](https://github.com/OrchardCMS/OrchardCore/milestones) for information on what we have planned for the next releases and what are the priorities.
 
 ## Getting Started and Documentation
 
-The documentation can be accessed under <https://docs.orchardcore.net/>. See the homepage for an overview, and [the getting started docs](https://docs.orchardcore.net/en/latest/docs/getting-started/) on how to start building apps with Orchard Core. If you'd just like to test drive Orchard Core as a user, check out [Test drive Orchard Core](https://docs.orchardcore.net/en/latest/docs/getting-started/test-drive-orchard-core/).
+The documentation can be accessed under <https://docs.orchardcore.net/>. See the homepage for an overview, and [the getting started docs](https://docs.orchardcore.net/en/latest/getting-started/) on how to start building apps with Orchard Core. If you'd just like to test drive Orchard Core as a user, check out [Test drive Orchard Core](https://docs.orchardcore.net/en/latest/getting-started/test-drive-orchard-core/).
 
 ## Help and Support
 
@@ -54,25 +54,25 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 中文资源
 
-[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
+[![Orchard Core CN 中文讨论组](https://docs.orchardcore.net/en/latest/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
 
 ## Contributing
 
-It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
+It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/community/).
 
-Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/docs/guides/contributing/).
+Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/guides/contributing/).
 
 ## Preview Package Feed
 
 [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
 
-NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com). Check out [the docs on using the preview package feed](https://docs.orchardcore.net/en/latest/docs/getting-started/preview-package-source/).
+NuGet package repository hosting for the preview feed is graciously provided by [Cloudsmith](https://cloudsmith.com). Check out [the docs on using the preview package feed](https://docs.orchardcore.net/en/latest/getting-started/preview-package-source/).
 
 Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that enables your organization to create, store, and share packages in any format, to any place, with total confidence.
 
 ## Code of Conduct
 
-See [our Code of Conduct](https://docs.orchardcore.net/en/latest/docs/guides/contributing/#code-of-conduct).
+See [our Code of Conduct](https://docs.orchardcore.net/en/latest/guides/contributing/#code-of-conduct).
 
 ## .NET Foundation
 
