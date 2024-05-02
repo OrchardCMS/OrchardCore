@@ -2,7 +2,7 @@ namespace OrchardCore.Data
 {
     /// <summary>
     /// Sqlite-specific configuration for the Orchard Core database. 
-    /// See <see href="https://docs.orchardcore.net/en/latest/docs/reference/core/Data/#sqlite" />.
+    /// See <see href="https://docs.orchardcore.net/en/latest/reference/core/Data/#sqlite" />.
     /// </summary>
     public class SqliteOptions
     {
