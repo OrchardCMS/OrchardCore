@@ -5,14 +5,14 @@ on:
   workflow_dispatch:
   pull_request_review:
     types: [submitted]
-  # Run it on main pushes too, in case we merge from a branch that's not up-to-date with main and breaks something
-  # after merge (or if we push to main).
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
   push:
     paths-ignore:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches: [ main ]
+    branches: [ main, release/** ]
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
