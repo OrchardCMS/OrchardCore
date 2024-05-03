@@ -13,7 +13,7 @@ public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswo
     {
         return Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier", vm =>
         {
-            vm.Identifier = model.Identifier;
+            vm.UsernameOrEmail = model.UsernameOrEmail;
         }).Location("Content");
     }
 
@@ -23,7 +23,7 @@ public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswo
 
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        model.Identifier = viewModel.Identifier;
+        model.UsernameOrEmail = viewModel.UsernameOrEmail;
 
         return Edit(model);
     }
