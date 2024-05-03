@@ -7,19 +7,17 @@ public class DefaultShellReleaseManager : IShellReleaseManager
 {
     public void SuspendReleaseRequest()
     {
-        var context = ShellScope.Get<ShellReleaseRequestContext>(nameof(ShellReleaseRequestContext));
-
-        if (context is not null)
+        if (ShellScope.TryGetValue<ShellReleaseRequestContext>(ShellReleaseRequestContext.ShellScopeKey, out var context))
         {
             context.Release = false;
 
-            ShellScope.Set(nameof(ShellReleaseRequestContext), context);
+            ShellScope.Set(ShellReleaseRequestContext.ShellScopeKey, context);
         }
     }
 
     public void RequestRelease()
     {
-        ShellScope.Set(nameof(ShellReleaseRequestContext),
+        ShellScope.Set(ShellReleaseRequestContext.ShellScopeKey,
             new ShellReleaseRequestContext()
             {
                 Release = true

@@ -130,6 +130,42 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
+        /// Gets a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static bool TryGetValue(object key, out object value)
+        {
+            var current = Current;
+
+            if (current == null)
+            {
+                value = default;
+
+                return false;
+            }
+
+            current._items ??= [];
+
+            return current._items.TryGetValue(key, out value);
+        }
+
+        /// <summary>
+        /// Gets a shared item of a given type from the current shell scope.
+        /// </summary>
+        public static bool TryGetValue<T>(object key, out T value)
+        {
+            if (TryGetValue(key, out var existingValue) && existingValue is T item)
+            {
+                value = item;
+
+                return true;
+            }
+
+            value = default;
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
         public static T GetOrCreate<T>(object key, Func<T> factory)
@@ -500,9 +536,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            var releaseContext = Get<ShellReleaseRequestContext>(nameof(ShellReleaseRequestContext));
-
-            if (releaseContext is not null && releaseContext.Release)
+            if (TryGetValue<ShellReleaseRequestContext>(ShellReleaseRequestContext.ShellScopeKey, out var context) && context.Release)
             {
                 await ShellContext.ReleaseAsync();
             }
