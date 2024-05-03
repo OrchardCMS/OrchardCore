@@ -5,21 +5,21 @@
 
 function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
@@ -52,6 +52,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   /**
    * Constants
    */
+  var _KEY_TO_DIRECTION;
   var elementMap = new Map();
   var Data = {
     set: function set(element, key, instance) {
@@ -243,6 +244,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var reflow = function reflow(element) {
     element.offsetHeight; // eslint-disable-line no-unused-expressions
   };
+
   var getjQuery = function getjQuery() {
     if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
       return window.jQuery;
@@ -678,7 +680,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function Config() {
       _classCallCheck(this, Config);
     }
-    return _createClass(Config, [{
+    _createClass(Config, [{
       key: "_getConfig",
       value: function _getConfig(config) {
         config = this._mergeConfigObj(config);
@@ -731,6 +733,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         throw new Error('You have to implement the static method "NAME", for each component!');
       }
     }]);
+    return Config;
   }();
   /**
    * --------------------------------------------------------------------------
@@ -747,23 +750,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var BaseComponent = /*#__PURE__*/function (_Config) {
+    _inherits(BaseComponent, _Config);
+    var _super = _createSuper(BaseComponent);
     function BaseComponent(element, config) {
       var _this;
       _classCallCheck(this, BaseComponent);
-      _this = _callSuper(this, BaseComponent);
+      _this = _super.call(this);
       element = getElement(element);
       if (!element) {
         return _possibleConstructorReturn(_this);
       }
       _this._element = element;
       _this._config = _this._getConfig(config);
-      Data.set(_this._element, _this.constructor.DATA_KEY, _this);
+      Data.set(_this._element, _this.constructor.DATA_KEY, _assertThisInitialized(_this));
       return _this;
     }
 
     // Public
-    _inherits(BaseComponent, _Config);
-    return _createClass(BaseComponent, [{
+    _createClass(BaseComponent, [{
       key: "dispose",
       value: function dispose() {
         Data.remove(this._element, this.constructor.DATA_KEY);
@@ -829,6 +833,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return "".concat(name).concat(this.EVENT_KEY);
       }
     }]);
+    return BaseComponent;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -979,12 +984,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Alert = /*#__PURE__*/function (_BaseComponent) {
+    _inherits(Alert, _BaseComponent);
+    var _super2 = _createSuper(Alert);
     function Alert() {
       _classCallCheck(this, Alert);
-      return _callSuper(this, Alert, arguments);
+      return _super2.apply(this, arguments);
     }
-    _inherits(Alert, _BaseComponent);
-    return _createClass(Alert, [{
+    _createClass(Alert, [{
       key: "close",
       value:
       // Public
@@ -1033,6 +1039,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Alert;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -1068,12 +1075,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Button = /*#__PURE__*/function (_BaseComponent2) {
+    _inherits(Button, _BaseComponent2);
+    var _super3 = _createSuper(Button);
     function Button() {
       _classCallCheck(this, Button);
-      return _callSuper(this, Button, arguments);
+      return _super3.apply(this, arguments);
     }
-    _inherits(Button, _BaseComponent2);
-    return _createClass(Button, [{
+    _createClass(Button, [{
       key: "toggle",
       value:
       // Public
@@ -1101,6 +1109,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Button;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -1155,10 +1164,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Swipe = /*#__PURE__*/function (_Config2) {
+    _inherits(Swipe, _Config2);
+    var _super4 = _createSuper(Swipe);
     function Swipe(element, config) {
       var _this3;
       _classCallCheck(this, Swipe);
-      _this3 = _callSuper(this, Swipe);
+      _this3 = _super4.call(this);
       _this3._element = element;
       if (!element || !Swipe.isSupported()) {
         return _possibleConstructorReturn(_this3);
@@ -1171,8 +1182,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Swipe, _Config2);
-    return _createClass(Swipe, [{
+    _createClass(Swipe, [{
       key: "dispose",
       value:
       // Public
@@ -1272,6 +1282,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
       }
     }]);
+    return Swipe;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -1316,7 +1327,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var SELECTOR_INDICATORS = '.carousel-indicators';
   var SELECTOR_DATA_SLIDE = '[data-bs-slide], [data-bs-slide-to]';
   var SELECTOR_DATA_RIDE = '[data-bs-ride="carousel"]';
-  var KEY_TO_DIRECTION = _defineProperty(_defineProperty({}, ARROW_LEFT_KEY$1, DIRECTION_RIGHT), ARROW_RIGHT_KEY$1, DIRECTION_LEFT);
+  var KEY_TO_DIRECTION = (_KEY_TO_DIRECTION = {}, _defineProperty(_KEY_TO_DIRECTION, ARROW_LEFT_KEY$1, DIRECTION_RIGHT), _defineProperty(_KEY_TO_DIRECTION, ARROW_RIGHT_KEY$1, DIRECTION_LEFT), _KEY_TO_DIRECTION);
   var Default$b = {
     interval: 5000,
     keyboard: true,
@@ -1339,10 +1350,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Carousel = /*#__PURE__*/function (_BaseComponent3) {
+    _inherits(Carousel, _BaseComponent3);
+    var _super5 = _createSuper(Carousel);
     function Carousel(element, config) {
       var _this5;
       _classCallCheck(this, Carousel);
-      _this5 = _callSuper(this, Carousel, [element, config]);
+      _this5 = _super5.call(this, element, config);
       _this5._interval = null;
       _this5._activeElement = null;
       _this5._isSliding = false;
@@ -1357,8 +1370,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Carousel, _BaseComponent3);
-    return _createClass(Carousel, [{
+    _createClass(Carousel, [{
       key: "next",
       value:
       // Public
@@ -1692,6 +1704,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Carousel;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -1782,10 +1795,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Collapse = /*#__PURE__*/function (_BaseComponent4) {
+    _inherits(Collapse, _BaseComponent4);
+    var _super6 = _createSuper(Collapse);
     function Collapse(element, config) {
       var _this12;
       _classCallCheck(this, Collapse);
-      _this12 = _callSuper(this, Collapse, [element, config]);
+      _this12 = _super6.call(this, element, config);
       _this12._isTransitioning = false;
       _this12._triggerArray = [];
       var toggleList = SelectorEngine.find(SELECTOR_DATA_TOGGLE$4);
@@ -1818,8 +1833,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Collapse, _BaseComponent4);
-    return _createClass(Collapse, [{
+    _createClass(Collapse, [{
       key: "toggle",
       value:
       // Public
@@ -2034,6 +2048,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Collapse;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -2321,6 +2336,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       getDocumentElement(element) // fallback
     );
   }
+
   function getTrueOffsetParent(element) {
     if (!isHTMLElement(element) ||
     // https://github.com/popperjs/popper-core/issues/837
@@ -3752,10 +3768,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Dropdown = /*#__PURE__*/function (_BaseComponent5) {
+    _inherits(Dropdown, _BaseComponent5);
+    var _super7 = _createSuper(Dropdown);
     function Dropdown(element, config) {
       var _this15;
       _classCallCheck(this, Dropdown);
-      _this15 = _callSuper(this, Dropdown, [element, config]);
+      _this15 = _super7.call(this, element, config);
       _this15._popper = null;
       _this15._parent = _this15._element.parentNode; // dropdown wrapper
       // TODO: v6 revert #37011 & change markup https://getbootstrap.com/docs/5.3/forms/input-group/
@@ -3765,8 +3783,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Dropdown, _BaseComponent5);
-    return _createClass(Dropdown, [{
+    _createClass(Dropdown, [{
       key: "toggle",
       value:
       // Public
@@ -4103,6 +4120,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }]);
+    return Dropdown;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -4145,6 +4163,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // if false, we use the backdrop helper without adding any element to the dom
     rootElement: 'body' // give the choice to place backdrop under different elements
   };
+
   var DefaultType$8 = {
     className: 'string',
     clickCallback: '(function|null)',
@@ -4157,10 +4176,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Backdrop = /*#__PURE__*/function (_Config3) {
+    _inherits(Backdrop, _Config3);
+    var _super8 = _createSuper(Backdrop);
     function Backdrop(config) {
       var _this17;
       _classCallCheck(this, Backdrop);
-      _this17 = _callSuper(this, Backdrop);
+      _this17 = _super8.call(this);
       _this17._config = _this17._getConfig(config);
       _this17._isAppended = false;
       _this17._element = null;
@@ -4168,8 +4189,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Backdrop, _Config3);
-    return _createClass(Backdrop, [{
+    _createClass(Backdrop, [{
       key: "show",
       value:
       // Public
@@ -4269,6 +4289,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$9;
       }
     }]);
+    return Backdrop;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -4291,6 +4312,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     autofocus: true,
     trapElement: null // The element to trap focus inside of
   };
+
   var DefaultType$7 = {
     autofocus: 'boolean',
     trapElement: 'element'
@@ -4300,10 +4322,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var FocusTrap = /*#__PURE__*/function (_Config4) {
+    _inherits(FocusTrap, _Config4);
+    var _super9 = _createSuper(FocusTrap);
     function FocusTrap(config) {
       var _this20;
       _classCallCheck(this, FocusTrap);
-      _this20 = _callSuper(this, FocusTrap);
+      _this20 = _super9.call(this);
       _this20._config = _this20._getConfig(config);
       _this20._isActive = false;
       _this20._lastTabNavDirection = null;
@@ -4311,8 +4335,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(FocusTrap, _Config4);
-    return _createClass(FocusTrap, [{
+    _createClass(FocusTrap, [{
       key: "activate",
       value:
       // Public
@@ -4384,6 +4407,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$8;
       }
     }]);
+    return FocusTrap;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -4409,7 +4433,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Public
-    return _createClass(ScrollBarHelper, [{
+    _createClass(ScrollBarHelper, [{
       key: "getWidth",
       value: function getWidth() {
         // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
@@ -4513,6 +4537,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }]);
+    return ScrollBarHelper;
   }();
   /**
    * --------------------------------------------------------------------------
@@ -4561,10 +4586,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Modal = /*#__PURE__*/function (_BaseComponent6) {
+    _inherits(Modal, _BaseComponent6);
+    var _super10 = _createSuper(Modal);
     function Modal(element, config) {
       var _this23;
       _classCallCheck(this, Modal);
-      _this23 = _callSuper(this, Modal, [element, config]);
+      _this23 = _super10.call(this, element, config);
       _this23._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this23._element);
       _this23._backdrop = _this23._initializeBackDrop();
       _this23._focustrap = _this23._initializeFocusTrap();
@@ -4576,8 +4603,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Modal, _BaseComponent6);
-    return _createClass(Modal, [{
+    _createClass(Modal, [{
       key: "toggle",
       value:
       // Public
@@ -4826,6 +4852,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Modal;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -4910,10 +4937,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Offcanvas = /*#__PURE__*/function (_BaseComponent7) {
+    _inherits(Offcanvas, _BaseComponent7);
+    var _super11 = _createSuper(Offcanvas);
     function Offcanvas(element, config) {
       var _this31;
       _classCallCheck(this, Offcanvas);
-      _this31 = _callSuper(this, Offcanvas, [element, config]);
+      _this31 = _super11.call(this, element, config);
       _this31._isShown = false;
       _this31._backdrop = _this31._initializeBackDrop();
       _this31._focustrap = _this31._initializeFocusTrap();
@@ -4922,8 +4951,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Offcanvas, _BaseComponent7);
-    return _createClass(Offcanvas, [{
+    _createClass(Offcanvas, [{
       key: "toggle",
       value:
       // Public
@@ -5075,6 +5103,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Offcanvas;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -5301,17 +5330,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var TemplateFactory = /*#__PURE__*/function (_Config5) {
+    _inherits(TemplateFactory, _Config5);
+    var _super12 = _createSuper(TemplateFactory);
     function TemplateFactory(config) {
       var _this37;
       _classCallCheck(this, TemplateFactory);
-      _this37 = _callSuper(this, TemplateFactory);
+      _this37 = _super12.call(this);
       _this37._config = _this37._getConfig(config);
       return _this37;
     }
 
     // Getters
-    _inherits(TemplateFactory, _Config5);
-    return _createClass(TemplateFactory, [{
+    _createClass(TemplateFactory, [{
       key: "getContent",
       value:
       // Public
@@ -5431,6 +5461,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$5;
       }
     }]);
+    return TemplateFactory;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -5513,13 +5544,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Tooltip = /*#__PURE__*/function (_BaseComponent8) {
+    _inherits(Tooltip, _BaseComponent8);
+    var _super13 = _createSuper(Tooltip);
     function Tooltip(element, config) {
       var _this39;
       _classCallCheck(this, Tooltip);
       if (typeof Popper === 'undefined') {
         throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
       }
-      _this39 = _callSuper(this, Tooltip, [element, config]);
+      _this39 = _super13.call(this, element, config);
 
       // Private
       _this39._isEnabled = true;
@@ -5540,8 +5573,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Tooltip, _BaseComponent8);
-    return _createClass(Tooltip, [{
+    _createClass(Tooltip, [{
       key: "enable",
       value:
       // Public
@@ -6040,6 +6072,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Tooltip;
   }(BaseComponent);
   /**
    * jQuery
@@ -6075,12 +6108,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Popover = /*#__PURE__*/function (_Tooltip) {
+    _inherits(Popover, _Tooltip);
+    var _super14 = _createSuper(Popover);
     function Popover() {
       _classCallCheck(this, Popover);
-      return _callSuper(this, Popover, arguments);
+      return _super14.apply(this, arguments);
     }
-    _inherits(Popover, _Tooltip);
-    return _createClass(Popover, [{
+    _createClass(Popover, [{
       key: "_isWithContent",
       value:
       // Overrides
@@ -6092,7 +6126,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: "_getContentForTemplate",
       value: function _getContentForTemplate() {
-        return _defineProperty(_defineProperty({}, SELECTOR_TITLE, this._getTitle()), SELECTOR_CONTENT, this._getContent());
+        var _ref17;
+        return _ref17 = {}, _defineProperty(_ref17, SELECTOR_TITLE, this._getTitle()), _defineProperty(_ref17, SELECTOR_CONTENT, this._getContent()), _ref17;
       }
     }, {
       key: "_getContent",
@@ -6133,6 +6168,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Popover;
   }(Tooltip);
   /**
    * jQuery
@@ -6189,10 +6225,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var ScrollSpy = /*#__PURE__*/function (_BaseComponent9) {
+    _inherits(ScrollSpy, _BaseComponent9);
+    var _super15 = _createSuper(ScrollSpy);
     function ScrollSpy(element, config) {
       var _this47;
       _classCallCheck(this, ScrollSpy);
-      _this47 = _callSuper(this, ScrollSpy, [element, config]);
+      _this47 = _super15.call(this, element, config);
 
       // this._element is the observablesContainer and config.target the menu links wrapper
       _this47._targetLinks = new Map();
@@ -6209,8 +6247,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(ScrollSpy, _BaseComponent9);
-    return _createClass(ScrollSpy, [{
+    _createClass(ScrollSpy, [{
       key: "refresh",
       value:
       // Public
@@ -6475,6 +6512,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return ScrollSpy;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -6545,10 +6583,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Tab = /*#__PURE__*/function (_BaseComponent10) {
+    _inherits(Tab, _BaseComponent10);
+    var _super16 = _createSuper(Tab);
     function Tab(element) {
       var _this51;
       _classCallCheck(this, Tab);
-      _this51 = _callSuper(this, Tab, [element]);
+      _this51 = _super16.call(this, element);
       _this51._parent = _this51._element.closest(SELECTOR_TAB_PANEL);
       if (!_this51._parent) {
         return _possibleConstructorReturn(_this51);
@@ -6565,8 +6605,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Tab, _BaseComponent10);
-    return _createClass(Tab, [{
+    _createClass(Tab, [{
       key: "show",
       value:
       // Public
@@ -6793,6 +6832,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Tab;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -6871,10 +6911,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Toast = /*#__PURE__*/function (_BaseComponent11) {
+    _inherits(Toast, _BaseComponent11);
+    var _super17 = _createSuper(Toast);
     function Toast(element, config) {
       var _this55;
       _classCallCheck(this, Toast);
-      _this55 = _callSuper(this, Toast, [element, config]);
+      _this55 = _super17.call(this, element, config);
       _this55._timeout = null;
       _this55._hasMouseInteraction = false;
       _this55._hasKeyboardInteraction = false;
@@ -6883,8 +6925,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Toast, _BaseComponent11);
-    return _createClass(Toast, [{
+    _createClass(Toast, [{
       key: "show",
       value:
       // Public
@@ -7038,6 +7079,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Toast;
   }(BaseComponent);
   /**
    * Data API implementation

@@ -4,8 +4,6 @@ var fs = require("graceful-fs"),
     merge = require("merge-stream"),
     gulp = require("gulp"),
     gulpif = require("gulp-if"),
-    print = require("gulp-print"),
-    debug = require("gulp-debug"),
     newer = require("gulp-newer"),
     plumber = require("gulp-plumber"),
     sourcemaps = require("gulp-sourcemaps"),
@@ -53,7 +51,6 @@ gulp.task("rebuild-assets", function () {
 
 // Continuous watch (each asset group is built whenever one of its inputs changes).
 gulp.task("watch", function () {
-    var pathWin32 = require("path");
     getAssetGroups().forEach(function (assetGroup) {
         var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
         var inputWatcher;
@@ -66,7 +63,7 @@ gulp.task("watch", function () {
                 else
                     console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group.");
                 var doRebuild = true;
-                var task = createAssetGroupTask(assetGroup, doRebuild);
+                createAssetGroupTask(assetGroup, doRebuild);
             });
         }
 
@@ -126,7 +123,7 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
         var resolvedPath = path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
 
         if (resolvedPath.includes('*')) {
-            var sortedPaths = glob.sync(resolvedPath);
+            var sortedPaths = glob.sync(resolvedPath, {});
 
             sortedPaths.sort();
 

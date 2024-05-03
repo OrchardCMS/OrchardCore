@@ -2282,6 +2282,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     /* eslint-enable */
   })();
+
   var dir = function dir(elem, _dir, until) {
     var matched = [],
       truncate = until !== undefined;

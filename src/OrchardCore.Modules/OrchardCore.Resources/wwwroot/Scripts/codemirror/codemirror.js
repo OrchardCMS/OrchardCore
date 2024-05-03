@@ -4258,6 +4258,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }, 20);
         } // Issue #1730
       }
+
       cm.display.input.receivedFocus();
     }
     restartBlink(cm);
@@ -4861,6 +4862,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Unique ID
       markArrays: null // Used by addMarkedSpan
     };
+
     pushOperation(cm.curOp);
   }
 
@@ -12174,6 +12176,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
     }
   };
+
   TextareaInput.prototype.blur = function () {
     this.textarea.blur();
   };

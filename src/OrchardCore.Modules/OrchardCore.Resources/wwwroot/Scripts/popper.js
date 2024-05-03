@@ -223,6 +223,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       getDocumentElement(element) // fallback
     );
   }
+
   function getScrollParent(node) {
     if (['html', 'body', '#document'].indexOf(getNodeName(node)) >= 0) {
       // $FlowFixMe[incompatible-return]: assume body is always available

@@ -1284,6 +1284,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       if (cmd === 'strikethrough' && t.o.semantic) {
         t.semanticTag('strike', t.o.semanticKeepAttributes, true); // browsers cannot undo e.g. <del> as they expect <strike>
       }
+
       try {
         t.doc.execCommand('styleWithCSS', false, forceCss || false);
       } catch (c) {}
