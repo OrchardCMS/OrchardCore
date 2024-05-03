@@ -18,8 +18,9 @@ reviews:
   review_status: false
   # The code walkthrough's text may take a lot of space, so collapsing it is nicer UX.
   collapse_walkthrough: true
+  # On-demand reviews are available but PRs are not reviewed automatically.
   auto_review:
-    enabled: true
+    enabled: false
     drafts: false
 chat:
   auto_reply: true
