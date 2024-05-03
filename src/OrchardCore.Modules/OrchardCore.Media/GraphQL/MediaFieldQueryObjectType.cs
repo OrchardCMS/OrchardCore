@@ -52,6 +52,18 @@ namespace OrchardCore.Media.GraphQL
                     var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
+
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
+                .Description("the media texts")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    if (x.Source?.MediaTexts is null)
+                    {
+                        return Array.Empty<string>();
+                    }
+                    return x.Page(x.Source.MediaTexts);
+                });
         }
     }
 }

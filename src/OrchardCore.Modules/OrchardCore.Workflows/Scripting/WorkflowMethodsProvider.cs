@@ -28,7 +28,7 @@ namespace OrchardCore.Workflows.Scripting
             _workflowIdMethod = new GlobalMethod
             {
                 Name = "workflowId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId),
+                Method = serviceProvider => () => workflowContext.Workflow.WorkflowId,
             };
 
             _inputMethod = new GlobalMethod
@@ -58,13 +58,13 @@ namespace OrchardCore.Workflows.Scripting
             _resultMethod = new GlobalMethod
             {
                 Name = "lastResult",
-                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult),
+                Method = serviceProvider => () => workflowContext.LastResult,
             };
 
             _correlationIdMethod = new GlobalMethod
             {
                 Name = "correlationId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId),
+                Method = serviceProvider => () => workflowContext.Workflow.CorrelationId,
             };
 
             _setCorrelationIdMethod = new GlobalMethod
