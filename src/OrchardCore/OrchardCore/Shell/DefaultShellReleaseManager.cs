@@ -1,42 +1,28 @@
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell;
 
 public class DefaultShellReleaseManager : IShellReleaseManager
 {
-    private bool _release;
-    private bool _deferredTaskAdded;
-
     public void SuspendReleaseRequest()
     {
-        _release = false;
+        var context = ShellScope.Get<ShellReleaseRequestContext>(nameof(ShellReleaseRequestContext));
+
+        if (context is not null)
+        {
+            context.Release = false;
+
+            ShellScope.Set(nameof(ShellReleaseRequestContext), context);
+        }
     }
 
     public void RequestRelease()
     {
-        _release = true;
-
-        if (_deferredTaskAdded)
-        {
-            return;
-        }
-
-        _deferredTaskAdded = true;
-
-        ShellScope.AddDeferredTask(async scope =>
-        {
-            if (!_release)
+        ShellScope.Set(nameof(ShellReleaseRequestContext),
+            new ShellReleaseRequestContext()
             {
-                return;
-            }
-
-            _release = false;
-
-            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
-            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
-
-            await shellHost.ReleaseShellContextAsync(shellSettings);
-        });
+                Release = true
+            });
     }
 }

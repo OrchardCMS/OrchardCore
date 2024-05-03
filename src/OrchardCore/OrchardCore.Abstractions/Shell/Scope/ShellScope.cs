@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
@@ -497,6 +498,13 @@ namespace OrchardCore.Environment.Shell.Scope
                     },
                     activateShell: false);
                 }
+            }
+
+            var releaseContext = Get<ShellReleaseRequestContext>(nameof(ShellReleaseRequestContext));
+
+            if (releaseContext is not null && releaseContext.Release)
+            {
+                await ShellContext.ReleaseAsync();
             }
         }
 
