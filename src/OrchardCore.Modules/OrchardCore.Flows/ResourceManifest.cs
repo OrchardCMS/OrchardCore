@@ -3,26 +3,26 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Flows;
 
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+{
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
     {
-        private static ResourceManifest _manifest;
+        _manifest = new ResourceManifest();
 
-        static ResourceManagementOptionsConfiguration()
-        {
-            _manifest = new ResourceManifest();
-
-            _manifest
-                .DefineStyle("flowpart-edit")
-                .SetUrl( "~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
-            _manifest
-                .DefineScript("flowpart-edit")
-                .SetDependencies("jQuery")
-                .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js","~/OrchardCore.Flows/Scripts/flows.edit.js");
-        }
-
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(_manifest);
-        }
+        _manifest
+            .DefineStyle("flowpart-edit")
+            .SetUrl( "~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
+            
+        _manifest
+            .DefineScript("flowpart-edit")
+            .SetDependencies("jQuery")
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js","~/OrchardCore.Flows/Scripts/flows.edit.js");
     }
 
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
