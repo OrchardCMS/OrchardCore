@@ -70,10 +70,11 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
         var culture = CultureInfo.CurrentUICulture;
+        var localizedStrings = includeParentCultures
+            ? GetAllStringsFromCultureHierarchyAsync(culture)
+            : GetAllStringsAsync(culture);
 
-        return includeParentCultures
-            ? GetAllStringsFromCultureHierarchyAsync(culture).GetAwaiter().GetResult()
-            : GetAllStringsAsync(culture).ToEnumerable();
+        return localizedStrings.ToEnumerable();
     }
 
     /// <inheritdocs />
@@ -120,10 +121,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         }
     }
 
-    private async Task<List<LocalizedString>> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
+    private async IAsyncEnumerable<LocalizedString> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
     {
         var currentCulture = culture;
-        var allLocalizedStrings = new List<LocalizedString>();
+        var resourcesNames = new HashSet<string>();
 
         do
         {
@@ -133,17 +134,17 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
             {
                 foreach (var localizedString in localizedStrings)
                 {
-                    if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
+                    if (!resourcesNames.Contains(localizedString.Name))
                     {
-                        allLocalizedStrings.Add(localizedString);
+                        resourcesNames.Add(localizedString.Name);
+
+                        yield return localizedString;
                     }
                 }
             }
 
             currentCulture = currentCulture.Parent;
         } while (currentCulture != currentCulture.Parent);
-
-        return allLocalizedStrings;
     }
 
     [Obsolete("This method is deprecated, please use GetTranslationAsync instead.")]
