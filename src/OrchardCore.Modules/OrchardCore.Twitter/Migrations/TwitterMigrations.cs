@@ -1,52 +1,73 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata;
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Twitter.Migrations;
 
 public class TwitterMigrations : DataMigration
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IStore _store;
-    private readonly ShellSettings _shellSettings;
+    private readonly ShellDescriptor _shellDescriptor;
 
-    public TwitterMigrations(IContentDefinitionManager contentDefinitionManager, IStore store, ShellSettings shellSettings)
+    public TwitterMigrations(ShellDescriptor shellDescriptor)
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _store = store;
-        _shellSettings = shellSettings;
+        _shellDescriptor = shellDescriptor;
     }
 
     public int Create()
     {
-        return 2;
+        if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Twitter"))
+        {
+            Upgrade();
+        }
+
+        return 1;
     }
 
-    public int UpdateFrom1()
+    private void Upgrade()
     {
-        using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-        var tablePrefix = string.IsNullOrEmpty(_store.Configuration.TablePrefix) ? "" : _store.Configuration.TablePrefix + "_";
-        var sql = $@"
-                -- Updates Existing Workflows
-                UPDATE {tablePrefix}Document SET Content = REPLACE(content, 'UpdateTwitterStatusTask', 'UpdateXStatusTask')
-                WHERE Type = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions';
-                ";
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+            var logger = scope.ServiceProvider.GetService<ILogger<TwitterMigrations>>();
+            var tablePrefix = session.Store.Configuration.TablePrefix;
+            var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
+            var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
-        using var transaction = connection.BeginTransaction();
-        using var command = transaction.Connection.CreateCommand();
+            logger.LogDebug("Updating Twitter/X Workflow Items");
 
-        command.CommandText = sql;
-        command.CommandType = System.Data.CommandType.Text;
+            await using var connection = dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+            await using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
+            var dialect = session.Store.Configuration.SqlDialect;
 
-        command.ExecuteNonQuery();
+            try
+            {
+                var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-        return 2;
+                var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'UpdateTwitterStatusTask', 'UpdateXStatusTask') WHERE {quotedTypeColumnName} = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions'";
+
+                await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync();
+                logger.LogError(e, "An error occurred while updating Twitter/X Workflow Items");
+
+                throw;
+            }
+        });
     }
 
 
