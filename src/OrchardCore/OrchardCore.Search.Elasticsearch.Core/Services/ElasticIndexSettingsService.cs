@@ -106,7 +106,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         // Returns the name of the analyzer configured for the given index name.
         private static string GetAnalyzerName(ElasticIndexSettingsDocument document, string indexName)
         {
-            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings))
+            // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && settings.AnalyzerName != "standardanalyzer")
             {
                 return settings.AnalyzerName;
             }
