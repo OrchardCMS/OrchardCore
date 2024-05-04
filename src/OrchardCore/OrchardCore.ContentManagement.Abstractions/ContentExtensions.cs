@@ -65,7 +65,10 @@ namespace OrchardCore.ContentManagement
         {
             if (contentElement.Elements.TryGetValue(name, out var element))
             {
-                return element;
+                if (element.GetType() == contentElementType)
+                {
+                    return element;
+                }
             }
 
             var elementData = contentElement.Data[name] as JsonObject;
