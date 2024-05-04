@@ -3,7 +3,7 @@ on:
   issue_comment:
     types: [created]
   schedule:
-    # once a day at 13:00 UTC to cleanup old runs
+    # Once a day at 13:00 UTC to clean up old runs.
     - cron: '0 13 * * *'
 
 permissions:
