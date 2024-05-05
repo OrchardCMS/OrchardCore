@@ -27,6 +27,6 @@ If the PR is coming from a fork, working with its code locally won't be as trivi
 
 ## Backporting Pull Requests to Another Branch
 
-Occasionally, you may find it necessary to cherry-pick a pull request into a release branch after it has been merged into main. To facilitate this process, we've established a dedicated workflow called backport.
+Occasionally, you may find it necessary to cherry-pick a pull request into a release branch after it has been merged into `main`. To facilitate this process, we've established a dedicated workflow called `backport`.
 
 To initiate the backporting process, simply leave a comment on the pull request you wish to backport. The comment should contain the following command: `/backport to release/1.8`. This command serves as a trigger for the backporting workflow, seamlessly bringing the desired pull request into the specified branch.
