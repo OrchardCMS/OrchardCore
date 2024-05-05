@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -58,6 +59,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
                 foreach (var part in record.ContentTypePartDefinitionRecords)
                 {
+                    if (string.IsNullOrEmpty(part.PartName))
+                    {
+                        throw new Exception(string.Format("Failed to add part to ContentType '{0}', The PartName property is not allowed to be empty", type.Name));
+                    }
+
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
                 }
             });
