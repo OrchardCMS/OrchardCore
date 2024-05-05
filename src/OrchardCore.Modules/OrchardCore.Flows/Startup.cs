@@ -1,5 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -12,6 +13,7 @@ using OrchardCore.Flows.Settings;
 using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Flows
 {
@@ -45,6 +47,8 @@ namespace OrchardCore.Flows
             services.AddContentPart<FlowMetadata>();
 
             services.AddDataMigration<Migrations>();
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 }

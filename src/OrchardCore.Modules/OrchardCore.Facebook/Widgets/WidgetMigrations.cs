@@ -15,7 +15,9 @@ namespace OrchardCore.Facebook.Widgets
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public WidgetMigrations(IRecipeMigrator recipeMigrator, IContentDefinitionManager contentDefinitionManager)
+        public WidgetMigrations(
+            IRecipeMigrator recipeMigrator,
+            IContentDefinitionManager contentDefinitionManager)
         {
             _recipeMigrator = recipeMigrator;
             _contentDefinitionManager = contentDefinitionManager;
@@ -28,6 +30,7 @@ namespace OrchardCore.Facebook.Widgets
                 .WithDescription("Provides a Facebook plugin part to create Facebook social plugin widgets."));
 
             await _recipeMigrator.ExecuteAsync($"Widgets/migration{RecipesConstants.RecipeExtension}", this);
+
             return 1;
         }
     }
