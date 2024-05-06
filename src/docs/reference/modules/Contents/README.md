@@ -131,7 +131,7 @@ Well known properties include
 
 ## Contents Module RESTful Web API
 
-The `OrchardCore.Contents` module provides RESTful API endpoints via [`ApiController`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Controllers/ApiController.cs) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
+The `OrchardCore.Contents` module provides RESTful API endpoints via [`minimal API`](https://github.com/OrchardCMS/OrchardCore/tree/main/src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
 
 ### Useful modules and libraries
 
