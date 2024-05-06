@@ -16,7 +16,7 @@
           "DisplayName": "Message",
           "ContentTypePartDefinitionRecords": [ 
             {
-              //"PartName": "TitlePart", // Test PartName validation.
+              // "PartName": "TitlePart", // Test PartName validation.
               "Name": "TitlePart"
             }
           ]
