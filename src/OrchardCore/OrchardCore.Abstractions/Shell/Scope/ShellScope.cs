@@ -19,11 +19,11 @@ namespace OrchardCore.Environment.Shell.Scope
         private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
         private readonly AsyncServiceScope _serviceScope;
-        private readonly Dictionary<object, object> _items = [];
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = [];
-        private readonly HashSet<string> _deferredSignals = [];
-        private readonly List<Func<ShellScope, Task>> _deferredTasks = [];
-        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = [];
+        private Dictionary<object, object> _items;
+        private List<Func<ShellScope, Task>> _beforeDispose;
+        private HashSet<string> _deferredSignals;
+        private List<Func<ShellScope, Task>> _deferredTasks;
+        private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;
@@ -84,35 +84,68 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static void Set(object key, object value)
         {
-            if (Current is not null)
+            var current = Current;
+
+            if (current != null)
             {
-                Current._items[key] = value;
+                current._items ??= [];
+
+                current._items[key] = value;
             }
         }
 
         /// <summary>
         /// Gets a shared item from the current shell scope.
         /// </summary>
-        public static object Get(object key) => Current is null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
+        public static object Get(object key)
+        {
+            var current = Current;
+
+            if (current == null)
+            {
+                return null;
+            }
+
+            current._items ??= [];
+
+            return current._items.TryGetValue(key, out var value) ? value : null;
+        }
 
         /// <summary>
         /// Gets a shared item of a given type from the current shell scope.
         /// </summary>
-        public static T Get<T>(object key) => Current is null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+        public static T Get<T>(object key)
+        {
+            var current = Current;
+
+            if (current == null)
+            {
+                return default;
+            }
+
+            current._items ??= [];
+
+            return current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+        }
 
         /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
         public static T GetOrCreate<T>(object key, Func<T> factory)
         {
-            if (Current is null)
+            var current = Current;
+
+            if (current == null)
             {
                 return factory();
             }
 
-            if (!Current._items.TryGetValue(key, out var value) || value is not T item)
+            current._items ??= [];
+
+
+            if (!current._items.TryGetValue(key, out var value) || value is not T item)
             {
-                Current._items[key] = item = factory();
+                current._items[key] = item = factory();
             }
 
             return item;
@@ -123,14 +156,19 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static T GetOrCreate<T>(object key) where T : class, new()
         {
-            if (Current is null)
+            var current = Current;
+
+            if (current == null)
             {
                 return new T();
             }
 
-            if (!Current._items.TryGetValue(key, out var value) || value is not T item)
+            current._items ??= [];
+
+
+            if (!current._items.TryGetValue(key, out var value) || value is not T item)
             {
-                Current._items[key] = item = new T();
+                current._items[key] = item = new T();
             }
 
             return item;
@@ -338,22 +376,22 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        internal void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
+        internal void BeforeDispose(Func<ShellScope, Task> callback) => (_beforeDispose ??= []).Insert(0, callback);
 
         /// <summary>
         /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
         /// </summary>
-        internal void DeferredSignal(string key) => _deferredSignals.Add(key);
+        internal void DeferredSignal(string key) => (_deferredSignals ??= []).Add(key);
 
         /// <summary>
         /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
         /// </summary>
-        internal void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
+        internal void DeferredTask(Func<ShellScope, Task> task) => (_deferredTasks ??= []).Add(task);
 
         /// <summary>
         /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
         /// </summary>
-        internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback) => _exceptionHandlers.Add(callback);
+        internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback) => (_exceptionHandlers ??= []).Add(callback);
 
         /// <summary>
         /// Registers a delegate to be invoked before the current shell scope will be disposed.
@@ -380,6 +418,11 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public async Task HandleExceptionAsync(Exception e)
         {
+            if (_exceptionHandlers == null)
+            {
+                return;
+            }
+
             foreach (var callback in _exceptionHandlers)
             {
                 await callback(this, e);
@@ -392,9 +435,12 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         internal async Task BeforeDisposeAsync()
         {
-            foreach (var callback in _beforeDispose)
+            if (_beforeDispose != null)
             {
-                await callback(this);
+                foreach (var callback in _beforeDispose)
+                {
+                    await callback(this);
+                }
             }
 
             if (_serviceScopeOnly)
@@ -402,7 +448,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            if (_deferredSignals.Count > 0)
+            if (_deferredSignals?.Count > 0)
             {
                 var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
                 foreach (var key in _deferredSignals)
@@ -411,7 +457,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            if (_deferredTasks.Count > 0)
+            if (_deferredTasks?.Count > 0)
             {
                 var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 
@@ -430,7 +476,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
+                    // Use 'UsingAsync()' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                     // trigger another one, but still prevent the shell to be activated in a deferred task.
                     await scope.UsingAsync(async scope =>
                     {
