@@ -135,7 +135,7 @@ The `OrchardCore.Contents` module provides RESTful API endpoints via [`minimal A
 
 ### Useful modules and libraries
 
-- We suggest you to read the docs about the [GraphQL module](../Apis.GraphQL/), to be used for querying content items.
+- We suggest you to read the docs about the [GraphQL module](../Apis.GraphQL/README.md), to be used for querying content items.
 - There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community, that allows you to create APIs documentation using Swagger.
 - Lombiq provide a [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
 
