@@ -70,9 +70,6 @@ public class JsonDynamicObject : DynamicObject
 
     public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
 
-    [Obsolete("Please use the SelectNode method", error: true)]
-    public JsonNode? SelectToken(string path) => _jsonObject.SelectNode(path);
-
     public object? GetValue(string key)
     {
         if (_dictionary.TryGetValue(key, out var value))

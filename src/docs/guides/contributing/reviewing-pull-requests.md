@@ -24,3 +24,9 @@ If the PR is coming from a fork, working with its code locally won't be as trivi
 - Be sure to merge PRs that don't need a second opinion. This is especially important for external contributors who can't merge their PRs. Keeping PRs open will make them collect merge conflicts and make the contributor demotivated.
 - Be especially patient and encouraging with first-time contributors. This is indicated by such a flag on the PR.
 - You can add the [Feedback section](contributing-code.md) to your review comment (i.e. the one that you send your per-line comments with) to remind the author about the practices.
+
+## Backporting Pull Requests to Another Branch
+
+Occasionally, you may find it necessary to cherry-pick a pull request into a release branch after it has been merged into `main`. To facilitate this process, we've established a dedicated workflow called `backport`.
+
+To initiate the backporting process, simply leave a comment on the pull request you wish to backport. The comment should contain the following command: `/backport to release/1.8`. This command serves as a trigger for the backporting workflow, seamlessly bringing the desired pull request into the specified branch.

@@ -1,3 +1,4 @@
+using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
@@ -26,6 +27,12 @@ namespace OrchardCore.Tests.Apis.Context
                 )
                 .ConfigureServices(collection =>
                 {
+                    collection.Configure<YesSqlOptions>(options =>
+                    {
+                        // To ensure we don't encounter any concurrent issue, enable EnableThreadSafetyChecks for all test.
+                        options.EnableThreadSafetyChecks = true;
+                    });
+
                     collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
 
                     collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>

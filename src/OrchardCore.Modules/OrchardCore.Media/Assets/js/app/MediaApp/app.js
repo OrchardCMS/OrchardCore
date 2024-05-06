@@ -27,7 +27,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 name: $('#t-mediaLibrary').text(),
                 path: '',
                 folder: '',
-                isDirectory: true
+                isDirectory: true,
+                canCreateFolder: $('#allowNewRootFolders').val() === 'true'
             };
 
             mediaApp = new Vue({
