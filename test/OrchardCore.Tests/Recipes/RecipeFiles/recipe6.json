@@ -47,7 +47,7 @@
               }
             },
             {
-              //"PartName": "TitlePart",//test part validate 
+              //"PartName": "TitlePart", // Test PartName validation.
               "Name": "TitlePart"
             }
           ]
