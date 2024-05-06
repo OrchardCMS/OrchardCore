@@ -276,28 +276,28 @@ namespace OrchardCore.Tests.Data
         }
     }
 
-    public class MyPart : ContentPart
+    public sealed class MyPart : ContentPart
     {
         public string Text { get; set; }
     }
 
-    public class MyField : ContentField
+    public sealed class MyField : ContentField
     {
         public int Value { get; set; }
     }
 
-    public class MyDateTimeField : ContentField
+    public sealed class MyDateTimeField : ContentField
     {
         public DateTime? Value { get; set; }
     }
 
-    public class MyTextField : ContentField
+    public sealed class MyTextField : ContentField
     {
         public string Text { get; set; }
     }
 
-    public class GetOnlyListPart : ContentPart
+    public sealed class GetOnlyListPart : ContentPart
     {
-        public IList<string> Texts { get; } = new List<string>();
+        public IList<string> Texts { get; } = [];
     }
 }

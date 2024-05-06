@@ -267,13 +267,17 @@ public class JsonDynamicValue : DynamicObject, IConvertible
         {
         }
 
-        // BindConvert() is automatically invoked to handle type conversion when casting dynamic types
-        // to static types in C#. For example, when extracting a DateTime value from a dynamically typed
+
+        // The 'BindConvert()' method is automatically invoked to handle type conversion when casting
+        // dynamic types to static types in C#. 
+        //
+        // For example, when extracting a 'DateTime' value from a dynamically typed
         // content item's field:
         // 
         // dynamic contentItem = [...]; // Assume contentItem is initialized properly
         //
-        // // BindConvert() is called implicitly to convert contentItem.Content.MyPart.MyField.Value to DateTime
+        // 'BindConvert()' is called implicitly to convert contentItem.Content.MyPart.MyField.Value 
+        // to 'DateTime' with similar behavior to the following:
         // var dateTimeValue = (DateTime)contentItem.Content.MyPart.MyField.Value;
         public override DynamicMetaObject BindConvert(ConvertBinder binder)
         {
@@ -282,6 +286,7 @@ public class JsonDynamicValue : DynamicObject, IConvertible
             if (_cachedReflectionInfo.TryGetValue(targetType, out var castMethod))
             {
                 var convertExpression = Expression.Convert(Expression.Convert(Expression, typeof(JsonDynamicValue)), targetType, castMethod);
+                
                 return new DynamicMetaObject(convertExpression, BindingRestrictions.GetTypeRestriction(Expression, typeof(JsonDynamicValue)));
             }
 
