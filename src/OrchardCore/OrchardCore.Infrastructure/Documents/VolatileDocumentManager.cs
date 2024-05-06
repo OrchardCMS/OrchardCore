@@ -116,7 +116,7 @@ namespace OrchardCore.Documents
         {
             public UpdateDelegate UpdateDelegateAsync;
             public AfterUpdateDelegate AfterUpdateDelegateAsync;
-            public HashSet<object> Targets = [];
+            public HashSet<object> Targets { get; set; } = [];
         }
     }
 }
