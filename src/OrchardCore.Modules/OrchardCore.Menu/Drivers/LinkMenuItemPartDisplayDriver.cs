@@ -72,11 +72,6 @@ namespace OrchardCore.Menu.Drivers
             part.Url = model.Url;
             part.ContentItem.DisplayText = model.Name;
 
-            // This code can be removed in a later release.
-#pragma warning disable 0618
-            part.Name = model.Name;
-#pragma warning restore 0618
-
             var urlToValidate = part.Url;
 
             if (!string.IsNullOrEmpty(urlToValidate))

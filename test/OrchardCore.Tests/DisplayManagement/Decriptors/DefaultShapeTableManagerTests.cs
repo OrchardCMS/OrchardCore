@@ -294,7 +294,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
             public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
                 => _featureShapes = featureShapes;
 
-            void IShapeTableProvider.Discover(ShapeTableBuilder builder)
+            ValueTask IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
             {
                 foreach (var pair in FeatureShapes)
                 {
@@ -305,6 +305,8 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
                 }
 
                 Discover(builder);
+
+                return ValueTask.CompletedTask;
             }
         }
 

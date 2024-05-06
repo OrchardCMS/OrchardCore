@@ -12,6 +12,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class Migrations : DataMigration
     {
         private readonly ILogger _logger;
+
         public Migrations(ILogger<Migrations> logger)
         {
             _logger = logger;

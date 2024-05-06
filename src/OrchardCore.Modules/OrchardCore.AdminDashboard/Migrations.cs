@@ -14,7 +14,9 @@ namespace OrchardCore.AdminDashboard
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IRecipeMigrator _recipeMigrator;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, IRecipeMigrator recipeMigrator)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IRecipeMigrator recipeMigrator)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _recipeMigrator = recipeMigrator;

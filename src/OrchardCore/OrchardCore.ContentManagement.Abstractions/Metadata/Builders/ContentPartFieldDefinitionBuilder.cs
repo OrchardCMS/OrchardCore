@@ -20,20 +20,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             _settings = field.Settings.Clone();
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            return this;
-        }
-
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
-        {
-            _settings[name] = JArray.FromObject(values);
-            return this;
-        }
-
         public ContentPartFieldDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
