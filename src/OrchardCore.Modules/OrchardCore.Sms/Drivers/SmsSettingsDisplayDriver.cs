@@ -19,28 +19,25 @@ namespace OrchardCore.Sms.Drivers;
 
 public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
 
     protected IStringLocalizer S;
 
     private readonly SmsProviderOptions _smsProviderOptions;
 
     public SmsSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<SmsProviderOptions> smsProviders,
-        ShellSettings shellSettings,
         IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _smsProviderOptions = smsProviders.Value;
-        _shellSettings = shellSettings;
         S = stringLocalizer;
     }
 
@@ -82,7 +79,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             {
                 settings.DefaultProviderName = model.DefaultProvider;
 
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                _shellReleaseManager.RequestRelease();
             }
         }
 

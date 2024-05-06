@@ -23,9 +23,6 @@ namespace OrchardCore.Layers.GraphQL
             Name = "Layer";
 
             Field(layer => layer.Name).Description("The name of the layer.");
-#pragma warning disable 0618
-            Field(layer => layer.Rule).Description("Deprecated. The rule that activates the layer.");
-#pragma warning restore 0618
             Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>("layerrule")
                 .Description("The rule that activates the layer.")
                 .Resolve(ctx => ctx.Source.LayerRule.Conditions);

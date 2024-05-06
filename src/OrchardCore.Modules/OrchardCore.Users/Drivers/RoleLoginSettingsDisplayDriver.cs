@@ -21,6 +21,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
+
     protected readonly IStringLocalizer S;
 
     public RoleLoginSettingsDisplayDriver(

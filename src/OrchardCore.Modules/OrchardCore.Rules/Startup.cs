@@ -22,8 +22,7 @@ namespace OrchardCore.Rules
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
                 .AddScoped<IConditionResolver, ConditionResolver>()
                 .AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>()
-                .AddScoped<IRuleService, RuleService>()
-                .AddScoped<IRuleMigrator, RuleMigrator>();
+                .AddScoped<IRuleService, RuleService>();
 
             // All condition.
             services.AddRule<AllConditionGroup, AllConditionEvaluator, AllConditionDisplayDriver>();
