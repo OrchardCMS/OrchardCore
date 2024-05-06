@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -256,20 +257,29 @@ public class JsonDynamicValue : DynamicObject, IConvertible
 
     private sealed class JsonDynamicMetaObject : DynamicMetaObject
     {
+        private static readonly Dictionary<Type, MethodInfo> _cachedReflectionInfo = typeof(JsonDynamicValue)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Where(method => method.Name == "op_Explicit")
+            .ToDictionary(method => method.ReturnType);
+
         public JsonDynamicMetaObject(Expression expression, JsonDynamicValue value)
             : base(expression, BindingRestrictions.Empty, value)
         {
         }
 
+        // BindConvert() is automatically invoked to handle type conversion when casting dynamic types
+        // to static types in C#. For example, when extracting a DateTime value from a dynamically typed
+        // content item's field:
+        // 
+        // dynamic contentItem = [...]; // Assume contentItem is initialized properly
+        //
+        // // BindConvert() is called implicitly to convert contentItem.Content.MyPart.MyField.Value to DateTime
+        // var dateTimeValue = (DateTime)contentItem.Content.MyPart.MyField.Value;
         public override DynamicMetaObject BindConvert(ConvertBinder binder)
         {
             var targetType = binder.Type;
 
-            var castMethod = typeof(JsonDynamicValue).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .Where(m => m.Name == "op_Explicit" && m.ReturnType == targetType)
-                .FirstOrDefault();
-
-            if (castMethod != null)
+            if (_cachedReflectionInfo.TryGetValue(targetType, out var castMethod))
             {
                 var convertExpression = Expression.Convert(Expression.Convert(Expression, typeof(JsonDynamicValue)), targetType, castMethod);
                 return new DynamicMetaObject(convertExpression, BindingRestrictions.GetTypeRestriction(Expression, typeof(JsonDynamicValue)));
