@@ -52,7 +52,7 @@ namespace OrchardCore.Recipes
         }
 
         [Fact]
-        public async Task IncorrectTypeDefinitionImportsShouldBeBlocked()
+        public async Task ContentDefinitionStep_WhenPartNameIsMissing_ThrowInvalidOperationException()
         {
             var context = new BlogContext();
             await context.InitializeAsync();
