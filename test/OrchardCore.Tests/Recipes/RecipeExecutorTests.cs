@@ -62,14 +62,13 @@ namespace OrchardCore.Recipes
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
                 var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
-                try
+
+                var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 {
                     await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
-                }
-                catch (Exception ex)
-                {
-                    Assert.Equal("Failed to add part to ContentType 'Message', The PartName property is not allowed to be empty", ex.Message);
-                }
+                });
+
+                Assert.Equal("Failed to add part to ContentType 'Message', The PartName property is not allowed to be empty", exception.Message);
             });
         }
 
