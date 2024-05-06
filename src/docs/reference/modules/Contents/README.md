@@ -143,7 +143,7 @@ The `OrchardCore.Contents` module provides RESTful API endpoints via [`minimal A
 
 To utilize the Orchard Core Contents API endpoints, user accounts must authenticate using the OAuth 2 standard by activating and configuring the "OpenId Authorization Server" and "OpenId Token Validation" features. Detailed configuration steps can be found in the [OpenId Authorization Server documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) and the [OpenId Token Validation documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation).
 
-It is usually better to **create a dedicated user for performing API calls**, to maintain control over user rights, and to easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)". Those are the available permissions:
+It is usually better to **create a dedicated user for performing API calls**, maintain control over user rights, and easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)". Those are the available permissions:
 
 - View and edit the OpenID Connect client settings
 - View and edit the OpenID Connect server settings
