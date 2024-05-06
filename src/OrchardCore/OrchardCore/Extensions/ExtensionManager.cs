@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            if(_extensions.TryGetValue(extensionInfo.Id, out var extension))
+            if (_extensions.TryGetValue(extensionInfo.Id, out var extension))
             {
                 return extension.ExportedTypes;
             }
