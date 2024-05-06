@@ -60,7 +60,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 {
                     if (string.IsNullOrEmpty(part.PartName))
                     {
-                        throw new InvalidOperationException($"Failed to add part to ContentType '{type.Name}', The PartName property is not allowed to be empty");
+                        throw new InvalidOperationException($"Unable to add content-part to the '{type.Name}' content-type. The part name cannot be null or empty.");
                     }
 
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
