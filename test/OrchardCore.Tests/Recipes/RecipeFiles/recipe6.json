@@ -1,7 +1,7 @@
 {
   "name": "Recipe6",
   "displayName": "Recipe 6",
-  "description": "This is a recipe for a bug to verify that the type-checking function works as expected",
+  "description": "This recipe is designed to uncover potential bugs during the content-definition import process. It serves as a validation for the import functionality.",
   "author": "Tony Han",
   "website": "",
   "version": "1.0.0",
