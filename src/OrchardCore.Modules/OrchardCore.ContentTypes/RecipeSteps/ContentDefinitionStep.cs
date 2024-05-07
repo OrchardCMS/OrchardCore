@@ -16,7 +16,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     public class ContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
+
         public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<ContentDefinitionStep> s)
         {
             _contentDefinitionManager = contentDefinitionManager;

@@ -94,7 +94,7 @@ namespace OrchardCore.Deployment.Controllers
                 }
                 catch (Exception ex)
                 {
-                    await _notifier.ErrorAsync(H[ex.Message]);
+                    await _notifier.ErrorAsync(H["Deployment package import faild, {0}", ex.Message]);
                 }
                 finally
                 {
@@ -155,7 +155,7 @@ namespace OrchardCore.Deployment.Controllers
                 }
                 catch (Exception ex)
                 {
-                    await _notifier.ErrorAsync(H[ex.Message]);
+                    await _notifier.ErrorAsync(H["Recipe import faild, {0}", ex.Message]);
                 }
                 finally
                 {
