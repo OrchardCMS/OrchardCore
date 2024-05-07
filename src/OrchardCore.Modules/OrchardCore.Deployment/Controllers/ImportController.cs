@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
@@ -25,11 +26,13 @@ namespace OrchardCore.Deployment.Controllers
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
+            ILogger<ImportController> logger,
             IHtmlLocalizer<ImportController> htmlLocalizer,
             IStringLocalizer<ImportController> stringLocalizer
         )
@@ -37,7 +40,7 @@ namespace OrchardCore.Deployment.Controllers
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
-
+            _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -95,6 +98,7 @@ namespace OrchardCore.Deployment.Controllers
                 catch (Exception ex)
                 {
                     await _notifier.ErrorAsync(H["Deployment package import faild, {0}", ex.Message]);
+                    _logger.LogError(ex, "Deployment package imported.");
                 }
                 finally
                 {
@@ -156,6 +160,7 @@ namespace OrchardCore.Deployment.Controllers
                 catch (Exception ex)
                 {
                     await _notifier.ErrorAsync(H["Recipe import faild, {0}", ex.Message]);
+                    _logger.LogError(ex, "Recipe import faild");
                 }
                 finally
                 {
