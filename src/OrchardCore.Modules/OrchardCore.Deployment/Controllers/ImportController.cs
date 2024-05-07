@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
@@ -91,6 +92,10 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _notifier.SuccessAsync(H["Deployment package imported."]);
                 }
+                catch (Exception ex)
+                {
+                    await _notifier.ErrorAsync(H[ex.Message]);
+                }
                 finally
                 {
                     if (System.IO.File.Exists(tempArchiveName))
@@ -147,6 +152,10 @@ namespace OrchardCore.Deployment.Controllers
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
                     await _notifier.SuccessAsync(H["Recipe imported."]);
+                }
+                catch (Exception ex)
+                {
+                    await _notifier.ErrorAsync(H[ex.Message]);
                 }
                 finally
                 {

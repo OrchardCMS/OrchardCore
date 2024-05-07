@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -15,10 +16,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     public class ContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+        private readonly IStringLocalizer S;
+        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<ContentDefinitionStep> s)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            S = s;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -60,7 +62,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 {
                     if (string.IsNullOrEmpty(part.PartName))
                     {
-                        throw new InvalidOperationException($"Unable to add content-part to the '{type.Name}' content-type. The part name cannot be null or empty.");
+                        throw new InvalidOperationException(S["Unable to add content-part to the '{0}' content-type. The part name cannot be null or empty.", type.Name]);
                     }
 
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
