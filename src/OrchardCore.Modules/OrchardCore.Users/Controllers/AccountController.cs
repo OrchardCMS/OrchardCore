@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -800,7 +801,7 @@ namespace OrchardCore.Users.Controllers
                 user.Properties.Merge(context.PropertiesToUpdate, _jsonMergeSettings);
                 userNeedUpdate = true;
             }
-            var currentClaims = user.UserClaims.DistinctBy(x => new { x.ClaimType, x.ClaimValue }).ToList();
+            var currentClaims = user.UserClaims.Where(x => !x.ClaimType.IsNullOrEmpty()).DistinctBy(x => new { x.ClaimType, x.ClaimValue }).ToList();
             var claimsChanged = false;
 
             if (context.ClaimsToRemove != null)

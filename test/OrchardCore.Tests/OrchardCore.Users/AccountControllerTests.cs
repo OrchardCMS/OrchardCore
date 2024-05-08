@@ -44,7 +44,7 @@ public class AccountControllerTests
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
-
+     
         await context.UsingTenantScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -55,22 +55,30 @@ public class AccountControllerTests
             var userRoles = await userManager.GetRolesAsync(user);
 
             var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
+                        .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var loginSettings = new LoginSettings
+            {
+                UseScriptToSyncRoles = true,
+                SyncRolesScript = """
+                context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
+                context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
+                context.rolesToAdd.push("Administrator")
+                context.propertiesToUpdate={
+                                                "UserProfile": {
+                                                    "UserProfile": {
+                                                        "DisplayName": {
+                                                        "Text": "Sam Zhang(CEO)"
+                                                        }
+                                                    }
+                                                }
+                                            }
 
-            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "displayName", ClaimValue = "Sam Zhang(CEO)" });
-            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "firstName", ClaimValue = "Sam" });
-            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "lastName", ClaimValue = "Zhang" });
-            context.ClaimsToUpdate.Add(new UserClaim { ClaimType = "jobTitle", ClaimValue = "CEO" });
-
-            context.RolesToAdd.Add("Administrator");
-            context.PropertiesToUpdate = JObject.Parse(@"{
-                                  ""UserProfile"": {
-                                    ""UserProfile"": {
-                                      ""DisplayName"": {
-                                        ""Text"": ""Sam Zhang(CEO)""
-                                      }
-                                    }
-                                  }
-                                }");
+                """
+            };
+            scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
             if (await AccountController.UpdateUserPropertiesAsync(userManager, user, context))
             {
@@ -110,21 +118,32 @@ public class AccountControllerTests
 
 
             var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
-            updateContext.ClaimsToUpdate.Add(new UserClaim { ClaimType = "displayName", ClaimValue = "Sam Zhang" });
-            updateContext.ClaimsToRemove.Add(new UserClaim { ClaimType = "jobTitle", ClaimValue = "CEO" });
 
-            updateContext.RolesToRemove.Add("Administrator");
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
+                      .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var loginSettings = new LoginSettings
+            {
+                UseScriptToSyncRoles = true,
+                SyncRolesScript = """
+                context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
+                context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                context.claimsToRemove.push({claimType:"jobTitle",    claimValue:"CEO"});
+                context.rolesToRemove.push("Administrator")
+                context.propertiesToUpdate={
+                                                "UserProfile": {
+                                                    "UserProfile": {
+                                                        "DisplayName": {
+                                                        "Text": "Sam Zhang"
+                                                        }
+                                                    }
+                                                }
+                                            }
 
-            updateContext.PropertiesToUpdate = JObject.Parse(@"{
-                                  ""UserProfile"": {
-                                    ""UserProfile"": {
-                                      ""DisplayName"": {
-                                        ""Text"": ""Sam Zhang""
-                                      }
-                                    }
-                                  }
-                                }");
-
+                """
+            };
+            scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
+             
             if (await AccountController.UpdateUserPropertiesAsync(userManager, user as User, updateContext))
             {
                 await userManager.UpdateAsync(user);

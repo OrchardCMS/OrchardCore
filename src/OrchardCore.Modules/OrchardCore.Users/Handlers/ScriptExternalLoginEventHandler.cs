@@ -52,9 +52,17 @@ namespace OrchardCore.Users.Handlers
             return string.Empty;
         }
 
+
+
+
         public async Task UpdateUserAsync(UpdateUserContext context)
         {
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            UpdateUserInternal(context, loginSettings);
+        }
+
+        public void UpdateUserInternal(UpdateUserContext context, LoginSettings loginSettings)
+        {
             if (loginSettings.UseScriptToSyncRoles)
             {
                 var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
@@ -64,13 +72,13 @@ namespace OrchardCore.Users.Handlers
 
                 if (evaluationResult.claimsToUpdate is not null)
                 {
-                    var claimsToUpdate = ((JsonObject)JObject.FromObject(evaluationResult.claimsToUpdate)).Deserialize<List<UserClaim>>();
+                    var claimsToUpdate = ((JsonArray)JArray.FromObject(evaluationResult.claimsToUpdate)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
                     context.ClaimsToUpdate.AddRange(claimsToUpdate);
                 }
 
                 if (evaluationResult.claimsToRemove is not null)
                 {
-                    var claimsToRemove = ((JsonObject)JObject.FromObject(evaluationResult.claimsToRemove)).Deserialize<List<UserClaim>>();
+                    var claimsToRemove = ((JsonArray)JArray.FromObject(evaluationResult.claimsToRemove)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
                     context.ClaimsToRemove.AddRange(claimsToRemove);
                 }
 
