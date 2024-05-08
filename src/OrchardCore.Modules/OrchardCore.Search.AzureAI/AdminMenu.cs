@@ -24,11 +24,13 @@ public class AdminMenu(
 
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("azure-ai-service")
-                .Id("azureaiservice")
+                .AddClass("search")
+                .Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                     .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
+                        .AddClass("azureaiindices")
+                        .Id("azureaiindices")
                         .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
                         .LocalNav()
                     )
