@@ -24,51 +24,44 @@ public class TwitterMigrations : DataMigration
     {
         if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Twitter"))
         {
-            Upgrade();
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+                var logger = scope.ServiceProvider.GetService<ILogger<TwitterMigrations>>();
+                var tablePrefix = session.Store.Configuration.TablePrefix;
+                var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
+                var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
+
+                logger.LogDebug("Updating Twitter/X Workflow Items");
+
+                await using var connection = dbConnectionAccessor.CreateConnection();
+                await connection.OpenAsync();
+                await using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
+                var dialect = session.Store.Configuration.SqlDialect;
+
+                try
+                {
+                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+
+                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'UpdateTwitterStatusTask', 'UpdateXStatusTask') WHERE {quotedTypeColumnName} = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions'";
+
+                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await transaction.RollbackAsync();
+                    logger.LogError(e, "An error occurred while updating Twitter/X Workflow Items");
+
+                    throw;
+                }
+            });
         }
 
         return 1;
     }
-
-    private void Upgrade()
-    {
-        ShellScope.AddDeferredTask(async scope =>
-        {
-            var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
-            var logger = scope.ServiceProvider.GetService<ILogger<TwitterMigrations>>();
-            var tablePrefix = session.Store.Configuration.TablePrefix;
-            var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
-            var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
-
-            logger.LogDebug("Updating Twitter/X Workflow Items");
-
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
-            await using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
-            var dialect = session.Store.Configuration.SqlDialect;
-
-            try
-            {
-                var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
-                var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-                var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
-
-                var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'UpdateTwitterStatusTask', 'UpdateXStatusTask') WHERE {quotedTypeColumnName} = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions'";
-
-                await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception e)
-            {
-                await transaction.RollbackAsync();
-                logger.LogError(e, "An error occurred while updating Twitter/X Workflow Items");
-
-                throw;
-            }
-        });
-    }
-
-
 }
