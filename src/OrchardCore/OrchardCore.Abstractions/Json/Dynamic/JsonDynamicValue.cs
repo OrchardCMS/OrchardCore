@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Frozen;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -253,14 +253,14 @@ public class JsonDynamicValue : DynamicObject, IConvertible
     }
 
     public static explicit operator Uri?(JsonDynamicValue value)
-        => new Uri(value?.JsonValue?.GetValue<string>() ?? string.Empty);
+        => new(value?.JsonValue?.GetValue<string>() ?? string.Empty);
 
     private sealed class JsonDynamicMetaObject : DynamicMetaObject
     {
-        private static readonly Dictionary<Type, MethodInfo> _cachedReflectionInfo = typeof(JsonDynamicValue)
+        private static readonly FrozenDictionary<Type, MethodInfo> _cachedReflectionInfo = typeof(JsonDynamicValue)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Where(method => method.Name == "op_Explicit")
-            .ToDictionary(method => method.ReturnType);
+            .ToFrozenDictionary(method => method.ReturnType);
 
         public JsonDynamicMetaObject(Expression expression, JsonDynamicValue value)
             : base(expression, BindingRestrictions.Empty, value)
