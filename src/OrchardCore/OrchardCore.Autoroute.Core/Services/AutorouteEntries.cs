@@ -34,6 +34,8 @@ namespace OrchardCore.Autoroute.Core.Services
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
+            ArgumentException.ThrowIfNullOrEmpty(path);
+
             await EnsureInitializedAsync();
 
             if (_contentItemIds.TryGetValue(path.TrimEnd('/'), out var entry))
@@ -46,6 +48,8 @@ namespace OrchardCore.Autoroute.Core.Services
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByContentItemIdAsync(string contentItemId)
         {
+            ArgumentException.ThrowIfNullOrEmpty(contentItemId);
+
             await EnsureInitializedAsync();
 
             if (_paths.TryGetValue(contentItemId, out var entry))
