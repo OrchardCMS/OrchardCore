@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -8,10 +9,11 @@ namespace OrchardCore.ContentTypes.Services
     public class StereotypeService : IStereotypeService
     {
         private readonly IEnumerable<IStereotypesProvider> _providers;
-
-        public StereotypeService(IEnumerable<IStereotypesProvider> providers)
+        private readonly IContentDefinitionService _contentDefinitionService;
+        public StereotypeService(IEnumerable<IStereotypesProvider> providers, IContentDefinitionService contentDefinitionService)
         {
             _providers = providers;
+            _contentDefinitionService = contentDefinitionService;
         }
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
@@ -22,6 +24,11 @@ namespace OrchardCore.ContentTypes.Services
             {
                 descriptions.AddRange(await provider.GetStereotypesAsync());
             }
+            var stereotypes = (await _contentDefinitionService.GetTypesAsync())
+                .Where(x => x.Settings["Stereotype"] != null)
+                .Select(x => x.Settings["Stereotype"].ToString())
+                .Distinct()
+                .Except(descriptions.Select(d => d.Stereotype));
 
             return descriptions;
         }

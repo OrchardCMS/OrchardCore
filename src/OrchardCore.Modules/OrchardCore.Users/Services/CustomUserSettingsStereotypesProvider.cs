@@ -10,7 +10,7 @@ public class CustomUserSettingsStereotypesProvider : IStereotypesProvider
 {
     protected readonly IStringLocalizer S;
 
-    public CustomUserSettingsStereotypesProvider(IStringLocalizer stringLozalizer)
+    public CustomUserSettingsStereotypesProvider(IStringLocalizer<CustomUserSettingsStereotypesProvider> stringLozalizer)
     {
         S = stringLozalizer;
     }
