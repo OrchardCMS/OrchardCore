@@ -26,6 +26,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 
+    private readonly IdentityOptions _identityOptions;
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
 
@@ -36,6 +37,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
+        IOptions<IdentityOptions> identityOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
         UrlEncoder urlEncoder,
@@ -52,6 +54,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             stringLocalizer,
             twoFactorOptions)
     {
+        _identityOptions = identityOptions.Value;
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
     }
@@ -88,7 +91,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return View(model);
         }
 
-        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, StripToken(model.Code));
+        var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, _identityOptions.Tokens.AuthenticatorTokenProvider, StripToken(model.Code));
 
         if (!isValid)
         {
@@ -191,7 +194,9 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         return string.Format(
             CultureInfo.InvariantCulture,
+#pragma warning disable CA1863 // Cache a 'CompositeFormat' for repeated use in this formatting operation
             AuthenticatorUriFormat,
+#pragma warning restore CA1863
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),
             unformattedKey,

@@ -8,7 +8,7 @@ Shortcodes can be implemented by enabling the Shortcode Templates feature or thr
 
 ## Shortcode Templates
 
-Shortcode templates with [Liquid](../Liquid/) are created through the _Design -> Shortcodes_ menu.
+Shortcode templates with [Liquid](../Liquid/README.md) are created through the _Design -> Shortcodes_ menu.
 
 Shortcode templates are designed to be able to override a code based Shortcode of the same name.
 
@@ -119,11 +119,6 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
     };
 });
 ```
-
-!!! note
-    When upgrading from version `1.0.0-rc2-13450` you may need to re-enable the Shortcodes feature, through _Configuration -> Features_
-
-    The Shortcode Templates feature is only available from the [Preview Feed](../../../getting-started/preview-package-source)
 
 ## Available Shortcodes
 

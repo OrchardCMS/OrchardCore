@@ -81,58 +81,57 @@ namespace OrchardCore.Seo.Drivers
         public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var partViewModel = new SeoMetaPartViewModel();
-            if (await updater.TryUpdateModelAsync(partViewModel, Prefix))
+            await updater.TryUpdateModelAsync(partViewModel, Prefix);
+
+            try
             {
-                try
-                {
-                    part.Render = partViewModel.Render;
-                    part.PageTitle = partViewModel.PageTitle;
-                    part.MetaDescription = partViewModel.MetaDescription;
-                    part.MetaKeywords = partViewModel.MetaKeywords;
-                    part.Canonical = partViewModel.Canonical;
-                    part.MetaRobots = partViewModel.MetaRobots;
+                part.Render = partViewModel.Render;
+                part.PageTitle = partViewModel.PageTitle;
+                part.MetaDescription = partViewModel.MetaDescription;
+                part.MetaKeywords = partViewModel.MetaKeywords;
+                part.Canonical = partViewModel.Canonical;
+                part.MetaRobots = partViewModel.MetaRobots;
 
-                    part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
-                        ? []
-                        : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
+                part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
+                    ? []
+                    : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
-                    if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
-                    {
-                        updater.ModelState.AddModelError(Prefix, S["The canonical entry contains invalid characters."]);
-                    }
-                }
-                catch
+                if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The meta entries are written in an incorrect format."]);
+                    updater.ModelState.AddModelError(Prefix, S["The canonical entry contains invalid characters."]);
                 }
+            }
+            catch
+            {
+                updater.ModelState.AddModelError(Prefix, S["The meta entries are written in an incorrect format."]);
             }
 
             var openGraphModel = new SeoMetaPartOpenGraphViewModel();
-            if (await updater.TryUpdateModelAsync(openGraphModel, Prefix))
-            {
-                part.OpenGraphType = openGraphModel.OpenGraphType;
-                part.OpenGraphTitle = openGraphModel.OpenGraphTitle;
-                part.OpenGraphDescription = openGraphModel.OpenGraphDescription;
-            }
+
+            await updater.TryUpdateModelAsync(openGraphModel, Prefix);
+
+            part.OpenGraphType = openGraphModel.OpenGraphType;
+            part.OpenGraphTitle = openGraphModel.OpenGraphTitle;
+            part.OpenGraphDescription = openGraphModel.OpenGraphDescription;
 
             var twitterModel = new SeoMetaPartTwitterViewModel();
-            if (await updater.TryUpdateModelAsync(twitterModel, Prefix))
-            {
-                part.TwitterTitle = twitterModel.TwitterTitle;
-                part.TwitterDescription = twitterModel.TwitterDescription;
-                part.TwitterCard = twitterModel.TwitterCard;
-                part.TwitterCreator = twitterModel.TwitterCreator;
-                part.TwitterSite = twitterModel.TwitterSite;
-            }
+
+            await updater.TryUpdateModelAsync(twitterModel, Prefix);
+
+            part.TwitterTitle = twitterModel.TwitterTitle;
+            part.TwitterDescription = twitterModel.TwitterDescription;
+            part.TwitterCard = twitterModel.TwitterCard;
+            part.TwitterCreator = twitterModel.TwitterCreator;
+            part.TwitterSite = twitterModel.TwitterSite;
 
             var googleSchemaModel = new SeoMetaPartGoogleSchemaViewModel();
-            if (await updater.TryUpdateModelAsync(googleSchemaModel, Prefix))
+
+            await updater.TryUpdateModelAsync(googleSchemaModel, Prefix);
+
+            part.GoogleSchema = googleSchemaModel.GoogleSchema;
+            if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
             {
-                part.GoogleSchema = googleSchemaModel.GoogleSchema;
-                if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
-                {
-                    updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
-                }
+                updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
             }
 
             return Edit(part, context);
