@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.Services
 {
@@ -10,29 +13,35 @@ namespace OrchardCore.ContentTypes.Services
     {
         private readonly IEnumerable<IStereotypesProvider> _providers;
         private readonly IContentDefinitionService _contentDefinitionService;
-        public StereotypeService(IEnumerable<IStereotypesProvider> providers, IContentDefinitionService contentDefinitionService)
+        private readonly ILogger<StereotypeService> _logger;
+
+        public StereotypeService(
+            IEnumerable<IStereotypesProvider> providers,
+            IContentDefinitionService contentDefinitionService,
+            ILogger<StereotypeService> logger)
         {
             _providers = providers;
             _contentDefinitionService = contentDefinitionService;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
-            var descriptions = new List<StereotypeDescription>();
+            var stereotypes = (await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger))
+                .Select(stereotype => stereotype.Stereotype)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var provider in _providers)
+            foreach (var contentType in await _contentDefinitionService.GetTypesAsync())
             {
-                descriptions.AddRange(await provider.GetStereotypesAsync());
+                if (!contentType.TypeDefinition.TryGetStereotype(out var stereotype))
+                {
+                    continue;
+                }
+
+                stereotypes.Add(stereotype);
             }
-            var stereotypes = (await _contentDefinitionService.GetTypesAsync())
-                .Select(x => x.Settings["Stereotype"]?.ToString())
-                .Where(x => x != null)
-                .Distinct()
-                .Except(descriptions.Select(d => d.Stereotype))
-                .Select(x => new StereotypeDescription { Stereotype = x, DisplayName = x });
 
-            return descriptions.Union(stereotypes);
-
+            return stereotypes.Select(x => new StereotypeDescription { Stereotype = x, DisplayName = x });
         }
     }
 }

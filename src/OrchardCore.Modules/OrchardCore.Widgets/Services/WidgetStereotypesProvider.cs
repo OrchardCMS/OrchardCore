@@ -5,18 +5,17 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Widgets.Services;
+
 public class WidgetStereotypesProvider : IStereotypesProvider
 {
     protected readonly IStringLocalizer S;
 
-    public WidgetStereotypesProvider(IStringLocalizer<WidgetStereotypesProvider> stringLozalizer)
+    public WidgetStereotypesProvider(IStringLocalizer<WidgetStereotypesProvider> stringLocalizer)
     {
-        S = stringLozalizer;
+        S = stringLocalizer;
     }
 
     public Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
-    {
-        return Task.FromResult<IEnumerable<StereotypeDescription>>(
+        => Task.FromResult<IEnumerable<StereotypeDescription>>(
             [new StereotypeDescription { Stereotype = "Widget", DisplayName = S["Widget"] }]);
-    }
 }
