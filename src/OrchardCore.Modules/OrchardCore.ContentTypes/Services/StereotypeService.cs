@@ -28,9 +28,11 @@ namespace OrchardCore.ContentTypes.Services
                 .Select(x => x.Settings["Stereotype"]?.ToString())
                 .Where(x => x != null)
                 .Distinct()
-                .Except(descriptions.Select(d => d.Stereotype));
+                .Except(descriptions.Select(d => d.Stereotype))
+                .Select(x => new StereotypeDescription { Stereotype = x, DisplayName = x });
 
-            return descriptions;
+            return descriptions.Union(stereotypes);
+
         }
     }
 }
