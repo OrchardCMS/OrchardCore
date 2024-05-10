@@ -16,14 +16,22 @@ public class JsonDynamicObject : DynamicObject
 
     private readonly Dictionary<string, object?> _dictionary = [];
 
-    public JsonDynamicObject() => _jsonObject = [];
+    public JsonDynamicObject()
+    {
+        _jsonObject = [];
+    }
 
-    public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
+    public JsonDynamicObject(JsonObject jsonObject)
+    {
+        _jsonObject = jsonObject;
+    }
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    {
         _jsonObject.Merge(content, settings);
+    }
 
     public object? this[string key]
     {

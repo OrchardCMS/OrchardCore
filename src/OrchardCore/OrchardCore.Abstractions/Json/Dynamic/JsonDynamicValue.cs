@@ -12,24 +12,32 @@ namespace System.Text.Json.Dynamic;
 
 public class JsonDynamicValue : DynamicObject, IConvertible
 {
-    public JsonDynamicValue(JsonValue? jsonValue) => JsonValue = jsonValue;
+    public JsonDynamicValue(JsonValue? jsonValue)
+    {
+        JsonValue = jsonValue;
+    }
 
     public JsonValue? JsonValue { get; }
 
-    public object? Value
-        => JsonValue?.GetObjectValue();
-
     public override DynamicMetaObject GetMetaObject(Expression parameter)
-        => new JsonDynamicMetaObject(parameter, this);
+    {
+        return new JsonDynamicMetaObject(parameter, this);
+    }
 
     public override string ToString()
-        => JsonValue?.ToString() ?? string.Empty;
+    {
+        return JsonValue?.ToString() ?? string.Empty;
+    }
 
     public string ToString(string format)
-        => ToString(format, CultureInfo.CurrentCulture);
+    {
+        return ToString(format, CultureInfo.CurrentCulture);
+    }
 
     public string ToString(IFormatProvider? formatProvider)
-        => ToString(null, formatProvider);
+    {
+        return ToString(null, formatProvider);
+    }
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
@@ -60,168 +68,266 @@ public class JsonDynamicValue : DynamicObject, IConvertible
     }
 
     bool IConvertible.ToBoolean(IFormatProvider? provider)
-        => (bool)this;
+    {
+        return (bool)this;
+    }
 
     byte IConvertible.ToByte(IFormatProvider? provider)
-        => (byte)this;
+    {
+        return (byte)this;
+    }
 
     char IConvertible.ToChar(IFormatProvider? provider)
-        => (char)this;
+    {
+        return (char)this;
+    }
 
     DateTime IConvertible.ToDateTime(IFormatProvider? provider)
-        => (DateTime)this;
+    {
+        return (DateTime)this;
+    }
 
     decimal IConvertible.ToDecimal(IFormatProvider? provider)
-        => (decimal)this;
+    {
+        return (decimal)this;
+    }
 
     double IConvertible.ToDouble(IFormatProvider? provider)
-        => (double)this;
+    {
+        return (double)this;
+    }
 
     short IConvertible.ToInt16(IFormatProvider? provider)
-        => (short)this;
+    {
+        return (short)this;
+    }
 
     int IConvertible.ToInt32(IFormatProvider? provider)
-        => (int)this;
+    {
+        return (int)this;
+    }
 
     long IConvertible.ToInt64(IFormatProvider? provider)
-        => (long)this;
+    {
+        return (long)this;
+    }
 
     sbyte IConvertible.ToSByte(IFormatProvider? provider)
-        => (sbyte)this;
+    {
+        return (sbyte)this;
+    }
 
     float IConvertible.ToSingle(IFormatProvider? provider)
-        => (float)this;
+    {
+        return (float)this;
+    }
 
     string IConvertible.ToString(IFormatProvider? provider)
-        => (string?)this ?? string.Empty;
+    {
+        return (string?)this ?? string.Empty;
+    }
 
     object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
-        => JsonValue?.ToObject(conversionType)
-        ?? throw new InvalidOperationException($"Cannot convert {this} to {conversionType}");
+    {
+        return JsonValue?.ToObject(conversionType)
+            ?? throw new InvalidOperationException($"Cannot convert {this} to {conversionType}");
+    }
 
     ushort IConvertible.ToUInt16(IFormatProvider? provider)
-        => (ushort)this;
+    {
+        return (ushort)this;
+    }
 
     uint IConvertible.ToUInt32(IFormatProvider? provider)
-        => (uint)this;
+    {
+        return (uint)this;
+    }
 
     ulong IConvertible.ToUInt64(IFormatProvider? provider)
-        => (ulong)this;
+    {
+        return (ulong)this;
+    }
 
     public static explicit operator bool(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<bool>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Boolean");
+    {
+        return value?.JsonValue?.GetValue<bool>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Boolean");
+    }
 
     public static explicit operator bool?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<bool?>();
+    {
+        return value?.JsonValue?.GetValue<bool?>();
+    }
 
     public static explicit operator byte(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<byte>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Byte");
+    {
+        return value?.JsonValue?.GetValue<byte>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Byte");
+    }
 
     public static explicit operator byte?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<byte?>();
+    {
+        return value?.JsonValue?.GetValue<byte?>();
+    }
 
     public static explicit operator char(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<char>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Char");
+    {
+        return value?.JsonValue?.GetValue<char>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Char");
+    }
 
     public static explicit operator char?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<char?>();
+    {
+        return value?.JsonValue?.GetValue<char?>();
+    }
 
     public static explicit operator DateTime(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<DateTime>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to DateTime");
+    {
+        return value?.JsonValue?.GetValue<DateTime>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to DateTime");
+    }
 
     public static explicit operator DateTime?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<DateTime?>();
+    {
+        return value?.JsonValue?.GetValue<DateTime?>();
+    }
 
     public static explicit operator DateTimeOffset(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<DateTimeOffset>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to DateTimeOffset");
+    {
+        return value?.JsonValue?.GetValue<DateTimeOffset>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to DateTimeOffset");
+    }
 
     public static explicit operator DateTimeOffset?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<DateTimeOffset?>();
+    {
+        return value?.JsonValue?.GetValue<DateTimeOffset?>();
+    }
 
     public static explicit operator decimal(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<decimal>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Decimal");
+    {
+        return value?.JsonValue?.GetValue<decimal>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Decimal");
+    }
 
     public static explicit operator decimal?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<decimal?>();
+    {
+        return value?.JsonValue?.GetValue<decimal?>();
+    }
 
     public static explicit operator double(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<double>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Double");
+    {
+        return value?.JsonValue?.GetValue<double>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Double");
+    }
 
     public static explicit operator double?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<double?>();
+    {
+        return value?.JsonValue?.GetValue<double?>();
+    }
 
     public static explicit operator Guid(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<Guid>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Guid");
+    {
+        return value?.JsonValue?.GetValue<Guid>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Guid");
+    }
 
     public static explicit operator Guid?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<Guid?>();
+    {
+        return value?.JsonValue?.GetValue<Guid?>();
+    }
 
     public static explicit operator short(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<short>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Int16");
+    {
+        return value?.JsonValue?.GetValue<short>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Int16");
+    }
 
     public static explicit operator short?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<short?>();
+    {
+        return value?.JsonValue?.GetValue<short?>();
+    }
 
     public static explicit operator int(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<int>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Int32");
+    {
+        return value?.JsonValue?.GetValue<int>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Int32");
+    }
 
     public static explicit operator int?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<int?>();
+    {
+        return value?.JsonValue?.GetValue<int?>();
+    }
 
     public static explicit operator long(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<long>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Int64");
+    {
+        return value?.JsonValue?.GetValue<long>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Int64");
+    }
 
     public static explicit operator long?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<long?>();
+    {
+        return value?.JsonValue?.GetValue<long?>();
+    }
 
     public static explicit operator sbyte(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<sbyte>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to SByte");
+    {
+        return value?.JsonValue?.GetValue<sbyte>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to SByte");
+    }
 
     public static explicit operator sbyte?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<sbyte?>();
+    {
+        return value?.JsonValue?.GetValue<sbyte?>();
+    }
 
     public static explicit operator float(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<float>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to Float");
+    {
+        return value?.JsonValue?.GetValue<float>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to Float");
+    }
 
     public static explicit operator float?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<float?>();
+    {
+        return value?.JsonValue?.GetValue<float?>();
+    }
 
     public static explicit operator string?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<string>();
+    {
+        return value?.JsonValue?.GetValue<string>();
+    }
 
     public static explicit operator ushort(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<ushort>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to UInt32");
+    {
+        return value?.JsonValue?.GetValue<ushort>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to UInt32");
+    }
 
     public static explicit operator ushort?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<ushort?>();
+    {
+        return value?.JsonValue?.GetValue<ushort?>();
+    }
 
     public static explicit operator uint(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<uint>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to UInt32");
+    {
+        return value?.JsonValue?.GetValue<uint>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to UInt32");
+    }
 
     public static explicit operator uint?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<uint?>();
+    {
+        return value?.JsonValue?.GetValue<uint?>();
+    }
 
     public static explicit operator ulong(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<ulong>()
-        ?? throw new InvalidCastException($"Cannot convert {value} to UInt64");
+    {
+        return value?.JsonValue?.GetValue<ulong>()
+            ?? throw new InvalidCastException($"Cannot convert {value} to UInt64");
+    }
 
     public static explicit operator ulong?(JsonDynamicValue value)
-        => value?.JsonValue?.GetValue<ulong?>();
+    {
+        return value?.JsonValue?.GetValue<ulong?>();
+    }
 
     public static explicit operator byte[]?(JsonDynamicValue value)
     {
@@ -253,12 +359,14 @@ public class JsonDynamicValue : DynamicObject, IConvertible
     }
 
     public static explicit operator Uri?(JsonDynamicValue value)
-        => new(value?.JsonValue?.GetValue<string>() ?? string.Empty);
+    {
+        return new(value?.JsonValue?.GetValue<string>() ?? string.Empty);
+    }
 
     private sealed class JsonDynamicMetaObject : DynamicMetaObject
     {
         private static readonly FrozenDictionary<Type, MethodInfo> _cachedReflectionInfo = typeof(JsonDynamicValue)
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
             .Where(method => method.Name == "op_Explicit")
             .ToFrozenDictionary(method => method.ReturnType);
 
@@ -286,7 +394,7 @@ public class JsonDynamicValue : DynamicObject, IConvertible
             if (_cachedReflectionInfo.TryGetValue(targetType, out var castMethod))
             {
                 var convertExpression = Expression.Convert(Expression.Convert(Expression, typeof(JsonDynamicValue)), targetType, castMethod);
-                
+
                 return new DynamicMetaObject(convertExpression, BindingRestrictions.GetTypeRestriction(Expression, typeof(JsonDynamicValue)));
             }
 
