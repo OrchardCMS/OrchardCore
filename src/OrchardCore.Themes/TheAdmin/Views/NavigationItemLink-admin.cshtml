@@ -17,10 +17,7 @@
         tag.Attributes["href"] = Model.Href;
     }
 
-    if (!string.IsNullOrEmpty(Model.Target))
-    {
-        tag.Attributes["target"] = Model.Target;
-    }
+    tag.Attributes["target"] = Model.Target;
 
     var prefix = "icon-class-";
 
