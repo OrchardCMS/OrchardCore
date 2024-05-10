@@ -13,7 +13,7 @@ namespace OrchardCore.ContentTypes.Editors
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
-        private readonly IStereotypesProvider _stereotypesProvider;
+        private readonly IStereotypeService  _stereotypeService;
         private readonly ContentTypeDefinitionOptions _options;
 
         protected readonly IStringLocalizer S;
@@ -21,18 +21,17 @@ namespace OrchardCore.ContentTypes.Editors
         public ContentTypeSettingsDisplayDriver(
             IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
             IOptions<ContentTypeDefinitionOptions> options,
-            IStereotypesProvider stereotypesProvider)
+            IStereotypeService stereotypeService)
         {
             S = stringLocalizer;
             _options = options.Value;
-            _stereotypesProvider = stereotypesProvider;
+            _stereotypeService = stereotypeService;
         }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
             => Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
             {
                 var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-                var stereotypes = await _stereotypesProvider.GetStereotypesAsync();
                 model.Creatable = settings.Creatable;
                 model.Listable = settings.Listable;
                 model.Draftable = settings.Draftable;
@@ -104,7 +103,7 @@ namespace OrchardCore.ContentTypes.Editors
                 options = stereotypesOptions;
             }
 
-            options.Stereotypes = await _stereotypesProvider.GetStereotypesAsync();
+            options.Stereotypes = await _stereotypeService.GetStereotypesAsync();
 
             return options;
         }
