@@ -4,8 +4,6 @@ var fs = require("graceful-fs"),
     merge = require("merge-stream"),
     gulp = require("gulp"),
     gulpif = require("gulp-if"),
-    print = require("gulp-print"),
-    debug = require("gulp-debug"),
     newer = require("gulp-newer"),
     plumber = require("gulp-plumber"),
     sourcemaps = require("gulp-sourcemaps"),
@@ -53,7 +51,6 @@ gulp.task("rebuild-assets", function () {
 
 // Continuous watch (each asset group is built whenever one of its inputs changes).
 gulp.task("watch", function () {
-    var pathWin32 = require("path");
     getAssetGroups().forEach(function (assetGroup) {
         var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
         var inputWatcher;
@@ -66,7 +63,7 @@ gulp.task("watch", function () {
                 else
                     console.log("Asset file '" + watchedPath + "' was changed, rebuilding asset group.");
                 var doRebuild = true;
-                var task = createAssetGroupTask(assetGroup, doRebuild);
+                createAssetGroupTask(assetGroup, doRebuild);
             });
         }
 
@@ -114,14 +111,29 @@ function getAssetGroups() {
 function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.manifestPath = assetManifestPath.replace(/\\/g, '/');
     assetGroup.basePath = path.dirname(assetGroup.manifestPath);
-    var inputPaths = assetGroup.inputs.map(function (inputPath) {
-        return path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
-    });
 
-    // For wildcard input paths also sortthem to ensure file concatenation is consistent.
-    if (inputPaths.some(path => path.includes('*'))) {
-        inputPaths = glob.sync(inputPaths, {}).sort();
-    }
+    var inputPaths = [];
+
+    // The inputPaths can contain either a physical path to a file or a path with a wildcard.
+    // It's crucial to maintain the order of each file based on its position in the assets.json file.
+    // When a path contains a wildcard, we need to convert the wildcard to physical paths
+    // and sort them independently of the previous paths to ensure consistent concatenation.
+    assetGroup.inputs.forEach(inputPath => {
+
+        var resolvedPath = path.resolve(path.join(assetGroup.basePath, inputPath)).replace(/\\/g, '/');
+
+        if (resolvedPath.includes('*')) {
+            var sortedPaths = glob.sync(resolvedPath, {});
+
+            sortedPaths.sort();
+
+            sortedPaths.forEach(sortedPath => {
+                inputPaths.push(sortedPath.replace(/\\/g, '/'));
+            });
+        } else {
+            inputPaths.push(resolvedPath);
+        }
+    });
 
     assetGroup.inputPaths = inputPaths;
 
@@ -263,7 +275,6 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         target: "es5",
     };
 
-    console.log(assetGroup.inputPaths);
     return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
