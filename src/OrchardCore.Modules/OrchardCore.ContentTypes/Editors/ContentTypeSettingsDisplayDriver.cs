@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
@@ -12,24 +13,26 @@ namespace OrchardCore.ContentTypes.Editors
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
-
+        private readonly IStereotypesProvider _stereotypesProvider;
         private readonly ContentTypeDefinitionOptions _options;
 
         protected readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(
             IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
-            IOptions<ContentTypeDefinitionOptions> options)
+            IOptions<ContentTypeDefinitionOptions> options,
+            IStereotypesProvider stereotypesProvider)
         {
             S = stringLocalizer;
             _options = options.Value;
+            _stereotypesProvider = stereotypesProvider;
         }
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
-            => Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
+            => Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
             {
                 var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-
+                var stereotypes = await _stereotypesProvider.GetStereotypesAsync();
                 model.Creatable = settings.Creatable;
                 model.Listable = settings.Listable;
                 model.Draftable = settings.Draftable;
@@ -37,7 +40,7 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
                 model.Description = settings.Description;
-                model.Options = GetOptions(contentTypeDefinition, settings.Stereotype);
+                model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
             }).Location("Content:5");
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -54,10 +57,11 @@ namespace OrchardCore.ContentTypes.Editors
             {
                 context.Updater.ModelState.AddModelError(nameof(ContentTypeSettingsViewModel.Stereotype), S["The stereotype should be alphanumeric."]);
             }
-            
-            var options = GetOptions(contentTypeDefinition, stereotype);
+
+            var options = await GetOptionsAsync(contentTypeDefinition, stereotype);
+
             Apply(context, model, options);
-            
+
             return Edit(contentTypeDefinition);
         }
 
@@ -84,21 +88,25 @@ namespace OrchardCore.ContentTypes.Editors
             }
         }
 
-        private ContentTypeDefinitionDriverOptions GetOptions(ContentTypeDefinition contentTypeDefinition, string stereotype)
+        private async Task<ContentTypeDefinitionDriverOptions> GetOptionsAsync(ContentTypeDefinition contentTypeDefinition, string stereotype)
         {
+            var options = _defaultOptions;
+
             if (contentTypeDefinition.Name != null
                 && _options.ContentTypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
             {
-                return typeOptions;
+                options = typeOptions;
             }
 
             if (stereotype != null
                 && _options.Stereotypes.TryGetValue(stereotype, out var stereotypesOptions))
             {
-                return stereotypesOptions;
+                options = stereotypesOptions;
             }
 
-            return _defaultOptions;
+            options.Stereotypes = await _stereotypesProvider.GetStereotypesAsync();
+
+            return options;
         }
 
         private static bool IsAlphaNumericOrEmpty(string value)
