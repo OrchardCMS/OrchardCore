@@ -25,8 +25,8 @@ namespace OrchardCore.ContentTypes.Services
                 descriptions.AddRange(await provider.GetStereotypesAsync());
             }
             var stereotypes = (await _contentDefinitionService.GetTypesAsync())
-                .Where(x => x.Settings["Stereotype"] != null)
-                .Select(x => x.Settings["Stereotype"].ToString())
+                .Select(x => x.Settings["Stereotype"]?.ToString())
+                .Where(x => x != null)
                 .Distinct()
                 .Except(descriptions.Select(d => d.Stereotype));
 
