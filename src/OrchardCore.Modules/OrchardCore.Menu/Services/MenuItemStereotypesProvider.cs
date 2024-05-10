@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Menu.Services;
+
 public class MenuItemStereotypesProvider : IStereotypesProvider
 {
     protected readonly IStringLocalizer S;
@@ -15,8 +16,6 @@ public class MenuItemStereotypesProvider : IStereotypesProvider
     }
 
     public Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
-    {
-        return Task.FromResult<IEnumerable<StereotypeDescription>>(
+        => Task.FromResult<IEnumerable<StereotypeDescription>>(
           [new StereotypeDescription { Stereotype = "MenuItem", DisplayName = S["Menu Item"] }]);
-    }
 }
