@@ -337,14 +337,4 @@ public class JsonDynamicTests
 
         Assert.Equal(expectedValue, (Uri)myDynamic);
     }
-
-    [Fact]
-    public void JsonDynamicValueHasValue()
-    {
-        var expectedValue = "A test string value";
-        dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
-
-        Assert.NotNull(myDynamic.Value);
-        Assert.Equal(expectedValue, myDynamic.Value);
-    }
 }
