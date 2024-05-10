@@ -24,7 +24,6 @@
 
     tag.Attributes["target"] = Model.Target;
 
-    var prefix = "icon-class-";
     // Extract classes that are not icons from 'Model.Classes'.
     var notIconClasses = ((IEnumerable<string>)Model.Classes)
         .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
