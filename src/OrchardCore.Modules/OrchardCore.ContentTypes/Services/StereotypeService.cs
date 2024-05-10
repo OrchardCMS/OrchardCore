@@ -27,14 +27,27 @@ namespace OrchardCore.ContentTypes.Services
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
-            var stereotypesInProvider = await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger);
+            var providerStereotypes = (await _providers.InvokeAsync(provider => provider.GetStereotypesAsync(), _logger)).ToList();
 
-            var stereotypesInType = (await _contentDefinitionService.GetTypesAsync())
-                .Select(contentType => contentType.TypeDefinition.TryGetStereotype(out var stereotype) ? stereotype : null)
-                .Where(stereotype => stereotype != null && stereotypesInProvider.Any(x => x.Stereotype == stereotype))
-                .ToHashSet();
+            var stereotypes = providerStereotypes.Select(providerStereotype => providerStereotype.Stereotype)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            return stereotypesInProvider.Union(stereotypesInType.Select(x => new StereotypeDescription { Stereotype = x, DisplayName = x }));
+            foreach (var contentType in await _contentDefinitionService.GetTypesAsync())
+            {
+                if (!contentType.TypeDefinition.TryGetStereotype(out var stereotype) ||
+                    stereotypes.Contains(stereotype))
+                {
+                    continue;
+                }
+
+                providerStereotypes.Add(new StereotypeDescription
+                {
+                    Stereotype = stereotype,
+                    DisplayName = stereotype
+                });
+            }
+
+            return providerStereotypes.OrderBy(x => x.DisplayName);
         }
     }
 }
