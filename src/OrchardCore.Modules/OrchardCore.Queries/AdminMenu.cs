@@ -24,9 +24,11 @@ namespace OrchardCore.Queries
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search")
                     .Id("search")
-                    .Add(S["Queries"], S["Queries"].PrefixPosition(), contentItems => contentItems
-                        .Add(S["All queries"], "1", queries => queries
+                    .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
+                        .Add(S["All queries"], "1", allQueries => allQueries
                         .Action("Index", "Admin", "OrchardCore.Queries")
+                        .AddClass("searchallqueries")
+                        .Id("searchallqueries")
                         .Permission(Permissions.ManageQueries)
                         .LocalNav()
                     )
