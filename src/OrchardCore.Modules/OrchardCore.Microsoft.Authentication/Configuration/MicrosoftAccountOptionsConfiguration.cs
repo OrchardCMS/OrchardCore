@@ -29,7 +29,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            if (_microsoftAccountSettings == null)
+            if (_microsoftAccountSettings is null)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            if (_microsoftAccountSettings == null)
+            if (_microsoftAccountSettings is null)
             {
                 return;
             }

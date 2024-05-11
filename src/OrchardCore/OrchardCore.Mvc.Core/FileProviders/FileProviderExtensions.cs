@@ -17,16 +17,16 @@ namespace OrchardCore.Mvc.FileProviders
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 
-            if (contents == null)
+            if (contents is null)
             {
                 yield break;
             }
 
-            if (!inViewsFolder && viewsFolder != null && inDepth)
+            if (!inViewsFolder && viewsFolder is not null && inDepth)
             {
                 var viewsFolderInfo = contents.FirstOrDefault(c => c.Name == viewsFolder && c.IsDirectory);
 
-                if (viewsFolderInfo != null)
+                if (viewsFolderInfo is not null)
                 {
                     foreach (var filePath in GetViewFilePaths(fileProvider, $"{subPath}/{viewsFolderInfo.Name}", extensions, viewsFolder, inViewsFolder: true))
                     {

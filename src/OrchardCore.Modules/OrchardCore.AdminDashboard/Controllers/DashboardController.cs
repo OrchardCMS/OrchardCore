@@ -155,7 +155,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             // Load the latest version first if any.
             var latestItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Latest);
 
-            if (latestItems == null)
+            if (latestItems is null)
             {
                 return NotFound();
             }
@@ -165,7 +165,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             foreach (var contentItem in latestItems)
             {
                 var dashboardPart = contentItem.As<DashboardPart>();
-                if (dashboardPart == null)
+                if (dashboardPart is null)
                 {
                     return Forbid();
                 }
@@ -184,7 +184,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 {
                     var publishedVersion = publishedItems.FirstOrDefault(p => p.ContentItemId == contentItem.ContentItemId);
                     var publishedMetaData = publishedVersion?.As<DashboardPart>();
-                    if (publishedMetaData != null)
+                    if (publishedMetaData is not null)
                     {
                         publishedMetaData.Position = partViewModel.Position;
                         publishedMetaData.Width = partViewModel.Width;
@@ -195,7 +195,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 }
             }
 
-            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
+            if (Request.Headers is not null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }

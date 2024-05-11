@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement.Handlers
             context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
-            if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
+            if (context.ContentItem.Owner is null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
                 context.ContentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 context.ContentItem.Author = httpContext.User.Identity.Name;

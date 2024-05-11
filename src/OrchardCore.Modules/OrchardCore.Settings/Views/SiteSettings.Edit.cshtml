@@ -1,6 +1,6 @@
 <div class="edit-item">
     <div class="edit-item-primary">
-        @if (Model.Content != null)
+        @if (Model.Content is not null)
         {
             <div class="edit-item-content">
                 @await DisplayAsync(Model.Content)
@@ -9,13 +9,13 @@
     </div>
 
     <div class="edit-item-secondary group">
-        @if (Model.Actions != null)
+        @if (Model.Actions is not null)
         {
             <div class="edit-item-actions">
                 @await DisplayAsync(Model.Actions)
             </div>
         }
-        @if (Model.Sidebar != null)
+        @if (Model.Sidebar is not null)
         {
             <div class="edit-item-sidebar group">
                 @await DisplayAsync(Model.Sidebar)

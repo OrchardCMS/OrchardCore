@@ -19,7 +19,7 @@ namespace OrchardCore.Queries.Liquid
         {
             var query = input.ToObjectValue() as Query;
 
-            if (query == null)
+            if (query is null)
             {
                 return NilValue.Instance;
             }

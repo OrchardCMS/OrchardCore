@@ -59,21 +59,21 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.GetLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
 
             var conditionGroup = FindConditionGroup(layer.LayerRule, conditionGroupId);
 
-            if (conditionGroup == null)
+            if (conditionGroup is null)
             {
                 return NotFound();
             }
 
             var condition = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
-            if (condition == null)
+            if (condition is null)
             {
                 return NotFound();
             }
@@ -100,21 +100,21 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.LoadLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
 
             var conditionGroup = FindConditionGroup(layer.LayerRule, model.ConditionGroupId);
 
-            if (conditionGroup == null)
+            if (conditionGroup is null)
             {
                 return NotFound();
             }
 
             var condition = _factories.FirstOrDefault(x => x.Name == model.ConditionType)?.Create();
 
-            if (condition == null)
+            if (condition is null)
             {
                 return NotFound();
             }
@@ -146,14 +146,14 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.GetLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
 
             var condition = FindCondition(layer.LayerRule, conditionId);
 
-            if (condition == null)
+            if (condition is null)
             {
                 return NotFound();
             }
@@ -178,14 +178,14 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.LoadLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
 
             var condition = FindCondition(layer.LayerRule, model.ConditionId);
 
-            if (condition == null)
+            if (condition is null)
             {
                 return NotFound();
             }
@@ -217,7 +217,7 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.LoadLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
@@ -225,7 +225,7 @@ namespace OrchardCore.Layers.Controllers
             var condition = FindCondition(layer.LayerRule, conditionId);
             var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
 
-            if (condition == null || conditionParent == null)
+            if (condition is null || conditionParent is null)
             {
                 return NotFound();
             }
@@ -249,7 +249,7 @@ namespace OrchardCore.Layers.Controllers
             var layers = await _layerService.LoadLayersAsync();
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
@@ -258,7 +258,7 @@ namespace OrchardCore.Layers.Controllers
             var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
             var toCondition = FindCondition(layer.LayerRule, toConditionId);
 
-            if (condition == null || conditionParent == null || toCondition == null || toCondition is not ConditionGroup toGroupCondition)
+            if (condition is null || conditionParent is null || toCondition is null || toCondition is not ConditionGroup toGroupCondition)
             {
                 return NotFound();
             }
@@ -295,7 +295,7 @@ namespace OrchardCore.Layers.Controllers
                 // Search in inner conditions.
                 result = FindCondition(nestedCondition, conditionId);
 
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }
@@ -323,7 +323,7 @@ namespace OrchardCore.Layers.Controllers
                 // Search in inner conditions.
                 result = FindConditionGroup(nestedCondition, groupConditionId);
 
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }
@@ -346,7 +346,7 @@ namespace OrchardCore.Layers.Controllers
                 if (nestedCondition is ConditionGroup nestedConditionGroup)
                 {
                     result = FindConditionParent(nestedConditionGroup, conditionId);
-                    if (result != null)
+                    if (result is not null)
                     {
                         return result;
                     }

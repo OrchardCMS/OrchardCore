@@ -25,7 +25,7 @@ namespace OrchardCore.Navigation
             await itemBuilder(childBuilder);
             Contained.AddRange(childBuilder.Build());
 
-            if (classes != null)
+            if (classes is not null)
             {
                 foreach (var className in classes)
                 {
@@ -46,7 +46,7 @@ namespace OrchardCore.Navigation
             itemBuilder(childBuilder);
             Contained.AddRange(childBuilder.Build());
 
-            if (classes != null)
+            if (classes is not null)
             {
                 foreach (var className in classes)
                 {

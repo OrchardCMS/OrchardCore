@@ -43,7 +43,7 @@ namespace OrchardCore.Alias
                             x.Published && x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
 #pragma warning restore CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
-                        if (contentItem == null)
+                        if (contentItem is null)
                         {
                             return NilValue.Instance;
                         }

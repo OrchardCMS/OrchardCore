@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
             var topLeftProperty = boundingBox["top_left"].AsObject();
             var bottomRightProperty = boundingBox["bottom_right"].AsObject();
 
-            if (topLeftProperty == null || bottomRightProperty == null)
+            if (topLeftProperty is null || bottomRightProperty is null)
             {
                 return null;
             }

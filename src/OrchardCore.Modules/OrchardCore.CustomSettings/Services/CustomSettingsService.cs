@@ -79,7 +79,7 @@ namespace OrchardCore.CustomSettings.Services
         public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
         {
             var settingsType = GetSettingsType(settingsTypeName);
-            if (settingsType == null)
+            if (settingsType is null)
             {
                 return Task.FromResult<ContentItem>(null);
             }

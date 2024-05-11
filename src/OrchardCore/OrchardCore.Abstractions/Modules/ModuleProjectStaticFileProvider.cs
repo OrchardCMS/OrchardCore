@@ -19,14 +19,14 @@ namespace OrchardCore.Modules
 
         public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
         {
-            if (_roots != null)
+            if (_roots is not null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_roots == null)
+                if (_roots is null)
                 {
                     var application = applicationContext.Application;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Modules
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                        if (module.Assembly is null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
                         var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
                             .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
 
-                        if (asset != null)
+                        if (asset is not null)
                         {
                             // Resolve "{ModuleProjectDirectory}wwwroot/" from the project asset.
                             var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot, StringComparison.Ordinal);
@@ -69,7 +69,7 @@ namespace OrchardCore.Modules
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }
@@ -102,7 +102,7 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return NullChangeToken.Singleton;
             }

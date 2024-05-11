@@ -32,10 +32,10 @@ namespace OrchardCore.DisplayManagement.Zones
             }
 
             // null == "before"; "" == "0"
-            x = x == null
+            x = x is null
                 ? "before." // in order to have before < null when 'before' is explicitly defined
                 : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
-            y = y == null
+            y = y is null
                 ? "before."
                 : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
 

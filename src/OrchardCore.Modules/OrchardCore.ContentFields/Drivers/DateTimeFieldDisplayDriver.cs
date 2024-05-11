@@ -31,7 +31,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                model.LocalDateTime = field.Value is null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -44,7 +44,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                model.LocalDateTime = field.Value is null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -58,13 +58,13 @@ namespace OrchardCore.ContentFields.Drivers
             await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime);
             var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
 
-            if (settings.Required && model.LocalDateTime == null)
+            if (settings.Required && model.LocalDateTime is null)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
             else
             {
-                if (model.LocalDateTime == null)
+                if (model.LocalDateTime is null)
                 {
                     field.Value = null;
                 }

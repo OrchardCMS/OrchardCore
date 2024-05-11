@@ -38,7 +38,7 @@ namespace OrchardCore.XmlRpc.Controllers
 
             var methodResponse = await DispatchAsync(methodCall);
 
-            if (methodResponse == null)
+            if (methodResponse is null)
             {
                 return StatusCode(500, "TODO: xmlrpc fault");
             }

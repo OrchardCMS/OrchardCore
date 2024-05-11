@@ -477,7 +477,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     return new AnimalIndex
                     {
-                        Name = contentItem.As<Animal>() != null
+                        Name = contentItem.As<Animal>() is not null
                             ? contentItem.As<Animal>().Name
                             : contentItem.As<AnimalPart>().Name
                     };
@@ -500,7 +500,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     var animal = contentItem.As<Animal>();
 
-                    if (animal != null)
+                    if (animal is not null)
                     {
                         return new AnimalTraitsIndex
                         {

@@ -122,7 +122,7 @@ namespace OrchardCore.Workflows.Services
 
             var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
 
-            if (activity == null)
+            if (activity is null)
             {
                 _logger.LogWarning("Requested activity '{ActivityName}' does not exist in the library. This could indicate a changed name or a missing feature. Replacing it with MissingActivity.", activityRecord.Name);
                 activity = new MissingActivity(_missingActivityLocalizer, _missingActivityLogger, activityRecord);
@@ -140,7 +140,7 @@ namespace OrchardCore.Workflows.Services
         public async Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
-            if (activity == null)
+            if (activity is null)
             {
                 _logger.LogError("Activity '{ActivityName}' was not found", name);
                 return Array.Empty<WorkflowExecutionContext>();
@@ -174,7 +174,7 @@ namespace OrchardCore.Workflows.Services
 
                 // If atomic, check if the workflow still exists and is still correlated.
                 var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
+                if (haltedWorkflow is null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
                 {
                     continue;
                 }
@@ -506,7 +506,7 @@ namespace OrchardCore.Workflows.Services
                     // Look for next activity in the graph.
                     var transition = workflowType.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
 
-                    if (transition != null)
+                    if (transition is not null)
                     {
                         var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
 

@@ -71,7 +71,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ValueTask<IShape> AddAsync(object item, string position)
         {
-            if (item == null)
+            if (item is null)
             {
                 return new ValueTask<IShape>(this);
             }

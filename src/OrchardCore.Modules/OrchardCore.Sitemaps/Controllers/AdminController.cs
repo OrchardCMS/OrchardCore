@@ -132,7 +132,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -226,7 +226,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as Sitemap;
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -252,7 +252,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = (await _sitemapManager.LoadSitemapAsync(model.SitemapId)) as Sitemap;
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -294,7 +294,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -316,7 +316,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }

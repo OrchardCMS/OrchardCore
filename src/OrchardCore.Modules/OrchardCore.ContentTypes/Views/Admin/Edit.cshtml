@@ -16,7 +16,7 @@
     {
         var partDefinition = await ContentDefinitionManager.GetPartDefinitionAsync(part.PartDefinition.Name);
 
-        if (partDefinition == null)
+        if (partDefinition is null)
         {
             continue;
         }
@@ -35,7 +35,7 @@
 
     var fieldDefinitions = new List<ContentPartFieldDefinition>();
 
-    if (typePart?.PartDefinition?.Fields != null)
+    if (typePart?.PartDefinition?.Fields is not null)
     {
         fieldDefinitions = typePart.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
@@ -54,7 +54,7 @@
 
     <input type="hidden" asp-for="Name" />
 
-    @if (Model.Editor.Shortcuts != null)
+    @if (Model.Editor.Shortcuts is not null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Editor.Shortcuts)

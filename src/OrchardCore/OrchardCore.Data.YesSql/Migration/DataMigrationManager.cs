@@ -59,11 +59,11 @@ namespace OrchardCore.Data.Migration
         /// <inheritdocs />
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
-            if (_dataMigrationRecord == null)
+            if (_dataMigrationRecord is null)
             {
                 _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
 
-                if (_dataMigrationRecord == null)
+                if (_dataMigrationRecord is null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
                     await _session.SaveAsync(_dataMigrationRecord);
@@ -86,7 +86,7 @@ namespace OrchardCore.Data.Migration
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
                 }
 
-                return GetMethod(dataMigration, "Create") != null;
+                return GetMethod(dataMigration, "Create") is not null;
             });
 
             return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToArray();
@@ -109,12 +109,12 @@ namespace OrchardCore.Data.Migration
 
                 var uninstallMethod = GetMethod(migration, "Uninstall");
 
-                if (uninstallMethod != null)
+                if (uninstallMethod is not null)
                 {
                     await InvokeMethodAsync(uninstallMethod, migration);
                 }
 
-                if (dataMigrationRecord == null)
+                if (dataMigrationRecord is null)
                 {
                     continue;
                 }
@@ -188,7 +188,7 @@ namespace OrchardCore.Data.Migration
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var current = 0;
-                if (dataMigrationRecord != null)
+                if (dataMigrationRecord is not null)
                 {
                     // This can be null if a failed create migration has occurred and the data migration record was saved.
                     current = dataMigrationRecord.Version ?? current;
@@ -207,7 +207,7 @@ namespace OrchardCore.Data.Migration
                         // Try to get a Create method.
                         var createMethod = GetMethod(migration, "Create");
 
-                        if (createMethod == null)
+                        if (createMethod is null)
                         {
                             _logger.LogWarning("The migration '{name}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migration.GetType().FullName, featureId);
                             continue;
@@ -290,7 +290,7 @@ namespace OrchardCore.Data.Migration
                 .GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Select(GetUpdateFromMethod)
-                .Where(tuple => tuple != null)
+                .Where(tuple => tuple is not null)
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
         private static Tuple<int, MethodInfo> GetUpdateFromMethod(MethodInfo methodInfo)
@@ -319,7 +319,7 @@ namespace OrchardCore.Data.Migration
             // First try to find a method that match the given name. (Ex. Create())
             var methodInfo = dataMigration.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
 
-            if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
+            if (methodInfo is not null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
                 return methodInfo;
             }
@@ -327,7 +327,7 @@ namespace OrchardCore.Data.Migration
             // At this point, try to find a method that matches the given name and ends with Async. (Ex. CreateAsync())
             methodInfo = dataMigration.GetType().GetMethod(name + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
 
-            if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+            if (methodInfo is not null && methodInfo.ReturnType == typeof(Task<int>))
             {
                 return methodInfo;
             }

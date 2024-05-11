@@ -16,7 +16,7 @@ namespace OrchardCore.Security.Services
 
         public override void ApplyPolicy(HttpContext httpContext)
         {
-            if (_policy != null)
+            if (_policy is not null)
             {
                 httpContext.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy] = _policy;
             }

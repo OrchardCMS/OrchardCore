@@ -45,7 +45,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                 indexName = fieldSettings.Index;
             }
 
-            if (indexName != null && !await _elasticIndexManager.ExistsAsync(indexName))
+            if (indexName is not null && !await _elasticIndexManager.ExistsAsync(indexName))
             {
                 return [];
             }
@@ -101,7 +101,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                     elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
                 }
 
-                if (elasticTopDocs.TopDocs != null)
+                if (elasticTopDocs.TopDocs is not null)
                 {
                     foreach (var doc in elasticTopDocs.TopDocs)
                     {

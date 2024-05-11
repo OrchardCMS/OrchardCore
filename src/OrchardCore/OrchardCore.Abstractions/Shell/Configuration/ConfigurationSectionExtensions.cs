@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public static JsonNode AsJsonNode(this IConfiguration configuration)
         {
-            if (configuration is IConfigurationSection configurationSection && configurationSection.Value != null)
+            if (configuration is IConfigurationSection configurationSection && configurationSection.Value is not null)
             {
                 return JsonValue.Create(configurationSection.Value);
             }

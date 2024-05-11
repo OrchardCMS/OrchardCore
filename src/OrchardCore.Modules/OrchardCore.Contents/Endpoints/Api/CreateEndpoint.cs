@@ -49,9 +49,9 @@ public static class CreateEndpoint
         var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
         var modelState = updateModelAccessor.ModelUpdater.ModelState;
 
-        if (contentItem == null)
+        if (contentItem is null)
         {
-            if (string.IsNullOrEmpty(model?.ContentType) || await contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
+            if (string.IsNullOrEmpty(model?.ContentType) || await contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) is null)
             {
                 return TypedResults.BadRequest();
             }
@@ -127,7 +127,7 @@ public static class CreateEndpoint
     {
         foreach (var error in result.Errors)
         {
-            if (error.MemberNames != null && error.MemberNames.Any())
+            if (error.MemberNames is not null && error.MemberNames.Any())
             {
                 foreach (var memberName in error.MemberNames)
                 {

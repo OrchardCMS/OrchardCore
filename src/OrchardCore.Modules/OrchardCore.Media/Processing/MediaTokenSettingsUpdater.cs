@@ -36,7 +36,7 @@ namespace OrchardCore.Media.Processing
 
             var mediaTokenSettings = (await _siteService.GetSiteSettingsAsync()).As<MediaTokenSettings>();
 
-            if (mediaTokenSettings.HashKey == null)
+            if (mediaTokenSettings.HashKey is null)
             {
                 var siteSettings = await _siteService.LoadSiteSettingsAsync();
 

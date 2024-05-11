@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Lucene.Deployment
         {
             var luceneIndexResetStep = step as LuceneIndexResetDeploymentStep;
 
-            if (luceneIndexResetStep == null)
+            if (luceneIndexResetStep is null)
             {
                 return Task.CompletedTask;
             }

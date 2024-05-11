@@ -28,7 +28,7 @@ namespace OrchardCore.Roles.Deployment
         {
             var allRolesStep = step as AllRolesDeploymentStep;
 
-            if (allRolesStep == null)
+            if (allRolesStep is null)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.Roles.Deployment
             {
                 var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
 
-                if (currentRole != null)
+                if (currentRole is not null)
                 {
                     permissions.Add(JObject.FromObject(
                         new RolesStepRoleModel

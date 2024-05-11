@@ -30,10 +30,10 @@ namespace OrchardCore.Security.Options
         public SecurityHeadersOptions AddContentSecurityPolicy(Dictionary<string, string> policies)
         {
             ContentSecurityPolicy = policies
-                .Where(kvp => kvp.Value != null ||
+                .Where(kvp => kvp.Value is not null ||
                     kvp.Key == ContentSecurityPolicyValue.Sandbox ||
                     kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
-                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : string.Empty))
+                .Select(kvp => kvp.Key + (kvp.Value is not null ? " " + kvp.Value : string.Empty))
                 .ToArray();
 
             return this;

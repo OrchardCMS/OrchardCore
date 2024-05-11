@@ -55,7 +55,7 @@ namespace OrchardCore.Facebook
                     }
                 }
 
-                if (script != null)
+                if (script is not null)
                 {
                     var bytes = Encoding.UTF8.GetBytes(script);
                     var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;

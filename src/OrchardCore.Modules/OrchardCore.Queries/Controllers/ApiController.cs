@@ -34,7 +34,7 @@ namespace OrchardCore.Queries.Controllers
         {
             var query = await _queryManager.GetQueryAsync(name);
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }

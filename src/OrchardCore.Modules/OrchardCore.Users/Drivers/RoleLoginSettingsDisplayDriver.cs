@@ -45,7 +45,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
             model.Roles = roles.Select(role => new RoleEntry()
             {
                 Role = role.RoleName,
-                IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                IsSelected = settings.Roles is not null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
             }).OrderBy(entry => entry.Role)
             .ToArray();
         }).Location("Content:6#Two-Factor Authentication")

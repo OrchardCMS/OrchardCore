@@ -112,7 +112,7 @@ namespace OrchardCore.Mvc
                 var relatedAssemblyAttribute = module.Assembly.GetCustomAttribute<RelatedAssemblyAttribute>();
 
                 // Is there a dedicated Views assembly (< net6.0)
-                if (relatedAssemblyAttribute != null)
+                if (relatedAssemblyAttribute is not null)
                 {
                     var precompiledAssemblyPath = Path.Combine(Path.GetDirectoryName(module.Assembly.Location), relatedAssemblyAttribute.AssemblyFileName + ".dll");
 
@@ -182,11 +182,11 @@ namespace OrchardCore.Mvc
             // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
             // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
 
-            if (services != null && _featureProviders == null)
+            if (services is not null && _featureProviders is null)
             {
                 lock (this)
                 {
-                    if (_featureProviders == null)
+                    if (_featureProviders is null)
                     {
                         _applicationPartManager = services.GetRequiredService<ApplicationPartManager>();
                         _featureProviders = services.GetServices<IApplicationFeatureProvider<ViewsFeature>>();

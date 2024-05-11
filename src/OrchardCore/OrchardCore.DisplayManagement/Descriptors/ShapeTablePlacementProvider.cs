@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var theme = await _themeManager.GetThemeAsync();
 
             // If there is no active theme, do nothing
-            if (theme == null)
+            if (theme is null)
             {
                 return null;
             }
@@ -47,7 +47,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
                 {
                     var placement = descriptor.Placement(placementContext);
-                    if (placement != null)
+                    if (placement is not null)
                     {
                         placement.Source = placementContext.Source;
                         return placement;

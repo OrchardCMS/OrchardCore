@@ -60,7 +60,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 elasticQueryResults.Items = [];
 
                 // Load corresponding content item versions
-                var topDocs = docs.TopDocs.Where(x => x != null).ToList();
+                var topDocs = docs.TopDocs.Where(x => x is not null).ToList();
 
                 if (topDocs.Count > 0)
                 {

@@ -198,7 +198,7 @@ namespace OrchardCore.Workflows.Controllers
                         {
                             var workflowType = await _workflowTypeStore.GetAsync(entry.Id);
 
-                            if (workflowType != null)
+                            if (workflowType is not null)
                             {
                                 await _workflowTypeStore.DeleteAsync(workflowType);
                                 await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", workflowType.Name]);
@@ -233,7 +233,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            if (id == null)
+            if (id is null)
             {
                 return View(new WorkflowTypePropertiesViewModel
                 {
@@ -272,7 +272,7 @@ namespace OrchardCore.Workflows.Controllers
                 return View(viewModel);
             }
 
-            var isNew = id == null;
+            var isNew = id is null;
             var workflowType = default(WorkflowType);
 
             if (isNew)
@@ -284,7 +284,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 workflowType = await _session.GetAsync<WorkflowType>(id.Value);
 
-                if (workflowType == null)
+                if (workflowType is null)
                 {
                     return NotFound();
                 }
@@ -318,7 +318,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _session.GetAsync<WorkflowType>(id);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 return NotFound();
             }
@@ -380,7 +380,7 @@ namespace OrchardCore.Workflows.Controllers
             var availableActivities = _activityLibrary.ListActivities();
             var workflowType = await _session.GetAsync<WorkflowType>(id);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 return NotFound();
             }
@@ -514,7 +514,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(id);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 return NotFound();
             }

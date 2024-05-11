@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             Current = part;
             Name = part.Name;
             PartName = part.PartDefinition.Name;
-            TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default;
+            TypeName = part.ContentTypeDefinition is not null ? part.ContentTypeDefinition.Name : default;
             _settings = part.Settings.Clone();
         }
 
@@ -43,7 +43,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
 
             // If existing settings do not exist, create.
-            if (existingJObject == null)
+            if (existingJObject is null)
             {
                 existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;

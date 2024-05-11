@@ -48,11 +48,11 @@ namespace OrchardCore.Mvc
                 // The scope is null when this code is called through a 'ChangeToken' callback, e.g to recompile razor pages.
                 // So, here we resolve and cache tenant level singletons, application singletons can be resolved in the ctor.
 
-                if (services != null && _tagHelpers == null)
+                if (services is not null && _tagHelpers is null)
                 {
                     lock (this)
                     {
-                        if (_tagHelpers == null)
+                        if (_tagHelpers is null)
                         {
                             _shellBlueprint = services.GetRequiredService<ShellBlueprint>();
                             _tagHelpers = services.GetServices<ITagHelpersProvider>();
@@ -70,14 +70,14 @@ namespace OrchardCore.Mvc
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            if (_referencePaths != null)
+            if (_referencePaths is not null)
             {
                 return _referencePaths;
             }
 
             lock (_synLock)
             {
-                if (_referencePaths != null)
+                if (_referencePaths is not null)
                 {
                     return _referencePaths;
                 }

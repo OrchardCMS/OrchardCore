@@ -20,7 +20,7 @@ namespace OrchardCore.OpenId.Deployment
         {
             var openIdServerStep = step as OpenIdServerDeploymentStep;
 
-            if (openIdServerStep == null)
+            if (openIdServerStep is null)
             {
                 return;
             }

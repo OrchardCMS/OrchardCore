@@ -74,7 +74,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -98,7 +98,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> IndexPost(RequestCodeSmsAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -151,14 +151,14 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
 
         var pendingPhoneNumber = await GetPendingPhoneNumberAsync(user.UserName);
 
-        if (pendingPhoneNumber == null)
+        if (pendingPhoneNumber is null)
         {
             await Notifier.ErrorAsync(H["Unable to find a phone number."]);
 
@@ -177,7 +177,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> ValidateCode(EnableSmsAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -213,7 +213,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
         var errorMessage = S["The SMS message could not be sent. Please attempt to request the code at a later time."];
 
-        if (user == null)
+        if (user is null)
         {
             return BadRequest(new
             {
@@ -284,7 +284,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
         var data = await DistributedCache.GetAsync(key);
 
-        if (data != null && data.Length > 0)
+        if (data is not null && data.Length > 0)
         {
             return Encoding.UTF8.GetString(data);
         }

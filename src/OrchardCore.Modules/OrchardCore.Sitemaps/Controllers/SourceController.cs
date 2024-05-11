@@ -59,14 +59,14 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
 
             var source = _factories.FirstOrDefault(x => x.Name == sourceType)?.Create();
 
-            if (source == null)
+            if (source is null)
             {
                 return NotFound();
             }
@@ -95,14 +95,14 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
 
             var source = _factories.FirstOrDefault(x => x.Name == model.SitemapSourceType)?.Create();
 
-            if (source == null)
+            if (source is null)
             {
                 return NotFound();
             }
@@ -137,14 +137,14 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
 
             var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
-            if (source == null)
+            if (source is null)
             {
                 return NotFound();
             }
@@ -172,14 +172,14 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
 
             var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
 
-            if (source == null)
+            if (source is null)
             {
                 return NotFound();
             }
@@ -212,14 +212,14 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
 
             var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
-            if (source == null)
+            if (source is null)
             {
                 return NotFound();
             }

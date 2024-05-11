@@ -96,7 +96,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 // Find base shape association using only the fundamental shape type.
                 // Alternates that may already be registered do not affect the "displaying" event calls.
                 var shapeDescriptor = GetShapeDescriptor(shapeMetadata.Type, shapeTable);
-                if (shapeDescriptor != null)
+                if (shapeDescriptor is not null)
                 {
                     await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
 
@@ -113,15 +113,15 @@ namespace OrchardCore.DisplayManagement.Implementation
                 shapeMetadata.Displaying.Invoke((action, displayContext) => action(displayContext), displayContext, _logger);
 
                 // Use pre-fetched content if available (e.g. coming from specific cache implementation).
-                if (displayContext.ChildContent != null)
+                if (displayContext.ChildContent is not null)
                 {
                     shape.Metadata.ChildContent = displayContext.ChildContent;
                 }
 
-                if (shape.Metadata.ChildContent == null)
+                if (shape.Metadata.ChildContent is null)
                 {
                     // There might be no shape binding for the main shape, and only for its alternates.
-                    if (shapeDescriptor != null)
+                    if (shapeDescriptor is not null)
                     {
                         await shapeDescriptor.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
                     }
@@ -141,7 +141,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     foreach (var frameType in shape.Metadata.Wrappers)
                     {
                         var frameBinding = await GetShapeBindingAsync(frameType, AlternatesCollection.Empty, shapeTable);
-                        if (frameBinding != null)
+                        if (frameBinding is not null)
                         {
                             shape.Metadata.ChildContent = await ProcessAsync(frameBinding, shape, localContext);
                         }
@@ -164,7 +164,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     }
                 }, displayContext, _logger);
 
-                if (shapeDescriptor != null)
+                if (shapeDescriptor is not null)
                 {
                     await shapeDescriptor.DisplayedAsync.InvokeAsync(async (action, displayContext) =>
                     {
@@ -227,7 +227,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeAlternate);
 
-                    if (binding != null)
+                    if (binding is not null)
                     {
                         return binding;
                     }
@@ -264,7 +264,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeSegment);
 
-                    if (binding != null)
+                    if (binding is not null)
                     {
                         return binding;
                     }
@@ -300,7 +300,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return (await task) ?? HtmlString.Empty;
             }
 
-            if (shapeBinding?.BindingAsync == null)
+            if (shapeBinding?.BindingAsync is null)
             {
                 // Todo: create result from all child shapes.
                 return new ValueTask<IHtmlContent>(shape.Metadata.ChildContent ?? HtmlString.Empty);

@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Commands
 
         private void SetSwitchValues(CommandContext context)
         {
-            if (context.Switches != null && context.Switches.Count > 0)
+            if (context.Switches is not null && context.Switches.Count > 0)
             {
                 foreach (var commandSwitch in context.Switches)
                 {
@@ -133,7 +133,7 @@ namespace OrchardCore.Environment.Commands
                 if (i < arguments.Length)
                 {
                     var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
-                    if (val == null) return null;
+                    if (val is null) return null;
 
                     invokeParameters.Add(val);
                 }
@@ -158,7 +158,7 @@ namespace OrchardCore.Environment.Commands
 
         private void CheckMethodForSwitches(MethodInfo methodInfo, IDictionary<string, string> switches)
         {
-            if (switches == null || switches.Count == 0)
+            if (switches is null || switches.Count == 0)
                 return;
 
             var supportedSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

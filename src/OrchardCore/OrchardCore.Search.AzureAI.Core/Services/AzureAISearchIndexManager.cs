@@ -78,7 +78,7 @@ public class AzureAISearchIndexManager
     }
 
     public async Task<bool> ExistsAsync(string indexName)
-        => await GetAsync(indexName) != null;
+        => await GetAsync(indexName) is not null;
 
     public async Task<SearchIndex> GetAsync(string indexName)
     {

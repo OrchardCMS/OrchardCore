@@ -34,16 +34,16 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public LiquidTagHelperActivator(Type type)
         {
             var accessibleProperties = type.GetProperties().Where(p =>
-                (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null ||
-                p.GetCustomAttribute<ViewContextAttribute>() != null) &&
-                p.GetSetMethod() != null);
+                (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() is null ||
+                p.GetCustomAttribute<ViewContextAttribute>() is not null) &&
+                p.GetSetMethod() is not null);
 
             foreach (var property in accessibleProperties)
             {
                 var setter = MakeFastPropertySetter(type, property);
                 var viewContextAttribute = property.GetCustomAttribute<ViewContextAttribute>();
 
-                if (viewContextAttribute != null && property.PropertyType == typeof(ViewContext))
+                if (viewContextAttribute is not null && property.PropertyType == typeof(ViewContext))
                 {
                     _viewContextSetter = (helper, context) => setter(helper, context);
                     continue;
@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
-                if (htmlAttribute != null && htmlAttribute.Name != null)
+                if (htmlAttribute is not null && htmlAttribute.Name is not null)
                 {
                     allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
@@ -62,7 +62,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
 
                     var dictionaryPrefix = htmlAttribute.DictionaryAttributePrefix;
-                    if (dictionaryPrefix != null)
+                    if (dictionaryPrefix is not null)
                     {
                         allNames.Add(dictionaryPrefix.Replace('-', '_'));
 
@@ -123,7 +123,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 }
             }
 
-            if (ShellScope.Services.GetService(type) as ITagHelper != null)
+            if (ShellScope.Services.GetService(type) as ITagHelper is not null)
             {
                 _activatorByService = (context) =>
                 {
@@ -150,7 +150,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             ITagHelper tagHelper;
 
-            if (_activatorByService != null)
+            if (_activatorByService is not null)
             {
                 tagHelper = _activatorByService(context);
             }
@@ -188,7 +188,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 var found = false;
 
-                if (setter != null)
+                if (setter is not null)
                 {
                     try
                     {

@@ -231,7 +231,7 @@ namespace OrchardCore.AuditTrail.Services
                 .And(ZeroOrOne(range.SkipAnd(OneOf(currentParser, dateParser))))
                 .Then<ExpressionNode>(x =>
                 {
-                    if (x.Item2 == null)
+                    if (x.Item2 is null)
                     {
                         return new UnaryExpressionNode(x.Item1);
                     }

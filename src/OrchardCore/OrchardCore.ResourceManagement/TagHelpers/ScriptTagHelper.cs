@@ -222,7 +222,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 setting.AtLocation(At);
             }
 
-            if (hasName && UseCdn != null)
+            if (hasName && UseCdn is not null)
             {
                 setting.UseCdn(UseCdn.Value);
             }
@@ -232,7 +232,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 setting.UseCondition(Condition);
             }
 
-            if (Debug != null)
+            if (Debug is not null)
             {
                 setting.UseDebugMode(Debug.Value);
             }

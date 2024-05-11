@@ -32,11 +32,11 @@ namespace OrchardCore.ContentLocalization.GraphQL
             var culture = context.GetArgument<string>("culture");
             var contentLocalizationManager = context.RequestServices.GetService<IContentLocalizationManager>();
 
-            if (culture != null)
+            if (culture is not null)
             {
                 var contentItem = await contentLocalizationManager.GetContentItemAsync(context.Source.LocalizationSet, culture);
 
-                return contentItem != null ? new[] { contentItem } : [];
+                return contentItem is not null ? new[] { contentItem } : [];
             }
 
             return await contentLocalizationManager.GetItemsForSetAsync(context.Source.LocalizationSet);

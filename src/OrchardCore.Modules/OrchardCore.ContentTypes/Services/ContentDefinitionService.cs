@@ -73,7 +73,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return null;
             }
@@ -85,7 +85,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return null;
             }
@@ -234,11 +234,11 @@ namespace OrchardCore.ContentTypes.Services
         {
             var contentPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
 
-            if (contentPartDefinition == null)
+            if (contentPartDefinition is null)
             {
                 var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
 
-                if (contentTypeDefinition == null)
+                if (contentTypeDefinition is null)
                 {
                     return null;
                 }
@@ -255,11 +255,11 @@ namespace OrchardCore.ContentTypes.Services
         {
             var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(name);
 
-            if (contentPartDefinition == null)
+            if (contentPartDefinition is null)
             {
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(name);
 
-                if (contentTypeDefinition == null)
+                if (contentTypeDefinition is null)
                 {
                     return null;
                 }
@@ -297,7 +297,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(name);
 
-            if (partDefinition == null)
+            if (partDefinition is null)
             {
                 // Couldn't find this named part, ignore it.
                 return;
@@ -329,7 +329,7 @@ namespace OrchardCore.ContentTypes.Services
             var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName);
 
             // If the type exists ensure it has its own part.
-            if (typeDefinition != null)
+            if (typeDefinition is not null)
             {
                 await _contentDefinitionManager.AlterTypeDefinitionAsync(partName, builder => builder.WithPart(partName));
             }
@@ -399,7 +399,7 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     var partDefinition = typeDefinition.Parts?.FirstOrDefault(x => x.Name == partNames[i]);
 
-                    if (partDefinition == null)
+                    if (partDefinition is null)
                     {
                         continue;
                     }
@@ -433,7 +433,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             displayName = displayName.ToSafeName();
 
-            while (await _contentDefinitionManager.LoadTypeDefinitionAsync(displayName) != null)
+            while (await _contentDefinitionManager.LoadTypeDefinitionAsync(displayName) is not null)
             {
                 displayName = VersionName(displayName);
             }
@@ -448,7 +448,7 @@ namespace OrchardCore.ContentTypes.Services
             var part = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
             displayName = displayName.ToSafeName();
 
-            if (part == null)
+            if (part is null)
             {
                 var type = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName)
                     ?? throw new ArgumentException("The part doesn't exist: " + partName);
@@ -456,7 +456,7 @@ namespace OrchardCore.ContentTypes.Services
                 var typePart = type.Parts?.FirstOrDefault(x => x.PartDefinition.Name == partName);
 
                 // If passed in might be that of a type w/ no implicit field.
-                if (typePart == null)
+                if (typePart is null)
                 {
                     return displayName;
                 }

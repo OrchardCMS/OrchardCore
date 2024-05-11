@@ -75,7 +75,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     {
         var users = await GetUsersAsync(workflowContext, activityContext);
 
-        if (users == null || !users.Any())
+        if (users is null || !users.Any())
         {
             return Outcomes("Failed: no user found");
         }

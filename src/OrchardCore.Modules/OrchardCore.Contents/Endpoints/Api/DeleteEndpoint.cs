@@ -33,7 +33,7 @@ public static class DeleteEndpoint
 
         var contentItem = await contentManager.GetAsync(contentItemId);
 
-        if (contentItem == null)
+        if (contentItem is null)
         {
             return TypedResults.NotFound();
         }

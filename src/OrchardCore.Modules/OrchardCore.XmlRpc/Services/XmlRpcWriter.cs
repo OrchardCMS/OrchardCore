@@ -48,7 +48,7 @@ namespace OrchardCore.XmlRpc.Services
             ArgumentNullException.ThrowIfNull(rpcMethodResponse);
 
             // return a valid fault as per http://xmlrpc.scripting.com/spec.html
-            if (rpcMethodResponse.Fault != null)
+            if (rpcMethodResponse.Fault is not null)
             {
                 var members = new XRpcStruct();
                 members.Set("faultCode", rpcMethodResponse.Fault.Code);

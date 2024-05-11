@@ -99,7 +99,7 @@ namespace OrchardCore.Media.Services
             {
                 var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
 
-                if (fileInfo == null)
+                if (fileInfo is null)
                 {
                     _logger.LogError("A file with the path '{Path}' does not exist.", item.Path);
                     return;
@@ -116,7 +116,7 @@ namespace OrchardCore.Media.Services
                 var previousDirPath = fileInfo.DirectoryPath;
 
                 // fileName is a hash of the file. We preserve disk space by reusing the file.
-                if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
+                if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
                 {
                     await _fileStore.MoveFileAsync(item.Path, finalFilePath);
                 }
@@ -148,7 +148,7 @@ namespace OrchardCore.Media.Services
 
         private async Task DeleteDirIfEmptyAsync(string previousDirPath)
         {
-            if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) == null)
+            if (await _fileStore.GetDirectoryInfoAsync(previousDirPath) is null)
             {
                 return;
             }

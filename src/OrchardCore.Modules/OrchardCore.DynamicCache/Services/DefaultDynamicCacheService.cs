@@ -60,7 +60,7 @@ namespace OrchardCore.DynamicCache.Services
             var cacheKey = await GetCacheKey(context);
 
             context = await GetCachedContextAsync(cacheKey);
-            if (context == null)
+            if (context is null)
             {
                 // We don't know the context, so we must treat this as a cache miss
                 return null;
@@ -174,7 +174,7 @@ namespace OrchardCore.DynamicCache.Services
             try
             {
                 var bytes = await _dynamicCache.GetAsync(cacheKey);
-                if (bytes == null)
+                if (bytes is null)
                 {
                     return null;
                 }
@@ -198,7 +198,7 @@ namespace OrchardCore.DynamicCache.Services
         {
             var cachedValue = await GetCachedStringAsync(GetCacheContextCacheKey(cacheKey));
 
-            if (cachedValue == null)
+            if (cachedValue is null)
             {
                 return null;
             }

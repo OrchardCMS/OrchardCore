@@ -44,11 +44,11 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
 
         await updater.TryUpdateModelAsync(vm, Prefix);
 
-        if (await _userManager.FindByNameAsync(vm.UserName) != null)
+        if (await _userManager.FindByNameAsync(vm.UserName) is not null)
         {
             updater.ModelState.AddModelError(Prefix, nameof(vm.UserName), S["A user with the same username already exists."]);
         }
-        else if (_identityOptions.User.RequireUniqueEmail && await _userManager.FindByEmailAsync(vm.Email) != null)
+        else if (_identityOptions.User.RequireUniqueEmail && await _userManager.FindByEmailAsync(vm.Email) is not null)
         {
             updater.ModelState.AddModelError(Prefix, nameof(vm.Email), S["A user with the same email address already exists."]);
         }

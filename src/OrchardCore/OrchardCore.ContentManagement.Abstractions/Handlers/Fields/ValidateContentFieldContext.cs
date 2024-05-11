@@ -22,7 +22,7 @@ public static class ValidateFieldContentContextExtensions
 
     public static void Fail(this ValidateContentFieldContext context, string errorMessage, string propertyName)
     {
-        if (propertyName == null)
+        if (propertyName is null)
         {
             context.ContentValidateResult.Fail(new ValidationResult(errorMessage));
 

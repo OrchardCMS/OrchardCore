@@ -27,12 +27,12 @@ namespace OrchardCore.Contents.ViewComponents
         {
             ContentItem contentItem = null;
 
-            if (contentItemId != null)
+            if (contentItemId is not null)
             {
                 contentItem = await _contentManager.GetAsync(contentItemId);
             }
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 throw new ArgumentException("Content item not found");
             }

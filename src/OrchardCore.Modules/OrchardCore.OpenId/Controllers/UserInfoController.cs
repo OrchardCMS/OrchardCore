@@ -32,7 +32,7 @@ namespace OrchardCore.OpenId.Controllers
             // an authentication cookie or try to establish an ASP.NET Core user session.
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -41,7 +41,7 @@ namespace OrchardCore.OpenId.Controllers
             // an exception if the OpenIddict server handler was not registered (e.g because the
             // OpenID server feature was not enabled or because the configuration was invalid).
             var principal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme))?.Principal;
-            if (principal == null)
+            if (principal is null)
             {
                 return Challenge(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }

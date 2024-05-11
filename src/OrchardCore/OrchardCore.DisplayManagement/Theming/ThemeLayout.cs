@@ -21,7 +21,7 @@ namespace OrchardCore.DisplayManagement.Theming
             // The View's body is rendered.
             var body = RenderLayoutBody();
 
-            if (ThemeLayout != null)
+            if (ThemeLayout is not null)
             {
                 // Then is added to the Content zone of the Layout shape.
                 await ThemeLayout.Zones["Content"].AddAsync(body);

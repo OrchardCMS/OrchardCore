@@ -25,7 +25,7 @@
     <div class="col-md-8">
         <h3>@T["Zones"]</h3>
         <form asp-action="Index">
-            @if (Model.Zones == null || Model.Zones.Length == 0)
+            @if (Model.Zones is null || Model.Zones.Length == 0)
             {
                 <p class="alert alert-warning">@T["Please <a href=\"{0}\">define the available zones</a> before adding Widgets", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })]</p>
             }

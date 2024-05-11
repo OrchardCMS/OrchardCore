@@ -53,7 +53,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 finally
                 {
                     // This disposes the final outputStream.
-                    if (outputStream != null)
+                    if (outputStream is not null)
                     {
                         await outputStream.DisposeAsync();
                     }
@@ -61,7 +61,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             }
             finally
             {
-                if (inputStream != null)
+                if (inputStream is not null)
                 {
                     await inputStream.DisposeAsync();
                 }

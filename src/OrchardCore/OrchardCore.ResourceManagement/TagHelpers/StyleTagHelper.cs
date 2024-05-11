@@ -80,7 +80,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.ShouldAppendVersion(AppendVersion);
                 }
 
-                if (Debug != null)
+                if (Debug is not null)
                 {
                     setting.UseDebugMode(Debug.Value);
                 }
@@ -122,7 +122,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                if (UseCdn != null)
+                if (UseCdn is not null)
                 {
                     setting.UseCdn(UseCdn.Value);
                 }
@@ -132,7 +132,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                if (Debug != null)
+                if (Debug is not null)
                 {
                     setting.UseDebugMode(Debug.Value);
                 }
@@ -208,7 +208,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Also include the style.
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
 
-                if (UseCdn != null)
+                if (UseCdn is not null)
                 {
                     setting.UseCdn(UseCdn.Value);
                 }
@@ -218,7 +218,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCondition(Condition);
                 }
 
-                if (Debug != null)
+                if (Debug is not null)
                 {
                     setting.UseDebugMode(Debug.Value);
                 }

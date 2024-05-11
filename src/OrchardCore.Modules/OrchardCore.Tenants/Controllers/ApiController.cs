@@ -351,7 +351,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
-            if (selectedProvider == null)
+            if (selectedProvider is null)
             {
                 return BadRequest(S["The database provider is not supported."]);
             }
@@ -393,7 +393,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (string.IsNullOrEmpty(recipeName))
             {
-                if (recipe == null)
+                if (recipe is null)
                 {
                     return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
                 }
@@ -419,7 +419,7 @@ namespace OrchardCore.Tenants.Controllers
                 var setupRecipes = await _setupService.GetSetupRecipesAsync();
                 recipeDescriptor = setupRecipes.FirstOrDefault(x => string.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
 
-                if (recipeDescriptor == null)
+                if (recipeDescriptor is null)
                 {
                     return BadRequest(S["Recipe '{0}' not found.", recipeName]);
                 }
@@ -464,7 +464,7 @@ namespace OrchardCore.Tenants.Controllers
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
             var host = shellSettings.RequestUrlHosts.FirstOrDefault();
-            var hostString = host != null ? new HostString(host) : Request.Host;
+            var hostString = host is not null ? new HostString(host) : Request.Host;
 
             var pathString = HttpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))

@@ -37,7 +37,7 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-            if (appSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
+            if (appSettingsFileInfo is null && _blobOptions.MigrateFromFiles)
             {
                 if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.Configuration.ApplicationSettingsFileName))
                 {
@@ -45,7 +45,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            if (appSettingsFileInfo != null)
+            if (appSettingsFileInfo is not null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
                 builder.AddTenantJsonStream(stream);
@@ -53,7 +53,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             var environmentAppSettingsFileName = $"{_appSettings}.{_environment}.json";
             var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
-            if (environmentAppSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
+            if (environmentAppSettingsFileInfo is null && _blobOptions.MigrateFromFiles)
             {
                 if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.{_environment}.json", environmentAppSettingsFileName))
                 {
@@ -65,7 +65,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            if (environmentAppSettingsFileInfo != null)
+            if (environmentAppSettingsFileInfo is not null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName);
                 builder.AddTenantJsonStream(stream);

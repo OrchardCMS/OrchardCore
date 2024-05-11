@@ -97,7 +97,7 @@ namespace OrchardCore.ContentFields.Settings
 
         private void SetContentTypes(IUpdateModel updater, string[] displayedContentTypes, ContentPickerFieldSettings settings)
         {
-            if (displayedContentTypes == null || displayedContentTypes.Length == 0)
+            if (displayedContentTypes is null || displayedContentTypes.Length == 0)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.DisplayedContentTypes), S["At least one content type must be selected."]);
 
@@ -114,7 +114,7 @@ namespace OrchardCore.ContentFields.Settings
                 return ContentPickerSettingType.AllTypes;
             }
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
+            return settings.DisplayedStereotypes is not null && settings.DisplayedStereotypes.Length > 0
                 ? ContentPickerSettingType.Stereotypes
                 : ContentPickerSettingType.ContentTypes;
         }

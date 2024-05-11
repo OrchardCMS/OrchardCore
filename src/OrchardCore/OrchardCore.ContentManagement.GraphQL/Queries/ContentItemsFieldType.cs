@@ -118,7 +118,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             IResolveFieldContext fieldContext,
             ISession session)
         {
-            if (where == null)
+            if (where is null)
             {
                 return query;
             }
@@ -273,19 +273,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 var property = values[0];
 
                 // Figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl.
-                if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
+                if (tableAlias is null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
                 {
                     var whereArgument = fieldContext?.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where");
 
-                    if (whereArgument != null)
+                    if (whereArgument is not null)
                     {
                         var whereInput = (WhereInputObjectGraphType)whereArgument.ResolvedType;
 
-                        foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
+                        foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") is not null))
                         {
                             var partName = field.GetMetadata<string>("PartName");
-                            if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
-                                (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
+                            if ((tableAlias is null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
+                                (tableAlias is not null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
                             {
                                 tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
                                 break;
@@ -294,7 +294,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     }
                 }
 
-                if (tableAlias != null)
+                if (tableAlias is not null)
                 {
                     property = $"{tableAlias}.{property}";
                 }
@@ -352,7 +352,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     };
                 }
 
-                if (expression != null)
+                if (expression is not null)
                 {
                     expressions.Add(expression);
                 }
@@ -366,7 +366,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 var orderByArguments = JObject.FromObject(context.Arguments["orderBy"].Value);
 
-                if (orderByArguments != null)
+                if (orderByArguments is not null)
                 {
                     var thenBy = false;
 
@@ -390,7 +390,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                             case "author": selector = x => x.Author; break;
                         }
 
-                        if (selector != null)
+                        if (selector is not null)
                         {
                             if (!thenBy)
                             {

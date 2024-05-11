@@ -146,7 +146,7 @@ namespace OrchardCore.Modules
                         var resourcePath = _baseNamespace + subpath.Replace('/', '>');
                         var fileName = Path.GetFileName(subpath);
 
-                        if (Assembly.GetManifestResourceInfo(resourcePath) == null)
+                        if (Assembly.GetManifestResourceInfo(resourcePath) is null)
                         {
                             return new NotFoundFileInfo(fileName);
                         }

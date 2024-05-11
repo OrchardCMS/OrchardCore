@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             _part = existing;
 
-            if (existing == null)
+            if (existing is null)
             {
                 _fields = [];
                 _settings = [];
@@ -69,7 +69,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartDefinitionBuilder RemoveField(string fieldName)
         {
             var existingField = _fields.SingleOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
-            if (existingField != null)
+            if (existingField is not null)
             {
                 _fields.Remove(existingField);
             }
@@ -88,7 +88,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
-            if (existingJObject == null)
+            if (existingJObject is null)
             {
                 existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;
@@ -119,7 +119,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
-            if (existingField != null)
+            if (existingField is not null)
             {
                 var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
                 foreach (var remove in toRemove)
@@ -178,7 +178,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
-            if (existingField != null)
+            if (existingField is not null)
             {
                 var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
                 foreach (var remove in toRemove)

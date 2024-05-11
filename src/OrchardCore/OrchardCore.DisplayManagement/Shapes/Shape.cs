@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        public bool HasItems => _items != null && _items.Count > 0;
+        public bool HasItems => _items is not null && _items.Count > 0;
 
         public string Position
         {
@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public virtual ValueTask<IShape> AddAsync(object item, string position)
         {
-            if (item == null)
+            if (item is null)
             {
                 return new ValueTask<IShape>(this);
             }
@@ -76,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Remove(string shapeName)
         {
-            if (_items == null)
+            if (_items is null)
             {
                 return;
             }
@@ -93,7 +93,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape Named(string shapeName)
         {
-            if (_items == null)
+            if (_items is null)
             {
                 return null;
             }
@@ -111,7 +111,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape NormalizedNamed(string shapeName)
         {
-            if (_items == null)
+            if (_items is null)
             {
                 return null;
             }
@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
-            if (_items == null)
+            if (_items is null)
             {
                 return Enumerable.Empty<object>().GetEnumerator();
             }
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IEnumerator GetEnumerator()
         {
-            if (_items == null)
+            if (_items is null)
             {
                 return Enumerable.Empty<object>().GetEnumerator();
             }

@@ -24,13 +24,13 @@ namespace OrchardCore.DisplayManagement.Theming
         {
             // For performance reason, processes the current theme only once per scope (request).
             // This can't be cached as each request gets a different value.
-            if (_theme == null)
+            if (_theme is null)
             {
                 var themeResults = new List<ThemeSelectorResult>();
                 foreach (var themeSelector in _themeSelectors)
                 {
                     var themeResult = await themeSelector.GetThemeAsync();
-                    if (themeResult != null)
+                    if (themeResult is not null)
                     {
                         themeResults.Add(themeResult);
                     }

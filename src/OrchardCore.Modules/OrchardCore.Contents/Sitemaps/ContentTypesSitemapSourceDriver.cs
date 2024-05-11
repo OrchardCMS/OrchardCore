@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Sitemaps
             var limitedCtd = contentTypeDefinitions
                 .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
-            if (limitedCtd != null)
+            if (limitedCtd is not null)
             {
                 var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name, StringComparison.Ordinal));
                 limitedEntry.Priority = sitemapSource.LimitedContentType.Priority;
@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Sitemaps
                 model.ChangeFrequency = sitemapSource.ChangeFrequency;
                 model.ContentTypes = entries;
                 model.LimitedContentTypes = limitedEntries;
-                model.LimitedContentType = limitedCtd != null ? limitedCtd.Name : contentTypeDefinitions.FirstOrDefault().Name;
+                model.LimitedContentType = limitedCtd is not null ? limitedCtd.Name : contentTypeDefinitions.FirstOrDefault().Name;
                 model.SitemapSource = sitemapSource;
             }).Location("Content");
         }
@@ -108,7 +108,7 @@ namespace OrchardCore.Contents.Sitemaps
                 .ToArray();
 
             var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType, StringComparison.Ordinal));
-            if (limitedEntry != null)
+            if (limitedEntry is not null)
             {
                 sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
                 sitemap.LimitedContentType.ChangeFrequency = limitedEntry.ChangeFrequency;

@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// <param name="arguments">The parameters used in the key.</param>
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
-            if (plural == null)
+            if (plural is null)
             {
                 throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
             }
@@ -35,7 +35,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         /// <param name="arguments">The parameters used in the key.</param>
         public static LocalizedHtmlString Plural(this IHtmlLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
         {
-            if (pluralForms == null)
+            if (pluralForms is null)
             {
                 throw new ArgumentNullException(nameof(pluralForms), "PluralForms array can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
             }

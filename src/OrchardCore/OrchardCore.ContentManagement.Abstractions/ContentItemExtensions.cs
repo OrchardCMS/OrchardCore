@@ -38,7 +38,7 @@ namespace OrchardCore.ContentManagement
                 part = null;
             }
 
-            return part != null;
+            return part is not null;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement
                 part = null;
             }
 
-            return part != null;
+            return part is not null;
         }
 
         /// <summary>

@@ -61,7 +61,7 @@ namespace OrchardCore.DisplayManagement
             await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.BuildDisplayAsync(model, context);
-                if (result != null)
+                if (result is not null)
                 {
                     await result.ApplyAsync(context);
                 }
@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement
             await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.BuildEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                 {
                     await result.ApplyAsync(context);
                 }
@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement
             await _drivers.InvokeAsync(async (driver, model, context) =>
             {
                 var result = await driver.UpdateEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                 {
                     await result.ApplyAsync(context);
                 }

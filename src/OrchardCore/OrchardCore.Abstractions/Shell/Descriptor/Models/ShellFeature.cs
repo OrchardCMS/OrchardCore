@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
 
         public bool Equals(ShellFeature other)
         {
-            if (other == null)
+            if (other is null)
             {
                 return false;
             }

@@ -30,7 +30,7 @@ namespace OrchardCore.ResourceManagement
             if (settings.Position != ResourcePosition.ByDependency)
             {
                 var existing = (RequireSettings)this[resource];
-                if (existing == null || existing.Position == ResourcePosition.ByDependency)
+                if (existing is null || existing.Position == ResourcePosition.ByDependency)
                 {
                     if (settings.Position == ResourcePosition.First)
                     {

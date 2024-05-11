@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Preview(string contentItemId)
         {
-            if (contentItemId == null)
+            if (contentItemId is null)
             {
                 return NotFound();
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.Contents.Controllers
 
             var contentItem = await _contentManager.GetAsync(contentItemId, versionOptions);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

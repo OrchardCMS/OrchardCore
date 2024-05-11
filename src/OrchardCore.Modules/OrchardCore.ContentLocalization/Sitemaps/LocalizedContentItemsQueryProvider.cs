@@ -57,7 +57,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                 var contentType = routeableContentTypeDefinitions
                     .FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
-                if (contentType == null)
+                if (contentType is null)
                 {
                     return;
                 }

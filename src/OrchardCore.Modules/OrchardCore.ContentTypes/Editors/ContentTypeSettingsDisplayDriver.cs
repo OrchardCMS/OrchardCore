@@ -91,13 +91,13 @@ namespace OrchardCore.ContentTypes.Editors
         {
             var options = _defaultOptions;
 
-            if (contentTypeDefinition.Name != null
+            if (contentTypeDefinition.Name is not null
                 && _options.ContentTypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))
             {
                 options = typeOptions;
             }
 
-            if (stereotype != null
+            if (stereotype is not null
                 && _options.Stereotypes.TryGetValue(stereotype, out var stereotypesOptions))
             {
                 options = stereotypesOptions;

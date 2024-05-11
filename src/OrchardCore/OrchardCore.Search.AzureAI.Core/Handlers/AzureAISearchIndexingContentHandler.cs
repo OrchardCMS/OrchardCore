@@ -99,7 +99,7 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
 
                     var contentItem = !indexSettings.IndexLatest ? published : latest;
 
-                    if (contentItem == null)
+                    if (contentItem is null)
                     {
                         await indexDocumentManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                     }

@@ -40,7 +40,7 @@ namespace OrchardCore.Taxonomies.GraphQL
 
                     var taxonomy = await contentManager.GetAsync(x.Source.TaxonomyContentItemId);
 
-                    if (taxonomy == null)
+                    if (taxonomy is null)
                     {
                         return null;
                     }

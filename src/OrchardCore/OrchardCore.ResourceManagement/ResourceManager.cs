@@ -70,7 +70,7 @@ namespace OrchardCore.ResourceManagement
                 resourcePath = string.Concat(_options.ContentBasePath, resourcePath.AsSpan(1));
             }
 
-            if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
+            if (resourceDebugPath is not null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
                 resourceDebugPath = string.Concat(_options.ContentBasePath, resourceDebugPath.AsSpan(1));
             }
@@ -129,13 +129,13 @@ namespace OrchardCore.ResourceManagement
             var stream = _options.ResourceManifests.SelectMany(x => x.GetResources(type));
             var resource = FindMatchingResource(stream, settings, name);
 
-            if (resource == null && _dynamicManifest != null)
+            if (resource is null && _dynamicManifest is not null)
             {
                 stream = _dynamicManifest.GetResources(type);
                 resource = FindMatchingResource(stream, settings, name);
             }
 
-            if (resolveInlineDefinitions && resource == null)
+            if (resolveInlineDefinitions && resource is null)
             {
                 // Does not seem to exist, but it's possible it is being
                 // defined by a Define() from a RequireSettings somewhere.
@@ -170,11 +170,11 @@ namespace OrchardCore.ResourceManagement
                 {
                     foreach (var resourceDefinition in r.Value)
                     {
-                        var version = resourceDefinition.Version != null
+                        var version = resourceDefinition.Version is not null
                             ? new Version(resourceDefinition.Version)
                             : null;
 
-                        if (lower != null)
+                        if (lower is not null)
                         {
                             if (lower > version || version >= upper)
                             {
@@ -245,14 +245,14 @@ namespace OrchardCore.ResourceManagement
             var anyWereDefined = false;
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
-                if (settings.InlineDefinition == null)
+                if (settings.InlineDefinition is null)
                 {
                     continue;
                 }
 
                 // Defining it on the fly.
                 var resource = FindResource(settings, false);
-                if (resource == null)
+                if (resource is null)
                 {
                     // Does not already exist, so define it.
                     resource = InlineManifest.DefineResource(resourceType, settings.Name).SetBasePath(settings.BasePath);
@@ -315,7 +315,7 @@ namespace OrchardCore.ResourceManagement
 
         private ResourceRequiredContext[] DoGetRequiredResources(string resourceType)
         {
-            if (_builtResources.TryGetValue(resourceType, out var requiredResources) && requiredResources != null)
+            if (_builtResources.TryGetValue(resourceType, out var requiredResources) && requiredResources is not null)
             {
                 return requiredResources;
             }
@@ -370,7 +370,7 @@ namespace OrchardCore.ResourceManagement
             ResourceDictionary allResources,
             bool isTopLevel)
         {
-            if (resource == null)
+            if (resource is null)
             {
                 return;
             }
@@ -379,15 +379,15 @@ namespace OrchardCore.ResourceManagement
 
             // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
             List<string> dependencies = null;
-            if (resource.Dependencies != null)
+            if (resource.Dependencies is not null)
             {
                 dependencies = new List<string>(resource.Dependencies);
-                if (settings.Dependencies != null)
+                if (settings.Dependencies is not null)
                 {
                     dependencies.AddRange(settings.Dependencies);
                 }
             }
-            else if (settings.Dependencies != null)
+            else if (settings.Dependencies is not null)
             {
                 dependencies = new List<string>(settings.Dependencies);
             }
@@ -400,7 +400,7 @@ namespace OrchardCore.ResourceManagement
             dependencySettings = isTopLevel ? dependencySettings.Combine(settings) : dependencySettings.AtLocation(settings.Location);
             dependencySettings = dependencySettings.CombinePosition(settings);
 
-            if (dependencies != null)
+            if (dependencies is not null)
             {
                 // Share search instance.
                 var tempSettings = new RequireSettings();
@@ -422,7 +422,7 @@ namespace OrchardCore.ResourceManagement
                     tempSettings.Version = version;
 
                     var dependency = FindResource(tempSettings);
-                    if (dependency == null)
+                    if (dependency is null)
                     {
                         continue;
                     }
@@ -441,7 +441,7 @@ namespace OrchardCore.ResourceManagement
 
             var href = link.Href;
 
-            if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
+            if (href is not null && href.StartsWith("~/", StringComparison.Ordinal))
             {
                 link.Href = string.Concat(_options.ContentBasePath, href.AsSpan(1));
             }
@@ -456,7 +456,7 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterMeta(MetaEntry meta)
         {
-            if (meta == null)
+            if (meta is null)
             {
                 return;
             }
@@ -470,7 +470,7 @@ namespace OrchardCore.ResourceManagement
 
         public void AppendMeta(MetaEntry meta, string contentSeparator)
         {
-            if (meta == null)
+            if (meta is null)
             {
                 return;
             }

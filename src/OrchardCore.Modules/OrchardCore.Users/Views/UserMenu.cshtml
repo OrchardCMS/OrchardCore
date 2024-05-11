@@ -1,10 +1,10 @@
 @if (!User.Identity.IsAuthenticated)
 {
-    @if (Model.AnonymousContent?.Items != null && Model.AnonymousContent.Items.Count > 0)
+    @if (Model.AnonymousContent?.Items is not null && Model.AnonymousContent.Items.Count > 0)
     {
         <li class="nav-item dropdown text-end">
             <a class="dropdown-toggle nav-link" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                @if (Model.AnonymousHeader?.Items != null && Model.AnonymousHeader.Items.Count > 0)
+                @if (Model.AnonymousHeader?.Items is not null && Model.AnonymousHeader.Items.Count > 0)
                 {
                     @await DisplayAsync(Model.AnonymousHeader)
                 }
@@ -33,13 +33,13 @@
 
 <li class="nav-item dropdown text-end">
     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-        @if (Model.Header != null)
+        @if (Model.Header is not null)
         {
             @await DisplayAsync(Model.Header)
         }
     </a>
 
-    @if (Model.Content != null)
+    @if (Model.Content is not null)
     {
         <ul class="dropdown-menu dropdown-menu-end">
             @await DisplayAsync(Model.Content)

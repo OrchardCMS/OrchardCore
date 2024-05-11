@@ -23,14 +23,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
         {
-            if (_sharedPaths != null)
+            if (_sharedPaths is not null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_sharedPaths == null)
+                if (_sharedPaths is null)
                 {
                     _sharedPaths = [];
 

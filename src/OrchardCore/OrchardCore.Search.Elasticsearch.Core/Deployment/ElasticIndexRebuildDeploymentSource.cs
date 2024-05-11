@@ -13,7 +13,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var elasticIndexRebuildStep = step as ElasticIndexRebuildDeploymentStep;
-            if (elasticIndexRebuildStep == null)
+            if (elasticIndexRebuildStep is null)
             {
                 return Task.CompletedTask;
             }

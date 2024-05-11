@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             var aspect = Aspect as TAspect;
 
-            if (aspect != null)
+            if (aspect is not null)
             {
                 await action(aspect);
             }

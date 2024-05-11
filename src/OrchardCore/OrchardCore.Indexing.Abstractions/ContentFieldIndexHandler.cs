@@ -21,7 +21,7 @@ namespace OrchardCore.Indexing
             }
 
             var field = contentPart.Get<TField>(partFieldDefinition.Name);
-            if (field != null)
+            if (field is not null)
             {
                 var keys = new List<string>();
                 foreach (var key in context.Keys)

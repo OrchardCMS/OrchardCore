@@ -31,7 +31,7 @@ namespace OrchardCore.Contents.Liquid
                 foreach (var objValue in input.Enumerate(ctx))
                 {
                     var contentItem = GetContentItem(objValue);
-                    if (contentItem != null)
+                    if (contentItem is not null)
                     {
                         if (!_fullTextRecursionHelper.IsRecursive(contentItem))
                         {
@@ -59,7 +59,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 var contentItem = GetContentItem(input);
 
-                if (contentItem == null || _fullTextRecursionHelper.IsRecursive(contentItem))
+                if (contentItem is null || _fullTextRecursionHelper.IsRecursive(contentItem))
                 {
                     return NilValue.Instance;
                 }
@@ -84,7 +84,7 @@ namespace OrchardCore.Contents.Liquid
                     contentItem = jObject.ToObject<ContentItem>();
                     // If input is a 'JObject' but which not represents a 'ContentItem',
                     // a 'ContentItem' is still created but with some null properties.
-                    if (contentItem?.ContentItemId == null)
+                    if (contentItem?.ContentItemId is null)
                     {
                         return null;
                     }

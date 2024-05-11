@@ -101,7 +101,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)?.ContentItem;
             }
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' failed to retrieve the content item.");
             }

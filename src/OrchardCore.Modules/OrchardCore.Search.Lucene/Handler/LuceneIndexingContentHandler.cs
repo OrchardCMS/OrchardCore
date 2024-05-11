@@ -102,7 +102,7 @@ namespace OrchardCore.Search.Lucene.Handlers
 
                         var contentItem = !indexSettings.IndexLatest ? published : latest;
 
-                        if (contentItem == null)
+                        if (contentItem is null)
                         {
                             await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
                         }

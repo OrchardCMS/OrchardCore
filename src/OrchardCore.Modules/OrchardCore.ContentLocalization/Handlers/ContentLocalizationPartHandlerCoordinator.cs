@@ -31,7 +31,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override async Task LocalizingAsync(LocalizationContentContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.ContentLocalization.Handlers
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (part is not null)
                 {
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger);
                 }
@@ -52,7 +52,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override async Task LocalizedAsync(LocalizationContentContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -63,7 +63,7 @@ namespace OrchardCore.ContentLocalization.Handlers
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (part is not null)
                 {
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger);
                 }

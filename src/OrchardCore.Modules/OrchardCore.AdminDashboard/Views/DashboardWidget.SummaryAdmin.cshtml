@@ -20,26 +20,26 @@
             @contentItem
         }
         - <small class="text-muted">@contentItem.ContentType</small>
-        @if (Model.Header != null)
+        @if (Model.Header is not null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
         }
-        @if (Model.Tags != null)
+        @if (Model.Tags is not null)
         {
             @await DisplayAsync(Model.Tags)
         }
-        @if (Model.Meta != null)
+        @if (Model.Meta is not null)
         {
         <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
     <div class="col-xl-3 col-sm-12">
         <div class="float-end button-group">
-            @if (Model.Actions != null)
+            @if (Model.Actions is not null)
             {
                 @await DisplayAsync(Model.Actions)
             }
-            @if (Model.ActionsMenu != null)
+            @if (Model.ActionsMenu is not null)
             {
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm text-secondary" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,7 +54,7 @@
     </div>
 </div>
 
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     <div class="primary">@await DisplayAsync(Model.Content)</div>
 }

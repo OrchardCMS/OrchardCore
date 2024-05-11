@@ -20,7 +20,7 @@ namespace OrchardCore.Queries.Deployment
         {
             var queryDeploymentStep = step as QueryBasedContentDeploymentStep;
 
-            if (queryDeploymentStep == null)
+            if (queryDeploymentStep is null)
             {
                 return;
             }
@@ -29,7 +29,7 @@ namespace OrchardCore.Queries.Deployment
 
             var query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
 
-            if (query == null)
+            if (query is null)
             {
                 return;
             }

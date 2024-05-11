@@ -1,4 +1,4 @@
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     <div id="accordion">
         @await DisplayAsync(Model.Content)

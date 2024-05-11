@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Drivers
                 var model = new DateEditorViewModel();
                 await updater.TryUpdateModelAsync(model, Prefix);
 
-                if (model.LocalDateTime == null)
+                if (model.LocalDateTime is null)
                 {
                     part.ContentItem.CreatedUtc = null;
                 }

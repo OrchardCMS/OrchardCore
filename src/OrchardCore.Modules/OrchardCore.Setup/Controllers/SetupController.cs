@@ -114,12 +114,12 @@ namespace OrchardCore.Setup.Controllers
             if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
-                if (selectedRecipe == null)
+                if (selectedRecipe is null)
                 {
                     ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
                 }
             }
-            else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) is null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }

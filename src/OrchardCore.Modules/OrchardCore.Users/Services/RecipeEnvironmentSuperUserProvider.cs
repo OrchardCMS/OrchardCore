@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Services
                     _userService ??= _serviceProvider.GetRequiredService<IUserService>();
 
                     var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser);
-                    if (superUser != null)
+                    if (superUser is not null)
                     {
                         environment["AdminUserId"] = siteSettings.SuperUser;
                         environment["AdminUsername"] = superUser.UserName;

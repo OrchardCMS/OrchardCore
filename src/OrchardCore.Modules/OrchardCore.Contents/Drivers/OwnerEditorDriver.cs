@@ -84,7 +84,7 @@ namespace OrchardCore.Contents.Drivers
                 {
                     var newOwner = await _userManager.FindByNameAsync(model.OwnerName);
 
-                    if (newOwner == null)
+                    if (newOwner is null)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.OwnerName), S["Invalid username provided for Owner."]);
                     }

@@ -19,12 +19,12 @@ public class RedisHealthCheck : IHealthCheck
         try
         {
             var redisService = _serviceProvider.GetService<IRedisService>();
-            if (redisService == null)
+            if (redisService is null)
             {
                 return HealthCheckResult.Unhealthy(description: $"The service '{nameof(IRedisService)}' isn't registered.");
             }
 
-            if (redisService.Connection == null)
+            if (redisService.Connection is null)
             {
                 await redisService.ConnectAsync();
             }

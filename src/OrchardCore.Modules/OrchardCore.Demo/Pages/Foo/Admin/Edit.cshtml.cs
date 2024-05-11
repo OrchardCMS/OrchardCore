@@ -44,7 +44,7 @@ namespace OrchardCore.Demo.Pages
         {
             var contentItem = await _contentManager.GetAsync(Id);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Demo.Pages
         public async Task<IActionResult> OnPostDelete()
         {
             var contentItem = await _contentManager.GetAsync(Id);
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -71,7 +71,7 @@ namespace OrchardCore.Demo.Pages
         {
             var contentItem = await _contentManager.GetAsync(Id);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

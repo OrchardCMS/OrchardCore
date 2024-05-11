@@ -88,7 +88,7 @@ namespace OrchardCore.Users.Controllers
                         IsEnabled = !settings.UsersAreModerated
                     }, model.Password, controller.ModelState.AddModelError) as User;
 
-                    if (user != null && controller.ModelState.IsValid)
+                    if (user is not null && controller.ModelState.IsValid)
                     {
                         if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                         {

@@ -69,27 +69,27 @@ namespace OrchardCore.Media.Shortcodes
                 var quality = arguments.Named("quality");
                 var format = arguments.Named("format");
 
-                if (width != null)
+                if (width is not null)
                 {
                     queryStringParams.Add("width", width);
                 }
 
-                if (height != null)
+                if (height is not null)
                 {
                     queryStringParams.Add("height", height);
                 }
 
-                if (mode != null)
+                if (mode is not null)
                 {
                     queryStringParams.Add("rmode", mode);
                 }
 
-                if (quality != null)
+                if (quality is not null)
                 {
                     queryStringParams.Add("quality", quality);
                 }
 
-                if (format != null)
+                if (format is not null)
                 {
                     queryStringParams.Add("format", format);
                 }

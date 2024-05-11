@@ -43,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Title
 
         public IHtmlContent GenerateTitle(IHtmlContent separator)
         {
-            if (_fixedTitle != null)
+            if (_fixedTitle is not null)
             {
                 return _fixedTitle;
             }

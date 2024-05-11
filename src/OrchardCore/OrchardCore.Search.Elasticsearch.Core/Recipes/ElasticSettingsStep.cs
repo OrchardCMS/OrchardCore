@@ -27,9 +27,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             var step = context.Step["ElasticSettings"];
 
-            if (step != null)
+            if (step is not null)
             {
-                if (step["SyncWithLucene"] != null && (bool)step["SyncWithLucene"])
+                if (step["SyncWithLucene"] is not null && (bool)step["SyncWithLucene"])
                 {
                     await _elasticIndexingService.SyncSettings();
                 }

@@ -93,7 +93,7 @@ namespace OrchardCore.Users.Workflows.Activities
             var isValid = false;
             IFormCollection form = null;
             string email = null;
-            if (_httpContextAccessor.HttpContext != null)
+            if (_httpContextAccessor.HttpContext is not null)
             {
                 form = _httpContextAccessor.HttpContext.Request.Form;
                 email = form["Email"];
@@ -114,7 +114,7 @@ namespace OrchardCore.Users.Workflows.Activities
                 if (errors.Count > 0)
                 {
                     var updater = _updateModelAccessor.ModelUpdater;
-                    if (updater != null)
+                    if (updater is not null)
                     {
                         foreach (var item in errors)
                         {
@@ -149,7 +149,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (!result.Succeeded)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
-                        if (updater != null)
+                        if (updater is not null)
                         {
                             foreach (var error in result.Errors)
                             {

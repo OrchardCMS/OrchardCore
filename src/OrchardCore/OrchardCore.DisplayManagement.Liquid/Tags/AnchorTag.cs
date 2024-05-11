@@ -89,16 +89,16 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // If "href" is already set, it means the user is attempting to use a normal anchor.
             if (!string.IsNullOrEmpty(href))
             {
-                if (action != null ||
-                    controller != null ||
-                    area != null ||
-                    page != null ||
-                    pageHandler != null ||
-                    route != null ||
-                    protocol != null ||
-                    host != null ||
-                    fragment != null ||
-                    (routeValues != null && routeValues.Count > 0))
+                if (action is not null ||
+                    controller is not null ||
+                    area is not null ||
+                    page is not null ||
+                    pageHandler is not null ||
+                    route is not null ||
+                    protocol is not null ||
+                    host is not null ||
+                    fragment is not null ||
+                    (routeValues is not null && routeValues.Count > 0))
                 {
                     // User specified an href and one of the bound attributes; can't determine the href attribute.
                     throw new InvalidOperationException("Cannot override href with other properties");
@@ -107,9 +107,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            var routeLink = route != null;
-            var actionLink = controller != null || action != null;
-            var pageLink = page != null || pageHandler != null;
+            var routeLink = route is not null;
+            var actionLink = controller is not null || action is not null;
+            var pageLink = page is not null || pageHandler is not null;
 
             if ((routeLink && actionLink) || (routeLink && pageLink) || (actionLink && pageLink))
             {
@@ -117,12 +117,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             RouteValueDictionary localRouteValues = null;
-            if (routeValues != null && routeValues.Count > 0)
+            if (routeValues is not null && routeValues.Count > 0)
             {
                 localRouteValues = new RouteValueDictionary(routeValues);
             }
 
-            if (area != null)
+            if (area is not null)
             {
                 // Unconditionally replace any value from asp-route-area.
                 localRouteValues ??= [];
@@ -176,7 +176,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            if (statements != null && statements.Count > 0)
+            if (statements is not null && statements.Count > 0)
             {
                 var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 

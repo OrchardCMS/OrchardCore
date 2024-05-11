@@ -175,7 +175,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflow = await _workflowStore.GetAsync(id);
 
-            if (workflow == null)
+            if (workflow is null)
             {
                 return NotFound();
             }
@@ -234,7 +234,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflow = await _workflowStore.GetAsync(id);
 
-            if (workflow == null)
+            if (workflow is null)
             {
                 return NotFound();
             }
@@ -255,14 +255,14 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflow = await _workflowStore.GetAsync(id);
 
-            if (workflow == null)
+            if (workflow is null)
             {
                 return NotFound();
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 return NotFound();
             }
@@ -315,7 +315,7 @@ namespace OrchardCore.Workflows.Controllers
                         {
                             var workflow = await _workflowStore.GetAsync(entry.Id);
 
-                            if (workflow != null)
+                            if (workflow is not null)
                             {
                                 await _workflowStore.DeleteAsync(workflow);
                                 await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", workflow.Id]);

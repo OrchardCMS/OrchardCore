@@ -190,7 +190,7 @@ namespace OrchardCore.Documents
                     // A non volatile document can be invalidated.
                     await InvalidateInternalAsync(document);
 
-                    if (afterUpdateAsync != null)
+                    if (afterUpdateAsync is not null)
                     {
                         await afterUpdateAsync(document);
                     }
@@ -377,7 +377,7 @@ namespace OrchardCore.Documents
                 data = await _options.Serializer.SerializeAsync(cached);
             }
 
-            if (data == null)
+            if (data is null)
             {
                 return null;
             }

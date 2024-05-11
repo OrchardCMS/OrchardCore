@@ -37,13 +37,13 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private void ReleasePooledBuffer()
         {
-            if (_pooledBuilder != null)
+            if (_pooledBuilder is not null)
             {
                 _pooledBuilder.Dispose();
                 _pooledBuilder = null;
                 _builder = null;
 
-                if (_previousPooledBuilders != null)
+                if (_previousPooledBuilders is not null)
                 {
                     foreach (var pooledBuilder in _previousPooledBuilders)
                     {
@@ -69,7 +69,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         // Invoked when used as TextWriter to intercept what is supposed to be written
         public override void Write(string value)
         {
-            if (value == null || value.Length == 0)
+            if (value is null || value.Length == 0)
             {
                 return;
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer)
         {
-            if (buffer == null || buffer.Length == 0)
+            if (buffer is null || buffer.Length == 0)
             {
                 return;
             }
@@ -139,7 +139,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer, int offset, int count)
         {
-            if (buffer == null || buffer.Length == 0 || count == 0)
+            if (buffer is null || buffer.Length == 0 || count == 0)
             {
                 return;
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(StringBuilder value)
         {
-            if (value != null)
+            if (value is not null)
             {
                 foreach (var chunk in value.GetChunks())
                 {
@@ -213,12 +213,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
-            if (_builder == null)
+            if (_builder is null)
             {
                 throw new InvalidOperationException("Buffer has already been rendered");
             }
 
-            if (_previousPooledBuilders != null)
+            if (_previousPooledBuilders is not null)
             {
                 foreach (var pooledBuilder in _previousPooledBuilders)
                 {

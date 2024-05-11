@@ -168,7 +168,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     return NotFound();
                 }
@@ -283,7 +283,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
 
-            if (luceneIndexSettings != null)
+            if (luceneIndexSettings is not null)
             {
                 if (!_luceneIndexManager.Exists(id))
                 {
@@ -312,7 +312,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
 
-            if (luceneIndexSettings != null)
+            if (luceneIndexSettings is not null)
             {
                 await _luceneIndexingService.RebuildIndexAsync(id);
                 await _luceneIndexingService.ProcessContentItemsAsync(id);
@@ -337,7 +337,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
 
-            if (luceneIndexSettings == null)
+            if (luceneIndexSettings is null)
             {
                 return NotFound();
             }
@@ -416,7 +416,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                     var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
                     var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
-                    if (luceneTopDocs != null)
+                    if (luceneTopDocs is not null)
                     {
                         model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
                         model.Count = luceneTopDocs.Count;
@@ -497,7 +497,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
+            if (model.IndexedContentTypes is null || model.IndexedContentTypes.Length < 1)
             {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }

@@ -127,7 +127,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         var twoFactorClaim = (await UserManager.GetClaimsAsync(user))
             .FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
 
-        if (twoFactorClaim != null)
+        if (twoFactorClaim is not null)
         {
             await UserManager.RemoveClaimAsync(user, twoFactorClaim);
             await SignInManager.RefreshSignInAsync(user);

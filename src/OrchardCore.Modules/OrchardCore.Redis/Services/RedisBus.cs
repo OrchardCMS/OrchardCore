@@ -28,10 +28,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task SubscribeAsync(string channel, Action<string, string> handler)
         {
-            if (_redis.Connection == null)
+            if (_redis.Connection is null)
             {
                 await _redis.ConnectAsync();
-                if (_redis.Connection == null)
+                if (_redis.Connection is null)
                 {
                     _logger.LogError("Unable to subscribe to the channel '{ChannelName}'.", _channelPrefix + channel);
                     return;
@@ -62,10 +62,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task PublishAsync(string channel, string message)
         {
-            if (_redis.Connection == null)
+            if (_redis.Connection is null)
             {
                 await _redis.ConnectAsync();
-                if (_redis.Connection == null)
+                if (_redis.Connection is null)
                 {
                     _logger.LogError("Unable to publish to the channel '{ChannelName}'.", _channelPrefix + channel);
                     return;

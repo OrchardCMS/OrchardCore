@@ -3,7 +3,7 @@
 
 @model SmsTestViewModel
 
-@if (Model.Providers == null || Model.Providers.Count == 0)
+@if (Model.Providers is null || Model.Providers.Count == 0)
 {
     <div class="alert alert-danger" role="alert">
         @T["No SMS providers are available. Enable at least one SMS provider feature."]

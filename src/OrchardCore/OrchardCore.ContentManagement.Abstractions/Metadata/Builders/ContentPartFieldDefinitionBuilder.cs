@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
-            if (existingJObject == null)
+            if (existingJObject is null)
             {
                 existingJObject = ToJsonObject(new T());
                 _settings[typeof(T).Name] = existingJObject;

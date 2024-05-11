@@ -32,7 +32,7 @@
     </div>
     <div class="widget-editor-body card-body">
         <div class="w-100">
-            @if (Model.ContentEditor != null)
+            @if (Model.ContentEditor is not null)
             {
                 @await DisplayAsync(Model.ContentEditor)
             }

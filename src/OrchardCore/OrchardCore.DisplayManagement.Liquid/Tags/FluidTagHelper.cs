@@ -66,7 +66,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             ViewBufferTextWriterContent content = null;
 
-            if (statements != null && statements.Count > 0)
+            if (statements is not null && statements.Count > 0)
             {
                 content = new ViewBufferTextWriterContent();
 
@@ -85,7 +85,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             TagHelperOutput tagHelperOutput = null;
 
-            if (content != null)
+            if (content is not null)
             {
                 tagHelperOutput = new TagHelperOutput(
                     identifier,

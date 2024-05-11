@@ -35,7 +35,7 @@ namespace OrchardCore.Lists.Indexes
 
                     var containedPart = contentItem.As<ContainedPart>();
 
-                    if (containedPart == null)
+                    if (containedPart is null)
                     {
                         return null;
                     }

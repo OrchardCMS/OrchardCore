@@ -50,7 +50,7 @@ namespace OrchardCore.Contents.Liquid
 
             // If input is a 'JObject' but which not represents a 'ContentItem',
             // a 'ContentItem' is still created but with some null properties.
-            if (contentItem?.ContentItemId == null)
+            if (contentItem?.ContentItemId is null)
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }

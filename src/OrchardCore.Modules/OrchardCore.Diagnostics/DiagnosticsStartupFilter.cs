@@ -38,7 +38,7 @@ namespace OrchardCore.Diagnostics
                         if (_contentTypeProvider.TryGetContentType(context.Request.Path.Value, out var contentType))
                         {
                             var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
-                            if (statusCodePagesFeature != null)
+                            if (statusCodePagesFeature is not null)
                             {
                                 statusCodePagesFeature.Enabled = false;
                             }

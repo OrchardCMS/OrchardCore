@@ -36,7 +36,7 @@ namespace OrchardCore.Localization
             {
                 var calendarResult = await calendarSelector.GetCalendarAsync();
 
-                if (calendarResult != null)
+                if (calendarResult is not null)
                 {
                     calendarResults.Add(calendarResult);
                 }

@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 var descriptor = _alternationDescriptors[i];
                 info = descriptor.Placement(ctx);
-                if (info != null)
+                if (info is not null)
                 {
                     break;
                 }
@@ -119,7 +119,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         protected PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
-            if (DefaultPlacement == null)
+            if (DefaultPlacement is null)
             {
                 return null;
             }

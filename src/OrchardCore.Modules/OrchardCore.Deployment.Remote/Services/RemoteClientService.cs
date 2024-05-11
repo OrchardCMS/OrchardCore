@@ -26,14 +26,14 @@ namespace OrchardCore.Deployment.Remote.Services
 
         public async Task<RemoteClientList> GetRemoteClientListAsync()
         {
-            if (_remoteClientList != null)
+            if (_remoteClientList is not null)
             {
                 return _remoteClientList;
             }
 
             _remoteClientList = await _session.Query<RemoteClientList>().FirstOrDefaultAsync();
 
-            if (_remoteClientList == null)
+            if (_remoteClientList is null)
             {
                 _remoteClientList = new RemoteClientList();
                 await _session.SaveAsync(_remoteClientList);
@@ -53,7 +53,7 @@ namespace OrchardCore.Deployment.Remote.Services
             var remoteClientList = await GetRemoteClientListAsync();
             var remoteClient = await GetRemoteClientAsync(id);
 
-            if (remoteClient != null)
+            if (remoteClient is not null)
             {
                 remoteClientList.RemoteClients.Remove(remoteClient);
                 await _session.SaveAsync(remoteClientList);
@@ -81,7 +81,7 @@ namespace OrchardCore.Deployment.Remote.Services
         {
             var remoteClient = await GetRemoteClientAsync(id);
 
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return false;
             }

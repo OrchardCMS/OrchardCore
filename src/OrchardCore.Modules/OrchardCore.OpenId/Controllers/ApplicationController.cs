@@ -99,7 +99,7 @@ namespace OrchardCore.OpenId.Controllers
             var model = new CreateOpenIdApplicationViewModel();
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
-            if (roleService != null)
+            if (roleService is not null)
             {
                 foreach (var role in await roleService.GetRoleNamesAsync())
                 {
@@ -146,7 +146,7 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(nameof(model.ClientSecret), S["The client secret is required for confidential applications."]);
             }
 
-            if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
+            if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) is not null)
             {
                 ModelState.AddModelError(nameof(model.ClientId), S["The client identifier is already taken by another application."]);
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);
-            if (application == null)
+            if (application is null)
             {
                 return NotFound();
             }
@@ -244,7 +244,7 @@ namespace OrchardCore.OpenId.Controllers
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
-            if (roleService != null)
+            if (roleService is not null)
             {
                 var roles = await _applicationManager.GetRolesAsync(application);
 
@@ -287,7 +287,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(model.Id);
-            if (application == null)
+            if (application is null)
             {
                 return NotFound();
             }
@@ -309,7 +309,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _applicationManager.FindByClientIdAsync(model.ClientId);
-                if (other != null && !string.Equals(
+                if (other is not null && !string.Equals(
                     await _applicationManager.GetIdAsync(other),
                     await _applicationManager.GetIdAsync(application), StringComparison.Ordinal))
                 {
@@ -366,7 +366,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var application = await _applicationManager.FindByPhysicalIdAsync(id);
-            if (application == null)
+            if (application is null)
             {
                 return NotFound();
             }

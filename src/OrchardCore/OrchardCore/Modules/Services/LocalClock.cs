@@ -62,7 +62,7 @@ namespace OrchardCore.Modules
             {
                 var timeZoneResult = await timeZoneSelector.GetTimeZoneAsync();
 
-                if (timeZoneResult != null)
+                if (timeZoneResult is not null)
                 {
                     timeZoneResults.Add(timeZoneResult);
                 }

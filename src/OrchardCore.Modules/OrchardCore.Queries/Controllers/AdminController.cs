@@ -132,7 +132,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }
@@ -156,7 +156,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }
@@ -186,7 +186,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.GetQueryAsync(id);
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }
@@ -212,7 +212,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.LoadQueryAsync(model.Name);
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }
@@ -243,7 +243,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.LoadQueryAsync(id);
 
-            if (query == null)
+            if (query is null)
             {
                 return NotFound();
             }

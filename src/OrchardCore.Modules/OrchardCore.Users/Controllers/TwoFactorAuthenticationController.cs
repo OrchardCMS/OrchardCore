@@ -71,7 +71,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         // Ensure the user has gone through the username & password screen first.
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
 
-        if (user == null)
+        if (user is null)
         {
             return RedirectToAccountLogin();
         }
@@ -106,7 +106,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
 
-        if (user == null)
+        if (user is null)
         {
             return RedirectToAccountLogin();
         }
@@ -163,7 +163,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     {
         // Ensure the user has gone through the username & password screen first
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-        if (user == null)
+        if (user is null)
         {
             return RedirectToAccountLogin();
         }
@@ -182,7 +182,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             // Ensure the user has gone through the username & password screen first.
             var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
 
-            if (user == null)
+            if (user is null)
             {
                 return RedirectToAccountLogin();
             }
@@ -219,7 +219,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -240,7 +240,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -275,7 +275,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> ForgetTwoFactorClient()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -290,7 +290,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -310,7 +310,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> GenerateRecoveryCodesPost()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -335,7 +335,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> ShowRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -344,7 +344,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var recoveryCodes = await GetCachedRecoveryCodes(userId);
 
-        if (recoveryCodes == null || recoveryCodes.Length == 0)
+        if (recoveryCodes is null || recoveryCodes.Length == 0)
         {
             return RedirectToAction(nameof(Index));
         }
@@ -360,7 +360,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> EnableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -385,7 +385,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> DisableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -404,7 +404,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     public async Task<IActionResult> DisableTwoFactorAuthenticationPost()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -435,7 +435,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var data = await DistributedCache.GetAsync(key);
 
-        if (data != null && data.Length > 0)
+        if (data is not null && data.Length > 0)
         {
             var model = JsonSerializer.Deserialize<ShowRecoveryCodesViewModel>(data);
 

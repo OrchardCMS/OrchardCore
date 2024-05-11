@@ -43,7 +43,7 @@ namespace OrchardCore.Media.Controllers
             }
             var model = new MediaCacheViewModel
             {
-                IsConfigured = _mediaFileStoreCache != null
+                IsConfigured = _mediaFileStoreCache is not null
             };
 
             return View(model);
@@ -57,7 +57,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (_mediaFileStoreCache == null)
+            if (_mediaFileStoreCache is null)
             {
                 await _notifier.ErrorAsync(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
                 RedirectToAction(nameof(Index));

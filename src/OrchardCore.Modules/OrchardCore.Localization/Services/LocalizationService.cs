@@ -39,7 +39,7 @@ namespace OrchardCore.Localization.Services
         {
             await InitializeLocalizationSettingsAsync();
 
-            return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
+            return _localizationSettings.SupportedCultures is null || _localizationSettings.SupportedCultures.Length == 0
                 ? _supportedCultures
                 : _localizationSettings.SupportedCultures
                 ;
@@ -47,7 +47,7 @@ namespace OrchardCore.Localization.Services
 
         private async Task InitializeLocalizationSettingsAsync()
         {
-            if (_localizationSettings == null)
+            if (_localizationSettings is null)
             {
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 _localizationSettings = siteSettings.As<LocalizationSettings>();

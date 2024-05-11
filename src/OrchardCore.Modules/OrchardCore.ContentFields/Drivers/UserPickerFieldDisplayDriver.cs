@@ -77,7 +77,7 @@ namespace OrchardCore.ContentFields.Drivers
             var viewModel = new EditUserPickerFieldViewModel();
 
             await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds);
-            field.UserIds = viewModel.UserIds == null
+            field.UserIds = viewModel.UserIds is null
                 ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();

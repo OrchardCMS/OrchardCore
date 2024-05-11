@@ -3,7 +3,7 @@
     <h1 class="fs-4">@T["Log in"]</h1>
     <hr />
 
-    @if (Model.Content != null)
+    @if (Model.Content is not null)
     {
         @await DisplayAsync(Model.Content)
     }
@@ -12,14 +12,14 @@
         <button type="submit" class="btn btn-primary" tabindex="4">@T["Log in"]</button>
     </div>
 
-    @if (Model.Links != null)
+    @if (Model.Links is not null)
     {
         <ul class="list-unstyled">
             @await DisplayAsync(Model.Links)
         </ul>
     }
 
-    @if (Model.Footer != null)
+    @if (Model.Footer is not null)
     {
         @await DisplayAsync(Model.Footer)
     }

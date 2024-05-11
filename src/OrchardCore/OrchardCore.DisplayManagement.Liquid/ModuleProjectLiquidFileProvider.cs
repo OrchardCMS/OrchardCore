@@ -20,14 +20,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public ModuleProjectLiquidFileProvider(IApplicationContext applicationContext)
         {
-            if (_paths != null)
+            if (_paths is not null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_paths == null)
+                if (_paths is null)
                 {
                     var assets = new List<Asset>();
                     var application = applicationContext.Application;
@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                        if (module.Assembly is null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
@@ -60,7 +60,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public IChangeToken Watch(string filter)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return NullChangeToken.Singleton;
             }

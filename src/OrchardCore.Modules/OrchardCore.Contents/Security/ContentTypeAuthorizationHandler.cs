@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.Security
             }
 
             // If we are not evaluating a ContentItem then return.
-            if (context.Resource == null)
+            if (context.Resource is null)
             {
                 return;
             }
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Security
 
             Permission permission = null;
 
-            if (contentItem != null)
+            if (contentItem is not null)
             {
                 var ownerVariation = GetOwnerVariation(requirement.Permission);
 
@@ -49,10 +49,10 @@ namespace OrchardCore.Contents.Security
 
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
 
-            if (contentTypePermission != null)
+            if (contentTypePermission is not null)
             {
                 // The resource can be a content type name
-                var contentType = contentItem != null
+                var contentType = contentItem is not null
                     ? contentItem.ContentType
                     : context.Resource.ToString()
                     ;
@@ -63,7 +63,7 @@ namespace OrchardCore.Contents.Security
                 }
             }
 
-            if (permission == null)
+            if (permission is null)
             {
                 return;
             }
@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Security
 
         private static bool HasOwnership(ClaimsPrincipal user, ContentItem content)
         {
-            if (user == null || content == null)
+            if (user is null || content is null)
             {
                 return false;
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.Contents.Security
 
         private static bool OwnerVariationExists(Permission permission)
         {
-            return GetOwnerVariation(permission) != null;
+            return GetOwnerVariation(permission) is not null;
         }
     }
 }

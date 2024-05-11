@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
 
-            if (httpContext != null)
+            if (httpContext is not null)
             {
                 foreach (var argument in expressions)
                 {

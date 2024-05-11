@@ -29,7 +29,7 @@ namespace OrchardCore.Sitemaps.Handlers
                 foreach (var source in sitemap.SitemapSources
                     .Select(s => s as CustomPathSitemapSource))
                 {
-                    if (source == null)
+                    if (source is null)
                     {
                         continue;
                     }

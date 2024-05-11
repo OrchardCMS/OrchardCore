@@ -29,7 +29,7 @@ namespace OrchardCore.AdminMenu.Services
             var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
             // it's new? add it
-            if (preexisting == null)
+            if (preexisting is null)
             {
                 adminMenuList.AdminMenu.Add(tree);
             }

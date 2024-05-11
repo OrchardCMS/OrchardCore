@@ -38,7 +38,7 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
             name = settings.DefaultProviderName;
         }
 
-        if (name != null && _smsProviderOptions.Providers.TryGetValue(name, out var providerType))
+        if (name is not null && _smsProviderOptions.Providers.TryGetValue(name, out var providerType))
         {
             return _serviceProvider.CreateInstance<ISmsProvider>(providerType.Type);
         }

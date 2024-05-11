@@ -47,7 +47,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                if (model.Taxonomy != null)
+                if (model.Taxonomy is not null)
                 {
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);

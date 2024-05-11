@@ -151,7 +151,7 @@ namespace OrchardCore.FileStorage
         /// </remarks>
         public static string NormalizePath(this IFileStore _, string path)
         {
-            if (path == null)
+            if (path is null)
             {
                 return null;
             }

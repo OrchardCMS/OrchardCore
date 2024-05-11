@@ -27,7 +27,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
     {
         var part = context.ContentItem.As<ArchiveLaterPart>();
 
-        if (part != null)
+        if (part is not null)
         {
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -59,7 +59,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                 }
 
                 var part = contentItem.As<ArchiveLaterPart>();
-                if (part == null || !part.ScheduledArchiveUtc.HasValue)
+                if (part is null || !part.ScheduledArchiveUtc.HasValue)
                 {
                     return null;
                 }

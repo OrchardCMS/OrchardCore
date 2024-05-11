@@ -19,7 +19,7 @@ namespace OrchardCore.Title.RemotePublishing
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
             var titlePart = contentItem.As<TitlePart>();
-            if (titlePart == null)
+            if (titlePart is null)
             {
                 return;
             }

@@ -42,7 +42,7 @@ namespace OrchardCore.Resources.Liquid
 
             var metaEntry = new MetaEntry(name, property, content, httpEquiv, charset);
 
-            if (customAttributes != null)
+            if (customAttributes is not null)
             {
                 foreach (var attribute in customAttributes)
                 {

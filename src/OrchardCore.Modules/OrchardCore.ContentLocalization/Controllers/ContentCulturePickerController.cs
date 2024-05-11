@@ -69,7 +69,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 {
                     var localization = localizationEntries.SingleOrDefault(e => string.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
-                    if (localization != null)
+                    if (localization is not null)
                     {
                         url = Url.Action("Display", "Item", new { Area = "OrchardCore.Contents", contentItemId = localization.ContentItemId }) + queryString;
 

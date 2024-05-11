@@ -39,7 +39,7 @@ namespace OrchardCore.ReCaptcha.Core
 
             services.AddTagHelpers<ReCaptchaTagHelper>();
 
-            if (configure != null)
+            if (configure is not null)
             {
                 services.Configure(configure);
             }

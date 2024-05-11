@@ -48,7 +48,7 @@ namespace OrchardCore.Queries.Recipes
                 var sourceName = token[nameof(Query.Source)].ToString();
                 var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();
 
-                if (sample == null)
+                if (sample is null)
                 {
                     _logger.LogError("Could not find query source: '{QuerySource}'. The query '{QueryName}' will not be imported.", sourceName, token[nameof(Query.Name)].ToString());
 

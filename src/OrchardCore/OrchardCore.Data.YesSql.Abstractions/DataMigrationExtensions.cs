@@ -14,14 +14,14 @@ public static class DataMigrationExtensions
     public static async Task<int> ExecuteCreateMethodAsync(this IDataMigration migration)
     {
         var methodInfo = GetCreateMethod(migration);
-        if (methodInfo != null)
+        if (methodInfo is not null)
         {
             return (int)methodInfo.Invoke(migration, []);
         }
         else
         {
             methodInfo = GetCreateAsyncMethod(migration);
-            if (methodInfo != null)
+            if (methodInfo is not null)
             {
                 return await (Task<int>)methodInfo.Invoke(migration, []);
             }
@@ -38,7 +38,7 @@ public static class DataMigrationExtensions
         var updateMethods = GetUpdateMethods(migration);
         while (updateMethods.TryGetValue(version, out var methodInfo))
         {
-            var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
+            var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) is not null;
             if (isAwaitable)
             {
                 version = await (Task<int>)methodInfo.Invoke(migration, []);
@@ -55,7 +55,7 @@ public static class DataMigrationExtensions
     private static MethodInfo GetCreateMethod(IDataMigration dataMigration)
     {
         var methodInfo = dataMigration.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.Instance);
-        if (methodInfo != null && methodInfo.ReturnType == typeof(int))
+        if (methodInfo is not null && methodInfo.ReturnType == typeof(int))
         {
             return methodInfo;
         }
@@ -66,7 +66,7 @@ public static class DataMigrationExtensions
     private static MethodInfo GetCreateAsyncMethod(IDataMigration dataMigration)
     {
         var methodInfo = dataMigration.GetType().GetMethod("CreateAsync", BindingFlags.Public | BindingFlags.Instance);
-        if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
+        if (methodInfo is not null && methodInfo.ReturnType == typeof(Task<int>))
         {
             return methodInfo;
         }
@@ -80,7 +80,7 @@ public static class DataMigrationExtensions
             .GetType()
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Select(GetUpdateMethod)
-            .Where(update => update.MethodInfo != null)
+            .Where(update => update.MethodInfo is not null)
             .ToDictionary(update => update.Version, update => update.MethodInfo);
     }
 

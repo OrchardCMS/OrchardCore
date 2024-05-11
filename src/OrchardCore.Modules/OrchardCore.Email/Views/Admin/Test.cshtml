@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
-@if (Model.Providers == null || Model.Providers.Count == 0)
+@if (Model.Providers is null || Model.Providers.Count == 0)
 {
     <div class="alert alert-danger" role="alert">
         @T["No email providers are currently enabled. Please enable at least one email provider feature."]

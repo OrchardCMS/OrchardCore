@@ -127,7 +127,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         foreach (var attachment in message.Attachments)
         {
             // Stream must not be null, otherwise it would try to get the filesystem path
-            if (attachment.Stream != null)
+            if (attachment.Stream is not null)
             {
                 body.Attachments.Add(attachment.Filename, attachment.Stream);
             }
@@ -209,7 +209,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             certificate.GetExpirationDateString(),
             sslPolicyErrors);
 
-        if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
+        if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus is not null)
         {
             foreach (var chainStatus in chain.ChainStatus)
             {

@@ -148,7 +148,7 @@
     selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
 
     var wrapper = document.getElementById('@Html.IdFor(m => m)');
-    if (wrapper != null) {
+    if (wrapper is not null) {
         // at this point, we know this wrapper was added after page load, let's initilize it
         selectOptionsEditor.initilizeFieldType(wrapper);
     }

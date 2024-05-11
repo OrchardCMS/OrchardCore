@@ -63,7 +63,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -81,7 +81,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> Index(EnableAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -113,7 +113,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -133,7 +133,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     public async Task<IActionResult> ResetPost()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }

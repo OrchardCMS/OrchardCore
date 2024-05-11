@@ -48,13 +48,13 @@ namespace OrchardCore.Sitemaps.Controllers
         public async Task<IActionResult> Index(string sitemapId, CancellationToken cancellationToken)
         {
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
-            if (sitemap == null || !sitemap.Enabled)
+            if (sitemap is null || !sitemap.Enabled)
             {
                 return NotFound();
             }
 
             var fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.CacheFileName);
-            if (fileResolver != null)
+            if (fileResolver is not null)
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
@@ -83,7 +83,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                         var document = await _sitemapBuilder.BuildAsync(sitemap, context);
 
-                        if (document == null)
+                        if (document is null)
                         {
                             return null;
                         }
@@ -112,7 +112,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
-                if (work == null)
+                if (work is null)
                 {
                     return NotFound();
                 }

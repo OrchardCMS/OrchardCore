@@ -165,7 +165,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -253,7 +253,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -277,7 +277,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.Id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -323,7 +323,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }

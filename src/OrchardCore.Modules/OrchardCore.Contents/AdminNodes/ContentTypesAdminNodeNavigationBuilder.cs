@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.AdminNodes
         {
             var node = menuItem as ContentTypesAdminNode;
 
-            if (node == null || !node.Enabled)
+            if (node is null || !node.Enabled)
             {
                 return;
             }

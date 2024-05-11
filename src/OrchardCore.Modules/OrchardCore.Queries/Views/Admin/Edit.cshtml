@@ -5,12 +5,12 @@
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()
 
-    @if (Model.Editor.Content != null)
+    @if (Model.Editor.Content is not null)
     {
         @await DisplayAsync(Model.Editor.Content)
     }
 
-    @if (Model.Editor.Actions != null)
+    @if (Model.Editor.Actions is not null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Editor.Actions)

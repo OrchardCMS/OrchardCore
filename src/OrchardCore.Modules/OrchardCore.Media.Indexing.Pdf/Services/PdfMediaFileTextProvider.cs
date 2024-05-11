@@ -38,7 +38,7 @@ namespace OrchardCore.Media.Indexing
             }
             finally
             {
-                if (seekableStream != null)
+                if (seekableStream is not null)
                 {
                     await seekableStream.DisposeAsync();
                 }

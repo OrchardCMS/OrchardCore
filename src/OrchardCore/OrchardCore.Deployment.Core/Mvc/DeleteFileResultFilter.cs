@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment.Core.Mvc
         {
             var result = context.Result as PhysicalFileResult;
 
-            if (result == null)
+            if (result is null)
             {
                 return;
             }

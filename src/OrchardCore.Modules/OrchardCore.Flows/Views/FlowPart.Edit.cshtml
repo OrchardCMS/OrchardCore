@@ -92,7 +92,7 @@
             </div>
         </div>
     </div>
-    @if (Context.Items["FlowPart.Edit"] == null)
+    @if (Context.Items["FlowPart.Edit"] is null)
     {
         Context.Items["FlowPart.Edit"] = new object();
         @foreach (var type in widgetContentTypes)

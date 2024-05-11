@@ -48,7 +48,7 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
 
     private bool HasConnectionInfo(ElasticConnectionOptions elasticConnectionOptions)
     {
-        if (elasticConnectionOptions == null)
+        if (elasticConnectionOptions is null)
         {
             _logger.LogError("Elasticsearch is enabled but not active because the configuration is missing.");
             return false;

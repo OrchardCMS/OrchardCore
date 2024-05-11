@@ -18,7 +18,7 @@ public static class CssOrchardHelperExtensions
 
         builder.AppendSeparatedValue(PartWrapperPrefix);
 
-        if (partDefinition?.PartDefinition != null)
+        if (partDefinition?.PartDefinition is not null)
         {
             builder.AppendSeparatedValue(PartWrapperPrefix);
             builder.AppendHyphen();
@@ -43,7 +43,7 @@ public static class CssOrchardHelperExtensions
 
         builder.AppendSeparatedValue(FieldWrapperPrefix);
 
-        if (fieldDefinition?.PartDefinition != null)
+        if (fieldDefinition?.PartDefinition is not null)
         {
             builder.AppendSeparatedValue(FieldWrapperPrefix);
             builder.AppendHyphen();

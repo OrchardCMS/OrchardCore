@@ -19,14 +19,14 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             var contentItemDeploymentStep = step as ContentItemDeploymentStep;
 
-            if (contentItemDeploymentStep == null || contentItemDeploymentStep.ContentItemId == null)
+            if (contentItemDeploymentStep is null || contentItemDeploymentStep.ContentItemId is null)
             {
                 return;
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemDeploymentStep.ContentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return;
             }
@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             jContentItem.Remove(nameof(ContentItem.Id));
 
             var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
-            if (contentStep != null)
+            if (contentStep is not null)
             {
                 var data = contentStep["data"] as JsonArray;
                 data.Add(jContentItem);

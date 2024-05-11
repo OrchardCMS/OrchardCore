@@ -62,7 +62,7 @@ public class CacheTicketStore : ITicketStore
         var cacheKey = $"{KeyPrefix}-{key}";
 
         var bytes = await _distributedCache.GetAsync(cacheKey);
-        if (bytes == null || bytes.Length == 0)
+        if (bytes is null || bytes.Length == 0)
         {
             return null;
         }
@@ -106,5 +106,5 @@ public class CacheTicketStore : ITicketStore
         => TicketSerializer.Default.Serialize(source);
 
     private static AuthenticationTicket? DeserializeTicket(byte[]? source)
-        => source == null ? null : TicketSerializer.Default.Deserialize(source);
+        => source is null ? null : TicketSerializer.Default.Deserialize(source);
 }

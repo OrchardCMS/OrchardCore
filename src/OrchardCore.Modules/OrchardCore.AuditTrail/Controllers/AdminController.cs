@@ -148,7 +148,7 @@ namespace OrchardCore.AuditTrail.Controllers
             }
 
             var auditTrailEvent = await _auditTrailManager.GetEventAsync(auditTrailEventId);
-            if (auditTrailEvent == null)
+            if (auditTrailEvent is null)
             {
                 return NotFound();
             }

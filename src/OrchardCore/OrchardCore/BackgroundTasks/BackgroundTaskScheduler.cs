@@ -32,7 +32,7 @@ namespace OrchardCore.BackgroundTasks
             var now = DateTime.UtcNow;
             var referenceTime = ReferenceTime;
 
-            if (TimeZone != null)
+            if (TimeZone is not null)
             {
                 now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
                 referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;

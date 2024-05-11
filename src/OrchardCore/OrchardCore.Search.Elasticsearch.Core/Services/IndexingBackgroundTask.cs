@@ -24,7 +24,7 @@ public class IndexingBackgroundTask : IBackgroundTask
     {
         var indexingService = serviceProvider.GetService<ElasticIndexingService>();
 
-        if (indexingService != null)
+        if (indexingService is not null)
         {
             return indexingService.ProcessContentItemsAsync();
         }

@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
         {
             var contentItem = await query.FirstOrDefaultAsync();
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return null;
             }

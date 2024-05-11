@@ -46,7 +46,7 @@ public class ApiController : Controller
 
         var notification = await _session.Query<Notification, NotificationIndex>(x => x.NotificationId == viewModel.MessageId && x.UserId == CurrentUserId(), collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
-        if (notification == null)
+        if (notification is null)
         {
             return NotFound();
         }

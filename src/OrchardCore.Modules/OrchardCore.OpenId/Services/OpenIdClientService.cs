@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (settings.Authority == null)
+            if (settings.Authority is null)
             {
                 results.Add(new ValidationResult(S["The authority cannot be null or empty."], new[]
                 {

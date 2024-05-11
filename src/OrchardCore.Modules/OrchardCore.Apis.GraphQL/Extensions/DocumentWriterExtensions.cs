@@ -18,7 +18,7 @@ namespace OrchardCore.Apis.GraphQL
                 Errors = []
             };
 
-            if (e == null)
+            if (e is null)
             {
                 errorResult.Errors.Add(new ExecutionError(message));
             }

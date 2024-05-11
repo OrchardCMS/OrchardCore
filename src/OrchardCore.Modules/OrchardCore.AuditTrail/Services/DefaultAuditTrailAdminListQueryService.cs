@@ -66,7 +66,7 @@ namespace OrchardCore.AuditTrail.Services
                 TotalCount = totalCount
             };
 
-            options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
+            options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem is not null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
 
             var categories = _auditTrailManager.DescribeCategories();
 
@@ -79,10 +79,10 @@ namespace OrchardCore.AuditTrail.Services
             if (options.CorrelationIdFromRoute)
             {
                 var firstEvent = result.Events.FirstOrDefault();
-                if (firstEvent != null)
+                if (firstEvent is not null)
                 {
                     var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
-                    if (currentCategory != null)
+                    if (currentCategory is not null)
                     {
                         options.Events = currentCategory.Events.Values.Select(category =>
                             new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category)).ToList();

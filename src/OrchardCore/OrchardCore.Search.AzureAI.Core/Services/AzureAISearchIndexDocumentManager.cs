@@ -245,7 +245,7 @@ public class AzureAIIndexDocumentManager(
 
             var map = mappings.FirstOrDefault(x => x.IndexingKey == entry.Name);
 
-            if (map == null)
+            if (map is null)
             {
                 continue;
             }
@@ -273,7 +273,7 @@ public class AzureAIIndexDocumentManager(
                     break;
 
                 case DocumentIndex.Types.Integer:
-                    if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
+                    if (entry.Value is not null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.TryAdd(map.AzureFieldKey, value);
                     }
@@ -281,21 +281,21 @@ public class AzureAIIndexDocumentManager(
                     break;
 
                 case DocumentIndex.Types.Number:
-                    if (entry.Value != null)
+                    if (entry.Value is not null)
                     {
                         doc.TryAdd(map.AzureFieldKey, Convert.ToDouble(entry.Value));
                     }
                     break;
 
                 case DocumentIndex.Types.GeoPoint:
-                    if (entry.Value != null)
+                    if (entry.Value is not null)
                     {
                         doc.TryAdd(map.AzureFieldKey, entry.Value);
                     }
                     break;
 
                 case DocumentIndex.Types.Text:
-                    if (entry.Value != null)
+                    if (entry.Value is not null)
                     {
                         var stringValue = Convert.ToString(entry.Value);
 

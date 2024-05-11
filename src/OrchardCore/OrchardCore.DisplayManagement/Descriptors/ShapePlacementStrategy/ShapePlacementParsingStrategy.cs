@@ -127,7 +127,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
                 KeyValuePair<string, object> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
         {
-            if (placementMatchProviders != null)
+            if (placementMatchProviders is not null)
             {
                 var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key, StringComparison.Ordinal));
                 if (providersForTerm.Any())

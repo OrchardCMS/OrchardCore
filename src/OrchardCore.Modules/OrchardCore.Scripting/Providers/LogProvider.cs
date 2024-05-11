@@ -21,7 +21,7 @@ namespace OrchardCore.Scripting.Providers
                         {
                             logLevel = LogLevel.Information;
                         }
-                        if (param == null)
+                        if (param is null)
                         {
 #pragma warning disable CA2254 // Template should be a static expression
                             logger.Log(logLevel, text);

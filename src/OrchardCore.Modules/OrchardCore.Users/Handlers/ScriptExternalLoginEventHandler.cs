@@ -37,7 +37,7 @@ namespace OrchardCore.Users.Handlers
                 var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                if (evaluationResult?.userName != null)
+                if (evaluationResult?.userName is not null)
                 {
                     return evaluationResult.userName;
                 }

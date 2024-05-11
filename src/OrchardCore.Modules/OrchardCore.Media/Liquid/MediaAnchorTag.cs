@@ -63,9 +63,9 @@ namespace OrchardCore.Media.Liquid
                 return Completion.Normal;
             }
 
-            var resolvedUrl = mediaFileStore != null ? mediaFileStore.MapPathToPublicUrl(assetHref) : assetHref;
+            var resolvedUrl = mediaFileStore is not null ? mediaFileStore.MapPathToPublicUrl(assetHref) : assetHref;
 
-            if (appendVersion != null && fileVersionProvider != null)
+            if (appendVersion is not null && fileVersionProvider is not null)
             {
                 customAttributes["href"] = fileVersionProvider.AddFileVersionToPath(httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl);
             }
@@ -83,7 +83,7 @@ namespace OrchardCore.Media.Liquid
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            if (statements != null && statements.Count > 0)
+            if (statements is not null && statements.Count > 0)
             {
                 var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 

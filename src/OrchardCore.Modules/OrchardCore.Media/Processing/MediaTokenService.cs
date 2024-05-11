@@ -66,7 +66,7 @@ namespace OrchardCore.Media.Processing
             processingCommands["token"] = queryStringToken;
 
             // If any non-resizing parameters have been added to the path include these on the query string output.
-            if (otherCommands != null)
+            if (otherCommands is not null)
             {
                 foreach (var command in otherCommands)
                 {

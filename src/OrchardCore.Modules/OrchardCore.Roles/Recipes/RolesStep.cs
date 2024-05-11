@@ -39,7 +39,7 @@ namespace OrchardCore.Roles.Recipes
                 }
 
                 var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
-                var isNewRole = role == null;
+                var isNewRole = role is null;
 
                 if (isNewRole)
                 {

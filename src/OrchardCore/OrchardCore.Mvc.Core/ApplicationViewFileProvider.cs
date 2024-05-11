@@ -35,7 +35,7 @@ namespace OrchardCore.Mvc
 
             // Note: This provider is also used in production where application views may not be precompiled.
 
-            if (subpath == null)
+            if (subpath is null)
             {
                 return NotFoundDirectoryContents.Singleton;
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Mvc
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }
@@ -90,7 +90,7 @@ namespace OrchardCore.Mvc
 
         public IChangeToken Watch(string filter)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return NullChangeToken.Singleton;
             }

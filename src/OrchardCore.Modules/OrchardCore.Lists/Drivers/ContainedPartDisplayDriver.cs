@@ -38,7 +38,7 @@ namespace OrchardCore.Lists.Drivers
             // needs to be rendered in the edit form to maintain the relationship with the parent.
             var containedPart = model.As<ContainedPart>();
 
-            if (containedPart != null)
+            if (containedPart is not null)
             {
                 return await BuildViewModelAsync(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
             }
@@ -46,7 +46,7 @@ namespace OrchardCore.Lists.Drivers
             var viewModel = new EditContainedPartViewModel();
             await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
-            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId is not null && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container.
                 // Render the container id as part of the form. The content type, and the enable ordering setting.
@@ -77,7 +77,7 @@ namespace OrchardCore.Lists.Drivers
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId is not null && viewModel.ContentType == model.ContentType)
             {
                 await model.AlterAsync<ContainedPart>(async part =>
                 {
@@ -113,16 +113,16 @@ namespace OrchardCore.Lists.Drivers
             {
                 var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(containerContentType);
 
-                if (definition != null)
+                if (definition is not null)
                 {
                     var listPart = definition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(ListPart));
                     var settings = listPart?.GetSettings<ListPartSettings>();
 
-                    if (settings != null)
+                    if (settings is not null)
                     {
                         var container = await GetContainerAsync(containerId);
 
-                        if (container != null)
+                        if (container is not null)
                         {
                             // Add list part navigation.
                             results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
@@ -150,7 +150,7 @@ namespace OrchardCore.Lists.Drivers
             {
                 model.ContainerContentItem = containerContentItem;
 
-                if (listPartSettings != null)
+                if (listPartSettings is not null)
                 {
                     model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings)).ToArray();
                     model.EnableOrdering = listPartSettings.EnableOrdering;
@@ -164,7 +164,7 @@ namespace OrchardCore.Lists.Drivers
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
         {
-            if (settings.ContainedContentTypes == null)
+            if (settings.ContainedContentTypes is null)
             {
                 return [];
             }

@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Liquid
                 var httpContextAccessor = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>();
 
                 var user = httpContextAccessor.HttpContext?.User;
-                if (user != null)
+                if (user is not null)
                 {
                     var claimType = arguments["type"].Or(arguments.At(0)).ToStringValue();
                     var claimName = arguments["name"].Or(arguments.At(1)).ToStringValue();
@@ -39,10 +39,10 @@ namespace OrchardCore.Users.Liquid
                 var httpContextAccessor = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>();
 
                 var user = httpContextAccessor.HttpContext?.User;
-                if (user != null)
+                if (user is not null)
                 {
                     var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                    if (userId != null)
+                    if (userId is not null)
                     {
                         return new ValueTask<FluidValue>(FluidValue.Create(userId, ctx.Options));
                     }

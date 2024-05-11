@@ -29,7 +29,7 @@ namespace OrchardCore.CustomSettings.Services
                 return;
             }
 
-            if (context.Resource == null || context.Resource.ToString() == "")
+            if (context.Resource is null || context.Resource.ToString() == "")
             {
                 return;
             }

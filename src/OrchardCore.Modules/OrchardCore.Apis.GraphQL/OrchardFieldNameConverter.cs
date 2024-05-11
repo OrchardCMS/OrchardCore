@@ -19,7 +19,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
 
-            if (attributes != null)
+            if (attributes is not null)
             {
                 foreach (var attribute in attributes.Cast<GraphQLFieldNameAttribute>())
                 {

@@ -32,12 +32,12 @@ If you wish to modify the look of your widget, consider incorporating a template
 
 ```
 <div class="card h-100 @string.Join(' ', Model.Classes.ToArray())">
-    @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
+    @if (Model.Header is not null || Model.Leading is not null || Model.ActionsMenu is not null)
     {
         <div class="card-header">
             @await DisplayAsync(Model.Leading)
             @await DisplayAsync(Model.Header)
-            @if (Model.ActionsMenu != null)
+            @if (Model.ActionsMenu is not null)
             {
                 <div class="btn-group float-end" title="@T["Actions"]">
                     <button type="button" class="btn btn-sm " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,7 +51,7 @@ If you wish to modify the look of your widget, consider incorporating a template
         </div>
     }
     <div class="dashboard-body-container card-body p-2 h-100">
-        @if (Model.Tags != null || Model.Meta != null)
+        @if (Model.Tags is not null || Model.Meta is not null)
         {
             <div class="dashboard-meta">
                 @await DisplayAsync(Model.Meta)
@@ -60,7 +60,7 @@ If you wish to modify the look of your widget, consider incorporating a template
         }
         @await DisplayAsync(Model.Content)
     </div>
-    @if (Model.Footer != null)
+    @if (Model.Footer is not null)
     {
         <div class="card-footer">
             @await DisplayAsync(Model.Footer)

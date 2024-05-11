@@ -46,7 +46,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if (_node == null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
+            if (_node is null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Lists.AdminNodes
 
             if (_node.AddContentTypeAsParent)
             {
-                if (_contentType == null)
+                if (_contentType is null)
                 {
                     _logger.LogError("Can't find The content type '{ContentType}' for list admin node.", _node.ContentType);
                 }
@@ -94,7 +94,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
-                if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
+                if (cim.AdminRouteValues.Count > 0 && ci.DisplayText is not null)
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {

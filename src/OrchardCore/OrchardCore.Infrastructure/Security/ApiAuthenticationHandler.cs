@@ -44,7 +44,7 @@ namespace OrchardCore.Security
             }
 
             var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
-            if (statusCodePagesFeature != null)
+            if (statusCodePagesFeature is not null)
             {
                 statusCodePagesFeature.Enabled = false;
             }
@@ -61,7 +61,7 @@ namespace OrchardCore.Security
             }
 
             var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
-            if (statusCodePagesFeature != null)
+            if (statusCodePagesFeature is not null)
             {
                 statusCodePagesFeature.Enabled = false;
             }

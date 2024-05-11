@@ -25,7 +25,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         {
             var queryGraphType = GetObjectGraphType(field);
 
-            if (queryGraphType != null)
+            if (queryGraphType is not null)
             {
                 return new FieldType
                 {
@@ -61,6 +61,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 );
         }
 
-        public bool HasField(ContentPartFieldDefinition field) => GetObjectGraphType(field) != null;
+        public bool HasField(ContentPartFieldDefinition field) => GetObjectGraphType(field) is not null;
     }
 }

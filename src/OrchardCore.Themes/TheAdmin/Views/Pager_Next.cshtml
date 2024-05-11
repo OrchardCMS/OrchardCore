@@ -9,7 +9,7 @@
 
     var parentTag = Model.Tag as TagBuilder;
 
-    if (parentTag != null)
+    if (parentTag is not null)
     {
         parentTag.MergeAttribute("title", T["Go to next page."].Value);
     }

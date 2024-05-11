@@ -17,7 +17,7 @@ namespace OrchardCore.Autoroute.RemotePublishing
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
             var autoroutePart = contentItem.As<AutoroutePart>();
-            if (autoroutePart == null)
+            if (autoroutePart is null)
             {
                 return;
             }
@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute.RemotePublishing
 
         public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            if (contentItem.As<AutoroutePart>() != null)
+            if (contentItem.As<AutoroutePart>() is not null)
             {
                 var slug = rpcStruct.Optional<string>("wp_slug");
 

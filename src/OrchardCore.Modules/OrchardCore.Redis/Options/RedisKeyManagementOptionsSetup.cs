@@ -21,7 +21,7 @@ namespace OrchardCore.Redis.Options
             var redis = _redis;
             options.XmlRepository = new RedisXmlRepository(() =>
             {
-                if (redis.Database == null)
+                if (redis.Database is null)
                 {
                     redis.ConnectAsync().GetAwaiter().GetResult();
                 }

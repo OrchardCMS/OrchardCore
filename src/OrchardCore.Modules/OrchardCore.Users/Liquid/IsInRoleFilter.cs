@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Liquid
             if (input.ToObjectValue() is LiquidUserAccessor)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user != null)
+                if (user is not null)
                 {
                     var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();
                     var roleClaimType = _identityOptions.ClaimsIdentity.RoleClaimType;

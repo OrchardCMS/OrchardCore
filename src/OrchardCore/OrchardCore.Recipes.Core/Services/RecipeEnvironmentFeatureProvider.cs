@@ -21,7 +21,7 @@ namespace OrchardCore.Recipes.Services
         {
             // When a migration is executed during setup these properties are available on the feature.
             var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
-            if (feature != null)
+            if (feature is not null)
             {
                 if (feature.Properties.TryGetValue("AdminUserId", out var adminUserId))
                 {

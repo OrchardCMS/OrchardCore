@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         {
             var exportContentToDeploymentTargetContentDeploymentStep = step as ExportContentToDeploymentTargetDeploymentStep;
 
-            if (exportContentToDeploymentTargetContentDeploymentStep == null)
+            if (exportContentToDeploymentTargetContentDeploymentStep is null)
             {
                 return;
             }
@@ -50,7 +50,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             if (!string.IsNullOrEmpty(model.ContentItemId))
             {
                 var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
-                if (contentItem != null)
+                if (contentItem is not null)
                 {
                     var objectData = JObject.FromObject(contentItem);
                     objectData.Remove(nameof(ContentItem.Id));

@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization
             var siteService = httpContext.RequestServices.GetService<ISiteService>();
             var localization = await culturePickerService.GetLocalizationFromRouteAsync(httpContext.Request.Path);
 
-            if (localization != null)
+            if (localization is not null)
             {
                 var settings = (await siteService.GetSiteSettingsAsync()).As<ContentRequestCultureProviderSettings>();
                 if (settings.SetCookie)

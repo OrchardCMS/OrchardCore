@@ -1,7 +1,7 @@
 <div class="edit-container">
     <div class="edit-body">
         <div class="edit-item-primary">
-            @if (Model.Content != null)
+            @if (Model.Content is not null)
             {
                 <div class="edit-item-content">
                     @await DisplayAsync(Model.Content)
@@ -9,7 +9,7 @@
             }
         </div>
         <div class="edit-item-parts">
-            @if (Model.Parts != null)
+            @if (Model.Parts is not null)
             {
                 @await DisplayAsync(Model.Parts)
             }

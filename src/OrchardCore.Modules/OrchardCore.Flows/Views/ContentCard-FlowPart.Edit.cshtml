@@ -23,7 +23,7 @@
         <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
         <div class="btn-widget-metadata border border-info w-100">
             <div class="btn-group">
-                @if (Model.Footer != null)
+                @if (Model.Footer is not null)
                 {
                     @await DisplayAsync(Model.Footer)
                 }
@@ -67,7 +67,7 @@
     </div>
     <div class="widget-editor-body card-body">
         <div class="w-100">
-            @if (Model.ContentEditor != null)
+            @if (Model.ContentEditor is not null)
             {
                 @await DisplayAsync(Model.ContentEditor)
             }

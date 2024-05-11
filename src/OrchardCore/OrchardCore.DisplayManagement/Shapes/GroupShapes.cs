@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public IHtmlContent AdminTabs(IShape shape)
         {
             var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
-            if (tabsGrouping == null)
+            if (tabsGrouping is null)
             {
                 return HtmlString.Empty;
             }

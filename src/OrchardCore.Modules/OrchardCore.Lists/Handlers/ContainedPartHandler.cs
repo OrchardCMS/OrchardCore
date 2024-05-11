@@ -22,13 +22,13 @@ namespace OrchardCore.Lists.Handlers
         public override async Task CloningAsync(CloneContentContext context)
         {
             var containedPart = context.CloneContentItem.As<ContainedPart>();
-            if (containedPart != null)
+            if (containedPart is not null)
             {
                 // Resolve from DI to avoid circular references.
                 var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
 
                 var listContentItem = await contentManager.GetAsync(containedPart.ListContentItemId);
-                if (listContentItem != null)
+                if (listContentItem is not null)
                 {
                     var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
                     var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(listContentItem.ContentType);

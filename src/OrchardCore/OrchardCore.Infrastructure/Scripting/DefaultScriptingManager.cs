@@ -34,12 +34,12 @@ namespace OrchardCore.Scripting
             var script = directive[(directiveIndex + 1)..];
 
             var engine = GetScriptingEngine(prefix);
-            if (engine == null)
+            if (engine is null)
             {
                 return directive;
             }
 
-            var methodProviders = scopedMethodProviders != null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
+            var methodProviders = scopedMethodProviders is not null ? GlobalMethodProviders.Concat(scopedMethodProviders) : GlobalMethodProviders;
             var scope = engine.CreateScope(methodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, fileProvider, basePath);
             return engine.Evaluate(scope, script);
         }

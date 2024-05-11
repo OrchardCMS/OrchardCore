@@ -220,7 +220,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
-            if (authorization.Properties == null)
+            if (authorization.Properties is null)
             {
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
@@ -338,7 +338,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 result += authorizations.Count;
             }
 
-            if (exceptions != null)
+            if (exceptions is not null)
             {
                 throw new AggregateException("An error occurred while pruning authorizations.", exceptions);
             }
@@ -379,7 +379,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
-            if (properties == null || properties.IsEmpty)
+            if (properties is null || properties.IsEmpty)
             {
                 authorization.Properties = null;
 

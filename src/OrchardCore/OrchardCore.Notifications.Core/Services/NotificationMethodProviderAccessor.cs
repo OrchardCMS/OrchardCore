@@ -21,7 +21,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
     {
         var user = notify as User;
 
-        if (user != null)
+        if (user is not null)
         {
             var notificationPart = user.As<UserNotificationPreferencesPart>();
 

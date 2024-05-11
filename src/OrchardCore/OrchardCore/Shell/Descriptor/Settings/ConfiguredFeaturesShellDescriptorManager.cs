@@ -31,7 +31,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
         {
-            if (_shellDescriptor == null)
+            if (_shellDescriptor is null)
             {
                 var configuredFeatures = new ConfiguredFeatures();
                 _shellConfiguration.Bind(configuredFeatures);

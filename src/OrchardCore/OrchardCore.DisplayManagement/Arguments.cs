@@ -184,7 +184,7 @@ namespace OrchardCore.DisplayManagement
                     // will default to key=(string)null,value=(object)null
 
                     value = pair.Value;
-                    return pair.Key != null;
+                    return pair.Key is not null;
                 }
 
                 // TBD

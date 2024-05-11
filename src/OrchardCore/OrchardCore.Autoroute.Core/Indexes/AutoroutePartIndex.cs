@@ -71,7 +71,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
             {
                 var part = context.ContentItem.As<AutoroutePart>();
 
-                if (part != null)
+                if (part is not null)
                 {
                     _itemRemoved.Add(context.ContentItem);
                 }
@@ -86,14 +86,14 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
             // Validate that the content definition contains this part, this prevents indexing parts
             // that have been removed from the type definition, but are still present in the elements.            
-            if (part != null)
+            if (part is not null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for this part.
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
+                if (contentTypeDefinition is not null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
                 {
                     context.ContentItem.Remove<AutoroutePart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);

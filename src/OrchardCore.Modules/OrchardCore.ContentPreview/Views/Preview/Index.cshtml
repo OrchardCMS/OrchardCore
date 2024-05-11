@@ -37,7 +37,7 @@
                 $(notConnectedWarning).show();
             }
             else if (ev.key.indexOf('contentpreview:') !== -1) {
-                if (ev.originalEvent.newValue != null) {
+                if (ev.originalEvent.newValue is not null) {
                     // Smooth event cascading
                     clearTimeout(previewEventTimer);
                     previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
@@ -57,7 +57,7 @@
 
         var preview = localStorage.getItem('contentpreview:@previewId');
 
-        if (preview == null) {
+        if (preview is null) {
             // notify the editor to render the preview
             localStorage.setItem('contentpreview:ready:@previewId', '');
             localStorage.removeItem('contentpreview:ready:@previewId');

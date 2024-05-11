@@ -47,7 +47,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
             var result = await UpdateAsync(model, section, context.Updater, context);
 
-            if (result == null)
+            if (result is null)
             {
                 return null;
             }

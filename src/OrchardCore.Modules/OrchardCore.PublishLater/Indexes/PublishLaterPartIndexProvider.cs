@@ -29,7 +29,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
 
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
-        if (part != null)
+        if (part is not null)
         {
             // Lazy initialization because of ISession cyclic dependency.
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -61,7 +61,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                 }
 
                 var part = contentItem.As<PublishLaterPart>();
-                if (part == null || !part.ScheduledPublishUtc.HasValue)
+                if (part is null || !part.ScheduledPublishUtc.HasValue)
                 {
                     return null;
                 }

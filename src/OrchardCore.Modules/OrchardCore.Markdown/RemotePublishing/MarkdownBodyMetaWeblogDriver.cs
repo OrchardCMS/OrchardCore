@@ -11,7 +11,7 @@ namespace OrchardCore.Markdown.RemotePublishing
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
             var bodyPart = contentItem.As<MarkdownBodyPart>();
-            if (bodyPart == null)
+            if (bodyPart is null)
             {
                 return;
             }
@@ -21,7 +21,7 @@ namespace OrchardCore.Markdown.RemotePublishing
 
         public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            if (contentItem.As<MarkdownBodyPart>() != null)
+            if (contentItem.As<MarkdownBodyPart>() is not null)
             {
                 contentItem.Alter<MarkdownBodyPart>(x => x.Markdown = rpcStruct.Optional<string>("description"));
             }

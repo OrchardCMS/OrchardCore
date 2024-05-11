@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Apis.Context
         {
             _permissionsContext = new PermissionsContext();
 
-            if (httpContextAccessor.HttpContext == null)
+            if (httpContextAccessor.HttpContext is null)
             {
                 return;
             }
@@ -72,12 +72,12 @@ namespace OrchardCore.Tests.Apis.Context
             stack.Add(permission.Name);
 
             // Iterate implied permissions to grant, it present
-            if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
+            if (permission.ImpliedBy is not null && permission.ImpliedBy.Any())
             {
                 foreach (var impliedBy in permission.ImpliedBy)
                 {
                     // Avoid potential recursion
-                    if (impliedBy == null || stack.Contains(impliedBy.Name))
+                    if (impliedBy is null || stack.Contains(impliedBy.Name))
                     {
                         continue;
                     }

@@ -22,7 +22,7 @@ namespace OrchardCore.Settings.Services
         public async Task HandleAsync(AuthorizationHandlerContext context)
         {
             var userId = context?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            if (userId is null)
             {
                 return;
             }

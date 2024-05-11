@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Liquid
             var contentItem = input.ToObjectValue() as ContentItem;
             RouteValueDictionary routeValues;
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {

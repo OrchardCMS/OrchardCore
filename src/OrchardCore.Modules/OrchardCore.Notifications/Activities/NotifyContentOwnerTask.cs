@@ -48,7 +48,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
 
             var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner && x.IsEnabled).FirstOrDefaultAsync();
 
-            if (owner != null)
+            if (owner is not null)
             {
                 workflowContext.Input.TryAdd("Owner", owner);
 

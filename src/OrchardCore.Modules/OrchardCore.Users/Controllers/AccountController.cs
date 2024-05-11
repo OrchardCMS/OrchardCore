@@ -187,7 +187,7 @@ namespace OrchardCore.Users.Controllers
                 if (ModelState.IsValid)
                 {
                     var user = await _userService.GetUserAsync(model.UserName);
-                    if (user != null)
+                    if (user is not null)
                     {
                         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
                         if (result.Succeeded)
@@ -343,7 +343,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
-            if (remoteError != null)
+            if (remoteError is not null)
             {
                 _logger.LogError("Error from external provider: {Error}", remoteError);
                 ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
@@ -352,7 +352,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            if (info is null)
             {
                 _logger.LogError("Could not get external login info.");
                 ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
@@ -365,7 +365,7 @@ namespace OrchardCore.Users.Controllers
 
             CopyTempDataErrorsToModelState();
 
-            if (iUser != null)
+            if (iUser is not null)
             {
                 if (!await AddConfirmEmailErrorAsync(iUser) && !AddUserEnabledError(iUser))
                 {
@@ -394,7 +394,7 @@ namespace OrchardCore.Users.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
 
-                if (iUser != null)
+                if (iUser is not null)
                 {
                     if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
                     {
@@ -450,7 +450,7 @@ namespace OrchardCore.Users.Controllers
                         }, S["Confirm your account"], _logger);
 
                         // If the registration was successful we can link the external provider and redirect the user.
-                        if (iUser != null)
+                        if (iUser is not null)
                         {
                             var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                             if (identityResult.Succeeded)
@@ -514,7 +514,7 @@ namespace OrchardCore.Users.Controllers
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            if (info == null)
+            if (info is null)
             {
                 _logger.LogWarning("Error loading external login info.");
 
@@ -624,7 +624,7 @@ namespace OrchardCore.Users.Controllers
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            if (info == null)
+            if (info is null)
             {
                 _logger.LogWarning("Error loading external login info.");
 
@@ -634,7 +634,7 @@ namespace OrchardCore.Users.Controllers
 
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user == null)
+            if (user is null)
             {
                 _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
                     info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
@@ -678,7 +678,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> ExternalLogins()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (user is null)
             {
                 return Forbid();
             }
@@ -713,7 +713,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> LinkLoginCallback()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (user is null)
             {
                 _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
 
@@ -721,7 +721,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            if (info is null)
             {
                 _logger.LogError("Unexpected error occurred loading external login info for user '{UserName}'.", user.UserName);
 
@@ -750,7 +750,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || user is not User u)
+            if (user is null || user is not User u)
             {
                 _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
 
@@ -827,7 +827,7 @@ namespace OrchardCore.Users.Controllers
 
             foreach (var state in ModelState)
             {
-                if (key != null && state.Key != key)
+                if (key is not null && state.Key != key)
                 {
                     continue;
                 }

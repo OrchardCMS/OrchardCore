@@ -31,7 +31,7 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (settings is not null)
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;

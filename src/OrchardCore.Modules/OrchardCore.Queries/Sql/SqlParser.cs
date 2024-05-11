@@ -196,7 +196,7 @@ namespace OrchardCore.Queries.Sql
                 sqlBuilder.Skip(_offset);
             }
 
-            if (previousContent != null)
+            if (previousContent is not null)
             {
                 _builder.Clear();
                 _builder.Append(new StringBuilder(previousContent));
@@ -411,7 +411,7 @@ namespace OrchardCore.Queries.Sql
 
                     _builder.Append("@" + name);
 
-                    if (_parameters != null && !_parameters.ContainsKey(name))
+                    if (_parameters is not null && !_parameters.ContainsKey(name))
                     {
                         // If a parameter is not set and there is no default value, report it.
                         if (parseTreeNode.ChildNodes.Count < 3)
@@ -420,14 +420,14 @@ namespace OrchardCore.Queries.Sql
                         }
                         else
                         {
-                            if (parseTreeNode.ChildNodes[3].Token != null)
+                            if (parseTreeNode.ChildNodes[3].Token is not null)
                             {
                                 _parameters[name] = parseTreeNode.ChildNodes[3].Token.Value;
                             }
                             else
                             {
                                 // Example: true.
-                                if (parseTreeNode.ChildNodes[3].ChildNodes[0].Token != null)
+                                if (parseTreeNode.ChildNodes[3].ChildNodes[0].Token is not null)
                                 {
                                     _parameters[name] = parseTreeNode.ChildNodes[3].ChildNodes[0].Token.Value;
                                 }

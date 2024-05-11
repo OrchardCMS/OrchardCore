@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    if (field.MediaTexts != null)
+                    if (field.MediaTexts is not null)
                     {
                         foreach (var mediaText in field.MediaTexts)
                         {
@@ -77,14 +77,14 @@ namespace OrchardCore.Media.Indexing
 
                 var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
-                if (providerType == null)
+                if (providerType is null)
                 {
                     continue;
                 }
 
                 using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
 
-                if (fileStream == null)
+                if (fileStream is null)
                 {
                     continue;
                 }

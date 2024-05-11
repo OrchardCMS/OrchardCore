@@ -27,7 +27,7 @@ public class YoutubeFieldHandler : ContentFieldHandler<YoutubeField>
             context.Fail(S["A value is required for '{0}'.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.RawAddress));
         }
 
-        if (field.RawAddress != null)
+        if (field.RawAddress is not null)
         {
             var uri = new Uri(field.RawAddress);
 

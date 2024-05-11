@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             ArgumentNullException.ThrowIfNull(alternate);
 
-            if (_collection == null)
+            if (_collection is null)
             {
                 return;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Clear()
         {
-            if (_collection == null)
+            if (_collection is null)
             {
                 return;
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             ArgumentNullException.ThrowIfNull(alternate);
 
-            if (_collection == null)
+            if (_collection is null)
             {
                 return false;
             }
@@ -75,7 +75,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             return _collection.Contains(alternate);
         }
 
-        public int Count => _collection == null ? 0 : _collection.Count;
+        public int Count => _collection is null ? 0 : _collection.Count;
 
         public void AddRange(AlternatesCollection alternates)
         {
@@ -109,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IEnumerator<string> GetEnumerator()
         {
-            if (_collection == null)
+            if (_collection is null)
             {
                 return ((IEnumerable<string>)[]).GetEnumerator();
             }

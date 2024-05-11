@@ -96,7 +96,7 @@ namespace OrchardCore.Recipes.Controllers
 
             var recipe = recipes.FirstOrDefault(c => c.RecipeFileInfo.Name == fileName && c.BasePath == basePath);
 
-            if (recipe == null)
+            if (recipe is null)
             {
                 await _notifier.ErrorAsync(H["Recipe was not found."]);
                 return RedirectToAction(nameof(Index));
@@ -121,8 +121,8 @@ namespace OrchardCore.Recipes.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x)
                 .Where(r => !r.IsSetupRecipe &&
-                    (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
-                    features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+                    (r.Tags is null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
+                    features.Any(f => r.BasePath is not null && f.Extension?.SubPath is not null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
 
             return recipes;
         }

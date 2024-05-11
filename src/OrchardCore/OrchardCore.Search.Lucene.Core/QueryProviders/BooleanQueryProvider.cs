@@ -95,7 +95,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                     {
                         filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Key, first.Value, query);
 
-                        if (filteredQuery != null)
+                        if (filteredQuery is not null)
                         {
                             break;
                         }
@@ -110,7 +110,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         {
                             filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Key, firstQuery.Value, query);
 
-                            if (filteredQuery != null)
+                            if (filteredQuery is not null)
                             {
                                 break;
                             }

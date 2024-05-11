@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Events
             var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
 
             // Avoid endless loops.
-            if (faultModel == null || faultModel.WorkflowName == workflowContext.WorkflowType.Name)
+            if (faultModel is null || faultModel.WorkflowName == workflowContext.WorkflowType.Name)
             {
                 return false;
             }

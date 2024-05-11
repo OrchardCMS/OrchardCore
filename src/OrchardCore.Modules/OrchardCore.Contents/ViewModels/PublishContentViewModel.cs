@@ -13,6 +13,6 @@
 //        public bool HasDraft { get; }
 //        public bool HasPublished { get; }
 
-// //ContentItem.ContentManager.Get(ContentItem.Id, VersionOptions.Published) != null;
+// //ContentItem.ContentManager.Get(ContentItem.Id, VersionOptions.Published) is not null;
 //    }
 // }

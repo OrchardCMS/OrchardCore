@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.Indexing
         {
             var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
-            if (body != null && body.Body != null)
+            if (body is not null && body.Body is not null)
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,

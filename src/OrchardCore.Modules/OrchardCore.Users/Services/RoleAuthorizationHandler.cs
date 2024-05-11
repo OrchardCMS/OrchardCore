@@ -31,7 +31,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
             return;
         }
 
-        if (context.Resource == null)
+        if (context.Resource is null)
         {
             return;
         }
@@ -44,7 +44,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         {
             var variantPermission = GetPermissionVariation(requirement.Permission, role.RoleName);
 
-            if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
+            if (variantPermission is not null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
             {
                 context.Succeed(requirement);
 
@@ -85,7 +85,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
             {
                 var variantPermission = GetPermissionVariation(requirement.Permission, roleName);
 
-                if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
+                if (variantPermission is not null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
                 {
                     context.Succeed(requirement);
 

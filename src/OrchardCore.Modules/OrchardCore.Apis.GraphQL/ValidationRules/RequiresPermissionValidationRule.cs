@@ -46,7 +46,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                 {
                     var fieldDef = validationContext.TypeInfo.GetFieldDef();
 
-                    if (fieldDef == null)
+                    if (fieldDef is null)
                         return;
 
                     // check target field
@@ -73,7 +73,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
         {
             var permissions = fieldType?.GetPermissions();
 
-            if (permissions == null)
+            if (permissions is null)
             {
                 return;
             }

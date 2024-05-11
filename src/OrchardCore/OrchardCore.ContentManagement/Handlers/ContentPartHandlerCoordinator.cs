@@ -260,7 +260,7 @@ namespace OrchardCore.ContentManagement.Handlers
         public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -271,7 +271,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var activator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part == null)
+                if (part is null)
                 {
                     continue;
                 }
@@ -279,7 +279,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                 await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger);
 
-                if (typePartDefinition.PartDefinition?.Fields == null)
+                if (typePartDefinition.PartDefinition?.Fields is null)
                 {
                     continue;
                 }
@@ -290,7 +290,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
                     var field = context.ContentItem.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
 
-                    if (field == null)
+                    if (field is null)
                     {
                         continue;
                     }
@@ -329,7 +329,7 @@ namespace OrchardCore.ContentManagement.Handlers
             where TFieldContext : ContentFieldContextBase
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -340,13 +340,13 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partActivator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part == null && createPartIfNotExists)
+                if (part is null && createPartIfNotExists)
                 {
                     part = partActivator.CreateInstance();
                     context.ContentItem.Weld(typePartDefinition.Name, part);
                 }
 
-                if (part == null)
+                if (part is null)
                 {
                     continue;
                 }
@@ -354,7 +354,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                 await partHandlers.InvokeAsync(partHandlerAction, context, part, _logger);
 
-                if (typePartDefinition.PartDefinition?.Fields == null)
+                if (typePartDefinition.PartDefinition?.Fields is null)
                 {
                     continue;
                 }
@@ -367,14 +367,14 @@ namespace OrchardCore.ContentManagement.Handlers
                     // Attempt to get the field from the part.
                     var field = part.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
 
-                    if (field == null && createFieldIfNotExists)
+                    if (field is null && createFieldIfNotExists)
                     {
                         field = fieldActivator.CreateInstance();
 
                         part.Weld(partFieldDefinition.Name, field);
                     }
 
-                    if (field == null)
+                    if (field is null)
                     {
                         continue;
                     }
@@ -398,7 +398,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -411,7 +411,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var buildingPart = (ContentPart)context.BuildingContentItem.Get(partActivator.Type, partName);
                 var existingPart = (ContentPart)context.ContentItem.Get(partActivator.Type, typePartDefinition.Name);
 
-                if (buildingPart == null || existingPart == null)
+                if (buildingPart is null || existingPart is null)
                 {
                     continue;
                 }
@@ -420,7 +420,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
                 await partHandlers.InvokeAsync(partHandlerAction, context, existingPart, buildingPart, _logger);
 
-                if (typePartDefinition.PartDefinition?.Fields == null)
+                if (typePartDefinition.PartDefinition?.Fields is null)
                 {
                     continue;
                 }
@@ -433,7 +433,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var buildingField = (ContentField)buildingPart.Get(fieldActivator.Type, fieldName);
                     var existingField = (ContentField)existingPart.Get(fieldActivator.Type, partFieldDefinition.Name);
 
-                    if (buildingField == null || existingField == null)
+                    if (buildingField is null || existingField is null)
                     {
                         continue;
                     }
@@ -454,7 +454,7 @@ namespace OrchardCore.ContentManagement.Handlers
             where TContext : ValidateContentContext
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -465,7 +465,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partActivator = _contentPartFactory.GetTypeActivator(partName);
                 var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part == null)
+                if (part is null)
                 {
                     continue;
                 }
@@ -485,7 +485,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     context.ContentValidateResult.Fail(error);
                 }
 
-                if (typePartDefinition.PartDefinition?.Fields == null)
+                if (typePartDefinition.PartDefinition?.Fields is null)
                 {
                     continue;
                 }
@@ -498,7 +498,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
                     var field = part.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
 
-                    if (field == null)
+                    if (field is null)
                     {
                         continue;
                     }

@@ -35,14 +35,14 @@ namespace OrchardCore.Mvc.LocationExpander
             _shellDescriptor = shellDescriptor;
             _memoryCache = memoryCache;
 
-            if (_modulesWithSharedViews != null)
+            if (_modulesWithSharedViews is not null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_modulesWithSharedViews == null)
+                if (_modulesWithSharedViews is null)
                 {
                     var orderedModules = _extensionManager.GetExtensions()
                         .Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase))
@@ -89,7 +89,7 @@ namespace OrchardCore.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (context.AreaName == null)
+            if (context.AreaName is null)
             {
                 return viewLocations;
             }
@@ -98,7 +98,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
             var result = new List<string>();
 
-            if (context.PageName != null)
+            if (context.PageName is not null)
             {
                 if (!_memoryCache.TryGetValue(PageCacheKey, out IEnumerable<string> modulePageSharedViewLocations))
                 {
@@ -128,7 +128,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
             HashSet<string> GetEnabledExtensionIds()
             {
-                if (enabledExtensionIds != null)
+                if (enabledExtensionIds is not null)
                 {
                     return enabledExtensionIds;
                 }

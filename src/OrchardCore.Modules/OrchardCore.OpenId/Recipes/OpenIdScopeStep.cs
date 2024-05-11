@@ -32,7 +32,7 @@ namespace OrchardCore.OpenId.Recipes
             var descriptor = new OpenIdScopeDescriptor();
             var isNew = true;
 
-            if (scope != null)
+            if (scope is not null)
             {
                 isNew = false;
                 await _scopeManager.PopulateAsync(scope, descriptor);

@@ -28,8 +28,8 @@ namespace OrchardCore.Environment.Shell.Builders
             var orderValue = order?.GetValue(_startup);
             var configureOrderValue = configureOrder?.GetValue(_startup);
 
-            Order = orderValue != null ? (int)orderValue : default;
-            ConfigureOrder = configureOrderValue != null ? (int)configureOrderValue : Order;
+            Order = orderValue is not null ? (int)orderValue : default;
+            ConfigureOrder = configureOrderValue is not null ? (int)configureOrderValue : Order;
         }
 
         /// <inheritdoc />
@@ -40,7 +40,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (_configureService == null)
+            if (_configureService is null)
             {
                 return;
             }
@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            if (_configure == null)
+            if (_configure is null)
             {
                 return;
             }

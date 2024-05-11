@@ -114,7 +114,7 @@ namespace OrchardCore.Media.Services
 
             // Create a dynamic permission for the folder path. This allows to give access to a specific folders only.
             var template = SecureMediaPermissions.ConvertToDynamicPermission(SecureMediaPermissions.ViewMedia);
-            if (template != null)
+            if (template is not null)
             {
                 var permission = SecureMediaPermissions.CreateDynamicPermission(template, folderPath);
                 await AuthorizeAsync(context, requirement, permission);

@@ -56,14 +56,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(remoteInstanceId);
 
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }

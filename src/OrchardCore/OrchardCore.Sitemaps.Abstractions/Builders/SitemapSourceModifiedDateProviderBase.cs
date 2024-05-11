@@ -13,7 +13,7 @@ namespace OrchardCore.Sitemaps.Builders
         {
             var tSource = source as TSitemapSource;
 
-            if (tSource == null)
+            if (tSource is null)
             {
                 return Task.FromResult<DateTime?>(null);
             }

@@ -102,7 +102,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
     private static bool AreTheSame(string[] a, string[] b)
     {
-        if (a == null && b == null)
+        if (a is null && b is null)
         {
             return false;
         }

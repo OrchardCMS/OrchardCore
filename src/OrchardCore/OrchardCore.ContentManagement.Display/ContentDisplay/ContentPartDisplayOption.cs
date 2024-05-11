@@ -16,10 +16,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private IReadOnlyList<ContentPartDisplayDriverOption> _editorDrivers;
 
         public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers
-            => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
+            => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode is not null).ToList();
 
         public IReadOnlyList<ContentPartDisplayDriverOption> EditorDrivers
-            => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToList();
+            => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor is not null).ToList();
 
         internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {
@@ -38,7 +38,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         internal void RemoveDisplayDriver(Type displayDriverType)
         {
             var displayDriverOption = _partDisplayDrivers.FirstOrDefault(d => d.DisplayDriverType == displayDriverType);
-            if (displayDriverOption != null)
+            if (displayDriverOption is not null)
             {
                 _partDisplayDrivers.Remove(displayDriverOption);
             }
@@ -48,7 +48,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var option = _partDisplayDrivers.FirstOrDefault(o => o.DisplayDriverType == displayDriverType);
 
-            if (option == null)
+            if (option is null)
             {
                 option = new ContentPartDisplayDriverOption(displayDriverType);
                 _partDisplayDrivers.Add(option);

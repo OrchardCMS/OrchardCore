@@ -88,7 +88,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 ReturnContentItems = returnContentItems
             };
 
-            var queryParameters = queryModel.Parameters != null ?
+            var queryParameters = queryModel.Parameters is not null ?
                 JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 

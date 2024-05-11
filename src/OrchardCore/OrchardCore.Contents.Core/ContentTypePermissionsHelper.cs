@@ -70,7 +70,7 @@ namespace OrchardCore.Contents.Security
             return new Permission(
                 string.Format(template.Name, typeDefinition.Name),
                 string.Format(template.Description, typeDefinition.DisplayName),
-                (template.ImpliedBy ?? Array.Empty<Permission>()).Where(t => t != null).Select(t => CreateDynamicPermission(t, typeDefinition))
+                (template.ImpliedBy ?? Array.Empty<Permission>()).Where(t => t is not null).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
                 Category = $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",

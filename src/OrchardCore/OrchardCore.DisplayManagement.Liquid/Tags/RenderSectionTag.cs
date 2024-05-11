@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
 
             var requiredExpression = arguments["required", 1];
-            var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+            var required = requiredExpression is not null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
 
             var zone = layout.Zones[name];
 

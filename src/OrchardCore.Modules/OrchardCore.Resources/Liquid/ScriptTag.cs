@@ -120,7 +120,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }
@@ -135,7 +135,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.ShouldAppendVersion(appendVersion);
                 }
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {
@@ -160,7 +160,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.AtLocation(at);
                 }
 
-                if (useCdn != null)
+                if (useCdn is not null)
                 {
                     setting.UseCdn(useCdn.Value);
                 }
@@ -170,7 +170,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }
@@ -245,7 +245,7 @@ namespace OrchardCore.Resources.Liquid
 
                     setting.AtLocation(at);
 
-                    if (useCdn != null)
+                    if (useCdn is not null)
                     {
                         setting.UseCdn(useCdn.Value);
                     }
@@ -255,7 +255,7 @@ namespace OrchardCore.Resources.Liquid
                         setting.UseCondition(condition);
                     }
 
-                    if (debug != null)
+                    if (debug is not null)
                     {
                         setting.UseDebugMode(debug.Value);
                     }
@@ -265,7 +265,7 @@ namespace OrchardCore.Resources.Liquid
                         setting.UseCulture(culture);
                     }
 
-                    if (customAttributes != null)
+                    if (customAttributes is not null)
                     {
                         foreach (var attribute in customAttributes)
                         {

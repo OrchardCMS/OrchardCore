@@ -13,7 +13,7 @@ namespace OrchardCore.Forms.Filters
 
             var serializedModelState = pageModel?.TempData[ModelStateTransferAttribute.Key] as string;
 
-            if (serializedModelState != null)
+            if (serializedModelState is not null)
             {
                 // Only Import if we are viewing.
                 if (context.Result is PageResult)

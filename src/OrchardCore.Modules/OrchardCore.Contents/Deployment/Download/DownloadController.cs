@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
             var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -65,7 +65,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
             var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

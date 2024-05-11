@@ -182,7 +182,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(application);
 
-            if (application.DisplayNames == null)
+            if (application.DisplayNames is null)
             {
                 return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
             }
@@ -239,7 +239,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(application);
 
-            if (application.Properties == null)
+            if (application.Properties is null)
             {
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
@@ -414,7 +414,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(application);
 
-            if (properties == null || properties.IsEmpty)
+            if (properties is null || properties.IsEmpty)
             {
                 application.Properties = null;
 

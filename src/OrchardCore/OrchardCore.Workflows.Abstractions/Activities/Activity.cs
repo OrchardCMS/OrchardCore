@@ -139,13 +139,13 @@ namespace OrchardCore.Workflows.Activities
         protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
-            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
+            return item is not null ? item.ToObject<T>() : defaultValue is not null ? defaultValue() : default;
         }
 
         protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
-            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
+            return item is not null ? (T)item.ToObject(type) : defaultValue is not null ? defaultValue() : default;
         }
 
         protected virtual void SetProperty(object value, [CallerMemberName] string name = null)

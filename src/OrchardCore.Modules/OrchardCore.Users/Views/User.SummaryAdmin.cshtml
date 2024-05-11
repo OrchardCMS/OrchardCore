@@ -1,31 +1,31 @@
 <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex flex-column">
         <div>
-            @if (Model.Header != null)
+            @if (Model.Header is not null)
             {
                 <div class="header">@await DisplayAsync(Model.Header)</div>
             }
 
-            @if (Model.Meta != null)
+            @if (Model.Meta is not null)
             {
                 <div class="metadata">
                     @await DisplayAsync(Model.Meta)
                 </div>
             }
 
-            @if (Model.Content != null)
+            @if (Model.Content is not null)
             {
                 <div class="primary">@await DisplayAsync(Model.Content)</div>
             }
         </div>
 
-        @if (Model.Description != null)
+        @if (Model.Description is not null)
         {
             <div>@await DisplayAsync(Model.Description)</div>
         }
     </div>
 
-    @if (Model.Actions != null)
+    @if (Model.Actions is not null)
     {
         <div>
             @await DisplayAsync(Model.Actions)

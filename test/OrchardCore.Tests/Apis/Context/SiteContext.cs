@@ -81,7 +81,7 @@ namespace OrchardCore.Tests.Apis.Context
                 TenantName = tenantName;
             }
 
-            if (PermissionsContext != null)
+            if (PermissionsContext is not null)
             {
                 var permissionContextKey = Guid.NewGuid().ToString();
                 SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);

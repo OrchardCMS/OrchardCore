@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (other.IsNil())
             {
-                return _value == null;
+                return _value is null;
             }
 
             return _value == other;

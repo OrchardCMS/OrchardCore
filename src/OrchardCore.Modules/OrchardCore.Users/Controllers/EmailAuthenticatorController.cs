@@ -66,7 +66,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -84,7 +84,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     public async Task<IActionResult> RequestCode()
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -126,7 +126,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     public async Task<IActionResult> ValidateCode(EnableEmailAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
-        if (user == null)
+        if (user is null)
         {
             return UserNotFound();
         }
@@ -158,7 +158,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
         var errorMessage = S["The email could not be sent. Please attempt to request the code at a later time."];
 
-        if (user == null)
+        if (user is null)
         {
             return BadRequest(new
             {

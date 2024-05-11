@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Services
         {
             var activity = InstantiateActivity<T>(library, name);
 
-            if (activity != null)
+            if (activity is not null)
             {
                 activity.Properties = properties;
             }

@@ -119,7 +119,7 @@ namespace OrchardCore.Media.Filters
                         anchor = jObject.ToObject<Anchor>();
                     }
                 }
-                if (anchor != null)
+                if (anchor is not null)
                 {
                     queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
                 }

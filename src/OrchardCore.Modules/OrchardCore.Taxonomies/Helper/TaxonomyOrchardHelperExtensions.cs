@@ -25,7 +25,7 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
 
-        if (taxonomy == null)
+        if (taxonomy is null)
         {
             return null;
         }
@@ -45,7 +45,7 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
 
-        if (taxonomy == null)
+        if (taxonomy is null)
         {
             return null;
         }
@@ -85,7 +85,7 @@ public static class TaxonomyOrchardHelperExtensions
             {
                 var found = FindTerm(children, termContentItemId);
 
-                if (found != null)
+                if (found is not null)
                 {
                     return found;
                 }

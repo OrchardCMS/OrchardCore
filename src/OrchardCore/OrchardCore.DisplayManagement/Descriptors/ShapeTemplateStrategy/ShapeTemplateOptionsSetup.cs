@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         public void Configure(ShapeTemplateOptions options)
         {
-            if (_hostingEnvironment.ContentRootFileProvider != null)
+            if (_hostingEnvironment.ContentRootFileProvider is not null)
             {
                 options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
             }

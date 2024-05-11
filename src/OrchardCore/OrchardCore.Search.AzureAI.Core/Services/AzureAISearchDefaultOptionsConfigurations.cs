@@ -38,7 +38,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         // The 'DisableUIConfiguration' should always be set from the file-options.
         options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
 
-        options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
+        options.Analyzers = fileOptions.Analyzers is null || fileOptions.Analyzers.Length == 0
             ? AzureAISearchDefaultOptions.DefaultAnalyzers
             : fileOptions.Analyzers;
 

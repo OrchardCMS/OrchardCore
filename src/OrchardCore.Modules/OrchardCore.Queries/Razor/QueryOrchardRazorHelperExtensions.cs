@@ -20,7 +20,7 @@ public static class QueryOrchardRazorHelperExtensions
 
         var query = await queryManager.GetQueryAsync(queryName);
 
-        if (query == null)
+        if (query is null)
         {
             return null;
         }
@@ -35,7 +35,7 @@ public static class QueryOrchardRazorHelperExtensions
 
         var query = await queryManager.GetQueryAsync(queryName);
 
-        if (query == null)
+        if (query is null)
         {
             return null;
         }

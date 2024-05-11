@@ -50,7 +50,7 @@ namespace OrchardCore.Admin
                 {
                     var attribute = type.GetCustomAttribute<AdminAttribute>();
 
-                    if (attribute != null)
+                    if (attribute is not null)
                     {
                         adminPaths.Add(descriptor.RelativePath);
                         break;

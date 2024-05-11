@@ -66,10 +66,10 @@ namespace OrchardCore.Security.Drivers
                 model.PermissionsPolicy = currentSettings.PermissionsPolicy;
                 model.ReferrerPolicy = currentSettings.ReferrerPolicy;
 
-                model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
+                model.EnableSandbox = currentSettings.ContentSecurityPolicy is not null &&
                     currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
 
-                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
+                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy is not null &&
                     currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }

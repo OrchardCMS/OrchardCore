@@ -52,7 +52,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var setting = resourceManager.RegisterResource("stylesheet", name);
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {
@@ -74,7 +74,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }
@@ -97,7 +97,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var content = "";
 
-                if (statements != null && statements.Count > 0)
+                if (statements is not null && statements.Count > 0)
                 {
                     using var sw = new ZStringWriter();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
@@ -127,7 +127,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var content = "";
 
-                if (statements != null && statements.Count > 0)
+                if (statements is not null && statements.Count > 0)
                 {
                     using var sw = new ZStringWriter();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
@@ -144,7 +144,7 @@ namespace OrchardCore.Resources.Liquid
                 builder.InnerHtml.AppendHtml(content);
                 builder.TagRenderMode = TagRenderMode.Normal;
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {

@@ -197,7 +197,7 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 }
 ```
 
-> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL.
 
 ##### Responses
 
@@ -540,12 +540,12 @@ With the newly added options, we can now allow searching for products based on e
                 .WithNamedTerm("producttext", builder => builder
                     .ManyCondition(
                         (val, query) => query.Any(
-                            (q) => q.With<ContentItemIndex>(i => i.DisplayText != null && i.DisplayText.Contains(val)),
-                            (q) => q.With<ProductIndex>(i => i.SerialNumber != null && i.SerialNumber.Contains(val))
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText is not null && i.DisplayText.Contains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber is not null && i.SerialNumber.Contains(val))
                         ),
                         (val, query) => query.All(
-                            (q) => q.With<ContentItemIndex>(i => i.DisplayText == null || i.DisplayText.NotContains(val)),
-                            (q) => q.With<ProductIndex>(i => i.SerialNumber == null || i.SerialNumber.NotContains(val))
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText is null || i.DisplayText.NotContains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber is null || i.SerialNumber.NotContains(val))
                         )
                     )
                 );
@@ -565,7 +565,6 @@ With the newly added options, we can now allow searching for products based on e
 Now, when a user searches for a product's serial number in the administration UI, we will utilize the `producttext` filter instead of the default `text` filter to perform the search.
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
-
 
 ## Videos
 

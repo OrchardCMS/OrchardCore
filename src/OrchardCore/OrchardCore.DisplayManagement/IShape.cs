@@ -26,11 +26,11 @@ namespace OrchardCore.DisplayManagement
 
     public static class IShapeExtensions
     {
-        public static bool IsNullOrEmpty(this IShape shape) => shape == null || shape is ZoneOnDemand;
+        public static bool IsNullOrEmpty(this IShape shape) => shape is null || shape is ZoneOnDemand;
 
         public static bool TryGetProperty<T>(this IShape shape, string key, out T value)
         {
-            if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
+            if (shape.Properties is not null && shape.Properties.TryGetValue(key, out var result))
             {
                 if (result is T t)
                 {
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement
 
         public static T GetProperty<T>(this IShape shape, string key, T value)
         {
-            if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
+            if (shape.Properties is not null && shape.Properties.TryGetValue(key, out var result))
             {
                 if (result is T t)
                 {

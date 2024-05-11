@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         public override object ParseLiteral(GraphQLValue value)
         {
             var str = value as GraphQLStringValue;
-            if (str != null)
+            if (str is not null)
             {
                 return ParseValue(str.Value);
             }

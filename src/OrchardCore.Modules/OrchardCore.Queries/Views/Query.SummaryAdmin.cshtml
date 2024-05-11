@@ -1,14 +1,14 @@
 @model dynamic
 
 <div class="w-100">
-    @if (Model.Actions != null)
+    @if (Model.Actions is not null)
     {
         <div class="float-end">
             @await DisplayAsync(Model.Actions)
         </div>
     }
 
-    @if (Model.Content != null)
+    @if (Model.Content is not null)
     {
         @await DisplayAsync(Model.Content)
     }

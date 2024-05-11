@@ -22,7 +22,7 @@ namespace OrchardCore.Queries
                 {
                     var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
                     var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
-                    if (query == null)
+                    if (query is null)
                     {
                         return null;
                     }

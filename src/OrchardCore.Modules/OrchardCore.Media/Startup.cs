@@ -210,7 +210,7 @@ namespace OrchardCore.Media
             }
 
             // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
-            if (mediaFileStoreCache != null)
+            if (mediaFileStoreCache is not null)
             {
                 app.UseMiddleware<MediaFileStoreResolverMiddleware>();
             }

@@ -37,7 +37,7 @@ namespace OrchardCore.Taxonomies.Drivers
         public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
         {
             var part = model.As<TermPart>();
-            if (part != null)
+            if (part is not null)
             {
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
@@ -55,7 +55,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart termPart, PagerSlim pager)
         {
-            if (pager.Before != null)
+            if (pager.Before is not null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
                 var query = _session.Query<ContentItem>()
@@ -85,7 +85,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 return await _contentManager.LoadAsync(containedItems);
             }
-            else if (pager.After != null)
+            else if (pager.After is not null)
             {
                 var afterValue = new DateTime(long.Parse(pager.After));
                 var query = _session.Query<ContentItem>()
@@ -153,12 +153,12 @@ namespace OrchardCore.Taxonomies.Drivers
 
         private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after)
         {
-            if (before != null)
+            if (before is not null)
             {
                 return x => x.Published && x.CreatedUtc > before;
             }
 
-            if (after != null)
+            if (after is not null)
             {
                 return x => x.Published && x.CreatedUtc < after;
             }

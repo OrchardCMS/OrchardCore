@@ -79,7 +79,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                 // get the index property provider fore the alias
                 var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
-                if (propertyProvider != null)
+                if (propertyProvider is not null)
                 {
                     if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                     {
@@ -121,7 +121,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                 // get the index property provider fore the alias
                 var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
-                if (propertyProvider != null)
+                if (propertyProvider is not null)
                 {
                     if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                     {

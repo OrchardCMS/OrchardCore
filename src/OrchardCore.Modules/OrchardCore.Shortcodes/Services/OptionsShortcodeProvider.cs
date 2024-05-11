@@ -20,7 +20,7 @@ namespace OrchardCore.Shortcodes.Services
         {
             if (_options.ShortcodeDelegates.TryGetValue(identifier, out var shortcode))
             {
-                if (shortcode == null)
+                if (shortcode is null)
                 {
                     return Null;
                 }

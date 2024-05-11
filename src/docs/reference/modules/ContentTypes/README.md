@@ -174,7 +174,7 @@ public class ProductController : Controller
     {
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
-        if (product == null) 
+        if (product is null) 
         {
             return NotFoundObjectResult();
         }
@@ -195,7 +195,7 @@ public class ProductController : Controller
         //this call will only fetch published content item, which makes publishing after update redundant
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
-        if (product == null) 
+        if (product is null) 
         {
             return NotFoundObjectResult();
         }

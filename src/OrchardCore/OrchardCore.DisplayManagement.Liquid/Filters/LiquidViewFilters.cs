@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
 
-            if (localizer == null)
+            if (localizer is null)
             {
                 return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
             }

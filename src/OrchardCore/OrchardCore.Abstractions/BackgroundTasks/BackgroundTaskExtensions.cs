@@ -11,7 +11,7 @@ namespace OrchardCore.BackgroundTasks
             var technicalName = task.GetTaskName();
 
             var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-            if (attribute != null)
+            if (attribute is not null)
             {
                 return new BackgroundTaskSettings
                 {

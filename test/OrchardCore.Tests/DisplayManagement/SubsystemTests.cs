@@ -105,7 +105,7 @@
 //    {
 //        public static string HtmlContentToString(IHtmlContent content, HtmlEncoder encoder = null)
 //        {
-//            if (encoder == null)
+//            if (encoder is null)
 //            {
 //                encoder = HtmlEncoder.Default;
 //            }

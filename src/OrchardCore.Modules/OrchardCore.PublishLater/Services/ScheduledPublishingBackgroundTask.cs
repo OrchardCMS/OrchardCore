@@ -47,7 +47,7 @@ public class ScheduledPublishingBackgroundTask : IBackgroundTask
             var contentItem = await contentManager.GetAsync(item.ContentItemId, VersionOptions.Latest);
 
             var part = contentItem.As<PublishLaterPart>();
-            if (part != null)
+            if (part is not null)
             {
                 part.ScheduledPublishUtc = null;
                 part.Apply();

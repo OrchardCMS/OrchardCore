@@ -15,7 +15,7 @@ namespace OrchardCore.Indexing
         {
             var part = contentPart as TPart;
 
-            if (part == null)
+            if (part is null)
             {
                 return Task.CompletedTask;
             }

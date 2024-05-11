@@ -48,9 +48,9 @@ namespace OrchardCore.Media.TagHelpers
                 return;
             }
 
-            var resolvedUrl = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetHref) : AssetHref;
+            var resolvedUrl = _mediaFileStore is not null ? _mediaFileStore.MapPathToPublicUrl(AssetHref) : AssetHref;
 
-            if (AppendVersion && _fileVersionProvider != null)
+            if (AppendVersion && _fileVersionProvider is not null)
             {
                 output.Attributes.SetAttribute(HrefAttributeName, _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl));
             }

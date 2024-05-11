@@ -117,7 +117,7 @@ namespace OrchardCore.Recipes.Services
                                     capturedException.Throw();
                                 }
 
-                                if (recipeStep.InnerRecipes != null)
+                                if (recipeStep.InnerRecipes is not null)
                                 {
                                     foreach (var descriptor in recipeStep.InnerRecipes)
                                     {

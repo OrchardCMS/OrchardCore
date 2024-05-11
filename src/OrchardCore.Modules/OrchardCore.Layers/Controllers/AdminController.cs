@@ -193,7 +193,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
@@ -238,7 +238,7 @@ namespace OrchardCore.Layers.Controllers
             {
                 var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
-                if (layer == null)
+                if (layer is null)
                 {
                     return NotFound();
                 }
@@ -266,7 +266,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
-            if (layer == null)
+            if (layer is null)
             {
                 return NotFound();
             }
@@ -298,14 +298,14 @@ namespace OrchardCore.Layers.Controllers
             // Load the latest version first if any
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
 
             var layerMetadata = contentItem.As<LayerMetadata>();
 
-            if (layerMetadata == null)
+            if (layerMetadata is null)
             {
                 return Forbid();
             }
@@ -322,11 +322,11 @@ namespace OrchardCore.Layers.Controllers
             if (contentItem.IsPublished() == false)
             {
                 var publishedContentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
-                if (publishedContentItem != null)
+                if (publishedContentItem is not null)
                 {
                     layerMetadata = contentItem.As<LayerMetadata>();
 
-                    if (layerMetadata == null)
+                    if (layerMetadata is null)
                     {
                         return Forbid();
                     }
@@ -343,7 +343,7 @@ namespace OrchardCore.Layers.Controllers
             // The state will be updated once the ambient session is committed.
             await _layerStateManager.UpdateAsync(new LayerState());
 
-            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
+            if (Request.Headers is not null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }

@@ -30,7 +30,7 @@ namespace OrchardCore.Rules.Drivers
         {
             return Initialize<ContentTypeConditionViewModel>("ContentTypeCondition_Fields_Edit", m =>
             {
-                if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
+                if (condition.Operation is not null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
                     m.SelectedOperation = option.Factory.Name;
                 }

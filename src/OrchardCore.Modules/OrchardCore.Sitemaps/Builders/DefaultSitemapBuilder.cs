@@ -24,7 +24,7 @@ namespace OrchardCore.Sitemaps.Builders
             foreach (var sitemapTypeBuilder in _sitemapTypeBuilders)
             {
                 await sitemapTypeBuilder.BuildAsync(sitemap, context);
-                if (context.Response != null)
+                if (context.Response is not null)
                 {
                     var document = new XDocument(context.Response.ResponseElement);
 

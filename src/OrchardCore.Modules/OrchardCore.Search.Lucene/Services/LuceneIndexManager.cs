@@ -223,7 +223,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value != null)
+                        if (entry.Value is not null)
                         {
                             if (entry.Value is DateTimeOffset)
                             {
@@ -253,7 +253,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value is not null && long.TryParse(entry.Value.ToString(), out var value))
                         {
                             doc.Add(new Int64Field(entry.Name, value, store));
 
@@ -270,7 +270,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Number:
-                        if (entry.Value != null)
+                        if (entry.Value is not null)
                         {
                             doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
 
@@ -286,7 +286,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value is not null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
@@ -328,7 +328,7 @@ namespace OrchardCore.Search.Lucene
                     case DocumentIndex.Types.GeoPoint:
                         var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
 
-                        if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
+                        if (entry.Value is not null && entry.Value is DocumentIndex.GeoPoint point)
                         {
                             var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
                             foreach (var field in strategy.CreateIndexableFields(geoPoint))

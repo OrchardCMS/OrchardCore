@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
-            if (option == null)
+            if (option is null)
             {
                 option = new ContentPartDisplayOption(contentPartType);
                 _contentParts.Add(option);
@@ -110,7 +110,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
-            if (option == null)
+            if (option is null)
             {
                 option = new ContentFieldDisplayOption(contentFieldType);
                 _contentFields.Add(option);

@@ -49,7 +49,7 @@ namespace OrchardCore.Localization.PortableObject
 
                 var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
 
-                return new LocalizedString(name, translation ?? name, translation == null);
+                return new LocalizedString(name, translation ?? name, translation is null);
             }
         }
 
@@ -100,7 +100,7 @@ namespace OrchardCore.Localization.PortableObject
 
                 translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
-                return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
+                return (new LocalizedString(name, translation, translation is null), argumentsWithCount);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 var localizedStrings = GetAllStrings(currentCulture);
 
-                if (localizedStrings != null)
+                if (localizedStrings is not null)
                 {
                     foreach (var localizedString in localizedStrings)
                     {
@@ -174,7 +174,7 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     do
                     {
-                        if (ExtractTranslation() != null)
+                        if (ExtractTranslation() is not null)
                         {
                             break;
                         }
@@ -192,7 +192,7 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     var dictionary = _localizationManager.GetDictionary(culture);
 
-                    if (dictionary != null)
+                    if (dictionary is not null)
                     {
                         var key = CultureDictionaryRecord.GetKey(name, context);
 
@@ -203,7 +203,7 @@ namespace OrchardCore.Localization.PortableObject
                             key = CultureDictionaryRecord.GetKey(name, _dataAnnotationsDefaultErrorMessagesContext);
                             translation = dictionary[key];
 
-                            if (translation != null)
+                            if (translation is not null)
                             {
                                 return translation;
                             }
@@ -212,7 +212,7 @@ namespace OrchardCore.Localization.PortableObject
                             key = CultureDictionaryRecord.GetKey(name, null);
                             translation = dictionary[key];
 
-                            if (translation != null)
+                            if (translation is not null)
                             {
                                 return translation;
                             }
@@ -221,7 +221,7 @@ namespace OrchardCore.Localization.PortableObject
                         // Extract translation with context.
                         translation = dictionary[key, count];
 
-                        if (context != null && translation == null)
+                        if (context is not null && translation is null)
                         {
                             // Extract translation without context.
                             key = CultureDictionaryRecord.GetKey(name, null);

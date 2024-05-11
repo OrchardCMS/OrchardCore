@@ -38,7 +38,7 @@ public class NamingTests
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexName, out var result);
 
-        if (expectedName != null)
+        if (expectedName is not null)
         {
             Assert.True(valid);
         }
@@ -84,7 +84,7 @@ public class NamingTests
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(indexName, out var result);
 
-        if (expectedName != null)
+        if (expectedName is not null)
         {
             Assert.True(valid);
         }

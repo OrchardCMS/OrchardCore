@@ -78,7 +78,7 @@ namespace OrchardCore.Benchmark
             // This is marginally different than the exact original as we currently pass any non null object to the display helper.
             // And the original benchmark was if (input.ToObjectValue() is IShape shape) where input was never IShape.
             // The original benchmark noop'd here and didn't hit the dynamic display helper.
-            if (input != null)
+            if (input is not null)
             {
                 return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(input));
             }

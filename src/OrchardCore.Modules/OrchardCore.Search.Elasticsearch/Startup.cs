@@ -62,7 +62,7 @@ namespace OrchardCore.Search.Elasticsearch
                     PropertyNameCaseInsensitive = true,
                 });
 
-                if (analyzersObject != null)
+                if (analyzersObject is not null)
                 {
                     o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 

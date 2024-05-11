@@ -36,12 +36,12 @@ namespace OrchardCore.Themes.Services
         public async Task DisableThemeFeaturesAsync(string themeName)
         {
             var themes = new Queue<string>();
-            while (themeName != null)
+            while (themeName is not null)
             {
                 if (themes.Contains(themeName))
                     throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
                 var theme = _extensionManager.GetExtension(themeName);
-                if (theme == null)
+                if (theme is null)
                     break;
                 themes.Enqueue(themeName);
 
@@ -67,7 +67,7 @@ namespace OrchardCore.Themes.Services
         public async Task EnableThemeFeaturesAsync(string themeName)
         {
             var themes = new Stack<string>();
-            while (themeName != null)
+            while (themeName is not null)
             {
                 if (themes.Contains(themeName))
                     throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());

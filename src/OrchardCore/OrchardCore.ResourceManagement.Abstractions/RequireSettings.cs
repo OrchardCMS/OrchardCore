@@ -52,13 +52,13 @@ namespace OrchardCore.ResourceManagement
             Version = resource.Version;
             Position = resource.Position;
 
-            if (resource.Attributes != null)
+            if (resource.Attributes is not null)
             {
                 _attributes = new Dictionary<string, string>(resource.Attributes);
             }
         }
 
-        public bool HasAttributes => _attributes != null && _attributes.Any(a => a.Value != null);
+        public bool HasAttributes => _attributes is not null && _attributes.Any(a => a.Value is not null);
 
         /// <summary>
         /// The resource will be displayed in the head of the page.
@@ -177,10 +177,10 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings Define(Action<ResourceDefinition> resourceDefinition)
         {
-            if (resourceDefinition != null)
+            if (resourceDefinition is not null)
             {
                 var previous = InlineDefinition;
-                if (previous != null)
+                if (previous is not null)
                 {
                     InlineDefinition = r =>
                     {
@@ -207,11 +207,11 @@ namespace OrchardCore.ResourceManagement
         {
             // efficiently merge the two dictionaries, taking into account that one or both may not exist
             // and that attributes in 'other' should override attributes in this, even if the value is null.
-            if (_attributes == null)
+            if (_attributes is null)
             {
-                return other._attributes == null ? null : new Dictionary<string, string>(other._attributes);
+                return other._attributes is null ? null : new Dictionary<string, string>(other._attributes);
             }
-            if (other._attributes == null)
+            if (other._attributes is null)
             {
                 return new Dictionary<string, string>(_attributes);
             }

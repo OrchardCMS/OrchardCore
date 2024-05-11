@@ -66,7 +66,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public virtual bool TryGetIndexImpl(string name, out object result)
         {
-            if (name != null && TryGetMemberImpl(name, out result))
+            if (name is not null && TryGetMemberImpl(name, out result))
             {
                 return true;
             }
@@ -97,7 +97,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 // try to access an existing member.
                 var stringIndex = indexes[0] as string;
 
-                if (stringIndex != null && TrySetMemberImpl(stringIndex, value))
+                if (stringIndex is not null && TrySetMemberImpl(stringIndex, value))
                 {
                     return true;
                 }
@@ -153,7 +153,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override int GetHashCode()
         {
-            return (_properties != null ? _properties.GetHashCode() : 0);
+            return (_properties is not null ? _properties.GetHashCode() : 0);
         }
     }
 
@@ -189,10 +189,10 @@ namespace OrchardCore.DisplayManagement.Shapes
             switch (binder.Operation)
             {
                 case ExpressionType.Equal:
-                    result = ReferenceEquals(arg, Nil.Instance) || arg == null;
+                    result = ReferenceEquals(arg, Nil.Instance) || arg is null;
                     return true;
                 case ExpressionType.NotEqual:
-                    result = !ReferenceEquals(arg, Nil.Instance) && arg != null;
+                    result = !ReferenceEquals(arg, Nil.Instance) && arg is not null;
                     return true;
             }
 
@@ -211,7 +211,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public static bool operator ==(Nil a, object b)
         {
-            return ReferenceEquals(a, b) || b == null;
+            return ReferenceEquals(a, b) || b is null;
         }
 
         public static bool operator !=(Nil a, object b)
@@ -221,7 +221,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if (obj is null)
             {
                 return true;
             }

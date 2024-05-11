@@ -20,7 +20,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
 
-            if (cacheScopeManager == null)
+            if (cacheScopeManager is null)
             {
                 return Completion.Normal;
             }

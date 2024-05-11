@@ -35,7 +35,7 @@ namespace OrchardCore.AdminDashboard.Drivers
             var dashboardFeature = httpContext.Features.Get<DashboardFeature>();
 
             // Return if it's not Manage dashboard request 
-            if (dashboardFeature == null || !dashboardFeature.IsManageRequest)
+            if (dashboardFeature is null || !dashboardFeature.IsManageRequest)
             {
                 return null;
             }

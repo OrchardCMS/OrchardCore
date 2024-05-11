@@ -35,7 +35,7 @@ namespace OrchardCore.Feeds.Rss
 
         public void AddProperty(FeedContext context, FeedItem feedItem, XElement element)
         {
-            if (feedItem == null)
+            if (feedItem is null)
             {
                 context.Response.Element.Add(element);
             }

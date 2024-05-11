@@ -159,7 +159,7 @@
             </div>
     }
 
-    @if (Context.Items["WidgetsListPart.Edit"] == null)
+    @if (Context.Items["WidgetsListPart.Edit"] is null)
     {
         Context.Items["WidgetsListPart.Edit"] = new object();
         @foreach (var type in widgetContentTypes)

@@ -33,10 +33,10 @@
 <div class="@Orchard.GetWrapperClasses()">
 
     <div class="@Orchard.GetEndClasses(true)">
-        @if (canAddTerm && Model.TermContentType != null)
+        @if (canAddTerm && Model.TermContentType is not null)
         {
             var termContentType = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.TermContentType);
-            @if (termContentType != null)
+            @if (termContentType is not null)
             {
                 <a class="btn btn-primary btn-sm"
                    asp-route-action="Create"

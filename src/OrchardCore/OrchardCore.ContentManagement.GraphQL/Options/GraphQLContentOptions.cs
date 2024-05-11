@@ -108,7 +108,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
 
-            if (contentTypeOption != null)
+            if (contentTypeOption is not null)
             {
                 if (contentTypeOption.Collapse)
                 {
@@ -117,7 +117,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
                 var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
 
-                if (contentTypePartOption != null)
+                if (contentTypePartOption is not null)
                 {
                     if (contentTypePartOption.Collapse)
                     {
@@ -128,7 +128,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
 
-            if (contentPartOption != null)
+            if (contentPartOption is not null)
             {
                 if (contentPartOption.Collapse)
                 {
@@ -192,7 +192,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
 
-            if (contentTypeOption != null)
+            if (contentTypeOption is not null)
             {
                 if (contentTypeOption.Hidden)
                 {
@@ -201,7 +201,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
                 var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
 
-                if (contentTypePartOption != null)
+                if (contentTypePartOption is not null)
                 {
                     if (contentTypePartOption.Hidden)
                     {
@@ -212,7 +212,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
 
-            if (contentPartOption != null)
+            if (contentPartOption is not null)
             {
                 if (contentPartOption.Hidden)
                 {

@@ -7,7 +7,7 @@
     TagBuilder tag = Tag(Model, "a");
 
     var url = linkMenuItemPart.Url;
-    if (url != null)
+    if (url is not null)
     {
         if (url.StartsWith('/'))
         {

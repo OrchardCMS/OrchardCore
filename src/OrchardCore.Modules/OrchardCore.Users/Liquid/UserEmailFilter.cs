@@ -25,12 +25,12 @@ namespace OrchardCore.Users.Liquid
             if (value is LiquidUserAccessor)
             {
                 var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
-                if (claimsPrincipal != null)
+                if (claimsPrincipal is not null)
                 {
                     // Todo: Use 'IdentityOptions.ClaimsIdentity.EmailClaimType' that will be supported in a future version.
                     // Currently the 'DefaultUserClaimsPrincipalFactory' also uses an hardcoded "email" for the claim type.
                     var email = claimsPrincipal.FindFirstValue("email") ?? claimsPrincipal.FindFirstValue(ClaimTypes.Email);
-                    if (email != null)
+                    if (email is not null)
                     {
                         return FluidValue.Create(email, ctx.Options);
                     }

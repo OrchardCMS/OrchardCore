@@ -53,7 +53,7 @@ namespace OrchardCore.Lists.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering, m => m.ShowHeader);
 
-            if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+            if (model.ContainedContentTypes is null || model.ContainedContentTypes.Length == 0)
             {
                 context.Updater.ModelState.AddModelError(nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
             }

@@ -55,7 +55,7 @@ namespace OrchardCore.Entities
         /// <param name="name">The name of the property to check.</param>
         /// <returns>True if the property was found, otherwise false.</returns>
         public static bool Has(this IEntity entity, string name)
-            => entity.Properties[name] != null;
+            => entity.Properties[name] is not null;
 
         public static IEntity Put<T>(this IEntity entity, T aspect) where T : new()
             => entity.Put(typeof(T).Name, aspect);

@@ -54,14 +54,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }
@@ -92,14 +92,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = _factories.FirstOrDefault(x => x.Name == model.DeploymentStepType)?.Create();
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }
@@ -133,14 +133,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }
@@ -169,14 +169,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }
@@ -209,14 +209,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }
@@ -239,14 +239,14 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
 
-            if (step == null)
+            if (step is null)
             {
                 return NotFound();
             }

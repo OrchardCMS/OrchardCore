@@ -129,9 +129,9 @@ namespace OrchardCore.Tenants.Controllers
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
-                    (t.ShellSettings != null &&
-                     ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+                    (t.ShellSettings is not null &&
+                     ((t.ShellSettings.RequestUrlHost is not null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                     (t.ShellSettings.RequestUrlPrefix is not null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(options.Category))
@@ -655,7 +655,7 @@ namespace OrchardCore.Tenants.Controllers
         private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)
         {
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key)))
+                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles is not null && currentFeatureProfiles.Contains(x.Key)))
                 .ToList();
 
             return featureProfiles;

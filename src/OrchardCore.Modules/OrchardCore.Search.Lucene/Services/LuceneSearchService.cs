@@ -45,7 +45,7 @@ public class LuceneSearchService : ISearchService
 
         var result = new SearchResult();
 
-        if (index == null || !_luceneIndexManager.Exists(index))
+        if (index is null || !_luceneIndexManager.Exists(index))
         {
             _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
@@ -54,7 +54,7 @@ public class LuceneSearchService : ISearchService
 
         var defaultSearchFields = await GetSearchFieldsAsync();
 
-        if (defaultSearchFields == null || defaultSearchFields.Length == 0)
+        if (defaultSearchFields is null || defaultSearchFields.Length == 0)
         {
             _logger.LogWarning("Lucene: Couldn't execute search. No search provider settings was defined.");
 

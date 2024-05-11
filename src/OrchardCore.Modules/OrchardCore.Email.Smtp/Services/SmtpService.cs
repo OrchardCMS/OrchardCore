@@ -31,7 +31,7 @@ public class SmtpService : ISmtpService
     {
         var provider = GetSmtpProvider();
 
-        if (provider == null)
+        if (provider is null)
         {
             return SmtpResult.Failed([S["Unable to find any SMTP providers."]]);
         }

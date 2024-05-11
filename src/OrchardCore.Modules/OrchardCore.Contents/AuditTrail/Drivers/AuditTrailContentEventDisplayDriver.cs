@@ -67,7 +67,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                         .As<AuditTrailContentEvent>()
                         .ContentItem;
 
-                    if (previousContentItem != null)
+                    if (previousContentItem is not null)
                     {
                         var current = JObject.FromObject(contentEvent.ContentItem);
                         var previous = JObject.FromObject(previousContentItem);
@@ -94,7 +94,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                         .As<AuditTrailContentEvent>()
                         .ContentItem;
 
-                    if (previousContentItem != null)
+                    if (previousContentItem is not null)
                     {
                         var current = JObject.FromObject(contentEvent.ContentItem);
                         var previous = JObject.FromObject(previousContentItem);

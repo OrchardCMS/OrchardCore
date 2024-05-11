@@ -31,7 +31,7 @@ internal sealed class OptionsFluidParserHelper<TOptions> where TOptions : class
 
     private TemplateContext GetTemplateContext()
     {
-        if (_templateContext == null)
+        if (_templateContext is null)
         {
             var templateOptions = new TemplateOptions();
             _templateContext = new TemplateContext(templateOptions);

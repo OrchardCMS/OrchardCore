@@ -39,7 +39,7 @@ namespace OrchardCore.Facebook.Login.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            if (_facebookSettings == null)
+            if (_facebookSettings is null)
             {
                 return;
             }
@@ -52,7 +52,7 @@ namespace OrchardCore.Facebook.Login.Configuration
             }
 
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
+            if (loginSettings is null)
             {
                 return;
             }
@@ -73,13 +73,13 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
-            if (_facebookSettings == null)
+            if (_facebookSettings is null)
             {
                 return;
             }
 
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
+            if (loginSettings is null)
             {
                 return;
             }

@@ -92,7 +92,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 var blobDirectory = await GetBlobDirectoryReference(path);
 
-                if (blobDirectory != null)
+                if (blobDirectory is not null)
                 {
                     return new BlobDirectory(path, _clock.UtcNow);
                 }
@@ -219,7 +219,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
 
                 var blobDirectory = await GetBlobDirectoryReference(path);
-                if (blobDirectory == null)
+                if (blobDirectory is null)
                 {
                     await CreateDirectoryAsync(path);
                 }

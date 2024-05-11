@@ -58,7 +58,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) is null)
             {
                 return NotFound();
             }
@@ -89,7 +89,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) is null)
             {
                 return NotFound();
             }
@@ -112,7 +112,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
             }
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return NotFound();
             }
@@ -131,7 +131,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return View(model);
             }
 
-            if (taxonomyItemId == null)
+            if (taxonomyItemId is null)
             {
                 // Use the taxonomy as the parent if no target is specified.
                 taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
@@ -142,14 +142,14 @@ namespace OrchardCore.Taxonomies.Controllers
                 var parentTaxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
                 // Couldn't find targeted taxonomy item.
-                if (parentTaxonomyItem == null)
+                if (parentTaxonomyItem is null)
                 {
                     return NotFound();
                 }
 
                 var taxonomyItems = (JsonArray)parentTaxonomyItem?["Terms"];
 
-                if (taxonomyItems == null)
+                if (taxonomyItems is null)
                 {
                     parentTaxonomyItem["Terms"] = taxonomyItems = [];
                 }
@@ -172,7 +172,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return NotFound();
             }
@@ -186,7 +186,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
-            if (taxonomyItem == null)
+            if (taxonomyItem is null)
             {
                 return NotFound();
             }
@@ -230,7 +230,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
             }
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return NotFound();
             }
@@ -239,7 +239,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
-            if (taxonomyItem == null)
+            if (taxonomyItem is null)
             {
                 return NotFound();
             }
@@ -305,7 +305,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
             }
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return NotFound();
             }
@@ -314,7 +314,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
-            if (taxonomyItem == null)
+            if (taxonomyItem is null)
             {
                 return NotFound();
             }
@@ -349,7 +349,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 // Search in inner taxonomy items.
                 result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
 
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }

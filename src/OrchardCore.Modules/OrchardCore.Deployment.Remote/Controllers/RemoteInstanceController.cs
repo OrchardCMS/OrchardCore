@@ -150,7 +150,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);
 
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
@@ -177,7 +177,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstance = await _service.LoadRemoteInstanceAsync(model.Id);
 
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
@@ -210,7 +210,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstance = await _service.LoadRemoteInstanceAsync(id);
 
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }

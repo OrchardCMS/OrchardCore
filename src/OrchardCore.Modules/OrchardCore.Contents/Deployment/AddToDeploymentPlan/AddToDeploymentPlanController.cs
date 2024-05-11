@@ -55,14 +55,14 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(deploymentPlanId);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -76,7 +76,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             var stepFactory = _factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep));
 
-            if (stepFactory == null)
+            if (stepFactory is null)
             {
                 return BadRequest();
             }
@@ -111,7 +111,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(deploymentPlanId);
 
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }

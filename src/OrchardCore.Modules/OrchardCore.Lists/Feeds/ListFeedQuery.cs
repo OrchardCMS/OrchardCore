@@ -30,7 +30,7 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
+            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId is null)
             {
                 return null;
             }
@@ -50,14 +50,14 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedQueryViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId == null)
+            if (!await context.Updater.TryUpdateModelAsync(model) || model.ContentItemId is null)
             {
                 return;
             }
 
             var contentItem = await _contentManager.GetAsync(model.ContentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return;
             }

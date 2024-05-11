@@ -29,7 +29,7 @@ public class AzureAISettingsViewModel : IValidatableObject
     {
         var S = validationContext.GetRequiredService<IStringLocalizer<AzureAISettingsViewModel>>();
 
-        if (IndexedContentTypes == null || IndexedContentTypes.Length == 0)
+        if (IndexedContentTypes is null || IndexedContentTypes.Length == 0)
         {
             yield return new ValidationResult(S["At least one content type is required."], [nameof(IndexedContentTypes)]);
         }

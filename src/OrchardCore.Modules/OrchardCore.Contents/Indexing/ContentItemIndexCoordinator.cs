@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Indexing
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }

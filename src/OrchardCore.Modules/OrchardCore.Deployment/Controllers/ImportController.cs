@@ -59,7 +59,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            if (importedPackage != null)
+            if (importedPackage is not null)
             {
                 var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
                 var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());

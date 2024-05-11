@@ -72,7 +72,7 @@ namespace OrchardCore.Resources.Liquid
                 linkEntry.AppendVersion = appendVersion.Value;
             }
 
-            if (customAttributes != null)
+            if (customAttributes is not null)
             {
                 foreach (var attribute in customAttributes)
                 {

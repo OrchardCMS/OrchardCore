@@ -14,14 +14,14 @@ namespace OrchardCore.Security.Settings
             get => _contentSecurityPolicy;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }
 
                 // Exclude null values and clone the dictionary to not be shared by site settings and options instances.
                 _contentSecurityPolicy = value
-                    .Where(kvp => kvp.Value != null ||
+                    .Where(kvp => kvp.Value is not null ||
                         kvp.Key == ContentSecurityPolicyValue.Sandbox ||
                         kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -40,7 +40,7 @@ namespace OrchardCore.Security.Settings
             get => _permissionsPolicy;
             set
             {
-                if (value == null)
+                if (value is null)
                 {
                     return;
                 }

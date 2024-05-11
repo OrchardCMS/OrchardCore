@@ -35,7 +35,7 @@
             <ol id="menu" data-treenode-id="content-preset" class="list-group">
                 @foreach (var menuItem in Model.AdminMenu.MenuItems)
                 {
-                    if (menuItem != null)
+                    if (menuItem is not null)
                     {
                         var adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
                         adminNodeShape.Properties["AdminMenuId"] = Model.AdminMenu.Id;

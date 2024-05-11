@@ -92,8 +92,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
-                    || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                items = items.Where(entry => entry.Title is not null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (entry.Description is not null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
@@ -155,7 +155,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }
@@ -192,7 +192,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(model.Name);
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }
@@ -236,7 +236,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }
@@ -265,7 +265,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }

@@ -85,7 +85,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
             {
                 var culture = ci.As<LocalizationPart>()?.Culture;
-                if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
+                if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture is null)
                 {
                     return null;
                 }

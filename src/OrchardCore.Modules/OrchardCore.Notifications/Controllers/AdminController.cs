@@ -281,7 +281,7 @@ public class AdminController : Controller, IUpdateModel
         {
             var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
-            if (notification != null)
+            if (notification is not null)
             {
                 var readPart = notification.As<NotificationReadInfo>();
 
@@ -316,7 +316,7 @@ public class AdminController : Controller, IUpdateModel
         {
             var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
-            if (notification != null)
+            if (notification is not null)
             {
                 _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
             }

@@ -17,7 +17,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
-            if (testContentPart == null)
+            if (testContentPart is null)
             {
                 return null;
             }
@@ -52,7 +52,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
-            if (testContentPart == null)
+            if (testContentPart is null)
             {
                 return null;
             }
@@ -64,7 +64,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
-            if (testContentPart == null)
+            if (testContentPart is null)
             {
                 return null;
             }

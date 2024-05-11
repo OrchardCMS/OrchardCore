@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         public void OnActionExecuting(ActionExecutingContext context)
         {
             var controller = context.Controller as Controller;
-            if (controller != null)
+            if (controller is not null)
             {
                 var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
                 modelBinderAccessor.ModelUpdater = new ControllerModelUpdater(controller);
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         {
             var page = context.HandlerInstance as PageModel;
 
-            if (page != null)
+            if (page is not null)
             {
                 var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
                 modelBinderAccessor.ModelUpdater = new PageModelUpdater(page);

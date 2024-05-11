@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             Current = existing;
 
-            if (existing == null)
+            if (existing is null)
             {
                 _parts = [];
                 _settings = [];
@@ -80,7 +80,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
-            if (existingJObject == null)
+            if (existingJObject is null)
             {
                 existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;
@@ -105,7 +105,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinitionBuilder RemovePart(string partName)
         {
             var existingPart = _parts.SingleOrDefault(x => string.Equals(x.Name, partName, StringComparison.OrdinalIgnoreCase));
-            if (existingPart != null)
+            if (existingPart is not null)
             {
                 _parts.Remove(existingPart);
             }
@@ -124,7 +124,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
             var existingPart = _parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-            if (existingPart != null)
+            if (existingPart is not null)
             {
                 _parts.Remove(existingPart);
             }
@@ -167,7 +167,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             var existingPart = _parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (existingPart != null)
+            if (existingPart is not null)
             {
                 _parts.Remove(existingPart);
             }

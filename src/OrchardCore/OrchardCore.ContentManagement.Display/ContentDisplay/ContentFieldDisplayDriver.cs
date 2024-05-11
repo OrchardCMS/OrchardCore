@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            if (_typePartDefinition != null && _partFieldDefinition != null)
+            if (_typePartDefinition is not null && _partFieldDefinition is not null)
             {
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var partName = _typePartDefinition.Name;
@@ -138,7 +138,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             }
 
             var field = contentPart.Get<TField>(partFieldDefinition.Name);
-            if (field != null)
+            if (field is not null)
             {
                 BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
@@ -168,7 +168,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
-            if (field != null)
+            if (field is not null)
             {
                 BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
@@ -210,7 +210,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _typePartDefinition = null;
             _partFieldDefinition = null;
 
-            if (result == null)
+            if (result is null)
             {
                 return null;
             }

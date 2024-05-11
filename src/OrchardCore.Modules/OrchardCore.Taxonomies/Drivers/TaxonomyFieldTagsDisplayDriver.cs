@@ -51,7 +51,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-                if (model.Taxonomy != null)
+                if (model.Taxonomy is not null)
                 {
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
@@ -82,7 +82,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
 
-            field.TermContentItemIds = model.TermContentItemIds == null
+            field.TermContentItemIds = model.TermContentItemIds is null
                 ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             if (settings.Required && field.TermContentItemIds.Length == 0)
@@ -95,7 +95,7 @@ namespace OrchardCore.Taxonomies.Drivers
             // Update display text for tags.
             var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return null;
             }

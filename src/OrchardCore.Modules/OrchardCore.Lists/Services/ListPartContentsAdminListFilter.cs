@@ -41,7 +41,7 @@ namespace OrchardCore.Lists.Services
             }
 
             // Show contained elements for the specified list
-            else if (viewModel.ListContentItemId != null)
+            else if (viewModel.ListContentItemId is not null)
             {
                 query.With<ContainedPartIndex>(x => x.ListContentItemId == viewModel.ListContentItemId);
             }

@@ -41,7 +41,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(AuthenticationOptions options)
         {
             var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(OpenIddictServerOptions options)
         {
             var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -188,7 +188,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(OpenIddictServerDataProtectionOptions options)
         {
             var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }

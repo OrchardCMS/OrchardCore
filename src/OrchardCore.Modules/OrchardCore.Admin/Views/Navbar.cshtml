@@ -6,7 +6,7 @@
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 
-@if (Model.Content == null)
+@if (Model.Content is null)
 {
     var shape = await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType);
 

@@ -29,7 +29,7 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            if (_googleAuthenticationSettings == null)
+            if (_googleAuthenticationSettings is null)
             {
                 return;
             }
@@ -56,7 +56,7 @@ namespace OrchardCore.Google.Authentication.Configuration
                 return;
             }
 
-            if (_googleAuthenticationSettings == null)
+            if (_googleAuthenticationSettings is null)
             {
                 return;
             }

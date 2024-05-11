@@ -80,7 +80,7 @@ namespace OrchardCore.Search.Lucene
             {
                 var settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     return;
                 }
@@ -139,13 +139,13 @@ namespace OrchardCore.Search.Lucene
                         updatedDocumentsByIndex[index.Key] = [];
                     }
 
-                    if (indexName != null)
+                    if (indexName is not null)
                     {
                         indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
                     }
 
-                    var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
-                    var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
+                    var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) is not null;
+                    var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) is not null;
 
                     var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
 
@@ -159,7 +159,7 @@ namespace OrchardCore.Search.Lucene
                             {
                                 allPublished.TryGetValue(task.ContentItemId, out var contentItem);
 
-                                if (contentItem != null)
+                                if (contentItem is not null)
                                 {
                                     publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
                                     await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
@@ -170,7 +170,7 @@ namespace OrchardCore.Search.Lucene
                             {
                                 allLatest.TryGetValue(task.ContentItemId, out var contentItem);
 
-                                if (contentItem != null)
+                                if (contentItem is not null)
                                 {
                                     latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
                                     await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
@@ -188,7 +188,7 @@ namespace OrchardCore.Search.Lucene
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
                                 // We index only if we actually found a content item in the database.
-                                if (context == null)
+                                if (context is null)
                                 {
                                     // TODO purge these content items from IndexingTask table.
                                     continue;

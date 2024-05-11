@@ -49,7 +49,7 @@ namespace OrchardCore.Demo.Controllers
             var model = (await _session.Query<TodoModel>().ListAsync())
                 .FirstOrDefault(m => m.TodoId == todoId);
 
-            if (model == null)
+            if (model is null)
             {
                 return NotFound();
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.Demo.Controllers
             var model = (await _session.Query<TodoModel>().ListAsync())
                 .FirstOrDefault(m => m.TodoId == todoId);
 
-            if (model == null)
+            if (model is null)
             {
                 return NotFound();
             }

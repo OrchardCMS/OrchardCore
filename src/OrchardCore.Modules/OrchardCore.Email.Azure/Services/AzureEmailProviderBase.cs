@@ -200,7 +200,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         foreach (var attachment in message.Attachments)
         {
-            if (attachment.Stream == null)
+            if (attachment.Stream is null)
             {
                 continue;
             }

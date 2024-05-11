@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies.Indexing
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
-                    if (contentTypeDefinition == null)
+                    if (contentTypeDefinition is null)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;

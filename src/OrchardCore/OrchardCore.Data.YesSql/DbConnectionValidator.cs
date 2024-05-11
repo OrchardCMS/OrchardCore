@@ -57,7 +57,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         }
 
         var provider = _databaseProviders.FirstOrDefault(provider => provider.Value == context.DatabaseProvider);
-        if (provider == null)
+        if (provider is null)
         {
             return DbConnectionValidatorResult.UnsupportedProvider;
         }

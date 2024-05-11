@@ -41,7 +41,7 @@ namespace OrchardCore.Mvc.RazorPages
 
                 var pageModelType = context.PageApplicationModel.ModelType.AsType();
                 var attribute = pageModelType.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-                if (attribute != null)
+                if (attribute is not null)
                 {
                     found = _featureIdsByArea[area].Contains(attribute.FeatureName);
                 }

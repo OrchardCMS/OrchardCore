@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         public IOpenIddictTokenStore<TToken> Get<TToken>() where TToken : class
         {
             var store = _provider.GetService<IOpenIddictTokenStore<TToken>>();
-            if (store != null)
+            if (store is not null)
             {
                 return store;
             }

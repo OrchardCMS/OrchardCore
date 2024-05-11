@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.Deployment
         {
             var allQueriesStep = step as AllQueriesDeploymentStep;
 
-            if (allQueriesStep == null)
+            if (allQueriesStep is null)
             {
                 return;
             }

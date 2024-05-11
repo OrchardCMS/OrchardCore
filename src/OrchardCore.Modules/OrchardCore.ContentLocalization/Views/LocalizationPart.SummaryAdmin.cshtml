@@ -1,6 +1,6 @@
 @model LocalizationPartViewModel
 
-@if (Model.LocalizationPart.Culture != null)
+@if (Model.LocalizationPart.Culture is not null)
 {
     <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Culture"]"><i class="fa-solid fa-globe text-info" aria-hidden="true"></i> @Model.LocalizationPart.Culture</span>
 }

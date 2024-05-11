@@ -50,7 +50,7 @@ namespace OrchardCore.OpenId.Controllers
         public async Task<IActionResult> Authorize()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -60,7 +60,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -68,14 +68,14 @@ namespace OrchardCore.OpenId.Controllers
             // Retrieve the claims stored in the authentication cookie.
             // If they can't be extracted, redirect the user to the login page.
             var result = await HttpContext.AuthenticateAsync();
-            if (result == null || !result.Succeeded || request.HasPrompt(Prompts.Login))
+            if (result is null || !result.Succeeded || request.HasPrompt(Prompts.Login))
             {
                 return RedirectToLoginPage(request);
             }
 
             // If a max_age parameter was provided, ensure that the cookie is not too old.
             // If it's too old, automatically redirect the user agent to the login page.
-            if (request.MaxAge != null && result.Properties.IssuedUtc != null &&
+            if (request.MaxAge is not null && result.Properties.IssuedUtc is not null &&
                 DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))
             {
                 return RedirectToLoginPage(request);
@@ -193,7 +193,7 @@ namespace OrchardCore.OpenId.Controllers
             // get codes/tokens without the user explicitly approving the authorization demand.
 
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -203,7 +203,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -272,7 +272,7 @@ namespace OrchardCore.OpenId.Controllers
         public IActionResult AuthorizeDeny()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -282,7 +282,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -294,7 +294,7 @@ namespace OrchardCore.OpenId.Controllers
         public async Task<IActionResult> Logout()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -304,7 +304,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -314,7 +314,7 @@ namespace OrchardCore.OpenId.Controllers
                 // If the user is not logged in, allow redirecting the user agent back to the
                 // specified post_logout_redirect_uri without rendering a confirmation form.
                 var result = await HttpContext.AuthenticateAsync();
-                if (result == null || !result.Succeeded)
+                if (result is null || !result.Succeeded)
                 {
                     return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
@@ -331,7 +331,7 @@ namespace OrchardCore.OpenId.Controllers
         public async Task<IActionResult> LogoutAccept()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -341,7 +341,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -368,7 +368,7 @@ namespace OrchardCore.OpenId.Controllers
         public IActionResult LogoutDeny()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
-            if (response != null)
+            if (response is not null)
             {
                 return View("Error", new ErrorViewModel
                 {
@@ -378,7 +378,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return NotFound();
             }
@@ -398,7 +398,7 @@ namespace OrchardCore.OpenId.Controllers
             // an authentication cookie or try to establish an ASP.NET Core user session.
 
             var request = HttpContext.GetOpenIddictServerRequest();
-            if (request == null)
+            if (request is null)
             {
                 return Task.FromResult((IActionResult)NotFound());
             }
@@ -461,7 +461,7 @@ namespace OrchardCore.OpenId.Controllers
                 identity.AddClaim(new Claim(identity.RoleClaimType, role)
                     .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
-                if (roleService != null)
+                if (roleService is not null)
                 {
                     foreach (var claim in await roleService.GetRoleClaimsAsync(role))
                     {
@@ -485,7 +485,7 @@ namespace OrchardCore.OpenId.Controllers
             // By design, the password flow requires direct username/password validation, which is performed by
             // the user service. If this service is not registered, prevent the password flow from being used.
             var service = HttpContext.RequestServices.GetService<IUserService>();
-            if (service == null)
+            if (service is null)
             {
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
@@ -497,7 +497,7 @@ namespace OrchardCore.OpenId.Controllers
 
             string error = null;
             var user = await service.AuthenticateAsync(request.Username, request.Password, (key, message) => error = message);
-            if (user == null)
+            if (user is null)
             {
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
@@ -588,10 +588,10 @@ namespace OrchardCore.OpenId.Controllers
             // If the user service is available, try to refresh the principal by retrieving
             // the user object from the database and creating a new claims-based principal.
             var service = HttpContext.RequestServices.GetService<IUserService>();
-            if (service != null)
+            if (service is not null)
             {
                 var user = await service.GetUserByUniqueIdAsync(principal.GetUserIdentifier());
-                if (user != null)
+                if (user is not null)
                 {
                     principal = await service.CreatePrincipalAsync(user);
                     // Copy the granted scopes and resources from the original authorization code/refresh token principal

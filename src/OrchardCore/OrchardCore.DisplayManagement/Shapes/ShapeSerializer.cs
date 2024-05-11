@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public JsonObject Serialize()
         {
-            if (_shape == null)
+            if (_shape is null)
             {
                 return [];
             }
@@ -54,17 +54,17 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             jObject.Add(nameof(ShapeMetadata), metadata);
 
-            if (_shape.Classes != null && _shape.Classes.Any())
+            if (_shape.Classes is not null && _shape.Classes.Any())
             {
                 jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, _shapeJsonSerializer));
             }
 
-            if (_shape.Attributes != null && _shape.Attributes.Any())
+            if (_shape.Attributes is not null && _shape.Attributes.Any())
             {
                 jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
             }
 
-            if (_shape.Properties != null && _shape.Properties.Any())
+            if (_shape.Properties is not null && _shape.Properties.Any())
             {
                 jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, _shapeJsonSerializer));
                 FindShapesInProperties(_shape);

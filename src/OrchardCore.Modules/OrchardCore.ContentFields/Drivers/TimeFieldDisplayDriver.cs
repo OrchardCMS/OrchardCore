@@ -49,7 +49,7 @@ namespace OrchardCore.ContentFields.Drivers
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
             var settings = context.PartFieldDefinition.GetSettings<TimeFieldSettings>();
 
-            if (settings.Required && field.Value == null)
+            if (settings.Required && field.Value is null)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }

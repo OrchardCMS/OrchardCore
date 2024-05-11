@@ -164,7 +164,7 @@ namespace OrchardCore.Navigation
             var pageSize = PageSize;
 
             var numberOfPagesToShow = Quantity ?? 0;
-            if (Quantity == null || Quantity < 0)
+            if (Quantity is null || Quantity < 0)
                 numberOfPagesToShow = 7;
 
             var totalPageCount = pageSize > 0 ? (int)Math.Ceiling(TotalItemCount / pageSize) : 1;
@@ -542,7 +542,7 @@ namespace OrchardCore.Navigation
 
         private static IHtmlContent CoerceHtmlString(object value)
         {
-            if (value == null)
+            if (value is null)
             {
                 return HtmlString.Empty;
             }
@@ -562,7 +562,7 @@ namespace OrchardCore.Navigation
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 
-            if (httpContext != null)
+            if (httpContext is not null)
             {
                 var query = httpContext.Request.Query;
 
@@ -574,7 +574,7 @@ namespace OrchardCore.Navigation
 
             // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
             var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
-            if (shapeRouteData != null)
+            if (shapeRouteData is not null)
             {
                 foreach (var rd in shapeRouteData.Values)
                 {
@@ -588,7 +588,7 @@ namespace OrchardCore.Navigation
         private static void SetCustomUrlParams(Dictionary<string, string> urlParams, RouteValueDictionary routeData)
         {
             // Allows to pass custom url params to Pager
-            if (urlParams != null)
+            if (urlParams is not null)
             {
                 foreach (var item in urlParams)
                 {

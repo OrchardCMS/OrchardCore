@@ -12,7 +12,7 @@ namespace OrchardCore.Lists.Indexes
         {
             var parent = context.ContentItem.As<ContainedPart>();
 
-            if (parent == null)
+            if (parent is null)
             {
                 return Task.CompletedTask;
             }

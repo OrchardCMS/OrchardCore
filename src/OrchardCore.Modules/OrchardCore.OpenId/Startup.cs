@@ -133,7 +133,7 @@ namespace OrchardCore.OpenId
         public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var settings = await GetServerSettingsAsync();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -256,9 +256,9 @@ namespace OrchardCore.OpenId
     {
         public static IServiceCollection RemoveAll(this IServiceCollection services, Type serviceType, Type implementationType)
         {
-            Debug.Assert(services != null, "The services collection shouldn't be null.");
-            Debug.Assert(serviceType != null, "The service type shouldn't be null.");
-            Debug.Assert(implementationType != null, "The implementation type shouldn't be null.");
+            Debug.Assert(services is not null, "The services collection shouldn't be null.");
+            Debug.Assert(serviceType is not null, "The service type shouldn't be null.");
+            Debug.Assert(implementationType is not null, "The implementation type shouldn't be null.");
 
             for (var index = services.Count - 1; index >= 0; index--)
             {

@@ -35,7 +35,7 @@ namespace OrchardCore.Layers.Drivers
         {
             var layerMetadata = model.As<LayerMetadata>();
 
-            if (layerMetadata == null)
+            if (layerMetadata is null)
             {
                 layerMetadata = new LayerMetadata();
                 await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position);
@@ -66,7 +66,7 @@ namespace OrchardCore.Layers.Drivers
 
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-            if (viewModel.LayerMetadata == null)
+            if (viewModel.LayerMetadata is null)
             {
                 return null;
             }

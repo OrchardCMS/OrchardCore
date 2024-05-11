@@ -1,7 +1,7 @@
 @model SearchResultsViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-@if (Model.ContentItems != null && Model.ContentItems.Any())
+@if (Model.ContentItems is not null && Model.ContentItems.Any())
 {
     <ul class="list-group">
         @foreach (var contentItem in Model.ContentItems)

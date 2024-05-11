@@ -46,7 +46,7 @@ namespace OrchardCore.Templates.Services
 
             var localTemplates = _previewTemplatesProvider.GetTemplates();
 
-            if (localTemplates != null && localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
+            if (localTemplates is not null && localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
             {
                 return BuildShapeBinding(shapeType, localTemplate);
             }

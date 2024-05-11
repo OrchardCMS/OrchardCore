@@ -88,7 +88,7 @@ namespace OrchardCore.ContentLocalization
             {
                 var existingContent = await GetContentItemAsync(localizationPart.LocalizationSet, targetCulture);
 
-                if (existingContent != null)
+                if (existingContent is not null)
                 {
                     // Already localized.
                     return existingContent;
@@ -141,7 +141,7 @@ namespace OrchardCore.ContentLocalization
             foreach (var set in localizationSets)
             {
                 var idxValue = cleanedIndexValues.FirstOrDefault(x => x.LocalizationSet == set);
-                if (idxValue == null)
+                if (idxValue is null)
                 {
                     continue;
                 }

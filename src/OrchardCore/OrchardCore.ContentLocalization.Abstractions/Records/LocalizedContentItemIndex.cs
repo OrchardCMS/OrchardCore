@@ -40,7 +40,7 @@ namespace OrchardCore.ContentLocalization.Records
             {
                 var part = context.ContentItem.As<LocalizationPart>();
 
-                if (part != null)
+                if (part is not null)
                 {
                     _itemRemoved.Add(context.ContentItem);
                 }
@@ -55,7 +55,7 @@ namespace OrchardCore.ContentLocalization.Records
 
             // Validate that the content definition contains this part, this prevents indexing parts
             // that have been removed from the type definition, but are still present in the elements.            
-            if (part != null)
+            if (part is not null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -90,7 +90,7 @@ namespace OrchardCore.ContentLocalization.Records
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<LocalizationPart>();
-                    if (!partRemoved && (part == null || string.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
+                    if (!partRemoved && (part is null || string.IsNullOrEmpty(part.LocalizationSet) || part.Culture is null))
                     {
                         return null;
                     }

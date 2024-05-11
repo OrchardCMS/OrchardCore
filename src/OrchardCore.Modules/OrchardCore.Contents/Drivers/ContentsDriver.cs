@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Drivers
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            if (contentTypeDefinition != null)
+            if (contentTypeDefinition is not null)
             {
                 var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem))
                     .Location("Detail", "Content:before");
@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.Drivers
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return null;
             }

@@ -4,7 +4,7 @@
     var activityRecord = (ActivityRecord)Model.ActivityRecord;
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
-    var isEvent = activityEvent != null;
+    var isEvent = activityEvent is not null;
     var isBlocking = (bool)Model.IsBlocking;
     var activityType = isEvent ? "Event" : "Task";
     var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";

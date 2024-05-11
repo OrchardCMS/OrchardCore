@@ -136,12 +136,12 @@ namespace OrchardCore.AutoSetup.Options
             }
 
             var selectedProvider = validationContext.GetServices<DatabaseProvider>().FirstOrDefault(x => x.Value == DatabaseProvider);
-            if (selectedProvider == null)
+            if (selectedProvider is null)
             {
                 yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
-            if (selectedProvider != null && selectedProvider.HasConnectionString && string.IsNullOrWhiteSpace(DatabaseConnectionString))
+            if (selectedProvider is not null && selectedProvider.HasConnectionString && string.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
                 yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }

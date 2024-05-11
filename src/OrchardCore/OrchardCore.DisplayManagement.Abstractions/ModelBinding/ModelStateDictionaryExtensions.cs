@@ -28,7 +28,7 @@ namespace OrchardCore.Mvc.ModelBinding
         /// <param name="validationResults">The <see cref="ValidationResult"/>.</param>
         public static void BindValidationResults(this ModelStateDictionary modelState, string prefix, IEnumerable<ValidationResult> validationResults)
         {
-            if (validationResults != null)
+            if (validationResults is not null)
             {
                 foreach (var item in validationResults)
                 {

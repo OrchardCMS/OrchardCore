@@ -43,7 +43,7 @@ namespace OrchardCore.Liquid
                     }
 
                     var cacheControl = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
-                    if (_bytes == null)
+                    if (_bytes is null)
                     {
                         var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
                         var liquidViewParser = httpContext.RequestServices.GetRequiredService<LiquidViewParser>();

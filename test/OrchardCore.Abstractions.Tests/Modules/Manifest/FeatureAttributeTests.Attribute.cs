@@ -95,7 +95,7 @@ namespace OrchardCore.Modules.Manifest
         {
             static Type ParameterlessCtorClassifier(int index, object arg) => typeof(object);
 
-            if (args.Length == 0 || classifier == null)
+            if (args.Length == 0 || classifier is null)
             {
                 classifier ??= ParameterlessCtorClassifier;
             }
@@ -250,7 +250,7 @@ namespace OrchardCore.Modules.Manifest
             private static string DefaultRender(object _)
             {
                 // Renders null as "null" as such.
-                if (_ == null)
+                if (_ is null)
                 {
                     return "null";
                 }

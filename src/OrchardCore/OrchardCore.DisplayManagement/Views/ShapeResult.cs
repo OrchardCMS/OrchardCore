@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Views
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations.
-            if (_otherLocations != null)
+            if (_otherLocations is not null)
             {
                 string displayTypePlacement;
                 if (_otherLocations.TryGetValue(displayType, out displayTypePlacement))
@@ -97,7 +97,7 @@ namespace OrchardCore.DisplayManagement.Views
             }
 
             // If a condition has been applied to this result evaluate it only if the shape has been placed.
-            if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
+            if (_renderPredicateAsync is not null && !(await _renderPredicateAsync()))
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace OrchardCore.DisplayManagement.Views
             var newShape = Shape = await _shapeBuilder(context);
 
             // Ignore it if the driver returned a null shape.
-            if (newShape == null)
+            if (newShape is null)
             {
                 return;
             }
@@ -121,20 +121,20 @@ namespace OrchardCore.DisplayManagement.Views
             newShapeMetadata.Column = placement.GetColumn();
             newShapeMetadata.Type = _shapeType;
 
-            if (_displaying != null)
+            if (_displaying is not null)
             {
                 newShapeMetadata.OnDisplaying(_displaying);
             }
 
             // The _processing callback is used to delay execution of costly initialization
             // that can be prevented by caching.
-            if (_processing != null)
+            if (_processing is not null)
             {
                 newShapeMetadata.OnProcessing(_processing);
             }
 
             // Apply cache settings
-            if (!string.IsNullOrEmpty(_cacheId) && _cache != null)
+            if (!string.IsNullOrEmpty(_cacheId) && _cache is not null)
             {
                 _cache(newShapeMetadata.Cache(_cacheId));
             }
@@ -147,14 +147,14 @@ namespace OrchardCore.DisplayManagement.Views
                 newShapeMetadata.Wrappers.Clear();
             }
 
-            if (placement != null)
+            if (placement is not null)
             {
-                if (placement.Alternates != null)
+                if (placement.Alternates is not null)
                 {
                     newShapeMetadata.Alternates.AddRange(placement.Alternates);
                 }
 
-                if (placement.Wrappers != null)
+                if (placement.Wrappers is not null)
                 {
                     newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
                 }
@@ -172,7 +172,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             foreach (var zone in zones)
             {
-                if (parentShape == null)
+                if (parentShape is null)
                 {
                     break;
                 }

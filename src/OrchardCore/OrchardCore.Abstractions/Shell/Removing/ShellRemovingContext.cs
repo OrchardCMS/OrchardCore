@@ -9,11 +9,11 @@ public class ShellRemovingContext
     public ShellSettings ShellSettings { get; set; }
     public bool LocalResourcesOnly { get; set; }
     public bool FailedOnLockTimeout { get; set; }
-    public bool Success => _errorMessage == null;
+    public bool Success => _errorMessage is null;
 
     public string ErrorMessage
     {
-        get => Error != null ? $"{_errorMessage} {Error.GetType().FullName}: {Error.Message}" : _errorMessage;
+        get => Error is not null ? $"{_errorMessage} {Error.GetType().FullName}: {Error.Message}" : _errorMessage;
 
         set => _errorMessage = value;
     }

@@ -20,7 +20,7 @@ namespace OrchardCore.Redis.Options
             var redis = _redis;
             options.ConnectionMultiplexerFactory = async () =>
             {
-                if (redis.Connection == null)
+                if (redis.Connection is null)
                 {
                     await redis.ConnectAsync();
                 }

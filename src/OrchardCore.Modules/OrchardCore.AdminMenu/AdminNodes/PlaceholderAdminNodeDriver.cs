@@ -60,7 +60,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             treeNode.LinkText = model.LinkText;
             treeNode.IconClass = model.IconClass;
 
-            var selectedPermissions = (model.SelectedPermissionNames == null ? Array.Empty<string>() : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            var selectedPermissions = (model.SelectedPermissionNames is null ? Array.Empty<string>() : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
             var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
             treeNode.PermissionNames = permissions
                 .Where(p => selectedPermissions.Contains(p.Name))

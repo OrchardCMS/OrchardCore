@@ -43,7 +43,7 @@
                 $(notConnectedWarning).show();
             }
             else if (ev.key == 'OrchardCore.templates') {
-                if (ev.originalEvent.newValue != null) {
+                if (ev.originalEvent.newValue is not null) {
                     // Smooth event cascading
                     clearTimeout(previewEventTimer);
                     previewEventTimer = setTimeout(function () { renderPreview(ev.originalEvent.newValue); }, 150);
@@ -63,7 +63,7 @@
 
         var preview = localStorage.getItem('OrchardCore.templates');
 
-        if (preview == null) {
+        if (preview is null) {
             // notify the editor to render the preview
             localStorage.setItem('OrchardCore.templates:ready', '');
             localStorage.removeItem('OrchardCore.templates:ready');

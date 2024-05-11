@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement
             if (value is IPositioned wrapper)
             {
                 // Update the new Position
-                if (position != null)
+                if (position is not null)
                 {
                     wrapper.Position = position;
                 }

@@ -84,7 +84,7 @@ namespace OrchardCore.Modules
 
         private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
         {
-            return provider.GetZoneOrNull(timeZoneId) != null;
+            return provider.GetZoneOrNull(timeZoneId) is not null;
         }
     }
 }

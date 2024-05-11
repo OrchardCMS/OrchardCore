@@ -31,7 +31,7 @@ namespace OrchardCore.Google.TagManager
             {
                 var canTrack = context.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
 
-                if (_scriptsCache == null && canTrack)
+                if (_scriptsCache is null && canTrack)
                 {
                     var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleTagManagerSettings>();
 
@@ -41,7 +41,7 @@ namespace OrchardCore.Google.TagManager
                     }
                 }
 
-                if (_scriptsCache != null)
+                if (_scriptsCache is not null)
                 {
                     _resourceManager.RegisterHeadScript(_scriptsCache);
                 }

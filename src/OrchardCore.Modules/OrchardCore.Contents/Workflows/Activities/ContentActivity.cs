@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             var contentEvent = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
 
-            if (contentEvent != null)
+            if (contentEvent is not null)
             {
                 InlineEvent = contentEvent;
 
@@ -81,27 +81,27 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
 
-                if (contentEventContext?.ContentItemVersionId != null)
+                if (contentEventContext?.ContentItemVersionId is not null)
                 {
                     contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
                 }
-                if (contentItem == null && contentEventContext?.ContentItemId != null)
+                if (contentItem is null && contentEventContext?.ContentItemId is not null)
                 {
                     contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
                 }
             }
 
-            if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
+            if (contentItem is null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
             {
                 var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>();
 
-                if (item?.ContentItemId != null)
+                if (item?.ContentItemId is not null)
                 {
                     contentItem = await ContentManager.GetAsync(item.ContentItemId);
                 }
             }
 
-            if (contentItem != null)
+            if (contentItem is not null)
             {
                 workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
             }
@@ -139,7 +139,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                     ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 
-            if (content != null && content.ContentItem.ContentItemId != null)
+            if (content is not null && content.ContentItem.ContentItemId is not null)
             {
                 return content;
             }

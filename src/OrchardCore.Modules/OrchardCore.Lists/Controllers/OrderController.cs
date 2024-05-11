@@ -29,7 +29,7 @@ namespace OrchardCore.Lists.Controllers
         {
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
             // Reverse pager as it represents the next page(s), rather than current page
-            if (pager.Before != null && pager.After != null)
+            if (pager.Before is not null && pager.After is not null)
             {
                 var beforeValue = int.Parse(pager.Before);
                 beforeValue -= 1;
@@ -38,14 +38,14 @@ namespace OrchardCore.Lists.Controllers
                 pager.Before = afterValue.ToString();
                 pager.After = beforeValue.ToString();
             }
-            else if (pager.Before != null)
+            else if (pager.Before is not null)
             {
                 var beforeValue = int.Parse(pager.Before);
                 beforeValue -= 1;
                 pager.Before = null;
                 pager.After = beforeValue.ToString();
             }
-            else if (pager.After != null)
+            else if (pager.After is not null)
             {
                 var afterValue = int.Parse(pager.After);
                 afterValue += 1;
@@ -61,7 +61,7 @@ namespace OrchardCore.Lists.Controllers
                 new ContainedItemOptions { Status = ContentsStatus.Latest }))
                 .ToList();
 
-            if (pageOfContentItems == null || pageOfContentItems.Count == 0)
+            if (pageOfContentItems is null || pageOfContentItems.Count == 0)
             {
                 return NotFound();
             }

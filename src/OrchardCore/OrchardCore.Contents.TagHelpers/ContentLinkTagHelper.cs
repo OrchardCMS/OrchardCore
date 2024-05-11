@@ -80,7 +80,7 @@ namespace OrchardCore.Contents.TagHelpers
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
 
-            if (DisplayFor != null)
+            if (DisplayFor is not null)
             {
                 contentItem = DisplayFor;
                 var previewAspect = await _contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
@@ -106,7 +106,7 @@ namespace OrchardCore.Contents.TagHelpers
 
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(DisplayFor);
 
-                if (metadata.DisplayRouteValues == null)
+                if (metadata.DisplayRouteValues is null)
                 {
                     return;
                 }
@@ -115,12 +115,12 @@ namespace OrchardCore.Contents.TagHelpers
 
                 output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
             }
-            else if (EditFor != null)
+            else if (EditFor is not null)
             {
                 contentItem = EditFor;
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(EditFor);
 
-                if (metadata.EditorRouteValues == null)
+                if (metadata.EditorRouteValues is null)
                 {
                     return;
                 }
@@ -129,12 +129,12 @@ namespace OrchardCore.Contents.TagHelpers
 
                 output.Attributes.SetAttribute("href", urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
             }
-            else if (AdminFor != null)
+            else if (AdminFor is not null)
             {
                 contentItem = AdminFor;
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(AdminFor);
 
-                if (metadata.AdminRouteValues == null)
+                if (metadata.AdminRouteValues is null)
                 {
                     return;
                 }
@@ -143,12 +143,12 @@ namespace OrchardCore.Contents.TagHelpers
 
                 output.Attributes.SetAttribute("href", urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
             }
-            else if (RemoveFor != null)
+            else if (RemoveFor is not null)
             {
                 contentItem = RemoveFor;
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(RemoveFor);
 
-                if (metadata.RemoveRouteValues == null)
+                if (metadata.RemoveRouteValues is null)
                 {
                     return;
                 }
@@ -157,12 +157,12 @@ namespace OrchardCore.Contents.TagHelpers
 
                 output.Attributes.SetAttribute("href", urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
             }
-            else if (CreateFor != null)
+            else if (CreateFor is not null)
             {
                 contentItem = CreateFor;
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(CreateFor);
 
-                if (metadata.CreateRouteValues == null)
+                if (metadata.CreateRouteValues is null)
                 {
                     return;
                 }
@@ -173,7 +173,7 @@ namespace OrchardCore.Contents.TagHelpers
             }
 
             // A self closing anchor tag will be rendered using the display text
-            if (output.TagMode == TagMode.SelfClosing && metadata != null)
+            if (output.TagMode == TagMode.SelfClosing && metadata is not null)
             {
                 output.TagMode = TagMode.StartTagAndEndTag;
                 if (!string.IsNullOrEmpty(contentItem.DisplayText))

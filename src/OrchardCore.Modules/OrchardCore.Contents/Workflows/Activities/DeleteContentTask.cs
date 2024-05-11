@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 if (content is ContentItemIdExpressionResult)
                 {

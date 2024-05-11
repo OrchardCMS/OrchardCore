@@ -23,7 +23,7 @@ namespace OrchardCore.Modules
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }

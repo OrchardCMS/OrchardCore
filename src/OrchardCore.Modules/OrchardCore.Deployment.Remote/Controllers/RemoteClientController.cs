@@ -157,7 +157,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = await _remoteClientService.GetRemoteClientAsync(id);
 
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return NotFound();
             }
@@ -182,7 +182,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = await _remoteClientService.GetRemoteClientAsync(model.Id);
 
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return NotFound();
             }
@@ -215,7 +215,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = await _remoteClientService.GetRemoteClientAsync(id);
 
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return NotFound();
             }

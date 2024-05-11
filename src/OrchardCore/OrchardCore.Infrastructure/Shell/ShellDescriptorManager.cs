@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
         {
-            if (_shellDescriptor != null)
+            if (_shellDescriptor is not null)
             {
                 return _shellDescriptor;
             }

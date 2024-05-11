@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement
 
         public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters)
         {
-            if (parameters == null || parameters == Arguments.Empty)
+            if (parameters is null || parameters == Arguments.Empty)
             {
                 return factory.CreateAsync(shapeType);
             }
@@ -142,7 +142,7 @@ namespace OrchardCore.DisplayManagement
 
                 var initializer = parameters.Positional.SingleOrDefault();
 
-                if (initializer != null)
+                if (initializer is not null)
                 {
                     // Use the Arguments class to optimize reflection code
                     var arguments = Arguments.From(initializer);

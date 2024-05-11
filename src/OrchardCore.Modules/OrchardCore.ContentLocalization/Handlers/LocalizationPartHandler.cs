@@ -46,7 +46,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                if (part.Culture != null)
+                if (part.Culture is not null)
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
                     cultureAspect.HasCulture = true;
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture is not null)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
@@ -69,7 +69,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture is not null)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
@@ -80,7 +80,7 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture is not null && context.NoActiveVersionLeft)
             {
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();

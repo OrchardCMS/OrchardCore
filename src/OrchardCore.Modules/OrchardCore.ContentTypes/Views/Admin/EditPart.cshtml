@@ -19,7 +19,7 @@
 <form asp-action="EditPart">
     @Html.ValidationSummary()
 
-    @if (Model.Editor.Shortcuts != null)
+    @if (Model.Editor.Shortcuts is not null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Editor.Shortcuts)
@@ -33,7 +33,7 @@
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
 
-            @if (Model.PartDefinition != null)
+            @if (Model.PartDefinition is not null)
             {
                 <ul class="list-group sortable" id="fields" style="cursor: move;">
                     @foreach (var field in orderedFields)

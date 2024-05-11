@@ -116,7 +116,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            if (await _scopeManager.FindByNameAsync(model.Name) != null)
+            if (await _scopeManager.FindByNameAsync(model.Name) is not null)
             {
                 ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
             }
@@ -162,7 +162,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
-            if (scope == null)
+            if (scope is null)
             {
                 return NotFound();
             }
@@ -205,7 +205,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
-            if (scope == null)
+            if (scope is null)
             {
                 return NotFound();
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _scopeManager.FindByNameAsync(model.Name);
-                if (other != null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
+                if (other is not null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
                 {
                     ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
                 }
@@ -263,7 +263,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
-            if (scope == null)
+            if (scope is null)
             {
                 return NotFound();
             }

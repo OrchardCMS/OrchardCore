@@ -49,18 +49,18 @@ namespace OrchardCore.Navigation
                         var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
                         var httpContext = httpContextAccessor.HttpContext;
 
-                        if (httpContext != null)
+                        if (httpContext is not null)
                         {
                             // adding query string parameters
                             var route = menu.GetProperty<RouteData>("RouteData");
                             var routeData = new RouteValueDictionary(route.Values);
                             var query = httpContext.Request.Query;
 
-                            if (query != null)
+                            if (query is not null)
                             {
                                 foreach (var pair in query)
                                 {
-                                    if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                    if (pair.Key is not null && !routeData.ContainsKey(pair.Key))
                                     {
                                         routeData[pair.Key] = pair.Value;
                                     }

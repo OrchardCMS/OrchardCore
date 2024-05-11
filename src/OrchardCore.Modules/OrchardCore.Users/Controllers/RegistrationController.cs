@@ -115,14 +115,14 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if (userId == null || code == null)
+            if (userId is null || code is null)
             {
                 return RedirectToAction(nameof(Register));
             }
 
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user == null)
+            if (user is null)
             {
                 return NotFound();
             }
@@ -158,7 +158,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
-            if (user != null)
+            if (user is not null)
             {
                 await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 

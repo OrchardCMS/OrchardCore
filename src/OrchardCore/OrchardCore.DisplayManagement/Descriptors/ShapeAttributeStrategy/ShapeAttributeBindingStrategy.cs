@@ -169,7 +169,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static IHtmlContent CoerceHtmlContent(object invoke)
         {
-            if (invoke == null)
+            if (invoke is null)
             {
                 return HtmlString.Empty;
             }
@@ -243,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             return d =>
             {
-                if (!d.Value.Properties.TryGetValue(parameter.Name, out var result) || result == null)
+                if (!d.Value.Properties.TryGetValue(parameter.Name, out var result) || result is null)
                 {
                     return defaultValue;
                 }
@@ -268,7 +268,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
             var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
+            if (contextable is not null)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
                 contextable.Contextualize(newViewContext);

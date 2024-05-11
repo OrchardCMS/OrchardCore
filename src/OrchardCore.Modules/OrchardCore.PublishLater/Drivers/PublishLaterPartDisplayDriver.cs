@@ -53,7 +53,7 @@ namespace OrchardCore.PublishLater.Drivers
 
                 await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-                if (viewModel.ScheduledPublishLocalDateTime == null || httpContext.Request.Form["submit.Save"] == "submit.CancelPublishLater")
+                if (viewModel.ScheduledPublishLocalDateTime is null || httpContext.Request.Form["submit.Save"] == "submit.CancelPublishLater")
                 {
                     part.ScheduledPublishUtc = null;
                 }

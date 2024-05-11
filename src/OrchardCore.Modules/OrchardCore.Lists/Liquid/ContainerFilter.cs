@@ -23,11 +23,11 @@ namespace OrchardCore.Lists.Liquid
 
             var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
 
-            if (containerId != null)
+            if (containerId is not null)
             {
                 var container = await _contentManager.GetAsync(containerId);
 
-                if (container != null)
+                if (container is not null)
                 {
                     return new ObjectValue(container);
                 }

@@ -21,7 +21,7 @@ namespace OrchardCore.DisplayManagement.Layout
                 "Layout",
                 () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone")))) as IZoneHolding;
 
-            if (_layout == null)
+            if (_layout is null)
             {
                 // At this point a Layout shape should always exist.
                 throw new ApplicationException("Fatal error, a Layout couldn't be created.");

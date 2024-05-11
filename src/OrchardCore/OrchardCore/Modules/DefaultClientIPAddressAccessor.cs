@@ -17,7 +17,7 @@ public class DefaultClientIPAddressAccessor : IClientIPAddressAccessor
     {
         var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
 
-        if (address != null)
+        if (address is not null)
         {
             if (IPAddress.IsLoopback(address))
             {

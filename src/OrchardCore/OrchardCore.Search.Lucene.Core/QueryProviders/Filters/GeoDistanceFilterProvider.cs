@@ -58,7 +58,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 }
             }
 
-            if (distanceProperty == null || geoProperty == null)
+            if (distanceProperty is null || geoProperty is null)
             {
                 return null;
             }

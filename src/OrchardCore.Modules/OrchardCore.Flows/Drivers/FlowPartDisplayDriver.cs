@@ -110,7 +110,7 @@ namespace OrchardCore.Flows.Drivers
                 // When the content item already exists merge its elements to reverse nested content item ids.
                 // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
                 // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
-                if (existingContentItem != null)
+                if (existingContentItem is not null)
                 {
                     contentItem.ContentItemId = model.ContentItems[i];
                     contentItem.Merge(existingContentItem);

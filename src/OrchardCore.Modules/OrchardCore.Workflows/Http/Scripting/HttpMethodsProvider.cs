@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "queryString",
                 Method = serviceProvider => (Func<string, object>)(name =>
                 {
-                    if (name == null)
+                    if (name is null)
                     {
                         return httpContextAccessor.HttpContext.Request.QueryString.ToString();
                     }
@@ -151,7 +151,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 {
                     Dictionary<string, object> result = null;
 
-                    if (httpContextAccessor.HttpContext != null)
+                    if (httpContextAccessor.HttpContext is not null)
                     {
                         var method = httpContextAccessor.HttpContext.Request.Method;
                         if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))

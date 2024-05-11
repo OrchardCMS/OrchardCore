@@ -42,7 +42,7 @@ namespace OrchardCore.Sitemaps.Builders
 
             var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
 
-            if (indexSource == null)
+            if (indexSource is null)
             {
                 return;
             }

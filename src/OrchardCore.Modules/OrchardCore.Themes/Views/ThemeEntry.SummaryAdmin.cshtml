@@ -1,25 +1,25 @@
 <div class="card theme-card w-100">
 
-    @if (Model.Thumbnail != null)
+    @if (Model.Thumbnail is not null)
     {
         @await DisplayAsync(Model.Thumbnail)
     }
 
     <div class="card-body">
 
-        @if (Model.Header != null)
+        @if (Model.Header is not null)
         {
             @await DisplayAsync(Model.Header)
         }
 
-        @if (Model.Content != null || Model.Attributes != null)
+        @if (Model.Content is not null || Model.Attributes is not null)
         {
-            @if (Model.Content != null)
+            @if (Model.Content is not null)
             {
                 @await DisplayAsync(Model.Content)
             }
 
-            @if (Model.Tags != null)
+            @if (Model.Tags is not null)
             {
                 <ul class="list-group list-group-flush">
                     @await DisplayAsync(Model.Tags)
@@ -29,22 +29,22 @@
 
     </div>
 
-    @if (Model.FooterStart != null || Model.FooterEnd != null || Model.FooterBelow != null)
+    @if (Model.FooterStart is not null || Model.FooterEnd is not null || Model.FooterBelow is not null)
     {
         <div class="card-footer">
 
-            @if (Model.FooterStart != null || Model.FooterEnd != null)
+            @if (Model.FooterStart is not null || Model.FooterEnd is not null)
             {
                 <div class="d-flex justify-content-between">
 
                     <div class="d-inline-flex">
-                        @if (Model.FooterStart != null)
+                        @if (Model.FooterStart is not null)
                         {
                             @await DisplayAsync(Model.FooterStart)
                         }
                     </div>
                     <div class="d-inline-flex">
-                        @if (Model.FooterEnd != null)
+                        @if (Model.FooterEnd is not null)
                         {
                             @await DisplayAsync(Model.FooterEnd)
                         }
@@ -52,7 +52,7 @@
                 </div>
             }
 
-            @if (Model.FooterBelow != null)
+            @if (Model.FooterBelow is not null)
             {
                 @await DisplayAsync(Model.FooterBelow)
             }

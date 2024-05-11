@@ -30,7 +30,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public void Configure(AuthenticationOptions options)
         {
             var settings = _azureADSettings;
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -63,7 +63,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             var loginSettings = _azureADSettings;
-            if (loginSettings == null)
+            if (loginSettings is null)
             {
                 return;
             }

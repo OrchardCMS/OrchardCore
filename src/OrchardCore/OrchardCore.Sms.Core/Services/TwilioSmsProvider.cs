@@ -114,7 +114,7 @@ public class TwilioSmsProvider : ISmsProvider
 
     private async Task<TwilioSettings> GetSettingsAsync()
     {
-        if (_settings == null)
+        if (_settings is null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TwilioSettings>();
 
@@ -125,7 +125,7 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
-                AuthToken = settings.AuthToken == null ? null : protector.Unprotect(settings.AuthToken),
+                AuthToken = settings.AuthToken is null ? null : protector.Unprotect(settings.AuthToken),
             };
         }
 

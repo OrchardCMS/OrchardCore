@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Theming
 
             var theme = await themeManager.GetThemeAsync();
 
-            if (theme == null)
+            if (theme is null)
             {
                 return;
             }

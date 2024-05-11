@@ -15,7 +15,7 @@ namespace OrchardCore.Email
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<EmailAddressAttribute>>();
 
-            if (value == null || emailAddressValidator.Validate(value.ToString()))
+            if (value is null || emailAddressValidator.Validate(value.ToString()))
             {
                 return ValidationResult.Success;
             }

@@ -61,7 +61,7 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     var contentItem = await _contentManager.GetAsync(kvp.Value, VersionOptions.Latest);
 
-                    if (contentItem == null)
+                    if (contentItem is null)
                     {
                         continue;
                     }
@@ -87,7 +87,7 @@ namespace OrchardCore.ContentFields.Drivers
                 return Edit(field, context);
             }
 
-            field.LocalizationSets = viewModel.LocalizationSets == null
+            field.LocalizationSets = viewModel.LocalizationSets is null
                 ? [] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();

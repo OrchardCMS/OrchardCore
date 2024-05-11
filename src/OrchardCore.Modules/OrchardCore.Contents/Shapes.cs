@@ -19,7 +19,7 @@ namespace OrchardCore.Contents
                     var shape = displaying.Shape;
                     var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                    if (contentItem != null)
+                    if (contentItem is not null)
                     {
                         // Alternates in order of specificity.
                         // Display type > content type > specific content > display type for a content type > display type for specific content
@@ -77,7 +77,7 @@ namespace OrchardCore.Contents
 
                     var contentItem = await contentManager.GetAsync(contentItemId);
 
-                    if (contentItem == null)
+                    if (contentItem is null)
                     {
                         return;
                     }

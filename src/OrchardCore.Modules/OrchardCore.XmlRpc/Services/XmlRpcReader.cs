@@ -68,7 +68,7 @@ namespace OrchardCore.XmlRpc.Services
         public XRpcData MapToData(XElement source)
         {
             var value = source.Element("value");
-            if (value == null)
+            if (value is null)
             {
                 return new XRpcData();
             }

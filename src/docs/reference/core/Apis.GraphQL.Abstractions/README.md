@@ -141,7 +141,7 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         var part = context.GetArgument<AutoroutePart>("autoroutePart");
 
-        if (part == null)
+        if (part is null)
         {
             return Task.FromResult(query);
         }

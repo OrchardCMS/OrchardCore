@@ -51,7 +51,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
         private static void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
         {
-            if (items != null)
+            if (items is not null)
             {
                 itemSet.UnionWith(items);
             }

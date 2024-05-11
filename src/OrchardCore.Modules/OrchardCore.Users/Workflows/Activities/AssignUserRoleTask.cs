@@ -58,7 +58,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
             var user = (User)await _userService.GetUserAsync(userName);
 
-            if (user != null)
+            if (user is not null)
             {
                 if (!user.RoleNames.Contains(roleName))
                 {

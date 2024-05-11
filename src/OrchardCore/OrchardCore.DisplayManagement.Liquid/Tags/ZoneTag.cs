@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            if (statements != null && statements.Count > 0)
+            if (statements is not null && statements.Count > 0)
             {
                 var content = new ViewBufferTextWriterContent();
 

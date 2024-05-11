@@ -37,7 +37,7 @@ namespace OrchardCore.Alias.Indexes
 
             // Validate that the content definition contains this part, this prevents indexing parts
             // that have been removed from the type definition, but are still present in the elements.            
-            if (part != null)
+            if (part is not null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -71,7 +71,7 @@ namespace OrchardCore.Alias.Indexes
                     }
 
                     var part = contentItem.As<AliasPart>();
-                    if (part == null || string.IsNullOrEmpty(part.Alias))
+                    if (part is null || string.IsNullOrEmpty(part.Alias))
                     {
                         return null;
                     }

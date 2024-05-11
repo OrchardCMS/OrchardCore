@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
             if (context is AuditTrailCreateContext<AuditTrailContentEvent> contentEvent)
             {
                 var auditTrailPart = contentEvent.AuditTrailEventItem.ContentItem.As<AuditTrailPart>();
-                if (auditTrailPart == null)
+                if (auditTrailPart is null)
                 {
                     return Task.CompletedTask;
                 }

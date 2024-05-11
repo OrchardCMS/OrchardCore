@@ -5,7 +5,7 @@
 @{
     Notification notification = Model.Notification;
 
-    if (notification == null)
+    if (notification is null)
     {
         return;
     }
@@ -18,7 +18,7 @@
         <div class="col-lg col-12 title d-flex">
 
             <div class="selectors-container d-flex">
-                @if (Model.Selectors != null)
+                @if (Model.Selectors is not null)
                 {
                     <div class="selectors cursor-pointer">
                         @await DisplayAsync(Model.Selectors)
@@ -40,19 +40,19 @@
                     </p>
 
                 </div>
-                @if (Model.Header != null)
+                @if (Model.Header is not null)
                 {
                     <div class="header me-1">
                         @await DisplayAsync(Model.Header)
                     </div>
                 }
-                @if (Model.Tags != null)
+                @if (Model.Tags is not null)
                 {
                     <div class="tags me-1">
                         @await DisplayAsync(Model.Tags)
                     </div>
                 }
-                @if (Model.Meta != null)
+                @if (Model.Meta is not null)
                 {
                     <div class="metadata me-1">
                         @await DisplayAsync(Model.Meta)
@@ -62,12 +62,12 @@
         </div>
         <div class="col-lg-auto col-12 d-flex justify-content-end">
             <div class="actions text-start">
-                @if (Model.Actions != null)
+                @if (Model.Actions is not null)
                 {
                     @await DisplayAsync(Model.Actions)
                 }
 
-                @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
+                @if (Model.ActionsMenu is not null && Model.ActionsMenu.HasItems)
                 {
                     <div class="btn-group" title="@T["Actions"]">
                         <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -83,7 +83,7 @@
     </div>
 </div>
 
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     <div class="row">
         <div class="col primary">

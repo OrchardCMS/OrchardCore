@@ -62,7 +62,7 @@ namespace OrchardCore.Resources.Liquid
                 // Include custom style
                 var setting = resourceManager.RegisterUrl("stylesheet", src, debugSrc);
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {
@@ -89,7 +89,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.ShouldAppendVersion(appendversion);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }
@@ -115,7 +115,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var setting = resourceManager.RegisterResource("stylesheet", name);
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {
@@ -132,7 +132,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                if (useCdn != null)
+                if (useCdn is not null)
                 {
                     setting.UseCdn(useCdn.Value);
                 }
@@ -142,7 +142,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }
@@ -180,7 +180,7 @@ namespace OrchardCore.Resources.Liquid
                 var definition = resourceManager.InlineManifest.DefineStyle(name);
                 definition.SetUrl(src, debugSrc);
 
-                if (customAttributes != null)
+                if (customAttributes is not null)
                 {
                     foreach (var attribute in customAttributes)
                     {
@@ -211,7 +211,7 @@ namespace OrchardCore.Resources.Liquid
                 // Also include the style.
                 var setting = resourceManager.RegisterResource("stylesheet", name);
 
-                if (useCdn != null)
+                if (useCdn is not null)
                 {
                     setting.UseCdn(useCdn.Value);
                 }
@@ -221,7 +221,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (debug != null)
+                if (debug is not null)
                 {
                     setting.UseDebugMode(debug.Value);
                 }

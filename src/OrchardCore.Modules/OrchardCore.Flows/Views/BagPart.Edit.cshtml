@@ -94,7 +94,7 @@
     }
 
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
-    @if (Context.Items["BagPart.Edit"] == null)
+    @if (Context.Items["BagPart.Edit"] is null)
     {
         Context.Items["BagPart.Edit"] = new object();
         <script asp-name="flowpart-edit" at="Foot"></script>
@@ -105,7 +105,7 @@
     @* Rendered only once per type to initialize the scripts its editor will need *@
     @foreach (var type in Model.ContainedContentTypeDefinitions)
     {
-        @if (Context.Items["BagPart.Edit:" + type.Name] == null)
+        @if (Context.Items["BagPart.Edit:" + type.Name] is null)
         {
             Context.Items["BagPart.Edit:" + type.Name] = new object();
 

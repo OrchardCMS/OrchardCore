@@ -99,7 +99,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                         default: throw new ArgumentException($"Unsupported range value type: {type}");
                     }
 
-                    if (boost != null)
+                    if (boost is not null)
                     {
                         rangeQuery.Boost = boost.Value;
                     }

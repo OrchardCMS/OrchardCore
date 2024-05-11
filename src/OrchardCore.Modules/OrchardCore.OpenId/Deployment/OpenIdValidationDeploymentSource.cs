@@ -19,7 +19,7 @@ namespace OrchardCore.OpenId.Deployment
         {
             var openIdValidationStep = step as OpenIdValidationDeploymentStep;
 
-            if (openIdValidationStep == null)
+            if (openIdValidationStep is null)
             {
                 return;
             }

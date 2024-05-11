@@ -25,20 +25,20 @@ public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandle
 
     public async Task<bool> IsRequiredAsync()
     {
-        if (_httpContextAccessor.HttpContext?.User == null)
+        if (_httpContextAccessor.HttpContext?.User is null)
         {
             return false;
         }
 
         var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-        if (user == null)
+        if (user is null)
         {
             return false;
         }
 
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<RoleLoginSettings>();
 
-        if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles != null)
+        if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles is not null)
         {
             foreach (var role in loginSettings.Roles)
             {

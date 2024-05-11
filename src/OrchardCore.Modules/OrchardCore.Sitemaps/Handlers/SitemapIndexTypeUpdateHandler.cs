@@ -25,7 +25,7 @@ namespace OrchardCore.Sitemaps.Handlers
             var sitemapIndex = allSitemaps
                 .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
 
-            if (contentItem == null || sitemapIndex == null)
+            if (contentItem is null || sitemapIndex is null)
             {
                 return;
             }
@@ -43,7 +43,7 @@ namespace OrchardCore.Sitemaps.Handlers
             {
                 foreach (var source in sitemap.SitemapSources.Select(x => x as ContentTypesSitemapSource))
                 {
-                    if (source == null)
+                    if (source is null)
                     {
                         continue;
                     }

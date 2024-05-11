@@ -24,7 +24,7 @@ namespace OrchardCore.AdminDashboard.Indexes
                         return null;
                     }
 
-                    if (dashboardPart != null)
+                    if (dashboardPart is not null)
                     {
                         return new DashboardPartIndex
                         {

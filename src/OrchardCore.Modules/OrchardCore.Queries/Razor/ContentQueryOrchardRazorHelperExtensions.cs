@@ -19,7 +19,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         var results = await orchardHelper.QueryAsync(queryName, parameters);
         var contentItems = new List<ContentItem>();
 
-        if (results != null)
+        if (results is not null)
         {
             foreach (var result in results)
             {
@@ -35,7 +35,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
 
                 // If input is a 'JObject' but which not represents a 'ContentItem',
                 // a 'ContentItem' is still created but with some null properties.
-                if (contentItem?.ContentItemId == null)
+                if (contentItem?.ContentItemId is null)
                 {
                     continue;
                 }
@@ -52,7 +52,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         var contentItems = new List<ContentItem>();
         var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters);
 
-        if (queryResult.Items != null)
+        if (queryResult.Items is not null)
         {
             foreach (var item in queryResult.Items)
             {
@@ -68,7 +68,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
 
                 // If input is a 'JObject' but which not represents a 'ContentItem',
                 // a 'ContentItem' is still created but with some null properties.
-                if (contentItem?.ContentItemId == null)
+                if (contentItem?.ContentItemId is null)
                 {
                     continue;
                 }

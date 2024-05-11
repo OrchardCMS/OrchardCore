@@ -59,7 +59,7 @@ namespace OrchardCore.Roles
         {
             var role = await _roleManager.FindByNameAsync(roleName);
 
-            if (role != null)
+            if (role is not null)
             {
                 return ((Role)role).RoleClaims;
             }

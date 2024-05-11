@@ -190,7 +190,7 @@ namespace OrchardCore.Placements.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
+            if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) is not null)
             {
                 // Prevent overriding existing rules on creation.
                 await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
@@ -321,8 +321,8 @@ namespace OrchardCore.Placements.Controllers
         {
             return string.IsNullOrEmpty(node.Location)
                 && string.IsNullOrEmpty(node.ShapeType)
-                && (node.Alternates == null || node.Alternates.Length == 0)
-                && (node.Wrappers == null || node.Wrappers.Length == 0);
+                && (node.Alternates is null || node.Alternates.Length == 0)
+                && (node.Wrappers is null || node.Wrappers.Length == 0);
         }
 
 

@@ -188,7 +188,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 settings = await _elasticIndexSettingsService.GetSettingsAsync(indexName);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     return NotFound();
                 }
@@ -524,9 +524,9 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 var elasticTopDocs = await _queryService.SearchAsync(model.IndexName, tokenizedContent);
 
-                if (elasticTopDocs != null)
+                if (elasticTopDocs is not null)
                 {
-                    model.Documents = elasticTopDocs.TopDocs.Where(x => x != null);
+                    model.Documents = elasticTopDocs.TopDocs.Where(x => x is not null);
                     model.Fields = elasticTopDocs.Fields;
                     model.Count = elasticTopDocs.Count;
                 }
@@ -610,7 +610,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         private void ValidateModel(ElasticIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
+            if (model.IndexedContentTypes is null || model.IndexedContentTypes.Length < 1)
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexedContentTypes), S["At least one content type is required."]);
             }

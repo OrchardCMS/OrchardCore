@@ -12,7 +12,7 @@
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
         var flowMetadata = widget.As<FlowMetadata>();
 
-        if (flowMetadata != null)
+        if (flowMetadata is not null)
         {
             widgetContent.Classes.Add("widget");
             widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());

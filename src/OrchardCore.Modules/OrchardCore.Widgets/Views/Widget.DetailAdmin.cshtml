@@ -18,7 +18,7 @@
 <article>
     <header>
         @await DisplayAsync(Model.Header)
-        @if (Model.Meta != null)
+        @if (Model.Meta is not null)
         {
             <div class="metadata">
                 @await DisplayAsync(Model.Meta)
@@ -26,7 +26,7 @@
         }
     </header>
     @await DisplayAsync(Model.Content)
-    @if (Model.Footer != null)
+    @if (Model.Footer is not null)
     {
         <footer>
             @await DisplayAsync(Model.Footer)

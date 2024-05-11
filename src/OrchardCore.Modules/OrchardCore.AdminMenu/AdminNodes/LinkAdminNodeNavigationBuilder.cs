@@ -33,7 +33,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var node = menuItem as LinkAdminNode;
-            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (node is null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
             }

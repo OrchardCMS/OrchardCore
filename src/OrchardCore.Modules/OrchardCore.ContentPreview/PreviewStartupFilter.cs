@@ -15,7 +15,7 @@ namespace OrchardCore.ContentPreview
                 {
                     await next();
 
-                    if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
+                    if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject is null)
                     {
                         return;
                     }

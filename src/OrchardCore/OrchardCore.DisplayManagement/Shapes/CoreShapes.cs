@@ -30,9 +30,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             string FirstClass,
             string LastClass)
         {
-            if (Items == null)
+            if (Items is null)
             {
-                if (shape.Items != null && shape.Items.Any())
+                if (shape.Items is not null && shape.Items.Any())
                 {
                     Items = shape.Items;
                 }
@@ -62,12 +62,12 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 var itemTag = new TagBuilder(itemTagName);
 
-                if (ItemAttributes != null)
+                if (ItemAttributes is not null)
                 {
                     itemTag.MergeAttributes(ItemAttributes, false);
                 }
 
-                if (ItemClasses != null)
+                if (ItemClasses is not null)
                 {
                     foreach (var cssClass in ItemClasses)
                     {

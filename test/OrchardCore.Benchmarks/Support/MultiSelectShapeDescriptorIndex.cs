@@ -103,7 +103,7 @@ public class MultiSelectShapeDescriptorIndex : ShapeDescriptor
         {
             var descriptor = _alternationDescriptors[i];
             info = descriptor.Placement(ctx);
-            if (info != null)
+            if (info is not null)
             {
                 break;
             }
@@ -211,7 +211,7 @@ public class MultiSelectShapeDescriptorIndexArray : ShapeDescriptor
         {
             var descriptor = _alternationDescriptors[i];
             info = descriptor.Placement(ctx);
-            if (info != null)
+            if (info is not null)
             {
                 break;
             }

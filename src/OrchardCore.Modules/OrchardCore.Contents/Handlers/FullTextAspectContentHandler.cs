@@ -39,7 +39,7 @@ namespace OrchardCore.Contents.Handlers
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.Handlers
                     var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
                     var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
 
-                    if (bodyAspect != null && bodyAspect.Body != null)
+                    if (bodyAspect is not null && bodyAspect.Body is not null)
                     {
                         using var sw = new ZStringWriter();
                         // Don't encode the body

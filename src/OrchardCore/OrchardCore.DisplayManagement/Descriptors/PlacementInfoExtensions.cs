@@ -15,11 +15,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// <returns>Combined <see cref="PlacementInfo"/>.</returns>
         public static PlacementInfo Combine(this PlacementInfo first, PlacementInfo second)
         {
-            if (first == null)
+            if (first is null)
             {
                 return second;
             }
-            else if (second != null)
+            else if (second is not null)
             {
                 var combined = new PlacementInfo
                 {
@@ -49,11 +49,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// <returns>Combined <see cref="AlternatesCollection"/>.</returns>
         public static AlternatesCollection Combine(this AlternatesCollection first, AlternatesCollection second)
         {
-            if (first == null)
+            if (first is null)
             {
                 return second;
             }
-            else if (second != null)
+            else if (second is not null)
             {
                 var combined = new AlternatesCollection();
 

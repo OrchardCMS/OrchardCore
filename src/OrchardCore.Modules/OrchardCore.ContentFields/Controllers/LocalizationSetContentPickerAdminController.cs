@@ -58,7 +58,7 @@ namespace OrchardCore.ContentFields.Controllers
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<LocalizationSetContentPickerFieldSettings>();
-            if (fieldSettings == null)
+            if (fieldSettings is null)
             {
                 return BadRequest("Unable to find field definition");
             }

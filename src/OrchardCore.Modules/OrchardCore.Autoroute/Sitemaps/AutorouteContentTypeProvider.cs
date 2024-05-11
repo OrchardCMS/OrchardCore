@@ -29,7 +29,7 @@ namespace OrchardCore.Autoroute.Sitemaps
         {
             var ctd = (await ListRoutableTypeDefinitionsAsync())?.FirstOrDefault(ctd => ctd.Name == contentItem.ContentType);
 
-            if (ctd != null)
+            if (ctd is not null)
             {
                 var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                 var routes = contentItemMetadata.DisplayRouteValues;

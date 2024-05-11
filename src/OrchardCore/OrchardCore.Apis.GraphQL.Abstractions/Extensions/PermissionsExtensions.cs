@@ -15,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL
             {
                 var permissions = type.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey);
 
-                if (permissions == null)
+                if (permissions is null)
                 {
                     type.Metadata[MetaDataKey] = permissions = [];
                 }
@@ -37,7 +37,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public static bool HasPermissions(this IProvideMetadata type)
         {
-            return type != null && type.HasMetadata(MetaDataKey);
+            return type is not null && type.HasMetadata(MetaDataKey);
         }
     }
 }

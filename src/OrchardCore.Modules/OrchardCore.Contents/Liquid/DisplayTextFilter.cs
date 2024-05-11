@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Liquid
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }

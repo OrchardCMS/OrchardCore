@@ -73,7 +73,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
                     indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
                 }
 
-                if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
+                if (indexSettings.IndexedContentTypes is null || indexSettings.IndexedContentTypes.Length == 0)
                 {
                     _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
 

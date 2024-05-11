@@ -23,7 +23,7 @@ namespace OrchardCore.Recipes
                 {
                     var variable = variables[name];
 
-                    if (variable == null)
+                    if (variable is null)
                     {
                         var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
 

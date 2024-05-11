@@ -83,7 +83,7 @@ namespace OrchardCore.Contents.Liquid
 
             var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
 
-            if (displayFor != null)
+            if (displayFor is not null)
             {
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
@@ -109,9 +109,9 @@ namespace OrchardCore.Contents.Liquid
                 {
                     var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
 
-                    if (metadata.DisplayRouteValues != null)
+                    if (metadata.DisplayRouteValues is not null)
                     {
-                        if (routeValues != null)
+                        if (routeValues is not null)
                         {
                             foreach (var attribute in routeValues)
                             {
@@ -123,13 +123,13 @@ namespace OrchardCore.Contents.Liquid
                     }
                 }
             }
-            else if (editFor != null)
+            else if (editFor is not null)
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(editFor);
 
-                if (metadata.EditorRouteValues != null)
+                if (metadata.EditorRouteValues is not null)
                 {
-                    if (routeValues != null)
+                    if (routeValues is not null)
                     {
                         foreach (var attribute in routeValues)
                         {
@@ -140,13 +140,13 @@ namespace OrchardCore.Contents.Liquid
                     customAttributes["href"] = urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
                 }
             }
-            else if (adminFor != null)
+            else if (adminFor is not null)
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor);
 
-                if (metadata.AdminRouteValues != null)
+                if (metadata.AdminRouteValues is not null)
                 {
-                    if (routeValues != null)
+                    if (routeValues is not null)
                     {
                         foreach (var attribute in routeValues)
                         {
@@ -157,13 +157,13 @@ namespace OrchardCore.Contents.Liquid
                     customAttributes["href"] = urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues);
                 }
             }
-            else if (removeFor != null)
+            else if (removeFor is not null)
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor);
 
-                if (metadata.RemoveRouteValues != null)
+                if (metadata.RemoveRouteValues is not null)
                 {
-                    if (routeValues != null)
+                    if (routeValues is not null)
                     {
                         foreach (var attribute in routeValues)
                         {
@@ -174,13 +174,13 @@ namespace OrchardCore.Contents.Liquid
                     customAttributes["href"] = urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues);
                 }
             }
-            else if (createFor != null)
+            else if (createFor is not null)
             {
                 var metadata = await PopulateAspectForContentItemMetadataAsync(createFor);
 
-                if (metadata.CreateRouteValues != null)
+                if (metadata.CreateRouteValues is not null)
                 {
-                    if (routeValues != null)
+                    if (routeValues is not null)
                     {
                         foreach (var attribute in routeValues)
                         {
@@ -206,7 +206,7 @@ namespace OrchardCore.Contents.Liquid
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            if (statements != null && statements.Count > 0)
+            if (statements is not null && statements.Count > 0)
             {
                 var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 

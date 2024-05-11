@@ -22,14 +22,14 @@ namespace OrchardCore.Mvc
 
         public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
         {
-            if (_roots != null)
+            if (_roots is not null)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_roots == null)
+                if (_roots is null)
                 {
                     var application = applicationContext.Application;
 
@@ -41,7 +41,7 @@ namespace OrchardCore.Mvc
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                        if (module.Assembly is null || Path.GetDirectoryName(module.Assembly.Location)
                             != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
@@ -64,7 +64,7 @@ namespace OrchardCore.Mvc
                             var page = assets.FirstOrDefault(a => a.ProjectAssetPath.Contains("/Pages/"));
 
                             // Check if the module project may have a razor page.
-                            if (page != null && Directory.Exists(root))
+                            if (page is not null && Directory.Exists(root))
                             {
                                 // Razor pages are not watched in the same way as other razor views.
                                 // We need a physical file provider on the "{ModuleProjectDirectory}".
@@ -92,7 +92,7 @@ namespace OrchardCore.Mvc
             // Note: This provider is not used in production where all modules precompiled views are used.
             // Note: See 'ApplicationRazorFileProvider' for the specific case of the application's module.
 
-            if (subpath == null)
+            if (subpath is null)
             {
                 return NotFoundDirectoryContents.Singleton;
             }
@@ -134,7 +134,7 @@ namespace OrchardCore.Mvc
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }
@@ -174,7 +174,7 @@ namespace OrchardCore.Mvc
 
         public IChangeToken Watch(string filter)
         {
-            if (filter == null)
+            if (filter is null)
             {
                 return NullChangeToken.Singleton;
             }
@@ -226,7 +226,7 @@ namespace OrchardCore.Mvc
                     // Watch all razor files under its "Pages" folder.
                     var changeToken = provider.Watch("Pages/**/*.cshtml");
 
-                    if (changeToken != null)
+                    if (changeToken is not null)
                     {
                         changeTokens.Add(changeToken);
                     }

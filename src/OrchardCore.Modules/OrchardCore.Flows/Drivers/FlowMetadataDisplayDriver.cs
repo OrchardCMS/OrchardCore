@@ -13,7 +13,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var flowMetadata = model.As<FlowMetadata>();
 
-            if (flowMetadata == null)
+            if (flowMetadata is null)
             {
                 return null;
             }
@@ -29,7 +29,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var flowMetadata = contentItem.As<FlowMetadata>();
 
-            if (flowMetadata == null)
+            if (flowMetadata is null)
             {
                 return null;
             }

@@ -105,7 +105,7 @@ namespace OrchardCore.Flows.Drivers
                 // Try to match the requested id with an existing id
                 var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
-                if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
+                if (existingContentItem is null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
                 {
                     // at this point the user is somehow trying to add content with no privileges. ignore the request
                     continue;
@@ -114,7 +114,7 @@ namespace OrchardCore.Flows.Drivers
                 // When the content item already exists merge its elements to preserve nested content item ids.
                 // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
                 // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
-                if (existingContentItem != null)
+                if (existingContentItem is not null)
                 {
                     if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, existingContentItem))
                     {
@@ -181,7 +181,7 @@ namespace OrchardCore.Flows.Drivers
 
                 var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                if (contentTypeDefinition == null)
+                if (contentTypeDefinition is null)
                 {
                     _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
 
@@ -228,12 +228,12 @@ namespace OrchardCore.Flows.Drivers
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
-            if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
+            if (settings.ContainedStereotypes is not null && settings.ContainedStereotypes.Length > 0)
             {
                 contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
-            else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
+            else if (settings.ContainedContentTypes is not null && settings.ContainedContentTypes.Length > 0)
             {
                 var definitions = new List<ContentTypeDefinition>();
 
@@ -241,7 +241,7 @@ namespace OrchardCore.Flows.Drivers
                 {
                     var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
-                    if (definition == null)
+                    if (definition is null)
                     {
                         continue;
                     }

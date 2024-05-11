@@ -35,7 +35,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             XElement url)
         {
             var part = contentItem.As<LocalizationPart>();
-            if (part == null)
+            if (part is null)
             {
                 return true;
             }

@@ -25,7 +25,7 @@ namespace OrchardCore.Navigation
         /// <param name="defaultPageSize">The default page size.</param>
         public Pager(int? page, int? pageSize, int defaultPageSize)
         {
-            Page = (int)(page != null ? (page > 0 ? page : PageDefault) : PageDefault);
+            Page = (int)(page is not null ? (page > 0 ? page : PageDefault) : PageDefault);
             PageSize = pageSize ?? defaultPageSize;
         }
 

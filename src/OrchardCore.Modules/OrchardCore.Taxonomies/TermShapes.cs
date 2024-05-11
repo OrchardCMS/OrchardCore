@@ -58,18 +58,18 @@ namespace OrchardCore.Taxonomies
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
+                    var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias is not null
                         ? await handleManager.GetContentItemIdAsync(alias.ToString())
                         : termShape.Properties["TaxonomyContentItemId"].ToString();
 
-                    if (taxonomyContentItemId == null)
+                    if (taxonomyContentItemId is null)
                     {
                         return;
                     }
 
                     var taxonomyContentItem = await contentManager.GetAsync(taxonomyContentItemId);
 
-                    if (taxonomyContentItem == null)
+                    if (taxonomyContentItem is null)
                     {
                         return;
                     }
@@ -78,7 +78,7 @@ namespace OrchardCore.Taxonomies
                     termShape.Properties["TaxonomyName"] = taxonomyContentItem.DisplayText;
 
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                    if (taxonomyPart == null)
+                    if (taxonomyPart is null)
                     {
                         return;
                     }
@@ -91,7 +91,7 @@ namespace OrchardCore.Taxonomies
                     {
                         level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, out var termContentItem);
 
-                        if (termContentItem == null)
+                        if (termContentItem is null)
                         {
                             return;
                         }
@@ -106,7 +106,7 @@ namespace OrchardCore.Taxonomies
                         termItems = taxonomyPart.Terms;
                     }
 
-                    if (termItems == null)
+                    if (termItems is null)
                     {
                         return;
                     }
@@ -166,7 +166,7 @@ namespace OrchardCore.Taxonomies
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
-                    if (termItem.GetProperty<ContentItem[]>("Terms") != null)
+                    if (termItem.GetProperty<ContentItem[]>("Terms") is not null)
                     {
                         foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
                         {
@@ -266,7 +266,7 @@ namespace OrchardCore.Taxonomies
                     level += 1;
                     level = FindTerm(children, termContentItemId, level, out var foundContentItem);
 
-                    if (foundContentItem != null)
+                    if (foundContentItem is not null)
                     {
                         contentItem = foundContentItem;
                         return level;

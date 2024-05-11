@@ -48,7 +48,7 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            if (context.Resource == null)
+            if (context.Resource is null)
             {
                 return;
             }

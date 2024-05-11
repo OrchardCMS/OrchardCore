@@ -44,7 +44,7 @@ namespace OrchardCore.Mvc
                 var controllerType = controller.ControllerType.AsType();
                 var blueprint = _typeFeatureProvider.GetFeatureForDependency(controllerType);
 
-                if (blueprint != null)
+                if (blueprint is not null)
                 {
                     if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
                     {

@@ -38,7 +38,7 @@ namespace OrchardCore.OpenId
         {
             var descriptor = new OpenIdApplicationDescriptor();
 
-            if (application != null)
+            if (application is not null)
             {
                 await _applicationManager.PopulateAsync(descriptor, application);
             }
@@ -240,7 +240,7 @@ namespace OrchardCore.OpenId
                 descriptor.RedirectUris.Add(uri);
             }
 
-            if (application == null)
+            if (application is null)
             {
                 await _applicationManager.CreateAsync(descriptor);
             }

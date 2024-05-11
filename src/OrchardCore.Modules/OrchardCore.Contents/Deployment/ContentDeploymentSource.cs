@@ -23,7 +23,7 @@ namespace OrchardCore.Contents.Deployment
 
             var contentStep = step as ContentDeploymentStep;
 
-            if (contentStep == null)
+            if (contentStep is null)
             {
                 return;
             }

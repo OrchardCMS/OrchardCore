@@ -154,7 +154,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete is null || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }
@@ -168,7 +168,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete is null || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }
@@ -182,7 +182,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete is null || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }

@@ -31,7 +31,7 @@ namespace OrchardCore.ContentManagement
         {
             var result = contentElement.Get(typeof(TElement), name);
 
-            if (result == null)
+            if (result is null)
             {
                 return null;
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.ContentManagement
         {
             var existing = contentElement.Get<TElement>(name);
 
-            if (existing == null)
+            if (existing is null)
             {
                 var newElement = new TElement
                 {
@@ -155,7 +155,7 @@ namespace OrchardCore.ContentManagement
             var elementName = typeof(TElement).Name;
 
             var elementData = contentElement.Data[elementName] as JsonObject;
-            if (elementData == null)
+            if (elementData is null)
             {
                 // build and weld the part
                 var part = new TElement();
@@ -285,7 +285,7 @@ namespace OrchardCore.ContentManagement
         /// <returns><c>True</c> if the content is published, <c>False</c> otherwise.</returns>
         public static bool IsPublished(this IContent content)
         {
-            return content.ContentItem != null && content.ContentItem.Published;
+            return content.ContentItem is not null && content.ContentItem.Published;
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace OrchardCore.ContentManagement
         /// <returns><c>True</c> if the content has a draft, <c>False</c> otherwise.</returns>
         public static bool HasDraft(this IContent content)
         {
-            return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
+            return content.ContentItem is not null && (!content.ContentItem.Published || !content.ContentItem.Latest);
         }
 
         /// <summary>
@@ -309,7 +309,7 @@ namespace OrchardCore.ContentManagement
             {
                 var result = part.Value as TElement;
 
-                if (result != null)
+                if (result is not null)
                 {
                     yield return result;
                 }

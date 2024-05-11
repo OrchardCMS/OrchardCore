@@ -29,7 +29,7 @@ namespace OrchardCore.Deployment
 
         private async Task<Dictionary<string, DeploymentPlan>> GetDeploymentPlans()
         {
-            if (_deploymentPlans == null)
+            if (_deploymentPlans is null)
             {
                 var deploymentPlanQuery = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
                 var deploymentPlans = await deploymentPlanQuery.ListAsync();

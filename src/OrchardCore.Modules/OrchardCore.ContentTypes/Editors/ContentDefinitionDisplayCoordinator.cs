@@ -34,7 +34,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -44,7 +44,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -54,7 +54,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -74,7 +74,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -84,7 +84,7 @@ namespace OrchardCore.ContentTypes.Editors
             return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -94,7 +94,7 @@ namespace OrchardCore.ContentTypes.Editors
             await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }
@@ -104,7 +104,7 @@ namespace OrchardCore.ContentTypes.Editors
             await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
             {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
+                if (result is not null)
                     await result.ApplyAsync(context);
             }, model, context, _logger);
         }

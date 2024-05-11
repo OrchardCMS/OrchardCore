@@ -107,12 +107,12 @@ public class SearchController : Controller
         var from = 0;
         var size = pager.PageSize + 1;
 
-        if (pagerParameters.Before != null)
+        if (pagerParameters.Before is not null)
         {
             from = Convert.ToInt32(pagerParameters.Before) - pager.PageSize - 1;
             size = Convert.ToInt32(pagerParameters.Before);
         }
-        else if (pagerParameters.After != null)
+        else if (pagerParameters.After is not null)
         {
             from = Convert.ToInt32(pagerParameters.After);
             size = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
@@ -171,7 +171,7 @@ public class SearchController : Controller
         var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
 
         // Set the PagerSlim before and after links.
-        if (pagerParameters.After != null || pagerParameters.Before != null)
+        if (pagerParameters.After is not null || pagerParameters.Before is not null)
         {
             pager.Before = null;
 

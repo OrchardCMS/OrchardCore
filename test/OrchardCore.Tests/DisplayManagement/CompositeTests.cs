@@ -55,7 +55,7 @@ namespace OrchardCore.Tests.DisplayManagement
             foo.Bar("bar");
 
             Assert.Equal("bar", foo.Bar);
-            Assert.False(foo.Bar == null);
+            Assert.False(foo.Bar is null);
         }
     }
 

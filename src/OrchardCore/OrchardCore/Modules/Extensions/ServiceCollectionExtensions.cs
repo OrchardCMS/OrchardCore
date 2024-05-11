@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
                 .ImplementationInstance as OrchardCoreBuilder;
 
-            if (builder == null)
+            if (builder is null)
             {
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);

@@ -174,7 +174,7 @@ namespace OrchardCore.Environment.Shell
 
         private bool DefaultIsCatchAll()
         {
-            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
+            return _default is not null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }

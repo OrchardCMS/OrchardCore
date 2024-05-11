@@ -108,7 +108,7 @@ namespace OrchardCore.OpenId.Services
                 results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
             }
 
-            if (settings.Authority != null)
+            if (settings.Authority is not null)
             {
                 if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
@@ -127,15 +127,15 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (settings.SigningCertificateStoreLocation != null &&
-                settings.SigningCertificateStoreName != null &&
+            if (settings.SigningCertificateStoreLocation is not null &&
+                settings.SigningCertificateStoreName is not null &&
                 !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
                     settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
-                if (certificate == null)
+                if (certificate is null)
                 {
                     results.Add(new ValidationResult(S["The certificate cannot be found."], new[]
                     {
@@ -274,15 +274,15 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.EncryptionCertificateStoreLocation != null &&
-                settings.EncryptionCertificateStoreName != null &&
+            if (settings.EncryptionCertificateStoreLocation is not null &&
+                settings.EncryptionCertificateStoreName is not null &&
                 !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.EncryptionCertificateStoreLocation.Value,
                     settings.EncryptionCertificateStoreName.Value, settings.EncryptionCertificateThumbprint);
 
-                if (certificate != null)
+                if (certificate is not null)
                 {
                     return [new X509SecurityKey(certificate)];
                 }
@@ -346,15 +346,15 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.SigningCertificateStoreLocation != null &&
-                settings.SigningCertificateStoreName != null &&
+            if (settings.SigningCertificateStoreLocation is not null &&
+                settings.SigningCertificateStoreName is not null &&
                 !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
                     settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
-                if (certificate != null)
+                if (certificate is not null)
                 {
                     return [new X509SecurityKey(certificate)];
                 }
@@ -440,7 +440,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (exceptions != null)
+            if (exceptions is not null)
             {
                 throw new AggregateException(exceptions);
             }

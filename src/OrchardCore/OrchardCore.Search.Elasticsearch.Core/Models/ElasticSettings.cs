@@ -20,7 +20,7 @@ public class ElasticSettings
 
     public string GetSearchType()
     {
-        if (SearchType == null)
+        if (SearchType is null)
         {
             return QueryStringSearchType;
         }

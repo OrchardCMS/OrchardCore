@@ -23,7 +23,7 @@ namespace OrchardCore.Modules
 
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return NotFoundDirectoryContents.Singleton;
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Modules
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath == null)
+            if (subpath is null)
             {
                 return new NotFoundFileInfo(subpath);
             }

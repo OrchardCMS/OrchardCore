@@ -15,7 +15,7 @@ public class SeoMetaPartContentIndexHandler : IContentItemIndexHandler
     {
         var parent = context.ContentItem.As<SeoMetaPart>();
 
-        if (parent == null)
+        if (parent is null)
         {
             return Task.CompletedTask;
         }

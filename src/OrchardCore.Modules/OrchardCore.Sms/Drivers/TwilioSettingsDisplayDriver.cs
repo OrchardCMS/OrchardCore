@@ -114,7 +114,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AccountSID), S["Account SID requires a value."]);
             }
 
-            if (settings.AuthToken == null && string.IsNullOrWhiteSpace(model.AuthToken))
+            if (settings.AuthToken is null && string.IsNullOrWhiteSpace(model.AuthToken))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthToken), S["Auth Token required a value."]);
             }

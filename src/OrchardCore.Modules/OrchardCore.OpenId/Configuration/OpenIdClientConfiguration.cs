@@ -40,7 +40,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(AuthenticationOptions options)
         {
             var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -75,7 +75,7 @@ namespace OrchardCore.OpenId.Configuration
 
             options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
 
-            if (settings.Scopes != null)
+            if (settings.Scopes is not null)
             {
                 foreach (var scope in settings.Scopes)
                 {
@@ -97,7 +97,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (settings.Parameters != null && settings.Parameters.Length > 0)
+            if (settings.Parameters is not null && settings.Parameters.Length > 0)
             {
                 var parameters = settings.Parameters;
                 options.Events.OnRedirectToIdentityProvider = (context) =>

@@ -49,7 +49,7 @@ namespace OrchardCore.ContentFields.GraphQL
 
             return dataLoaderContextAccessor.Context.GetOrAddCollectionBatchLoader("GetOrAddUserByIds", async (IEnumerable<string> userIds) =>
             {
-                if (userIds == null || !userIds.Any())
+                if (userIds is null || !userIds.Any())
                 {
                     return default;
                 }

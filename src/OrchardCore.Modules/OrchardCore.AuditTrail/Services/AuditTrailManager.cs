@@ -65,14 +65,14 @@ namespace OrchardCore.AuditTrail.Services
             if (_shellSettings.IsInitializing() && string.IsNullOrEmpty(context.UserName))
             {
                 var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
-                if (feature != null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
+                if (feature is not null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
                 {
                     context.UserName = (string)adminUsername;
                 }
             }
 
             var descriptor = DescribeEvent(context.Name, context.Category);
-            if (descriptor == null || !await IsEventEnabledAsync(descriptor))
+            if (descriptor is null || !await IsEventEnabledAsync(descriptor))
             {
                 return;
             }

@@ -57,7 +57,7 @@ namespace OrchardCore.ContentFields.Controllers
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<UserPickerFieldSettings>();
-            if (fieldSettings == null)
+            if (fieldSettings is null)
             {
                 return BadRequest("Unable to find field definition");
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.ContentFields.Controllers
             var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
                 ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
 
-            if (resultProvider == null)
+            if (resultProvider is null)
             {
                 return new ObjectResult(new List<UserPickerResult>());
             }

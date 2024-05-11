@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var elasticTopDocs = new ElasticTopDocs();
 
-            if (_elasticClient == null)
+            if (_elasticClient is null)
             {
                 _logger.LogWarning("Elasticsearch Client is not setup, please validate your Elasticsearch Configurations");
 
@@ -57,7 +57,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var hit in searchResponse.Hits)
                 {
-                    if (hit.Fields != null)
+                    if (hit.Fields is not null)
                     {
                         var row = new Dictionary<string, object>();
 

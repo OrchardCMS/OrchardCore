@@ -4,7 +4,7 @@
 <div class="edit-container">
     <div class="edit-body">
         <div class="edit-item-primary">
-            @if (Model.Content != null)
+            @if (Model.Content is not null)
             {
                 <div class="edit-item-content">
                     @await DisplayAsync(Model.Content)
@@ -12,14 +12,14 @@
             }
         </div>
         <div class="edit-item-parts">
-            @if (Model.Parts != null)
+            @if (Model.Parts is not null)
             {
                 @await DisplayAsync(Model.Parts)
             }
         </div>
 
         <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
-            @if (Model.Actions != null)
+            @if (Model.Actions is not null)
             {
                 <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
@@ -27,7 +27,7 @@
             }
         </div>
     </div>
-    @if (Model.Sidebar != null)
+    @if (Model.Sidebar is not null)
     {
         <div class="edit-sidebar-handler"></div>
         <div class="edit-sidebar group">

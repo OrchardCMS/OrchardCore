@@ -45,7 +45,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId);
             var contentItem = await _contentManager.GetAsync(model.ContentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(step.ContentItemId), S["Your content item does not exist."]);
             }

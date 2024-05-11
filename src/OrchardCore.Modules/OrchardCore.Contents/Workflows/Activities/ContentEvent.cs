@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             var content = await GetContentAsync(workflowContext);
 
-            if (content == null)
+            if (content is null)
             {
                 return false;
             }

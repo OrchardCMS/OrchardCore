@@ -46,7 +46,7 @@ namespace OrchardCore.ContentManagement.Display
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.Display
                 try
                 {
                     var result = await displayDriver.BuildDisplayAsync(contentItem, context);
-                    if (result != null)
+                    if (result is not null)
                     {
                         await result.ApplyAsync(context);
                     }
@@ -76,7 +76,7 @@ namespace OrchardCore.ContentManagement.Display
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = contentItem.Get(partActivator.Type, partName) as ContentPart;
 
-                if (part == null)
+                if (part is null)
                 {
                     continue;
                 }
@@ -88,7 +88,7 @@ namespace OrchardCore.ContentManagement.Display
                     try
                     {
                         var result = await partDisplayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
-                        if (result != null)
+                        if (result is not null)
                         {
                             await result.ApplyAsync(context);
                         }
@@ -176,7 +176,7 @@ namespace OrchardCore.ContentManagement.Display
                         try
                         {
                             var result = await fieldDisplayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
-                            if (result != null)
+                            if (result is not null)
                             {
                                 await result.ApplyAsync(context);
                             }
@@ -195,7 +195,7 @@ namespace OrchardCore.ContentManagement.Display
         public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return;
             }
@@ -214,7 +214,7 @@ namespace OrchardCore.ContentManagement.Display
                 try
                 {
                     var result = await displayDriver.BuildEditorAsync(contentItem, context);
-                    if (result != null)
+                    if (result is not null)
                     {
                         await result.ApplyAsync(context);
                     }
@@ -241,7 +241,7 @@ namespace OrchardCore.ContentManagement.Display
                 await typePartShapeResult.ApplyAsync(context);
                 var typePartShape = typePartShapeResult.Shape;
 
-                if (typePartShape == null)
+                if (typePartShape is null)
                 {
                     // Part is explicitly noop in placement then stop rendering execution
                     continue;
@@ -258,7 +258,7 @@ namespace OrchardCore.ContentManagement.Display
                 await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
                     var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
-                    if (result != null)
+                    if (result is not null)
                     {
                         await result.ApplyAsync(context);
                     }
@@ -274,7 +274,7 @@ namespace OrchardCore.ContentManagement.Display
                     await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
                         var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                        if (result != null)
+                        if (result is not null)
                         {
                             await result.ApplyAsync(context);
                         }
@@ -286,7 +286,7 @@ namespace OrchardCore.ContentManagement.Display
         public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType);
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
                 return;
 
             var contentShape = context.Shape as IZoneHolding;
@@ -303,7 +303,7 @@ namespace OrchardCore.ContentManagement.Display
                 try
                 {
                     var result = await displayDriver.UpdateEditorAsync(contentItem, context);
-                    if (result != null)
+                    if (result is not null)
                     {
                         await result.ApplyAsync(context);
                     }
@@ -330,7 +330,7 @@ namespace OrchardCore.ContentManagement.Display
                 await typePartShapeResult.ApplyAsync(context);
                 var typePartShape = typePartShapeResult.Shape;
 
-                if (typePartShape == null)
+                if (typePartShape is null)
                 {
                     // Part is explicitly hidden in placement then stop rendering it
                     continue;
@@ -345,7 +345,7 @@ namespace OrchardCore.ContentManagement.Display
                 await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
                     var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
-                    if (result != null)
+                    if (result is not null)
                     {
                         await result.ApplyAsync(context);
                     }
@@ -361,7 +361,7 @@ namespace OrchardCore.ContentManagement.Display
                     await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
                         var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
-                        if (result != null)
+                        if (result is not null)
                         {
                             await result.ApplyAsync(context);
                         }

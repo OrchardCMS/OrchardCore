@@ -142,7 +142,7 @@
     $(function () {
         var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
-        if (textArea == null) {
+        if (textArea is null) {
             return;
         }
         var editor = CodeMirror.fromTextArea(textArea, {

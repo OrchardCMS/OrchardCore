@@ -28,7 +28,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
             {
                 var slidePart = document.PresentationPart.GetPartById(slideId.RelationshipId) as SlidePart;
 
-                if (slidePart == null)
+                if (slidePart is null)
                 {
                     continue;
                 }

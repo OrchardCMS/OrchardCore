@@ -18,7 +18,7 @@ namespace OrchardCore.Layers.Indexes
                 .Map(contentItem =>
                 {
                     var layerMetadata = contentItem.As<LayerMetadata>();
-                    if (layerMetadata == null)
+                    if (layerMetadata is null)
                     {
                         return null;
                     }

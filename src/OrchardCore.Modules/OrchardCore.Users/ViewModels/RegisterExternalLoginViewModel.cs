@@ -56,7 +56,7 @@ namespace OrchardCore.Users.ViewModels
                 yield return new ValidationResult(S["Confirm Password do not match"], ["ConfirmPassword"]);
             }
 
-            if (Password != null && (Password.Length < 6 || Password.Length > 100))
+            if (Password is not null && (Password.Length < 6 || Password.Length > 100))
             {
                 yield return new ValidationResult(string.Format(S["Password must be between {0} and {1} characters"], 6, 100), ["Password"]);
             }

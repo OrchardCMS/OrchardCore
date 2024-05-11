@@ -87,7 +87,7 @@ namespace OrchardCore.Demo.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.Demo.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

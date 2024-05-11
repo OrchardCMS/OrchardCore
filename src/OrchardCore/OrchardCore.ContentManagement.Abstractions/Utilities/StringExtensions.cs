@@ -223,7 +223,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Strip(this string source, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(source))
+            if (stripped is null || stripped.Length == 0 || string.IsNullOrEmpty(source))
             {
                 return source;
             }
@@ -262,7 +262,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool Any(this string source, params char[] chars)
         {
-            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars is null || chars.Length == 0)
             {
                 return false;
             }
@@ -281,7 +281,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool All(this string source, params char[] chars)
         {
-            if (string.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(source) || chars is null || chars.Length == 0)
             {
                 return false;
             }
@@ -347,7 +347,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string TrimEnd(this string value, string trim = "")
         {
-            if (value == null)
+            if (value is null)
             {
                 return null;
             }

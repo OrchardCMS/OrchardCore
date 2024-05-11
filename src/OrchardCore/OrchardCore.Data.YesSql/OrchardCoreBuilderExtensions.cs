@@ -121,7 +121,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Initialize(async sp =>
                 {
                     var store = sp.GetService<IStore>();
-                    if (store == null)
+                    if (store is null)
                     {
                         return;
                     }
@@ -139,7 +139,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var store = sp.GetService<IStore>();
 
-                    if (store == null)
+                    if (store is null)
                     {
                         return null;
                     }
@@ -193,22 +193,22 @@ namespace Microsoft.Extensions.DependencyInjection
                 ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
             };
 
-            if (yesSqlOptions.IdGenerator != null)
+            if (yesSqlOptions.IdGenerator is not null)
             {
                 storeConfiguration.IdGenerator = yesSqlOptions.IdGenerator;
             }
 
-            if (yesSqlOptions.IdentifierAccessorFactory != null)
+            if (yesSqlOptions.IdentifierAccessorFactory is not null)
             {
                 storeConfiguration.IdentifierAccessorFactory = yesSqlOptions.IdentifierAccessorFactory;
             }
 
-            if (yesSqlOptions.VersionAccessorFactory != null)
+            if (yesSqlOptions.VersionAccessorFactory is not null)
             {
                 storeConfiguration.VersionAccessorFactory = yesSqlOptions.VersionAccessorFactory;
             }
 
-            if (yesSqlOptions.ContentSerializer != null)
+            if (yesSqlOptions.ContentSerializer is not null)
             {
                 storeConfiguration.ContentSerializer = yesSqlOptions.ContentSerializer;
             }

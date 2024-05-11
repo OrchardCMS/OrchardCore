@@ -56,14 +56,14 @@ namespace OrchardCore.Layers.Recipes
             {
                 var layer = allLayers.Layers.FirstOrDefault(x => string.Equals(x.Name, layerStep.Name, StringComparison.OrdinalIgnoreCase));
 
-                if (layer == null)
+                if (layer is null)
                 {
                     layer = new Layer();
                     allLayers.Layers.Add(layer);
                 }
 
                 // Backwards compatibility check.
-                if (layer.LayerRule == null)
+                if (layer.LayerRule is null)
                 {
                     layer.LayerRule = new Rule();
                     _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
@@ -79,7 +79,7 @@ namespace OrchardCore.Layers.Recipes
                     throw new InvalidOperationException($"The layer '{nameof(layer.Name)}' is required.");
                 }
 
-                if (layerStep.LayerRule != null)
+                if (layerStep.LayerRule is not null)
                 {
                     if (!string.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
                     {

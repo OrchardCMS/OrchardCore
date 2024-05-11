@@ -85,7 +85,7 @@ namespace OrchardCore.Media.Services
                 {
                     var fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
-                    if (fileStoreEntry != null)
+                    if (fileStoreEntry is not null)
                     {
                         using var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry);
                         await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted);

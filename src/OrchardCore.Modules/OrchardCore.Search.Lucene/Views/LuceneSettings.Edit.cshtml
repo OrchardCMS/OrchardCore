@@ -5,7 +5,7 @@
     <div class="mb-3" asp-validation-class-for="SearchIndex">
         <label asp-for="SearchIndex" class="form-label">@T["Default search index"]</label>
         <select asp-for="SearchIndex" class="form-select">
-            <option value="" selected="@(Model.SearchIndex == null)">@T["Select a search index"]</option>
+            <option value="" selected="@(Model.SearchIndex is null)">@T["Select a search index"]</option>
             @foreach (var index in Model.SearchIndexes)
             {
                 <option value="@index" selected="@(Model.SearchIndex == index)">@index</option>

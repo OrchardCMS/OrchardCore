@@ -6,7 +6,7 @@
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "NavigationItemLink";
 
-    if (Model.Id != null)
+    if (Model.Id is not null)
     {
         Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
     }

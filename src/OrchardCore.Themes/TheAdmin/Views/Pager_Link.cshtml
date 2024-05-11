@@ -4,7 +4,7 @@
     Model.Classes.Add("page-link");
     var parentTag = Model.Tag as TagBuilder;
 
-    if (parentTag != null)
+    if (parentTag is not null)
     {
         parentTag.AddCssClass("page-item");
     }

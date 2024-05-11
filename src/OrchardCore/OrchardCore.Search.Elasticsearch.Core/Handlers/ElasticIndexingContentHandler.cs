@@ -107,7 +107,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 
                         var contentItem = !indexSettings.IndexLatest ? published : latest;
 
-                        if (contentItem == null)
+                        if (contentItem is null)
                         {
                             await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [context.ContentItem.ContentItemId]);
                         }

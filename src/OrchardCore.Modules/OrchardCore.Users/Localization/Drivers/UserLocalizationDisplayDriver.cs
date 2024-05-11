@@ -44,7 +44,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
 
             // If Invariant Culture is installed as a supported culture we bind it to a different culture code than String.Empty.
             var emptyCulture = cultureList.FirstOrDefault(c => c.Value == "");
-            if (emptyCulture != null)
+            if (emptyCulture is not null)
             {
                 emptyCulture.Value = UserLocalizationConstants.Invariant;
             }

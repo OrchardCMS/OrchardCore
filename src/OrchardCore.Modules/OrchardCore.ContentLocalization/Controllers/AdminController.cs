@@ -43,7 +43,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -65,14 +65,14 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             var part = contentItem.As<LocalizationPart>();
 
-            if (part == null)
+            if (part is null)
             {
                 return NotFound();
             }
 
             var alreadyLocalizedContent = await _contentLocalizationManager.GetContentItemAsync(part.LocalizationSet, targetCulture);
 
-            if (alreadyLocalizedContent != null)
+            if (alreadyLocalizedContent is not null)
             {
                 await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId });

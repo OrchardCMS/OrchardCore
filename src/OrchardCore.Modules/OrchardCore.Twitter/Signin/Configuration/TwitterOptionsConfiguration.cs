@@ -54,7 +54,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
         public void Configure(AuthenticationOptions options)
         {
             var settings = GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }

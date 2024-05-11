@@ -54,7 +54,7 @@ namespace OrchardCore.Cors.Controllers
 
             var list = new List<CorsPolicyViewModel>();
 
-            if (settings?.Policies != null)
+            if (settings?.Policies is not null)
             {
                 foreach (var policySetting in settings.Policies)
                 {

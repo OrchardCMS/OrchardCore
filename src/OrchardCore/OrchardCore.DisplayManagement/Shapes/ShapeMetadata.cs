@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string Differentiator { get; set; }
         public AlternatesCollection Wrappers { get; set; } = [];
         public AlternatesCollection Alternates { get; set; } = [];
-        public bool IsCached => _cacheContext != null;
+        public bool IsCached => _cacheContext is not null;
         public IHtmlContent ChildContent { get; set; }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// </summary>
         public CacheContext Cache(string cacheId)
         {
-            if (_cacheContext == null || _cacheContext.CacheId != cacheId)
+            if (_cacheContext is null || _cacheContext.CacheId != cacheId)
             {
                 _cacheContext = new CacheContext(cacheId);
             }

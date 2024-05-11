@@ -118,7 +118,7 @@ namespace OrchardCore.Apis.GraphQL
                     request = CreateRequestFromQueryString(context, true);
                 }
 
-                if (request == null)
+                if (request is null)
                 {
                     throw new InvalidOperationException("Unable to create a graphqlrequest from this request");
                 }
@@ -166,7 +166,7 @@ namespace OrchardCore.Apis.GraphQL
                 options.RequestServices = context.RequestServices;
             });
 
-            context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
+            context.Response.StatusCode = (int)(result.Errors is null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
                 : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
                     ? HttpStatusCode.Unauthorized

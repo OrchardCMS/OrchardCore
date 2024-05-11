@@ -20,7 +20,7 @@ namespace OrchardCore.Sitemaps.Services
             foreach (var rctp in _routeableContentTypeProviders)
             {
                 var result = await rctp.GetRouteAsync(context, contentItem);
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }

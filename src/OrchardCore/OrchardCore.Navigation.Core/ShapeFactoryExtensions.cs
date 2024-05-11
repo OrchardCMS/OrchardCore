@@ -19,7 +19,7 @@ public static class ShapeFactoryExtensions
     {
         var pagerShape = await _shapeFactory.PagerAsync(pager, totalItemCount);
 
-        if (routeData != null)
+        if (routeData is not null)
         {
             pagerShape.Properties[nameof(RouteData)] = routeData;
         }
@@ -28,7 +28,7 @@ public static class ShapeFactoryExtensions
     }
 
     public static ValueTask<IShape> PagerAsync(this IShapeFactory _shapeFactory, Pager pager, int totalItemCount, RouteValueDictionary routeValues)
-        => _shapeFactory.PagerAsync(pager, totalItemCount, routeValues == null ? null : new RouteData(routeValues));
+        => _shapeFactory.PagerAsync(pager, totalItemCount, routeValues is null ? null : new RouteData(routeValues));
 
     public static ValueTask<IShape> PagerSlimAsync(this IShapeFactory _shapeFactory, PagerSlim pager)
         => _shapeFactory.CreateAsync(nameof(PagerSlim), Arguments.From(new
@@ -47,7 +47,7 @@ public static class ShapeFactoryExtensions
             pager.PageSize,
         }));
 
-        if (values != null && values.Count > 0)
+        if (values is not null && values.Count > 0)
         {
             shape.Properties["UrlParams"] = values;
         }

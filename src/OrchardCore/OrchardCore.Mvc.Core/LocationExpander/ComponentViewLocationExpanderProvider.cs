@@ -90,7 +90,7 @@ namespace OrchardCore.Mvc.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (context.AreaName == null)
+            if (context.AreaName is null)
             {
                 return viewLocations;
             }

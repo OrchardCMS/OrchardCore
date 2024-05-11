@@ -1,13 +1,13 @@
 <div class="row mx-0 border-bottom">
     <div class="col-auto d-flex align-items-center">
-        @if (Model.Icon != null)
+        @if (Model.Icon is not null)
         {
             @await DisplayAsync(Model.Icon)
         }
     </div>
 
     <div class="col p-3">
-        @if (Model.Content != null)
+        @if (Model.Content is not null)
         {
             @await DisplayAsync(Model.Content)
         }
@@ -15,7 +15,7 @@
 
     <div class="col-auto d-flex align-items-center">
 
-        @if (Model.Actions != null)
+        @if (Model.Actions is not null)
         {
             @await DisplayAsync(Model.Actions)
         }

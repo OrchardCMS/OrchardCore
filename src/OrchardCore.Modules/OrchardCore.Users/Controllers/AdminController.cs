@@ -237,7 +237,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            if (itemIds != null && itemIds.Any())
+            if (itemIds is not null && itemIds.Any())
             {
                 var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
 

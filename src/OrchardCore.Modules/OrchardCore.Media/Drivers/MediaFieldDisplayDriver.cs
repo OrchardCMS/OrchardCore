@@ -64,14 +64,14 @@ namespace OrchardCore.Media.Drivers
                     if (settings.AllowAnchors)
                     {
                         var anchors = field.GetAnchors();
-                        if (anchors != null && i < anchors.Length)
+                        if (anchors is not null && i < anchors.Length)
                         {
                             itemPaths[i].Anchor = anchors[i];
                         }
                     }
 
                     var filenames = field.GetAttachedFileNames();
-                    if (filenames != null && i < filenames.Length)
+                    if (filenames is not null && i < filenames.Length)
                     {
                         itemPaths[i].AttachedFileName = filenames[i];
                     }

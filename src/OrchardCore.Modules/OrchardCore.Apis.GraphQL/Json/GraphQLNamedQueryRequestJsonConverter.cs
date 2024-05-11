@@ -41,31 +41,31 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
     public override void Write(Utf8JsonWriter writer, GraphQLNamedQueryRequest value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        if (value.Query != null)
+        if (value.Query is not null)
         {
             writer.WritePropertyName(_queryKey);
             writer.WriteStringValue(value.Query);
         }
 
-        if (value.OperationName != null)
+        if (value.OperationName is not null)
         {
             writer.WritePropertyName(_operationNameKey);
             writer.WriteStringValue(value.OperationName);
         }
 
-        if (value.Variables != null)
+        if (value.Variables is not null)
         {
             writer.WritePropertyName(_variablesKey);
             JsonSerializer.Serialize(writer, value.Variables, options);
         }
 
-        if (value.Extensions != null)
+        if (value.Extensions is not null)
         {
             writer.WritePropertyName(_extensionsKey);
             JsonSerializer.Serialize(writer, value.Extensions, options);
         }
 
-        if (value.NamedQuery != null)
+        if (value.NamedQuery is not null)
         {
             writer.WritePropertyName(_namedQueryKey);
             JsonSerializer.Serialize(writer, value.NamedQuery, options);

@@ -4,7 +4,7 @@
     string name = Model.Metadata.Name;
 }
 
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     // We don't render anything from custom parts in the terms list
     // This can be customized per part by creating custom templates

@@ -213,7 +213,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var analyzerProperty in analyzerProperties)
                 {
-                    if (analyzerProperty.Value == null || string.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
+                    if (analyzerProperty.Value is null || string.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
@@ -222,7 +222,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                     var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
 
-                    if (property == null)
+                    if (property is null)
                     {
                         continue;
                     }
@@ -258,7 +258,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 }
             }
 
-            if (analyzer == null)
+            if (analyzer is null)
             {
                 if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out getter))
                 {
@@ -472,7 +472,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     {
                         var document = documents.Current;
 
-                        if (document != null)
+                        if (document is not null)
                         {
                             topDocs.Add(document);
 
@@ -544,7 +544,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value is not null && long.TryParse(entry.Value.ToString(), out var value))
                         {
                             AddValue(entries, entry.Name, value);
                         }
@@ -552,14 +552,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         break;
 
                     case DocumentIndex.Types.Number:
-                        if (entry.Value != null)
+                        if (entry.Value is not null)
                         {
                             AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
                         }
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null)
+                        if (entry.Value is not null)
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
@@ -611,7 +611,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         private string GetIndexPrefix()
         {
-            if (_indexPrefix == null)
+            if (_indexPrefix is null)
             {
                 var parts = new List<string>();
 

@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var result = base.Factory(shapeType, shapeBuilder, initializeAsync).Prefix(Prefix);
 
-            if (_typePartDefinition != null)
+            if (_typePartDefinition is not null)
             {
                 // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
                 // the same time in an alternate because a content type is always of one stereotype.
@@ -180,7 +180,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var part = contentPart as TPart;
 
-            if (part == null)
+            if (part is null)
             {
                 return null;
             }
@@ -203,7 +203,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var part = contentPart as TPart;
 
-            if (part == null)
+            if (part is null)
             {
                 return null;
             }
@@ -226,7 +226,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var part = contentPart as TPart;
 
-            if (part == null)
+            if (part is null)
             {
                 return null;
             }

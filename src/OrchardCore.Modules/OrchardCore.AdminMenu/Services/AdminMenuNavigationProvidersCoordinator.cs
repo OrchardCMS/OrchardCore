@@ -62,7 +62,7 @@ namespace OrchardCore.AdminMenu.Services
             {
                 var nodeBuilder = _nodeBuilders.FirstOrDefault(x => x.Name == node.GetType().Name);
 
-                if (nodeBuilder != null)
+                if (nodeBuilder is not null)
                 {
                     await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);
                 }

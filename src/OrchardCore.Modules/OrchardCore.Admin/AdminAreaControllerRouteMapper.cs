@@ -24,7 +24,7 @@ namespace OrchardCore.Admin
             var controllerAttribute = descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>();
             var actionAttribute = descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>();
 
-            if (descriptor.ControllerName != "Admin" && controllerAttribute == null && actionAttribute == null)
+            if (descriptor.ControllerName != "Admin" && controllerAttribute is null && actionAttribute is null)
             {
                 return false;
             }

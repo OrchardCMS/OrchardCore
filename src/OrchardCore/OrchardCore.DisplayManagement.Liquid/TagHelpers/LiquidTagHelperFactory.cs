@@ -33,14 +33,14 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
         private void EnsureMatchings()
         {
-            if (_matchings != null)
+            if (_matchings is not null)
             {
                 return;
             }
 
             lock (this)
             {
-                if (_matchings == null)
+                if (_matchings is null)
                 {
                     var feature = new TagHelperFeature();
                     _partManager.PopulateFeature(feature);

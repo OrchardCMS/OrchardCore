@@ -35,7 +35,7 @@ namespace OrchardCore.Data.Documents
         public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
-            if (loaded != null)
+            if (loaded is not null)
             {
                 return loaded;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.Data.Documents
         public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
-            if (loaded != null)
+            if (loaded is not null)
             {
                 // Return the already loaded document but indicating that it should not be cached.
                 return (false, loaded as T);
@@ -85,7 +85,7 @@ namespace OrchardCore.Data.Documents
             var typeName = typeof(T).Name;
 
             var attribute = typeof(T).GetCustomAttribute<FileDocumentStoreAttribute>();
-            if (attribute != null)
+            if (attribute is not null)
             {
                 typeName = attribute.FileName ?? typeName;
             }
@@ -113,7 +113,7 @@ namespace OrchardCore.Data.Documents
             var typeName = typeof(T).Name;
 
             var attribute = typeof(T).GetCustomAttribute<FileDocumentStoreAttribute>();
-            if (attribute != null)
+            if (attribute is not null)
             {
                 typeName = attribute.FileName ?? typeName;
             }

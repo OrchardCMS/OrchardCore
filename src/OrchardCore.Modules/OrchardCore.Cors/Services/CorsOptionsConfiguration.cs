@@ -19,7 +19,7 @@ namespace OrchardCore.Cors.Services
         public void Configure(CorsOptions options)
         {
             var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
-            if (corsSettings?.Policies == null || !corsSettings.Policies.Any())
+            if (corsSettings?.Policies is null || !corsSettings.Policies.Any())
             {
                 return;
             }

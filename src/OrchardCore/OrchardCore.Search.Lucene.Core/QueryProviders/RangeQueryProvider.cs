@@ -58,7 +58,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         }
                     }
 
-                    if (gt != null && lt != null && gt.GetValueKind() != lt.GetValueKind())
+                    if (gt is not null && lt is not null && gt.GetValueKind() != lt.GetValueKind())
                     {
                         throw new ArgumentException("Lower and upper bound range types don't match");
                     }
@@ -91,7 +91,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         default: throw new ArgumentException($"Unsupported range value type: {type}");
                     }
 
-                    if (boost != null)
+                    if (boost is not null)
                     {
                         rangeQuery.Boost = boost.Value;
                     }

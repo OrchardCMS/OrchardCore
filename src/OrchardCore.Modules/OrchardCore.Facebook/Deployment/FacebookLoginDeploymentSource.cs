@@ -18,7 +18,7 @@ namespace OrchardCore.Facebook.Deployment
         {
             var facebookLoginStep = step as FacebookLoginDeploymentStep;
 
-            if (facebookLoginStep == null)
+            if (facebookLoginStep is null)
             {
                 return;
             }

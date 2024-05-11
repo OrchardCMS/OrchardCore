@@ -175,7 +175,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
         {
             IHtmlContent content = null;
 
-            while (content == null)
+            while (content is null)
             {
                 Task<IHtmlContent> result;
 
@@ -193,7 +193,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
                     {
                         var value = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
-                        if (value == null)
+                        if (value is null)
                         {
                             // The value is not cached, we need to render the tag helper output
                             var processedContent = await output.GetChildContentAsync();

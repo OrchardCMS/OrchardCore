@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Deployment
             var settingJPropertyValue = JObject.FromObject(siteSettings.As<TModel>());
 
             var settingsStepJObject = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Settings");
-            if (settingsStepJObject != null)
+            if (settingsStepJObject is not null)
             {
                 settingsStepJObject.Add(settingJPropertyName, settingJPropertyValue);
             }

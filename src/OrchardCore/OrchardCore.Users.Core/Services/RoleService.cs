@@ -27,7 +27,7 @@ public class RoleService : IRoleService
         }
 
         var entity = await _roleManager.FindByNameAsync(role);
-        if (entity == null)
+        if (entity is null)
         {
             return Array.Empty<Claim>();
         }

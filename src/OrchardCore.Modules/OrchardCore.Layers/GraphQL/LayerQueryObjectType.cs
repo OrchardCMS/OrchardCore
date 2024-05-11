@@ -42,7 +42,7 @@ namespace OrchardCore.Layers.GraphQL
                 var layerWidgets = widgets?.Where(item =>
                 {
                     var metadata = item.As<LayerMetadata>();
-                    if (metadata == null) return false;
+                    if (metadata is null) return false;
                     return metadata.Layer == context.Source.Name;
                 });
 

@@ -41,7 +41,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
             }

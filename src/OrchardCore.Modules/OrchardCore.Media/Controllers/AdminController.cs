@@ -89,14 +89,14 @@ namespace OrchardCore.Media.Controllers
                 path = string.Empty;
             }
 
-            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) is null)
             {
                 return NotFound();
             }
 
             // create default folders if not exist
             if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
+                && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) is null)
             {
                 await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
             }
@@ -134,7 +134,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+            if (await _mediaFileStore.GetDirectoryInfoAsync(path) is null)
             {
                 return NotFound();
             }
@@ -166,7 +166,7 @@ namespace OrchardCore.Media.Controllers
 
             var fileEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
-            if (fileEntry == null)
+            if (fileEntry is null)
             {
                 return NotFound();
             }
@@ -288,7 +288,7 @@ namespace OrchardCore.Media.Controllers
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);
-            if (mediaFolder != null && !mediaFolder.IsDirectory)
+            if (mediaFolder is not null && !mediaFolder.IsDirectory)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete path because it is not a directory"]);
             }
@@ -338,7 +338,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.GetFileInfoAsync(oldPath) == null)
+            if (await _mediaFileStore.GetFileInfoAsync(oldPath) is null)
             {
                 return NotFound();
             }
@@ -350,7 +350,7 @@ namespace OrchardCore.Media.Controllers
                 return BadRequest(S["This file extension is not allowed: {0}", newExtension]);
             }
 
-            if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
+            if (await _mediaFileStore.GetFileInfoAsync(newPath) is not null)
             {
                 return BadRequest(S["Cannot move media because a file already exists with the same name"]);
             }
@@ -366,7 +366,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
-            if (paths == null)
+            if (paths is null)
             {
                 return NotFound();
             }
@@ -405,7 +405,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if ((mediaNames == null) || (mediaNames.Length < 1)
+            if ((mediaNames is null) || (mediaNames.Length < 1)
                 || string.IsNullOrEmpty(sourceFolder)
                 || string.IsNullOrEmpty(targetFolder))
             {
@@ -465,13 +465,13 @@ namespace OrchardCore.Media.Controllers
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
-            if (mediaFolder != null)
+            if (mediaFolder is not null)
             {
                 return BadRequest(S["Cannot create folder because a folder already exists with the same name"]);
             }
 
             var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
-            if (existingFile != null)
+            if (existingFile is not null)
             {
                 return BadRequest(S["Cannot create folder because a file already exists with the same name"]);
             }
@@ -555,14 +555,14 @@ namespace OrchardCore.Media.Controllers
         private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
         {
             var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
-            if (mediaFileStoreCache == null)
+            if (mediaFileStoreCache is null)
             {
                 return;
             }
 
             Stream localStream = null;
 
-            if (stream == null)
+            if (stream is null)
             {
                 stream = localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
             }

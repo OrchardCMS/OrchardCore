@@ -11,8 +11,8 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             var zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
-            Assert.True(zoneOnDemand == null);
-            Assert.False(zoneOnDemand != null);
+            Assert.True(zoneOnDemand is null);
+            Assert.False(zoneOnDemand is not null);
             Assert.True(zoneOnDemand == Nil.Instance);
             Assert.False(zoneOnDemand != Nil.Instance);
         }
@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
-            Assert.True(zoneOnDemand == null);
-            Assert.False(zoneOnDemand != null);
+            Assert.True(zoneOnDemand is null);
+            Assert.False(zoneOnDemand is not null);
             Assert.True(zoneOnDemand == Nil.Instance);
             Assert.False(zoneOnDemand != Nil.Instance);
         }
@@ -37,9 +37,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Composite zoneComposite = zoneOnDemand;
             object zoneObject = zoneOnDemand;
 
-            Assert.False(zoneShape == null);
-            Assert.False(zoneComposite == null);
-            Assert.False(zoneObject == null);
+            Assert.False(zoneShape is null);
+            Assert.False(zoneComposite is null);
+            Assert.False(zoneObject is null);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var zone = zoneHolding["SomeZone"];
 
             Assert.False(zone is ZoneOnDemand);
-            Assert.True(zone == null);
+            Assert.True(zone is null);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var someZone = zoneHolding.SomeZone;
 
             Assert.True(someZone is ZoneOnDemand);
-            Assert.True(someZone == null);
+            Assert.True(someZone is null);
 
             Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
             Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
@@ -108,11 +108,11 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var dynamicZone = zoneHolding["SomeZone"];
             Assert.True(dynamicZone is ZoneOnDemand);
-            Assert.True(dynamicZone == null);
+            Assert.True(dynamicZone is null);
 
             var zoneObject = (zoneHolding as ZoneHolding).Properties["SomeZone"];
             Assert.True(zoneObject is ZoneOnDemand);
-            Assert.False(zoneObject == null);
+            Assert.False(zoneObject is null);
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace OrchardCore.Tests.DisplayManagement
             var zoneOnDemand = zoneHolding.Zones.SomeZone;
 
             Assert.True(zoneOnDemand is ZoneOnDemand);
-            Assert.True(zoneOnDemand == null);
+            Assert.True(zoneOnDemand is null);
 
             Assert.False(object.ReferenceEquals(zoneHolding.Zones.SomeZone, zoneOnDemand));
 
@@ -130,7 +130,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             Assert.False(someZone is ZoneOnDemand);
             Assert.False(someZone is Shape);
-            Assert.True(someZone == null);
+            Assert.True(someZone is null);
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             Assert.False(someZone is ZoneOnDemand);
             Assert.True(someZone is Shape);
-            Assert.False(someZone == null);
+            Assert.False(someZone is null);
 
             Assert.True(object.ReferenceEquals(zoneHolding.SomeZone, someZone));
             Assert.True(object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
@@ -159,8 +159,8 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
-            Assert.True(zoneOnDemand.Foo == null);
-            Assert.True(zoneOnDemand.Foo.Bar == null);
+            Assert.True(zoneOnDemand.Foo is null);
+            Assert.True(zoneOnDemand.Foo.Bar is null);
             Assert.True(zoneOnDemand.Foo.Bar == Nil.Instance);
         }
 
@@ -182,7 +182,7 @@ namespace OrchardCore.Tests.DisplayManagement
         public void ConvertingZoneOnDemandToStringShouldReturnNullString()
         {
             dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
-            Assert.True((string)zoneOnDemand == null);
+            Assert.True((string)zoneOnDemand is null);
         }
 
         private static ZoneHolding CreateZoneHolding() => new(() => new ValueTask<IShape>(new Shape()));

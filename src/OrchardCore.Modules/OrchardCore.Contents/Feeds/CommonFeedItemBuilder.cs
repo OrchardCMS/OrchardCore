@@ -49,7 +49,7 @@ namespace OrchardCore.Contents.Feeds.Builders
 
                     feedItem.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? string.Empty)));
 
-                    if (contentItem.PublishedUtc != null)
+                    if (contentItem.PublishedUtc is not null)
                     {
                         // RFC833
                         // The "R" or "r" standard format specifier represents a custom date and time format string that is defined by
@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     context.Builder.AddProperty(context, feedItem, "title", contentItem.DisplayText);
                     context.Builder.AddProperty(context, feedItem, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? string.Empty)));
 
-                    if (contentItem.PublishedUtc != null)
+                    if (contentItem.PublishedUtc is not null)
                     {
                         context.Builder.AddProperty(context, feedItem, "published-date", contentItem.PublishedUtc.Value.ToString("r"));
                     }

@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Services
                 if (type == "Content")
                 {
                     var contentId = jObject.Value<string>("ContentId");
-                    context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
+                    context.Output = contentId is not null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
                 }
             }
         }

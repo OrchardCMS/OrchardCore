@@ -20,7 +20,7 @@ namespace OrchardCore.Templates.Deployment
         {
             var allTemplatesStep = step as AllTemplatesDeploymentStep;
 
-            if (allTemplatesStep == null)
+            if (allTemplatesStep is null)
             {
                 return;
             }

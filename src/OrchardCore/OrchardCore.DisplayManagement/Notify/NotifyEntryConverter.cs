@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Notify
         public override void Write(Utf8JsonWriter writer, NotifyEntry value, JsonSerializerOptions options)
         {
             var notifyEntry = value;
-            if (notifyEntry == null)
+            if (notifyEntry is null)
             {
                 return;
             }

@@ -22,7 +22,7 @@ namespace OrchardCore.Sitemaps.Builders
                 foreach (var modifiedDateProviders in _sitemapSourceModifiedDateProviders)
                 {
                     var result = await modifiedDateProviders.GetLastModifiedDateAsync(source);
-                    if (result.HasValue && (lastModifiedDate == null || result.Value > lastModifiedDate))
+                    if (result.HasValue && (lastModifiedDate is null || result.Value > lastModifiedDate))
                     {
                         lastModifiedDate = result;
                     }

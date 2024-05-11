@@ -14,7 +14,7 @@ namespace OrchardCore.Security
     {
         public bool IsGranted(PermissionRequirement requirement, IEnumerable<Claim> claims)
         {
-            if (claims == null || !claims.Any())
+            if (claims is null || !claims.Any())
             {
                 return false;
             }
@@ -36,12 +36,12 @@ namespace OrchardCore.Security
             stack.Add(permission.Name);
 
             // Iterate implied permissions to grant, it present
-            if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
+            if (permission.ImpliedBy is not null && permission.ImpliedBy.Any())
             {
                 foreach (var impliedBy in permission.ImpliedBy)
                 {
                     // Avoid potential recursion
-                    if (impliedBy == null || stack.Contains(impliedBy.Name))
+                    if (impliedBy is null || stack.Contains(impliedBy.Name))
                     {
                         continue;
                     }

@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>();
 
-            if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
+            if (auditTrailContentEvent is null || auditTrailContentEvent.ContentItem is null)
             {
                 return NotFound();
             }
@@ -77,7 +77,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             }
 
             var auditTrailPart = contentItem.As<AuditTrailPart>();
-            if (auditTrailPart != null)
+            if (auditTrailPart is not null)
             {
                 auditTrailPart.ShowComment = true;
             }
@@ -98,7 +98,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }

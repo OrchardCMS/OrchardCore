@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Lucene
                     sortType = jsonObject.First().Value["type"]?.ToString();
                     var sortFieldType = SortFieldType.STRING;
 
-                    if (sortType != null)
+                    if (sortType is not null)
                     {
                         sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
                     }
@@ -70,7 +70,7 @@ namespace OrchardCore.Search.Lucene
                         sortType = item.AsObject().First().Value["type"]?.ToString();
                         var sortFieldType = SortFieldType.STRING;
 
-                        if (sortType != null)
+                        if (sortType is not null)
                         {
                             sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
                         }
@@ -87,7 +87,7 @@ namespace OrchardCore.Search.Lucene
                 TopDocs topDocs = context.IndexSearcher.Search(
                     query,
                     size + from,
-                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+                    sortField is null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
                 );
 
                 if (from > 0)
@@ -114,7 +114,7 @@ namespace OrchardCore.Search.Lucene
             {
                 query = queryProvider.CreateQuery(this, context, first.Key, first.Value.AsObject());
 
-                if (query != null)
+                if (query is not null)
                 {
                     break;
                 }
@@ -138,7 +138,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
 
-                    if (termAttribute != null)
+                    if (termAttribute is not null)
                     {
                         result.Add(termAttribute.ToString());
                     }

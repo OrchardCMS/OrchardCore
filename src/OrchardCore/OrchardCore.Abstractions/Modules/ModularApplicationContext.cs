@@ -30,7 +30,7 @@ namespace OrchardCore.Modules
 
         private void EnsureInitialized()
         {
-            if (_application == null)
+            if (_application is null)
             {
                 lock (_initLock)
                 {

@@ -31,7 +31,7 @@ namespace OrchardCore.ContentTypes
                 {
                     foreach (var partDefinition in contentType.ContentTypePartDefinitionRecords)
                     {
-                        if (partDefinition.Settings != null)
+                        if (partDefinition.Settings is not null)
                         {
                             if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                                 !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
@@ -46,7 +46,7 @@ namespace OrchardCore.ContentTypes
 
                 foreach (var partDefinition in step.ContentParts)
                 {
-                    if (partDefinition.Settings != null)
+                    if (partDefinition.Settings is not null)
                     {
                         if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentTypes
 
                         foreach (var fieldDefinition in partDefinition.ContentPartFieldDefinitionRecords)
                         {
-                            if (fieldDefinition.Settings != null)
+                            if (fieldDefinition.Settings is not null)
                             {
                                 if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings) &&
                                     !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))

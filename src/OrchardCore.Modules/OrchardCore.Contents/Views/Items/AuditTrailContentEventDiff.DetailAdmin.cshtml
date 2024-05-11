@@ -13,7 +13,7 @@
 
 <style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head" depends-on="admin"></style>
 
-@if (Model.PreviousContentItem != null)
+@if (Model.PreviousContentItem is not null)
 {
     <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" version="4.0.2" at="Foot"></script>
     <script at="Foot" asp-name="prism" depends-on="jsdiff" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>

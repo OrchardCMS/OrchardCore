@@ -287,7 +287,7 @@ public class AdminController : Controller
 
         var settings = await _indexSettingsService.GetAsync(indexName);
 
-        if (settings == null)
+        if (settings is null)
         {
             return NotFound();
         }
@@ -338,7 +338,7 @@ public class AdminController : Controller
         {
             var settings = await _indexSettingsService.GetAsync(model.IndexName);
 
-            if (settings == null)
+            if (settings is null)
             {
                 return NotFound();
             }
@@ -442,7 +442,7 @@ public class AdminController : Controller
 
         var settings = await _indexSettingsService.GetAsync(indexName);
 
-        if (settings == null)
+        if (settings is null)
         {
             return NotFound();
         }
@@ -476,7 +476,7 @@ public class AdminController : Controller
 
         var settings = await _indexSettingsService.GetAsync(indexName);
 
-        if (settings == null)
+        if (settings is null)
         {
             return NotFound();
         }

@@ -24,7 +24,7 @@ namespace OrchardCore.Users.Liquid
             if (input.ToObjectValue() is LiquidUserAccessor)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user != null)
+                if (user is not null)
                 {
                     var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
                     var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();

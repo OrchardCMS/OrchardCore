@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.Display.Liquid
         {
             var content = input.ToObjectValue();
 
-            if (content == null || _hostEnvironment.IsProduction())
+            if (content is null || _hostEnvironment.IsProduction())
             {
                 return NilValue.Instance;
             }

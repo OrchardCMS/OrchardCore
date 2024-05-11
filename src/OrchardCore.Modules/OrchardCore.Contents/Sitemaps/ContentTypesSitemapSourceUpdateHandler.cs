@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var contentItem = context.UpdateObject as ContentItem;
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Sitemaps
                 foreach (var source in sitemap.SitemapSources
                     .Select(s => s as ContentTypesSitemapSource))
                 {
-                    if (source == null)
+                    if (source is null)
                     {
                         continue;
                     }

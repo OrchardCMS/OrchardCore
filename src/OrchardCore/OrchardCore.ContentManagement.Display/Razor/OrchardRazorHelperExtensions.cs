@@ -37,7 +37,7 @@ public static class OrchardRazorHelperExtensions
 
         var env = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
 
-        if (content == null || env.IsProduction())
+        if (content is null || env.IsProduction())
         {
             builder.AppendHtml("null");
         }

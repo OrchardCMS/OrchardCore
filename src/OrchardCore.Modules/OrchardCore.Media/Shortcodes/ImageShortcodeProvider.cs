@@ -90,27 +90,27 @@ namespace OrchardCore.Media.Shortcodes
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
 
-                if (width != null)
+                if (width is not null)
                 {
                     queryStringParams.Add("width", width);
                 }
 
-                if (height != null)
+                if (height is not null)
                 {
                     queryStringParams.Add("height", height);
                 }
 
-                if (mode != null)
+                if (mode is not null)
                 {
                     queryStringParams.Add("rmode", mode);
                 }
 
-                if (quality != null)
+                if (quality is not null)
                 {
                     queryStringParams.Add("quality", quality);
                 }
 
-                if (format != null)
+                if (format is not null)
                 {
                     queryStringParams.Add("format", format);
                 }
@@ -120,12 +120,12 @@ namespace OrchardCore.Media.Shortcodes
                     content = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, content);
                 }
 
-                if (className != null)
+                if (className is not null)
                 {
                     className = "class=\"" + className + "\" ";
                 }
 
-                if (altText != null)
+                if (altText is not null)
                 {
                     altText = "alt=\"" + altText + "\" ";
                 }

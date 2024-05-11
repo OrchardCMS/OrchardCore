@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         public IOpenIddictApplicationStore<TApplication> Get<TApplication>() where TApplication : class
         {
             var store = _provider.GetService<IOpenIddictApplicationStore<TApplication>>();
-            if (store != null)
+            if (store is not null)
             {
                 return store;
             }

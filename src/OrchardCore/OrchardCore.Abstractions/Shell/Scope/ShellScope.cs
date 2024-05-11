@@ -86,7 +86,7 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             var current = Current;
 
-            if (current != null)
+            if (current is not null)
             {
                 current._items ??= [];
 
@@ -101,7 +101,7 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             var current = Current;
 
-            if (current == null)
+            if (current is null)
             {
                 return null;
             }
@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             var current = Current;
 
-            if (current == null)
+            if (current is null)
             {
                 return default;
             }
@@ -135,7 +135,7 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             var current = Current;
 
-            if (current == null)
+            if (current is null)
             {
                 return factory();
             }
@@ -158,7 +158,7 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             var current = Current;
 
-            if (current == null)
+            if (current is null)
             {
                 return new T();
             }
@@ -418,7 +418,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public async Task HandleExceptionAsync(Exception e)
         {
-            if (_exceptionHandlers == null)
+            if (_exceptionHandlers is null)
             {
                 return;
             }
@@ -435,7 +435,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         internal async Task BeforeDisposeAsync()
         {
-            if (_beforeDispose != null)
+            if (_beforeDispose is not null)
             {
                 foreach (var callback in _beforeDispose)
                 {

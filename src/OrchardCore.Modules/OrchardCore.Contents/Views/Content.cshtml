@@ -9,11 +9,11 @@
 }
 
 <article class="@string.Join(" ", Model.Classes.ToArray())">
-    @if (Model.Header != null || Model.Meta != null)
+    @if (Model.Header is not null || Model.Meta is not null)
     {
     <header>
         @await DisplayAsync(Model.Header)
-        @if (Model.Meta != null)
+        @if (Model.Meta is not null)
         {
             <div class="metadata">
                 @await DisplayAsync(Model.Meta)
@@ -22,7 +22,7 @@
     </header>
     }
     @await DisplayAsync(Model.Content)
-    @if (Model.Footer != null)
+    @if (Model.Footer is not null)
     {
     <footer>
         @await DisplayAsync(Model.Footer)

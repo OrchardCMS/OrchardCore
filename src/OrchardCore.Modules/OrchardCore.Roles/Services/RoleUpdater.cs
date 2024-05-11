@@ -69,7 +69,7 @@ namespace OrchardCore.Roles.Services
                 foreach (var stereotype in stereotypes)
                 {
                     var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, stereotype.Name, StringComparison.OrdinalIgnoreCase));
-                    if (role == null)
+                    if (role is null)
                     {
                         continue;
                     }
@@ -131,7 +131,7 @@ namespace OrchardCore.Roles.Services
         {
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
             var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, StringComparison.OrdinalIgnoreCase));
-            if (role == null)
+            if (role is null)
             {
                 return;
             }

@@ -20,7 +20,7 @@ namespace OrchardCore.Modules.FileProviders
                 using var sr = new StreamReader(reader);
 
                 string line;
-                while ((line = await sr.ReadLineAsync()) != null)
+                while ((line = await sr.ReadLineAsync()) is not null)
                 {
                     lines.Add(line);
                 }

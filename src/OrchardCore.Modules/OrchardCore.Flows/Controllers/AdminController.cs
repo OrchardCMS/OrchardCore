@@ -122,7 +122,7 @@ namespace OrchardCore.Flows.Controllers
             {
                 var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(ct);
 
-                if (definition == null || !definition.StereotypeEquals("Widget"))
+                if (definition is null || !definition.StereotypeEquals("Widget"))
                 {
                     continue;
                 }

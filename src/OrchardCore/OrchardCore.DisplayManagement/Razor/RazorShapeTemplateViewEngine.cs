@@ -66,7 +66,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var viewContext = _viewContextAccessor.ViewContext;
 
-            if (viewContext?.View != null)
+            if (viewContext?.View is not null)
             {
                 var viewData = new ViewDataDictionary(viewContext.ViewData);
                 viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
@@ -152,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Razor
             var httpContext = _httpContextAccessor.HttpContext;
             var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
 
-            if (actionContext != null)
+            if (actionContext is not null)
             {
                 return actionContext;
             }

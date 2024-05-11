@@ -36,14 +36,14 @@
         <span class="hint">@T["Technical name of the field."]</span>
     </div>
 
-    @if (Model.Shape.Shortcuts != null)
+    @if (Model.Shape.Shortcuts is not null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Shape.Shortcuts)
         </div>
     }
 
-    @if (Model.Shape.Content != null)
+    @if (Model.Shape.Content is not null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Shape.Content)

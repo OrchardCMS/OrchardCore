@@ -30,7 +30,7 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (settings is not null)
         {
             options.ConsumerKey = settings.ConsumerKey;
             options.ConsumerSecret = settings.ConsumerSecret;

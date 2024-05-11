@@ -27,19 +27,19 @@
             <div class="contenttype me-1">
                 <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> @contentItem.ContentType</span>
             </div>
-            @if (Model.Header != null)
+            @if (Model.Header is not null)
             {
                 <div class="header me-1">
                     @await DisplayAsync(Model.Header)
                 </div>
             }
-            @if (Model.Tags != null)
+            @if (Model.Tags is not null)
             {
                 <div class="tags me-1">
                     @await DisplayAsync(Model.Tags)
                 </div>
             }
-            @if (Model.Meta != null)
+            @if (Model.Meta is not null)
             {
                 <div class="metadata me-1">
                     @await DisplayAsync(Model.Meta)
@@ -49,11 +49,11 @@
     </div>
     <div class="col-lg-auto col-12 d-flex justify-content-end">
         <div class="actions">
-            @if (Model.Actions != null)
+            @if (Model.Actions is not null)
             {
                 @await DisplayAsync(Model.Actions)
             }
-            @if (Model.ActionsMenu != null)
+            @if (Model.ActionsMenu is not null)
             {
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,7 +68,7 @@
     </div>
 </div>
 
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     <div class="row">
         <div class="col primary">

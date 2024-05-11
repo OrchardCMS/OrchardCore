@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         var hostEnvironment = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHostEnvironment>();
 
-                        if (hostEnvironment != null)
+                        if (hostEnvironment is not null)
                         {
                             return name switch
                             {
@@ -104,7 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     o.MemberAccessStrategy.Register<LiquidRequestAccessor, FluidValue>((obj, name, ctx) =>
                     {
                         var request = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.Request;
-                        if (request != null)
+                        if (request is not null)
                         {
                             return name switch
                             {
@@ -141,7 +141,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     o.MemberAccessStrategy.Register<LiquidHttpContextAccessor, FluidValue>((obj, name, ctx) =>
                     {
                         var httpContext = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                        if (httpContext != null)
+                        if (httpContext is not null)
                         {
                             return name switch
                             {

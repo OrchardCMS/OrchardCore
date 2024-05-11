@@ -86,7 +86,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority is null ^ string.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[]
                 {
@@ -95,7 +95,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (settings.Authority != null)
+            if (settings.Authority is not null)
             {
                 if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
@@ -115,7 +115,7 @@ namespace OrchardCore.OpenId.Services
 
             }
 
-            if (settings.MetadataAddress != null)
+            if (settings.MetadataAddress is not null)
             {
                 if (!settings.MetadataAddress.IsAbsoluteUri || !settings.MetadataAddress.IsWellFormedOriginalString())
                 {
@@ -150,7 +150,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority is not null && string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[]
                 {
@@ -158,7 +158,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (settings.Authority == null && settings.DisableTokenTypeValidation)
+            if (settings.Authority is null && settings.DisableTokenTypeValidation)
             {
                 results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[]
                 {
@@ -200,7 +200,7 @@ namespace OrchardCore.OpenId.Services
                         }
 
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
-                        if (manager == null)
+                        if (manager is null)
                         {
                             results.Add(new ValidationResult(S["The specified tenant is not valid."], new[]
                             {

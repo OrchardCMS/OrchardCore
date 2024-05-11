@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Timers
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return StartedUtc == null || IsExpired();
+            return StartedUtc is null || IsExpired();
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

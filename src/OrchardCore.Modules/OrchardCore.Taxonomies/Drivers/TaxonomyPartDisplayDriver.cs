@@ -86,7 +86,7 @@ namespace OrchardCore.Taxonomies.Drivers
             // Seek the term represented by the list of indexes
             foreach (var index in indexes)
             {
-                if (taxonomyItems == null || taxonomyItems.Count < index)
+                if (taxonomyItems is null || taxonomyItems.Count < index)
                 {
                     // Trying to access an unknown index
                     return null;
@@ -100,7 +100,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             var newObj = JObject.FromObject(taxonomyItem);
 
-            if (newObj["Terms"] != null)
+            if (newObj["Terms"] is not null)
             {
                 newObj["Terms"] = new JsonArray();
             }

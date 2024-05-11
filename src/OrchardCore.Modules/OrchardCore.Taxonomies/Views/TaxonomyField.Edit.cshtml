@@ -18,7 +18,7 @@
             <div class="hint dashed mt-lg-2">@settings.Hint</div>
         }
 
-        @if (Model.Taxonomy == null)
+        @if (Model.Taxonomy is null)
         {
             <div class="alert alert-danger" role="alert">
                 @T["The taxonomy could not be found. Please check the settings for this field."]

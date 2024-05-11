@@ -14,7 +14,7 @@ public class AccountBaseController : Controller
     protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {
         var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
-        if (workflowManager != null && user is User u)
+        if (workflowManager is not null && user is User u)
         {
             var input = new Dictionary<string, object>
             {

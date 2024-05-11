@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Security
         {
             var identity = authenticated ? new ClaimsIdentity("Test") : new ClaimsIdentity();
 
-            if (allowed != null)
+            if (allowed is not null)
             {
                 foreach (var permissionName in allowed)
                 {

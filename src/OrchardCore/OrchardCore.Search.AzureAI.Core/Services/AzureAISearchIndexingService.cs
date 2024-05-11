@@ -50,7 +50,7 @@ public class AzureAISearchIndexingService
         var indexSettings = new List<AzureAISearchIndexSettings>();
         var indexesDocument = await _azureAISearchIndexSettingsService.LoadDocumentAsync();
 
-        if (indexNames == null || indexNames.Length == 0)
+        if (indexNames is null || indexNames.Length == 0)
         {
             indexSettings = new List<AzureAISearchIndexSettings>(indexesDocument.IndexSettings.Values);
         }
@@ -120,19 +120,19 @@ public class AzureAISearchIndexingService
                 {
                     BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
 
-                    if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
+                    if (allPublished is not null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                     {
                         publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new AzureAISearchContentIndexSettings());
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                     }
 
-                    if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
+                    if (allLatest is not null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                     {
                         latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new AzureAISearchContentIndexSettings());
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                     }
 
-                    if (publishedIndexContext == null && latestIndexContext == null)
+                    if (publishedIndexContext is null && latestIndexContext is null)
                     {
                         continue;
                     }
@@ -148,7 +148,7 @@ public class AzureAISearchIndexingService
                         var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
                         // We index only if we actually found a content item in the database.
-                        if (context == null)
+                        if (context is null)
                         {
                             continue;
                         }
@@ -187,7 +187,7 @@ public class AzureAISearchIndexingService
 
                 var settings = indexSettings.FirstOrDefault(x => x.IndexName == index.Key);
 
-                if (settings == null)
+                if (settings is null)
                 {
                     continue;
                 }

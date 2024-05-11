@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         {
             var shape = (IShape)context.Items[typeof(IShape)];
 
-            if (shape != null && output.Attributes.ContainsName("display-type"))
+            if (shape is not null && output.Attributes.ContainsName("display-type"))
             {
                 shape.Metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);
             }

@@ -211,7 +211,7 @@ namespace OrchardCore.ContentManagement
                 contentItem = await _session.ExecuteQuery(new PublishedContentItemById(contentItemId)).FirstOrDefaultAsync();
             }
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return null;
             }
@@ -227,7 +227,7 @@ namespace OrchardCore.ContentManagement
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
-                    if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
+                    if (contentTypeDefinition is not null && !contentTypeDefinition.IsVersionable())
                     {
                         contentItem.Published = false;
                     }
@@ -249,7 +249,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
         {
-            if (contentItemIds == null || !contentItemIds.Any())
+            if (contentItemIds is null || !contentItemIds.Any())
             {
                 return [];
             }
@@ -320,7 +320,7 @@ namespace OrchardCore.ContentManagement
                         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(item.ContentType);
 
                         // Check if not versionable, meaning we use only one version.
-                        if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
+                        if (contentTypeDefinition is not null && !contentTypeDefinition.IsVersionable())
                         {
                             item.Published = false;
 
@@ -386,7 +386,7 @@ namespace OrchardCore.ContentManagement
                 .Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId == contentItemVersionId)
                 .FirstOrDefaultAsync();
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return null;
             }
@@ -435,7 +435,7 @@ namespace OrchardCore.ContentManagement
                 return;
             }
 
-            if (previous != null)
+            if (previous is not null)
             {
                 await _session.SaveAsync(previous, checkConcurrency: true);
                 previous.Published = false;
@@ -467,7 +467,7 @@ namespace OrchardCore.ContentManagement
                 publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
             }
 
-            if (publishedItem == null)
+            if (publishedItem is null)
             {
                 // No published version exists. no work to perform.
                 return;
@@ -506,13 +506,13 @@ namespace OrchardCore.ContentManagement
                         x.Latest)
                     .FirstOrDefaultAsync();
 
-                if (latestVersion != null)
+                if (latestVersion is not null)
                 {
                     await _session.SaveAsync(latestVersion);
                 }
             }
 
-            if (latestVersion != null)
+            if (latestVersion is not null)
             {
                 latestVersion.Latest = false;
             }
@@ -694,7 +694,7 @@ namespace OrchardCore.ContentManagement
                         originalVersion = versionsToUpdate.FirstOrDefault(x => string.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
-                    if (originalVersion == null)
+                    if (originalVersion is null)
                     {
                         // The version does not exist in the current database.
                         var context = new ImportContentContext(importingItem);
@@ -831,7 +831,7 @@ namespace OrchardCore.ContentManagement
                 .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
                 .FirstOrDefaultAsync();
 
-            if (latestVersion != null)
+            if (latestVersion is not null)
             {
                 latestVersion.Latest = false;
                 await _session.SaveAsync(latestVersion);
@@ -892,7 +892,7 @@ namespace OrchardCore.ContentManagement
 
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 
-            var context = new RemoveContentContext(contentItem, publishedItem == null);
+            var context = new RemoveContentContext(contentItem, publishedItem is null);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
 
@@ -901,7 +901,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
 
-            if (publishedItem != null)
+            if (publishedItem is not null)
             {
                 publishedItem.Latest = true;
                 await _session.SaveAsync(publishedItem);
@@ -1109,7 +1109,7 @@ namespace OrchardCore.ContentManagement
         private async Task RemoveLatestVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
         {
             ContentItem latestVersion;
-            if (evictionVersions == null)
+            if (evictionVersions is null)
             {
                 latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Latest)
@@ -1120,11 +1120,11 @@ namespace OrchardCore.ContentManagement
                 latestVersion = evictionVersions.FirstOrDefault(x => x.Latest);
             }
 
-            if (latestVersion != null)
+            if (latestVersion is not null)
             {
                 var publishedVersion = evictionVersions?.FirstOrDefault(x => x.Published);
 
-                var removeContext = new RemoveContentContext(contentItem, publishedVersion == null);
+                var removeContext = new RemoveContentContext(contentItem, publishedVersion is null);
 
                 await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 
@@ -1138,7 +1138,7 @@ namespace OrchardCore.ContentManagement
         private async Task RemovePublishedVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
         {
             ContentItem publishedVersion;
-            if (evictionVersions == null)
+            if (evictionVersions is null)
             {
                 publishedVersion = await _session.Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItem.ContentItemId && x.Published)
@@ -1149,7 +1149,7 @@ namespace OrchardCore.ContentManagement
                 publishedVersion = evictionVersions.FirstOrDefault(x => x.Published);
             }
 
-            if (publishedVersion != null)
+            if (publishedVersion is not null)
             {
                 var removeContext = new RemoveContentContext(contentItem, true);
 
@@ -1165,7 +1165,7 @@ namespace OrchardCore.ContentManagement
         private async Task RemoveVersionsAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions)
         {
             IEnumerable<ContentItem> activeVersions;
-            if (evictionVersions == null)
+            if (evictionVersions is null)
             {
                 activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                     .Where(x =>

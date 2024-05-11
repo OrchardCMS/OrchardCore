@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public void Configure(LiquidViewOptions options)
         {
-            if (_hostingEnvironment.ContentRootFileProvider != null)
+            if (_hostingEnvironment.ContentRootFileProvider is not null)
             {
                 options.FileProviders.Add(_hostingEnvironment.ContentRootFileProvider);
 

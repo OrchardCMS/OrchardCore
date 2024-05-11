@@ -101,7 +101,7 @@ namespace OrchardCore.Roles.Controllers
                     ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
 
-                if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
+                if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) is not null)
                 {
                     ModelState.AddModelError(string.Empty, S["The role is already used."]);
                 }
@@ -139,7 +139,7 @@ namespace OrchardCore.Roles.Controllers
 
             var currentRole = await _roleManager.FindByIdAsync(id);
 
-            if (currentRole == null)
+            if (currentRole is null)
             {
                 return NotFound();
             }

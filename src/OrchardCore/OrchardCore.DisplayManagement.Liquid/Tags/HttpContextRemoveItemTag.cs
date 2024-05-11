@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
 
-            if (httpContext != null)
+            if (httpContext is not null)
             {
                 var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
 

@@ -24,7 +24,7 @@ namespace OrchardCore.AdminMenu.Deployment
         {
             var adminMenuStep = step as AdminMenuDeploymentStep;
 
-            if (adminMenuStep == null)
+            if (adminMenuStep is null)
             {
                 return;
             }

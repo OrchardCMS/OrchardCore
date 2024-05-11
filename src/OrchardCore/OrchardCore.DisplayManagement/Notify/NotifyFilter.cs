@@ -62,7 +62,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             DeserializeNotifyEntries(messages, out var messageEntries);
 
-            if (messageEntries == null)
+            if (messageEntries is null)
             {
                 // An error occurred during deserialization.
                 _shouldDeleteCookie = true;

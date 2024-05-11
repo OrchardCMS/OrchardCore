@@ -37,7 +37,7 @@ namespace OrchardCore.Lists.Services
                 .OrderByDescending(x => x.Order)
                 .FirstOrDefaultAsync();
 
-            if (index != null)
+            if (index is not null)
             {
                 return index.Order + 1;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.Lists.Services
             foreach (var contentItem in contentItems)
             {
                 var containedPart = contentItem.As<ContainedPart>();
-                if (containedPart != null && containedPart.Order != orderOfFirstItem + i)
+                if (containedPart is not null && containedPart.Order != orderOfFirstItem + i)
                 {
                     containedPart.Order = orderOfFirstItem + i;
                     containedPart.Apply();
@@ -62,7 +62,7 @@ namespace OrchardCore.Lists.Services
                     if (!contentItem.IsPublished())
                     {
                         var publishedItem = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Published);
-                        if (publishedItem != null)
+                        if (publishedItem is not null)
                         {
                             publishedItem.Alter<ContainedPart>(x => x.Order = orderOfFirstItem + i);
                             await _contentManager.UpdateAsync(publishedItem);
@@ -104,7 +104,7 @@ namespace OrchardCore.Lists.Services
                 foreach (var contentItem in contentItemGroup)
                 {
                     var containedPart = contentItem.As<ContainedPart>();
-                    if (containedPart != null)
+                    if (containedPart is not null)
                     {
                         if (contentItem.Published && contentItem.Latest)
                         {
@@ -120,7 +120,7 @@ namespace OrchardCore.Lists.Services
                             // If a published version exists, find it, and set it to the same order as the draft.
                             var publishedItem = contentItemGroup.FirstOrDefault(p => p.Published == true && p.ContentItemId == contentItem.ContentItemId);
                             var publishedContainedPart = publishedItem?.As<ContainedPart>();
-                            if (publishedContainedPart != null)
+                            if (publishedContainedPart is not null)
                             {
                                 publishedContainedPart.Order = i;
                                 publishedContainedPart.Apply();
@@ -130,7 +130,7 @@ namespace OrchardCore.Lists.Services
                         {
                             // If a latest version exists, it will handle updating the order.
                             var latestItem = contentItemGroup.FirstOrDefault(l => l.Latest == true && l.ContentItemId == contentItem.ContentItemId);
-                            if (latestItem == null)
+                            if (latestItem is null)
                             {
                                 // Apply order to the published item.
                                 containedPart.Order = i;
@@ -160,7 +160,7 @@ namespace OrchardCore.Lists.Services
             ArgumentNullException.ThrowIfNull(containedItemOptions);
 
             IQuery<ContentItem> query = null;
-            if (pager.Before != null)
+            if (pager.Before is not null)
             {
                 if (enableOrdering)
                 {
@@ -219,7 +219,7 @@ namespace OrchardCore.Lists.Services
 
                 return containedItems;
             }
-            else if (pager.After != null)
+            else if (pager.After is not null)
             {
                 if (enableOrdering)
                 {
@@ -327,12 +327,12 @@ namespace OrchardCore.Lists.Services
         {
             var indexQuery = query.With<ContentItemIndex>();
 
-            if (before != null)
+            if (before is not null)
             {
                 indexQuery.Where(i => i.CreatedUtc > before);
             }
 
-            if (after != null)
+            if (after is not null)
             {
                 indexQuery.Where(i => i.CreatedUtc < after);
             }
@@ -368,7 +368,7 @@ namespace OrchardCore.Lists.Services
                 case ContentsStatus.Owner:
                     var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    if (currentUserName != null)
+                    if (currentUserName is not null)
                     {
                         query.With<ContentItemIndex>(i => (i.Published || i.Latest) && i.Owner == currentUserName);
                     }
@@ -381,12 +381,12 @@ namespace OrchardCore.Lists.Services
 
         private static Expression<Func<ContainedPartIndex, bool>> CreateOrderedContainedPartIndexFilter(int? before, int? after, string contentItemId)
         {
-            if (before != null)
+            if (before is not null)
             {
                 return x => x.Order < before && x.ListContentItemId == contentItemId;
             }
 
-            if (after != null)
+            if (after is not null)
             {
                 return x => x.Order > after && x.ListContentItemId == contentItemId;
             }

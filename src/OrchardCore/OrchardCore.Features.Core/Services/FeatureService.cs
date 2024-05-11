@@ -39,7 +39,7 @@ public class FeatureService
 
     public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeatures(string[] ids)
     {
-        if (ids == null || ids.Length == 0)
+        if (ids is null || ids.Length == 0)
         {
             return [];
         }

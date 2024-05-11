@@ -49,7 +49,7 @@ namespace OrchardCore.Taxonomies.Liquid
 
             var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId);
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return null;
             }

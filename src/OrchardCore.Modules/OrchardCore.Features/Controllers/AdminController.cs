@@ -88,7 +88,7 @@ namespace OrchardCore.Features.Controllers
                 return Forbid();
             }
 
-            if (model.FeatureIds == null || model.FeatureIds.Length == 0)
+            if (model.FeatureIds is null || model.FeatureIds.Length == 0)
             {
                 ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
             }
@@ -121,7 +121,7 @@ namespace OrchardCore.Features.Controllers
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
-                if (feature == null)
+                if (feature is null)
                 {
                     return;
                 }
@@ -161,7 +161,7 @@ namespace OrchardCore.Features.Controllers
             {
                 var feature = await featureService.GetAvailableFeature(id);
 
-                if (feature == null)
+                if (feature is null)
                 {
                     return;
                 }
@@ -221,7 +221,7 @@ namespace OrchardCore.Features.Controllers
                 _shellHost.TryGetSettings(tenant, out settings);
             }
 
-            if (settings != null && settings.Name != _shellSettings.Name)
+            if (settings is not null && settings.Name != _shellSettings.Name)
             {
                 return Url.Action(nameof(Features), new { tenant });
             }

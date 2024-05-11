@@ -15,7 +15,7 @@ namespace OrchardCore.AdminMenu.Models
             foreach (var menuItem in MenuItems)
             {
                 var found = menuItem.GetMenuItemById(id);
-                if (found != null)
+                if (found is not null)
                 {
                     return found;
                 }
@@ -48,7 +48,7 @@ namespace OrchardCore.AdminMenu.Models
             ArgumentNullException.ThrowIfNull(menuItemToInsert);
 
             // insert the node at the destination node
-            if (destinationMenuItem == null)
+            if (destinationMenuItem is null)
             {
                 MenuItems.Insert(position, menuItemToInsert);
                 return true; // success

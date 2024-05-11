@@ -31,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        [DebuggerDisplay(" { _shapeType == null ? _value : \"Shape: \" + _shapeType}", Name = "{_key,nq}")]
+        [DebuggerDisplay(" { _shapeType is null ? _value : \"Shape: \" + _shapeType}", Name = "{_key,nq}")]
         public class KeyValuePairs
         {
             public KeyValuePairs(string key, object value)

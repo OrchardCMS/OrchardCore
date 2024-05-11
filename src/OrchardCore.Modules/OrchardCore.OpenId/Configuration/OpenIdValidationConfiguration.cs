@@ -54,12 +54,12 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(AuthenticationOptions options)
         {
             var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
 
-            if (settings.Authority != null)
+            if (settings.Authority is not null)
             {
                 options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
                     OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
@@ -72,13 +72,13 @@ namespace OrchardCore.OpenId.Configuration
             CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
             {
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
-                if (service == null)
+                if (service is null)
                 {
                     return;
                 }
 
                 var configuration = await GetServerSettingsAsync(service);
-                if (configuration == null)
+                if (configuration is null)
                 {
                     return;
                 }
@@ -91,7 +91,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(OpenIddictValidationOptions options)
         {
             var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
@@ -102,7 +102,7 @@ namespace OrchardCore.OpenId.Configuration
             // Otherwise, set the authority to allow the handler to retrieve the endpoint URLs/signing keys
             // from the remote server's metadata by sending an OpenID Connect/OAuth 2.0 discovery request.
 
-            if (settings.Authority != null)
+            if (settings.Authority is not null)
             {
                 options.Issuer = settings.Authority;
                 options.ConfigurationEndpoint = settings.MetadataAddress;
@@ -129,13 +129,13 @@ namespace OrchardCore.OpenId.Configuration
             CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
             {
                 var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
-                if (service == null)
+                if (service is null)
                 {
                     return;
                 }
 
                 var configuration = await GetServerSettingsAsync(service);
-                if (configuration == null)
+                if (configuration is null)
                 {
                     return;
                 }
@@ -167,7 +167,7 @@ namespace OrchardCore.OpenId.Configuration
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
-                if (configuration.Authority != null)
+                if (configuration.Authority is not null)
                 {
                     options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
                 }
@@ -181,7 +181,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
+                        if (tenant is null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -195,7 +195,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(OpenIddictValidationDataProtectionOptions options)
         {
             var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }

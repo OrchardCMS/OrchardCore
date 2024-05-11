@@ -68,7 +68,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             var fieldType = fieldProvider.GetField(field, part.Name, customFieldName);
 
-                            if (fieldType != null)
+                            if (fieldType is not null)
                             {
                                 if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
                                 {
@@ -85,7 +85,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 {
                     // Check if another builder has already added a field for this part.
                     var existingField = contentItemType.GetField(partName.ToFieldName());
-                    if (existingField != null)
+                    if (existingField is not null)
                     {
                         // Add content field types.
                         foreach (var field in part.PartDefinition.Fields)
@@ -94,7 +94,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             {
                                 var contentFieldType = fieldProvider.GetField(field, part.Name);
 
-                                if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
+                                if (contentFieldType is not null && !contentItemType.HasField(contentFieldType.Name))
                                 {
                                     contentItemType.AddField(contentFieldType);
                                     break;

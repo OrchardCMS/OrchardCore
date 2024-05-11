@@ -31,14 +31,14 @@ namespace OrchardCore.Lists.Controllers
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
 
             var listPart = contentItem.As<ListPart>();
 
-            if (listPart == null)
+            if (listPart is null)
             {
                 return NotFound();
             }

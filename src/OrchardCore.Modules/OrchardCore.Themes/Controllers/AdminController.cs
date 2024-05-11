@@ -55,8 +55,8 @@ namespace OrchardCore.Themes.Controllers
 
             var currentSiteThemeExtensionInfo = await _siteThemeService.GetSiteThemeAsync();
             var currentAdminThemeExtensionInfo = await _adminThemeService.GetAdminThemeAsync();
-            var currentAdminTheme = currentAdminThemeExtensionInfo != null ? new ThemeEntry(currentAdminThemeExtensionInfo) : default;
-            var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default;
+            var currentAdminTheme = currentAdminThemeExtensionInfo is not null ? new ThemeEntry(currentAdminThemeExtensionInfo) : default;
+            var currentSiteTheme = currentSiteThemeExtensionInfo is not null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default;
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
             var themes = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
@@ -121,7 +121,7 @@ namespace OrchardCore.Themes.Controllers
                 var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                     .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
 
-                if (feature == null)
+                if (feature is null)
                 {
                     return NotFound();
                 }
@@ -196,7 +196,7 @@ namespace OrchardCore.Themes.Controllers
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                 .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
 
-            if (feature == null)
+            if (feature is null)
             {
                 return NotFound();
             }
@@ -219,7 +219,7 @@ namespace OrchardCore.Themes.Controllers
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
                 .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
 
-            if (feature == null)
+            if (feature is null)
             {
                 return NotFound();
             }

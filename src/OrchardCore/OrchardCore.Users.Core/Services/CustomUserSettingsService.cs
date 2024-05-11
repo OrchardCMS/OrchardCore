@@ -62,7 +62,7 @@ public class CustomUserSettingsService
     public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Func<Task> factoryAsync = null)
     {
         var settingsType = await GetSettingsTypeAsync(settingsTypeName);
-        if (settingsType == null)
+        if (settingsType is null)
         {
             return [];
         }
@@ -77,7 +77,7 @@ public class CustomUserSettingsService
         foreach (var user in users)
         {
             var item = await GetSettingsAsync(user, settingsType, factoryAsync);
-            if (item != null)
+            if (item is not null)
             {
                 contentItems.Add(user.UserId, item);
             }

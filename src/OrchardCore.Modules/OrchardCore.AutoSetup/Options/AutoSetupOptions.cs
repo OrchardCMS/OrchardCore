@@ -53,7 +53,7 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("The single 'Default' tenant should be provided.");
             }
 
-            if (LockOptions != null && (LockOptions.LockExpiration <= 0 || LockOptions.LockTimeout <= 0))
+            if (LockOptions is not null && (LockOptions.LockExpiration <= 0 || LockOptions.LockTimeout <= 0))
             {
                 yield return new ValidationResult("Lock option's 'LockExpiration' and 'LockTimeout' should be greater than zero.");
             }

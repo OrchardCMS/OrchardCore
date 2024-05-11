@@ -11,7 +11,7 @@ namespace OrchardCore.Html.RemotePublishing
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
             var bodyPart = contentItem.As<HtmlBodyPart>();
-            if (bodyPart == null)
+            if (bodyPart is null)
             {
                 return;
             }
@@ -21,7 +21,7 @@ namespace OrchardCore.Html.RemotePublishing
 
         public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            if (contentItem.As<HtmlBodyPart>() != null)
+            if (contentItem.As<HtmlBodyPart>() is not null)
             {
                 contentItem.Alter<HtmlBodyPart>(x => x.Html = rpcStruct.Optional<string>("description"));
             }

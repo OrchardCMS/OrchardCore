@@ -58,7 +58,7 @@ namespace OrchardCore.Autoroute.Drivers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var homeRoute = siteSettings.HomeRoute;
 
-                if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+                if (homeRoute is not null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
                 {
                     if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
@@ -106,7 +106,7 @@ namespace OrchardCore.Autoroute.Drivers
 
                 var httpContext = _httpContextAccessor.HttpContext;
 
-                if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
+                if (httpContext is not null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
                 {
                     await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }

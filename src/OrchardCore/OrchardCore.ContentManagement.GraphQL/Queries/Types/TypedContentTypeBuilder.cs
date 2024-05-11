@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 var collapsePart = _contentOptions.ShouldCollapse(part);
 
-                if (queryGraphType != null)
+                if (queryGraphType is not null)
                 {
                     if (collapsePart)
                     {
@@ -129,10 +129,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     return queryInputGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
                 });
 
-                if (inputGraphTypeResolved != null)
+                if (inputGraphTypeResolved is not null)
                 {
                     var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
-                    if (whereArgument == null)
+                    if (whereArgument is null)
                     {
                         return;
                     }

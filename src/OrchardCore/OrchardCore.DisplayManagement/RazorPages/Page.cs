@@ -99,7 +99,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         {
             get
             {
-                if (_orchardHelper == null)
+                if (_orchardHelper is null)
                 {
                     EnsureDisplayHelper();
                     _orchardHelper = new OrchardDisplayHelper(HttpContext, _displayHelper);
@@ -166,7 +166,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         {
             get
             {
-                if (_t == null)
+                if (_t is null)
                 {
                     _t = HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
                     ((IViewContextAware)_t).Contextualize(ViewContext);
@@ -263,7 +263,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
         public static object OrDefault(object text, object other)
         {
-            if (text == null || Convert.ToString(text) == "")
+            if (text is null || Convert.ToString(text) == "")
             {
                 return other;
             }

@@ -34,7 +34,7 @@
 
     tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-    if (parentTag != null)
+    if (parentTag is not null)
     {
         foreach (var item in Model.Items)
         {

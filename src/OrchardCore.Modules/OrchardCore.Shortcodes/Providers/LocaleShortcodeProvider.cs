@@ -23,7 +23,7 @@ namespace OrchardCore.Shortcodes.Providers
             var argFallback = arguments.NamedOrAt("fallback", 1);
 
             // Default value of true for the fallback argument.
-            var fallback = argFallback == null || Convert.ToBoolean(argFallback);
+            var fallback = argFallback is null || Convert.ToBoolean(argFallback);
             var currentCulture = CultureInfo.CurrentUICulture;
 
             if (fallback)

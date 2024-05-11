@@ -44,7 +44,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 
         _siteService ??= context.HttpContext.RequestServices.GetService<ISiteService>();
 
-        if (_siteService == null)
+        if (_siteService is null)
         {
             return;
         }

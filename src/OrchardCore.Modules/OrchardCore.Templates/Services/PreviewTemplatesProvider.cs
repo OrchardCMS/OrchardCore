@@ -24,7 +24,7 @@ namespace OrchardCore.Templates.Services
                 {
                     var viewModel = model as TemplateViewModel;
 
-                    if (viewModel == null || viewModel.Name == null)
+                    if (viewModel is null || viewModel.Name is null)
                     {
                         return templatesDocument;
                     }

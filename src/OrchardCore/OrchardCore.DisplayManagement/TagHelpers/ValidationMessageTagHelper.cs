@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             ArgumentNullException.ThrowIfNull(output);
 
-            if (For != null)
+            if (For is not null)
             {
                 // contextualize IHtmlHelper
                 var viewContextAware = _htmlHelper as IViewContextAware;

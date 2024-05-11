@@ -98,7 +98,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             get
             {
-                if (_orchardHelper == null)
+                if (_orchardHelper is null)
                 {
                     EnsureDisplayHelper();
                     _orchardHelper = new OrchardDisplayHelper(Context, _displayHelper);
@@ -165,7 +165,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             get
             {
-                if (_t == null)
+                if (_t is null)
                 {
                     _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
                     ((IViewContextAware)_t).Contextualize(ViewContext);
@@ -308,7 +308,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public static object OrDefault(object text, object other)
         {
-            if (text == null || Convert.ToString(text) == "")
+            if (text is null || Convert.ToString(text) == "")
             {
                 return other;
             }

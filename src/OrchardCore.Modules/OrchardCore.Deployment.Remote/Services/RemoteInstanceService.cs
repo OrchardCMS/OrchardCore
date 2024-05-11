@@ -39,7 +39,7 @@ namespace OrchardCore.Deployment.Remote.Services
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
             var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
-            if (remoteInstance != null)
+            if (remoteInstance is not null)
             {
                 remoteInstanceList.RemoteInstances.Remove(remoteInstance);
                 await _documentManager.UpdateAsync(remoteInstanceList);

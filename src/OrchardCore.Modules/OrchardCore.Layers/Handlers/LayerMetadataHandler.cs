@@ -26,7 +26,7 @@ namespace OrchardCore.Layers.Handlers
         {
             var layerMetadata = contentItem.As<LayerMetadata>();
 
-            if (layerMetadata == null)
+            if (layerMetadata is null)
             {
                 return Task.CompletedTask;
             }

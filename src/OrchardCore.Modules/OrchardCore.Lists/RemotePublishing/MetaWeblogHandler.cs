@@ -282,7 +282,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
-            if (publishedUtc == null)
+            if (publishedUtc is null)
             {
                 // Take the local one
                 publishedUtc = content.Optional<DateTime?>("dateCreated");
@@ -293,7 +293,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
-            if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
+            if (publish && (publishedUtc is null || publishedUtc <= DateTime.UtcNow))
             {
                 await _contentManager.PublishAsync(contentItem);
             }
@@ -302,7 +302,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 await _contentManager.SaveDraftAsync(contentItem);
             }
 
-            if (publishedUtc != null)
+            if (publishedUtc is not null)
             {
                 contentItem.CreatedUtc = publishedUtc;
             }
@@ -366,7 +366,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
-            if (publishedUtc == null)
+            if (publishedUtc is null)
             {
                 // take the local one
                 publishedUtc = content.Optional<DateTime?>("dateCreated");
@@ -377,7 +377,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
-            if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
+            if (publish && (publishedUtc is null || publishedUtc <= DateTime.UtcNow))
             {
                 await _contentManager.PublishAsync(contentItem);
             }
@@ -386,7 +386,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 await _contentManager.SaveDraftAsync(contentItem);
             }
 
-            if (publishedUtc != null)
+            if (publishedUtc is not null)
             {
                 contentItem.CreatedUtc = publishedUtc;
             }
@@ -433,7 +433,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
             var storeUser = await _membershipService.GetUserAsync(userName);
 
-            if (storeUser == null)
+            if (storeUser is null)
             {
                 return null;
             }
@@ -461,7 +461,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 .Set("link", url)
                 .Set("permaLink", url);
 
-            if (contentItem.PublishedUtc != null)
+            if (contentItem.PublishedUtc is not null)
             {
                 blogStruct.Set("dateCreated", contentItem.PublishedUtc);
                 blogStruct.Set("date_created_gmt", contentItem.PublishedUtc);
@@ -496,7 +496,7 @@ namespace OrchardCore.Lists.RemotePublishing
             {
                 var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
-                if (definition == null)
+                if (definition is null)
                 {
                     continue;
                 }

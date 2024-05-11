@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Zones
         public static bool operator ==(ZoneOnDemand _, object b)
         {
             // If ZoneOnDemand is compared to null it must return true.
-            return b == null || ReferenceEquals(b, Nil.Instance);
+            return b is null || ReferenceEquals(b, Nil.Instance);
         }
 
         public static bool operator !=(ZoneOnDemand a, object b)
@@ -109,9 +109,9 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override async ValueTask<IShape> AddAsync(object item, string position)
         {
-            if (item == null)
+            if (item is null)
             {
-                if (_zone != null)
+                if (_zone is not null)
                 {
                     return _zone;
                 }
@@ -119,7 +119,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 return this;
             }
 
-            if (_zone == null)
+            if (_zone is null)
             {
                 _zone = await _zoneFactory();
                 _zone.Properties["Parent"] = _parent;

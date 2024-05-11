@@ -35,7 +35,7 @@ namespace OrchardCore.Roles.ViewComponents
         {
             var roleNames = await _roleService.GetRoleNamesAsync();
 
-            if (except != null)
+            if (except is not null)
             {
                 roleNames = roleNames.Except(except, StringComparer.OrdinalIgnoreCase);
             }

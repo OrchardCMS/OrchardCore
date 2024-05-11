@@ -65,7 +65,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     ModelState.AddModelError("Email", S["This email is already your current one."]);
                 }
-                else if (userWithEmail != null && user.UserName != userWithEmail.UserName)
+                else if (userWithEmail is not null && user.UserName != userWithEmail.UserName)
                 {
                     ModelState.AddModelError("Email", S["A user with the same email already exists."]);
                 }

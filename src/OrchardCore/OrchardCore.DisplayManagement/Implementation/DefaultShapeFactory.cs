@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         private async Task<ShapeTable> GetShapeTableAsync()
         {
-            if (_scopedShapeTable == null)
+            if (_scopedShapeTable is null)
             {
                 var theme = await _themeManager.GetThemeAsync();
                 _scopedShapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
@@ -82,7 +82,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Creating(creatingContext);
             }
 
-            if (shapeDescriptor != null)
+            if (shapeDescriptor is not null)
             {
                 foreach (var ev in shapeDescriptor.CreatingAsync)
                 {
@@ -107,7 +107,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             shapeMetadata.Type = shapeType;
 
             // Merge wrappers if there are any.
-            if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
+            if (shapeDescriptor is not null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
             {
                 shapeMetadata.Wrappers.AddRange(shapeDescriptor.Wrappers);
             }
@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 ev.Created(createdContext);
             }
 
-            if (shapeDescriptor != null)
+            if (shapeDescriptor is not null)
             {
                 foreach (var ev in shapeDescriptor.CreatedAsync)
                 {
@@ -126,7 +126,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 }
             }
 
-            if (creatingContext != null)
+            if (creatingContext is not null)
             {
                 foreach (var ev in creatingContext.OnCreated)
                 {

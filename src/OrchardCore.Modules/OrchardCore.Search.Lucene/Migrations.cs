@@ -103,9 +103,9 @@ namespace OrchardCore.Search.Lucene
                         var included = existingPartSettings["Included"];
                         var analyzed = existingPartSettings["Analyzed"];
 
-                        if (included != null)
+                        if (included is not null)
                         {
-                            if (analyzed != null)
+                            if (analyzed is not null)
                             {
                                 if ((bool)included && !(bool)analyzed)
                                 {
@@ -141,9 +141,9 @@ namespace OrchardCore.Search.Lucene
                             var included = existingFieldSettings["Included"];
                             var analyzed = existingFieldSettings["Analyzed"];
 
-                            if (included != null)
+                            if (included is not null)
                             {
-                                if (analyzed != null)
+                                if (analyzed is not null)
                                 {
                                     if ((bool)included && !(bool)analyzed)
                                     {

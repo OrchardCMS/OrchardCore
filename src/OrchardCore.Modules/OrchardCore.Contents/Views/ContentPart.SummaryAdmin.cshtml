@@ -4,7 +4,7 @@
     string name = Model.Metadata.Name;
 }
 
-@if (Model.Content != null)
+@if (Model.Content is not null)
 {
     <div class="contentpart contentpart-@name.HtmlClassify()">
         @await DisplayAsync(Model.Content)

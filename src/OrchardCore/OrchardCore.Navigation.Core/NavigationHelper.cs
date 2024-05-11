@@ -45,7 +45,7 @@ namespace OrchardCore.Navigation
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
-                if (menuItem.Items != null && menuItem.Items.Count > 0)
+                if (menuItem.Items is not null && menuItem.Items.Count > 0)
                 {
                     await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
@@ -74,7 +74,7 @@ namespace OrchardCore.Navigation
                 .Item(menuItem)
                 .Menu(menu)
                 .Parent(parentShape)
-                .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
+                .Level(parentShape.Level is null ? 1 : (int)parentShape.Level + 1)
                 .Priority(menuItem.Priority)
                 .Local(menuItem.LocalNav)
                 .Hash((parentShape.Hash + menuItem.Text.Value).GetHashCode().ToString())
@@ -134,11 +134,11 @@ namespace OrchardCore.Navigation
             var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
             // Apply the selection to the hierarchy
-            if (selectedItem != null)
+            if (selectedItem is not null)
             {
                 viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
 
-                while (selectedItem.Parent != null)
+                while (selectedItem.Parent is not null)
                 {
                     selectedItem = selectedItem.Parent;
                     selectedItem.Selected = true;
@@ -164,7 +164,7 @@ namespace OrchardCore.Navigation
 
                 if (item.Selected == true)
                 {
-                    if (result == null) // found the first one
+                    if (result is null) // found the first one
                     {
                         result = item;
                     }

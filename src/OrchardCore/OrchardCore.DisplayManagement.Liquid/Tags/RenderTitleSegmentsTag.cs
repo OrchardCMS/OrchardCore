@@ -26,10 +26,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var segment = (await segmentExpression.EvaluateAsync(context)).ToStringValue();
 
             var positionExpression = arguments["position", 1];
-            var position = positionExpression == null ? "0" : (await positionExpression.EvaluateAsync(context)).ToStringValue();
+            var position = positionExpression is null ? "0" : (await positionExpression.EvaluateAsync(context)).ToStringValue();
 
             var separatorExpression = arguments["separator", 2];
-            var separator = separatorExpression == null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context)).ToStringValue());
+            var separator = separatorExpression is null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context)).ToStringValue());
 
             titleBuilder.AddSegment(new HtmlString(segment), position);
             titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder)encoder);

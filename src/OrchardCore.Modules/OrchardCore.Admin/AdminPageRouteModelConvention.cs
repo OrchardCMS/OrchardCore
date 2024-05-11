@@ -16,7 +16,7 @@ namespace OrchardCore.Admin
         {
             var route = model.Selectors.FirstOrDefault()?.AttributeRouteModel;
 
-            if (route == null)
+            if (route is null)
             {
                 return;
             }

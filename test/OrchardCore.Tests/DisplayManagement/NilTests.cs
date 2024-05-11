@@ -9,8 +9,8 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             var nil = Nil.Instance;
 
-            Assert.True(nil == null);
-            Assert.False(nil != null);
+            Assert.True(nil is null);
+            Assert.False(nil is not null);
 
             Assert.True(nil == Nil.Instance);
             Assert.False(nil != Nil.Instance);
@@ -21,9 +21,9 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             dynamic nil = Nil.Instance;
 
-            Assert.True(nil == null);
-            Assert.True(nil.Foo == null);
-            Assert.True(nil.Foo.Bar == null);
+            Assert.True(nil is null);
+            Assert.True(nil.Foo is null);
+            Assert.True(nil.Foo.Bar is null);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.DisplayManagement
         public void ConvertingToStringShouldReturnNullString()
         {
             dynamic nil = Nil.Instance;
-            Assert.True((string)nil == null);
+            Assert.True((string)nil is null);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace OrchardCore.Sitemaps.Builders
         public async Task BuildAsync(SitemapType sitemap, SitemapBuilderContext context)
         {
             var tSitemap = sitemap as TSitemapType;
-            if (tSitemap != null)
+            if (tSitemap is not null)
             {
                 await BuildSitemapTypeAsync(tSitemap, context);
             }

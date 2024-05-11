@@ -5,19 +5,19 @@
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-@if (Model.Header?.Search != null || Model.Header?.ActionBarButtons)
+@if (Model.Header?.Search is not null || Model.Header?.ActionBarButtons)
 {
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
-                @if (Model.Header.Search != null)
+                @if (Model.Header.Search is not null)
                 {
                     <div class="col">
                         @await DisplayAsync(Model.Header.Search)
                     </div>
                 }
 
-                @if (Model.Header.ActionBarButtons != null)
+                @if (Model.Header.ActionBarButtons is not null)
                 {
                     <div class="col-auto">
                         @await DisplayAsync(Model.Header.ActionBarButtons)
@@ -29,17 +29,17 @@
 }
 
 <div class="list-group with-checkbox notification-container">
-    @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
+    @if (Model.Header?.Summary is not null || Model.Header?.Actions is not null)
     {
         <div class="list-group-item text-bg-theme">
             <div class="row gx-3">
-                @if (Model.Header.Summary != null)
+                @if (Model.Header.Summary is not null)
                 {
                     <div class="col">
                         @await DisplayAsync(Model.Header.Summary)
                     </div>
                 }
-                @if (Model.Header.Actions != null)
+                @if (Model.Header.Actions is not null)
                 {
                     <div class="col col-md-auto text-end">
                         @await DisplayAsync(Model.Header.Actions)

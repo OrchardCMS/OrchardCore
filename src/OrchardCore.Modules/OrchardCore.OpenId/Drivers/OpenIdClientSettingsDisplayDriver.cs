@@ -68,7 +68,7 @@ namespace OrchardCore.OpenId.Drivers
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
-                model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
+                model.Scopes = settings.Scopes is not null ? string.Join(" ", settings.Scopes) : null;
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;

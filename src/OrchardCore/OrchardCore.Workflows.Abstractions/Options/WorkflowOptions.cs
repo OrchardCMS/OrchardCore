@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Options
         {
             if (ActivityDictionary.TryGetValue(activityType, out var value))
             {
-                if (driverType != null)
+                if (driverType is not null)
                 {
                     value.DriverTypes.Add(driverType);
                 }

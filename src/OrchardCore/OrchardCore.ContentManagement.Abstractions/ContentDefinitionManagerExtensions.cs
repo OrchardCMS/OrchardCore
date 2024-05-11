@@ -57,7 +57,7 @@ namespace OrchardCore.ContentManagement.Metadata
             foreach (var contentType in contentTypes)
             {
                 var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == typeof(TPart).Name);
-                if (partDefinition != null)
+                if (partDefinition is not null)
                 {
                     var existingSettings = partDefinition.Settings.ToObject<TSettings>();
 

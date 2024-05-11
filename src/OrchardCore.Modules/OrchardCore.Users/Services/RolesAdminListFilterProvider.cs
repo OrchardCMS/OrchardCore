@@ -24,7 +24,7 @@ public class RolesAdminListFilterProvider : IUsersAdminListFilterProvider
 
                         var user = httpContextAccessor.HttpContext?.User;
 
-                        if (user != null && !await authorizationService.AuthorizeAsync(user, CommonPermissions.ListUsers))
+                        if (user is not null && !await authorizationService.AuthorizeAsync(user, CommonPermissions.ListUsers))
                         {
                             // At this point the user cannot see all users, so lets see what role does he have access too and filter by them.
                             var accessibleRoles = await roleService.GetAccessibleRoleNamesAsync(authorizationService, user, CommonPermissions.ListUsers);

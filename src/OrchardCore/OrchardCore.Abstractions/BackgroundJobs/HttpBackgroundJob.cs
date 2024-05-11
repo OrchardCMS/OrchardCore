@@ -27,7 +27,7 @@ public static class HttpBackgroundJob
 
         // Can't be executed outside of an http context.
         var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-        if (httpContextAccessor.HttpContext == null)
+        if (httpContextAccessor.HttpContext is null)
         {
             return Task.CompletedTask;
         }
@@ -40,7 +40,7 @@ public static class HttpBackgroundJob
             var timeoutTask = Task.Delay(60_000);
 
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
-            while (httpContextAccessor.HttpContext != null)
+            while (httpContextAccessor.HttpContext is not null)
             {
                 await Task.Delay(1_000);
                 if (timeoutTask.IsCompleted)

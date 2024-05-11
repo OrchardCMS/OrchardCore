@@ -32,7 +32,7 @@ namespace OrchardCore.Media.Services
                 {
                     var tempDir = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
 
-                    if (await _fileStore.GetDirectoryInfoAsync(tempDir) == null)
+                    if (await _fileStore.GetDirectoryInfoAsync(tempDir) is null)
                     {
                         return;
                     }

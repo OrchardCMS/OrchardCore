@@ -160,7 +160,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.GetTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
@@ -181,7 +181,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(id);
 
-            if (contentTypeDefinition == null)
+            if (contentTypeDefinition is null)
             {
                 return NotFound();
             }
@@ -200,7 +200,7 @@ namespace OrchardCore.ContentTypes.Controllers
             else
             {
                 var ownedPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(contentTypeDefinition.Name);
-                if (ownedPartDefinition != null && viewModel.OrderedFieldNames != null)
+                if (ownedPartDefinition is not null && viewModel.OrderedFieldNames is not null)
                 {
                     await _contentDefinitionService.AlterPartFieldsOrderAsync(ownedPartDefinition, viewModel.OrderedFieldNames);
                 }
@@ -222,7 +222,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
@@ -244,7 +244,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.GetTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
@@ -255,7 +255,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
-                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition is not null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -273,13 +273,13 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.GetTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
 
             var reusableParts = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
-                    .Where(cpd => cpd.PartDefinition != null &&
+                    .Where(cpd => cpd.PartDefinition is not null &&
                         cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
                         cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
 
@@ -305,7 +305,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
@@ -342,7 +342,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-            if (typeViewModel == null)
+            if (typeViewModel is null)
             {
                 return NotFound();
             }
@@ -417,7 +417,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
+            if (typeViewModel is null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -501,7 +501,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.AddPartAsync(viewModel);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 await _notifier.InformationAsync(H["The content part could not be created."]);
                 return View(viewModel);
@@ -522,7 +522,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var contentPartDefinition = await _contentDefinitionManager.GetPartDefinitionAsync(id);
 
-            if (contentPartDefinition == null)
+            if (contentPartDefinition is null)
             {
                 return NotFound();
             }
@@ -546,7 +546,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var contentPartDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(id);
 
-            if (contentPartDefinition == null)
+            if (contentPartDefinition is null)
             {
                 return NotFound();
             }
@@ -581,7 +581,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.LoadPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
@@ -612,7 +612,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.LoadPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
@@ -637,7 +637,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.LoadPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
@@ -719,14 +719,14 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.GetPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
 
             var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (partFieldDefinition?.FieldDefinition?.Name == null
+            if (partFieldDefinition?.FieldDefinition?.Name is null
                 || !(await _contentDefinitionService.GetFieldsAsync()).Any(field => string.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
@@ -755,21 +755,21 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 return NotFound();
             }
 
             var partViewModel = await _contentDefinitionService.LoadPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
 
             var field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
-            if (field == null)
+            if (field is null)
             {
                 return NotFound();
             }
@@ -831,7 +831,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 // Redirect to the type editor if a type exists with this name
                 var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
-                if (typeViewModel != null)
+                if (typeViewModel is not null)
                 {
                     return RedirectToAction(nameof(Edit), new { id });
                 }
@@ -850,14 +850,14 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partViewModel = await _contentDefinitionService.LoadPartAsync(id);
 
-            if (partViewModel == null)
+            if (partViewModel is null)
             {
                 return NotFound();
             }
 
             var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (field == null)
+            if (field is null)
             {
                 return NotFound();
             }
@@ -866,7 +866,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             await _notifier.SuccessAsync(H["The \"{0}\" field has been removed.", field.DisplayName()]);
 
-            if (await _contentDefinitionService.LoadTypeAsync(id) != null)
+            if (await _contentDefinitionService.LoadTypeAsync(id) is not null)
             {
                 return RedirectToAction(nameof(Edit), new { id });
             }
@@ -888,14 +888,14 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(id);
 
-            if (typeDefinition == null)
+            if (typeDefinition is null)
             {
                 return NotFound();
             }
 
             var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (typePartDefinition == null)
+            if (typePartDefinition is null)
             {
                 return NotFound();
             }
@@ -923,21 +923,21 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            if (viewModel == null)
+            if (viewModel is null)
             {
                 return NotFound();
             }
 
             var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(id);
 
-            if (typeDefinition == null)
+            if (typeDefinition is null)
             {
                 return NotFound();
             }
 
             var part = typeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
-            if (part == null)
+            if (part is null)
             {
                 return NotFound();
             }

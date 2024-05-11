@@ -93,7 +93,7 @@ namespace OrchardCore.Menu.Controllers
                 menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
             }
 
-            if (menu == null)
+            if (menu is null)
             {
                 return NotFound();
             }
@@ -110,7 +110,7 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            if (menuItemId == null)
+            if (menuItemId is null)
             {
                 // Use the menu as the parent if no target is specified.
                 menu.Alter<MenuItemsListPart>(part => part.MenuItems.Add(contentItem));
@@ -121,14 +121,14 @@ namespace OrchardCore.Menu.Controllers
                 var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
                 // Couldn't find targeted menu item.
-                if (parentMenuItem == null)
+                if (parentMenuItem is null)
                 {
                     return NotFound();
                 }
 
                 var menuItems = (JsonArray)parentMenuItem["MenuItemsListPart"]?["MenuItems"];
 
-                if (menuItems == null)
+                if (menuItems is null)
                 {
                     parentMenuItem["MenuItemsListPart"] = new JsonObject
                     {
@@ -148,7 +148,7 @@ namespace OrchardCore.Menu.Controllers
         {
             var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
-            if (menu == null)
+            if (menu is null)
             {
                 return NotFound();
             }
@@ -162,7 +162,7 @@ namespace OrchardCore.Menu.Controllers
             var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
-            if (menuItem == null)
+            if (menuItem is null)
             {
                 return NotFound();
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.Menu.Controllers
                 menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
             }
 
-            if (menu == null)
+            if (menu is null)
             {
                 return NotFound();
             }
@@ -208,7 +208,7 @@ namespace OrchardCore.Menu.Controllers
             var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item
-            if (menuItem == null)
+            if (menuItem is null)
             {
                 return NotFound();
             }
@@ -257,7 +257,7 @@ namespace OrchardCore.Menu.Controllers
                 ? await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired)
                 : await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
-            if (menu == null)
+            if (menu is null)
             {
                 return NotFound();
             }
@@ -267,7 +267,7 @@ namespace OrchardCore.Menu.Controllers
             var menuItem = FindMenuItem(menuContentAsJson, menuItemId);
 
             // Couldn't find targeted menu item.
-            if (menuItem == null)
+            if (menuItem is null)
             {
                 return NotFound();
             }
@@ -302,7 +302,7 @@ namespace OrchardCore.Menu.Controllers
                 // Search in inner menu items.
                 result = FindMenuItem(menuItem, menuItemId);
 
-                if (result != null)
+                if (result is not null)
                 {
                     return result;
                 }

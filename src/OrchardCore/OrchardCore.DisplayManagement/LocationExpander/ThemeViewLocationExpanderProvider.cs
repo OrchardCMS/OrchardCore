@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
         {
             var currentTheme = context.ActionContext.HttpContext.Features.Get<RazorViewFeature>()?.Theme;
 
-            if (currentTheme != null)
+            if (currentTheme is not null)
             {
                 context.Values["Theme"] = currentTheme.Id;
             }
@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                 .GetFeatures()
                 .FirstOrDefault(x => x.Id == _hostingEnvironment.ApplicationName);
 
-            if (applicationTheme != null)
+            if (applicationTheme is not null)
             {
                 currentThemeAndBaseThemesOrdered.Insert(0, applicationTheme);
             }
@@ -68,9 +68,9 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                     var themePagesPath = '/' + theme.Extension.SubPath + "/Pages";
                     var themeViewsPath = '/' + theme.Extension.SubPath + "/Views";
 
-                    if (context.AreaName != null)
+                    if (context.AreaName is not null)
                     {
-                        if (context.PageName != null)
+                        if (context.PageName is not null)
                         {
                             result.Add(themePagesPath + "/{2}/{0}" + RazorViewEngine.ViewExtension);
                         }
@@ -80,12 +80,12 @@ namespace OrchardCore.DisplayManagement.LocationExpander
                         }
                     }
 
-                    if (context.PageName != null)
+                    if (context.PageName is not null)
                     {
                         result.Add(themePagesPath + "/Shared/{0}" + RazorViewEngine.ViewExtension);
                     }
 
-                    if (context.AreaName != null)
+                    if (context.AreaName is not null)
                     {
                         result.Add(themeViewsPath + "/{2}/Shared/{0}" + RazorViewEngine.ViewExtension);
                     }

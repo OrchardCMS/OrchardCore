@@ -84,7 +84,7 @@ namespace OrchardCore.ContentManagement.Display.Placement
         protected static bool HasContent(ShapePlacementContext context)
         {
             var shape = context.ZoneShape as Shape;
-            return shape != null && shape.TryGetProperty("ContentItem", out object contentItem) && contentItem != null;
+            return shape is not null && shape.TryGetProperty("ContentItem", out object contentItem) && contentItem is not null;
         }
 
         protected static ContentItem GetContent(ShapePlacementContext context)

@@ -37,7 +37,7 @@ namespace OrchardCore.Search.Lucene.Recipes
                     foreach (var indexName in indices)
                     {
                         var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync(indexName);
-                        if (luceneIndexSettings != null)
+                        if (luceneIndexSettings is not null)
                         {
                             await luceneIndexingService.RebuildIndexAsync(indexName);
                             await luceneIndexingService.ProcessContentItemsAsync(indexName);

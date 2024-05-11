@@ -27,7 +27,7 @@ namespace OrchardCore.ContentLocalization.Security
                 return;
             }
 
-            if (context.Resource == null)
+            if (context.Resource is null)
             {
                 return;
             }
@@ -36,7 +36,7 @@ namespace OrchardCore.ContentLocalization.Security
 
             Permission permission = null;
 
-            if (contentItem != null)
+            if (contentItem is not null)
             {
                 if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
@@ -44,7 +44,7 @@ namespace OrchardCore.ContentLocalization.Security
                 }
             }
 
-            if (permission == null)
+            if (permission is null)
             {
                 return;
             }
@@ -70,7 +70,7 @@ namespace OrchardCore.ContentLocalization.Security
 
         private static bool HasOwnership(ClaimsPrincipal user, ContentItem content)
         {
-            if (user == null || content == null)
+            if (user is null || content is null)
             {
                 return false;
             }
@@ -80,7 +80,7 @@ namespace OrchardCore.ContentLocalization.Security
 
         private static bool OwnerVariationExists(Permission permission)
         {
-            return GetOwnerVariation(permission) != null;
+            return GetOwnerVariation(permission) is not null;
         }
     }
 }

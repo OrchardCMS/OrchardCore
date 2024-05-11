@@ -31,6 +31,6 @@ public class PermissionGroupKey
     {
         var other = obj as PermissionGroupKey;
 
-        return other != null && Key.Equals(other.Key, StringComparison.Ordinal);
+        return other is not null && Key.Equals(other.Key, StringComparison.Ordinal);
     }
 }

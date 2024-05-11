@@ -129,7 +129,7 @@ public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, I
 {
     // Cast the received item to the concrete admin node type we are handling.
     var node = menuItem as LinkAdminNode;
-    if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+    if (node is null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
     {
         return Task.CompletedTask;
     }

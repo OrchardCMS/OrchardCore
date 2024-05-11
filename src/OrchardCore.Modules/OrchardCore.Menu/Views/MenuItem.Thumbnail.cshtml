@@ -2,7 +2,7 @@
 
 <div class="card h-100">
     <div class="card-body">
-        @if (Model.Content != null)
+        @if (Model.Content is not null)
         {
             @await DisplayAsync(Model.Content)
         }

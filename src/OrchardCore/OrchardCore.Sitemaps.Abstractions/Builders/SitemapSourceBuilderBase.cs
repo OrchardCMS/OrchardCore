@@ -11,7 +11,7 @@ namespace OrchardCore.Sitemaps.Builders
         async Task ISitemapSourceBuilder.BuildAsync(SitemapSource source, SitemapBuilderContext context)
         {
             var tSource = source as TSitemapSource;
-            if (tSource != null)
+            if (tSource is not null)
             {
                 await BuildSourceAsync(tSource, context);
             }

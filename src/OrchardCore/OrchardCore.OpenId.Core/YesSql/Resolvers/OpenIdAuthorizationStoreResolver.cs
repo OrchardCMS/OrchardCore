@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         public IOpenIddictAuthorizationStore<TAuthorization> Get<TAuthorization>() where TAuthorization : class
         {
             var store = _provider.GetService<IOpenIddictAuthorizationStore<TAuthorization>>();
-            if (store != null)
+            if (store is not null)
             {
                 return store;
             }

@@ -28,13 +28,13 @@ namespace OrchardCore.Menu
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
+                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias is not null
                         ? await handleManager.GetContentItemIdAsync(alias.ToString())
                         : menu.TryGetProperty("ContentItemId", out object id)
                             ? id.ToString()
                             : null;
 
-                    if (contentItemId == null)
+                    if (contentItemId is null)
                     {
                         return;
                     }
@@ -43,7 +43,7 @@ namespace OrchardCore.Menu
 
                     var menuContentItem = await contentManager.GetAsync(contentItemId);
 
-                    if (menuContentItem == null)
+                    if (menuContentItem is null)
                     {
                         return;
                     }
@@ -54,7 +54,7 @@ namespace OrchardCore.Menu
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
-                    if (menuItems == null)
+                    if (menuItems is null)
                     {
                         return;
                     }
@@ -101,7 +101,7 @@ namespace OrchardCore.Menu
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
-                    if (menuItems != null)
+                    if (menuItems is not null)
                     {
                         foreach (var contentItem in menuItems)
                         {

@@ -171,19 +171,19 @@ namespace OrchardCore.Autoroute.Core.Services
                     // is not updated for the published version that may be already scanned, so the entry may not be re-added.
 
                     var entriesToRemove = indexes
-                        .Where(i => !i.Published || i.Path == null)
+                        .Where(i => !i.Published || i.Path is null)
                         .SelectMany(i => _paths.Values.Where(e =>
                             // The item was removed.
                             ((!i.Published && !i.Latest) ||
                             // The part was disabled or removed.
-                            (i.Path == null && i.Published) ||
+                            (i.Path is null && i.Published) ||
                             // The item was unpublished.
                             (!i.Published && e.DocumentId == i.DocumentId)) &&
                             (e.ContentItemId == i.ContentItemId ||
                             e.ContainedContentItemId == i.ContentItemId)));
 
                     var entriesToAdd = indexes
-                        .Where(i => i.Published && i.Path != null)
+                        .Where(i => i.Published && i.Path is not null)
                         .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                         {
                             DocumentId = i.DocumentId
@@ -217,7 +217,7 @@ namespace OrchardCore.Autoroute.Core.Services
                     var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session
-                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
+                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path is not null)
                         .OrderBy(i => i.Id)
                         .ListAsync();
 

@@ -56,7 +56,7 @@ namespace OrchardCore.Menu
             foreach (var menu in menus)
             {
                 var menuItemsListPart = menu.As<MenuItemsListPart>();
-                if (menuItemsListPart != null)
+                if (menuItemsListPart is not null)
                 {
                     MigrateMenuItems(menuItemsListPart.MenuItems);
                     menu.Apply(menuItemsListPart);
@@ -73,7 +73,7 @@ namespace OrchardCore.Menu
             foreach (var menuItem in menuItems)
             {
                 var menuItemsListPart = menuItem.As<MenuItemsListPart>();
-                if (menuItemsListPart != null)
+                if (menuItemsListPart is not null)
                 {
                     MigrateMenuItems(menuItemsListPart.MenuItems);
                     menuItem.Apply(menuItemsListPart);

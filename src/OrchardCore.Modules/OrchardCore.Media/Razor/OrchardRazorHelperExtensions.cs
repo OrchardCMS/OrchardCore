@@ -19,7 +19,7 @@ public static class OrchardRazorHelperExtensions
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
-        if (mediaFileStore == null)
+        if (mediaFileStore is null)
         {
             return assetPath;
         }
@@ -43,7 +43,7 @@ public static class OrchardRazorHelperExtensions
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
-        if (mediaFileStore == null)
+        if (mediaFileStore is null)
         {
             return Task.FromResult(assetPath);
         }

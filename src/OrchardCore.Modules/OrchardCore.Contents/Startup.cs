@@ -123,7 +123,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle);
 
-                    if (contentItemId == null)
+                    if (contentItemId is null)
                     {
                         return NilValue.Instance;
                     }

@@ -165,7 +165,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.Id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
@@ -220,7 +220,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 await _notifier.ErrorAsync(H["Can't find the admin menu."]);
                 return RedirectToAction(nameof(List));
@@ -284,7 +284,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }

@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Controllers
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
-            if (fieldSettings == null)
+            if (fieldSettings is null)
             {
                 return BadRequest("Unable to find field definition");
             }
@@ -60,14 +60,14 @@ namespace OrchardCore.ContentFields.Controllers
             var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
                 ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
 
-            if (resultProvider == null)
+            if (resultProvider is null)
             {
                 return new ObjectResult(new List<ContentPickerResult>());
             }
 
             var contentTypes = fieldSettings.DisplayedContentTypes;
 
-            if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
+            if (fieldSettings.DisplayedStereotypes is not null && fieldSettings.DisplayedStereotypes.Length > 0)
             {
                 contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(contentType =>

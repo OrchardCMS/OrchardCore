@@ -206,7 +206,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as SitemapIndex;
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -249,7 +249,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -296,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }
@@ -318,7 +318,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
 
-            if (sitemap == null)
+            if (sitemap is null)
             {
                 return NotFound();
             }

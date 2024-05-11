@@ -77,7 +77,7 @@ namespace OrchardCore.Media.Recipes
                     }
                 }
 
-                if (stream != null)
+                if (stream is not null)
                 {
                     try
                     {

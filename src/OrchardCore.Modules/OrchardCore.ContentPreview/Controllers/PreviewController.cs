@@ -122,7 +122,7 @@ namespace OrchardCore.ContentPreview.Controllers
     {
         public static string GetModelErrorMessageOrDefault(ModelError modelError)
         {
-            Debug.Assert(modelError != null);
+            Debug.Assert(modelError is not null);
 
             if (!string.IsNullOrEmpty(modelError.ErrorMessage))
             {
@@ -138,9 +138,9 @@ namespace OrchardCore.ContentPreview.Controllers
             ModelStateEntry containingEntry,
             ModelExplorer modelExplorer)
         {
-            Debug.Assert(modelError != null);
-            Debug.Assert(containingEntry != null);
-            Debug.Assert(modelExplorer != null);
+            Debug.Assert(modelError is not null);
+            Debug.Assert(containingEntry is not null);
+            Debug.Assert(modelExplorer is not null);
 
             if (!string.IsNullOrEmpty(modelError.ErrorMessage))
             {
@@ -161,7 +161,7 @@ namespace OrchardCore.ContentPreview.Controllers
             {
                 viewData.ModelState.TryGetValue(viewData.TemplateInfo.HtmlFieldPrefix, out var ms);
 
-                if (ms != null)
+                if (ms is not null)
                 {
                     return new[] { ms };
                 }
@@ -196,7 +196,7 @@ namespace OrchardCore.ContentPreview.Controllers
             ModelMetadata metadata,
             List<ModelStateEntry> orderedModelStateEntries)
         {
-            if (metadata.ElementMetadata != null && modelStateEntry.Children != null)
+            if (metadata.ElementMetadata is not null && modelStateEntry.Children is not null)
             {
                 foreach (var indexEntry in modelStateEntry.Children)
                 {
@@ -209,7 +209,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 {
                     var propertyMetadata = metadata.Properties[i];
                     var propertyModelStateEntry = modelStateEntry.GetModelStateForProperty(propertyMetadata.PropertyName);
-                    if (propertyModelStateEntry != null)
+                    if (propertyModelStateEntry is not null)
                     {
                         Visit(propertyModelStateEntry, propertyMetadata, orderedModelStateEntries);
                     }

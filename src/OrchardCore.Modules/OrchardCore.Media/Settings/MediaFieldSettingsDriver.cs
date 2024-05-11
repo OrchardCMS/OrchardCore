@@ -52,7 +52,7 @@ namespace OrchardCore.Media.Settings
                         {
                             Extension = extension,
                             ContentType = contentType,
-                            IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
+                            IsSelected = settings.AllowedExtensions is not null && settings.AllowedExtensions.Contains(extension)
                         };
 
                         var index = contentType.IndexOf('/');

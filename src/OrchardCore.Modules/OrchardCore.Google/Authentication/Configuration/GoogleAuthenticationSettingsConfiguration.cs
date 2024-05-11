@@ -30,7 +30,7 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (settings is not null)
         {
             options.CallbackPath = settings.CallbackPath;
             options.ClientID = settings.ClientID;

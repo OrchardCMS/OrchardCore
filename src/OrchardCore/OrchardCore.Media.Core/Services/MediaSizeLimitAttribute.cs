@@ -37,12 +37,12 @@ namespace OrchardCore.Media.Services
                 ArgumentNullException.ThrowIfNull(context);
 
                 var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
-                if (effectiveFormPolicy == null || effectiveFormPolicy == this)
+                if (effectiveFormPolicy is null || effectiveFormPolicy == this)
                 {
                     var features = context.HttpContext.Features;
                     var formFeature = features.Get<IFormFeature>();
 
-                    if (formFeature == null || formFeature.Form == null)
+                    if (formFeature is null || formFeature.Form is null)
                     {
                         // Request form has not been read yet, so set the limits
                         var formOptions = new FormOptions
@@ -55,12 +55,12 @@ namespace OrchardCore.Media.Services
                 }
 
                 var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
-                if (effectiveRequestSizePolicy == null)
+                if (effectiveRequestSizePolicy is null)
                 {
                     // Will only be available when running OutOfProcess with Kestrel.
                     var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
 
-                    if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+                    if (maxRequestBodySizeFeature is not null && !maxRequestBodySizeFeature.IsReadOnly)
                     {
                         maxRequestBodySizeFeature.MaxRequestBodySize = _maxFileSize;
                     }

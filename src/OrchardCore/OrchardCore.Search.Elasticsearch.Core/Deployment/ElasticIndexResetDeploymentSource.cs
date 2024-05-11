@@ -14,7 +14,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
         {
             var elasticIndexResetStep = step as ElasticIndexResetDeploymentStep;
 
-            if (elasticIndexResetStep == null)
+            if (elasticIndexResetStep is null)
             {
                 return Task.CompletedTask;
             }

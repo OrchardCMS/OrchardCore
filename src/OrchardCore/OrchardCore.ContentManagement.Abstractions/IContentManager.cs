@@ -168,12 +168,12 @@ namespace OrchardCore.ContentManagement
 
         public static async Task<bool> HasPublishedVersionAsync(this IContentManager contentManager, IContent content)
         {
-            if (content.ContentItem == null)
+            if (content.ContentItem is null)
             {
                 return false;
             }
 
-            return content.ContentItem.IsPublished() || (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) != null);
+            return content.ContentItem.IsPublished() || (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) is not null);
         }
 
         public static Task<ContentItemMetadata> GetContentItemMetadataAsync(this IContentManager contentManager, IContent content)

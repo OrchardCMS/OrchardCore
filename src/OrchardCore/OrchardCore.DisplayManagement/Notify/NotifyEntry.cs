@@ -37,7 +37,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             var cache = _cache;
 
-            if (cache.Message != null && cache.HtmlEncoder == htmlEncoder)
+            if (cache.Message is not null && cache.HtmlEncoder == htmlEncoder)
             {
                 return cache.Message;
             }

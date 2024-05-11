@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement
             {
                 var resolver = await provider.BuildPlacementInfoResolverAsync(context);
 
-                if (resolver != null)
+                if (resolver is not null)
                 {
                     resolvers.Add(resolver);
                 }

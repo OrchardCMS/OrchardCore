@@ -74,7 +74,7 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-                    if (contentItem == null)
+                    if (contentItem is null)
                     {
                         continue;
                     }
@@ -109,7 +109,7 @@ namespace OrchardCore.ContentFields.Drivers
                 return Edit(field, context);
             }
 
-            field.ContentItemIds = viewModel.ContentItemIds == null
+            field.ContentItemIds = viewModel.ContentItemIds is null
                 ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();

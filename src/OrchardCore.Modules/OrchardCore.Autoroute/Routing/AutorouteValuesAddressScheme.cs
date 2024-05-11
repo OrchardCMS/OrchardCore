@@ -22,7 +22,7 @@ namespace OrchardCore.Autoroute.Routing
 
         public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
         {
-            if (address.AmbientValues == null || address.ExplicitValues == null)
+            if (address.AmbientValues is null || address.ExplicitValues is null)
             {
                 return [];
             }

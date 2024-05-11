@@ -16,6 +16,6 @@ namespace OrchardCore.BackgroundTasks
         public string Tenant { get; }
         public IServiceProvider Services { get; }
         public Exception Exception { get; set; }
-        public bool HasException => Exception != null;
+        public bool HasException => Exception is not null;
     }
 }

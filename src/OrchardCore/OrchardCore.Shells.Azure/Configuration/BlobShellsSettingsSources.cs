@@ -32,7 +32,7 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
 
-            if (fileInfo == null && _blobOptions.MigrateFromFiles)
+            if (fileInfo is null && _blobOptions.MigrateFromFiles)
             {
                 if (await TryMigrateFromFileAsync())
                 {
@@ -44,7 +44,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName);
                 builder.AddTenantJsonStream(stream);
@@ -59,7 +59,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
 
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName);
                 tenantsSettings = await JObject.LoadAsync(stream);
@@ -72,7 +72,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             var settings = tenantsSettings[tenant] as JsonObject ?? [];
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
                     settings[key] = data[key];
                 }
@@ -94,7 +94,7 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.Shell.TenantsFileName);
 
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 JsonObject tenantsSettings;
                 using (var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.Shell.TenantsFileName))

@@ -69,7 +69,7 @@ namespace OrchardCore.DisplayManagement
             private string GetTrace()
             {
 #if TRACE_LEAKS
-                return Trace == null ? "" : Trace.ToString();
+                return Trace is null ? "" : Trace.ToString();
 #else
                 return "Leak tracing information is disabled. Define TRACE_LEAKS on ObjectPool`1.cs to get more info \n";
 #endif
@@ -122,7 +122,7 @@ namespace OrchardCore.DisplayManagement
             // We will interlock only when we have a candidate. in a worst case we may miss some
             // recently returned objects. Not a big deal.
             var inst = _firstItem;
-            if (inst == null || inst != Interlocked.CompareExchange(ref _firstItem, null, inst))
+            if (inst is null || inst != Interlocked.CompareExchange(ref _firstItem, null, inst))
             {
                 inst = AllocateSlow();
             }
@@ -149,7 +149,7 @@ namespace OrchardCore.DisplayManagement
                 // We will interlock only when we have a candidate. in a worst case we may miss some
                 // recently returned objects. Not a big deal.
                 var inst = items[i].Value;
-                if (inst != null)
+                if (inst is not null)
                 {
                     if (inst == Interlocked.CompareExchange(ref items[i].Value, null, inst))
                     {
@@ -171,7 +171,7 @@ namespace OrchardCore.DisplayManagement
         /// </remarks>
         internal void Free(T obj)
         {
-            if (_firstItem == null)
+            if (_firstItem is null)
             {
                 // Intentionally not using interlocked here.
                 // In a worst case scenario two objects may be stored into same slot.
@@ -189,7 +189,7 @@ namespace OrchardCore.DisplayManagement
             var items = _items;
             for (var i = 0; i < items.Length; i++)
             {
-                if (items[i].Value == null)
+                if (items[i].Value is null)
                 {
                     // Intentionally not using interlocked here.
                     // In a worst case scenario two objects may be stored into same slot.
@@ -221,7 +221,7 @@ namespace OrchardCore.DisplayManagement
 
         private StringBuilderPool(ObjectPool<StringBuilderPool> pool)
         {
-            Debug.Assert(pool != null);
+            Debug.Assert(pool is not null);
             _pool = pool;
         }
 

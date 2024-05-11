@@ -22,12 +22,12 @@ public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
 
         var model = context.Step.ToObject<AzureAISearchIndexRebuildDeploymentStep>();
 
-        if (model == null)
+        if (model is null)
         {
             return;
         }
 
-        if (!model.IncludeAll && (model.Indices == null || model.Indices.Length == 0))
+        if (!model.IncludeAll && (model.Indices is null || model.Indices.Length == 0))
         {
             return;
         }

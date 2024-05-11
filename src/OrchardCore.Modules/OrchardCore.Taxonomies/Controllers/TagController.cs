@@ -62,7 +62,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, versionOption);
 
-            if (taxonomy == null)
+            if (taxonomy is null)
             {
                 return NotFound();
             }

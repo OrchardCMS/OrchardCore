@@ -1,9 +1,9 @@
 <div class="@string.Join(" ", Model.Classes.ToArray())">
-    @if (Model.Header != null || Model.Meta != null)
+    @if (Model.Header is not null || Model.Meta is not null)
     {
         <div class="widget-header">
             @await DisplayAsync(Model.Header)
-            @if (Model.Meta != null)
+            @if (Model.Meta is not null)
             {
                 <div class="widget-metadata">
                     @await DisplayAsync(Model.Meta)
@@ -14,7 +14,7 @@
     <div class="widget-body">
         @await DisplayAsync(Model.Content)
     </div>
-    @if (Model.Footer != null)
+    @if (Model.Footer is not null)
     {
         <div class="widget-footer">
             @await DisplayAsync(Model.Footer)

@@ -96,7 +96,7 @@
 
     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-    @if (defaultRecipe == null)
+    @if (defaultRecipe is null)
     {
         <div class="alert alert-danger" role="alert">
             <strong>@T["No recipes available."]</strong> @T["It is not possible to set up a site without a recipe."]
@@ -119,7 +119,7 @@
                 <nav>
                     <div asp-validation-class-for="RecipeName">
                         <label asp-for="RecipeName" class="form-label">@T["Recipe"]</label>
-                        @if (defaultRecipe == null)
+                        @if (defaultRecipe is null)
                         {
                             <div id="noRecipes" class="dropdown disabled">
                                 <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

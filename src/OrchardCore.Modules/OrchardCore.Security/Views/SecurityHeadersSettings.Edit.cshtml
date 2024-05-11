@@ -227,7 +227,7 @@
                 var originType = value ?? PermissionsPolicyOriginValue.None;
                 var allowedOrigins = string.Empty;
 
-                if (value != null)
+                if (value is not null)
                 {
                     var originsSeparatorIndex = value.IndexOf(' ');
                     if (originsSeparatorIndex > -1)

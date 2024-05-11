@@ -30,7 +30,7 @@ namespace OrchardCore.Rules.Drivers
         {
             return Initialize<RoleConditionViewModel>("RoleCondition_Fields_Edit", m =>
             {
-                if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
+                if (condition.Operation is not null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
                     m.SelectedOperation = option.Factory.Name;
                 }

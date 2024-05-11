@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public T GetSettings<T>() where T : new()
         {
-            if (Settings == null)
+            if (Settings is null)
             {
                 return new T();
             }

@@ -35,7 +35,7 @@ namespace OrchardCore.Flows.Settings
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = [];
-                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
+                model.Source = settings.ContainedStereotypes is not null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
                 model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
                 foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {
@@ -85,7 +85,7 @@ namespace OrchardCore.Flows.Settings
 
         private void SetContentTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
         {
-            if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
+            if (model.ContainedContentTypes is null || model.ContainedContentTypes.Length == 0)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContainedContentTypes), S["At least one content type must be selected."]);
 

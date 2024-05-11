@@ -49,7 +49,7 @@
                                                     @T["Setup Recipe"]
                                                 </span>
                                             }
-                                            @if (recipe.Tags != null && recipe.Tags.Any())
+                                            @if (recipe.Tags is not null && recipe.Tags.Any())
                                             {
                                                 @foreach (var tag in recipe.Tags)
                                                 {

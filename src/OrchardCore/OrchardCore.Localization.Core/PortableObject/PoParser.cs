@@ -29,7 +29,7 @@ namespace OrchardCore.Localization.PortableObject
         {
             var entryBuilder = new DictionaryRecordBuilder();
             string line;
-            while ((line = reader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) is not null)
             {
                 (var context, var content) = ParseLine(line);
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Localization.PortableObject
                 var c = str[i];
                 if (escaped)
                 {
-                    if (sb == null)
+                    if (sb is null)
                     {
                         sb = new StringBuilder(str.Length);
                         if (i > 1)

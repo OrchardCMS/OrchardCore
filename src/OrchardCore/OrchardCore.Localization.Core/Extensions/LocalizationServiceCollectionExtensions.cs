@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
             services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
-            if (setupAction != null)
+            if (setupAction is not null)
             {
                 services.Configure(setupAction);
             }

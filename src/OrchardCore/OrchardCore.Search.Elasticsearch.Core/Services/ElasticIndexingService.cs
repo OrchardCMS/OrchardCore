@@ -77,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             var indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 
-            if (indexNames != null && indexNames.Length > 0)
+            if (indexNames is not null && indexNames.Length > 0)
             {
                 indexSettingsList = indexSettingsList
                     .Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
@@ -144,7 +144,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     updatedDocumentsByIndex[index.Key] = [];
                 }
 
-                var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
+                var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) is not null;
 
                 foreach (var task in tasks)
                 {
@@ -155,19 +155,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                     BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
 
-                    if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
+                    if (allPublished is not null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                     {
                         publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticContentIndexSettings());
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                     }
 
-                    if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
+                    if (allLatest is not null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                     {
                         latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticContentIndexSettings());
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                     }
 
-                    if (publishedIndexContext == null && latestIndexContext == null)
+                    if (publishedIndexContext is null && latestIndexContext is null)
                     {
                         continue;
                     }
@@ -183,7 +183,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
                         // We index only if we actually found a content item in the database.
-                        if (context == null)
+                        if (context is null)
                         {
                             // TODO purge these content items from IndexingTask table.
                             continue;
@@ -328,7 +328,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     {
                         var included = existingPartSettings["Included"];
 
-                        if (included != null && (bool)included)
+                        if (included is not null && (bool)included)
                         {
                             partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
                         }
@@ -340,7 +340,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         {
                             var included = existingFieldSettings["Included"];
 
-                            if (included != null && (bool)included)
+                            if (included is not null && (bool)included)
                             {
                                 fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
                             }

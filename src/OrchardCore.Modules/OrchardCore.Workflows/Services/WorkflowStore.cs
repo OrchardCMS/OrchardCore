@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId)
         {
-            return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
+            return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) is not null;
         }
 
         public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
@@ -38,12 +38,12 @@ namespace OrchardCore.Workflows.Services
             var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
                 .OrderByDescending(x => x.CreatedUtc);
 
-            if (skip != null)
+            if (skip is not null)
             {
                 query = query.Skip(skip.Value);
             }
 
-            if (take != null)
+            if (take is not null)
             {
                 query = query.Take(take.Value);
             }
@@ -147,7 +147,7 @@ namespace OrchardCore.Workflows.Services
 
         private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
         {
-            if (workflowTypeId != null)
+            if (workflowTypeId is not null)
             {
                 query = query.Where(x => x.WorkflowTypeId == workflowTypeId);
             }

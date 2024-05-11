@@ -18,7 +18,7 @@ public class AdminMenuPermissionService : IAdminMenuPermissionService
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        if (_permissions != null)
+        if (_permissions is not null)
         {
             return _permissions;
         }

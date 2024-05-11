@@ -43,7 +43,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
             }
 
             // The shape has cache settings and no content yet.
-            if (context.Shape.Metadata.IsCached && context.ChildContent == null)
+            if (context.Shape.Metadata.IsCached && context.ChildContent is null)
             {
                 var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
@@ -51,7 +51,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
                 var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
-                if (cachedContent != null)
+                if (cachedContent is not null)
                 {
                     // The contents of this shape was found in the cache.
                     // Add the cacheContext to _cached so that we don't try to cache the content again in the DisplayedAsync method.
@@ -75,7 +75,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
             var cacheContext = context.Shape.Metadata.Cache();
 
             // If the shape is not configured to be cached, continue as usual.
-            if (cacheContext == null)
+            if (cacheContext is null)
             {
                 context.ChildContent ??= HtmlString.Empty;
 
@@ -89,7 +89,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
             // If the ChildContent was retrieved form the cache, then the Cache Context will be present in the _cached collection (see the DisplayingAsync method in this class).
             // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
-            if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
+            if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent is not null)
             {
                 // The content is pre-encoded in the cache so we don't have to do it every time it's rendered.
                 using var sw = new ZStringWriter();
@@ -113,7 +113,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
             var cacheContext = context.Shape.Metadata.Cache();
 
-            if (cacheContext != null && _openScopes.ContainsKey(cacheContext.CacheId))
+            if (cacheContext is not null && _openScopes.ContainsKey(cacheContext.CacheId))
             {
                 _cacheScopeManager.ExitScope();
                 _openScopes.Remove(cacheContext.CacheId);

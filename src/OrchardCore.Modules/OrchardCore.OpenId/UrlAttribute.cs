@@ -9,7 +9,7 @@ public class UrlAttribute : ValidationAttribute
 
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        if (value != null)
+        if (value is not null)
         {
             var urls = value.ToString();
 

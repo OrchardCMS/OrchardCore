@@ -54,7 +54,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
@@ -91,14 +91,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -126,14 +126,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.AdminMenuId);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = _factories.FirstOrDefault(x => x.Name == model.AdminNodeType)?.Create();
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -167,14 +167,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -206,14 +206,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.AdminMenuId);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = adminMenu.GetMenuItemById(model.AdminNodeId);
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -249,14 +249,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -284,14 +284,14 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
 
-            if (adminMenu == null)
+            if (adminMenu is null)
             {
                 return NotFound();
             }
 
             var treeNode = adminMenu.GetMenuItemById(treeNodeId);
 
-            if (treeNode == null)
+            if (treeNode is null)
             {
                 return NotFound();
             }
@@ -317,13 +317,13 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, treeId);
 
-            if ((adminMenu == null) || (adminMenu.MenuItems == null))
+            if ((adminMenu is null) || (adminMenu.MenuItems is null))
             {
                 return NotFound();
             }
 
             var nodeToMove = adminMenu.GetMenuItemById(nodeToMoveId);
-            if (nodeToMove == null)
+            if (nodeToMove is null)
             {
                 return NotFound();
             }

@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var messageBus = sp.GetService<IMessageBus>();
 
-                    if (messageBus == null)
+                    if (messageBus is null)
                     {
                         return new Signal();
                     }

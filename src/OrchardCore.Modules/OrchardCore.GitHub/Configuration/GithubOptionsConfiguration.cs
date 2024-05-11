@@ -28,7 +28,7 @@ namespace OrchardCore.GitHub.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            if (_gitHubAuthenticationSettings == null)
+            if (_gitHubAuthenticationSettings is null)
             {
                 return;
             }
@@ -57,7 +57,7 @@ namespace OrchardCore.GitHub.Configuration
                 return;
             }
 
-            if (_gitHubAuthenticationSettings == null)
+            if (_gitHubAuthenticationSettings is null)
             {
                 return;
             }

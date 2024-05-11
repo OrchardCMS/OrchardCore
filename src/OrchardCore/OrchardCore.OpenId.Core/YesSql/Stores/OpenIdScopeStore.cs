@@ -138,7 +138,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(scope);
 
-            if (scope.Descriptions == null)
+            if (scope.Descriptions is null)
             {
                 return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
             }
@@ -160,7 +160,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(scope);
 
-            if (scope.DisplayNames == null)
+            if (scope.DisplayNames is null)
             {
                 return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
             }
@@ -197,7 +197,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(scope);
 
-            if (scope.Properties == null)
+            if (scope.Properties is null)
             {
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
@@ -299,7 +299,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             ArgumentNullException.ThrowIfNull(scope);
 
-            if (properties == null || properties.IsEmpty)
+            if (properties is null || properties.IsEmpty)
             {
                 scope.Properties = null;
 

@@ -21,7 +21,7 @@ namespace OrchardCore.Routing
             {
                 var action = endpoints[i].Metadata.GetMetadata<ActionDescriptor>();
 
-                if (action != null)
+                if (action is not null)
                 {
                     for (var n = 0; n < action.EndpointMetadata.Count; n++)
                     {
@@ -52,7 +52,7 @@ namespace OrchardCore.Routing
 
                 var required = candidates[i].Endpoint.Metadata.GetMetadata<FormValueRequiredAttribute>();
 
-                if (required == null)
+                if (required is null)
                 {
                     continue;
                 }

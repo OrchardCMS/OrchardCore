@@ -63,7 +63,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
             var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
             var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
-            var isConfigured = _settings != null;
+            var isConfigured = _settings is not null;
 
             if (isConfigured && (robotDetected || alwaysShow))
             {
@@ -92,7 +92,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         {
             var query = new QueryString();
             var cultureInfo = await GetCultureAsync();
-            if (cultureInfo != null)
+            if (cultureInfo is not null)
             {
                 query = query.Add("hl", cultureInfo.TwoLetterISOLanguageName);
             }

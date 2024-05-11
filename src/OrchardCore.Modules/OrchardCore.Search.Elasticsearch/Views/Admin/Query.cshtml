@@ -128,7 +128,7 @@
                         {
                             var hitValues = (string[])hit.FirstOrDefault(x => x.Key == fieldNames[i]).Value;
 
-                            if (hitValues != null)
+                            if (hitValues is not null)
                             {
                                 var value = hitValues.First();
                                 var item = !string.IsNullOrEmpty(value) ? value : "NULL";

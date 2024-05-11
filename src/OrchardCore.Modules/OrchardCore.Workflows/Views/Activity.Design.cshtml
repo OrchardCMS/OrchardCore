@@ -4,7 +4,7 @@
     var activityRecord = (ActivityRecord)Model.ActivityRecord;
     var activity = (IActivity)Model.Activity;
     var activityEvent = activity as IEvent;
-    var isEvent = activityEvent != null;
+    var isEvent = activityEvent is not null;
     var isStart = activityRecord.IsStart;
     var cssClass = isStart ? "activity-start" : isEvent ? "activity-event" : "activity-task";
     var hasEditor = activity.HasEditor;

@@ -55,12 +55,12 @@ namespace OrchardCore.Queries.Deployment
                 updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
             }
 
-            if (queryBasedContentViewModel.QueryParameters != null)
+            if (queryBasedContentViewModel.QueryParameters is not null)
             {
                 try
                 {
                     var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
-                    if (parameters == null)
+                    if (parameters is null)
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
                     }

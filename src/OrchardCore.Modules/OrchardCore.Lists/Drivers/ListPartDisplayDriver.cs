@@ -181,7 +181,7 @@ namespace OrchardCore.Lists.Drivers
             {
                 var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
-                if (definition == null)
+                if (definition is null)
                 {
                     continue;
                 }

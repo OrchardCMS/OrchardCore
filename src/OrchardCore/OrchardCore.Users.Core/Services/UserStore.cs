@@ -68,7 +68,7 @@ namespace OrchardCore.Users.Services
 
         public string NormalizeKey(string key)
         {
-            return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
+            return _keyNormalizer is null ? key : _keyNormalizer.NormalizeName(key);
         }
 
         #region IUserStore<IUser>
@@ -284,7 +284,7 @@ namespace OrchardCore.Users.Services
 
             if (user is User u)
             {
-                return Task.FromResult(u.PasswordHash != null);
+                return Task.FromResult(u.PasswordHash is not null);
             }
 
             return Task.FromResult(false);
@@ -473,7 +473,7 @@ namespace OrchardCore.Users.Services
             ArgumentException.ThrowIfNullOrEmpty(normalizedRoleName);
 
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
-            return users == null ? [] : users.ToList<IUser>();
+            return users is null ? [] : users.ToList<IUser>();
         }
 
         #endregion IUserRoleStore<IUser>
@@ -520,10 +520,10 @@ namespace OrchardCore.Users.Services
         {
             ArgumentNullException.ThrowIfNull(user);
 
-            if (user is User u && u.LoginInfos != null)
+            if (user is User u && u.LoginInfos is not null)
             {
                 var item = u.LoginInfos.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
-                if (item != null)
+                if (item is not null)
                 {
                     u.LoginInfos.Remove(item);
                 }
@@ -632,7 +632,7 @@ namespace OrchardCore.Users.Services
             }
 
             var userToken = GetUserToken(user, loginProvider, name);
-            if (userToken != null)
+            if (userToken is not null)
             {
                 var value = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
 
@@ -657,7 +657,7 @@ namespace OrchardCore.Users.Services
             }
 
             var userToken = GetUserToken(user, loginProvider, name);
-            if (userToken != null && user is User u)
+            if (userToken is not null && user is User u)
             {
                 u.UserTokens.Remove(userToken);
             }
@@ -686,7 +686,7 @@ namespace OrchardCore.Users.Services
 
             var userToken = GetUserToken(user, loginProvider, name);
 
-            if (userToken == null && user is User u)
+            if (userToken is null && user is User u)
             {
                 userToken = new UserToken
                 {
@@ -698,7 +698,7 @@ namespace OrchardCore.Users.Services
             }
 
             // Encrypt the token.
-            if (userToken != null)
+            if (userToken is not null)
             {
                 userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
             }

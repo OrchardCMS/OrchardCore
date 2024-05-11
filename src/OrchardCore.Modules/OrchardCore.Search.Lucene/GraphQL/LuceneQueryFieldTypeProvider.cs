@@ -71,7 +71,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
 
-                    if (fieldType != null)
+                    if (fieldType is not null)
                     {
                         schema.Query.AddField(fieldType);
                     }
@@ -86,7 +86,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"].AsObject(); ;
-            if (properties == null)
+            if (properties is null)
             {
                 return null;
             }
@@ -158,7 +158,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
+                var queryParameters = parameters is not null ?
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
@@ -174,7 +174,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
-            if (typetype == null)
+            if (typetype is null)
             {
                 return null;
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
+                    var queryParameters = parameters is not null ?
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 

@@ -43,7 +43,7 @@ namespace OrchardCore.Liquid.Services
             var result = GetCachedTemplate(source);
             var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            if (properties != null)
+            if (properties is not null)
             {
                 foreach (var property in properties)
                 {
@@ -64,7 +64,7 @@ namespace OrchardCore.Liquid.Services
             var result = GetCachedTemplate(source);
             var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            if (properties != null)
+            if (properties is not null)
             {
                 foreach (var property in properties)
                 {
@@ -89,7 +89,7 @@ namespace OrchardCore.Liquid.Services
             var result = GetCachedTemplate(source);
             var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            if (properties != null)
+            if (properties is not null)
             {
                 foreach (var property in properties)
                 {

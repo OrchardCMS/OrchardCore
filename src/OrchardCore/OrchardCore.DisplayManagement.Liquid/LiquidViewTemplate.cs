@@ -122,7 +122,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     _ => null
                 };
 
-                if (obj != null)
+                if (obj is not null)
                 {
                     return obj;
                 }
@@ -134,7 +134,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                 // 'MyType-MyField-FieldType_Display__DisplayMode'.
                 var namedShaped = shape.Named(n);
-                if (namedShaped != null)
+                if (namedShaped is not null)
                 {
                     return namedShaped;
                 }
@@ -189,7 +189,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             var actionContext = context.Services.GetService<IActionContextAccessor>()?.ActionContext;
 
-            if (actionContext == null)
+            if (actionContext is null)
             {
                 var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
                 actionContext = await GetActionContextAsync(httpContext);

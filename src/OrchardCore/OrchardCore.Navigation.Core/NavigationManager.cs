@@ -121,7 +121,7 @@ namespace OrchardCore.Navigation
                         // Fallback to get the same behavior than before having the Priority var.
                         if (cursor.Priority == source.Priority)
                         {
-                            if (cursor.Position != null && source.Position == null)
+                            if (cursor.Position is not null && source.Position is null)
                             {
                                 source.Culture = cursor.Culture;
                                 source.Href = cursor.Href;
@@ -212,7 +212,7 @@ namespace OrchardCore.Navigation
             foreach (var item in items)
             {
                 // TODO: Attach actual user and remove this clause.
-                if (user == null)
+                if (user is null)
                 {
                     filtered.Add(item);
                 }

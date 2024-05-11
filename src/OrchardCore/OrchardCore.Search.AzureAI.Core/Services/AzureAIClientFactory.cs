@@ -31,7 +31,7 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential is not null)
             {
                 client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
             }
@@ -52,7 +52,7 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
 
     public SearchIndexClient CreateSearchIndexClient()
     {
-        if (_searchIndexClient == null)
+        if (_searchIndexClient is null)
         {
             if (!_defaultOptions.ConfigurationExists())
             {
@@ -64,7 +64,7 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential is not null)
             {
                 _searchIndexClient = new SearchIndexClient(endpoint, _defaultOptions.Credential);
             }

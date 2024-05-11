@@ -136,7 +136,7 @@ namespace OrchardCore.Contents.Services
                         if (!string.IsNullOrEmpty(contentType))
                         {
                             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-                            if (contentTypeDefinition != null)
+                            if (contentTypeDefinition is not null)
                             {
                                 // We display a specific type even if it's not listable so that admin pages
                                 // can reuse the Content list page for specific types.

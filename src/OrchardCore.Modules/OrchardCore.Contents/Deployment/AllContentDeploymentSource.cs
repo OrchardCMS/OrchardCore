@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.Deployment
         {
             var allContentStep = step as AllContentDeploymentStep;
 
-            if (allContentStep == null)
+            if (allContentStep is null)
             {
                 return;
             }

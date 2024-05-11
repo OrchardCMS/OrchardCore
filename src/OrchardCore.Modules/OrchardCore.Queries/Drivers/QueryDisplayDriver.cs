@@ -80,7 +80,7 @@ namespace OrchardCore.Queries.Drivers
             {
                 var existing = await _queryManager.LoadQueryAsync(safeName);
 
-                if (existing != null && existing != model)
+                if (existing is not null && existing != model)
                 {
                     updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
                 }

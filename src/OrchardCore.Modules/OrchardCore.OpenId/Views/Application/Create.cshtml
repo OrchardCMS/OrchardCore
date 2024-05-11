@@ -183,7 +183,7 @@
         refreshOfflineAccessTip(false);
 
         function refreshForbiddenFlows() {
-            @if (settings == null)
+            @if (settings is null)
             {
                 <text>
                     $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");

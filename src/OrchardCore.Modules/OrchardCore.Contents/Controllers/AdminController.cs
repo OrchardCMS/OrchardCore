@@ -104,7 +104,7 @@ namespace OrchardCore.Contents.Controllers
                 options.FilterResult.TryAddOrReplace(new ContentTypeFilterNode(options.SelectedContentType));
 
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(options.SelectedContentType);
-                if (contentTypeDefinition == null)
+                if (contentTypeDefinition is null)
                 {
                     return NotFound();
                 }
@@ -128,7 +128,7 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
 
-            if (options.CreatableTypes == null)
+            if (options.CreatableTypes is null)
             {
                 // At this point, the creatable types were not yet populated. Populate them using all creatable types.
                 var creatableContentTypeDefinitions = contentTypeDefinitions
@@ -167,7 +167,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            if (options.ContentTypeOptions == null
+            if (options.ContentTypeOptions is null
                 && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
             {
                 options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(contentTypeDefinitions, options.SelectedContentType, true);
@@ -393,7 +393,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -413,7 +413,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -461,7 +461,7 @@ namespace OrchardCore.Contents.Controllers
 
             var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (content == null)
+            if (content is null)
             {
                 return NotFound();
             }
@@ -489,7 +489,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -524,7 +524,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null || contentItem.Published)
+            if (contentItem is null || contentItem.Published)
             {
                 return NotFound();
             }
@@ -534,7 +534,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            if (contentItem != null)
+            if (contentItem is not null)
             {
                 await _contentManager.DiscardDraftAsync(contentItem);
 
@@ -561,7 +561,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            if (contentItem != null)
+            if (contentItem is not null)
             {
                 await _contentManager.RemoveAsync(contentItem);
 
@@ -582,7 +582,7 @@ namespace OrchardCore.Contents.Controllers
         public async Task<IActionResult> Publish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -615,7 +615,7 @@ namespace OrchardCore.Contents.Controllers
         public async Task<IActionResult> Unpublish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -694,7 +694,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return NotFound();
             }
@@ -714,7 +714,7 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            if (returnUrl == null)
+            if (returnUrl is null)
             {
                 return RedirectToAction(nameof(Edit), new RouteValueDictionary
                 {

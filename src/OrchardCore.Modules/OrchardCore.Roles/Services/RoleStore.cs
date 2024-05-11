@@ -111,7 +111,7 @@ namespace OrchardCore.Roles.Services
 
             var role = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, roleId, StringComparison.OrdinalIgnoreCase));
 
-            if (role == null)
+            if (role is null)
             {
                 return null;
             }
@@ -126,7 +126,7 @@ namespace OrchardCore.Roles.Services
 
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
 
-            if (role == null)
+            if (role is null)
             {
                 return null;
             }

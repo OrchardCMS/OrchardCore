@@ -274,7 +274,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string Strip(this string subject, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
+            if (stripped is null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -313,7 +313,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static bool Any(this string subject, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (string.IsNullOrEmpty(subject) || chars is null || chars.Length == 0)
             {
                 return false;
             }
@@ -337,7 +337,7 @@ namespace OrchardCore.Mvc.Utilities
                 return true;
             }
 
-            if (chars == null || chars.Length == 0)
+            if (chars is null || chars.Length == 0)
             {
                 return false;
             }
@@ -402,7 +402,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string TrimEnd(this string rough, string trim = "")
         {
-            if (rough == null)
+            if (rough is null)
             {
                 return null;
             }

@@ -40,7 +40,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
 
-            if (fileInfo == null && _blobOptions.MigrateFromFiles)
+            if (fileInfo is null && _blobOptions.MigrateFromFiles)
             {
                 if (await TryMigrateFromFileAsync(tenant, appSettings))
                 {
@@ -48,7 +48,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
                 builder.AddTenantJsonStream(stream);
@@ -64,7 +64,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 #pragma warning disable CA1859 // Use concrete types when possible for improved performance
             IDictionary<string, string> configData;
 #pragma warning restore CA1859 // Use concrete types when possible for improved performance
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
                 configData = await JsonConfigurationParser.ParseAsync(stream);
@@ -97,7 +97,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
-            if (fileInfo != null)
+            if (fileInfo is not null)
             {
                 await _shellsFileStore.RemoveFileAsync(appsettings);
             }

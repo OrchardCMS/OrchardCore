@@ -30,10 +30,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task TagAsync(string key, params string[] tags)
         {
-            if (_redis.Database == null)
+            if (_redis.Database is null)
             {
                 await _redis.ConnectAsync();
-                if (_redis.Database == null)
+                if (_redis.Database is null)
                 {
                     _logger.LogError("Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
                     return;
@@ -55,10 +55,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task<IEnumerable<string>> GetTaggedItemsAsync(string tag)
         {
-            if (_redis.Database == null)
+            if (_redis.Database is null)
             {
                 await _redis.ConnectAsync();
-                if (_redis.Database == null)
+                if (_redis.Database is null)
                 {
                     _logger.LogError("Fails to get '{TagName}' items.", _prefix + tag);
                     return [];
@@ -69,7 +69,7 @@ namespace OrchardCore.Redis.Services
             {
                 var values = await _redis.Database.SetMembersAsync(_prefix + tag);
 
-                if (values == null || values.Length == 0)
+                if (values is null || values.Length == 0)
                 {
                     return [];
                 }
@@ -86,10 +86,10 @@ namespace OrchardCore.Redis.Services
 
         public async Task RemoveTagAsync(string tag)
         {
-            if (_redis.Database == null)
+            if (_redis.Database is null)
             {
                 await _redis.ConnectAsync();
-                if (_redis.Database == null)
+                if (_redis.Database is null)
                 {
                     _logger.LogError("Fails to remove the '{TagName}'.", _prefix + tag);
                     return;
@@ -100,7 +100,7 @@ namespace OrchardCore.Redis.Services
             {
                 var values = await _redis.Database.SetMembersAsync(_prefix + tag);
 
-                if (values == null || values.Length == 0)
+                if (values is null || values.Length == 0)
                 {
                     return;
                 }

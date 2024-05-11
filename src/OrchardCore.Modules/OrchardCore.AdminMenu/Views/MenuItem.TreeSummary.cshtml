@@ -13,7 +13,7 @@
     string toggleButtonText = T["Toggle"].Value;
 
     var adminNode = menuItem as AdminNode;
-    if (adminNode != null)
+    if (adminNode is not null)
     {
         disabledClass = adminNode.Enabled ? "" : "disabled-admin-node";
         toggleButtonText = adminNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
@@ -66,7 +66,7 @@
     </div>
 
     <ol class="menu-item menu-item-links">
-        @if (children != null)
+        @if (children is not null)
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 

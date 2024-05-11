@@ -72,7 +72,7 @@ namespace OrchardCore.ResourceManagement
             ArgumentException.ThrowIfNullOrEmpty(url);
 
             Url = url;
-            if (urlDebug != null)
+            if (urlDebug is not null)
             {
                 UrlDebug = urlDebug;
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.ResourceManagement
             ArgumentException.ThrowIfNullOrEmpty(cdnIntegrity);
 
             CdnIntegrity = cdnIntegrity;
-            if (cdnDebugIntegrity != null)
+            if (cdnDebugIntegrity is not null)
             {
                 CdnDebugIntegrity = cdnDebugIntegrity;
             }
@@ -111,7 +111,7 @@ namespace OrchardCore.ResourceManagement
             ArgumentException.ThrowIfNullOrEmpty(cdnUrl);
 
             UrlCdn = cdnUrl;
-            if (cdnUrlDebug != null)
+            if (cdnUrlDebug is not null)
             {
                 UrlCdnDebug = cdnUrlDebug;
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.ResourceManagement
                 }
             }
 
-            if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
+            if (url is not null && url.StartsWith("~/", StringComparison.Ordinal))
             {
                 if (!string.IsNullOrEmpty(BasePath))
                 {
@@ -226,14 +226,14 @@ namespace OrchardCore.ResourceManagement
             }
 
             // If settings has value, it can override resource definition, otherwise use resource definition.
-            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
+            if (url is not null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
                 (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-            if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
+            if (url is not null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
 
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
@@ -259,7 +259,7 @@ namespace OrchardCore.ResourceManagement
                     filePathAttributeName = "src";
                     break;
                 case "stylesheet":
-                    if (url == null && InnerContent != null)
+                    if (url is null && InnerContent is not null)
                     {
                         // Inline style declaration.
                         tagBuilder = new TagBuilder("style")
@@ -292,18 +292,18 @@ namespace OrchardCore.ResourceManagement
                     break;
             }
 
-            if (!string.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+            if (!string.IsNullOrEmpty(CdnIntegrity) && url is not null && url == UrlCdn)
             {
                 tagBuilder.Attributes["integrity"] = CdnIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
-            else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+            else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url is not null && url == UrlCdnDebug)
             {
                 tagBuilder.Attributes["integrity"] = CdnDebugIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
 
-            if (Attributes != null)
+            if (Attributes is not null)
             {
                 tagBuilder.MergeAttributes(Attributes);
             }
@@ -313,7 +313,7 @@ namespace OrchardCore.ResourceManagement
                 tagBuilder.MergeAttributes(settings.Attributes);
             }
 
-            if (!string.IsNullOrEmpty(url) && filePathAttributeName != null)
+            if (!string.IsNullOrEmpty(url) && filePathAttributeName is not null)
             {
                 tagBuilder.MergeAttribute(filePathAttributeName, url, true);
             }
@@ -328,7 +328,7 @@ namespace OrchardCore.ResourceManagement
         public string FindNearestCulture(string culture)
         {
             // Go for an exact match.
-            if (Cultures == null)
+            if (Cultures is null)
             {
                 return null;
             }
@@ -342,7 +342,7 @@ namespace OrchardCore.ResourceManagement
             if (cultureInfo.Parent.Name != culture)
             {
                 var selectedCulture = FindNearestCulture(cultureInfo.Parent.Name);
-                if (selectedCulture != null)
+                if (selectedCulture is not null)
                 {
                     return selectedCulture;
                 }
@@ -352,7 +352,7 @@ namespace OrchardCore.ResourceManagement
 
         public override bool Equals(object obj)
         {
-            if (obj == null || obj.GetType() != GetType())
+            if (obj is null || obj.GetType() != GetType())
             {
                 return false;
             }

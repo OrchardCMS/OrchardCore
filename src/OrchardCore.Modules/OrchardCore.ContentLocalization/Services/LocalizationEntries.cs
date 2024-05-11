@@ -145,18 +145,18 @@ namespace OrchardCore.ContentLocalization.Services
                     // is not updated for the published version that may be already scanned, so the entry may not be re-added.
 
                     var entriesToRemove = indexes
-                        .Where(i => !i.Published || i.Culture == null)
+                        .Where(i => !i.Published || i.Culture is null)
                         .SelectMany(i => _localizations.Values.Where(e =>
                             // The item was removed.
                             ((!i.Published && !i.Latest) ||
                             // The part was removed.
-                            (i.Culture == null && i.Published) ||
+                            (i.Culture is null && i.Published) ||
                             // The item was unpublished.
                             (!i.Published && e.DocumentId == i.DocumentId)) &&
                             (e.ContentItemId == i.ContentItemId)));
 
                     var entriesToAdd = indexes.
-                        Where(i => i.Published && i.Culture != null)
+                        Where(i => i.Published && i.Culture is not null)
                         .Select(i => new LocalizationEntry
                         {
                             DocumentId = i.DocumentId,
@@ -193,7 +193,7 @@ namespace OrchardCore.ContentLocalization.Services
                     var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session
-                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture is not null)
                         .OrderBy(i => i.Id)
                         .ListAsync();
 

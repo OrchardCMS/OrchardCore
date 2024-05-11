@@ -60,7 +60,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
             else
             {
-                if (model.RawAddress != null)
+                if (model.RawAddress is not null)
                 {
                     var uri = new Uri(model.RawAddress);
 

@@ -71,7 +71,7 @@ public class ElasticsearchService : ISearchService
 
         var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
 
-        if (index == null || !await _elasticIndexManager.ExistsAsync(index))
+        if (index is null || !await _elasticIndexManager.ExistsAsync(index))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
@@ -81,7 +81,7 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        if (searchSettings.DefaultSearchFields == null || searchSettings.DefaultSearchFields.Length == 0)
+        if (searchSettings.DefaultSearchFields is null || searchSettings.DefaultSearchFields.Length == 0)
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. No search provider settings was defined.");
 

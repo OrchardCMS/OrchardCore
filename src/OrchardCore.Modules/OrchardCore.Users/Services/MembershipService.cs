@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Services
         {
             var user = await _userManager.FindByNameAsync(userName);
 
-            if (user == null)
+            if (user is null)
             {
                 return false;
             }

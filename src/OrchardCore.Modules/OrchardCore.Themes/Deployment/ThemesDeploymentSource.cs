@@ -22,7 +22,7 @@ namespace OrchardCore.Themes.Deployment
         {
             var themesStep = step as ThemesDeploymentStep;
 
-            if (themesStep == null)
+            if (themesStep is null)
             {
                 return;
             }
