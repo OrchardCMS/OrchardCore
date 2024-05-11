@@ -217,7 +217,7 @@ namespace OrchardCore.Autoroute.Core.Services
                     var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session
-                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path is not null)
+                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
                         .OrderBy(i => i.Id)
                         .ListAsync();
 

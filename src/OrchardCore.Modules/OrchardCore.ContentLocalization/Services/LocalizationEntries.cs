@@ -193,7 +193,7 @@ namespace OrchardCore.ContentLocalization.Services
                     var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session
-                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture is not null)
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
                         .OrderBy(i => i.Id)
                         .ListAsync();
 
