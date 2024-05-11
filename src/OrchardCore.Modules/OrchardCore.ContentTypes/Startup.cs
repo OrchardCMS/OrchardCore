@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
@@ -19,7 +20,6 @@ namespace OrchardCore.ContentTypes
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
-            services.AddScoped<IStereotypesProvider, DefaultStereotypesProvider>();
             services.AddScoped<IStereotypeService, StereotypeService>();
             services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
             services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
