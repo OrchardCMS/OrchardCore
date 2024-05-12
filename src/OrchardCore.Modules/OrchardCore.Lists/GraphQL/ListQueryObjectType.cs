@@ -54,7 +54,7 @@ namespace OrchardCore.Lists.GraphQL
                                      .With<ContainedPartIndex>(cp => cp.ListContentItemId.IsIn(contentItemIds))
                                      .OrderBy(o => o.Order)
                                      .Skip(skip)
-                                     .Take(first)
+                                     .Take(count)
                                      .ListAsync();
 
             return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
