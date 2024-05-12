@@ -42,7 +42,7 @@ namespace OrchardCore.Lists.GraphQL
                 });
         }
 
-        private static async Task<ILookup<string, ContentItem>> LoadPublishedContentItemsForListAsync(IEnumerable<string> contentItemIds, ISession session, int skip, int first)
+        private static async Task<ILookup<string, ContentItem>> LoadPublishedContentItemsForListAsync(IEnumerable<string> contentItemIds, ISession session, int skip, int count)
         {
             if (contentItemIds is null || !contentItemIds.Any())
             {
