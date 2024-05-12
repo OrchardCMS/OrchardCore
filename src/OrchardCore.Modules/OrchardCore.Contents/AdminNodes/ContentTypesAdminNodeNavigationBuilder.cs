@@ -129,7 +129,7 @@ namespace OrchardCore.Contents.AdminNodes
         {
             return unprefixed?.Split(' ')
                 .ToList()
-                .Select(c => "icon-class-" + c)
+                .Select(c => NavigationConstants.CssClassPrefix + c)
                 .ToList()
                 ?? [];
         }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Deployment;
 using OrchardCore.CustomSettings.Drivers;
@@ -22,7 +23,7 @@ namespace OrchardCore.CustomSettings
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
             services.AddScoped<CustomSettingsService>();
-
+            services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
             // Permissions
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
