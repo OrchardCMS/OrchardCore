@@ -36,7 +36,7 @@ namespace OrchardCore.Lists.GraphQL
                     var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
 
                     var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems",
-                                                    x => LoadPublishedContentItemsForListAsync(x, session, g.GetArgument<int>("skip"), g.GetArgument<int>("first")));
+                       x => LoadPublishedContentItemsForListAsync(x, session, g.GetArgument<int>("skip"), g.GetArgument<int>("first")));
 
                     return await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync();
                 });
