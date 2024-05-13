@@ -9,6 +9,7 @@ using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
+using OrchardCore.Widgets.Services;
 using OrchardCore.Widgets.Settings;
 
 namespace OrchardCore.Widgets
@@ -22,6 +23,8 @@ namespace OrchardCore.Widgets
             // Widgets List Part
             services.AddContentPart<WidgetsListPart>()
                 .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+
+            services.AddScoped<IStereotypesProvider, WidgetStereotypesProvider>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
             services.AddContentPart<WidgetMetadata>();
