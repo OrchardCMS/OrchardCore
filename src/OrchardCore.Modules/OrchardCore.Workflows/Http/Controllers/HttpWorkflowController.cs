@@ -149,7 +149,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                     await using var acquiredLock = locker;
 
                     // Check if this is not a workflow singleton or there's not already an halted instance on any activity.
-                    if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                    if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeVersionId))
                     {
                         if (_logger.IsEnabled(LogLevel.Debug))
                         {
@@ -163,7 +163,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             else
             {
                 // Otherwise, we need to resume all halted workflows on this activity.
-                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId });
+                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeVersionId, new[] { startActivity.ActivityId });
 
                 if (!workflows.Any())
                 {

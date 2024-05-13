@@ -278,7 +278,7 @@ namespace OrchardCore.Workflows.Controllers
                 await using var acquiredLock = locker;
 
                 // Check if this is a workflow singleton and there's already an halted instance on any activity.
-                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeVersionId))
                 {
                     await _notifier.ErrorAsync(H["Another instance is already running.", id]);
                 }

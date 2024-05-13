@@ -215,28 +215,6 @@ namespace OrchardCore.Workflows
                     "CreatedUtc");
             });
 
-
-            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table =>
-            {
-                table.AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26));
-            });
-
-            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
-                                    "DocumentId",
-                                    "ActivityId",
-                                    "WorkflowTypeId",
-                                    "WorkflowTypeVersionId",
-                                    "WorkflowId"));
-
-            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
-                    "DocumentId",
-                    "ActivityName",
-                    "WorkflowTypeId",
-                    "WorkflowTypeVersionId",
-                    "WorkflowCorrelationId"));
-
             var existsedTypes = await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
 
             foreach (var workflowType in existsedTypes)

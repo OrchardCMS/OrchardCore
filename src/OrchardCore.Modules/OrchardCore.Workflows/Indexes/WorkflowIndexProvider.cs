@@ -23,7 +23,6 @@ namespace OrchardCore.Workflows.Indexes
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
         public string WorkflowCorrelationId { get; set; }
-        public string WorkflowTypeVersionId { get; set; }
     }
 
     public class WorkflowIndexProvider : IndexProvider<Workflow>
@@ -48,7 +47,6 @@ namespace OrchardCore.Workflows.Indexes
                     new WorkflowBlockingActivitiesIndex
                     {
                         ActivityId = x.ActivityId,
-                        WorkflowTypeVersionId = workflow.WorkflowTypeVersionId,
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
                         WorkflowTypeId = workflow.WorkflowTypeId,

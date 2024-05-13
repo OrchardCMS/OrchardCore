@@ -6,17 +6,17 @@ namespace OrchardCore.Workflows.Services
 {
     public interface IWorkflowStore
     {
-        Task<int> CountAsync(string workflowTypeId = null);
-        Task<bool> HasHaltedInstanceAsync(string workflowTypeId);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null);
-        Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
+        //Task<int> CountAsync(string workflowTypeVersionId = null);
+        Task<bool> HasHaltedInstanceAsync(string workflowTypeVersionId);
+        //Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId = null, int? skip = null, int? take = null);
+        //Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeVersiIds);
+        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId, IEnumerable<string> blockingActivityIds);
         Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
-        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
+        Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
         Task<Workflow> GetAsync(long id);
-        Task<Workflow> GetAsync(string uid);
-        Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids);
-        Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> uids);
+        Task<Workflow> GetAsync(string workflowId);
+        //Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids);
+        Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> workflowIds);
         Task SaveAsync(Workflow workflow);
         Task DeleteAsync(Workflow workflow);
     }

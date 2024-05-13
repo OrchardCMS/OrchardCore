@@ -23,38 +23,39 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        public Task<int> CountAsync(string workflowTypeId = null)
+        //public Task<int> CountAsync(string workflowTypeVersionId = null)
+        //{
+        //    return FilterByWorkflowTypeVersionId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeVersionId).CountAsync();
+        //}
+
+        public async Task<bool> HasHaltedInstanceAsync(string workflowTypeVersionId)
         {
-            return FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId).CountAsync();
+            return (await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeVersionId == workflowTypeVersionId)
+                .With<WorkflowBlockingActivitiesIndex>().FirstOrDefaultAsync()) != null;
         }
 
-        public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId)
-        {
-            return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
-        }
+        //public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId = null, int? skip = null, int? take = null)
+        //{
+        //    var query = (IQuery<Workflow>)FilterByWorkflowTypeVersionId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeVersionId)
+        //        .OrderByDescending(x => x.CreatedUtc);
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
-        {
-            var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
-                .OrderByDescending(x => x.CreatedUtc);
+        //    if (skip != null)
+        //    {
+        //        query = query.Skip(skip.Value);
+        //    }
 
-            if (skip != null)
-            {
-                query = query.Skip(skip.Value);
-            }
+        //    if (take != null)
+        //    {
+        //        query = query.Take(take.Value);
+        //    }
 
-            if (take != null)
-            {
-                query = query.Take(take.Value);
-            }
+        //    return query.ListAsync();
+        //}
 
-            return query.ListAsync();
-        }
-
-        public Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds)
-        {
-            return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
-        }
+        //public Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeVersionIds)
+        //{
+        //    return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeVersionId.IsIn(workflowTypeVersionIds)).ListAsync();
+        //}
 
         public Task<Workflow> GetAsync(long id)
         {
@@ -71,31 +72,26 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
-        {
-            return _session.GetAsync<Workflow>(ids.ToArray());
-        }
+        //public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
+        //{
+        //    return _session.GetAsync<Workflow>(ids.ToArray());
+        //}
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId, IEnumerable<string> blockingActivityIds)
         {
             return _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds))
+                .Query<Workflow, WorkflowIndex>(index => index.WorkflowTypeVersionId == workflowTypeVersionId)
+                .With<WorkflowBlockingActivitiesIndex>(index => index.ActivityId.IsIn(blockingActivityIds))
                 .ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeVersionId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
         {
-            var query = _session.Query<Workflow, WorkflowBlockingActivitiesIndex>();
-
-            if (isAlwaysCorrelated)
+            var query = _session.Query<Workflow, WorkflowIndex>(index => index.WorkflowTypeVersionId == workflowTypeVersionId)
+            .With<WorkflowBlockingActivitiesIndex>(index => index.ActivityName == activityName);
+            if (!isAlwaysCorrelated)
             {
-                query = query.Where(index => index.WorkflowTypeId == workflowTypeId && index.ActivityName == activityName);
-            }
-            else
-            {
-                query = query.Where(index => index.WorkflowTypeId == workflowTypeId && index.ActivityName == activityName && index.WorkflowCorrelationId == (correlationId ?? ""));
+                query = query.Where(index => index.WorkflowCorrelationId == (correlationId ?? ""));
             }
 
             return query.ListAsync();
@@ -145,14 +141,14 @@ namespace OrchardCore.Workflows.Services
             return _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
 
-        private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
-        {
-            if (workflowTypeId != null)
-            {
-                query = query.Where(x => x.WorkflowTypeId == workflowTypeId);
-            }
+        //private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeVersionId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeVersionId)
+        //{
+        //    if (workflowTypeVersionId != null)
+        //    {
+        //        query = query.Where(x => x.WorkflowTypeVersionId == workflowTypeVersionId);
+        //    }
 
-            return query;
-        }
+        //    return query;
+        //}
     }
 }

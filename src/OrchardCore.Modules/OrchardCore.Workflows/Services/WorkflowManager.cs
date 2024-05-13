@@ -219,13 +219,13 @@ namespace OrchardCore.Workflows.Services
                 await using var acquiredLock = locker;
 
                 // Check if this is a workflow singleton and there's already an halted instance on any activity.
-                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeVersionId))
                 {
                     continue;
                 }
 
                 // Check if the event is exclusive and there's already a correlated instance halted on a starting activity of this type.
-                if (isExclusive && (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, name, correlationId, isAlwaysCorrelated))
+                if (isExclusive && (await _workflowStore.ListAsync(workflowType.WorkflowTypeVersionId, name, correlationId, isAlwaysCorrelated))
                     .Any(x => x.BlockingActivities.Any(x => x.Name == name && x.IsStart)))
                 {
                     continue;
