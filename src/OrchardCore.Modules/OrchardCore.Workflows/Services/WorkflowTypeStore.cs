@@ -45,6 +45,12 @@ namespace OrchardCore.Workflows.Services
                 .FirstOrDefaultAsync();
         }
 
+        public Task<WorkflowType> GetByVersionAsync(string workflowTypeVersionId)
+        {
+            return _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeVersionId == workflowTypeVersionId)
+                .FirstOrDefaultAsync();
+        }
+
         public Task<IEnumerable<WorkflowType>> ListAsync()
         {
             return _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.Latest).ListAsync();

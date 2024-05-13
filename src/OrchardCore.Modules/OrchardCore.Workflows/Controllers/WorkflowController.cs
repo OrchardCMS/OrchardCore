@@ -260,7 +260,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var workflowType = await _workflowTypeStore.GetByVersionAsync(workflow.WorkflowTypeVersionId);
 
             if (workflowType == null)
             {
