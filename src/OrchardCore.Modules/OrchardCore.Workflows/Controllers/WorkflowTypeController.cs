@@ -99,8 +99,7 @@ namespace OrchardCore.Workflows.Controllers
 
             options ??= new WorkflowTypeIndexOptions();
 
-            var query = _session.Query<WorkflowType, WorkflowTypeIndex>()
-                                .Where(x => x.Latest);
+            var query = _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.Latest);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -125,7 +124,7 @@ namespace OrchardCore.Workflows.Controllers
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
             sqlBuilder.Distinct();
-            sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
+            sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeVersionId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
             // Use existing session connection. Do not use 'using' or dispose the connection.
@@ -149,7 +148,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        HasInstances = workflowTypeIdsWithInstances.Contains(x.WorkflowTypeId),
+                        HasInstances = workflowTypeIdsWithInstances.Contains(x.WorkflowTypeVersionId),
                         Name = x.Name,
                     })
                     .ToList(),
@@ -185,7 +184,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>()
+                var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.Latest)
                     .Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
                 switch (options.BulkAction)
                 {

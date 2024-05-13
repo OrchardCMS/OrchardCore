@@ -52,32 +52,22 @@ namespace OrchardCore.Workflows.Recipes
             foreach (var token in model.Data.Cast<JsonObject>())
             {
                 var workflow = token.ToObject<WorkflowType>(_jsonSerializerOptions);
+                workflow.Id = 0;
 
-                var existing = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
-
-                if (existing is null)
+                if (urlHelper is not null)
                 {
-                    workflow.Id = 0;
-
-                    if (urlHelper is not null)
+                    foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                     {
-                        foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
+                        if (!activity.Properties.TryGetPropertyValue("TokenLifeSpan", out var tokenLifeSpan))
                         {
-                            if (!activity.Properties.TryGetPropertyValue("TokenLifeSpan", out var tokenLifeSpan))
-                            {
-                                continue;
-                            }
-
-                            activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(urlHelper, workflow, activity, tokenLifeSpan.ToObject<int>());
+                            continue;
                         }
+
+                        activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(urlHelper, workflow, activity, tokenLifeSpan.ToObject<int>());
                     }
                 }
-                else
-                {
-                    await _workflowTypeStore.DeleteAsync(existing);
-                }
 
-                await _workflowTypeStore.SaveAsync(workflow);
+                await _workflowTypeStore.SaveAsync(workflow, true);
             }
         }
 

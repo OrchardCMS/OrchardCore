@@ -17,6 +17,11 @@ namespace OrchardCore.Workflows.Models
         public string WorkflowTypeId { get; set; }
 
         /// <summary>
+        /// Define the liquid template that generates the workflow title.
+        /// </summary>
+        public string TitleTemplate { get; set; }
+
+        /// <summary>
         /// Workflow type version. 
         /// </summary>
         public string WorkflowTypeVersionId { get; set; }
@@ -69,7 +74,7 @@ namespace OrchardCore.Workflows.Models
         public IList<Transition> Transitions { get; set; } = [];
         public DateTime CreatedUtc { get; set; }
         public DateTime ModifiedUtc { get; set; }
-        public string UpdatedBy { get; set; }
+        public string ModifiedBy { get; set; }
         public string CreatedBy { get; set; }
     }
 }

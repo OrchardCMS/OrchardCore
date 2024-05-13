@@ -17,7 +17,7 @@ namespace OrchardCore.Workflows.Http.Services
 
         protected override async Task<WorkflowTypeRouteDocument> CreateDocumentAsync()
         {
-            var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+            var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>(x => x.Latest).ListAsync()).ToDictionary(x => x.WorkflowTypeId);
 
             var workflowTypeRouteEntries =
                 from workflowType in workflowTypeDictionary.Values

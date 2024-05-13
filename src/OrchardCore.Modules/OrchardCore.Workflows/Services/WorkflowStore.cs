@@ -114,6 +114,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task SaveAsync(Workflow workflow)
         {
+            // 构建新流程
             var isNew = workflow.Id == 0;
             await _session.SaveAsync(workflow);
 

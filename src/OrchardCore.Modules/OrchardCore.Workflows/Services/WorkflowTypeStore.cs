@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Indexes;
@@ -66,33 +69,43 @@ namespace OrchardCore.Workflows.Services
                 .ListAsync();
         }
 
-        public async Task SaveAsync(WorkflowType workflowType)
-        {
-            var existsedEntity = await GetAsync(workflowType.WorkflowTypeId);
-            var isNew = existsedEntity is null;
 
-            // reset to new entity.
-            workflowType.Id = 0;
-            workflowType.WorkflowTypeVersionId = _idGenerator.GenerateVersionUniqueId(workflowType);
+
+        public async Task SaveAsync(WorkflowType workflowType, bool newVersion = false)
+        {
+            var isNew = workflowType.Id == 0;
+            if (newVersion)
+            {
+                var existsedEntity = await GetAsync(workflowType.WorkflowTypeId);
+                if (existsedEntity != null)
+                {
+                    existsedEntity.Latest = false;
+                    existsedEntity.ModifiedUtc = _clock.UtcNow;
+                    existsedEntity.ModifiedBy = workflowType.ModifiedBy;
+                    await _session.SaveAsync(existsedEntity);
+                }
+                // reset to new entity.
+                workflowType = JObject.FromObject(workflowType).ToObject<WorkflowType>();
+                workflowType.Id = 0;
+                workflowType.WorkflowTypeVersionId = _idGenerator.GenerateVersionUniqueId(workflowType);
+            }
+
             workflowType.DisplayName ??= workflowType.Name;
             workflowType.Latest = true;
             workflowType.ModifiedUtc = _clock.UtcNow;
-            workflowType.UpdatedBy = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            workflowType.ModifiedBy = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _session.SaveAsync(workflowType);
 
             if (isNew)
             {
                 workflowType.CreatedUtc = _clock.UtcNow;
-                workflowType.CreatedBy = workflowType.UpdatedBy;
+                workflowType.CreatedBy = workflowType.ModifiedBy;
 
                 var context = new WorkflowTypeCreatedContext(workflowType);
                 await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
-                existsedEntity.Latest = false;
-                await _session.SaveAsync(existsedEntity);
 
                 var context = new WorkflowTypeUpdatedContext(workflowType);
                 await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
@@ -103,7 +116,7 @@ namespace OrchardCore.Workflows.Services
         {
             workflowType.Latest = false;
             workflowType.ModifiedUtc = _clock.UtcNow;
-            workflowType.UpdatedBy = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            workflowType.ModifiedBy = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _session.SaveAsync(workflowType);
             var context = new WorkflowTypeDeletedContext(workflowType);
             await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);

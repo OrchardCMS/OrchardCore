@@ -8,11 +8,11 @@ namespace OrchardCore.Workflows.Services
     {
         Task<WorkflowType> GetAsync(long id);
         Task<WorkflowType> GetAsync(string uid);
+        Task<WorkflowType> GetByVersionAsync(string workflowTypeVersionId);
         Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<long> ids);
         Task<IEnumerable<WorkflowType>> ListAsync();
         Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName);
-        Task SaveAsync(WorkflowType workflowType);
+        Task SaveAsync(WorkflowType workflowType, bool newVersion = false);
         Task DeleteAsync(WorkflowType workflowType);
-        Task<WorkflowType> GetByVersionAsync(string workflowTypeVersionId);
     }
 }

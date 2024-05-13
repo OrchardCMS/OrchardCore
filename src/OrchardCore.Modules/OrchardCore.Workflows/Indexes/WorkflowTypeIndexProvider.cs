@@ -15,10 +15,10 @@ namespace OrchardCore.Workflows.Indexes
         public string DisplayName { get; set; }
         public string WorkflowTypeVersionId { get; set; }
         public bool Latest { get; set; }
-        public string UpdatedBy { get; set; }
-        public string CreatedBy { get; set; }
         public DateTime CreatedUtc { get; set; }
+        public string CreatedBy { get; set; }
         public DateTime ModifiedUtc { get; set; }
+        public string ModifiedBy { get; set; }
     }
 
     public class WorkflowTypeStartActivitiesIndex : MapIndex
@@ -47,7 +47,7 @@ namespace OrchardCore.Workflows.Indexes
                             Latest = workflowType.Latest,
                             CreatedUtc = workflowType.CreatedUtc,
                             ModifiedUtc = workflowType.ModifiedUtc,
-                            UpdatedBy = workflowType.UpdatedBy,
+                            ModifiedBy = workflowType.ModifiedBy,
                             CreatedBy = workflowType.CreatedBy
                         }
                 );

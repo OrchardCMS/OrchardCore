@@ -153,7 +153,10 @@ namespace OrchardCore.Workflows.Http.Controllers
                     {
                         if (_logger.IsEnabled(LogLevel.Debug))
                         {
-                            _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                            _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}', Version: '{WorkflowTypeVersionId}' with start activity '{ActivityId}'",
+                                workflowType.WorkflowTypeId,
+                                workflowType.WorkflowTypeVersionId,
+                                startActivity.ActivityId);
                         }
 
                         await _workflowManager.StartWorkflowAsync(workflowType, startActivity);

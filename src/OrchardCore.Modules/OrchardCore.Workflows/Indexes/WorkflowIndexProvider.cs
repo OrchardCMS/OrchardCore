@@ -12,6 +12,7 @@ namespace OrchardCore.Workflows.Indexes
         public string WorkflowTypeVersionId { get; set; }
         public string WorkflowId { get; set; }
         public int WorkflowStatus { get; set; }
+        public DateTime? LastExecutedOnUtc { get; set; }
         public DateTime CreatedUtc { get; set; }
     }
 

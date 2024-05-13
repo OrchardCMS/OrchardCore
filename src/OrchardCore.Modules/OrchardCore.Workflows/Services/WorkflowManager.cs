@@ -75,6 +75,7 @@ namespace OrchardCore.Workflows.Services
             var workflow = new Workflow
             {
                 WorkflowTypeId = workflowType.WorkflowTypeId,
+                WorkflowTypeVersionId = workflowType.WorkflowTypeVersionId,
                 Status = WorkflowStatus.Idle,
                 State = JObject.FromObject(new WorkflowState
                 {
@@ -567,6 +568,7 @@ namespace OrchardCore.Workflows.Services
             state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
             workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
+
             await _workflowStore.SaveAsync(workflowContext.Workflow);
         }
 

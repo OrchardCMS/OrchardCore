@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
+using YesSql.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Workflows
@@ -171,13 +174,18 @@ namespace OrchardCore.Workflows
                 table.AddColumn<string>("DisplayName", c => c.WithLength(255));
                 table.AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26));
                 table.AddColumn<bool>("Latest");
-                table.AddColumn<bool>("UpdatedBy");
+                table.AddColumn<bool>("ModifiedBy");
+                table.AddColumn<bool>("CreatedBy");
                 table.AddColumn<DateTime>("CreatedUtc");
                 table.AddColumn<DateTime>("ModifiedUtc");
             });
 
             await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeIndex>(table => table
-                .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
+                .DropIndex("IDX_WorkflowTypeIndex_WorkflowTypeVersionId"));
+
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeIndex>(table => table
+
+                .CreateIndex("IDX_WorkflowTypeIndex_WorkflowTypeVersionId",
                         "DocumentId",
                         "WorkflowTypeId",
                         "Name",
@@ -188,24 +196,21 @@ namespace OrchardCore.Workflows
                         "Latest",
                         "CreatedUtc",
                         "ModifiedUtc",
-                        "UpdatedBy")
+                        "ModifiedBy")
             );
-
-            //await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table =>
-            //{
-            //    table.AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26));
-            //    table.CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
-            //        "DocumentId",
-            //        "WorkflowTypeId",
-            //        "WorkflowTypeVersionId",
-            //        "StartActivityId",
-            //        "StartActivityName",
-            //        "IsEnabled");
-            //});
 
             await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
             {
                 table.AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26));
+            });
+
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+            {
+                table.DropIndex("IDX_WorkflowIndex_DocumentId");
+            });
+
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
+            {
                 table.CreateIndex("IDX_WorkflowIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -216,16 +221,24 @@ namespace OrchardCore.Workflows
             });
 
             var existsedTypes = await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
-
+            var latestVersionMapping = new Dictionary<string, string>();
             foreach (var workflowType in existsedTypes)
             {
                 workflowType.DisplayName = workflowType.Name;
                 workflowType.Latest = true;
                 workflowType.CreatedUtc = _clock.UtcNow;
                 workflowType.ModifiedUtc = _clock.UtcNow;
-
                 await _workflowTypeStore.SaveAsync(workflowType);
+                latestVersionMapping[workflowType.WorkflowTypeId] = workflowType.WorkflowTypeVersionId;
             }
+            var existsWorkflows = await _session.Query<Workflow, WorkflowIndex>(index => index.WorkflowTypeId.IsIn(latestVersionMapping.Keys)).ListAsync();
+
+            foreach (var workflow in existsWorkflows)
+            {
+                workflow.WorkflowTypeVersionId = latestVersionMapping[workflow.WorkflowTypeId];
+                await _workflowStore.SaveAsync(workflow);
+            }
+
 
             return 4;
         }

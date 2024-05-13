@@ -180,7 +180,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var workflowType = await _workflowTypeStore.GetByVersionAsync(workflow.WorkflowTypeVersionId);
             var blockingActivities = workflow.BlockingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
             var activityContexts = await Task.WhenAll(workflowType.Activities.Select(x => _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
@@ -239,7 +239,7 @@ namespace OrchardCore.Workflows.Controllers
                 return NotFound();
             }
 
-            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+            var workflowType = await _workflowTypeStore.GetByVersionAsync(workflow.WorkflowTypeVersionId);
             await _workflowStore.DeleteAsync(workflow);
             await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", id]);
             return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });

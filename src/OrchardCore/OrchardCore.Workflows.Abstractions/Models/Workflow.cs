@@ -15,6 +15,8 @@ namespace OrchardCore.Workflows.Models
         /// A unique identifier for this workflow.
         /// </summary>
         public string WorkflowId { get; set; }
+        public string Title { get; set; }
+        public DateTime LastExecutedOnUtc { get; set; }
 
         public string WorkflowTypeId { get; set; }
 
