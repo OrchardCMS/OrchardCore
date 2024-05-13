@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell.Models
 
         public string Name { get; set; }
 
-        public List<FeatureRule> FeatureRules = [];
+        public List<FeatureRule> FeatureRules { get; set; } = [];
     }
 
     public class FeatureRule
