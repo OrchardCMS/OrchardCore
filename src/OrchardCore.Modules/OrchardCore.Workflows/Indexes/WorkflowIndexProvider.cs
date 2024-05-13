@@ -9,6 +9,7 @@ namespace OrchardCore.Workflows.Indexes
     {
         public long DocumentId { get; set; }
         public string WorkflowTypeId { get; set; }
+        public string WorkflowTypeVersionId { get; set; }
         public string WorkflowId { get; set; }
         public int WorkflowStatus { get; set; }
         public DateTime CreatedUtc { get; set; }
@@ -22,6 +23,7 @@ namespace OrchardCore.Workflows.Indexes
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
         public string WorkflowCorrelationId { get; set; }
+        public string WorkflowTypeVersionId { get; set; }
     }
 
     public class WorkflowIndexProvider : IndexProvider<Workflow>
@@ -33,6 +35,7 @@ namespace OrchardCore.Workflows.Indexes
                     new WorkflowIndex
                     {
                         WorkflowTypeId = workflow.WorkflowTypeId,
+                        WorkflowTypeVersionId = workflow.WorkflowTypeVersionId,
                         WorkflowId = workflow.WorkflowId,
                         CreatedUtc = workflow.CreatedUtc,
                         WorkflowStatus = (int)workflow.Status
@@ -45,6 +48,7 @@ namespace OrchardCore.Workflows.Indexes
                     new WorkflowBlockingActivitiesIndex
                     {
                         ActivityId = x.ActivityId,
+                        WorkflowTypeVersionId = workflow.WorkflowTypeVersionId,
                         ActivityName = x.Name,
                         ActivityIsStart = x.IsStart,
                         WorkflowTypeId = workflow.WorkflowTypeId,

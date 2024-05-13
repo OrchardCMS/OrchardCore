@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.Entities;
 
@@ -16,9 +17,21 @@ namespace OrchardCore.Workflows.Models
         public string WorkflowTypeId { get; set; }
 
         /// <summary>
+        /// Workflow type version. 
+        /// </summary>
+        public string WorkflowTypeVersionId { get; set; }
+
+        /// <summary>
+        /// Is the latest version.
+        /// </summary>
+        public bool Latest { get; set; }
+
+        /// <summary>
         /// The name of this workflow type.
         /// </summary>
         public string Name { get; set; }
+
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Whether this workflow definition is enabled or not.
@@ -54,5 +67,9 @@ namespace OrchardCore.Workflows.Models
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
         public IList<Transition> Transitions { get; set; } = [];
+        public DateTime CreatedUtc { get; set; }
+        public DateTime ModifiedUtc { get; set; }
+        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; }
     }
 }

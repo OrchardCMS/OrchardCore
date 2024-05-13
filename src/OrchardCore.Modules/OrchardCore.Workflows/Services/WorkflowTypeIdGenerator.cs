@@ -16,5 +16,10 @@ namespace OrchardCore.Workflows.Services
         {
             return _idGenerator.GenerateUniqueId();
         }
+
+        public string GenerateVersionUniqueId(WorkflowType workflowType)
+        {
+            return _idGenerator.GenerateUniqueId();
+        }
     }
 }

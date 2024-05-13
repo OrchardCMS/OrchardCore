@@ -99,7 +99,8 @@ namespace OrchardCore.Workflows.Controllers
 
             options ??= new WorkflowTypeIndexOptions();
 
-            var query = _session.Query<WorkflowType, WorkflowTypeIndex>();
+            var query = _session.Query<WorkflowType, WorkflowTypeIndex>()
+                                .Where(x => x.Latest);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {

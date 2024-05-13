@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using OrchardCore.Workflows.Models;
 using YesSql.Indexes;
@@ -11,6 +12,13 @@ namespace OrchardCore.Workflows.Indexes
         public string Name { get; set; }
         public bool IsEnabled { get; set; }
         public bool HasStart { get; set; }
+        public string DisplayName { get; set; }
+        public string WorkflowTypeVersionId { get; set; }
+        public bool Latest { get; set; }
+        public string UpdatedBy { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedUtc { get; set; }
+        public DateTime ModifiedUtc { get; set; }
     }
 
     public class WorkflowTypeStartActivitiesIndex : MapIndex
@@ -33,7 +41,14 @@ namespace OrchardCore.Workflows.Indexes
                             WorkflowTypeId = workflowType.WorkflowTypeId,
                             Name = workflowType.Name,
                             IsEnabled = workflowType.IsEnabled,
-                            HasStart = workflowType.Activities.Any(x => x.IsStart)
+                            HasStart = workflowType.Activities.Any(x => x.IsStart),
+                            DisplayName = workflowType.DisplayName,
+                            WorkflowTypeVersionId = workflowType.WorkflowTypeVersionId,
+                            Latest = workflowType.Latest,
+                            CreatedUtc = workflowType.CreatedUtc,
+                            ModifiedUtc = workflowType.ModifiedUtc,
+                            UpdatedBy = workflowType.UpdatedBy,
+                            CreatedBy = workflowType.CreatedBy
                         }
                 );
 

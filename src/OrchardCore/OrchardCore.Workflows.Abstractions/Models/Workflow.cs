@@ -53,5 +53,7 @@ namespace OrchardCore.Workflows.Models
         /// Whether this workflow instance needs to be resumed atomically.
         /// </summary>
         public bool IsAtomic => LockTimeout > 0 && LockExpiration > 0;
+
+        public string WorkflowTypeVersionId { get; set; }
     }
 }
