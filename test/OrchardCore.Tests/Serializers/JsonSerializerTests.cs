@@ -29,7 +29,6 @@ public class JsonSerializerTests
         Assert.Equal("default", obj.ProviderDisplayName);
     }
 
-
     [Fact]
     public void Deserialize_WhenCalled_ReturnDoubleFromString()
     {
@@ -41,7 +40,6 @@ public class JsonSerializerTests
         Assert.Equal("1", items[0].Value);
         Assert.Equal(1.75, items[0].Weight);
     }
-
 
     [Fact]
     public void Deserialize_WhenCalled_ReturnIntAsDoubleFromString()
