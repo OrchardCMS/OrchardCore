@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
@@ -52,7 +53,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public void Configure(string name, MicrosoftAccountOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme))
+            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

@@ -93,7 +93,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.Registration")]
+    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -131,7 +131,7 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()

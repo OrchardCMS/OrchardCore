@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -200,9 +200,14 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     private static string CalculateHash(params string[] parts)
     {
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(string.Join(string.Empty, parts)));
+        var hash = new XxHash64();
 
-        return Convert.ToHexString(hash);
+        foreach (var part in parts)
+        {
+            hash.Append(MemoryMarshal.AsBytes<char>(part));
+        }
+
+        return Convert.ToHexString(hash.GetCurrentHash());
     }
 
     private sealed class ChunkedFormFile : IFormFile, IDisposable

@@ -41,7 +41,7 @@ public class SubResourceIntegrityTests
                     {
                         var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdnDebug);
 
-                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity),
+                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity, StringComparison.Ordinal),
                             $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                     }
 
@@ -49,7 +49,7 @@ public class SubResourceIntegrityTests
                     {
                         var resourceIntegrity = await GetSubResourceIntegrityAsync(httpClient, resourceDefinition.UrlCdn);
 
-                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity),
+                        Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity, StringComparison.Ordinal),
                             $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                     }
                 }

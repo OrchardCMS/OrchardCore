@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": true,
     "generateRTL": true,
     "inputs": [
       "Assets/scss/shortcodes.scss"

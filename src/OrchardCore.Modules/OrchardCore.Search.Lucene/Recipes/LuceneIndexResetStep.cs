@@ -53,7 +53,7 @@ namespace OrchardCore.Search.Lucene.Recipes
             }
         }
 
-        private class LuceneIndexResetStepModel
+        private sealed class LuceneIndexResetStepModel
         {
             public bool IncludeAll { get; set; } = false;
             public string[] Indices { get; set; } = [];

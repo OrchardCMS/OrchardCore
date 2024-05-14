@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -68,24 +66,23 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new EditTaxonomyFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+
+            field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+            field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+            if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                field.TermContentItemIds = [model.UniqueValue];
+            }
 
-                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
-
-                if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
-                {
-                    field.TermContentItemIds = [model.UniqueValue];
-                }
-
-                if (settings.Required && field.TermContentItemIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(
-                        nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
-                }
+            if (settings.Required && field.TermContentItemIds.Length == 0)
+            {
+                updater.ModelState.AddModelError(
+                    nameof(EditTaxonomyFieldViewModel.TermEntries),
+                    S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

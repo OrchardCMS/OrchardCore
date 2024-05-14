@@ -54,7 +54,35 @@ Here are samples using logo and favicon from media module.
 
 ## Navbar Shape
 
-The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`.
+The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. The `Navbar` shape is composed and used `TheAdmin` and `TheTheme` themes. If you wish to compose and use the `Navbar` shape in other themes, you may create it using two steps
+
+
+=== "Liquid"
+
+    ``` liquid
+    // Construct the shape at the beginning of the layout.liquid file to enable navbar items to potentially contribute to the resources output as necessary.
+    {% assign navbar = Navbar() | shape_render %}
+    
+    // Subsequently in the layout.liquid file, invoke the shape at the location where you want to display it.
+    {{ navbar }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @inject IDisplayManager<Navbar> DisplayManager
+    @inject IUpdateModelAccessor UpdateModelAccessor
+    @{
+        // Construct the shape at the beginning of the layout.cshtml file to enable navbar items to potentially contribute to the resources output as necessary.
+        var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "Detail"));
+    }
+
+    // Subsequently in the layout.cshtml file, invoke the shape at the location where you want to display it.
+    @navbar
+    ```
+
+
+If you wish to add a menu item to the navbar, simply create a display driver for `Navbar`.
 
 As an illustration, we inject the Visit Site link into `DetailAdmin` display type using a display driver as outlined below:
 

@@ -18,6 +18,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
+
     protected readonly IHtmlLocalizer H;
 
     public RobotsSettingsDisplayDriver(
@@ -60,7 +61,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

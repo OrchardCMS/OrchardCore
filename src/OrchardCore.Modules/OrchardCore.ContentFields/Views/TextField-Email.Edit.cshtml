@@ -5,11 +5,12 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div class="input-group">
             <span class="input-group-text">@@</span>
             <input asp-for="Text" class="form-control content-preview-text" type="email" />
+            <span asp-validation-for="Text"></span>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {

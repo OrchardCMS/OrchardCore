@@ -9,6 +9,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Themes.Deployment;
 using OrchardCore.Themes.Drivers;
+using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
@@ -27,12 +28,10 @@ namespace OrchardCore.Themes
             services.AddScoped<ISiteThemeService, SiteThemeService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IThemeService, ThemeService>();
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.AddScoped<DarkModeService>();
-#pragma warning restore CS0618 // Type or member is obsolete
             services.AddScoped<ThemeTogglerService>();
             services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ThemeEntry>, ThemeEntryDisplayDriver>();
         }
     }
 }
