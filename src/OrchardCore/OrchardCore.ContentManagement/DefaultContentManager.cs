@@ -30,6 +30,7 @@ namespace OrchardCore.ContentManagement
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
         private readonly IClock _clock;
+
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IContentManagerSession contentManagerSession,
