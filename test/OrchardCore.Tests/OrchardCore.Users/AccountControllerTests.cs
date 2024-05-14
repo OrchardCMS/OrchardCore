@@ -61,22 +61,21 @@ public class AccountControllerTests
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
-                context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
-                context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
-                context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
-                context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
-                context.rolesToAdd.push("Administrator")
-                context.propertiesToUpdate={
-                                                "UserProfile": {
-                                                    "UserProfile": {
-                                                        "DisplayName": {
-                                                        "Text": "Sam Zhang(CEO)"
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                """
+                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
+                    context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                    context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                    context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
+                    context.rolesToAdd.push("Administrator");
+                    context.propertiesToUpdate = {
+                        "UserProfile": {
+                            "UserProfile": {
+                                "DisplayName": {
+                                    "Text": "Sam Zhang(CEO)"
+                                }
+                            }
+                        }
+                    };
+                    """
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
@@ -125,22 +124,21 @@ public class AccountControllerTests
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
-                context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
-                context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
-                context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
-                context.claimsToRemove.push({claimType:"jobTitle",    claimValue:"CEO"});
-                context.rolesToRemove.push("Administrator")
-                context.propertiesToUpdate={
-                                                "UserProfile": {
-                                                    "UserProfile": {
-                                                        "DisplayName": {
-                                                        "Text": "Sam Zhang"
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                """
+                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
+                    context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                    context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                    context.claimsToRemove.push({claimType:"jobTitle",    claimValue:"CEO"});
+                    context.rolesToRemove.push("Administrator");
+                    context.propertiesToUpdate = {
+                        "UserProfile": {
+                            "UserProfile": {
+                                "DisplayName": {
+                                    "Text": "Sam Zhang"
+                                }
+                            }
+                        }
+                    };
+                    """
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
              

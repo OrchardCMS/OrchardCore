@@ -92,7 +92,7 @@ also check the settings to disable asking user info on first registration
 switch (context.loginProvider) {
     case "AzureAd":
         context.propertiesToUpdate = {"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}};
-        context.claimsToUpdate = {"displayName":"UserDisplayName"};
+        context.claimsToUpdate = [{ claimType: "DisplayName", claimValue: "UserDisplayName"}];
         context.externalClaims.forEach(claim => {
             if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {
                 switch (claim.value) {
