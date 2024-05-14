@@ -117,11 +117,9 @@ namespace OrchardCore.Tests.DisplayManagement
             public string Text { get; set; }
         }
 
-
         public class MyField : ContentField
         {
             public int Value { get; set; }
         }
-
     }
 }
