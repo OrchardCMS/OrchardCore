@@ -44,7 +44,7 @@ public class AccountControllerTests
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
-     
+
         await context.UsingTenantScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -53,28 +53,47 @@ public class AccountControllerTests
 
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
+            var safeUser = new SafeUser
+            {
+                UserName = user.UserName,
+                UserClaims = user.UserClaims,
+                UserRoles = userRoles,
+                UserProperties = user.Properties
+            };
 
-            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
+            var context = new UpdateUserContext(safeUser, "TestLoginProvider", externalClaims);
+
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                         .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
             var loginSettings = new LoginSettings
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
-                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
+                    if(!context.user.userClaims.find(x=>x.claimType=="lastName"&&claimValue=="Zhang")){
+                        context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                    }
                     context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
-                    context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+
+                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
+
                     context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
-                    context.rolesToAdd.push("Administrator");
-                    context.propertiesToUpdate = {
-                        "UserProfile": {
+
+                    if(!context.user.userRoles.includes('Administrator')){
+                        context.rolesToAdd.push("Administrator");
+                    }
+
+                    if(context.user.userProperties.UserProfile?.UserProfile?.DisplayName?.Text!="Sam Zhang(CEO)")
+                    {
+                        context.propertiesToUpdate = {
                             "UserProfile": {
-                                "DisplayName": {
-                                    "Text": "Sam Zhang(CEO)"
+                                "UserProfile": {
+                                    "DisplayName": {
+                                        "Text": "Sam Zhang(CEO)"
+                                    }
                                 }
                             }
-                        }
-                    };
+                        };
+                    }
                     """
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
@@ -110,13 +129,19 @@ public class AccountControllerTests
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var user = await userManager.FindByNameAsync(model.UserName);
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
 
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
+            var safeUser = new SafeUser
+            {
+                UserName = user.UserName,
+                UserClaims = user.UserClaims,
+                UserRoles = userRoles,
+                UserProperties = user.Properties
+            };
 
-
-            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, userRoles);
+            var updateContext = new UpdateUserContext(safeUser, "TestLoginProvider", externalClaims);
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                       .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
@@ -141,7 +166,7 @@ public class AccountControllerTests
                     """
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
-             
+
             if (await AccountController.UpdateUserPropertiesAsync(userManager, user as User, updateContext))
             {
                 await userManager.UpdateAsync(user);

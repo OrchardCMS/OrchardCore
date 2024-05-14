@@ -313,7 +313,16 @@ namespace OrchardCore.Users.Controllers
         {
             var externalClaims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userRoles);
+            var userInfo = user as User;
+            var safeUser = new SafeUser
+            {
+                UserName = userInfo.UserName,
+                UserClaims = userInfo.UserClaims,
+                UserRoles = userRoles,
+                UserProperties = userInfo.Properties
+            };
+
+            var context = new UpdateUserContext(safeUser, info.LoginProvider, externalClaims);
             foreach (var item in _externalLoginHandlers)
             {
                 try
@@ -326,7 +335,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            if (await UpdateUserPropertiesAsync(_userManager, user as User, context))
+            if (await UpdateUserPropertiesAsync(_userManager, userInfo, context))
             {
                 await _userManager.UpdateAsync(user);
             }
@@ -842,7 +851,7 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<string> GenerateUsernameAsync(ExternalLoginInfo info)
         {
-            var ret = string.Concat("u", IdGenerator.GenerateId());
+            var ret = string.Concat("userInfo", IdGenerator.GenerateId());
             var externalClaims = info?.Principal.GetSerializableClaims();
             var userNames = new Dictionary<Type, string>();
 

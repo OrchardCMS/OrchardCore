@@ -16,12 +16,13 @@ namespace OrchardCore.Users.Handlers
         /// <param name="user">The <see cref="IUser"/>.</param>
         /// <param name="loginProvider">The login provider.</param>
         /// <param name="externalClaims">The user claims.</param>
-        /// <param name="userRoles">The user roles.</param>
-        public UpdateUserContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
+        public UpdateUserContext(SafeUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims) : base(user)
         {
             ExternalClaims = externalClaims.AsEnumerable();
-            UserRoles = userRoles;
             LoginProvider = loginProvider;
+            UserRoles = user.UserRoles;
+            UserProperties = user.UserProperties;
+            UserClaims = user.UserClaims;
         }
 
         /// <summary>
@@ -38,6 +39,17 @@ namespace OrchardCore.Users.Handlers
         /// Gets the user's roles.
         /// </summary>
         public IEnumerable<string> UserRoles { get; }
+
+        /// <summary>
+        /// Gets the user's roles.
+        /// </summary>
+        public IEnumerable<UserClaim> UserClaims { get; }
+
+        /// <summary>
+        /// Gets the user properties.
+        /// </summary>
+        public JsonObject UserProperties { get; }
+
 
         /// <summary>
         /// Gets the roles to be added to the user roles.
