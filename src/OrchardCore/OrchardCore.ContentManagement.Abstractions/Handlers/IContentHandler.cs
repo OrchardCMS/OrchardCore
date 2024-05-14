@@ -14,9 +14,7 @@ namespace OrchardCore.ContentManagement.Handlers
         Task LoadingAsync(LoadContentContext context);
         Task LoadedAsync(LoadContentContext context);
         Task ImportingAsync(ImportContentContext context);
-        Task BeforeImportAsync(IEnumerable<ImportContentContext> contentItems);
         Task ImportedAsync(ImportContentContext context);
-        Task AfterImportAsync(IEnumerable<ImportContentContext> contentItems);
         Task UpdatingAsync(UpdateContentContext context);
         Task UpdatedAsync(UpdateContentContext context);
         Task ValidatingAsync(ValidateContentContext context);

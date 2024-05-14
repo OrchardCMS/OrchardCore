@@ -147,15 +147,5 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             return Task.CompletedTask;
         }
-
-        public Task BeforeImportAsync(IEnumerable<ImportContentContext> contentItems)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task AfterImportAsync(IEnumerable<ImportContentContext> contentItems)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

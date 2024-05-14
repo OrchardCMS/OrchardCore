@@ -30,11 +30,11 @@ namespace OrchardCore.ContentManagement
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IContentItemIdGenerator _idGenerator;
         private readonly IClock _clock;
-
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
+            IEnumerable<IBulkContentHandler> bulkContentHandlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
             ILogger<DefaultContentManager> logger,
@@ -43,12 +43,15 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
             ReversedHandlers = handlers.Reverse().ToArray();
+            BulkContentHandlers = bulkContentHandlers;
             _session = session;
             _idGenerator = idGenerator;
             _contentManagerSession = contentManagerSession;
             _logger = logger;
             _clock = clock;
         }
+
+        public IEnumerable<IBulkContentHandler> BulkContentHandlers { get; private set; }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
@@ -648,7 +651,7 @@ namespace OrchardCore.ContentManagement
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
         {
             var contentList = contentItems.Select(x => new ImportContentContext(x)).ToList();
-            await ReversedHandlers.InvokeAsync((handler, list) => handler.BeforeImportAsync(list), contentList, _logger);
+            await BulkContentHandlers.InvokeAsync((handler, list) => handler.ImportingAsync(list), contentList, _logger);
 
             var skip = 0;
 
@@ -779,9 +782,7 @@ namespace OrchardCore.ContentManagement
                 batchedContentItems = contentItems.Skip(skip).Take(ImportBatchSize);
             }
 
-            await ReversedHandlers.InvokeAsync((handler, list) => handler.AfterImportAsync(list), contentList, _logger);
-
-
+            await BulkContentHandlers.InvokeAsync((handler, list) => handler.ImportedAsync(list), contentList, _logger);
         }
 
         public async Task UpdateAsync(ContentItem contentItem)
