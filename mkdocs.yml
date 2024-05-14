@@ -130,6 +130,7 @@ nav:
           - Contributing code: guides/contributing/contributing-code.md
           - Contributing documentation: guides/contributing/contributing-documentation.md
           - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
+          - Benchmarking: guides/contributing/benchmarking.md
       - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
