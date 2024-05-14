@@ -16,31 +16,27 @@ public class JsonDynamicObject : DynamicObject
 
     private readonly Dictionary<string, object?> _dictionary = [];
 
-    public JsonDynamicObject() => _jsonObject = [];
+    public JsonDynamicObject()
+    {
+        _jsonObject = [];
+    }
 
-    public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
+    public JsonDynamicObject(JsonObject jsonObject)
+    {
+        _jsonObject = jsonObject;
+    }
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    {
         _jsonObject.Merge(content, settings);
+    }
 
     public object? this[string key]
     {
-        get
-        {
-            var value = GetValue(key);
-            if (value is JsonDynamicValue jsonDynamicValue)
-            {
-                return jsonDynamicValue.JsonValue;
-            }
-
-            return value;
-        }
-        set
-        {
-            SetValue(key, value);
-        }
+        get => GetValue(key);
+        set => SetValue(key, value);
     }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
@@ -57,14 +53,7 @@ public class JsonDynamicObject : DynamicObject
             return true;
         }
 
-        var value = GetValue(binder.Name);
-        if (value is JsonDynamicValue jsonDynamicValue)
-        {
-            result = jsonDynamicValue.Value;
-            return true;
-        }
-
-        result = value;
+        result = GetValue(binder.Name);
         return true;
     }
 
@@ -124,7 +113,7 @@ public class JsonDynamicObject : DynamicObject
         return null;
     }
 
-    public void SetValue(string key, object? value, object? nodeValue = null)
+    public void SetValue(string key, object? value)
     {
         if (value is null)
         {
@@ -135,8 +124,7 @@ public class JsonDynamicObject : DynamicObject
 
         if (value is not JsonNode)
         {
-            var jsonNode = JNode.FromObject(value);
-            SetValue(key, jsonNode, value);
+            value = JNode.FromObject(value);
         }
 
         if (value is JsonObject jsonObject)
@@ -156,7 +144,7 @@ public class JsonDynamicObject : DynamicObject
         if (value is JsonValue jsonValue)
         {
             _jsonObject[key] = jsonValue;
-            _dictionary[key] = new JsonDynamicValue(jsonValue, nodeValue);
+            _dictionary[key] = new JsonDynamicValue(jsonValue);
             return;
         }
     }
