@@ -29,40 +29,16 @@ public class JsonSerializerTests
         Assert.Equal("default", obj.ProviderDisplayName);
     }
 
-    [Fact]
-    public void Deserialize_WhenCalled_ReturnDoubleFromString()
+    [Theory]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1.75\"}", 1.75)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1\"}", 1)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":1}", 1)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":2.75}", 2.75)]
+    public void Deserialize_WhenCalled_ReturnDoubleFromStringWithBaseOptions(string json, double expectedWeight)
     {
-        var weightInfo = "[{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1.75\"}]";
+        var item = JsonSerializer.Deserialize<CustomListValueOption>(json, JOptions.Base);
 
-        var items = JsonSerializer.Deserialize<CustomListValueOption[]>(weightInfo, JOptions.Default);
-
-        Assert.Equal("One", items[0].Name);
-        Assert.Equal("1", items[0].Value);
-        Assert.Equal(1.75, items[0].Weight);
-    }
-
-    [Fact]
-    public void Deserialize_WhenCalled_ReturnIntAsDoubleFromString()
-    {
-        var weightInfo = "[{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1\"}]";
-
-        var items = JsonSerializer.Deserialize<CustomListValueOption[]>(weightInfo, JOptions.Default);
-
-        Assert.Equal("One", items[0].Name);
-        Assert.Equal("1", items[0].Value);
-        Assert.Equal(1, items[0].Weight);
-    }
-
-    [Fact]
-    public void Deserialize_WhenCalled_ReturnValidWeightFromInt()
-    {
-        var weightInfo = "[{\"name\":\"One\",\"value\":\"1\",\"Weight\":1}]";
-
-        var items = JsonSerializer.Deserialize<CustomListValueOption[]>(weightInfo, JOptions.Default);
-
-        Assert.Equal("One", items[0].Name);
-        Assert.Equal("1", items[0].Value);
-        Assert.Equal(1, items[0].Weight);
+        Assert.Equal(expectedWeight, item.Weight);
     }
 
     [Fact]
