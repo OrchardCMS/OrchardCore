@@ -69,20 +69,18 @@ public class AccountControllerTests
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
-                    if(!context.user.userClaims.find(x=>x.claimType=="lastName"&&claimValue=="Zhang")){
+                    if(!context.user.userClaims?.find(x=> x.claimType=="lastName" && claimValue=="Zhang")){
                         context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
                     }
                     context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
-
                     context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
-
                     context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
 
-                    if(!context.user.userRoles.includes('Administrator')){
+                    if(!context.user.userRoles?.includes('Administrator')){
                         context.rolesToAdd.push("Administrator");
                     }
 
-                    if(context.user.userProperties.UserProfile?.UserProfile?.DisplayName?.Text!="Sam Zhang(CEO)")
+                    if(context.user.userProperties?.UserProfile?.UserProfile?.DisplayName?.Text!="Sam Zhang(CEO)")
                     {
                         context.propertiesToUpdate = {
                             "UserProfile": {
