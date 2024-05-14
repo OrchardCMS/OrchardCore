@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentTypes.Services;
+namespace OrchardCore.ContentManagement;
 
 public interface IStereotypesProvider
 {
