@@ -26,7 +26,7 @@ public class JsonDynamicValue : DynamicObject, IConvertible
 
     public override string ToString()
     {
-        return JsonValue?.ToString() ?? string.Empty;
+        return ToString(null, null);
     }
 
     public string ToString(string format)
@@ -124,7 +124,7 @@ public class JsonDynamicValue : DynamicObject, IConvertible
 
     string IConvertible.ToString(IFormatProvider? provider)
     {
-        return (string?)this ?? string.Empty;
+        return ToString(provider);
     }
 
     object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
@@ -293,7 +293,7 @@ public class JsonDynamicValue : DynamicObject, IConvertible
 
     public static explicit operator string?(JsonDynamicValue value)
     {
-        return value?.JsonValue?.GetValue<string>();
+        return value?.ToString();
     }
 
     public static explicit operator ushort(JsonDynamicValue value)
@@ -354,8 +354,8 @@ public class JsonDynamicValue : DynamicObject, IConvertible
         var str = value?.JsonValue?.GetObjectValue() as string;
 
         return str is not null
-        ? TimeSpan.Parse(str, CultureInfo.InvariantCulture)
-        : null;
+            ? TimeSpan.Parse(str, CultureInfo.InvariantCulture)
+            : null;
     }
 
     public static explicit operator Uri?(JsonDynamicValue value)
