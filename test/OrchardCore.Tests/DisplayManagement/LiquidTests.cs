@@ -68,7 +68,6 @@ namespace OrchardCore.Tests.DisplayManagement
 
                 var testModel = JConvert.DeserializeObject<ContentItem>(json);
 
-
                 var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var result = await liquidTemplateManager.RenderStringAsync(template,
                     NullEncoder.Default,
@@ -101,7 +100,6 @@ namespace OrchardCore.Tests.DisplayManagement
                 var json = JConvert.SerializeObject(contentItem);
 
                 var testModel = JConvert.DeserializeObject<ContentItem>(json);
-
 
                 var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var result = await liquidTemplateManager.RenderStringAsync(template,
