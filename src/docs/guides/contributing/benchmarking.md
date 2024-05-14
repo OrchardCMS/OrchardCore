@@ -4,7 +4,7 @@ To measure how fast Orchard Core is (usually, it's pretty fast :)), we employ so
 
 ## `OrchardCore.Benchmarks`
 
-In the [`OrchardCore.Benchmarks` project](https://github.com/OrchardCMS/OrchardCore/tree/main/test/OrchardCore.Benchmarks) we have several benchmarks created with [BenchmarkDotNet](https://benchmarkdotnet.org/). When we troubleshoot some performance issue, we extend these to measure the performance impact of the changes.
+In the [`OrchardCore.Benchmarks` project](https://github.com/OrchardCMS/OrchardCore/tree/main/test/OrchardCore.Benchmarks) we have several benchmarks created with [BenchmarkDotNet](https://benchmarkdotnet.org/). When we troubleshoot some performance issues, we extend these to measure the performance impact of the changes.
 
 ### Running `OrchardCore.Benchmarks` benchmarks
 
