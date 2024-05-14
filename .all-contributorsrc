@@ -3149,6 +3149,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "LombiqBot",
+      "name": "Lombiq Bot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8517910?v=4",
+      "profile": "https://lombiq.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
