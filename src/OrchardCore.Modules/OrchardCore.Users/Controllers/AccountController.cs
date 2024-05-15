@@ -314,15 +314,12 @@ namespace OrchardCore.Users.Controllers
             var externalClaims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
             var userInfo = user as User;
-            var safeUser = new SafeUser
-            {
-                UserName = userInfo.UserName,
+
+            var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
+            { 
                 UserClaims = userInfo.UserClaims,
                 UserRoles = userRoles,
-                UserProperties = userInfo.Properties
             };
-
-            var context = new UpdateUserContext(safeUser, info.LoginProvider, externalClaims);
             foreach (var item in _externalLoginHandlers)
             {
                 try
@@ -805,11 +802,14 @@ namespace OrchardCore.Users.Controllers
             await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
             await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
             var userNeedUpdate = false;
+
             if (context.PropertiesToUpdate != null)
             {
+                var currentProperties = user.Properties.DeepClone();
                 user.Properties.Merge(context.PropertiesToUpdate, _jsonMergeSettings);
-                userNeedUpdate = true;
+                userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
             }
+
             var currentClaims = user.UserClaims.Where(x => !x.ClaimType.IsNullOrEmpty()).DistinctBy(x => new { x.ClaimType, x.ClaimValue }).ToList();
             var claimsChanged = false;
 

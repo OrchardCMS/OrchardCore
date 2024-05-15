@@ -53,15 +53,15 @@ public class AccountControllerTests
 
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
-            var safeUser = new SafeUser
+
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
             {
-                UserName = user.UserName,
                 UserClaims = user.UserClaims,
-                UserRoles = userRoles,
-                UserProperties = user.Properties
+                UserRoles = userRoles
             };
 
-            var context = new UpdateUserContext(safeUser, "TestLoginProvider", externalClaims);
+            context.UserProperties["Test"] = 111;
+            Assert.NotEqual(user.Properties["Test"], context.UserProperties["Test"]);
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                         .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
@@ -131,15 +131,12 @@ public class AccountControllerTests
 
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
-            var safeUser = new SafeUser
+
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
             {
-                UserName = user.UserName,
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles,
-                UserProperties = user.Properties
             };
-
-            var updateContext = new UpdateUserContext(safeUser, "TestLoginProvider", externalClaims);
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                       .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
