@@ -37,7 +37,7 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the user properties.
         /// </summary>
-        public JsonObject UserProperties { get; } = [];
+        public JsonObject UserProperties { get; }
 
         /// <summary>
         /// Gets the user's roles.
