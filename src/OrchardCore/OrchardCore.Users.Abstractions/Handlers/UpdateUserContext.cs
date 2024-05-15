@@ -32,22 +32,22 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets a list of external claims.
         /// </summary>
-        public IEnumerable<SerializableClaim> ExternalClaims { get; }
-
-        /// <summary>
-        /// Gets the user's roles.
-        /// </summary>
-        public IEnumerable<string> UserRoles { get; set; }
-
-        /// <summary>
-        /// Gets the user's roles.
-        /// </summary>
-        public IEnumerable<UserClaim> UserClaims { get; set; }
+        public IEnumerable<SerializableClaim> ExternalClaims { get; } = [];
 
         /// <summary>
         /// Gets the user properties.
         /// </summary>
         public JsonObject UserProperties { get; }
+
+        /// <summary>
+        /// Gets the user's roles.
+        /// </summary>
+        public IEnumerable<string> UserRoles { get; set; } = [];
+
+        /// <summary>
+        /// Gets the user's roles.
+        /// </summary>
+        public IEnumerable<UserClaim> UserClaims { get; set; } = [];
 
         /// <summary>
         /// Gets the roles to be added to the user roles.
@@ -62,12 +62,12 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the claims to be added from the user claims.
         /// </summary>
-        public List<UserClaim> ClaimsToUpdate { get; set; } = [];
+        public List<UserClaim> ClaimsToUpdate { get; init; } = [];
 
         /// <summary>
         /// Gets the claims to be removed from the user claims.
         /// </summary>
-        public List<UserClaim> ClaimsToRemove { get; set; } = [];
+        public List<UserClaim> ClaimsToRemove { get; init; } = [];
 
         /// <summary>
         /// Gets the user properties to update the user
