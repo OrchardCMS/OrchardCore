@@ -36,18 +36,16 @@ namespace OrchardCore.Settings.Services
         /// <summary>
         /// Updates the store with the provided site settings and then updates the cache.
         /// </summary>
-        public Task UpdateSiteSettingsAsync(ISite site)
+        public async Task UpdateSiteSettingsAsync(ISite site)
         {
             if (site is SiteSettings siteSettings)
             {
+                await _documentManager.UpdateAsync(siteSettings);
+
                 // Clear the internal cache to ensure that any other lookup against
                 // this document will load the new values until the site is reloaded.
                 siteSettings.ClearCache();
-
-                return _documentManager.UpdateAsync(siteSettings);
             }
-
-            return Task.CompletedTask;
         }
 
         private Task<SiteSettings> GetDefaultSettingsAsync()
