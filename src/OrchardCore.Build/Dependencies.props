@@ -42,6 +42,16 @@
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.3" />
     <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="8.5.0" />
     <PackageManagement Include="Microsoft.Identity.Web" Version="2.18.1" />
+
+    <!--
+      Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
+      match the IdentityModel version transitively referenced by OpenIddict to ensure we don't
+      accidentally end up referencing inconsistent versions (which is not supported by IM).
+
+      See https://github.com/OrchardCMS/OrchardCore/pull/16057 for more information.
+    -->
+
+    <PackageManagement Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.5.1" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.5.0" />
