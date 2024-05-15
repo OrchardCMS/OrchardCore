@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets a list of external claims.
         /// </summary>
-        public IEnumerable<SerializableClaim> ExternalClaims { get; } = [];
+        public IEnumerable<SerializableClaim> ExternalClaims { get; }
 
         /// <summary>
         /// Gets the user properties.
