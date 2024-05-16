@@ -52,7 +52,14 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
             if (userNames.Length > 0)
             {
-                return await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(userNames)).ListAsync();
+                var users = new List<User>();
+
+                foreach (var page in userNames.PagesOf(1000))
+                {
+                    users.AddRange(await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(page)).ListAsync());
+                }
+
+                return users;
             }
         }
 
