@@ -89,7 +89,7 @@ namespace OrchardCore.Data.Migration
                 return GetMethod(dataMigration, "Create") != null;
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeaturesForDependency(m.GetType()).First().Id).ToArray();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToArray();
         }
 
         public async Task Uninstall(string feature)
@@ -276,7 +276,7 @@ namespace OrchardCore.Data.Migration
         private IDataMigration[] GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
-                    .Where(dm => _typeFeatureProvider.GetFeaturesForDependency(dm.GetType()).First().Id == featureId)
+                    .Where(dm => _typeFeatureProvider.GetFeaturesForDependency(dm.GetType()).Any(feature => feature.Id == featureId))
                     .ToArray();
 
             return migrations;

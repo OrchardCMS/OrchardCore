@@ -243,9 +243,7 @@ namespace OrchardCore.Roles.Controllers
             var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
-                // Note: This uses the last feature, because that is likely the most specific. The first feature entry
-                // is always the extension itself, if multiple permission providers are sharing the same assembly.
-                var feature = _typeFeatureProvider.GetFeaturesForDependency(permissionProvider.GetType()).Last();
+                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)

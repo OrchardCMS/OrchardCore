@@ -44,25 +44,22 @@ namespace OrchardCore.Mvc
             {
                 var controllerType = controller.ControllerType.AsType();
 
-                var blueprint = _typeFeatureProvider.GetFeaturesForDependency(controllerType).FirstOrDefault();
+                var blueprint = _typeFeatureProvider.GetExtensionForDependency(controllerType);
 
-                if (blueprint != null)
-                { 
-                    if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
+                if (blueprint.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
+                {
+                    // Don't serve any action of the application'module which is enabled during a setup.
+                    foreach (var action in controller.Actions)
                     {
-                        // Don't serve any action of the application'module which is enabled during a setup.
-                        foreach (var action in controller.Actions)
-                        {
-                            action.Selectors.Clear();
-                        }
+                        action.Selectors.Clear();
+                    }
 
-                        controller.Selectors.Clear();
-                    }
-                    else
-                    {
-                        // Add an "area" route value equal to the module id.
-                        controller.RouteValues.Add("area", blueprint.Extension.Id);
-                    }
+                    controller.Selectors.Clear();
+                }
+                else
+                {
+                    // Add an "area" route value equal to the module id.
+                    controller.RouteValues.Add("area", blueprint.Id);
                 }
             }
         }

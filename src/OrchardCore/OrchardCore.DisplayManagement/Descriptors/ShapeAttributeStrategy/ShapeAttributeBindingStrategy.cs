@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 var occurrence = iter;
                 var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
                 builder.Describe(shapeType)
-                    .From(_typeFeatureProvider.GetFeaturesForDependency(occurrence.ServiceType).First())
+                    .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
                         CreateDelegate(occurrence));

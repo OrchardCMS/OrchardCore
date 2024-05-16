@@ -56,7 +56,7 @@ namespace OrchardCore.Tests.Shell
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeaturesForDependency(typeof(TestService)).FirstOrDefault());
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace OrchardCore.Tests.Shell
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
             Assert.IsType<CustomTestService>(container.GetRequiredService(typeof(ITestService)));
-            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeaturesForDependency(typeof(CustomTestService)).FirstOrDefault());
+            Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace OrchardCore.Tests.Shell
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, new ExtensionInfo(startupType.Name), null, false, false, false);
             shellBlueprint.Dependencies.Add(startupType, [featureInfo]);
 
             return featureInfo;
@@ -186,8 +186,8 @@ namespace OrchardCore.Tests.Shell
 
         public static IFeatureInfo[] AddStartups(ShellBlueprint shellBlueprint, Type startupType1, Type startupType2)
         {
-            var featureInfo1 = new FeatureInfo(startupType1.Name, startupType1.Name, 1, "Tests", null, null, null, false, false, false);
-            var featureInfo2 = new FeatureInfo(startupType2.Name, startupType2.Name, 1, "Tests", null, null, null, false, false, false);
+            var featureInfo1 = new FeatureInfo(startupType1.Name, startupType1.Name, 1, "Tests", null, new ExtensionInfo(startupType1.Name), null, false, false, false);
+            var featureInfo2 = new FeatureInfo(startupType2.Name, startupType2.Name, 1, "Tests", null, new ExtensionInfo(startupType2.Name), null, false, false, false);
             shellBlueprint.Dependencies.Add(startupType1, [featureInfo1]);
             shellBlueprint.Dependencies.Add(startupType2, [featureInfo2]);
 

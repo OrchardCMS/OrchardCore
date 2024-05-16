@@ -10,6 +10,28 @@ namespace OrchardCore.Environment.Extensions
     {
         private readonly ConcurrentDictionary<Type, IEnumerable<IFeatureInfo>> _features = new();
 
+        public IExtensionInfo GetExtensionForDependency(Type dependency)
+        {
+            if (_features.TryGetValue(dependency, out var features))
+            {
+                return features.First().Extension;
+            }
+
+            throw new InvalidOperationException($"Could not resolve extension for type {dependency.Name}");
+        }
+
+        public IFeatureInfo GetFeatureForDependency(Type dependency)
+        {
+            if(_features.TryGetValue(dependency, out var features))
+            {
+                // Gets the first feature that has the same ID as the extension, if any. Otherwise returns the
+                // first feature.
+                return features.FirstOrDefault(feature => feature.Extension.Id == feature.Id) ?? features.First();
+            }
+
+            throw new InvalidOperationException($"Could not resolve main feature for type {dependency.Name}");
+        }
+
         public IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency)
         {
             if (_features.TryGetValue(dependency, out var features))
