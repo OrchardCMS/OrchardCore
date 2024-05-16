@@ -119,9 +119,10 @@ namespace OrchardCore.Users
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-            // Add the default token providers used to generate tokens for reset passwords, change email,
-            // and for two-factor authentication token generation.
-            services.AddIdentity<IUser, IRole>();
+            // Add the default token providers used to generate tokens for an admin to change user's password.
+            services.AddIdentity<IUser, IRole>()
+                .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
+
             services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
             services.AddPhoneFormatValidator();
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
