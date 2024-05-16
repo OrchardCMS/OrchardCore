@@ -42,7 +42,7 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
         }
         else
         {
-            activity.UserNames = new WorkflowExpression<string>(string.Join(',', userNames));
+            activity.UserNames = new WorkflowExpression<string>(string.Join(", ", userNames));
         }
 
         return await base.UpdateAsync(activity, updater);
