@@ -33,16 +33,16 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
         var viewModel = new NotifyUserTaskViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        var usernames = viewModel.Usernames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        var userNames = viewModel.UserNames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase) ?? [];
 
-        if (!usernames.Any())
+        if (!userNames.Any())
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Usernames), S["Please provide at least one username to notify."]);
+            updater.ModelState.AddModelError(Prefix, nameof(viewModel.UserNames), S["Please provide at least one username to notify."]);
         }
         else
         {
-            model.Usernames = new WorkflowExpression<string>(string.Join(',', usernames));
+            model.UserNames = new WorkflowExpression<string>(string.Join(',', userNames));
         }
 
         return await base.UpdateAsync(model, updater);
@@ -52,6 +52,6 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
     {
         base.EditActivity(activity, model);
 
-        model.Usernames = activity.Usernames.Expression;
+        model.UserNames = activity.UserNames.Expression;
     }
 }

@@ -36,7 +36,7 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
     public override LocalizedString DisplayText => S["Notify Specific Users Task"];
 
-    public WorkflowExpression<string> Usernames
+    public WorkflowExpression<string> UserNames
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
@@ -44,9 +44,9 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
     protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (!string.IsNullOrEmpty(Usernames.Expression))
+        if (!string.IsNullOrEmpty(UserNames.Expression))
         {
-            var expression = await _expressionEvaluator.EvaluateAsync(Usernames, workflowContext, null);
+            var expression = await _expressionEvaluator.EvaluateAsync(UserNames, workflowContext, null);
 
             var usernames = expression.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 

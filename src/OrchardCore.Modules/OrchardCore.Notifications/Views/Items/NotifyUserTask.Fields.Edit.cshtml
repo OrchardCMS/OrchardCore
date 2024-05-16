@@ -1,8 +1,8 @@
 @model NotifyUserTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="Usernames">
-    <label asp-for="Usernames" class="form-label">@T["Usernames"]</label>
-    <input type="text" asp-for="Usernames" class="form-control" />
-    <span asp-validation-for="Usernames"></span>
-    <span class="hint">@T["Please provide a comma separated list of usernames. You may use Liquid syntax."]</span>
+<div class="mb-3" asp-validation-class-for="UserNames">
+    <label asp-for="UserNames" class="form-label">@T["User names"]</label>
+    <input type="text" asp-for="UserNames" class="form-control" />
+    <span asp-validation-for="UserNames"></span>
+    <span class="hint">@T["Please provide a comma separated list of user names. You may use Liquid syntax."]</span>
 </div>

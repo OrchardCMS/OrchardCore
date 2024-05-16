@@ -129,9 +129,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
         activity.Subject = new WorkflowExpression<string>(model.Subject);
-        activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary));
+        activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary ?? string.Empty));
         activity.TextBody = new WorkflowExpression<string>(model.TextBody);
-        activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody));
+        activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody ?? string.Empty));
         activity.IsHtmlPreferred = model.IsHtmlPreferred;
     }
 
