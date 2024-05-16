@@ -1,6 +1,6 @@
 namespace OrchardCore.Notifications.ViewModels;
 
-public class NotifyUserTaskViewModel : NotifyUserTaskActivityViewModel
+public class NotifyUserTaskViewModel
 {
     public string UserNames { get; set; }
 }
