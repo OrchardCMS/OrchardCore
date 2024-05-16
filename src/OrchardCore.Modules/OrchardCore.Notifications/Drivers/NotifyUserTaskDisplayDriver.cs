@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -32,9 +33,10 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
         var viewModel = new NotifyUserTaskViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        var usernames = viewModel.Usernames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var usernames = viewModel.Usernames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase) ?? [];
 
-        if (usernames?.Length == 0)
+        if (!usernames.Any())
         {
             updater.ModelState.AddModelError(Prefix, nameof(viewModel.Usernames), S["Please provide at least one username to notify."]);
         }

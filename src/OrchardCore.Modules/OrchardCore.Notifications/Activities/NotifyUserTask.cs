@@ -34,7 +34,7 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
         _session = session;
     }
 
-    public override LocalizedString DisplayText => S["Notify User Task"];
+    public override LocalizedString DisplayText => S["Notify Specific Users Task"];
 
     public WorkflowExpression<string> Usernames
     {
