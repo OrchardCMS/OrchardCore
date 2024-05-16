@@ -50,9 +50,9 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
             var userNames = expression.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
-            if (usernames.Length > 0)
+            if (userNames.Length > 0)
             {
-                return await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(usernames)).ListAsync();
+                return await _session.Query<User, UserIndex>(user => user.NormalizedUserName.IsIn(userNames)).ListAsync();
             }
         }
 
