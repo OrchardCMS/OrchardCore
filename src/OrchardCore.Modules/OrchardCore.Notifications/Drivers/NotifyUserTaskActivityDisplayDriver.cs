@@ -20,8 +20,6 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : class, new()
 {
-    protected static readonly string ActivityName = typeof(TActivity).Name;
-
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly NotificationOptions _notificationOptions;
@@ -69,6 +67,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
     {
         var model = new NotifyUserTaskActivityViewModel();
+
         await updater.TryUpdateModelAsync(model, Prefix);
 
         if (!_liquidTemplateManager.Validate(model.Subject, out var subjectErrors))
@@ -98,6 +97,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         activity.IsHtmlPreferred = model.IsHtmlPreferred;
 
         var modelOfT = new TEditViewModel();
+
         await updater.TryUpdateModelAsync(modelOfT, Prefix);
 
         await UpdateActivityAsync(modelOfT, activity);
