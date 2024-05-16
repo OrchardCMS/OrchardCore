@@ -138,7 +138,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        return await RemoveTwoFactorProviderAync(user, async () =>
+        return await RemoveTwoFactorProviderAsync(user, async () =>
         {
             await UserManager.ResetAuthenticatorKeyAsync(user);
 
