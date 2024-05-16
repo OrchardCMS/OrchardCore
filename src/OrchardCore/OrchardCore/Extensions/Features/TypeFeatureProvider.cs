@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Extensions
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
-            if(_features.TryGetValue(dependency, out var features))
+            if (_features.TryGetValue(dependency, out var features))
             {
                 // Gets the first feature that has the same ID as the extension, if any. Otherwise returns the
                 // first feature.
