@@ -29,22 +29,6 @@ public class CustomUserSettingsService
         _session = session;
     }
 
-    [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<string> GetAllSettingsTypeNames()
-        => _settingsTypes.Value.GetAwaiter().GetResult().Keys;
-
-    [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
-        => _settingsTypes.Value.GetAwaiter().GetResult().Values;
-
-    [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
-        => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
-
-    [Obsolete($"Instead, utilize the {nameof(GetSettingsTypeAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public ContentTypeDefinition GetSettingsType(string settingsTypeName)
-        => GetSettingsTypeAsync(settingsTypeName).GetAwaiter().GetResult();
-
     public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
         => (await _settingsTypes.Value).Keys;
 

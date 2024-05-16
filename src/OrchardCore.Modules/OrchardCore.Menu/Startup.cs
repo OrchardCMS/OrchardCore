@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
+using OrchardCore.Menu.Services;
 using OrchardCore.Menu.Settings;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
@@ -24,6 +25,8 @@ namespace OrchardCore.Menu
             services.AddScoped<IShapeTableProvider, MenuShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
 
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();

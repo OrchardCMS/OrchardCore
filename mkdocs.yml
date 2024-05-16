@@ -2,8 +2,8 @@ site_name: Orchard Core Documentation
 theme:
   name: material
   custom_dir: src/docs/theme
-  logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon.png
+  logo: assets/images/orchard-logo.png
+  favicon: assets/images/favicon.png
   features:
     - navigation.footer
     - header.autohide
@@ -52,7 +52,7 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
-  releases/1.9.0.md
+  releases/2.0.0.md
 
 # Extensions
 markdown_extensions:
@@ -130,6 +130,7 @@ nav:
           - Contributing code: guides/contributing/contributing-code.md
           - Contributing documentation: guides/contributing/contributing-documentation.md
           - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
+          - Benchmarking: guides/contributing/benchmarking.md
       - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md

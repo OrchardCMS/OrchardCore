@@ -22,10 +22,9 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
     private readonly EmailOptions _emailOptions;
     private readonly IEmailProviderResolver _emailProviderResolver;
-    private readonly ShellSettings _shellSettings;
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly EmailProviderOptions _emailProviders;
 
     protected readonly IStringLocalizer S;
@@ -33,20 +32,18 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
         IEmailProviderResolver emailProviderResolver,
-        ShellSettings shellSettings,
+        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _emailOptions = emailOptions.Value;
         _emailProviderResolver = emailProviderResolver;
         _emailProviders = emailProviders.Value;
-        _shellSettings = shellSettings;
+        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
     public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
@@ -91,7 +88,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         {
             settings.DefaultProviderName = model.DefaultProvider;
 
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            _shellReleaseManager.RequestRelease();
         }
 
         return await EditAsync(settings, context);

@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Name = "ContentItemType";
 
             Field(ci => ci.ContentItemId).Description("Content item id");
-            Field(ci => ci.ContentItemVersionId).Description("The content item version id");
+            Field(ci => ci.ContentItemVersionId, nullable: true).Description("The content item version id");
             Field(ci => ci.ContentType).Description("Type of content");
             Field(ci => ci.DisplayText, nullable: true).Description("The display text of the content item");
             Field(ci => ci.Published).Description("Is the published version");
@@ -32,7 +32,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<DateTimeGraphType>("modifiedUtc").Resolve(ci => ci.Source.ModifiedUtc).Description("The date and time of modification");
             Field<DateTimeGraphType>("publishedUtc").Resolve(ci => ci.Source.PublishedUtc).Description("The date and time of publication");
             Field<DateTimeGraphType>("createdUtc").Resolve(ci => ci.Source.CreatedUtc).Description("The date and time of creation");
-            Field(ci => ci.Owner).Description("The owner of the content item");
+            Field(ci => ci.Owner, nullable: true).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 
             Field<StringGraphType, string>("render")
