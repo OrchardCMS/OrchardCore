@@ -102,7 +102,7 @@ public static class ContentManagerExtensions
     {
         var contentItem = await contentManager.GetAsync(id, options);
 
-        // It represents a contained content item
+        // It represents a contained content item.
         if (!string.IsNullOrEmpty(jsonPath))
         {
             var root = (JsonObject)contentItem.Content;
