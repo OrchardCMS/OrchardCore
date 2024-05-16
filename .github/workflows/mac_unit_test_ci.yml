@@ -16,4 +16,4 @@ jobs:
     - name: Run Test
       run: dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
       env: 
-        OrchardCore__OrchardCore_YesSql: true
+        OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true

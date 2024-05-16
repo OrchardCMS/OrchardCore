@@ -41,7 +41,7 @@ jobs:
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
       env: 
-        OrchardCore__OrchardCore_YesSql: true
+        OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     - name: Functional Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
