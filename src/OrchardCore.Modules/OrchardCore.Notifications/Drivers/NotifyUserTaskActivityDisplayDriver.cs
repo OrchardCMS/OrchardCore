@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -19,13 +20,15 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
+    private static readonly string _activityName = typeof(TActivity).Name;
+
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly NotificationOptions _notificationOptions;
 
     protected readonly IStringLocalizer S;
 
-    protected virtual string EditShapeType => $"{nameof(NotifyUserTaskActivity)}_Fields_Edit";
+    protected virtual string EditShapeType { get; } = null;
 
     public NotifyUserTaskActivityDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
@@ -41,10 +44,26 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
     public override IDisplayResult Edit(TActivity model)
     {
-        return Initialize<TEditViewModel>(EditShapeType, viewModel =>
+        var results = new List<IDisplayResult>();
+
+        if (!string.IsNullOrEmpty(EditShapeType))
         {
-            return EditActivityAsync(model, viewModel);
-        }).Location("Content");
+            results.Add(Initialize<TEditViewModel>(EditShapeType, viewModel =>
+            {
+                return EditActivityAsync(model, viewModel);
+            }).Location("Content"));
+        }
+
+        results.Add(Initialize<NotifyUserTaskActivityViewModel>("NotifyUserTaskActivity_Fields_Edit", viewModel =>
+        {
+            viewModel.Subject = model.Subject.Expression;
+            viewModel.Summary = model.Summary.Expression;
+            viewModel.TextBody = model.TextBody.Expression;
+            viewModel.HtmlBody = model.HtmlBody.Expression;
+            viewModel.IsHtmlPreferred = model.IsHtmlPreferred;
+        }).Location("Content"));
+
+        return Combine(results);
     }
 
     public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
@@ -72,10 +91,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
         }
 
-        if (updater.ModelState.IsValid)
-        {
-            await UpdateActivityAsync(viewModel, model);
-        }
+        await UpdateActivityAsync(viewModel, model);
 
         return Edit(model);
     }
@@ -95,15 +111,10 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
-        model.Subject = activity.Subject.Expression;
-        model.Summary = activity.Summary.Expression;
-        model.TextBody = activity.TextBody.Expression;
-        model.HtmlBody = activity.HtmlBody.Expression;
-        model.IsHtmlPreferred = activity.IsHtmlPreferred;
     }
 
     /// <summary>
-    /// Updates the activity when the view model is validated.
+    /// Updates the activity.
     /// </summary>
     protected override Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
     {
@@ -113,7 +124,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     }
 
     /// <summary>
-    /// Updates the activity when the view model is validated.
+    /// Updates the activity.
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
@@ -127,9 +138,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public override IDisplayResult Display(TActivity activity)
     {
         return Combine(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+            Shape($"{_activityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
                 .Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+            Shape($"{_activityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
                 .Location("Design", "Content")
         );
     }
