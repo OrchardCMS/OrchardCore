@@ -28,7 +28,7 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
 
     protected override string EditShapeType { get; } = $"{ActivityName}_Fields_Edit";
 
-    public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask model, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask activity, IUpdateModel updater)
     {
         var viewModel = new NotifyUserTaskViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
@@ -42,10 +42,10 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
         }
         else
         {
-            model.UserNames = new WorkflowExpression<string>(string.Join(',', userNames));
+            activity.UserNames = new WorkflowExpression<string>(string.Join(',', userNames));
         }
 
-        return await base.UpdateAsync(model, updater);
+        return await base.UpdateAsync(activity, updater);
     }
 
     protected override void EditActivity(NotifyUserTask activity, NotifyUserTaskViewModel model)
