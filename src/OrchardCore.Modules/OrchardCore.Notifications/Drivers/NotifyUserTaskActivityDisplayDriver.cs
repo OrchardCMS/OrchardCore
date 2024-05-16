@@ -20,7 +20,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
-    private static readonly string _activityName = typeof(TActivity).Name;
+    protected static readonly string ActivityName = typeof(TActivity).Name;
 
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -138,9 +138,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     public override IDisplayResult Display(TActivity activity)
     {
         return Combine(
-            Shape($"{_activityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+            Shape($"{ActivityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
                 .Location("Thumbnail", "Content"),
-            Shape($"{_activityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+            Shape($"{ActivityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
                 .Location("Design", "Content")
         );
     }

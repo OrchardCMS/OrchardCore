@@ -26,7 +26,7 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
     {
     }
 
-    protected override string EditShapeType { get; } = $"{typeof(NotifyUserTask).Name}_Fields_Edit";
+    protected override string EditShapeType { get; } = $"{ActivityName}_Fields_Edit";
 
     public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask model, IUpdateModel updater)
     {
