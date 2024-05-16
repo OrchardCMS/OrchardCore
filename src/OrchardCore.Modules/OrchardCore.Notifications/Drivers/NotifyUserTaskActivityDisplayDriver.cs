@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -52,7 +51,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     {
         var viewModel = new TEditViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
-        
+
         if (!_liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
         {
             updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
