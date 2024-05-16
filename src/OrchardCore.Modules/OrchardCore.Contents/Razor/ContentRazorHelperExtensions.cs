@@ -65,7 +65,7 @@ public static class ContentRazorHelperExtensions
     public static Task<IEnumerable<ContentItem>> GetContentItemsByIdAsync(this IOrchardHelper orchardHelper, IEnumerable<string> contentItemIds, bool latest = false)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        return contentManager.GetAsync(contentItemIds, latest);
+        return contentManager.GetAsync(contentItemIds, latest ? VersionOptions.Latest : VersionOptions.Published);
     }
 
     /// <summary>

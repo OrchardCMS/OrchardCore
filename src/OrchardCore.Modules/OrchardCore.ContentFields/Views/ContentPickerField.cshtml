@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
 
@@ -6,7 +7,7 @@
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
-    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
+    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds, VersionOptions.Published);
 }
 
 <div class="field field-type-contentpickerfield field-name-@name">

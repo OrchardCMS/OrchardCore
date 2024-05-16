@@ -23,7 +23,7 @@ namespace OrchardCore.Contents.Liquid
                 // List of content item ids
                 var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
+                return FluidValue.Create(await _contentManager.GetAsync(contentItemIds, VersionOptions.Published), ctx.Options);
             }
             else
             {
