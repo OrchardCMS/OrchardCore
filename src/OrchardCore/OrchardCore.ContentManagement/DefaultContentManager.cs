@@ -100,7 +100,7 @@ namespace OrchardCore.ContentManagement
 
             if (options.IsAllVersions)
             {
-                throw new ArgumentException($"This method does not support {nameof(options.IsAllVersions)} option.");
+                throw new ArgumentException($"This method does not support the {nameof(options.IsAllVersions)} option.");
             }
 
             ContentItem contentItem = null;
@@ -566,7 +566,7 @@ namespace OrchardCore.ContentManagement
 
             if (options.IsAllVersions)
             {
-                throw new ArgumentException($"This method does not support {nameof(options.IsAllVersions)} option.");
+                throw new ArgumentException($"This method does not support the {nameof(options.IsAllVersions)} option.");
             }
 
             // Draft flag on create is required for explicitly-published content items
