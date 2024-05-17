@@ -17,7 +17,7 @@ namespace OrchardCore.Environment.Extensions
                 return features.First().Extension;
             }
 
-            throw new InvalidOperationException($"Could not resolve extension for type {dependency.Name}");
+            throw new InvalidOperationException($"Could not resolve extension for type {dependency.Name}.");
         }
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
@@ -29,7 +29,7 @@ namespace OrchardCore.Environment.Extensions
                 return features.FirstOrDefault(feature => feature.Extension.Id == feature.Id) ?? features.First();
             }
 
-            throw new InvalidOperationException($"Could not resolve main feature for type {dependency.Name}");
+            throw new InvalidOperationException($"Could not resolve main feature for type {dependency.Name}.");
         }
 
         public IEnumerable<IFeatureInfo> GetFeaturesForDependency(Type dependency)
@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Extensions
                 return features;
             }
 
-            throw new InvalidOperationException($"Could not resolve features for type {dependency.Name}");
+            throw new InvalidOperationException($"Could not resolve features for type {dependency.Name}.");
         }
 
         public IEnumerable<Type> GetTypesForFeature(IFeatureInfo feature)
