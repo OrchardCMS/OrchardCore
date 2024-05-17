@@ -95,7 +95,13 @@ namespace OrchardCore.ContentManagement
             {
                 return null;
             }
+
             options ??= VersionOptions.Published;
+
+            if (options.IsAllVersions)
+            {
+                throw new ArgumentException($"This method does not support {nameof(options.IsAllVersions)} option.");
+            }
 
             ContentItem contentItem = null;
 
@@ -235,6 +241,14 @@ namespace OrchardCore.ContentManagement
 
                     contentItems.AddRange(missingItems);
                 }
+            }
+            else if (options.IsAllVersions)
+            {
+                contentItems = (await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId.IsIn(ids))
+                    .ListAsync()
+                    ).ToList();
             }
 
             var needVersions = new List<ContentItem>();
@@ -549,6 +563,11 @@ namespace OrchardCore.ContentManagement
             }
 
             options ??= VersionOptions.Published;
+
+            if (options.IsAllVersions)
+            {
+                throw new ArgumentException($"This method does not support {nameof(options.IsAllVersions)} option.");
+            }
 
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
