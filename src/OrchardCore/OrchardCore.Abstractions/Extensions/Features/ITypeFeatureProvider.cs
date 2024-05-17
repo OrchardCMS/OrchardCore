@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Extensions
         /// Gets the first feature for the specified dependent type.
         /// </summary>
         /// <remarks>
-        /// If a type with more than one feature has been registered,
+        /// If a type has been registered for more than one feature,
         /// <c>GetFeatureForDependency</c> returns the first feature that has
         /// the same ID as the parent extension.
         /// Use this method when you only need one feature of a module, such
