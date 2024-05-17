@@ -21,9 +21,9 @@ namespace OrchardCore.Contents.Liquid
             if (input.Type == FluidValues.Array)
             {
                 // List of content item ids
-                var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+                var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue());
 
-                return FluidValue.Create(await _contentManager.GetAsync(contentItemIds, VersionOptions.Published), ctx.Options);
+                return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
             }
             else
             {

@@ -88,7 +88,7 @@ namespace OrchardCore.ContentFields.Controllers
             });
 
             var contentItems = await _contentManager
-                .GetAsync(results.Select(r => r.ContentItemId), VersionOptions.Published);
+                .GetAsync(results.Select(r => r.ContentItemId));
 
             var selectedItems = new List<VueMultiselectItemViewModel>();
             var user = _httpContextAccessor.HttpContext?.User;

@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The content instance filled with all necessary data.</param>
         /// <param name="options">The version to create the item with.</param>
-        Task CreateAsync(ContentItem contentItem, VersionOptions options);
+        Task CreateAsync(ContentItem contentItem, VersionOptions options = null);
 
         /// <summary>
         /// Creates (puts) a new content item and manages removing and updating existing published or draft items.
@@ -71,7 +71,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItemId">The id of the content item to load.</param>
         /// <param name="options">The version option.</param>
-        Task<ContentItem> GetAsync(string contentItemId, VersionOptions options);
+        Task<ContentItem> GetAsync(string contentItemId, VersionOptions options = null);
 
         /// <summary>
         /// Gets the published content items with the specified ids.
@@ -82,7 +82,7 @@ namespace OrchardCore.ContentManagement
         /// This method will always issue a database query.
         /// This means that it should be used only to get a list of content items that have not been loaded.
         /// </remarks>
-        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options);
+        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options = null);
 
         /// <summary>
         /// Gets the content item with the specified version id.

@@ -68,7 +68,7 @@ namespace OrchardCore.Taxonomies.Drivers
             }
 
             var results = new List<IDisplayResult>();
-            var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds, VersionOptions.Published);
+            var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds);
 
             var position = 5;
             foreach (var taxonomy in taxonomies)

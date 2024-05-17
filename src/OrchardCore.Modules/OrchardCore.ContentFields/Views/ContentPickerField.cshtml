@@ -7,7 +7,7 @@
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
-    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds, VersionOptions.Published);
+    var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
 }
 
 <div class="field field-type-contentpickerfield field-name-@name">

@@ -89,14 +89,13 @@ namespace OrchardCore.ContentManagement
             return context3.ContentItem;
         }
 
-        public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
+        public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options = null)
         {
-            ArgumentNullException.ThrowIfNull(options);
-
             if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
             }
+            options ??= VersionOptions.Published;
 
             ContentItem contentItem = null;
 
@@ -175,10 +174,8 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
-        public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
+        public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options = null)
         {
-            ArgumentNullException.ThrowIfNull(options);
-
             var ids = contentItemIds?
                 .Where(id => id is not null)
                 .Distinct()
@@ -188,6 +185,8 @@ namespace OrchardCore.ContentManagement
             {
                 return [];
             }
+
+            options ??= VersionOptions.Published;
 
             var contentItems = new List<ContentItem>();
 
@@ -540,7 +539,7 @@ namespace OrchardCore.ContentManagement
             return finalVersions;
         }
 
-        public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
+        public async Task CreateAsync(ContentItem contentItem, VersionOptions options = null)
         {
             if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
@@ -548,6 +547,8 @@ namespace OrchardCore.ContentManagement
                 contentItem.Published = true;
                 contentItem.Latest = true;
             }
+
+            options ??= VersionOptions.Published;
 
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)

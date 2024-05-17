@@ -46,13 +46,13 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemId">The content item id to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+    /// <param name="option">The version to load. By default we load the Published version.</param>
     /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific id, or <c>null</c> if it doesn't exist.</returns>
-    public static Task<ContentItem> GetContentItemByIdAsync(this IOrchardHelper orchardHelper, string contentItemId, bool latest = false)
+    public static Task<ContentItem> GetContentItemByIdAsync(this IOrchardHelper orchardHelper, string contentItemId, VersionOptions option = null)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        return contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+        return contentManager.GetAsync(contentItemId, option);
     }
 
     /// <summary>
@@ -60,12 +60,12 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemIds">The content item ids to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+    /// <param name="option">The version to load. By default we load the Published version.</param>
     /// <returns>A list of content items with the specific ids.</returns>
-    public static Task<IEnumerable<ContentItem>> GetContentItemsByIdAsync(this IOrchardHelper orchardHelper, IEnumerable<string> contentItemIds, bool latest = false)
+    public static Task<IEnumerable<ContentItem>> GetContentItemsByIdAsync(this IOrchardHelper orchardHelper, IEnumerable<string> contentItemIds, VersionOptions option = null)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        return contentManager.GetAsync(contentItemIds, latest ? VersionOptions.Latest : VersionOptions.Published);
+        return contentManager.GetAsync(contentItemIds, option);
     }
 
     /// <summary>

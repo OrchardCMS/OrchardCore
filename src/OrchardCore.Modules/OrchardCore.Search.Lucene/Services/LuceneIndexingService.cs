@@ -126,7 +126,7 @@ namespace OrchardCore.Search.Lucene
                     var allPublished = new Dictionary<string, ContentItem>();
                     var allLatest = new Dictionary<string, ContentItem>();
 
-                    var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Published);
+                    var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
                     allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
                     var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Latest);
                     allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
