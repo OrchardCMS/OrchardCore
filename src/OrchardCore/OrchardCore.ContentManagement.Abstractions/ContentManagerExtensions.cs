@@ -10,6 +10,32 @@ namespace OrchardCore.ContentManagement;
 public static class ContentManagerExtensions
 {
     /// <summary>
+    /// Gets the published content items with the specified ids.
+    /// </summary>
+    /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
+    /// <param name="contentItemId">The content item id to load.</param>
+    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+    /// <remarks>
+    /// This method will always issue a database query.
+    /// This means that it should be used only to get a list of content items that have not been loaded.
+    /// </remarks>
+    public static Task<ContentItem> GetAsync(this IContentManager contentManager, string contentItemId, bool latest = false)
+        => contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+
+    /// <summary>
+    /// Gets the published content items with the specified ids.
+    /// </summary>
+    /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
+    /// <param name="contentItemIds">The content item ids to load.</param>
+    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
+    /// <remarks>
+    /// This method will always issue a database query.
+    /// This means that it should be used only to get a list of content items that have not been loaded.
+    /// </remarks>
+    public static Task<IEnumerable<ContentItem>> GetAsync(this IContentManager contentManager, IEnumerable<string> contentItemIds, bool latest = false)
+        => contentManager.GetAsync(contentItemIds, latest ? VersionOptions.Latest : VersionOptions.Published);
+
+    /// <summary>
     /// Gets the published content item with the specified id.
     /// </summary>
     /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>

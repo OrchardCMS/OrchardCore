@@ -22,7 +22,10 @@ namespace OrchardCore.ContentManagement
     {
         private const int ImportBatchSize = 500;
 
-        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+        {
+            MergeArrayHandling = MergeArrayHandling.Replace,
+        };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -51,10 +54,13 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
+
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
+            ArgumentException.ThrowIfNullOrEmpty(contentType);
+
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
             contentTypeDefinition ??= new ContentTypeDefinitionBuilder().Named(contentType).Build();
 
@@ -85,6 +91,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
+            ArgumentNullException.ThrowIfNull(options);
+
             if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
@@ -122,7 +130,7 @@ namespace OrchardCore.ContentManagement
             else if (options.IsPublished)
             {
                 // If the published version is requested and is already loaded, we can
-                // return it right away
+                // return it right away.
                 if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
@@ -140,20 +148,20 @@ namespace OrchardCore.ContentManagement
 
             if (options.IsDraftRequired)
             {
-                // When draft is required and latest is published a new version is added
+                // When draft is required and latest is published a new version is added.
                 if (contentItem.Published)
                 {
                     // We save the previous version further because this call might do a session query.
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                    // Check if not versionable, meaning we use only one version
+                    // Check if not versionable, meaning we use only one version.
                     if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
                     {
                         contentItem.Published = false;
                     }
                     else
                     {
-                        // Save the previous version
+                        // Save the previous version.
                         await _session.SaveAsync(contentItem, checkConcurrency: true);
 
                         contentItem = await BuildNewVersionAsync(contentItem);
@@ -169,12 +177,17 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
         {
-            if (contentItemIds == null || !contentItemIds.Any())
+            ArgumentNullException.ThrowIfNull(options);
+
+            var ids = contentItemIds?
+                .Where(id => id is not null)
+                .Distinct()
+                .ToArray();
+
+            if (ids?.Length == 0)
             {
                 return [];
             }
-
-            var ids = new List<string>(contentItemIds);
 
             var contentItems = new List<ContentItem>();
 
@@ -195,7 +208,7 @@ namespace OrchardCore.ContentManagement
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
-                // Loaded whatever is the latest as it will be cloned
+                // Loaded whatever is the latest as it will be cloned.
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId.IsIn(ids) && x.Latest)
@@ -282,6 +295,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> LoadAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out var loaded))
             {
                 // store in session prior to loading to avoid some problems with simple circular dependencies
@@ -302,6 +317,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
         {
+            ArgumentException.ThrowIfNullOrEmpty(contentItemVersionId);
+
             var contentItem = await _session
                 .Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId == contentItemVersionId)
                 .FirstOrDefaultAsync();
@@ -316,6 +333,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task SaveDraftAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             if (!contentItem.Latest || contentItem.Published)
             {
                 return;
@@ -332,13 +351,15 @@ namespace OrchardCore.ContentManagement
 
         public async Task PublishAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             if (contentItem.Published)
             {
                 return;
             }
 
             // Create a context for the item and it's previous published record
-            // Because of this query the content item will need to be re-enlisted
+            // because of this query the content item will need to be re-enlisted
             // to be saved.
             var previous = await _session
                 .Query<ContentItem, ContentItemIndex>(x =>
@@ -347,7 +368,7 @@ namespace OrchardCore.ContentManagement
 
             var context = new PublishContentContext(contentItem, previous);
 
-            // invoke handlers to acquire state, or at least establish lazy loading callbacks
+            // Invoke handlers to acquire state, or at least establish lazy loading callbacks.
             await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), context, _logger);
 
             if (context.Cancel)
@@ -369,6 +390,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task UnpublishAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             // This method needs to be called using the latest version
             if (!contentItem.Latest)
             {
@@ -495,7 +518,7 @@ namespace OrchardCore.ContentManagement
                 await _session.SaveAsync(existingContentItem);
 
                 // We are not invoking NewAsync as we are cloning an existing item
-                // This will also prevent the Elements (parts) from being allocated unnecessarily
+                // This will also prevent the Elements (parts) from being allocated unnecessarily.
                 var buildingContentItem = new ContentItem
                 {
                     ContentType = existingContentItem.ContentType,
@@ -567,6 +590,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
         {
+            ArgumentNullException.ThrowIfNull(contentItems);
+
             var skip = 0;
 
             var importedVersionIds = new HashSet<string>();
@@ -699,6 +724,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task UpdateAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             var context = new UpdateContentContext(contentItem);
 
             await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
@@ -710,6 +737,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentValidateResult> ValidateAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             var validateContext = new ValidateContentContext(contentItem);
 
             await Handlers.InvokeAsync((handler, context) => handler.ValidatingAsync(context), validateContext, _logger);
@@ -726,11 +755,13 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentValidateResult> RestoreAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             // Prepare record for restore.
             // So that a new record will be created.
             contentItem.Id = 0;
             // So that a new version id will be generated.
-            contentItem.ContentItemVersionId = "";
+            contentItem.ContentItemVersionId = string.Empty;
             contentItem.Latest = contentItem.Published = false;
 
             var context = new RestoreContentContext(contentItem);
@@ -766,6 +797,9 @@ namespace OrchardCore.ContentManagement
 
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
         {
+            ArgumentNullException.ThrowIfNull(content);
+            ArgumentNullException.ThrowIfNull(aspect);
+
             var context = new ContentItemAspectContext
             {
                 ContentItem = content.ContentItem,
@@ -779,6 +813,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task RemoveAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x =>
                     x.ContentItemId == contentItem.ContentItemId &&
@@ -805,6 +841,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             if (contentItem.Published || !contentItem.Latest)
             {
                 throw new InvalidOperationException("Not a draft version.");
@@ -830,6 +868,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> CloneAsync(ContentItem contentItem)
         {
+            ArgumentNullException.ThrowIfNull(contentItem);
+
             var cloneContentItem = await NewAsync(contentItem.ContentType);
             cloneContentItem.DisplayText = contentItem.DisplayText;
             await CreateAsync(cloneContentItem, VersionOptions.Draft);
@@ -934,6 +974,7 @@ namespace OrchardCore.ContentManagement
             {
                 contentItem.Owner = owner;
             }
+
             if (!string.IsNullOrEmpty(author))
             {
                 contentItem.Author = author;
@@ -950,7 +991,7 @@ namespace OrchardCore.ContentManagement
             var modifiedUtc = updatedVersion.ModifiedUtc;
             var publishedUtc = updatedVersion.PublishedUtc;
 
-            // Remove previous published or draft items if necesary or they will continue to be listed as published or draft.
+            // Remove previous published or draft items if necessary or they will continue to be listed as published or draft.
             var discardLatest = false;
             var removePublished = false;
 
@@ -1018,6 +1059,7 @@ namespace OrchardCore.ContentManagement
             {
                 updatingVersion.ModifiedUtc = modifiedUtc;
             }
+
             if (publishedUtc.HasValue)
             {
                 updatingVersion.PublishedUtc = publishedUtc;
