@@ -51,7 +51,7 @@
       See https://github.com/OrchardCMS/OrchardCore/pull/16057 for more information.
     -->
 
-    <PackageManagement Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.5.1" />
+    <PackageManagement Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.5.2" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.5.0" />
