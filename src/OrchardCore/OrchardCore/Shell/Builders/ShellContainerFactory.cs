@@ -157,12 +157,13 @@ namespace OrchardCore.Environment.Shell.Builders
 
             var allTypesByExtension = extensions
                 .SelectMany(extension =>
-                    _extensionManager.GetExportedExtensionTypes(extension).Where(IsComponentType)
-                    .Select(type => new
-                    {
-                        Extension = extension,
-                        Type = type
-                    }));
+                    _extensionManager.GetExportedExtensionTypes(extension)
+                        .Where(IsComponentType)
+                        .Select(type => new
+                        {
+                            Extension = extension,
+                            Type = type
+                        }));
 
             var typesByFeature = allTypesByExtension
                 .GroupBy(typeByExtension => GetSourceFeatureNameForType(

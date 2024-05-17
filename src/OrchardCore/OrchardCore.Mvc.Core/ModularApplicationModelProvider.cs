@@ -44,9 +44,9 @@ namespace OrchardCore.Mvc
             {
                 var controllerType = controller.ControllerType.AsType();
 
-                var blueprint = _typeFeatureProvider.GetExtensionForDependency(controllerType);
+                var extension = _typeFeatureProvider.GetExtensionForDependency(controllerType);
 
-                if (blueprint.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
+                if (extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
                 {
                     // Don't serve any action of the application's module which is enabled during a setup.
                     foreach (var action in controller.Actions)
@@ -59,7 +59,7 @@ namespace OrchardCore.Mvc
                 else
                 {
                     // Add an "area" route value equal to the module id.
-                    controller.RouteValues.Add("area", blueprint.Id);
+                    controller.RouteValues.Add("area", extension.Id);
                 }
             }
         }
