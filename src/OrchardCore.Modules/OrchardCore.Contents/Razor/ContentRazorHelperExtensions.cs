@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
 
-#pragma warning disable CA1050 // Declare types in namespaces
+namespace OrchardCore;
+
 public static class ContentRazorHelperExtensions
-#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a content item id by its handle.
@@ -30,7 +29,7 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="handle">The handle to load.</param>
-    /// <param name="option">The version to load. By default we load the Published version.</param>
+    /// <param name="option">A specific version to load or the default version.</param>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, VersionOptions option = null)
     {
@@ -44,12 +43,13 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemId">The content item id to load.</param>
-    /// <param name="option">The version to load. By default we load the Published version.</param>
+    /// <param name="option">A specific version to load or the default version.</param>
     /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific id, or <c>null</c> if it doesn't exist.</returns>
     public static Task<ContentItem> GetContentItemByIdAsync(this IOrchardHelper orchardHelper, string contentItemId, VersionOptions option = null)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+
         return contentManager.GetAsync(contentItemId, option);
     }
 
@@ -58,11 +58,12 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemIds">The content item ids to load.</param>
-    /// <param name="option">The version to load. By default we load the Published version.</param>
+    /// <param name="option">A specific version to load or the default version.</param>
     /// <returns>A list of content items with the specific ids.</returns>
     public static Task<IEnumerable<ContentItem>> GetContentItemsByIdAsync(this IOrchardHelper orchardHelper, IEnumerable<string> contentItemIds, VersionOptions option = null)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+
         return contentManager.GetAsync(contentItemIds, option);
     }
 
@@ -76,6 +77,7 @@ public static class ContentRazorHelperExtensions
     public static Task<ContentItem> GetContentItemByVersionIdAsync(this IOrchardHelper orchardHelper, string contentItemVersionId)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+
         return contentManager.GetVersionAsync(contentItemVersionId);
     }
 

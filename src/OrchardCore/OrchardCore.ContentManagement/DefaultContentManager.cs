@@ -45,7 +45,6 @@ namespace OrchardCore.ContentManagement
         {
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
-            ReversedHandlers = handlers.Reverse().ToArray();
             _session = session;
             _idGenerator = idGenerator;
             _contentManagerSession = contentManagerSession;
@@ -55,7 +54,10 @@ namespace OrchardCore.ContentManagement
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
 
-        public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
+        public IEnumerable<IContentHandler> _reversedHandlers;
+
+        public IEnumerable<IContentHandler> ReversedHandlers
+            => _reversedHandlers ??= Handlers.Reverse().ToArray();
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
@@ -97,11 +99,6 @@ namespace OrchardCore.ContentManagement
             }
 
             options ??= VersionOptions.Published;
-
-            if (options.IsAllVersions)
-            {
-                throw new ArgumentException($"This method does not support the {nameof(options.IsAllVersions)} option.");
-            }
 
             ContentItem contentItem = null;
 
@@ -180,6 +177,23 @@ namespace OrchardCore.ContentManagement
             return contentItem;
         }
 
+        public async Task<IEnumerable<ContentItem>> GetAllVersionsAsync(string contentItemId)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(contentItemId);
+
+            var contentItems = await _session
+                    .Query<ContentItem, ContentItemIndex>()
+                    .Where(x => x.ContentItemId == contentItemId)
+                    .ListAsync();
+
+            foreach (var contentItem in contentItems)
+            {
+                await LoadAsync(contentItem);
+            }
+
+            return contentItems;
+        }
+
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options = null)
         {
             var ids = contentItemIds?
@@ -241,14 +255,6 @@ namespace OrchardCore.ContentManagement
 
                     contentItems.AddRange(missingItems);
                 }
-            }
-            else if (options.IsAllVersions)
-            {
-                contentItems = (await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(ids))
-                    .ListAsync()
-                    ).ToList();
             }
 
             var needVersions = new List<ContentItem>();
@@ -563,11 +569,6 @@ namespace OrchardCore.ContentManagement
             }
 
             options ??= VersionOptions.Published;
-
-            if (options.IsAllVersions)
-            {
-                throw new ArgumentException($"This method does not support the {nameof(options.IsAllVersions)} option.");
-            }
 
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)

@@ -91,6 +91,12 @@ namespace OrchardCore.ContentManagement
         Task<ContentItem> GetVersionAsync(string contentItemVersionId);
 
         /// <summary>
+        /// Gets all versions of the given content item id.
+        /// </summary>
+        /// <param name="contentItemId">The content item id.</param>
+        Task<IEnumerable<ContentItem>> GetAllVersionsAsync(string contentItemId);
+
+        /// <summary>
         /// Triggers the Load events for a content item that was queried directly from the database.
         /// </summary>
         /// <param name="contentItem">The content item. </param>

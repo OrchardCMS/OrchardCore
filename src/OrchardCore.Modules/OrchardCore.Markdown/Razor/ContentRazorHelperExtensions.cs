@@ -2,15 +2,14 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Shortcodes.Services;
 
-#pragma warning disable CA1050 // Declare types in namespaces
+namespace OrchardCore;
+
 public static class ContentRazorHelperExtensions
-#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Converts Markdown string to HTML.
@@ -25,7 +24,7 @@ public static class ContentRazorHelperExtensions
 
         // The default Markdown option is to entity escape html
         // so filters must be run after the markdown has been processed.
-        markdown = markdownService.ToHtml(markdown ?? "");
+        markdown = markdownService.ToHtml(markdown ?? string.Empty);
 
         // The liquid rendering is for backwards compatibility and can be removed in a future version.
         if (!sanitize)
