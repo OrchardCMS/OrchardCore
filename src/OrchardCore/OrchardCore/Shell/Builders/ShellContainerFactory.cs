@@ -176,7 +176,7 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 foreach (var feature in extension.Features)
                 {
-                    // Features can have no types
+                    // Features can have no types.
                     if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                     {
                         foreach (var type in featureTypes)
@@ -187,7 +187,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
             }
 
-            // Register all DIed types in ITypeFeatureProvider
+            // Register all DIed types in ITypeFeatureProvider.
             foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
