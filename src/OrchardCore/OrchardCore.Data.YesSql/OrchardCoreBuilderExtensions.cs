@@ -68,12 +68,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-
-                    if (yesSqlOptions.EnableThreadSafetyChecks)
-                    {
-                        throw new InvalidOperationException("EnableThreadSafetyChecks IS ENABLED!!!");
-                    }
-
                     var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
