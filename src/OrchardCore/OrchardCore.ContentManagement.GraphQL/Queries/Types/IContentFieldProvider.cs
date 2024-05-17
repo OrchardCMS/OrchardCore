@@ -11,5 +11,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         bool HasField(ContentPartFieldDefinition field);
 
         (string, Type) GetFieldIndex(ContentPartFieldDefinition field);
+
+        bool HasFieldIndex(ContentPartFieldDefinition field);
     }
 }

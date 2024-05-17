@@ -152,14 +152,18 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         public (string, Type) GetFieldIndex(ContentPartFieldDefinition field)
         {
-            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldDescriptor) || 
-                    fieldDescriptor.IndexDescriptor == null)
+            if (!HasFieldIndex(field))
             {
                 return (null, null);
             }
 
+            var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
             return (fieldDescriptor.IndexDescriptor.Index, fieldDescriptor.IndexDescriptor.IndexType);
         }
+
+        public bool HasFieldIndex(ContentPartFieldDefinition field) =>
+            _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
+            fieldTypeDescriptor.IndexDescriptor != null;
 
         private sealed class FieldTypeDescriptor
         {

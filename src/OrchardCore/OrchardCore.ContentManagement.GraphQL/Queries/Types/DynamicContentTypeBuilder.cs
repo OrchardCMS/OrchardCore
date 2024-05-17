@@ -88,7 +88,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                                 contentItemType.AddField(fieldType);
 
-                                if (_fieldsInputMarker != null)
+                                if (_fieldsInputMarker != null && fieldProvider.HasFieldIndex(field))
                                 {
                                     whereInputType.AddFilterField(fieldType.Type, fieldType.Name, fieldType.Description);
                                 }
@@ -114,7 +114,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 {
                                     contentItemType.AddField(contentFieldType);
 
-                                    if (_fieldsInputMarker != null)
+                                    if (_fieldsInputMarker != null && fieldProvider.HasFieldIndex(field))
                                     {
                                         whereInputType.AddFilterField(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
                                     }
@@ -148,11 +148,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                         field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
 
-                        if (_fieldsInputMarker != null)
+                        if (_fieldsInputMarker != null && part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(cfp => cfp.HasFieldIndex(field))))
                         {
                             var inputField = whereInputType
                                 .Field<DynamicPartInputGraphType>(partName.ToFieldName())
-                                .Description(S["Represents a {0}.", part.PartDefinition.Name]);
+                                .Description(S["Represents a {0} input.", part.PartDefinition.Name]);
 
                             inputField.Type(new DynamicPartInputGraphType(_httpContextAccessor, part));
                         }

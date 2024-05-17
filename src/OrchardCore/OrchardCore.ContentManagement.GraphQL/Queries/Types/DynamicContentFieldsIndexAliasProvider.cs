@@ -46,13 +46,13 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
 
                 foreach (var fieldProvider in _contentFieldProviders)
                 {
-                    var (index, indexType) = fieldProvider.GetFieldIndex(field);
-
-                    if (indexType == null || index == null)
+                    if (!fieldProvider.HasFieldIndex(field))
                     {
                         continue;
                     }
 
+                    var (index, indexType) = fieldProvider.GetFieldIndex(field);
+                    
                     _aliases.Add(new IndexAlias
                     {
                         Alias = alias,
