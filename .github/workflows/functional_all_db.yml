@@ -50,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
+    env:
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
