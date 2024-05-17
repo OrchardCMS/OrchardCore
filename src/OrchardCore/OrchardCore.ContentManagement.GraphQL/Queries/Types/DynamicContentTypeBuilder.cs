@@ -12,26 +12,37 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public class DynamicContentTypeBuilder : IContentTypeBuilder
     {
+        // If registered, then fields input should be exposed, otherwise ignored.
+        public class FieldsInputMarker
+        {
+        }
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
         protected readonly IStringLocalizer S;
+        private readonly FieldsInputMarker _fieldsInputMarker;
+
         private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
-            IStringLocalizer<DynamicContentTypeBuilder> localizer)
+            IStringLocalizer<DynamicContentTypeBuilder> localizer,
+            FieldsInputMarker fieldsInputMarker = null)
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
             _dynamicPartFields = [];
 
             S = localizer;
+            _fieldsInputMarker = fieldsInputMarker;
         }
 
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+
+            var whereInputType = (ContentItemWhereInput)contentQuery.Arguments?.FirstOrDefault(x => x.Name == "where")?.ResolvedType;
 
             if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
@@ -53,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(field)))))
+                if (!part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(field))))
                 {
                     continue;
                 }
@@ -76,6 +87,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 }
 
                                 contentItemType.AddField(fieldType);
+
+                                if (_fieldsInputMarker != null)
+                                {
+                                    whereInputType.AddFilterField(fieldType.Type, fieldType.Name, fieldType.Description);
+                                }
                                 break;
                             }
                         }
@@ -97,16 +113,25 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
                                 {
                                     contentItemType.AddField(contentFieldType);
+
+                                    if (_fieldsInputMarker != null)
+                                    {
+                                        whereInputType.AddFilterField(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                    }
+
                                     break;
                                 }
                             }
                         }
-                        continue;
                     }
-
-                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                    else if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
                     {
                         contentItemType.AddField(fieldType);
+
+                        if (_fieldsInputMarker != null)
+                        {
+                            whereInputType.AddFilterField(fieldType.Type, fieldType.Name, fieldType.Description);
+                        }
                     }
                     else
                     {
@@ -122,6 +147,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             });
 
                         field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+
+                        if (_fieldsInputMarker != null)
+                        {
+                            var inputField = whereInputType
+                                .Field<DynamicPartInputGraphType>(partName.ToFieldName())
+                                .Description(S["Represents a {0}.", part.PartDefinition.Name]);
+
+                            inputField.Type(new DynamicPartInputGraphType(_httpContextAccessor, part));
+                        }
+
                         _dynamicPartFields[partName] = field.FieldType;
                     }
                 }

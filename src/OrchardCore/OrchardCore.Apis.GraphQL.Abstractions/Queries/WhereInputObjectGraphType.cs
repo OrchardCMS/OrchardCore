@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
@@ -58,6 +59,12 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
         public void AddScalarFilterFields(Type graphType, string fieldName, string description)
         {
+            if (!typeof(ScalarGraphType).IsAssignableFrom(graphType) &&
+                !typeof(IInputObjectGraphType).IsAssignableFrom(graphType))
+            {
+                return;
+            }
+
             AddEqualityFilters(graphType, fieldName, description);
             AddMultiValueFilters(graphType, fieldName, description);
 
@@ -65,7 +72,15 @@ namespace OrchardCore.Apis.GraphQL.Queries
             {
                 AddStringFilters(graphType, fieldName, description);
             }
-            else if (graphType == typeof(DateTimeGraphType))
+            else if (graphType == typeof(DateTimeGraphType) ||
+                graphType == typeof(DateGraphType) ||
+                graphType == typeof(DateOnlyGraphType) ||
+                graphType == typeof(TimeSpanGraphType) ||
+                graphType == typeof(DecimalGraphType) ||
+                graphType == typeof(IntGraphType) ||
+                graphType == typeof(LongGraphType) ||
+                graphType == typeof(FloatGraphType) ||
+                graphType == typeof(BigIntGraphType))
             {
                 AddNonStringFilters(graphType, fieldName, description);
             }

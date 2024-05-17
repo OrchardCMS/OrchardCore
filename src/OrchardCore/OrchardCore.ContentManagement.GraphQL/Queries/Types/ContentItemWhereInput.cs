@@ -1,3 +1,4 @@
+using System;
 using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
@@ -36,12 +37,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<ListGraphType<ContentItemWhereInput>>("Not").Description("NOT logical operation").Type(whereInputType);
         }
 
-        private void AddFilterField<T>(string name, string description)
+        public void AddFilterField<TGraphType>(string name, string description)
         {
-            if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
+            AddFilterField(typeof(TGraphType), name, description);
+        }
+
+        public void AddFilterField(Type graphType, string name, string description)
+        {
+            if (_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
             {
-                AddScalarFilterFields<T>(name, description);
+                return;
             }
+
+            AddScalarFilterFields(graphType, name, description);
         }
     }
 }

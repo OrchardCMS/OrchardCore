@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Type = queryGraphType.GetType(),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
-                        var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                        var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType
+                            .GetGenericArguments().First();
 
                         // Check if part has been collapsed by trying to get the parent part.
                         ContentElement contentPart = context.Source.Get<ContentPart>(field.PartDefinition.Name);
@@ -49,6 +51,11 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
 
             return null;
+        }
+
+        public (string, Type) GetFieldIndex(ContentPartFieldDefinition field)
+        {
+            return (null, null);
         }
 
         private IObjectGraphType GetObjectGraphType(ContentPartFieldDefinition field)
