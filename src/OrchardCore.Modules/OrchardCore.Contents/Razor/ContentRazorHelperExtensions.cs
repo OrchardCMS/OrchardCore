@@ -44,7 +44,6 @@ public static class ContentRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemId">The content item id to load.</param>
     /// <param name="option">A specific version to load or the default version.</param>
-    /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific id, or <c>null</c> if it doesn't exist.</returns>
     public static Task<ContentItem> GetContentItemByIdAsync(this IOrchardHelper orchardHelper, string contentItemId, VersionOptions option = null)
     {
@@ -72,7 +71,6 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemVersionId">The content item version id to load.</param>
-    /// <example>GetContentItemByVersionIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific version id, or <c>null</c> if it doesn't exist.</returns>
     public static Task<ContentItem> GetContentItemByVersionIdAsync(this IOrchardHelper orchardHelper, string contentItemVersionId)
     {
