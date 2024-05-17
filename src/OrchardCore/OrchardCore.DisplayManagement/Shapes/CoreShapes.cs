@@ -7,11 +7,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-    [Feature(Application.DefaultFeatureId)]
     public class CoreShapes : IShapeAttributeProvider
     {
         [Shape]

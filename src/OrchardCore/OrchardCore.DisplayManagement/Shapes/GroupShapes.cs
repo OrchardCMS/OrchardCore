@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-    [Feature(Application.DefaultFeatureId)]
     public class GroupShapes : IShapeAttributeProvider
     {
         [Shape]

@@ -3,11 +3,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene
 {
-    [Feature("OrchardCore.Search.Lucene.ContentPicker")]
     public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
     {
         protected readonly IStringLocalizer S;

@@ -2,12 +2,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentLocalization
 {
-    [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _providersRouteValues = new()
