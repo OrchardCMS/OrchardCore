@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManager : IContentManager
     {
-        private const int ImportBatchSize = 500;
+        private const int _importBatchSize = 500;
 
         private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
         {
@@ -596,7 +596,7 @@ namespace OrchardCore.ContentManagement
 
             var importedVersionIds = new HashSet<string>();
 
-            var batchedContentItems = contentItems.Take(ImportBatchSize);
+            var batchedContentItems = contentItems.Take(_importBatchSize);
 
             while (batchedContentItems.Any())
             {
@@ -717,8 +717,8 @@ namespace OrchardCore.ContentManagement
                     }
                 }
 
-                skip += ImportBatchSize;
-                batchedContentItems = contentItems.Skip(skip).Take(ImportBatchSize);
+                skip += _importBatchSize;
+                batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
             }
         }
 
