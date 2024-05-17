@@ -23,18 +23,32 @@ namespace OrchardCore.Settings.Services
         /// Loads the site settings from the store for updating and that should not be cached.
         /// </summary>
         // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
-        public async Task<ISite> LoadSiteSettingsAsync() => await _documentManager.GetOrCreateMutableAsync(GetDefaultSettingsAsync);
+        public async Task<ISite> LoadSiteSettingsAsync()
+            => await _documentManager.GetOrCreateMutableAsync(GetDefaultSettingsAsync);
 
         /// <summary>
         /// Gets the site settings from the cache for sharing and that should not be updated.
         /// </summary>
         // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
-        public async Task<ISite> GetSiteSettingsAsync() => await _documentManager.GetOrCreateImmutableAsync(GetDefaultSettingsAsync);
+        public async Task<ISite> GetSiteSettingsAsync()
+            => await _documentManager.GetOrCreateImmutableAsync(GetDefaultSettingsAsync);
 
         /// <summary>
         /// Updates the store with the provided site settings and then updates the cache.
         /// </summary>
-        public Task UpdateSiteSettingsAsync(ISite site) => _documentManager.UpdateAsync(site as SiteSettings);
+        public async Task UpdateSiteSettingsAsync(ISite site)
+        {
+            if (site is not SiteSettings siteSettings)
+            {
+                return;
+            }
+
+            await _documentManager.UpdateAsync(siteSettings);
+
+            // Clear the internal cache to ensure that any other lookup against
+            // this document will load the new values until the site is reloaded.
+            siteSettings.ClearCache();
+        }
 
         private Task<SiteSettings> GetDefaultSettingsAsync()
         {

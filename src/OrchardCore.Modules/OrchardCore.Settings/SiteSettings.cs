@@ -45,5 +45,10 @@ namespace OrchardCore.Settings
 
             return settings;
         }
+
+        internal void ClearCache()
+        {
+            _cache.Clear();
+        }
     }
 }

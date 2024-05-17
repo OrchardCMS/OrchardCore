@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -118,9 +119,10 @@ namespace OrchardCore.Users
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-            // Add the default token providers used to generate tokens for reset passwords, change email,
-            // and for two-factor authentication token generation.
-            services.AddIdentity<IUser, IRole>();
+            // Add the default token providers used to generate tokens for an admin to change user's password.
+            services.AddIdentity<IUser, IRole>()
+                .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
+
             services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
             services.AddPhoneFormatValidator();
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
@@ -468,6 +470,7 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
             services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
+            services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
 
             services.Configure<ContentTypeDefinitionOptions>(options =>
             {
