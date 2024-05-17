@@ -17,7 +17,7 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="markdown">The markdown to convert.</param>
-    /// <param name="sanitize">Whether to sanitze the markdown. Defaults to <see langword="true"/>.</param>
+    /// <param name="sanitize">Whether to sanitize the markdown. Defaults to <see langword="true"/>.</param>
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
         var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
@@ -27,7 +27,7 @@ public static class ContentRazorHelperExtensions
         // so filters must be run after the markdown has been processed.
         markdown = markdownService.ToHtml(markdown ?? "");
 
-        // The liquid rendering is for backwards compatability and can be removed in a future version.
+        // The liquid rendering is for backwards compatibility and can be removed in a future version.
         if (!sanitize)
         {
             var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();

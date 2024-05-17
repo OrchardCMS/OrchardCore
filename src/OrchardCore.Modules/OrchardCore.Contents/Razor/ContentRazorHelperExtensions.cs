@@ -30,15 +30,13 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="handle">The handle to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemByHandleAsync("alias:carousel").</example>
-    /// <example>GetContentItemByHandleAsync("slug:myblog/my-blog-post", true).</example>
+    /// <param name="option">The version to load. By default we load the Published version.</param>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
-    public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, bool latest = false)
+    public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, VersionOptions option = null)
     {
         var contentItemId = await GetContentItemIdByHandleAsync(orchardHelper, handle);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-        return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+        return await contentManager.GetAsync(contentItemId, option);
     }
 
     /// <summary>
@@ -102,6 +100,8 @@ public static class ContentRazorHelperExtensions
     /// <param name="maxContentItems">The maximum content items to return.</param>
     public static Task<IEnumerable<ContentItem>> GetRecentContentItemsByContentTypeAsync(this IOrchardHelper orchardHelper, string contentType, int maxContentItems = 10)
     {
-        return orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true).OrderByDescending(x => x.CreatedUtc).Take(maxContentItems));
+        return orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true)
+        .OrderByDescending(x => x.CreatedUtc)
+        .Take(maxContentItems));
     }
 }
