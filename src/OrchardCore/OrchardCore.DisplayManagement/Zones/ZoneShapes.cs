@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
+    [Feature(Application.DefaultFeatureId)]
     public class ZoneShapes : IShapeAttributeProvider
     {
         // By convention all placement delimiters default to the name 'Content' when not specified during placement.
