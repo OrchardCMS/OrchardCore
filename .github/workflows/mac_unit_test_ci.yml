@@ -11,9 +11,7 @@ jobs:
     name: Unit Tests
     steps:
     - uses: actions/checkout@v4
-    - name: Build
-      run: dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
-    - name: Run Test
-      run: dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-      env: 
-        OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
+    - name: Build and test
+      run: |
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

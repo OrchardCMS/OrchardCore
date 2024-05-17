@@ -69,7 +69,7 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
+
   test_functional_cms_postgresql:
     name: Functional Tests - CMS Postgres
     runs-on: ubuntu-latest
@@ -91,6 +91,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
@@ -128,6 +129,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
@@ -164,6 +166,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
