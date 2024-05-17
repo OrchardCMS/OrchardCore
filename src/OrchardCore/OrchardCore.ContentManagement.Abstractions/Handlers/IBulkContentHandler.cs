@@ -5,6 +5,6 @@ namespace OrchardCore.ContentManagement.Handlers;
 
 public interface IBulkContentHandler
 {
-    Task ImportingAsync(IEnumerable<ImportContentContext> contentItems);
-    Task ImportedAsync(IEnumerable<ImportContentContext> contentItems);
+    Task ImportingAsync(IEnumerable<ImportContentContext> contexts);
+    Task ImportedAsync(IEnumerable<ImportContentContext> contexts);
 }
