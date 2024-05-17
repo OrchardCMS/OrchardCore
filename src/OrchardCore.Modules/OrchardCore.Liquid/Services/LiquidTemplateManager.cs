@@ -124,8 +124,17 @@ namespace OrchardCore.Liquid.Services
 
         public bool Validate(string template, out IEnumerable<string> errors)
         {
+            if (string.IsNullOrEmpty(template))
+            {
+                errors = [];
+
+                return true;
+            }
+
             var success = _liquidViewParser.TryParse(template, out _, out var error);
-            errors = new[] { error };
+
+            errors = [error];
+
             return success;
         }
     }
