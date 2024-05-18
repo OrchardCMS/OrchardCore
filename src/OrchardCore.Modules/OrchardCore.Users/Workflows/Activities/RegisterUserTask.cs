@@ -141,7 +141,6 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (!result.Succeeded)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
-
                         if (updater != null)
                         {
                             foreach (var error in result.Errors)
