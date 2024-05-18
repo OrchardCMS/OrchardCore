@@ -17,7 +17,7 @@ public static class EmailServiceExtensions
     /// <param name="isHtmlBody">Whether the <paramref name="body"/> in HTML format or not. Defaults to <c>true</c>.</param>
     /// <returns></returns>
     /// <exception cref="System.ArgumentException"></exception>
-    public static async Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
+    public static Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
     {
         var message = new MailMessage
         {
@@ -27,6 +27,6 @@ public static class EmailServiceExtensions
             IsHtmlBody = isHtmlBody
         };
 
-        return await emailService.SendAsync(message);
+        return emailService.SendAsync(message);
     }
 }
