@@ -17,7 +17,7 @@
 <style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
-    <label asp-for="UserIds" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <label asp-for="UserIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
 
@@ -56,7 +56,11 @@
                     <span class="hint">@settings.Hint</span>
                 }
             </div>
+
         </div>
+
+        <span asp-validation-for="UserIds"></span>
+
     </div>
 </div>
 <script at="Foot" depends-on="vue-multiselect-userpicker">initVueMultiselectUserPicker(document.querySelector("#@vueElementId"))</script>

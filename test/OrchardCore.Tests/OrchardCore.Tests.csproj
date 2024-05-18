@@ -4,7 +4,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +19,7 @@
 
   <ItemGroup>
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
+    <None Remove="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
@@ -29,6 +29,7 @@
     <None Remove="Recipes\RecipeFiles\recipe3.json" />
     <None Remove="Recipes\RecipeFiles\recipe4.json" />
     <None Remove="Recipes\RecipeFiles\recipe5.json" />
+    <None Remove="Recipes\RecipeFiles\recipe6.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,11 +39,13 @@
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
+    <EmbeddedResource Include="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe6.json" />
   </ItemGroup>
 
   <ItemGroup>

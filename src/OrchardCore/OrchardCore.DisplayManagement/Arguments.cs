@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement
             return propertiesAccessor(propertyObject);
         }
 
-        private class NamedEnumerable<T> : INamedEnumerable<T>
+        private sealed class NamedEnumerable<T> : INamedEnumerable<T>
         {
             private readonly List<T> _arguments;
             private readonly List<string> _names;
@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement
                 get { return _named ??= new Named(_arguments, _names); }
             }
 
-            private class Named : IDictionary<string, T>
+            private sealed class Named : IDictionary<string, T>
             {
                 private readonly IList<T> _arguments;
                 private readonly IList<string> _names;

@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             {
                 foreach (var fieldProvider in contentFieldProviders)
                 {
-                    var fieldType = fieldProvider.GetField(field);
+                    var fieldType = fieldProvider.GetField(field, part.Name);
                     if (fieldType != null)
                     {
                         AddField(fieldType);

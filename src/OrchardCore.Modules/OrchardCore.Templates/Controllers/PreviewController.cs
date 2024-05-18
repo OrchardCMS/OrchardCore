@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Autoroute;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview;
@@ -80,7 +81,7 @@ namespace OrchardCore.Templates.Controllers
                 handle = (index < 0 ? handle : handle[_homeUrl.Length..])
                     .ToUriComponents(UriFormat.SafeUnescaped);
 
-                contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
+                contentItemId = await _contentHandleManager.GetContentItemIdAsync(AutorouteConstants.SlugPrefix + handle);
             }
 
             if (string.IsNullOrEmpty(contentItemId))

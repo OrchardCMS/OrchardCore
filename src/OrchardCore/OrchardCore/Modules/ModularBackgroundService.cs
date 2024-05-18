@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : BackgroundService
+    internal sealed class ModularBackgroundService : BackgroundService
     {
         private static readonly TimeSpan _pollingTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(10);
@@ -102,7 +102,7 @@ namespace OrchardCore.Modules
 
         private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
         {
-            await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
+            await Parallel.ForEachAsync(GetShellsToRun(runningShells), async (tenant, cancellationToken) =>
             {
                 // Check if the shell is still registered and running.
                 if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
@@ -238,7 +238,7 @@ namespace OrchardCore.Modules
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
+            await Parallel.ForEachAsync(GetShellsToUpdate(previousShells, runningShells), async (tenant, cancellationToken) =>
             {
                 if (stoppingToken.IsCancellationRequested)
                 {
@@ -325,7 +325,7 @@ namespace OrchardCore.Modules
                         }
 
                         settings ??= task.GetDefaultSettings();
-                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
+                        if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule, StringComparison.Ordinal))
                         {
                             scheduler.ReferenceTime = referenceTime;
                         }

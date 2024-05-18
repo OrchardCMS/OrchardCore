@@ -15,31 +15,15 @@ namespace OrchardCore.DisplayManagement.Notify
     public interface INotifier
     {
         /// <summary>
-        /// Adds a new UI notification.
-        /// </summary>
-        /// <param name="type">
-        /// The type of the notification (notifications with different types can be displayed differently).</param>
-        /// <param name="message">A localized message to display.</param>
-        [Obsolete("This method will be removed in a later version. Use AddAsync()")]
-        void Add(NotifyType type, LocalizedHtmlString message);
-
-        /// <summary>
         /// Adds a new UI notification asynchronously.
         /// </summary>
         /// <param name="type">
         /// The type of the notification (notifications with different types can be displayed differently).</param>
         /// <param name="message">A localized message to display.</param>
         /// <remarks>
-        /// Added with a default interface implementation for backwards compatability.
+        /// Added with a default interface implementation for backwards compatibility.
         /// </remarks>
-        ValueTask AddAsync(NotifyType type, LocalizedHtmlString message)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            Add(type, message);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            return new ValueTask();
-        }
+        ValueTask AddAsync(NotifyType type, LocalizedHtmlString message);
 
         /// <summary>
         /// Get all notifications added.

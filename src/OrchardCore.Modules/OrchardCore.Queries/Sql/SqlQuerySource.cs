@@ -28,7 +28,7 @@ namespace OrchardCore.Queries.Sql
             ILiquidTemplateManager liquidTemplateManager,
             IDbConnectionAccessor dbConnectionAccessor,
             ISession session,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;

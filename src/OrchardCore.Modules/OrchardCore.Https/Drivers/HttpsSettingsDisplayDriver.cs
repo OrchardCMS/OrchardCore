@@ -19,25 +19,24 @@ namespace OrchardCore.Https.Drivers
     {
         public const string GroupId = "Https";
 
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+
         protected readonly IHtmlLocalizer H;
 
-        public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
+        public HttpsSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
+            IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
         {
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             H = htmlLocalizer;
         }
 
@@ -75,7 +74,7 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
@@ -94,11 +93,7 @@ namespace OrchardCore.Https.Drivers
                 settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
                 settings.SslPort = model.SslPort;
 
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                _shellReleaseManager.RequestRelease();
             }
 
             return await EditAsync(settings, context);

@@ -18,7 +18,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
         S = stringLocalizer;
     }
 
-    public string Method => "Email";
+    public string Method { get; } = "Email";
 
     public LocalizedString Name => S["Email Notifications"];
 
@@ -44,7 +44,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             isHtmlBody = false;
         }
 
-        var result = await _emailService.SendAsync(user.Email, message.Summary, body, isHtmlBody);
+        var result = await _emailService.SendAsync(user.Email, message.Subject, body, isHtmlBody);
 
         return result.Succeeded;
     }

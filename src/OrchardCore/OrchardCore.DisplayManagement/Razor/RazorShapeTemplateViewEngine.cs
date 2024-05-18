@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -25,30 +25,37 @@ namespace OrchardCore.DisplayManagement.Razor
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
         private readonly IOptions<MvcViewOptions> _options;
+        private readonly IEnumerable<IRazorViewExtensionProvider> _viewExtensionProviders;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly List<string> _templateFileExtensions = new([RazorViewEngine.ViewExtension]);
+        private readonly IHtmlHelper _htmlHelper;
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
             IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
             IHttpContextAccessor httpContextAccessor,
             ViewContextAccessor viewContextAccessor,
-            ITempDataProvider tempDataProvider)
+            ITempDataProvider tempDataProvider,
+            IHtmlHelper htmlHelper)
         {
             _options = options;
+            _viewExtensionProviders = viewExtensionProviders;
             _httpContextAccessor = httpContextAccessor;
             _viewContextAccessor = viewContextAccessor;
             _tempDataProvider = tempDataProvider;
-            _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
+            _htmlHelper = htmlHelper;
         }
 
         public IEnumerable<string> TemplateFileExtensions
         {
             get
             {
-                return _templateFileExtensions;
+                yield return RazorViewEngine.ViewExtension;
+                foreach (var provider in _viewExtensionProviders)
+                {
+                    yield return provider.ViewExtension;
+                }
             }
         }
 
@@ -164,18 +171,15 @@ namespace OrchardCore.DisplayManagement.Razor
             return actionContext;
         }
 
-        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
+        private IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
         {
-            var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
-
-            var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
+            if (_htmlHelper is IViewContextAware contextAwareHelper)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
-                contextable.Contextualize(newViewContext);
+                contextAwareHelper.Contextualize(newViewContext);
             }
 
-            return newHelper;
+            return _htmlHelper;
         }
     }
 }

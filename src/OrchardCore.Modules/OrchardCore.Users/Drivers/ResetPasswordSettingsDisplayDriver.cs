@@ -11,10 +11,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature("OrchardCore.Users.ResetPassword")]
+    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
     {
         public const string GroupId = "userResetPassword";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -42,7 +43,7 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 

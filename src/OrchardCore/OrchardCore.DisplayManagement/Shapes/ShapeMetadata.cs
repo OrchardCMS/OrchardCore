@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -15,12 +14,6 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public ShapeMetadata()
         {
-            Wrappers = [];
-            Alternates = [];
-            BindingSources = [];
-            Displaying = [];
-            Displayed = [];
-            ProcessingAsync = [];
         }
 
         public string Type { get; set; }
@@ -33,8 +26,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string Prefix { get; set; }
         public string Name { get; set; }
         public string Differentiator { get; set; }
-        public AlternatesCollection Wrappers { get; set; }
-        public AlternatesCollection Alternates { get; set; }
+        public AlternatesCollection Wrappers { get; set; } = [];
+        public AlternatesCollection Alternates { get; set; } = [];
         public bool IsCached => _cacheContext != null;
         public IHtmlContent ChildContent { get; set; }
 
@@ -42,36 +35,36 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// Event use for a specific shape instance.
         /// </summary>
         [JsonIgnore]
-        public IEnumerable<Action<ShapeDisplayContext>> Displaying { get; private set; }
+        public IReadOnlyList<Action<ShapeDisplayContext>> Displaying { get; private set; } = [];
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
         [JsonIgnore]
-        public IEnumerable<Func<IShape, Task>> ProcessingAsync { get; private set; }
+        public IReadOnlyList<Func<IShape, Task>> ProcessingAsync { get; private set; } = [];
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
         [JsonIgnore]
-        public IEnumerable<Action<ShapeDisplayContext>> Displayed { get; private set; }
+        public IReadOnlyList<Action<ShapeDisplayContext>> Displayed { get; private set; } = [];
 
         [JsonIgnore]
-        public IList<string> BindingSources { get; set; }
+        public IReadOnlyList<string> BindingSources { get; set; } = [];
 
         public void OnDisplaying(Action<ShapeDisplayContext> context)
         {
-            Displaying = Displaying.Concat(new[] { context });
+            Displaying = [..Displaying, context];
         }
 
         public void OnProcessing(Func<IShape, Task> context)
         {
-            ProcessingAsync = ProcessingAsync.Concat(new[] { context });
+            ProcessingAsync = [.. ProcessingAsync, context];
         }
 
         public void OnDisplayed(Action<ShapeDisplayContext> context)
         {
-            Displayed = Displayed.Concat(new[] { context });
+            Displayed = [.. Displayed, context];
         }
 
         /// <summary>

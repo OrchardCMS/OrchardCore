@@ -13,11 +13,13 @@ public static class JOptions
     public static readonly JsonSerializerOptions Base = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+        ReferenceHandler = null, // Needed by JsonObjectCreationHandling.Populate.
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
-        WriteIndented = false
+        WriteIndented = false,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
     };
 
     public static readonly JsonSerializerOptions Default;
