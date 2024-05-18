@@ -31,7 +31,7 @@ public static class AliasPartRazorHelperExtensions
         }
 
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
-        var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(session, alias);
+        var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndexAsync(session, alias);
 
         return aliasPartIndex?.ContentItemId;
     }
