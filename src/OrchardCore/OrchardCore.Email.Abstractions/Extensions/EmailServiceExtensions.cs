@@ -14,7 +14,7 @@ public static class EmailServiceExtensions
     /// <param name="to">The email recipients.</param>
     /// <param name="subject">The email subject.</param>
     /// <param name="body">The email body.</param>
-    /// <param name="isHtmlBody">Whether the <paramref name="body"/> in HTML format or not. Defaults to <c>true</c>.</param>
+    /// <param name="isHtmlBody">Whether the <paramref name="body"/> is in HTML format or not. Defaults to <c>true</c>.</param>
     /// <returns></returns>
     /// <exception cref="System.ArgumentException"></exception>
     public static Task<EmailResult> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
