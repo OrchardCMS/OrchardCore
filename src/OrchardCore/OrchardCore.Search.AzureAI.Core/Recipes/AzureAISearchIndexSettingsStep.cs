@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace OrchardCore.Search.AzureAI.Recipes;
 
 public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 {
-    public const string Name = "azureai-index-create";
+    public const string Name = "AzureAISearchIndexSettings";
 
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
@@ -50,11 +51,15 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
         foreach (var index in indexes)
         {
-            var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
+            var settings = index.ToObject<Dictionary<string, AzureAISearchIndexSettings>>().FirstOrDefault();
+
+            var indexSettings = settings.Value;
+
+            indexSettings.IndexName = settings.Key;
 
             if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
             {
-                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {indexName}.", indexSettings.IndexName);
+                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {IndexName}.", indexSettings.IndexName);
 
                 continue;
             }
@@ -75,7 +80,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
                 if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
                 {
-                    _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
+                    _logger.LogError("No {FieldName} were provided in the recipe step. IndexName: {IndexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
 
                     continue;
                 }
