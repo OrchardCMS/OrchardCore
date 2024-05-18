@@ -8,6 +8,7 @@ using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.AzureAI.Deployment;
+using OrchardCore.Search.AzureAI.Deployment.Models;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
