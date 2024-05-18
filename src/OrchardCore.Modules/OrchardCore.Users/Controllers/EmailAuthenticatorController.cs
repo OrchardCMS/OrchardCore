@@ -99,9 +99,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
 
         var to = await UserManager.GetEmailAsync(user);
-        var subject = await GetSubjectAsync(settings, user, code);
-        var body = await GetBodyAsync(settings, user, code);
-        var result = await _emailService.SendAsync(to, subject, body);
+        var subjectAndBody = await GetSubjectAndBodyAsync(settings, user, code);
+        var result = await _emailService.SendAsync(to, subjectAndBody.Subject, subjectAndBody.Body);
 
         if (!result.Succeeded)
         {
@@ -167,9 +166,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
         var to = await UserManager.GetEmailAsync(user);
-        var subject = await GetSubjectAsync(settings, user, code);
-        var body = await GetBodyAsync(settings, user, code);
-        var result = await _emailService.SendAsync(to, subject, body);
+        var subjectAndBody = await GetSubjectAndBodyAsync(settings, user, code);
+        var result = await _emailService.SendAsync(to, subjectAndBody.Subject, subjectAndBody.Body);
 
         return Ok(new
         {
@@ -179,36 +177,31 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         });
     }
 
-    private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
+    private async Task<(string Subject, string Body)> GetSubjectAndBodyAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = string.IsNullOrWhiteSpace(settings.Subject)
-        ? EmailAuthenticatorLoginSettings.DefaultSubject
-        : settings.Subject;
+        var subject = string.IsNullOrWhiteSpace(settings.Subject)
+            ? EmailAuthenticatorLoginSettings.DefaultSubject
+            : settings.Subject;
 
-        return GetContentAsync(message, user, code);
-    }
+        var body = string.IsNullOrWhiteSpace(settings.Body)
+            ? EmailAuthenticatorLoginSettings.DefaultBody
+            : settings.Body;
 
-    private Task<string> GetBodyAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
-    {
-        var message = string.IsNullOrWhiteSpace(settings.Body)
-        ? EmailAuthenticatorLoginSettings.DefaultBody
-        : settings.Body;
+        return (await GetContentAsync(subject), await GetContentAsync(body));
 
-        return GetContentAsync(message, user, code);
-    }
+        async Task<string> GetContentAsync(string message)
+        {
+            var result = await _liquidTemplateManager.RenderHtmlContentAsync(message, _htmlEncoder, null,
+                new Dictionary<string, FluidValue>()
+                {
+                    ["User"] = new ObjectValue(user),
+                    ["Code"] = new StringValue(code),
+                });
 
-    private async Task<string> GetContentAsync(string message, IUser user, string code)
-    {
-        var result = await _liquidTemplateManager.RenderHtmlContentAsync(message, _htmlEncoder, null,
-            new Dictionary<string, FluidValue>()
-            {
-                ["User"] = new ObjectValue(user),
-                ["Code"] = new StringValue(code),
-            });
+            using var writer = new StringWriter();
+            result.WriteTo(writer, _htmlEncoder);
 
-        using var writer = new StringWriter();
-        result.WriteTo(writer, _htmlEncoder);
-
-        return writer.ToString();
+            return writer.ToString();
+        }
     }
 }
