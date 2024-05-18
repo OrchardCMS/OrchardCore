@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,27 +46,45 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
             return;
         }
 
-        var indexNames = new List<string>();
+        var newIndexNames = new List<string>();
 
         foreach (var index in indexes)
         {
-            var settings = index.ToObject<Dictionary<string, AzureAISearchIndexSettings>>().FirstOrDefault();
+            var indexInfo = index.ToObject<AzureAISearchIndexInfo>();
 
-            var indexSettings = settings.Value;
-
-            indexSettings.IndexName = settings.Key;
-
-            if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
+            if (string.IsNullOrWhiteSpace(indexInfo.IndexName))
             {
-                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {IndexName}.", indexSettings.IndexName);
+                _logger.LogError("No index name was provided in the '{Name}' recipe step.", Name);
 
                 continue;
             }
 
-            indexSettings.IndexName = indexName;
-
-            if (!await _indexManager.ExistsAsync(indexSettings.IndexName))
+            if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexInfo.IndexName, out var indexName))
             {
+                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {IndexName}.", indexInfo.IndexName);
+
+                continue;
+            }
+
+            if (indexInfo.IndexedContentTypes?.Length == 0)
+            {
+                _logger.LogError("No {IndexedContentTypes} were provided in the recipe step. IndexName: {IndexName}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName);
+
+                continue;
+            }
+
+            if (!await _indexManager.ExistsAsync(indexInfo.IndexName))
+            {
+                var indexSettings = new AzureAISearchIndexSettings()
+                {
+                    IndexName = indexInfo.IndexName,
+                    AnalyzerName = indexInfo.AnalyzerName,
+                    QueryAnalyzerName = indexInfo.QueryAnalyzerName,
+                    IndexedContentTypes = indexInfo.IndexedContentTypes,
+                    IndexLatest = indexInfo.IndexLatest,
+                    Culture = indexInfo.Culture,
+                };
+
                 if (string.IsNullOrWhiteSpace(indexSettings.AnalyzerName))
                 {
                     indexSettings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
@@ -75,17 +92,9 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
                 if (string.IsNullOrEmpty(indexSettings.QueryAnalyzerName))
                 {
-                    indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
+                    indexSettings.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
-                if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
-                {
-                    _logger.LogError("No {FieldName} were provided in the recipe step. IndexName: {IndexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
-
-                    continue;
-                }
-
-                indexSettings.SetLastTaskId(0);
                 indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings.IndexedContentTypes);
                 indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexSettings.IndexName);
 
@@ -93,7 +102,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
                 {
                     await _azureAISearchIndexSettingsService.UpdateAsync(indexSettings);
 
-                    indexNames.Add(indexSettings.IndexName);
+                    newIndexNames.Add(indexSettings.IndexName);
                 }
             }
         }
@@ -102,7 +111,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
         {
             var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
 
-            await searchIndexingService.ProcessContentItemsAsync(indexNames.ToArray());
+            await searchIndexingService.ProcessContentItemsAsync(newIndexNames.ToArray());
         });
     }
 }
