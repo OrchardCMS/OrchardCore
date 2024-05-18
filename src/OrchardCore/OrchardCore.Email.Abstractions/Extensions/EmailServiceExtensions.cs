@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Email;
 
 /// <summary>
-/// Provides an extension methods to <see cref="ISmtpService"/>.
+/// Provides extension methods to <see cref="ISmtpService"/>.
 /// </summary>
 public static class EmailServiceExtensions
 {
