@@ -93,7 +93,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
                 if (string.IsNullOrEmpty(indexSettings.QueryAnalyzerName))
                 {
-                    indexSettings.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
+                    indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
                 }
 
                 indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings.IndexedContentTypes);
