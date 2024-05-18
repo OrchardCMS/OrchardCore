@@ -33,6 +33,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
 
         string body;
         bool isHtmlBody;
+        
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
             body = message.HtmlBody;
