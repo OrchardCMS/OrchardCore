@@ -250,7 +250,7 @@ namespace OrchardCore.Roles.Controllers
             {
                 var feature = _typeFeatureProvider
                     .GetFeaturesForDependency(permissionProvider.GetType())
-                    .FirstOrDefault(feature => enabledFeatures.Any(enabledFeature => feature.Id == enabledFeature.Id));
+                    .LastOrDefault(feature => enabledFeatures.Any(enabledFeature => feature.Id == enabledFeature.Id));
 
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
