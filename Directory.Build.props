@@ -9,9 +9,6 @@
 
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
 
-    <!-- Member is explicitly initialized to its default value -->
-    <NoWarn>$(NoWarn);CA1805</NoWarn>
-
     <!-- The behavior could vary based on the current user's locale setting -->
     <NoWarn>$(NoWarn);CA1304;CA1305;CA1310</NoWarn>
 
