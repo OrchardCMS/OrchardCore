@@ -16,9 +16,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     // Common supported file extensions and their corresponding MIME types for email attachments
     // using Azure Communication Services Email.
     // For more info <see href="https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types" />
-#pragma warning disable CA1707 // Remove the underscores from member name
-    protected static readonly Dictionary<string, string> _allowedMimeTypes = new()
-#pragma warning restore CA1707
+    protected static readonly Dictionary<string, string> AllowedMimeTypes = new()
     {
         { ".3gp", "video/3gpp" },
         { ".3g2", "video/3gpp2" },
@@ -208,7 +206,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             var extension = Path.GetExtension(attachment.Filename);
 
-            if (_allowedMimeTypes.TryGetValue(extension, out var contentType))
+            if (AllowedMimeTypes.TryGetValue(extension, out var contentType))
             {
                 var data = new byte[attachment.Stream.Length];
 
