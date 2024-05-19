@@ -93,7 +93,7 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public IEnumerable<Permission> AuthorizedPermissions { get; set; } = [];
 
-        public bool UsePermissionsContext { get; set; } = false;
+        public bool UsePermissionsContext { get; set; }
     }
 
     internal sealed class StubIdentity : IIdentity

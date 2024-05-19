@@ -21,7 +21,7 @@ public class AzureAISearchIndexSettings
 
     public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
 
-    private long _lastTaskId = 0;
+    private long _lastTaskId;
 
     public long GetLastTaskId()
         => _lastTaskId;
