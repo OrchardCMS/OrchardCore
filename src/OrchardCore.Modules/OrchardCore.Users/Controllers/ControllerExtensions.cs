@@ -35,15 +35,7 @@ namespace OrchardCore.Users.Controllers
                 body = sw.ToString();
             }
 
-            var message = new MailMessage()
-            {
-                To = email,
-                Subject = subject,
-                Body = body,
-                IsHtmlBody = true
-            };
-
-            var result = await emailService.SendAsync(message);
+            var result = await emailService.SendAsync(email, subject, body);
 
             return result.Succeeded;
         }
