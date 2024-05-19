@@ -48,9 +48,6 @@
     <!-- Exception type is not sufficiently specific -->
     <NoWarn>$(NoWarn);CA2201</NoWarn>
 
-    <!-- Remove the underscores from member name -->
-    <NoWarn>$(NoWarn);CA1707</NoWarn>
-
     <!-- Use PascalCase for named placeholders in the logging message template -->
     <NoWarn>$(NoWarn);CA1727</NoWarn>
 
