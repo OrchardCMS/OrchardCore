@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public IDictionary<string, object> Properties => _properties ??= [];
 
-        private bool _sorted = false;
+        private bool _sorted;
 
         private List<IPositioned> _items;
 

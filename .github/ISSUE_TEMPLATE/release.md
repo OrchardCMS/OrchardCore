@@ -27,10 +27,11 @@ Update the source, so everything looks like on the new version.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
 - [ ] Create a new milestone.
-- [ ] Add final updates the to the release notes in the documentation. It should include the following, at least:
-    - Overview of the release's highlights and goals. What do you want people to remember this release for?
-    - Prerequisites. What framework version do you need, anything else to work with Orchard?
-    - Upgrade steps, any migration necessary from previous versions, and any breaking changes.
+- [ ] Change the Orchard Core version in the project templates, more specifically in `dotnetcli.host.json` and `template.json` files.
+- [ ] Add final updates to the release notes in the documentation. It should include the following, at least:
+  - Overview of the release's highlights and goals. What do you want people to remember this release for?
+  - Prerequisites. What framework version do you need, anything else to work with Orchard?
+  - Upgrade steps, any migration necessary from previous versions, and any breaking changes.
 - [ ] Add the release notes documentation page to the documentation site's navigation in `mkdocs.yml` and remove it from `not_in_nav`.
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/latest/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 
@@ -40,9 +41,9 @@ Make sure everything works all right.
 
 - [ ] Make sure that [`OrchardCore.Samples` works](https://github.com/OrchardCMS/OrchardCore.Samples).
 - [ ] Test the [guides](https://docs.orchardcore.net/en/latest/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
-    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
-    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
-    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
+  - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
+  - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
+  - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
 - [ ] Re-certify Orchard Core for the latest major version of Red Hat Enterprise Linux if a new version has been released (e.g., v10 after v9). Refer to Orchard's [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797) for the previously certified version, the [Red Hat Customer Portal](https://access.redhat.com/articles/3078) for the latest version, and [our certification guide](https://docs.orchardcore.net/en/latest/topics/red-hat-ecosystem-catalog-certification/) for the certification steps.
 
 ### Prepare and publish Orchard Core Translations
@@ -59,16 +60,16 @@ Do the harder parts of making the release public. This should come after everyth
 
 - [ ] Tag the head of `release/<version name>` with the version. Include `v` in the name, e.g. `v1.8.0`.
 - [ ] Merge `release/<version name>` to `main`.
-    - You'll need to create a pull request.
-    - Merge it as a merge commit, not squash merge.
-    - If there are merge conflicts, then create a `release/<version name>-integration` branch and fix them there.
+  - You'll need to create a pull request.
+  - Merge it as a merge commit, not squash merge.
+  - If there are merge conflicts, then create a `release/<version name>-integration` branch and fix them there.
 - [ ] Create and publish a release [on GitHub](https://github.com/OrchardCMS/OrchardCore/releases/new).
-    - Generate release notes.
-    - Add a link to the release notes in the docs (something like `For details on this version see the [release notes in the documentation](link here).`). Note that the docs will only be built once the branch is merged to `main`.
+  - Generate release notes.
+  - Add a link to the release notes in the docs (something like `For details on this version see the [release notes in the documentation](link here).`). Note that the docs will only be built once the branch is merged to `main`.
 - [ ] Test the [guides](https://docs.orchardcore.net/en/latest/guides/) with the packages now automatically published to NuGet. Test at least the following guides:
-    - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
-    - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
-    - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
+  - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
+  - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
+  - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
 - [ ] Update [Try Orchard Core](https://github.com/OrchardCMS/TryOrchardCore).
 
 ### Publicize the release
