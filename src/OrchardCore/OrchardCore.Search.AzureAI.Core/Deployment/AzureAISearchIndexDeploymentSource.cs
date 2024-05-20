@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
+using OrchardCore.Search.AzureAI.Deployment.Models;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
@@ -14,7 +14,7 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AzureAISearchIndexDeploymentStep settingsStep)
+        if (step is not AzureAISearchIndexDeploymentStep indexStep)
         {
             return;
         }
@@ -22,25 +22,37 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
-        var indicesToAdd = settingsStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : settingsStep.IndexNames;
+        var indicesToAdd = indexStep.IncludeAll
+            ? indexSettings.Select(x => x.IndexName).ToArray()
+            : indexStep.IndexNames;
 
         foreach (var index in indexSettings)
         {
-            if (indicesToAdd.Contains(index.IndexName))
+            if (index.IndexName == null || !indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, AzureAISearchIndexSettings>
-                {
-                    { index.IndexName, index },
-                };
-
-                data.Add(JObject.FromObject(indexSettingsDict));
+                continue;
             }
+
+            var indexInfo = GetIndexInfo(index);
+
+            data.Add(JObject.FromObject(indexInfo));
         }
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = nameof(AzureAISearchIndexSettings),
+            ["name"] = step.Name,
             ["Indices"] = data,
         });
     }
+
+    private static AzureAISearchIndexInfo GetIndexInfo(AzureAISearchIndexSettings settings)
+        => new()
+        {
+            IndexName = settings.IndexName,
+            AnalyzerName = settings.AnalyzerName,
+            QueryAnalyzerName = settings.QueryAnalyzerName,
+            IndexedContentTypes = settings.IndexedContentTypes ?? [],
+            IndexLatest = settings.IndexLatest,
+            Culture = settings.Culture,
+        };
 }

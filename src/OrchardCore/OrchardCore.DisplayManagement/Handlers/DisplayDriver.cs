@@ -12,6 +12,8 @@ namespace OrchardCore.DisplayManagement.Handlers
         where TEditorContext : BuildEditorContext
         where TUpdateContext : UpdateEditorContext
     {
+        protected static readonly string ModelName = typeof(TModel).Name;
+
         /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
         /// </summary>
@@ -116,11 +118,11 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
-                Prefix = $"{htmlFieldPrefix}.{typeof(TModel).Name}";
+                Prefix = $"{htmlFieldPrefix}.{ModelName}";
             }
             else
             {
-                Prefix = typeof(TModel).Name;
+                Prefix = ModelName;
             }
         }
     }

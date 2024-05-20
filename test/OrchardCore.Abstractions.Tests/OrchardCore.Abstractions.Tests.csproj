@@ -5,11 +5,9 @@
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <RootNamespace>OrchardCore</RootNamespace>
+    <!-- Remove the underscores from member name -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
-
-  <!--<ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>-->
 
   <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />

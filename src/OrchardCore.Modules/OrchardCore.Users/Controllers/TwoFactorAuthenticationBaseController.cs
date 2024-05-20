@@ -73,7 +73,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
             });
     }
 
-    protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
+    protected async Task<IActionResult> RemoveTwoFactorProviderAsync(IUser user, Func<Task> onSuccessAsync)
     {
         var currentProviders = await GetTwoFactorProvidersAsync(user);
 

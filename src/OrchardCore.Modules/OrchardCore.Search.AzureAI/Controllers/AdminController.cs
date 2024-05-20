@@ -351,6 +351,11 @@ public class AdminController : Controller
                 settings.IndexedContentTypes = model.IndexedContentTypes;
                 settings.Culture = model.Culture ?? string.Empty;
 
+                if (string.IsNullOrEmpty(settings.IndexFullName))
+                {
+                    settings.IndexFullName = _indexManager.GetFullIndexName(settings.IndexName);
+                }
+
                 if (string.IsNullOrEmpty(settings.AnalyzerName))
                 {
                     settings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;

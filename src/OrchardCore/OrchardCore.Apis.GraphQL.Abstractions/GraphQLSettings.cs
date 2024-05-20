@@ -9,7 +9,7 @@ namespace OrchardCore.Apis.GraphQL
         public PathString Path { get; set; } = "/api/graphql";
         public Func<HttpContext, IDictionary<string, object>> BuildUserContext { get; set; }
 
-        public bool ExposeExceptions { get; set; } = false;
+        public bool ExposeExceptions { get; set; }
 
         public int? MaxDepth { get; set; }
         public int? MaxComplexity { get; set; }

@@ -10,6 +10,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
@@ -37,8 +38,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
 
-            builder.ConfigureServices(services =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
+                var configuration = serviceProvider.GetService<IShellConfiguration>();
+
+                services.Configure<YesSqlOptions>(configuration.GetSection("OrchardCore_YesSql"));
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
@@ -64,6 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
+
                     var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
                     var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
