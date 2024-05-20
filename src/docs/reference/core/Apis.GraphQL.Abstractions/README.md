@@ -224,24 +224,21 @@ To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvi
 
 
 ```csharp
-public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
+public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
 {
-     public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
-    {
-        private static readonly IndexAlias[] _aliases =
-        [
-            new IndexAlias
-            {
-                Alias = "autoroutePart", // alias of graphql ContentPart. You may also use nameof(AutoroutPart).ToFieldName()
-                Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has same name in index and part.
-                IndexType = typeof(AutoroutePartIndex)
-            }
-        ];
-
-        public IEnumerable<IndexAlias> GetAliases()
+    private static readonly IndexAlias[] _aliases =
+    [
+        new IndexAlias
         {
-            return _aliases;
+            Alias = "autoroutePart", // alias of graphql ContentPart. You may also use nameof(AutoroutPart).ToFieldName()
+            Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has same name in index and part.
+            IndexType = typeof(AutoroutePartIndex)
         }
+    ];
+
+    public IEnumerable<IndexAlias> GetAliases()
+    {
+        return _aliases;
     }
 }
 ```
