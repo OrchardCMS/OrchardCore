@@ -169,12 +169,12 @@ namespace OrchardCore.Taxonomies
         }
     }
 
-    internal class AliasPartSettings
+    internal sealed class AliasPartSettings
     {
         public string Pattern { get; set; }
     }
 
-    internal class AutoroutePartSettings
+    internal sealed class AutoroutePartSettings
     {
         public string Pattern { get; set; }
         public bool AllowRouteContainedItems { get; set; }

@@ -3,7 +3,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    internal class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    internal sealed class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly PermissionsContext _permissionsContext;
 
@@ -66,7 +66,7 @@ namespace OrchardCore.Tests.Apis.Context
             return Task.CompletedTask;
         }
 
-        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+        private static void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
         {
             // The given name is tested
             stack.Add(permission.Name);
@@ -93,10 +93,10 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public IEnumerable<Permission> AuthorizedPermissions { get; set; } = [];
 
-        public bool UsePermissionsContext { get; set; } = false;
+        public bool UsePermissionsContext { get; set; }
     }
 
-    internal class StubIdentity : IIdentity
+    internal sealed class StubIdentity : IIdentity
     {
         public string AuthenticationType => "TEST TEST";
 

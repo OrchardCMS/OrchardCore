@@ -839,6 +839,11 @@ label .field-validation-error::before {
   content: "- ";
 }
 
+label.input-required:after {
+  color: var(--bs-danger-text-emphasis);
+  content: " *";
+}
+
 input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none;
@@ -8682,7 +8687,7 @@ span.field-validation-error {
 }
 
 .field-validation-error {
-  color: var(--bs-danger) !important;
+  color: var(--bs-danger-text-emphasis) !important;
 }
 
 .field-validation-valid {

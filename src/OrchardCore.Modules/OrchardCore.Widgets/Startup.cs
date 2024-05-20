@@ -1,12 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
+using OrchardCore.Widgets.Services;
 using OrchardCore.Widgets.Settings;
 
 namespace OrchardCore.Widgets
@@ -21,9 +24,12 @@ namespace OrchardCore.Widgets
             services.AddContentPart<WidgetsListPart>()
                 .UseDisplayDriver<WidgetsListPartDisplayDriver>();
 
+            services.AddScoped<IStereotypesProvider, WidgetStereotypesProvider>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
             services.AddContentPart<WidgetMetadata>();
             services.AddDataMigration<Migrations>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 }

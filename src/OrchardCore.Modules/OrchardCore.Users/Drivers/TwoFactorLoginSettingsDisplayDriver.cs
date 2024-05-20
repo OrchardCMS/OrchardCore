@@ -16,6 +16,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+
     protected readonly IStringLocalizer S;
 
     public TwoFactorLoginSettingsDisplayDriver(
@@ -40,7 +41,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
         .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings section, UpdateEditorContext context)
     {
         if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))

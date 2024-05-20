@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IFeaturesProvider _featuresProvider;
 
-        private Dictionary<string, ExtensionEntry> _extensions;
+        private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
         private Dictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
 
         private bool _isInitialized;
-        private readonly SemaphoreSlim _semaphore = new(1);
+        private readonly object _synLock = new();
 
         public ExtensionManager(
             IApplicationContext applicationContext,
@@ -80,7 +80,7 @@ namespace OrchardCore.Environment.Extensions
             EnsureInitialized();
 
             var allDependencyIds = new HashSet<string>(featureIdsToLoad
-                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .SelectMany(GetFeatureDependencies)
                 .Select(x => x.Id));
 
             foreach (var featureInfo in _featureInfos)
@@ -101,22 +101,22 @@ namespace OrchardCore.Environment.Extensions
             return Task.FromResult(extension);
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            await EnsureInitializedAsync();
-            return _features.Values;
+            EnsureInitialized();
+            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
-            await EnsureInitializedAsync();
+            EnsureInitialized();
 
             var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
 
             var loadedFeatures = _features.Values
                 .Where(f => features.Contains(f.FeatureInfo.Id));
 
-            return loadedFeatures;
+            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -274,20 +274,8 @@ namespace OrchardCore.Environment.Extensions
                 return;
             }
 
-            EnsureInitializedAsync().GetAwaiter().GetResult();
-        }
-
-        private async Task EnsureInitializedAsync()
-        {
-            if (_isInitialized)
+            lock (_synLock)
             {
-                return;
-            }
-
-            await _semaphore.WaitAsync();
-            try
-            {
-
                 if (_isInitialized)
                 {
                     return;
@@ -297,11 +285,11 @@ namespace OrchardCore.Environment.Extensions
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                await modules.ForEachAsync((module) =>
+                Parallel.ForEach(modules, (module, cancellationToken) =>
                 {
                     if (!module.ModuleInfo.Exists)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
@@ -318,8 +306,6 @@ namespace OrchardCore.Environment.Extensions
                     };
 
                     loadedExtensions.TryAdd(module.Name, entry);
-
-                    return Task.CompletedTask;
                 });
 
                 var loadedFeatures = new Dictionary<string, FeatureEntry>();
@@ -374,13 +360,9 @@ namespace OrchardCore.Environment.Extensions
                     .Select(f => f.Extension)
                     .ToList();
 
-                _extensions = _extensionsInfos.ToDictionary(e => e.Id, e => loadedExtensions[e.Id]);
+                _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
 
                 _isInitialized = true;
-            }
-            finally
-            {
-                _semaphore.Release();
             }
         }
 

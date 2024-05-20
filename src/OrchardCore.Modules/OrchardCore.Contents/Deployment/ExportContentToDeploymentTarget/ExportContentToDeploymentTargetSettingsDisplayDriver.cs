@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             }).Location("Content:2").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GroupId)
             {

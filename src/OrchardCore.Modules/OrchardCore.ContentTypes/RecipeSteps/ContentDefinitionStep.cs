@@ -58,6 +58,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
                 foreach (var part in record.ContentTypePartDefinitionRecords)
                 {
+                    if (string.IsNullOrEmpty(part.PartName))
+                    {
+                        throw new InvalidOperationException($"Unable to add content-part to the '{type.Name}' content-type. The part name cannot be null or empty.");
+                    }
+
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
                 }
             });
@@ -77,7 +82,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 }
             });
 
-        private class ContentDefinitionStepModel
+        private sealed class ContentDefinitionStepModel
         {
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];

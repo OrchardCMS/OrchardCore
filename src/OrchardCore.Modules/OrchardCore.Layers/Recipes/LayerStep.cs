@@ -21,20 +21,17 @@ namespace OrchardCore.Layers.Recipes
     public class LayerStep : IRecipeStepHandler
     {
         private readonly ILayerService _layerService;
-        private readonly IRuleMigrator _ruleMigrator;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _factories;
         private readonly JsonSerializerOptions _serializationOptions;
 
         public LayerStep(
             ILayerService layerService,
-            IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<ContentSerializerJsonOptions> serializationOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions)
         {
             _layerService = layerService;
-            _ruleMigrator = ruleMigrator;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
             _serializationOptions = serializationOptions.Value.SerializerOptions;
@@ -105,13 +102,6 @@ namespace OrchardCore.Layers.Recipes
                             unknownTypes.Add(name);
                         }
                     }
-                }
-
-                // Migrate any old rule in a recipe to the new rule format.
-                // Do not import the old rule.
-                if (!string.IsNullOrEmpty(layerStep.Rule))
-                {
-                    _ruleMigrator.Migrate(layerStep.Rule, layer.LayerRule);
                 }
 
                 if (!string.IsNullOrEmpty(layerStep.Description))
