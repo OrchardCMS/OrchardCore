@@ -19,6 +19,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Abstractions;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
@@ -47,6 +48,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IEnumerable<IExternalLoginUserToRelateFinder> _externalLoginUsrFinder;
 
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
@@ -67,7 +69,8 @@ namespace OrchardCore.Users.Controllers
             IShellFeaturesManager shellFeaturesManager,
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IEnumerable<IExternalLoginUserToRelateFinder> externalLoginUsrFinder)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -83,6 +86,7 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
+            _externalLoginUsrFinder = externalLoginUsrFinder.Reverse();
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -384,12 +388,9 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
-
-                if (!string.IsNullOrWhiteSpace(email))
-                {
-                    iUser = await _userManager.FindByEmailAsync(email);
-                }
+                //really important the order of the services registration in the dependency injection context
+                var usrFinder = _externalLoginUsrFinder.Where(x => x.CanManageThis(info.LoginProvider)).FirstOrDefault();
+                iUser = await usrFinder?.FindUserToRelateAsync(info) ?? null;
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
@@ -409,7 +410,7 @@ namespace OrchardCore.Users.Controllers
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    ViewData["Email"] = email;
+                    ViewData["LinkParameterValue"] = usrFinder?.GetValueThatLinkAccount(info);
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -423,6 +424,8 @@ namespace OrchardCore.Users.Controllers
                 }
                 else
                 {
+                    var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
+
                     var externalLoginViewModel = new RegisterExternalLoginViewModel
                     {
                         NoPassword = registrationSettings.NoPasswordForExternalUsers,
@@ -630,9 +633,9 @@ namespace OrchardCore.Users.Controllers
 
                 return NotFound();
             }
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
-
-            var user = await _userManager.FindByEmailAsync(email);
+            //really important the order of the services registration in the dependency injection context
+            var usrFinder = _externalLoginUsrFinder.Where(x => x.CanManageThis(info.LoginProvider)).FirstOrDefault();
+            var user = await usrFinder?.FindUserToRelateAsync(info) ?? null;
 
             if (user == null)
             {
