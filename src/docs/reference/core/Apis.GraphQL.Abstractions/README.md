@@ -74,7 +74,9 @@ public class Startup : StartupBase
 
 Thats it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
 
-### Define a query filter type
+## Filtration
+
+### Define a custom query filter type
 
 So now you have lots of data coming back, the next thing you want to do is to be able to filter said data.
 
@@ -175,6 +177,123 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 ```
 
 Done.
+
+### Extending Content Type Query Filters
+
+In the previous section, we demonstrated how to create custom filters for more complex requirements. However, if you need to implement filtering based on your index atomic values, the `WhereInputObjectGraphType` and `IIndexAliasProvider` are what you need.
+
+We will cover:
+
+1. Implementing a `WhereInputObjectGraphType`.
+2. Implementing `IIndexAliasProvider`.
+3. Registering it in the `Startup` class.
+
+#### Implementing WhereInputObjectGraphType
+
+The `WhereInputObjectGraphType` enhances the `InputObjectGraphType` by introducing methods to define filters such as equality, array filters, etc. This is essential since it's the expected type for the `ContentItemsFieldType` responsible for the filtering logic.
+
+Here is an example implementation:
+
+```csharp
+// Assuming we've added the necessary using directives.
+public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
+{
+    // Binds the filter fields to the GraphQL type representing AutoroutePart
+    public AutorouteInputObjectType()
+    {
+        Name = "AutoroutePartInput";
+
+        // Utilize the method for adding scalar fields from the base class.
+        AddScalarFilterFields<StringGraphType>("path", S["Filter by the path of the content item"]);
+    }
+}
+```
+
+This method will addscalar filters to all ContentItem queries, including custom Content Types.
+
+1. equals, not equals
+2. contains, not contains
+3. starts with, ends with, not starts with, not ends with
+4. in, not in
+
+These filters are checked against index that is bound to given ```ContentPart```.
+
+#### Implementing IIndexAliasProvider
+
+To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvider```. Ensure that field names in your filter object are same as fields in index. It is needed for filter automatching.
+
+
+```csharp
+public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
+{
+     public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
+    {
+        private static readonly IndexAlias[] _aliases =
+        [
+            new IndexAlias
+            {
+                Alias = "autoroutePart", // alias of graphql ContentPart. You may also use nameof(AutoroutPart).ToFieldName()
+                Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has same name in index and part.
+                IndexType = typeof(AutoroutePartIndex)
+            }
+        ];
+
+        public IEnumerable<IndexAlias> GetAliases()
+        {
+            return _aliases;
+        }
+    }
+}
+```
+
+#### Updating the Startup Class
+
+Update Startup class like below.
+
+```csharp
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public class Startup : StartupBase
+{
+    // Assuming we've added the necessary using directives.
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Code to register the AutoroutePart and AutorouteQueryObjectType is assumed to be present.
+        // Register WhereInputObjectGraphType
+        services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
+
+        // Register IIndexAliasProvider
+        services.AddTransient<IIndexAliasProvider, AutoroutePartIndexAliasProvider>();
+        services.AddWhereInputIndexPropertyProvider<AutoroutePartIndex>();
+    }
+}
+```
+With these configurations, you can navigate to your GraphQL interface, and you should see the new filters available for use in all Content type queries.
+
+#### Example Query Filters
+
+Below are resulting query filters applied to an autoroutePart:
+
+
+```json
+{
+  person(where: {path: {path_contains: "", path: "", path_ends_with: "", path_in: "", path_not: "", path_not_contains: "", path_not_ends_with: "", path_not_in: "", path_not_starts_with: "", path_starts_with: ""}}) {
+    name
+  }
+}
+```
+
+Alternatively, if you register the part with ```collapse = true```, fields will not be nested inside object:
+
+```json
+{
+  person(where: {path_contains: "", path: "", path_ends_with: "", path_in: "", path_not: "", path_not_contains: "", path_not_ends_with: "", path_not_in: "", path_not_starts_with: "", path_starts_with: ""}) {
+    name
+  }
+}
+```
+
+For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType]{https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs} and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also might check existing index for [autoroutePart](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs). 
+
 
 ## Querying related content items
 
