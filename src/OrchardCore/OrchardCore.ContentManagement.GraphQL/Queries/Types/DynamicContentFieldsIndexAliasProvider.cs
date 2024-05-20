@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
@@ -5,31 +6,37 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Events;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
-    private static readonly List<IndexAlias> _aliases = new List<IndexAlias>();
+    private static readonly ConcurrentDictionary<string, List<IndexAlias>> _aliases = new ConcurrentDictionary<string, List<IndexAlias>>();
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
+    private readonly ShellSettings _shellSettings;
     private readonly GraphQLContentOptions _contentOptions;
 
     public DynamicContentFieldsIndexAliasProvider(IContentDefinitionManager contentDefinitionManager,
         IEnumerable<IContentFieldProvider> contentFieldProviders,
-        IOptions<GraphQLContentOptions> contentOptionsAccessor)
+        IOptions<GraphQLContentOptions> contentOptionsAccessor,
+        ShellSettings shellSettings)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentFieldProviders = contentFieldProviders;
         _contentOptions = contentOptionsAccessor.Value;
+        _shellSettings = shellSettings;
     }
 
     public IEnumerable<IndexAlias> GetAliases()
     {
-        if (_aliases.Count != 0)
+        var tenantAliases = _aliases.GetOrAdd(_shellSettings.Name, _ => []);
+
+        if (tenantAliases.Count != 0)
         {
-            return _aliases;
+            return tenantAliases;
         }
 
         var types = _contentDefinitionManager.ListTypeDefinitionsAsync().GetAwaiter().GetResult();
@@ -51,8 +58,8 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
                     }
 
                     var (index, indexType) = fieldProvider.GetFieldIndex(field);
-                    
-                    _aliases.Add(new IndexAlias
+
+                    tenantAliases.Add(new IndexAlias
                     {
                         Alias = alias,
                         Index = index,
@@ -64,12 +71,12 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
             }
         }
 
-        return _aliases;
+        return tenantAliases;
     }
 
-    private static void ClearAliases()
+    private void ClearAliases()
     {
-        _aliases.Clear();
+        _aliases.GetOrAdd(_shellSettings.Name, _ => []).Clear();
     }
 
     public void ContentFieldAttached(ContentFieldAttachedContext context) => ClearAliases();
