@@ -26,7 +26,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
     protected readonly IStringLocalizer S;
 
-    protected virtual string EditShapeType { get; } = null;
+    protected virtual string EditShapeType { get; }
 
     public NotifyUserTaskActivityDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
@@ -163,5 +163,5 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUse
     {
     }
 
-    sealed protected override string EditShapeType { get; } = null;
+    protected sealed override string EditShapeType { get; }
 }
