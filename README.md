@@ -46,9 +46,8 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 ## Get in Touch
 
 - [X (Twitter)](https://twitter.com/orchardcms)
-- [LinkedIn](https://www.linkedin.com/groups/13605669/)
-- [Facebook](https://www.facebook.com/OrchardCore)
 - [LinkedIn](https://orchardcore.net/linkedin)
+- [Facebook](https://www.facebook.com/OrchardCore)
 - [Discord](https://orchardcore.net/discord)
 - Please report security issues privately, via email, to [contact@orchardcore.net](mailto:contact@orchardcore.net).
 
