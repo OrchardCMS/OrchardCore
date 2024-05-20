@@ -18,7 +18,9 @@ namespace OrchardCore.Search.Lucene
         }
 
         [Shape]
+#pragma warning disable CA1707 // Remove the underscores from member name
         public IHtmlContent ContentPickerField_Option__Lucene(dynamic shape)
+#pragma warning restore CA1707
         {
             var selected = shape.Editor == "Lucene";
             if (selected)

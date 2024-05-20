@@ -22,8 +22,10 @@ public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService au
             return null;
         }
 
-        return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model => contentPartFieldDefinition.GetSettings<AzureAISearchContentIndexSettings>())
-            .Location("Content:10");
+        return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model =>
+        {
+            model.Included = contentPartFieldDefinition.GetSettings<AzureAISearchContentIndexSettings>().Included;
+        }).Location("Content:10");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)
@@ -33,11 +35,11 @@ public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService au
             return null;
         }
 
-        var model = new AzureAISearchContentIndexSettings();
+        var settings = new AzureAISearchContentIndexSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        context.Builder.WithSettings(model);
+        context.Builder.WithSettings(settings);
 
         return await EditAsync(contentPartFieldDefinition, context.Updater);
     }
