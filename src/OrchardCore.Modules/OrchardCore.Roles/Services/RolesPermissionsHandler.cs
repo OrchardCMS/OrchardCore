@@ -16,7 +16,8 @@ namespace OrchardCore.Roles
         private readonly IPermissionGrantingService _permissionGrantingService;
 
 
-        private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
+        private IEnumerable<RoleClaim> _anonymousClaims;
+        private IEnumerable<RoleClaim> _authenticatedClaims;
 
         public RolesPermissionsHandler(
             RoleManager<IRole> roleManager,
