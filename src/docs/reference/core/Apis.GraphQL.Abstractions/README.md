@@ -209,7 +209,7 @@ public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
 }
 ```
 
-This method will addscalar filters to all ContentItem queries, including custom Content Types.
+This method will add scalar filters to all ContentItem queries, including custom Content Types.
 
 1. equals, not equals
 2. contains, not contains
