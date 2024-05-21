@@ -216,11 +216,11 @@ This method will addscalar filters to all ContentItem queries, including custom 
 3. starts with, ends with, not starts with, not ends with
 4. in, not in
 
-These filters are checked against index that is bound to given ```ContentPart```.
+These filters are checked against an index that is bound to the given ```ContentPart```.
 
 #### Implementing IIndexAliasProvider
 
-To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvider```. Ensure that field names in your filter object are same as fields in index. It is needed for filter automatching.
+To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvider```. Ensure that field names in your filter object are the same as fields in the index. It is needed for filter automatching.
 
 
 ```csharp
