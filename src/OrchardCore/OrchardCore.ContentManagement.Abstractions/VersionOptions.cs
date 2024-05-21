@@ -1,26 +1,39 @@
 namespace OrchardCore.ContentManagement;
 
-public class VersionOptions
+public record struct VersionOptions
 {
     /// <summary>
     /// Gets the latest version.
     /// </summary>
-    public static readonly VersionOptions Latest = new() { IsLatest = true };
+    public static readonly VersionOptions Latest = new()
+    {
+        IsLatest = true,
+    };
 
     /// <summary>
     /// Gets the latest published version.
     /// </summary>
-    public static readonly VersionOptions Published = new() { IsPublished = true };
+    public static readonly VersionOptions Published = new()
+    {
+        IsPublished = true,
+    };
 
     /// <summary>
     /// Gets the latest draft version.
     /// </summary>
-    public static readonly VersionOptions Draft = new() { IsDraft = true };
+    public static readonly VersionOptions Draft = new()
+    {
+        IsDraft = true,
+    };
 
     /// <summary>
     /// Gets the latest version and creates a new version draft based on it.
     /// </summary>
-    public static readonly VersionOptions DraftRequired = new() { IsDraft = true, IsDraftRequired = true };
+    public static readonly VersionOptions DraftRequired = new()
+    {
+        IsDraft = true,
+        IsDraftRequired = true,
+    };
 
     public bool IsLatest { get; private set; }
 
