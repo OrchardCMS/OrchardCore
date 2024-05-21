@@ -289,8 +289,7 @@ Alternatively, if you register the part with ```collapse = true```, fields will 
 }
 ```
 
-For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType]{https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs} and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also might check existing index for [autoroutePart](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs). 
-
+For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also might check the existing index for [`AutoroutePart`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs).
 
 ## Querying related content items
 
