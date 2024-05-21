@@ -23,7 +23,8 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize, Feature(UserConstants.Features.EmailAuthenticator)]
+[Authorize]
+[Feature(UserConstants.Features.EmailAuthenticator)]
 public class EmailAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IUserService _userService;
@@ -62,7 +63,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin("Authenticator/Configure/Email", "ConfigureEmailAuthenticator")]
+    [Admin("Authenticator/Configure/Email", "ConfigureEmailAuthenticator", false)]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -80,7 +81,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     }
 
     [HttpPost]
-    [Admin("Authenticator/Configure/Email/RequestCode", "ConfigureEmailAuthenticatorRequestCode")]
+    [Admin("Authenticator/Configure/Email/RequestCode", "ConfigureEmailAuthenticatorRequestCode", false)]
     public async Task<IActionResult> RequestCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -94,7 +95,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return RedirectToTwoFactorIndex();
         }
 
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
 
@@ -118,7 +119,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     }
 
     [HttpPost]
-    [Admin("Authenticator/Configure/Email/ValidateCode", "ConfigureEmailAuthenticatorValidateCode")]
+    [Admin("Authenticator/Configure/Email/ValidateCode", "ConfigureEmailAuthenticatorValidateCode", false)]
     public async Task<IActionResult> ValidateCode(EnableEmailAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -132,9 +133,9 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return View(model);
         }
 
-        var result = await UserManager.ConfirmEmailAsync(user, StripToken(model.Code));
+        var succeeded = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider, StripToken(model.Code));
 
-        if (result.Succeeded)
+        if (succeeded)
         {
             await EnableTwoFactorAuthenticationAsync(user);
 
@@ -148,7 +149,9 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View(nameof(RequestCode), model);
     }
 
-    [HttpPost, Produces("application/json"), AllowAnonymous]
+    [HttpPost]
+    [Produces("application/json")]
+    [AllowAnonymous]
     public async Task<IActionResult> SendCode()
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();

@@ -79,7 +79,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
         if (currentProviders.Count == 1)
         {
-            if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
+            if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
             {
                 await Notifier.ErrorAsync(H["You cannot remove the only active two-factor method."]);
 
@@ -111,12 +111,14 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         if (await UserManager.GetTwoFactorEnabledAsync(user))
         {
+            await RefreshTwoFactorClaimAsync(user);
+
             return;
         }
 
         await UserManager.SetTwoFactorEnabledAsync(user, true);
 
-        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
+        if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user))
         {
             await RefreshTwoFactorClaimAsync(user);
         }

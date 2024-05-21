@@ -21,7 +21,8 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize, Admin, Feature(UserConstants.Features.AuthenticatorApp)]
+[Authorize]
+[Feature(UserConstants.Features.AuthenticatorApp)]
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
@@ -59,7 +60,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         _shellSettings = shellSettings;
     }
 
-    [Admin("Authenticator/Configure/App", "ConfigureAuthenticatorApp")]
+    [Admin("Authenticator/Configure/App", "ConfigureAuthenticatorApp", false)]
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -109,7 +110,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return await RedirectToTwoFactorAsync(user);
     }
 
-    [Admin("Authenticator/Reset/App", "RemoveAuthenticatorApp")]
+    [Admin("Authenticator/Reset/App", "RemoveAuthenticatorApp", false)]
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -122,14 +123,15 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         var model = new ResetAuthenticatorViewModel()
         {
-            CanRemove = providers.Count > 1 || !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(),
+            CanRemove = providers.Count > 1 || !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(user),
             WillDisableTwoFactor = providers.Count == 1,
         };
 
         return View(model);
     }
 
-    [HttpPost, ActionName(nameof(Reset))]
+    [HttpPost]
+    [ActionName(nameof(Reset))]
     public async Task<IActionResult> ResetPost()
     {
         var user = await UserManager.GetUserAsync(User);

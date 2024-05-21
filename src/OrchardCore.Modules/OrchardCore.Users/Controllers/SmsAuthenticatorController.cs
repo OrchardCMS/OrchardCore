@@ -70,7 +70,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator")]
+    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator", false)]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -94,7 +94,9 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost, Admin, ActionName(nameof(Index))]
+    [HttpPost]
+    [Admin(requireAccessAdminPanelPermission: false)]
+    [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost(RequestCodeSmsAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -147,7 +149,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return RedirectToAction(nameof(ValidateCode));
     }
 
-    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode")]
+    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode", false)]
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -207,7 +209,9 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost, Produces("application/json"), AllowAnonymous]
+    [HttpPost]
+    [Produces("application/json")]
+    [AllowAnonymous]
     public async Task<IActionResult> SendCode()
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();

@@ -25,7 +25,7 @@ namespace OrchardCore.Admin
 
             if (!await AuthorizeAsync(context.HttpContext))
             {
-                context.Result = context.HttpContext.User?.Identity?.IsAuthenticated ?? false ? (IActionResult)new ForbidResult() : new ChallengeResult();
+                context.Result = context.HttpContext.User?.Identity?.IsAuthenticated ?? false ? new ForbidResult() : new ChallengeResult();
                 return;
             }
 
@@ -53,7 +53,9 @@ namespace OrchardCore.Admin
 
         private Task<bool> AuthorizeAsync(Microsoft.AspNetCore.Http.HttpContext context)
         {
-            if (AdminAttribute.IsApplied(context))
+            var adminAttribute = AdminAttribute.Get(context);
+
+            if (adminAttribute?.RequireAccessAdminPanelPermission == true)
             {
                 return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
             }

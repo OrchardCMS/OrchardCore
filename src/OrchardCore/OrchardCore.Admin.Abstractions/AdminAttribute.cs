@@ -37,26 +37,54 @@ namespace OrchardCore.Admin
         /// </summary>
         public string RouteName { get; set; }
 
-        public AdminAttribute(string template = null, string routeName = null)
+        public bool RequireAccessAdminPanelPermission { get; set; } = true;
+
+        public AdminAttribute(string template = null, string routeName = null, bool requireAccessAdminPanelPermission = true)
         {
             Template = template;
             RouteName = routeName;
+            RequireAccessAdminPanelPermission = requireAccessAdminPanelPermission;
         }
 
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            Apply(context.HttpContext);
+            Apply(context.HttpContext, this);
 
             return next();
         }
 
-        public static void Apply(HttpContext context)
+        private static readonly string _adminAttributeItemName = typeof(AdminAttribute).Name;
+
+        public static void Apply(HttpContext context, AdminAttribute attributeValue = null)
         {
-            // The value isn't important, it's just a marker object
-            context.Items[typeof(AdminAttribute)] = null;
+            if (context.Items.TryGetValue(_adminAttributeItemName, out var value) && value is AdminAttribute adminAttribute)
+            {
+                if (attributeValue != null)
+                {
+                    adminAttribute.RequireAccessAdminPanelPermission = attributeValue.RequireAccessAdminPanelPermission;
+                    adminAttribute.Template = attributeValue.Template;
+                    adminAttribute.RouteName = attributeValue.RouteName;
+
+                    context.Items[_adminAttributeItemName] = adminAttribute;
+                }
+
+                return;
+            }
+
+            context.Items[_adminAttributeItemName] = attributeValue ?? new AdminAttribute();
         }
 
         public static bool IsApplied(HttpContext context)
-            => context.Items.ContainsKey(typeof(AdminAttribute));
+            => context.Items.ContainsKey(_adminAttributeItemName);
+
+        public static AdminAttribute Get(HttpContext context)
+        {
+            if (context.Items.TryGetValue(_adminAttributeItemName, out var value) && value is AdminAttribute adminAttribute)
+            {
+                return adminAttribute;
+            }
+
+            return null;
+        }
     }
 }

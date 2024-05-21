@@ -8,5 +8,5 @@ public interface ITwoFactorAuthenticationHandlerCoordinator
     /// Checks if the two-factor authentication should be required or not.
     /// </summary>
     /// <returns>true if any of the two-factor authentication providers require 2FA otherwise false.</returns>
-    Task<bool> IsRequiredAsync();
+    Task<bool> IsRequiredAsync(IUser user);
 }

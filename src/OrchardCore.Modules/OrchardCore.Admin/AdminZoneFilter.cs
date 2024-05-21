@@ -17,14 +17,14 @@ namespace OrchardCore.Admin
             {
                 if (action.ControllerName == "Admin")
                 {
-                    AdminAttribute.Apply(context.HttpContext);
+                    AdminAttribute.Apply(context.HttpContext, null);
                 }
             }
             else if (context.ActionDescriptor is PageActionDescriptor page)
             {
                 if (page.ViewEnginePath.Contains("/Admin/"))
                 {
-                    AdminAttribute.Apply(context.HttpContext);
+                    AdminAttribute.Apply(context.HttpContext, null);
                 }
             }
 

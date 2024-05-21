@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.Filters;
@@ -13,17 +12,18 @@ namespace OrchardCore.Users.Filters;
 public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private readonly UserOptions _userOptions;
+    private readonly UserManager<IUser> _userManager;
     private readonly ITwoFactorAuthenticationHandlerCoordinator _twoFactorHandlerCoordinator;
     private readonly AdminOptions _adminOptions;
-
-    private ISiteService _siteService;
 
     public TwoFactorAuthenticationAuthorizationFilter(
         IOptions<UserOptions> userOptions,
         IOptions<AdminOptions> adminOptions,
+        UserManager<IUser> userManager,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator)
     {
         _userOptions = userOptions.Value;
+        _userManager = userManager;
         _twoFactorHandlerCoordinator = twoFactorHandlerCoordinator;
         _adminOptions = adminOptions.Value;
     }
@@ -42,17 +42,24 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
             return;
         }
 
-        _siteService ??= context.HttpContext.RequestServices.GetService<ISiteService>();
-
-        if (_siteService == null)
+        if (context.HttpContext?.User?.Identity?.IsAuthenticated == false)
         {
             return;
         }
 
-        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
-            && context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
+        if (context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
         {
-            context.Result = new RedirectResult("~/" + _userOptions.TwoFactorAuthenticationPath);
+            var user = await _userManager.GetUserAsync(context.HttpContext.User);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            if (await _twoFactorHandlerCoordinator.IsRequiredAsync(user))
+            {
+                context.Result = new RedirectResult("~/" + _userOptions.TwoFactorAuthenticationPath);
+            }
         }
     }
 }
