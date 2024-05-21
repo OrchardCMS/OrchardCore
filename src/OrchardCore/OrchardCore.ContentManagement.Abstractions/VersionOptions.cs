@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentManagement;
 
-public record struct VersionOptions
+public record VersionOptions
 {
     /// <summary>
     /// Gets the latest version.
