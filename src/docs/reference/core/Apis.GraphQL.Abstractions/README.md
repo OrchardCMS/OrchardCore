@@ -82,6 +82,11 @@ So now you have lots of data coming back, the next thing you want to do is to be
 
 We follow a similar process from step #1, so at this point I will make the assumption you have implemented step #1.
 
+Use this approach if you;
+
+* want to add new filter on Content Type queries
+* need to use custom logic for filtration. For example fetching data from service, comparing complex objects.
+
 What we are going to cover here is;
 
 1. Implement an Input type.
@@ -130,6 +135,7 @@ When an input part is registered, it adds in that part as the parent query, in t
 ```
 
 Next we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
+Note that GraphQLFilter also provides PostQueryAsync and can be used also in other usecases as checking permissions etc.
 
 ```csharp
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
@@ -178,9 +184,15 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 
 Done.
 
-### Extending Content Type Query Filters
+### Using default Content Type query filters
 
-In the previous section, we demonstrated how to create custom filters for more complex requirements. However, if you need to implement filtering based on your index atomic values, the `WhereInputObjectGraphType` and `IIndexAliasProvider` are what you need.
+In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add filter on Content Type queries, there is also a simpler solution for many usecases.
+
+Use this approach if you;
+
+* want to add new filter on Content Type queries
+* will have database index with data for your filters
+* you can use simple comparison (equals, contains, in, ...) against index values. For example ```AutoroutePartIndex.path = filterValue```.
 
 We will cover:
 
@@ -290,6 +302,19 @@ Alternatively, if you register the part with ```collapse = true```, fields will 
 ```
 
 For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also might check the existing index for [`AutoroutePart`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs).
+
+### Using arguments for query filtration
+
+There is also possibility to utilize query arguments and use them for filtering query results inside ```Resolve``` method. For more information visit [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
+
+Use this approach if you;
+
+* want to add new filter on any type of query, content part or field
+* will use custom logic for filtration
+
+OrchardCore implementation of filtering query by argument can be seen [in ContentItemQuery](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or ```MediaAssetQuery```.
+
+OrchardCore implementation of applying argument on field can be seen in ```MediaFieldQueryObjectType```.
 
 ## Querying related content items
 
