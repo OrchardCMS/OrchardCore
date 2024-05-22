@@ -1,6 +1,6 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Media.Fields;
+using OrchardCore.Media.GraphQL;
 using OrchardCore.Seo.Models;
 
 namespace OrchardCore.Seo.GraphQL;
@@ -28,10 +28,10 @@ public class SeoMetaQueryObjectType : ObjectGraphType<SeoMetaPart>
         Field<ListGraphType<MetaEntryQueryObjectType>>("customMetaTags")
             .Resolve(ctx => ctx.Source.CustomMetaTags);
 
-        Field<ObjectGraphType<MediaField>>("defaultSocialImage")
+        Field<MediaFieldQueryObjectType>("defaultSocialImage")
             .Resolve(ctx => ctx.Source.DefaultSocialImage);
 
-        Field<ObjectGraphType<MediaField>>("openGraphImage")
+        Field<MediaFieldQueryObjectType>("openGraphImage")
             .Resolve(ctx => ctx.Source.OpenGraphImage);
 
         Field(x => x.OpenGraphType, true)
@@ -41,7 +41,7 @@ public class SeoMetaQueryObjectType : ObjectGraphType<SeoMetaPart>
         Field(x => x.OpenGraphDescription, true)
             .Description("The seo meta opengraph description");
 
-        Field<ObjectGraphType<MediaField>>("twitterImage")
+        Field<MediaFieldQueryObjectType>("twitterImage")
             .Resolve(ctx => ctx.Source.TwitterImage);
 
         Field(x => x.TwitterTitle, true)
