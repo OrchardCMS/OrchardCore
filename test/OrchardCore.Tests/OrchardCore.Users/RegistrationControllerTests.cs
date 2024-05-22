@@ -251,7 +251,7 @@ public class RegistrationControllerTests
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
-        Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.ConfirmEmailSent)}", responseFromPost.Headers.Location.ToString());
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromPost.Headers.Location.ToString());
 
         await context.UsingTenantScopeAsync(async scope =>
         {

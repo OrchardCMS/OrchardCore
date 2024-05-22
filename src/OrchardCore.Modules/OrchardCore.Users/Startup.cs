@@ -57,6 +57,8 @@ namespace OrchardCore.Users
     public sealed class Startup : StartupBase
     {
         private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+        private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
 
         private readonly string _tenantName;
         private UserOptions _userOptions;
@@ -103,6 +105,20 @@ namespace OrchardCore.Users
                 areaName: UserConstants.Features.Users,
                 pattern: _userOptions.ExternalLoginsUrl,
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.ExternalLogins) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ConfirmEmail",
+                areaName: UserConstants.Features.Users,
+                pattern: "ConfirmEmail",
+                defaults: new { controller = _emailConfirmationControllerName, action = nameof(EmailConfirmationController.ConfirmEmail) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ConfirmEmailSent",
+                areaName: UserConstants.Features.Users,
+                pattern: "ConfirmEmailSent",
+                defaults: new { controller = _emailConfirmationControllerName, action = nameof(EmailConfirmationController.ConfirmEmailSent) }
             );
 
             builder.UseAuthorization();
