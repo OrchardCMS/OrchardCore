@@ -72,15 +72,7 @@ namespace OrchardCore.Media.Shortcodes
                 }
                 else
                 {
-                    var queryIndex = content.IndexOf('?');
-                    string queryString = null;
-
-                    if (queryIndex >= 0)
-                    {
-                        queryString = content[queryIndex..];
-                        content = content[..queryIndex];
-                    }
-
+                    content = content.RemoveQueryString(out var queryString);
                     content = _mediaFileStore.MapPathToPublicUrl(content) + queryString;
                 }
             }
