@@ -46,7 +46,7 @@ public class AzureAISearchIndexResetStep : IRecipeStepHandler
             foreach (var settings in indexSettings)
             {
                 settings.SetLastTaskId(0);
-                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings);
 
                 if (!await indexManager.ExistsAsync(settings.IndexName))
                 {
