@@ -7,6 +7,6 @@ namespace OrchardCore.ContentManagement.Handlers
             UpdatingItem = contentItem;
         }
 
-        public ContentItem UpdatingItem { get; set; }
+        public ContentItem UpdatingItem { get; private set; }
     }
 }

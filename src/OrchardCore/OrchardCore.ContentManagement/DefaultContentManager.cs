@@ -476,10 +476,7 @@ namespace OrchardCore.ContentManagement
             // Create a context for the item. the publishing version is null in this case
             // and the previous version is the one active prior to unpublishing. handlers
             // should take this null check into account
-            var context = new PublishContentContext(contentItem, publishedItem)
-            {
-                PublishingItem = null
-            };
+            var context = new PublishContentContext(contentItem, publishedItem, false);
 
             await Handlers.InvokeAsync((handler, context) => handler.UnpublishingAsync(context), context, _logger);
 
