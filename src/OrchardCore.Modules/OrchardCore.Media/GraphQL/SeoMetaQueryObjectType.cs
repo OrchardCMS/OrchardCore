@@ -1,10 +1,9 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Media.Core.GraphQL;
 using OrchardCore.Media.GraphQL;
 using OrchardCore.Seo.Models;
 
-namespace OrchardCore.Media.GraphQL;
+namespace OrchardCore.Seo.GraphQL;
 
 public class SeoMetaQueryObjectType : ObjectGraphType<SeoMetaPart>
 {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Media.GraphQL;
+namespace OrchardCore.Seo.GraphQL;
 
 public class MetaEntryQueryObjectType : ObjectGraphType<MetaEntry>
 {

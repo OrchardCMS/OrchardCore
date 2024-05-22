@@ -10,7 +10,6 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Core.GraphQL;
 
 namespace OrchardCore.Media.GraphQL
 {
