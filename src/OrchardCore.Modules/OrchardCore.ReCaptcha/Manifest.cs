@@ -21,5 +21,5 @@ using OrchardCore.Users;
     Dependencies =
     [
         "OrchardCore.ReCaptcha",
-        UserConstants.Features.Users
+        UserConstants.Features.Users,
     ])]
