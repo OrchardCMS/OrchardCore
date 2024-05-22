@@ -58,7 +58,7 @@ namespace OrchardCore.Media.Shortcodes
                     var queryIndex = content.IndexOf('?');
                     string queryString = null;
 
-                    if(queryIndex >= 0)
+                    if (queryIndex >= 0)
                     {
                         queryString = content[queryIndex..];
                         content = content[..queryIndex];
