@@ -27,7 +27,7 @@
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="7.8.0" />
     <PackageManagement Include="Jint" Version="3.1.1" />
-    <PackageManagement Include="JsonPath.Net" Version="1.0.4" />
+    <PackageManagement Include="JsonPath.Net" Version="1.1.0" />
     <PackageManagement Include="HtmlSanitizer" Version="8.1.860-beta" />
     <PackageManagement Include="Irony" Version="1.5.1" />
     <PackageManagement Include="libphonenumber-csharp" Version="8.13.37" />
@@ -41,7 +41,7 @@
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.3" />
     <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="8.5.0" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.18.1" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.18.2" />
 
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST

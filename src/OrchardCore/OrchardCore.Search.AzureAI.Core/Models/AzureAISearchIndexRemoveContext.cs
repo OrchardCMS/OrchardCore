@@ -1,4 +1,4 @@
-namespace OrchardCore.Search.AzureAI;
+namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexRemoveContext(string indexName, string indexFullName)
 {

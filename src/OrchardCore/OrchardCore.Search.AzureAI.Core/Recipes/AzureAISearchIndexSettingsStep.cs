@@ -96,7 +96,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
                     indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
                 }
 
-                indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings.IndexedContentTypes);
+                indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings);
                 indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexSettings.IndexName);
 
                 if (await _indexManager.CreateAsync(indexSettings))
