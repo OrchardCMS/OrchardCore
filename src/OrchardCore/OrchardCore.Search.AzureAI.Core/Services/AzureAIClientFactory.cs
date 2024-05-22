@@ -8,16 +8,24 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
+public class AzureAIClientFactory
 {
-    private readonly ConcurrentDictionary<string, SearchClient> _clients = [];
-    private readonly AzureAISearchDefaultOptions _defaultOptions = defaultOptions.Value;
+    private readonly AzureAISearchDefaultOptions _defaultOptions;
 
     private SearchIndexClient _searchIndexClient;
+
+    private ConcurrentDictionary<string, SearchClient> _clients;
+
+    public AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
+    {
+        _defaultOptions = defaultOptions.Value;
+    }
 
     public SearchClient CreateSearchClient(string indexFullName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(indexFullName, nameof(indexFullName));
+
+        _clients ??= [];
 
         if (!_clients.TryGetValue(indexFullName, out var client))
         {

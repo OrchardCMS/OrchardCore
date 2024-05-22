@@ -10,21 +10,29 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchService(
-    ISiteService siteService,
-    AzureAIIndexDocumentManager indexDocumentManager,
-    AzureAISearchIndexSettingsService indexSettingsService,
-    ILogger<AzureAISearchService> logger,
-    IOptions<AzureAISearchDefaultOptions> azureAIOptions
-        ) : ISearchService
+public class AzureAISearchService : ISearchService
 {
     public const string Key = "Azure AI Search";
 
-    private readonly ISiteService _siteService = siteService;
-    private readonly AzureAIIndexDocumentManager _indexDocumentManager = indexDocumentManager;
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
-    private readonly ILogger<AzureAISearchService> _logger = logger;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
+    private readonly ISiteService _siteService;
+    private readonly AzureAIIndexDocumentManager _indexDocumentManager;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
+    private readonly ILogger<AzureAISearchService> _logger;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions;
+
+    public AzureAISearchService(
+        ISiteService siteService,
+        AzureAIIndexDocumentManager indexDocumentManager,
+        AzureAISearchIndexSettingsService indexSettingsService,
+        ILogger<AzureAISearchService> logger,
+        IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+    {
+        _siteService = siteService;
+        _indexDocumentManager = indexDocumentManager;
+        _indexSettingsService = indexSettingsService;
+        _logger = logger;
+        _azureAIOptions = azureAIOptions.Value;
+    }
 
     public string Name => Key;
 
