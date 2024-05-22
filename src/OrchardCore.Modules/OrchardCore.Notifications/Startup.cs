@@ -16,6 +16,7 @@ using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;
@@ -77,7 +78,7 @@ public class WorkflowsStartup : StartupBase
     }
 }
 
-[RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users", "OrchardCore.Contents")]
+[RequireFeatures("OrchardCore.Workflows", UserConstants.Features.Users, "OrchardCore.Contents")]
 public class UsersWorkflowStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

@@ -32,17 +32,13 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (!(context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
+        if (context.HttpContext?.User?.Identity?.IsAuthenticated == false
             || context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase)
             || context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase)
             || context.HttpContext.Request.Path.StartsWithSegments("/" + _adminOptions.AdminUrlPrefix + "/Authenticator/Configure", StringComparison.OrdinalIgnoreCase)
+            || context.HttpContext.Request.Path.Equals("/" + _adminOptions.AdminUrlPrefix + "/EnableTwoFactorAuthentication", StringComparison.OrdinalIgnoreCase)
             || context.HttpContext.Request.Path.Equals("/" + _adminOptions.AdminUrlPrefix + "/ShowRecoveryCodes", StringComparison.OrdinalIgnoreCase)
             )
-        {
-            return;
-        }
-
-        if (context.HttpContext?.User?.Identity?.IsAuthenticated == false)
         {
             return;
         }

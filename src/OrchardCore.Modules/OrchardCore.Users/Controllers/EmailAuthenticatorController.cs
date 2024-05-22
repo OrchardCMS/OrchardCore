@@ -18,8 +18,6 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
-using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -27,7 +25,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.EmailAuthenticator)]
 public class EmailAuthenticatorController : TwoFactorAuthenticationBaseController
 {
-    private readonly IUserService _userService;
     private readonly IEmailService _emailService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly HtmlEncoder _htmlEncoder;
@@ -41,7 +38,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         IOptions<TwoFactorOptions> twoFactorOptions,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IUserService userService,
         IEmailService emailService,
         ILiquidTemplateManager liquidTemplateManager,
         HtmlEncoder htmlEncoder,
@@ -57,7 +53,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             stringLocalizer,
             twoFactorOptions)
     {
-        _userService = userService;
         _emailService = emailService;
         _liquidTemplateManager = liquidTemplateManager;
         _htmlEncoder = htmlEncoder;
@@ -78,75 +73,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         }
 
         return View();
-    }
-
-    [HttpPost]
-    [Admin("Authenticator/Configure/Email/RequestCode", "ConfigureEmailAuthenticatorRequestCode", false)]
-    public async Task<IActionResult> RequestCode()
-    {
-        var user = await UserManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return UserNotFound();
-        }
-
-        if (await UserManager.IsEmailConfirmedAsync(user))
-        {
-            return RedirectToTwoFactorIndex();
-        }
-
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
-
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
-
-        var to = await UserManager.GetEmailAsync(user);
-        var subject = await GetSubjectAsync(settings, user, code);
-        var body = await GetBodyAsync(settings, user, code);
-        var result = await _emailService.SendAsync(to, subject, body);
-
-        if (!result.Succeeded)
-        {
-            await Notifier.ErrorAsync(H["We are unable to send you an email at this time. Please try again later."]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email."]);
-
-        var model = new EnableEmailAuthenticatorViewModel();
-
-        return View(model);
-    }
-
-    [HttpPost]
-    [Admin("Authenticator/Configure/Email/ValidateCode", "ConfigureEmailAuthenticatorValidateCode", false)]
-    public async Task<IActionResult> ValidateCode(EnableEmailAuthenticatorViewModel model)
-    {
-        var user = await UserManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return UserNotFound();
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
-        var succeeded = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider, StripToken(model.Code));
-
-        if (succeeded)
-        {
-            await EnableTwoFactorAuthenticationAsync(user);
-
-            await Notifier.SuccessAsync(H["Your email has been confirmed."]);
-
-            return await RedirectToTwoFactorAsync(user);
-        }
-
-        await Notifier.ErrorAsync(H["Unable to confirm your email. Please try again."]);
-
-        return View(nameof(RequestCode), model);
     }
 
     [HttpPost]
@@ -177,7 +103,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return Ok(new
         {
             success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value
+            message = result.Succeeded
+            ? S["A verification code has been sent via email. Please check your email for the code."].Value
             : errorMessage.Value,
         });
     }

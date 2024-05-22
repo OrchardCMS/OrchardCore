@@ -123,6 +123,11 @@ namespace OrchardCore.Users
             services.AddIdentity<IUser, IRole>()
                 .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
 
+            // Configure token provider for email confirmation.
+            services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+                .AddTransient<EmailConfirmationTokenProvider>()
+                .AddOptions<EmailConfirmationTokenProviderOptions>();
+
             services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
             services.AddPhoneFormatValidator();
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
@@ -277,17 +282,6 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature(UserConstants.Features.UserEmailConfirmation)]
-    public sealed class EmailConfirmationStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
-                .AddTransient<EmailConfirmationTokenProvider>()
-                .AddOptions<EmailConfirmationTokenProviderOptions>();
-        }
-    }
-
     [Feature("OrchardCore.Users.ChangeEmail")]
     public sealed class ChangeEmailStartup : StartupBase
     {
@@ -343,7 +337,7 @@ namespace OrchardCore.Users
     public sealed class RegistrationStartup : StartupBase
     {
         private const string RegisterPath = nameof(RegistrationController.Register);
-        private const string ConfirmEmailSent = nameof(RegistrationController.ConfirmEmailSent);
+        private const string ConfirmEmailSent = nameof(EmailConfirmationController.ConfirmEmailSent);
         private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
         private const string RegistrationControllerName = "Registration";
 

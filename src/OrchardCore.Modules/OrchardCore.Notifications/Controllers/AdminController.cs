@@ -71,7 +71,7 @@ public class AdminController : Controller, IUpdateModel
         H = htmlLocalizer;
     }
 
-    [Admin("notifications", "ListNotifications")]
+    [Admin("notifications", "ListNotifications", requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
@@ -143,7 +143,8 @@ public class AdminController : Controller, IUpdateModel
         return View(shapeViewModel);
     }
 
-    [HttpPost, ActionName(nameof(List))]
+    [HttpPost]
+    [ActionName(nameof(List))]
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ListNotificationOptions options)
     {
@@ -162,7 +163,8 @@ public class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List), options.RouteValues);
     }
 
-    [HttpPost, ActionName(nameof(List))]
+    [HttpPost]
+    [ActionName(nameof(List))]
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPOST(ListNotificationOptions options, IEnumerable<string> itemIds)
     {

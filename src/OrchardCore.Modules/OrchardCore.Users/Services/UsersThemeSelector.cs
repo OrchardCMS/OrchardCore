@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Services
         {
             var routeValues = _httpContextAccessor.HttpContext.Request.RouteValues;
 
-            if (routeValues["area"]?.ToString() == "OrchardCore.Users")
+            if (routeValues["area"]?.ToString() == UserConstants.Features.Users)
             {
                 bool useSiteTheme;
 

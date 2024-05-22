@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -109,7 +110,14 @@ namespace OrchardCore.Users.Controllers
         {
             var userManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = controller.Url.Action("ConfirmEmail", "Registration", new { userId = user.UserId, code }, protocol: controller.HttpContext.Request.Scheme);
+            var callbackUrl = controller.Url.Action(nameof(EmailConfirmationController.ConfirmEmail), typeof(EmailConfirmationController).ControllerName(),
+                new
+                {
+                    userId = user.UserId,
+                    code
+                },
+                protocol: controller.HttpContext.Request.Scheme);
+
             await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
 
             return callbackUrl;

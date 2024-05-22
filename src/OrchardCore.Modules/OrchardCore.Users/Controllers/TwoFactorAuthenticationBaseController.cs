@@ -126,8 +126,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
     protected async Task RefreshTwoFactorClaimAsync(IUser user)
     {
-        var twoFactorClaim = (await UserManager.GetClaimsAsync(user))
-            .FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
+        var twoFactorClaim = User.Claims.FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
 
         if (twoFactorClaim != null)
         {
