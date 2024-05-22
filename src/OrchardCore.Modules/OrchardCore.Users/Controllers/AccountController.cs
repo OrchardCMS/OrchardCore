@@ -390,7 +390,7 @@ namespace OrchardCore.Users.Controllers
             {
                 //really important the order of the services registration in the dependency injection context
                 var usrFinder = _externalLoginUsrFinder.Where(x => x.CanManageThis(info.LoginProvider)).FirstOrDefault();
-                iUser = await usrFinder?.FindUserToRelateAsync(info) ?? null;
+                iUser = usrFinder == null ? null : await usrFinder.FindUserToRelateAsync(info);
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;

@@ -39,6 +39,7 @@ using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
+using OrchardCore.Users.Abstractions;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Deployment;
@@ -198,6 +199,8 @@ namespace OrchardCore.Users
             services.AddScoped<CustomUserSettingsService>();
             services.AddRecipeExecutionStep<CustomUserSettingsStep>();
             services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
+
+            services.AddScoped<IExternalLoginUserToRelateFinder, DefaultExternalLoginUserToRelateFinder>();
         }
     }
 
