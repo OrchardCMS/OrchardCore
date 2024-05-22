@@ -4,12 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OpenIddict.Client;
+using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
@@ -66,6 +67,21 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddOpenIddict()
+                .AddClient(options =>
+                {
+                    options.UseAspNetCore();
+                    options.UseSystemNetHttp();
+
+                    // TODO: determine what flows we want to enable and whether this
+                    // should be configurable by the user (like the server feature).
+                    options.AllowAuthorizationCodeFlow()
+                           .AllowHybridFlow()
+                           .AllowImplicitFlow();
+
+                    options.AddEventHandler(OpenIdClientCustomParametersEventHandler.Descriptor);
+                });
+
             services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
@@ -75,16 +91,59 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdClientSettingsStep>()
             });
 
-            // Register the options initializers required by the OpenID Connect client handler.
+            // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
+            // registering the client ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
+            // as it is lazily registered by OpenIdClientConfiguration only after checking the OpenID client
+            // settings are valid and can be safely used in this tenant without causing runtime exceptions.
+            // To prevent that, the initializer is manually removed from the services collection of the tenant.
+            services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictClientAspNetCoreConfiguration>();
+
             services.TryAddEnumerable(new[]
             {
-                // Orchard-specific initializers:
                 ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
-
-                // Built-in initializers:
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictClientOptions>, OpenIdClientConfiguration>(),
+                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictClientAspNetCoreOptions>, OpenIdClientConfiguration>()
             });
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
+            if (settings == null)
+            {
+                return;
+            }
+
+            // Note: the redirection and post-logout redirection endpoints use the same default values
+            // as the Microsoft ASP.NET Core OpenID Connect handler, for compatibility reasons.
+            routes.MapAreaControllerRoute(
+                name: "Callback.LogInCallback",
+                areaName: typeof(Startup).Namespace,
+                pattern: settings.CallbackPath ?? "signin-oidc",
+                defaults: new { controller = "Callback", action = "LogInCallback" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Callback.LogOutCallback",
+                areaName: typeof(Startup).Namespace,
+                pattern: settings.SignedOutCallbackPath ?? "signout-callback-oidc",
+                defaults: new { controller = "Callback", action = "LogOutCallback" }
+            );
+
+            async Task<OpenIdClientSettings> GetClientSettingsAsync()
+            {
+                // Note: the OpenID client service is registered as a singleton service and thus can be
+                // safely used with the non-scoped/root service provider available at this stage.
+                var service = serviceProvider.GetRequiredService<IOpenIdClientService>();
+
+                var configuration = await service.GetSettingsAsync();
+                if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
+                {
+                    return null;
+                }
+
+                return configuration;
+            }
         }
     }
 
