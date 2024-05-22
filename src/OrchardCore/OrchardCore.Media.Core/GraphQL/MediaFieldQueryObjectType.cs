@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Media.Fields;
 
-namespace OrchardCore.Media.GraphQL
+namespace OrchardCore.Media.Core.GraphQL
 {
     public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
     {

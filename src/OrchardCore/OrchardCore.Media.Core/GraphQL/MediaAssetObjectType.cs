@@ -2,7 +2,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media.GraphQL
+namespace OrchardCore.Media.Core.GraphQL
 {
     public class MediaAssetObjectType : ObjectGraphType<IFileStoreEntry>
     {
