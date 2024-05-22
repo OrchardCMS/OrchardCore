@@ -23,7 +23,7 @@ namespace System
 
         public static string RemoveQueryString(this string url, out string queryString)
         {
-            if(url != null)
+            if (url != null)
             {
                 var queryIndex = url.IndexOf('?');
                 if (queryIndex >= 0)
