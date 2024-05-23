@@ -125,11 +125,7 @@ namespace OrchardCore.Recipes.Controllers
             {
                 _logger.LogError(e, "Unable to import a recipe file.");
 
-                foreach (var entry in e.StepResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, string.Join(' ', entry.Value));
-
-                }
+                ModelState.AddModelError(string.Empty, string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
             }
             catch (Exception e)
             {
