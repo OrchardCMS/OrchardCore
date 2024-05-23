@@ -73,7 +73,7 @@ namespace OrchardCore.Recipes
                     await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
                 });
 
-                Assert.Equal("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.Message);
+                Assert.Contains("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.StepResult.Errors["ContentDefinition"]);
             });
         }
 
