@@ -29,11 +29,13 @@ namespace System
                 if (queryIndex >= 0)
                 {
                     queryString = url[queryIndex..];
+
                     return url[..queryIndex];
                 }
             }
 
             queryString = null;
+
             return url;
         }
     }

@@ -177,8 +177,7 @@ namespace OrchardCore.FileStorage
                 return null;
             }
 
-            var normalizedParts =
-                path
+            var normalizedParts = path
                     .Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries)
                     .Select(Uri.EscapeDataString);
 
