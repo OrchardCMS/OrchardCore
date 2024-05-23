@@ -63,10 +63,10 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-            model.MenuContentItemId = menuContentItemId;
-            model.MenuItemId = menuItemId;
+            model.Properties["MenuContentItemId"] = menuContentItemId;
+            model.Properties["MenuItemId"] = menuItemId;
 
             return View(model);
         }
@@ -100,12 +100,12 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
-                model.MenuContentItemId = menuContentItemId;
-                model.MenuItemId = menuItemId;
+                model.Properties["MenuContentItemId"] = menuContentItemId;
+                model.Properties["MenuItemId"] = menuItemId;
 
                 return View(model);
             }
@@ -169,10 +169,10 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            model.MenuContentItemId = menuContentItemId;
-            model.MenuItemId = menuItemId;
+            model.Properties["MenuContentItemId"] = menuContentItemId;
+            model.Properties["MenuItemId"] = menuItemId;
 
             return View(model);
         }
@@ -220,12 +220,12 @@ namespace OrchardCore.Menu.Controllers
 
             contentItem.Merge(existing);
 
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
-                model.MenuContentItemId = menuContentItemId;
-                model.MenuItemId = menuItemId;
+                model.Properties["MenuContentItemId"] = menuContentItemId;
+                model.Properties["MenuItemId"] = menuItemId;
 
                 return View(model);
             }

@@ -16,26 +16,23 @@ namespace OrchardCore.GitHub.Drivers
 {
     public class GitHubAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GitHubAuthenticationSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GitHubAuthenticationSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -76,7 +73,7 @@ namespace OrchardCore.GitHub.Drivers
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GitHubConstants.Features.GitHubAuthentication)
             {
@@ -97,9 +94,11 @@ namespace OrchardCore.GitHub.Drivers
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackUrl;
                     settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+                    _shellReleaseManager.RequestRelease();
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

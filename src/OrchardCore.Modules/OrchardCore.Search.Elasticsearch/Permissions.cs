@@ -39,7 +39,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 ManageElasticIndexes,
@@ -47,7 +47,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
                 QueryElasticApi,

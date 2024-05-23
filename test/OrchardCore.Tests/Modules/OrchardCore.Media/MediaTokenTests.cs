@@ -128,7 +128,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             Assert.Equal(tokenizedPath1, tokenizedPath2);
         }
 
-        private IServiceProvider CreateServiceProvider()
+        private ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
 

@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _workflowStore = workflowStore;

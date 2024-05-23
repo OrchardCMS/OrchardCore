@@ -15,7 +15,7 @@ namespace OrchardCore.Tests.Shell
             .AsDefaultShell()
             .AsUninitialized();
 
-        private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly ShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;
 
         public ShellContainerFactoryTests()
@@ -170,15 +170,15 @@ namespace OrchardCore.Tests.Shell
         {
         }
 
-        private class TestService : ITestService
+        private sealed class TestService : ITestService
         {
         }
 
-        private class CustomTestService : ITestService
+        private sealed class CustomTestService : ITestService
         {
         }
 
-        private class RegisterServiceStartup : StartupBase
+        private sealed class RegisterServiceStartup : StartupBase
         {
             public override int Order => 1;
 
@@ -188,7 +188,7 @@ namespace OrchardCore.Tests.Shell
             }
         }
 
-        private class ReplaceServiceStartup : StartupBase
+        private sealed class ReplaceServiceStartup : StartupBase
         {
             public override int Order => 2;
 
@@ -204,31 +204,31 @@ namespace OrchardCore.Tests.Shell
 
         private interface ITestScoped { }
 
-        private class TestSingleton : ITestSingleton { }
+        private sealed class TestSingleton : ITestSingleton { }
 
-        private class TestTransient : ITestTransient { }
+        private sealed class TestTransient : ITestTransient { }
 
-        private class TestScoped : ITestScoped { }
+        private sealed class TestScoped : ITestScoped { }
 
         private interface ITwoHostSingletonsOfTheSameType { }
 
-        private class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private sealed class FirstHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
 
-        private class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
+        private sealed class SecondHostSingletonsOfTheSameType : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellSingletonOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellTransientOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
-        private class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
+        private sealed class ShellScopedOfTheSametype : ITwoHostSingletonsOfTheSameType { }
 
         private interface IHostSingletonAndScopedOfTheSameType { }
 
-        private class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
+        private sealed class HostSingletonOfTheSameTypeAsScoped : IHostSingletonAndScopedOfTheSameType { }
 
-        private class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
+        private sealed class HostScopedOfTheSameTypeAsSingleton : IHostSingletonAndScopedOfTheSameType { }
 
-        private class ServicesOfTheSameTypeStartup : StartupBase
+        private sealed class ServicesOfTheSameTypeStartup : StartupBase
         {
             public override int Order => 1;
 

@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
     <PackageReference Include="OpenIddict.Server.AspNetCore" />
     <PackageReference Include="OpenIddict.Server.DataProtection" />
     <PackageReference Include="OpenIddict.Validation.AspNetCore" />

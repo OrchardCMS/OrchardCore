@@ -4,7 +4,7 @@ namespace OrchardCore.Tests
 {
     public class StubPoFileLocationProvider : ILocalizationFileLocationProvider
     {
-        private readonly IFileProvider _fileProvider;
+        private readonly PhysicalFileProvider _fileProvider;
         private readonly string _resourcesContainer;
 
         public StubPoFileLocationProvider(IHostEnvironment hostingEnvironment, IOptions<LocalizationOptions> localizationOptions)

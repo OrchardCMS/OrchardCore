@@ -571,7 +571,7 @@ namespace OrchardCore.OpenId.Controllers
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-                if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
+                if (!string.Equals(type, OpenIdConstants.EntityTypes.User, StringComparison.Ordinal))
                 {
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {

@@ -33,6 +33,8 @@ namespace OrchardCore.Search
                     .Id("search")
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                         .Action("Index", "Admin", _routeValues)
+                        .AddClass("searchsettings")
+                        .Id("searchsettings")
                         .Permission(Permissions.ManageSearchSettings)
                         .LocalNav()
                     )

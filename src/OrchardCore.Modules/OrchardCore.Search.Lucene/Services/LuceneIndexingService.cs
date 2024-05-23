@@ -128,7 +128,7 @@ namespace OrchardCore.Search.Lucene
 
                     var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
                     allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
-                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
+                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Latest);
                     allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
 
                     // Group all DocumentIndex by index to batch update them.

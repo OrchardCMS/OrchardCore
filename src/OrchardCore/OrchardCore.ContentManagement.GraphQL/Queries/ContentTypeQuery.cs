@@ -85,6 +85,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     // Register the content item type explicitly since it won't be discovered from the root 'query' type.
                     schema.RegisterType(typeType);
                 }
+
+                if (!string.IsNullOrEmpty(stereotype))
+                {
+                    typeType.Metadata["Stereotype"] = stereotype;
+                }
             }
 
             foreach (var builder in contentTypeBuilders)

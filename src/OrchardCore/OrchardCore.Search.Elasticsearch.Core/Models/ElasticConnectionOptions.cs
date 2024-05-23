@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         /// <summary>
         /// Enables compatibility mode for Elasticsearch 8.x.
         /// </summary>
-        public bool EnableApiVersioningHeader { get; set; } = false;
+        public bool EnableApiVersioningHeader { get; set; }
 
         /// <summary>
         /// Whether the configuration section exists.

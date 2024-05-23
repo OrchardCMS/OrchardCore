@@ -45,11 +45,11 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(AdminFilter));
-                options.Filters.Add(typeof(AdminMenuFilter));
+                options.Filters.Add<AdminFilter>();
+                options.Filters.Add<AdminMenuFilter>();
 
                 // Ordered to be called before any global filter.
-                options.Filters.Add(typeof(AdminZoneFilter), -1000);
+                options.Filters.Add<AdminZoneFilter>(-1000);
             });
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
@@ -120,15 +120,6 @@ namespace OrchardCore.Admin
 
                     return NilValue.Instance;
                 }));
-
-                o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
-                {
-                    return name switch
-                    {
-                        nameof(Navbar.Properties) => new ObjectValue(navbar.Properties),
-                        _ => NilValue.Instance
-                    };
-                });
             });
         }
     }

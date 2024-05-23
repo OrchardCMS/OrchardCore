@@ -12,7 +12,7 @@ namespace OrchardCore.ContentLocalization.ViewModels
         public string Culture { get; set; }
 
         [BindNever]
-        public CultureInfo CultureInfo { get { return new CultureInfo(Culture); } }
+        public CultureInfo CultureInfo => CultureInfo.GetCultureInfo(Culture);
 
         [BindNever]
         public LocalizationPart LocalizationPart { get; set; }
