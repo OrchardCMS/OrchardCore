@@ -62,8 +62,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (query.ReturnDocuments &&
-                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnDocuments && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
