@@ -248,6 +248,7 @@ namespace OrchardCore.Roles.Controllers
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
             foreach (var permissionProvider in _permissionProviders)
             {
+                // Two features could use the same permission.
                 var feature = _typeFeatureProvider
                     .GetFeaturesForDependency(permissionProvider.GetType())
                     .LastOrDefault(feature => enabledFeatures.Any(enabledFeature => feature.Id == enabledFeature.Id));
