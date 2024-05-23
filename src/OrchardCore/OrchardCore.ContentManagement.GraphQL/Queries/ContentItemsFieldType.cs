@@ -143,8 +143,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 foreach (var alias in aliasProvider.GetAliases())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                    indexAliases.Add(alias.Alias, alias.Alias);
-                    indexes.TryAdd(alias.Index, alias);
+                    if (indexAliases.TryAdd(alias.Alias, alias.Alias))
+                    {
+                        indexes.TryAdd(alias.Index, alias);
+                    }
                 }
             }
 
