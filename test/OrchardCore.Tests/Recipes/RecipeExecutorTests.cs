@@ -57,7 +57,7 @@ namespace OrchardCore.Recipes
         }
 
         [Fact]
-        public async Task ContentDefinitionStep_WhenPartNameIsMissing_ThrowInvalidOperationException()
+        public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
         {
             var context = new BlogContext();
             await context.InitializeAsync();
@@ -68,7 +68,7 @@ namespace OrchardCore.Recipes
                 var executionId = Guid.NewGuid().ToString("n");
                 var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
 
-                var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>
                 {
                     await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
                 });
