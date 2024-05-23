@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private bool _sorted = false;
+        private bool _sorted;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 

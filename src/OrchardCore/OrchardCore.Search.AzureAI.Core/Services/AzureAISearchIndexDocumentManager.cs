@@ -10,25 +10,37 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
+using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIIndexDocumentManager(
-    AzureAIClientFactory clientFactory,
-    AzureAISearchIndexManager indexManager,
-    IIndexingTaskManager indexingTaskManager,
-    IContentManager contentManager,
-    IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
-    IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
-    ILogger<AzureAIIndexDocumentManager> logger)
+public class AzureAIIndexDocumentManager
 {
-    private readonly AzureAIClientFactory _clientFactory = clientFactory;
-    private readonly AzureAISearchIndexManager _indexManager = indexManager;
-    private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
-    private readonly IContentManager _contentManager = contentManager;
-    private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents = documentEvents;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers = contentItemIndexHandlers;
-    private readonly ILogger _logger = logger;
+    private readonly AzureAIClientFactory _clientFactory;
+    private readonly AzureAISearchIndexManager _indexManager;
+    private readonly IContentManager _contentManager;
+    private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
+    private readonly IEnumerable<IAzureAISearchFieldIndexEvents> _fieldIndexEvents;
+    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly ILogger _logger;
+
+    public AzureAIIndexDocumentManager(
+        AzureAIClientFactory clientFactory,
+        AzureAISearchIndexManager indexManager,
+        IContentManager contentManager,
+        IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
+        IEnumerable<IAzureAISearchFieldIndexEvents> fieldIndexEvents,
+        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        ILogger<AzureAIIndexDocumentManager> logger)
+    {
+        _clientFactory = clientFactory;
+        _indexManager = indexManager;
+        _contentManager = contentManager;
+        _documentEvents = documentEvents;
+        _fieldIndexEvents = fieldIndexEvents;
+        _contentItemIndexHandlers = contentItemIndexHandlers;
+        _logger = logger;
+    }
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
@@ -190,34 +202,50 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(string[] indexedContentTypes)
+    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(AzureAISearchIndexSettings settings)
     {
-        ArgumentNullException.ThrowIfNull(indexedContentTypes);
+        ArgumentNullException.ThrowIfNull(settings);
 
-        var mapping = new List<AzureAISearchIndexMap>();
+        var indexMappings = new List<AzureAISearchIndexMap>();
 
-        foreach (var contentType in indexedContentTypes)
+        foreach (var contentType in settings.IndexedContentTypes ?? [])
         {
             var contentItem = await _contentManager.NewAsync(contentType);
             var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
             var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
             await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
+            await AddIndexMappingAsync(indexMappings, IndexingConstants.ContentItemIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), settings);
+            await AddIndexMappingAsync(indexMappings, IndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemVersionIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), settings);
+
             foreach (var entry in index.Entries)
             {
-                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var fieldKey))
+                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var safeFieldName))
                 {
                     continue;
                 }
 
-                mapping.Add(new AzureAISearchIndexMap(fieldKey, entry.Type, entry.Options)
-                {
-                    IndexingKey = entry.Name,
-                });
+                await AddIndexMappingAsync(indexMappings, safeFieldName, entry, settings);
             }
         }
 
-        return mapping;
+        return indexMappings;
+    }
+
+    private async Task AddIndexMappingAsync(List<AzureAISearchIndexMap> indexMappings, string safeFieldName, DocumentIndexEntry entry, AzureAISearchIndexSettings settings)
+    {
+        var indexMap = new AzureAISearchIndexMap(safeFieldName, entry.Type, entry.Options)
+        {
+            IndexingKey = entry.Name,
+        };
+
+        var context = new SearchIndexDefinition(indexMap, entry, settings);
+
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);
+
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger);
+
+        indexMappings.Add(indexMap);
     }
 
     private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
@@ -252,14 +280,14 @@ public class AzureAIIndexDocumentManager(
 
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         doc.TryAdd(map.AzureFieldKey, boolValue);
                     }
                     break;
 
-                case DocumentIndex.Types.DateTime:
+                case Types.DateTime:
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
@@ -272,7 +300,7 @@ public class AzureAIIndexDocumentManager(
 
                     break;
 
-                case DocumentIndex.Types.Integer:
+                case Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.TryAdd(map.AzureFieldKey, value);
@@ -280,30 +308,33 @@ public class AzureAIIndexDocumentManager(
 
                     break;
 
-                case DocumentIndex.Types.Number:
+                case Types.Number:
                     if (entry.Value != null)
                     {
                         doc.TryAdd(map.AzureFieldKey, Convert.ToDouble(entry.Value));
                     }
                     break;
 
-                case DocumentIndex.Types.GeoPoint:
+                case Types.GeoPoint:
                     if (entry.Value != null)
                     {
                         doc.TryAdd(map.AzureFieldKey, entry.Value);
                     }
                     break;
 
-                case DocumentIndex.Types.Text:
+                case Types.Text:
                     if (entry.Value != null)
                     {
                         var stringValue = Convert.ToString(entry.Value);
 
                         if (!string.IsNullOrEmpty(stringValue) && stringValue != IndexingConstants.NullValue)
                         {
-                            if (UseSingleStringValue(entry.Options, map))
+                            if (UseSingleValue(map))
                             {
-                                doc.TryAdd(map.AzureFieldKey, stringValue);
+                                if (!doc.TryAdd(map.AzureFieldKey, stringValue))
+                                {
+                                    doc[map.AzureFieldKey] += stringValue;
+                                }
                             }
                             else
                             {
@@ -325,12 +356,12 @@ public class AzureAIIndexDocumentManager(
         return doc;
     }
 
-    private static bool UseSingleStringValue(DocumentIndexOptions options, AzureAISearchIndexMap map)
+    private static bool UseSingleValue(AzureAISearchIndexMap map)
     {
-        // Full-text, Display-text-analyzed and all keyword fields should support a single string value.
+        // Full-text, Display-text-analyzed and non-collections support single value.
         return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
             || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
-            || options.HasFlag(DocumentIndexOptions.Keyword);
+            || !map.IsCollection;
     }
 
     private SearchClient GetSearchClient(string indexName)
