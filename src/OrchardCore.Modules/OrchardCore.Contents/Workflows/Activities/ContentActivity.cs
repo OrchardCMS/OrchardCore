@@ -135,11 +135,11 @@ namespace OrchardCore.Contents.Workflows.Activities
             else
             {
                 // If no expression was provided, see if the content item was provided as an input or as a property.
-                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
-                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
+                content = workflowContext.Input.GetValue<ContentItem>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<ContentItem>(ContentEventConstants.ContentItemInputKey);
             }
 
-            if (content != null && content.ContentItem.ContentItemId != null)
+            if (content?.ContentItem?.ContentItemId != null)
             {
                 return content;
             }
