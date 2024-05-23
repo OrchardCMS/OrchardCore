@@ -32,12 +32,17 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+                var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+
+                localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
 
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
                     recipeEventHandlers,
-                    loggerMock.Object);
+                    loggerMock.Object,
+                    localizerMock.Object);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
