@@ -52,7 +52,7 @@
     -->
 
     <PackageManagement Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.5.1" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.6.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
