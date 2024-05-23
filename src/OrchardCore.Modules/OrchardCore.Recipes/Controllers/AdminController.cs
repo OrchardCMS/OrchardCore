@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
@@ -30,8 +31,11 @@ namespace OrchardCore.Recipes.Controllers
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly INotifier _notifier;
-        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+
 
         public AdminController(
             IShellHost shellHost,
@@ -42,8 +46,9 @@ namespace OrchardCore.Recipes.Controllers
             IRecipeExecutor recipeExecutor,
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> localizer,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -53,8 +58,9 @@ namespace OrchardCore.Recipes.Controllers
             _recipeExecutor = recipeExecutor;
             _environmentProviders = environmentProviders;
             _notifier = notifier;
-            H = localizer;
             _logger = logger;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         [Admin("Recipes", "Recipes")]
@@ -105,13 +111,32 @@ namespace OrchardCore.Recipes.Controllers
             var environment = new Dictionary<string, object>();
             await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
-            var executionId = Guid.NewGuid().ToString("n");
+            try
+            {
+                var executionId = Guid.NewGuid().ToString("n");
 
-            await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
+                await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
 
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-            await _notifier.SuccessAsync(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
+                await _notifier.SuccessAsync(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
+            }
+            catch (RecipeExecutionException e)
+            {
+                _logger.LogError(e, "Unable to import a recipe file.");
+
+                foreach (var entry in e.StepResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, string.Join(' ', entry.Value));
+
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to import a recipe file.");
+
+                ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+            }
 
             return RedirectToAction(nameof(Index));
         }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
@@ -8,11 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Controllers
 {
@@ -22,6 +25,8 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private readonly ILogger _logger;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -29,6 +34,7 @@ namespace OrchardCore.Deployment.Controllers
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
+            ILogger<ImportController> logger,
             IHtmlLocalizer<ImportController> htmlLocalizer,
             IStringLocalizer<ImportController> stringLocalizer
         )
@@ -36,7 +42,7 @@ namespace OrchardCore.Deployment.Controllers
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
-
+            _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -147,6 +153,21 @@ namespace OrchardCore.Deployment.Controllers
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
                     await _notifier.SuccessAsync(H["Recipe imported."]);
+                }
+                catch (RecipeExecutionException e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+
+                    foreach (var entry in e.StepResult.Errors)
+                    {
+                        ModelState.AddModelError(nameof(model.Json), string.Join(' ', entry.Value));
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+
+                    ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
                 }
                 finally
                 {
