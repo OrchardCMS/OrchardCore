@@ -25,14 +25,14 @@ namespace OrchardCore.Workflows.Helpers
                 return default;
             }
 
-            if (value is not TValue castedValued)
+            if (value is not TValue castedValue)
             {
                 var json = JConvert.SerializeObject(value);
 
                 return JConvert.DeserializeObject<TValue>(json);
             }
 
-            return castedValued;
+            return castedValue;
         }
 
         /// <summary>
