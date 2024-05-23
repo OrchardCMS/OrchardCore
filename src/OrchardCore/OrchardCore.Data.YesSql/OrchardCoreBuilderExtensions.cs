@@ -174,7 +174,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var documentStore = new DocumentStore(session);
+                    var documentStore = new DatabaseDocumentStore(session);
 
                     ShellScope.Current
                         .RegisterBeforeDispose(scope =>

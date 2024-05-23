@@ -8,7 +8,7 @@ namespace OrchardCore.Data.Documents
     /// <summary>
     /// An <see cref="IDocumentStore"/> using the <see cref="ISession"/>.
     /// </summary>
-    public class DocumentStore : IDocumentStore
+    public class DatabaseDocumentStore : IDocumentStore
     {
         private readonly ISession _session;
 
@@ -22,7 +22,7 @@ namespace OrchardCore.Data.Documents
 
         private bool _canceled;
 
-        public DocumentStore(ISession session)
+        public DatabaseDocumentStore(ISession session)
         {
             _session = session;
         }
