@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Extensions
         /// </summary>
         /// <remarks>
         /// If a type has been registered for more than one feature,
-        /// <c>GetFeatureForDependency</c> returns the first feature that has
+        /// <see cref="GetFeatureForDependency"/> returns the first feature that has
         /// the same ID as the parent extension.
         /// Use this method when you only need one feature of a module, such
         /// as when applying migrations for the entire module as opposed to
