@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
@@ -75,6 +76,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     continue;
                                 }
 
+                                // Do not add field if it collides with existing ones. Note that we may have fields with different
+                                // casing here too, which must be prevented as well.
+                                if (contentItemType.Fields.Any(f => f.Name.Equals(fieldType.Name, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    continue;
+                                }
+
                                 contentItemType.AddField(fieldType);
                                 break;
                             }
@@ -84,25 +92,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 else
                 {
                     // Check if another builder has already added a field for this part.
-                    var existingField = contentItemType.GetField(partName.ToFieldName());
-                    if (existingField != null)
-                    {
-                        // Add content field types.
-                        foreach (var field in part.PartDefinition.Fields)
-                        {
-                            foreach (var fieldProvider in contentFieldProviders)
-                            {
-                                var contentFieldType = fieldProvider.GetField(field, part.Name);
-
-                                if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
-                                {
-                                    contentItemType.AddField(contentFieldType);
-                                    break;
-                                }
-                            }
-                        }
+                    // We do not modify the existing field here again. The other builder
+                    // must take care to fully populate the part type.
+                    var partFieldName = partName.ToFieldName();
+                    if (contentItemType.HasField(partFieldName))
                         continue;
-                    }
 
                     if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
                     {
@@ -111,7 +105,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     else
                     {
                         var field = contentItemType
-                            .Field<DynamicPartGraphType>(partName.ToFieldName())
+                            .Field<DynamicPartGraphType>(partFieldName)
                             .Description(S["Represents a {0}.", part.PartDefinition.Name])
                             .Resolve(context =>
                             {
