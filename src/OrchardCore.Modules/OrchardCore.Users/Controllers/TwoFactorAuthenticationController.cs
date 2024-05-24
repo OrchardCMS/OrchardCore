@@ -10,7 +10,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -160,7 +159,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [AllowAnonymous]
-    [Admin(template: nameof(LoginWithRecoveryCode), requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
     {
         // Ensure the user has gone through the username & password screen first
@@ -218,7 +216,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View(model);
     }
 
-    [Admin(requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -240,7 +237,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [HttpPost]
-    [Admin(requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -276,7 +272,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [HttpPost]
-    [Admin(requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> ForgetTwoFactorClient()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -291,7 +286,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return RedirectToAction(nameof(Index));
     }
 
-    [Admin(template: nameof(GenerateRecoveryCodes), requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -312,7 +306,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [HttpPost]
-    [Admin(requireAccessAdminPanelPermission: false)]
     [ActionName(nameof(GenerateRecoveryCodes))]
     public async Task<IActionResult> GenerateRecoveryCodesPost()
     {
@@ -338,7 +331,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
-    [Admin(template: nameof(ShowRecoveryCodes), requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> ShowRecoveryCodes()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -363,7 +355,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [HttpPost]
-    [Admin(template: nameof(EnableTwoFactorAuthentication), requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> EnableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -388,7 +379,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return await RedirectToTwoFactorAsync(user);
     }
 
-    [Admin(template: nameof(DisableTwoFactorAuthentication), requireAccessAdminPanelPermission: false)]
     public async Task<IActionResult> DisableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -408,7 +398,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
     }
 
     [HttpPost]
-    [Admin(requireAccessAdminPanelPermission: false)]
     [ActionName(nameof(DisableTwoFactorAuthentication))]
     public async Task<IActionResult> DisableTwoFactorAuthenticationPost()
     {

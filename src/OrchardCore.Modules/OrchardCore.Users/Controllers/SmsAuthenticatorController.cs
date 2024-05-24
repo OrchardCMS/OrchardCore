@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -25,7 +24,8 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize, Feature(UserConstants.Features.SmsAuthenticator)]
+[Authorize]
+[Feature(UserConstants.Features.SmsAuthenticator)]
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IdentityOptions _identityOptions;
@@ -70,7 +70,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator", false)]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -95,7 +94,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     }
 
     [HttpPost]
-    [Admin(requireAccessAdminPanelPermission: false)]
     [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost(RequestCodeSmsAuthenticatorViewModel model)
     {
@@ -149,7 +147,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return RedirectToAction(nameof(ValidateCode));
     }
 
-    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode", false)]
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -209,6 +206,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
+    // TODO: move this action into minimal API.
     [HttpPost]
     [Produces("application/json")]
     [AllowAnonymous]

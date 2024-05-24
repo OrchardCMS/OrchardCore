@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
@@ -48,7 +47,7 @@ public class AdminController : Controller
         S = stringLocalizer;
     }
 
-    [Admin("Email/Test", "EmailTest")]
+    [Admin.Admin("Email/Test", "EmailTest")]
     public async Task<IActionResult> Test()
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))

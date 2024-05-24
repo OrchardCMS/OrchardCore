@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -25,7 +24,7 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.AuthenticatorApp)]
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
-    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
+    private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 
     private readonly IdentityOptions _identityOptions;
     private readonly UrlEncoder _urlEncoder;
@@ -60,7 +59,6 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         _shellSettings = shellSettings;
     }
 
-    [Admin("Authenticator/Configure/App", "ConfigureAuthenticatorApp", false)]
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -110,7 +108,6 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return await RedirectToTwoFactorAsync(user);
     }
 
-    [Admin("Authenticator/Reset/App", "RemoveAuthenticatorApp", false)]
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -197,7 +194,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return string.Format(
             CultureInfo.InvariantCulture,
 #pragma warning disable CA1863 // Cache a 'CompositeFormat' for repeated use in this formatting operation
-            AuthenticatorUriFormat,
+            _authenticatorUriFormat,
 #pragma warning restore CA1863
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),

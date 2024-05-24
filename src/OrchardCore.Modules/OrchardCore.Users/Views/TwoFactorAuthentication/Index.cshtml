@@ -8,8 +8,8 @@
 @inject ITwoFactorAuthenticationHandlerCoordinator TwoFactorAuthenticationHandlerCoordinator
 @{
     RenderTitleSegments(T["Two-Factor Authentication"]);
+    ViewLayout = "Layout__TwoFactor";
 }
-
 @if (Model.AuthenticationMethods.Count == 0)
 {
     <div class="alert alert-danger text-center">

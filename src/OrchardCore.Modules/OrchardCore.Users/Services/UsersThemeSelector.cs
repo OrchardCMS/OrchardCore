@@ -45,9 +45,24 @@ namespace OrchardCore.Users.Services
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
                         break;
                     case "TwoFactorAuthentication":
-                        useSiteTheme = routeValues["action"] != null
-                            && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
-                            && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        {
+                            if (routeValues["action"] != null
+                               && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
+                               && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme)
+                            {
+                                useSiteTheme = true;
+                            }
+                            else
+                            {
+                                useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                            }
+                        }
+                        break;
+                    case "SmsAuthenticator":
+                    case "AuthenticatorApp":
+                        {
+                            useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                        }
                         break;
                     case "Registration":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UseSiteTheme;

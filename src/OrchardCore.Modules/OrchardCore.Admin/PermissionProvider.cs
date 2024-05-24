@@ -4,13 +4,11 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin;
 
-public class Permissions : IPermissionProvider
+public class PermissionProvider : IPermissionProvider
 {
-    public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        AccessAdminPanel,
+        Permissions.AccessAdminPanel,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

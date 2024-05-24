@@ -46,7 +46,6 @@ public class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-
         IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
@@ -71,7 +70,7 @@ public class AdminController : Controller, IUpdateModel
         H = htmlLocalizer;
     }
 
-    [Admin("notifications", "ListNotifications", requireAccessAdminPanelPermission: false)]
+    [Admin("notifications", "ListNotifications")]
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,

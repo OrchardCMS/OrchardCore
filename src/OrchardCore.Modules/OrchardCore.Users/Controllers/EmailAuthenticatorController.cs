@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Liquid;
@@ -58,7 +57,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin("Authenticator/Configure/Email", "ConfigureEmailAuthenticator", false)]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -75,6 +73,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View();
     }
 
+    // TODO: move this action into minimal API.
     [HttpPost]
     [Produces("application/json")]
     [AllowAnonymous]

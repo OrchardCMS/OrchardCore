@@ -55,6 +55,34 @@ public class TwoFactorAuthenticationStartup : StartupBase
             pattern: _userOptions.TwoFactorAuthenticationPath,
             defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
         );
+
+        routes.MapAreaControllerRoute(
+            name: "LoginWithRecoveryCode",
+            areaName: UserConstants.Features.Users,
+            pattern: "LoginWithRecoveryCode",
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "GenerateRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "GenerateRecoveryCodes",
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ShowRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "ShowRecoveryCodes",
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "DisableTwoFactorAuthentication",
+            areaName: UserConstants.Features.Users,
+            pattern: "DisableTwoFactorAuthentication",
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
+        );
     }
 }
 
@@ -87,6 +115,25 @@ public class AuthenticatorAppStartup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var _controllerName = typeof(AuthenticatorAppController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/App",
+            defaults: new { controller = _controllerName, action = nameof(AuthenticatorAppController.Index) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "RemoveAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Reset/App",
+            defaults: new { controller = _controllerName, action = nameof(AuthenticatorAppController.Reset) }
+        );
+    }
 }
 
 [Feature(UserConstants.Features.EmailAuthenticator)]
@@ -104,6 +151,18 @@ public class EmailAuthenticatorStartup : StartupBase
 
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var _controllerName = typeof(EmailAuthenticatorController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureEmailAuthenticator",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/Email",
+            defaults: new { controller = _controllerName, action = nameof(EmailAuthenticatorController.Index) }
+        );
     }
 }
 
@@ -123,5 +182,24 @@ public class SmsAuthenticatorStartup : StartupBase
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var _controllerName = typeof(SmsAuthenticatorController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureSmsAuthenticator",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/Sms",
+            defaults: new { controller = _controllerName, action = nameof(SmsAuthenticatorController.Index) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureSmsAuthenticatorValidateCode",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/Sms/ValidateCode",
+            defaults: new { controller = _controllerName, action = nameof(SmsAuthenticatorController.ValidateCode) }
+        );
     }
 }
