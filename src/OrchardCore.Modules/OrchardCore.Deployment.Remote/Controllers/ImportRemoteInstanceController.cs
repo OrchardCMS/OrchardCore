@@ -97,7 +97,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unable to import a package.");
+                _logger.LogError(e, "Unexpected error occurred while importing the recipe.");
 
                 ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
             }
