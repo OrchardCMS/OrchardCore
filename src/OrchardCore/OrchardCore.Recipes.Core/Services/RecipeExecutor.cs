@@ -120,7 +120,7 @@ namespace OrchardCore.Recipes.Services
                                     stepResult.IsSuccessful = false;
                                     stepResult.Errors = new Dictionary<string, string[]>()
                                     {
-                                        { recipeStep.Name, [S["Unexpected error occurred while importing the '{0}' step.", stepResult.StepName]] }
+                                        { recipeStep.Name, [S["Unexpected error occurred while executing the '{0}' step.", stepResult.StepName]] }
                                     };
 
                                     // Because we can't do some async processing the in catch or finally

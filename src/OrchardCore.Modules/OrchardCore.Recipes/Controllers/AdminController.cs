@@ -130,7 +130,7 @@ namespace OrchardCore.Recipes.Controllers
             {
                 _logger.LogError(e, "Unable to import a recipe file.");
 
-                await _notifier.ErrorAsync(H["Unexpected error occurred while importing the '{0}' recipe.", recipe.DisplayName]);
+                await _notifier.ErrorAsync(H["Unexpected error occurred while running the '{0}' recipe.", recipe.DisplayName]);
             }
 
             return RedirectToAction(nameof(Index));

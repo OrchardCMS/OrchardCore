@@ -100,15 +100,15 @@ namespace OrchardCore.Deployment.Controllers
                 }
                 catch (RecipeExecutionException e)
                 {
-                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+                    _logger.LogError(e, "Unable to import a deployment package.");
 
                     await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unable to import a package.");
+                    _logger.LogError(e, "Unable to import a deplyment package.");
 
-                    await _notifier.ErrorAsync(H["Unexpected error occurred while importing the recipe."]);
+                    await _notifier.ErrorAsync(H["Unexpected error occurred while importing the deployment package."]);
                 }
                 finally
                 {
@@ -165,7 +165,7 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    await _notifier.SuccessAsync(H["Recipe imported."]);
+                    await _notifier.SuccessAsync(H["Recipe imported successfully!"]);
                 }
                 catch (RecipeExecutionException e)
                 {

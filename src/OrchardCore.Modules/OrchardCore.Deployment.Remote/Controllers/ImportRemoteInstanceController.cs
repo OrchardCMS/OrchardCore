@@ -91,15 +91,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
             catch (RecipeExecutionException e)
             {
-                _logger.LogError(e, "Unable to import a recipe from JSON input.");
+                _logger.LogError(e, "Unable to import a recipe from deployment plan.");
 
-                await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unexpected error occurred while importing the recipe.");
+                _logger.LogError(e, "Unexpected error occurred while executing a deployment plan.");
 
-                await _notifier.ErrorAsync(H["Unexpected error occurred while importing the recipe."]);
+                await _notifier.ErrorAsync(H["Unexpected error occurred while executing a deployment plan."]);
             }
             finally
             {
