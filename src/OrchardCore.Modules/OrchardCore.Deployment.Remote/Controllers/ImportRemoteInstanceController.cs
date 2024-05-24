@@ -99,7 +99,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 _logger.LogError(e, "Unexpected error occurred while importing the recipe.");
 
-                ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+                await _notifier.ErrorAsync(H["Unexpected error occurred while importing the recipe."]);
             }
             finally
             {
