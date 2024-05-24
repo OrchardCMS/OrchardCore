@@ -113,6 +113,7 @@ namespace OrchardCore.Environment.Extensions
         public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
         {
             EnsureInitialized();
+            
             return Task.FromResult<IEnumerable<IFeatureInfo>>(_features.Values);
         }
 

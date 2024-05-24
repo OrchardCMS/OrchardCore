@@ -67,7 +67,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     continue;
                 }
 
-                // Ignore Startup class from main application
+                // Ignore Startup class from main application.
                 if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
                 {
                     continue;
@@ -115,7 +115,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            // Let any module add custom service descriptors to the tenant
+            // Let any module add custom service descriptors to the tenant.
             foreach (var startup in startups)
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();

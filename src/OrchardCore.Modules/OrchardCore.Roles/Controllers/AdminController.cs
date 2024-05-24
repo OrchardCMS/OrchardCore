@@ -32,6 +32,7 @@ namespace OrchardCore.Roles.Controllers
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -246,6 +247,7 @@ namespace OrchardCore.Roles.Controllers
         {
             var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            
             foreach (var permissionProvider in _permissionProviders)
             {
                 // Two features could use the same permission.

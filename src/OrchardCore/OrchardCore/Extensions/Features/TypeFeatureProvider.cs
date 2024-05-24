@@ -24,8 +24,8 @@ namespace OrchardCore.Environment.Extensions
         {
             if (_features.TryGetValue(dependency, out var features))
             {
-                // Gets the first feature that has the same ID as the extension, if any. Otherwise returns the
-                // first feature.
+                // Gets the first feature that has the same ID as the extension, if any. 
+                // Otherwise returns the first feature.
                 return features.FirstOrDefault(feature => feature.Extension.Id == feature.Id) ?? features.First();
             }
 
