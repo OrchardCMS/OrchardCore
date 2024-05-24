@@ -11,11 +11,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Facebook.Settings;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Facebook.Login.Configuration
 {
-    [Feature(FacebookConstants.Features.Login)]
     public class FacebookLoginConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<FacebookOptions>

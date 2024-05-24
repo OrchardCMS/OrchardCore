@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Models;
@@ -55,7 +54,6 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -93,7 +91,6 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature(UserConstants.Features.UserRegistration)]
     public class RegistrationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -131,7 +128,6 @@ namespace OrchardCore.Users
         }
     }
 
-    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
