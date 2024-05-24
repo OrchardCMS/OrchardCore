@@ -148,22 +148,50 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
+        [Fact]
+        public async Task AssignsTypeToMultipleFeatures()
+        {
+            var shellBlueprint = CreateBlueprint();
+
+            var expectedFeatureInfos = AddStartups(shellBlueprint, typeof(RegisterServiceStartup), typeof(RegisterSecondServiceStartup));
+
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
+
+            var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
+
+            Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
+            Assert.Equal(expectedFeatureInfos, typeFeatureProvider.GetFeaturesForDependency(typeof(TestService)));
+        }
+
         private static ShellBlueprint CreateBlueprint()
         {
             return new ShellBlueprint
             {
                 Settings = new ShellSettings(),
                 Descriptor = new ShellDescriptor(),
-                Dependencies = new Dictionary<Type, FeatureEntry>()
+                Dependencies = new Dictionary<Type, IEnumerable<IFeatureInfo>>()
             };
         }
 
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false, false);
-            shellBlueprint.Dependencies.Add(startupType, new FeatureEntry(featureInfo));
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, new ExtensionInfo(startupType.Name), null, false, false, false);
+            shellBlueprint.Dependencies.Add(startupType, [featureInfo]);
 
             return featureInfo;
+        }
+
+        public static IFeatureInfo[] AddStartups(ShellBlueprint shellBlueprint, Type startupType1, Type startupType2)
+        {
+            var featureInfo1 = new FeatureInfo(startupType1.Name, startupType1.Name, 1, "Tests", null, new ExtensionInfo(startupType1.Name), null, false, false, false);
+            var featureInfo2 = new FeatureInfo(startupType2.Name, startupType2.Name, 1, "Tests", null, new ExtensionInfo(startupType2.Name), null, false, false, false);
+            shellBlueprint.Dependencies.Add(startupType1, [featureInfo1]);
+            shellBlueprint.Dependencies.Add(startupType2, [featureInfo2]);
+
+            return [featureInfo1, featureInfo2];
         }
 
         private interface ITestService
@@ -179,6 +207,16 @@ namespace OrchardCore.Tests.Shell
         }
 
         private sealed class RegisterServiceStartup : StartupBase
+        {
+            public override int Order => 1;
+
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddScoped<ITestService, TestService>();
+            }
+        }
+
+        private sealed class RegisterSecondServiceStartup : StartupBase
         {
             public override int Order => 1;
 
