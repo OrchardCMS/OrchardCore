@@ -108,7 +108,7 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     _logger.LogError(e, "Unable to import a package.");
 
-                    ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+                    await _notifier.ErrorAsync(H["Unexpected error occurred while importing the recipe."]);
                 }
                 finally
                 {
