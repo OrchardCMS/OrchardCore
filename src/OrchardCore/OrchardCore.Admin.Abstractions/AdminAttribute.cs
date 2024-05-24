@@ -14,6 +14,8 @@ namespace OrchardCore.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
+        private static readonly string _adminAttributeItemName = typeof(AdminAttribute).Name;
+
         /// <summary>
         /// This may be used if the route name should be just the controller and action names stuck together. For
         /// example <c>~/Admin/AdminMenu/List</c> gets the route name <c>AdminMenuList</c>.
@@ -52,8 +54,6 @@ namespace OrchardCore.Admin
 
             return next();
         }
-
-        private static readonly string _adminAttributeItemName = typeof(AdminAttribute).Name;
 
         public static void Apply(HttpContext context, AdminAttribute attributeValue = null)
         {
