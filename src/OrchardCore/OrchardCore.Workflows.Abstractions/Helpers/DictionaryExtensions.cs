@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace OrchardCore.Workflows.Helpers
 {
@@ -19,12 +20,19 @@ namespace OrchardCore.Workflows.Helpers
         {
             var value = dictionary.GetValue(key);
 
-            if (value != null)
+            if (value == null)
             {
-                return (TValue)value;
+                return default;
             }
 
-            return default;
+            if (value is not TValue castedValue)
+            {
+                var json = JConvert.SerializeObject(value);
+
+                return JConvert.DeserializeObject<TValue>(json);
+            }
+
+            return castedValue;
         }
 
         /// <summary>
