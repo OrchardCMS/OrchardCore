@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Google
 {
-    [Feature(GoogleConstants.Features.GoogleAuthentication)]
     public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -46,7 +44,6 @@ namespace OrchardCore.Google
         }
     }
 
-    [Feature(GoogleConstants.Features.GoogleAnalytics)]
     public class GoogleAnalyticsAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -85,7 +82,6 @@ namespace OrchardCore.Google
         }
     }
 
-    [Feature(GoogleConstants.Features.GoogleTagManager)]
     public class GoogleTagManagerAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
