@@ -36,7 +36,6 @@ namespace OrchardCore.Recipes.Controllers
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
-
         public AdminController(
             IShellHost shellHost,
             ShellSettings shellSettings,
@@ -125,13 +124,13 @@ namespace OrchardCore.Recipes.Controllers
             {
                 _logger.LogError(e, "Unable to import a recipe file.");
 
-                ModelState.AddModelError(string.Empty, string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
+                await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unable to import a recipe file.");
 
-                ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+                await _notifier.ErrorAsync(H["Unexpected error occurred while importing the '{0}' recipe.", recipe.DisplayName]);
             }
 
             return RedirectToAction(nameof(Index));

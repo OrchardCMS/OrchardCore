@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -97,6 +98,18 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _notifier.SuccessAsync(H["Deployment package imported."]);
                 }
+                catch (RecipeExecutionException e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+
+                    await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to import a package.");
+
+                    ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+                }
                 finally
                 {
                     if (System.IO.File.Exists(tempArchiveName))
@@ -138,7 +151,7 @@ namespace OrchardCore.Deployment.Controllers
 
             if (!model.Json.IsJson(JOptions.Document))
             {
-                ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
+                ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect JSON format."]);
             }
 
             if (ModelState.IsValid)
@@ -158,10 +171,7 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     _logger.LogError(e, "Unable to import a recipe from JSON input.");
 
-                    foreach (var entry in e.StepResult.Errors)
-                    {
-                        ModelState.AddModelError(nameof(model.Json), string.Join(' ', entry.Value));
-                    }
+                    ModelState.AddModelError(nameof(model.Json), string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
                 }
                 catch (Exception e)
                 {
