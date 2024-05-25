@@ -32,12 +32,17 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+                var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+
+                localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
 
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
                     recipeEventHandlers,
-                    loggerMock.Object);
+                    loggerMock.Object,
+                    localizerMock.Object);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
@@ -52,7 +57,7 @@ namespace OrchardCore.Recipes
         }
 
         [Fact]
-        public async Task ContentDefinitionStep_WhenPartNameIsMissing_ThrowInvalidOperationException()
+        public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
         {
             var context = new BlogContext();
             await context.InitializeAsync();
@@ -63,12 +68,12 @@ namespace OrchardCore.Recipes
                 var executionId = Guid.NewGuid().ToString("n");
                 var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
 
-                var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>
                 {
                     await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
                 });
 
-                Assert.Equal("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.Message);
+                Assert.Contains("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.StepResult.Errors["ContentDefinition"]);
             });
         }
 
