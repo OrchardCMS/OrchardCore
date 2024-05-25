@@ -57,6 +57,7 @@ namespace OrchardCore.Liquid
                     {
                         JsonObject o => new ObjectValue(o),
                         JsonDynamicObject o => new ObjectValue((JsonObject)o),
+                        JsonValue o => o.GetObjectValue(),
                         DateTime d => new ObjectValue(d),
                         _ => null
                     };
