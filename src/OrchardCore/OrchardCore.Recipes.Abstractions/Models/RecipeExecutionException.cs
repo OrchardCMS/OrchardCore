@@ -4,8 +4,6 @@ namespace OrchardCore.Recipes.Models;
 
 public class RecipeExecutionException : Exception
 {
-    public RecipeStepResult StepResult { get; }
-
     public RecipeExecutionException(RecipeStepResult recipeStepResult)
     {
         StepResult = recipeStepResult;
@@ -16,4 +14,6 @@ public class RecipeExecutionException : Exception
     {
         StepResult = recipeStepResult;
     }
+
+    public RecipeStepResult StepResult { get; }
 }
