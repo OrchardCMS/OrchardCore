@@ -105,7 +105,7 @@ namespace OrchardCore.Recipes.Services
                                     if (recipeStep.Errors.Count > 0)
                                     {
                                         stepResult.IsSuccessful = false;
-                                        stepResult.Errors = new Dictionary<string, string[]>()
+                                        stepResult.Errors = new Dictionary<string, string[]>
                                         {
                                             { recipeStep.Name, recipeStep.Errors.ToArray() }
                                         };
