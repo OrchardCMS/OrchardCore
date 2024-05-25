@@ -5,13 +5,11 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
     {
         public const string GroupId = "userChangeEmail";

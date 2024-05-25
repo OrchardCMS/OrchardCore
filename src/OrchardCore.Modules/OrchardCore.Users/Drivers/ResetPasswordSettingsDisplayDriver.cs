@@ -5,13 +5,11 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature(UserConstants.Features.ResetPassword)]
     public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
     {
         public const string GroupId = "userResetPassword";

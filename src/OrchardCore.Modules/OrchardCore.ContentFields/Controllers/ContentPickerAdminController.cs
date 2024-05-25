@@ -91,6 +91,7 @@ namespace OrchardCore.ContentFields.Controllers
                 .GetAsync(results.Select(r => r.ContentItemId));
 
             var selectedItems = new List<VueMultiselectItemViewModel>();
+            var user = _httpContextAccessor.HttpContext?.User;
             foreach (var contentItem in contentItems)
             {
                 selectedItems.Add(new VueMultiselectItemViewModel()
@@ -98,8 +99,7 @@ namespace OrchardCore.ContentFields.Controllers
                     Id = contentItem.ContentItemId,
                     DisplayText = contentItem.ToString(),
                     HasPublished = contentItem.IsPublished(),
-                    IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User,
-                                     CommonPermissions.EditContent, contentItem)
+                    IsViewable = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)
                 });
             }
 

@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub
 {
-    [Feature(GitHubConstants.Features.GitHubAuthentication)]
     public class AdminMenuGitHubLogin : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()

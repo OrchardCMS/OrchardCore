@@ -4,6 +4,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <!-- Remove the underscores from member name -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -17,16 +17,31 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContextAccessor) : ContentHandlerBase
+public class AzureAISearchIndexingContentHandler : ContentHandlerBase
 {
     private readonly List<ContentContextBase> _contexts = [];
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-    public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
-    public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
-    public override Task UpdatedAsync(UpdateContentContext context) => AddContextAsync(context);
-    public override Task RemovedAsync(RemoveContentContext context) => AddContextAsync(context);
-    public override Task UnpublishedAsync(PublishContentContext context) => AddContextAsync(context);
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    public override Task PublishedAsync(PublishContentContext context)
+        => AddContextAsync(context);
+
+    public override Task CreatedAsync(CreateContentContext context)
+        => AddContextAsync(context);
+
+    public override Task UpdatedAsync(UpdateContentContext context)
+        => AddContextAsync(context);
+
+    public override Task RemovedAsync(RemoveContentContext context)
+        => AddContextAsync(context);
+
+    public override Task UnpublishedAsync(PublishContentContext context)
+        => AddContextAsync(context);
 
     private Task AddContextAsync(ContentContextBase context)
     {
@@ -101,7 +116,7 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
 
                     if (contentItem == null)
                     {
-                        await indexDocumentManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                        await indexDocumentManager.DeleteDocumentsAsync(indexSettings.IndexName, [context.ContentItem.ContentItemId]);
                     }
                     else
                     {
