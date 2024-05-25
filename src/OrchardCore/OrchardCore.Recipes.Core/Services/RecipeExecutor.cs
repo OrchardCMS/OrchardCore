@@ -118,7 +118,7 @@ namespace OrchardCore.Recipes.Services
                                 catch (Exception e)
                                 {
                                     stepResult.IsSuccessful = false;
-                                    stepResult.Errors = new Dictionary<string, string[]>()
+                                    stepResult.Errors = new Dictionary<string, string[]>
                                     {
                                         { recipeStep.Name, [S["Unexpected error occurred while executing the '{0}' step.", stepResult.StepName]] }
                                     };
