@@ -81,7 +81,7 @@ namespace OrchardCore.Layers.Recipes
                 }
                 else
                 {
-                    context.Errors.Add(S["The layer '{nameof(layer.Name)}' is required."]);
+                    context.Errors.Add(S["The layer '{0}' is required.", layer.Name]);
 
                     continue;
                 }
