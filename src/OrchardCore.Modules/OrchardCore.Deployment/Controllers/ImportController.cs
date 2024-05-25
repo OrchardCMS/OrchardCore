@@ -106,7 +106,7 @@ namespace OrchardCore.Deployment.Controllers
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unable to import a deplyment package.");
+                    _logger.LogError(e, "Unable to import a deployment package.");
 
                     await _notifier.ErrorAsync(H["Unexpected error occurred while importing the deployment package."]);
                 }
