@@ -53,7 +53,7 @@ namespace OrchardCore.Admin
             });
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
-            services.AddScoped<IPermissionProvider, PermissionProvider>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
             services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();

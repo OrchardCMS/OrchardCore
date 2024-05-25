@@ -57,7 +57,7 @@ namespace OrchardCore.Admin
         {
             if (AdminAttribute.IsApplied(context))
             {
-                return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
+                return _authorizationService.AuthorizeAsync(context.User, AdminPermissions.AccessAdminPanel);
             }
 
             return Task.FromResult(true);

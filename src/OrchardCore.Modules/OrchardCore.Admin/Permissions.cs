@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin;
 
-public class PermissionProvider : IPermissionProvider
+public class Permissions : IPermissionProvider
 {
+    [Obsolete("This property will be removed in future release. Instead use 'AdminPermissions.AccessAdminPanel'.")]
+    public static readonly Permission AccessAdminPanel = AdminPermissions.AccessAdminPanel;
+
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        Permissions.AccessAdminPanel,
+        AdminPermissions.AccessAdminPanel,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
