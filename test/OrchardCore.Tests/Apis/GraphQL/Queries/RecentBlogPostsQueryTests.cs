@@ -44,8 +44,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             // test is executing too fast, both blog entries may have the same CreatedUtc
             // value and ordering becomes random. Because of this, we do not assert the order
             // of the result.
-            Assert.Contains("Some sorta blogpost in a Query!", jsonArray.Select(node => node["displayText"]?.ToString()));
-            Assert.Contains("Man must explore, and this is exploration at its greatest", jsonArray.Select(node => node["displayText"]?.ToString()));
+            var displayTexts = jsonArray.Select(node => node["displayText"]?.ToString());
+
+            Assert.Contains("Some sorta blogpost in a Query!", displayTexts);
+            Assert.Contains("Man must explore, and this is exploration at its greatest", displayTexts);
         }
     }
 }
