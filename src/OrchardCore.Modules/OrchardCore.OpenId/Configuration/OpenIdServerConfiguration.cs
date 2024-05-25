@@ -11,14 +11,12 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    [Feature(OpenIdConstants.Features.Server)]
     public class OpenIdServerConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureOptions<OpenIddictServerOptions>,
         IConfigureOptions<OpenIddictServerDataProtectionOptions>,
