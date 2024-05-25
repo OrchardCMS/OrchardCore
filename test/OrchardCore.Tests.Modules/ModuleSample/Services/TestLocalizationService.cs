@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Demo.Services;
+namespace ModuleSample.Services;
 public class TestLocalizationService
 {
     private readonly IStringLocalizer S;
