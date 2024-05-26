@@ -118,20 +118,20 @@ public class AuthenticatorAppStartup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var _controllerName = typeof(AuthenticatorAppController).ControllerName();
+        var controllerName = typeof(AuthenticatorAppController).ControllerName();
 
         routes.MapAreaControllerRoute(
             name: "ConfigureAuthenticatorApp",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Configure/App",
-            defaults: new { controller = _controllerName, action = nameof(AuthenticatorAppController.Index) }
+            defaults: new { controller = controllerName, action = nameof(AuthenticatorAppController.Index) }
         );
 
         routes.MapAreaControllerRoute(
             name: "RemoveAuthenticatorApp",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Reset/App",
-            defaults: new { controller = _controllerName, action = nameof(AuthenticatorAppController.Reset) }
+            defaults: new { controller = controllerName, action = nameof(AuthenticatorAppController.Reset) }
         );
     }
 }
@@ -186,20 +186,20 @@ public class SmsAuthenticatorStartup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var _controllerName = typeof(SmsAuthenticatorController).ControllerName();
+        var controllerName = typeof(SmsAuthenticatorController).ControllerName();
 
         routes.MapAreaControllerRoute(
             name: "ConfigureSmsAuthenticator",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Configure/Sms",
-            defaults: new { controller = _controllerName, action = nameof(SmsAuthenticatorController.Index) }
+            defaults: new { controller = controllerName, action = nameof(SmsAuthenticatorController.Index) }
         );
 
         routes.MapAreaControllerRoute(
             name: "ConfigureSmsAuthenticatorValidateCode",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Configure/Sms/ValidateCode",
-            defaults: new { controller = _controllerName, action = nameof(SmsAuthenticatorController.ValidateCode) }
+            defaults: new { controller = controllerName, action = nameof(SmsAuthenticatorController.ValidateCode) }
         );
     }
 }

@@ -10,6 +10,8 @@
     RenderTitleSegments(T["Two-Factor Authentication"]);
     ViewLayout = "Layout__TwoFactor";
 }
+<script asp-name="font-awesome" at="Head" version="6"></script>
+
 @if (Model.AuthenticationMethods.Count == 0)
 {
     <div class="alert alert-danger text-center">

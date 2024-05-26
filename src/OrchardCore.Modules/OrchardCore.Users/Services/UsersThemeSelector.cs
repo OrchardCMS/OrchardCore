@@ -10,7 +10,8 @@ namespace OrchardCore.Users.Services
 {
     /// <summary>
     /// Provides the theme defined in the site configuration for the current scope (request).
-    /// This selector provides AdminTheme as default or fallback for Account|Registration|ResetPassword
+    /// This selector provides AdminTheme as default or fallback for Account for Registration,
+    /// ResetPassword, TwoFactorAuthentication, SmsAuthenticator and AuthenticatorApp
     /// controllers based on SiteSettings.
     /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
