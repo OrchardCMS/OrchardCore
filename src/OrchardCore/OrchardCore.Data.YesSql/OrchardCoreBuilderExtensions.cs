@@ -174,39 +174,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    var documentStore = new DatabaseDocumentStore(session);
-
-                    ShellScope.Current
-                        .RegisterBeforeDispose(scope =>
-                        {
-                            return documentStore.CommitAsync();
-                        })
-                        .AddExceptionHandler((scope, e) =>
-                        {
-                            return documentStore.CancelAsync();
-                        });
-
-                    return documentStore;
+                    return new DatabaseDocumentStore(session);
                 });
 
-                services.AddSingleton<IDocumentFileStore, FileSystemDocumentStore>();
-
-                services.AddScoped<IFileDocumentStore>(sp =>
-                {
-                    var fileDocumentStore = sp.CreateInstance<FileDocumentStore>();
-
-                    ShellScope.Current
-                        .RegisterBeforeDispose(scope =>
-                        {
-                            return fileDocumentStore.CommitAsync();
-                        })
-                        .AddExceptionHandler((scope, e) =>
-                        {
-                            return fileDocumentStore.CancelAsync();
-                        });
-
-                    return fileDocumentStore;
-                });
+                services.AddScoped<IFileDocumentStore, FileSystemDocumentStore>();
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });

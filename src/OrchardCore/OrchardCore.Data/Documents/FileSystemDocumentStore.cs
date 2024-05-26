@@ -2,25 +2,33 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Locking;
 
 namespace OrchardCore.Data.Documents
 {
     /// <summary>
-    /// A singleton <see cref="IDocumentFileStore"/> implementation using
+    /// A scoped <see cref="IFileDocumentStore"/> implementation using
     /// file system to persist documents.
     /// </summary>
-    public class FileSystemDocumentStore : IDocumentFileStore
+    public class FileSystemDocumentStore : FileDocumentStore
     {
+        private const string LockKey = "FILESYSTEM_DOCUMENTSTORE_LOCK";
+        private const double LockTimeout = 10_000;
+
         private readonly string _tenantPath;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly ILocalLock _localLock;
 
-        public FileSystemDocumentStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
+        public FileSystemDocumentStore(
+            ILocalLock localLock,
+            IOptions<ShellOptions> shellOptions,
+            ShellSettings shellSettings)
         {
+            _localLock = localLock;
+
             _tenantPath = Path.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
@@ -29,8 +37,7 @@ namespace OrchardCore.Data.Documents
             Directory.CreateDirectory(_tenantPath);
         }
 
-        /// <inheritdoc />
-        public async Task<object> GetDocumentAsync(Type documentType)
+        protected override async Task<object> GetDocumentAsync(Type documentType)
         {
             var filename = GetFilename(documentType);
 
@@ -39,32 +46,37 @@ namespace OrchardCore.Data.Documents
                 return null;
             }
 
-            await _semaphore.WaitAsync();
-            try
+            var timeout = TimeSpan.FromMilliseconds(LockTimeout);
+            (var locker, var locked) = await _localLock.TryAcquireLockAsync($"{LockKey}:{documentType.Name}", timeout, timeout);
+
+            if (!locked)
+            {
+                throw new TimeoutException($"Couldn't acquire a lock to read document within {timeout.Seconds} seconds.");
+            }
+
+            using (locker)
             {
                 using var stream = File.OpenRead(filename);
                 return await JsonSerializer.DeserializeAsync(stream, documentType, JOptions.Default);
             }
-            finally
-            {
-                _semaphore.Release();
-            }
         }
 
-        /// <inheritdoc />
-        public async Task SaveDocumentAsync(Type documentType, object document)
+        protected override async Task SaveDocumentAsync(Type documentType, object document)
         {
             var filename = GetFilename(documentType);
 
-            await _semaphore.WaitAsync();
-            try
+            var timeout = TimeSpan.FromMilliseconds(LockTimeout);
+            (var locker, var locked) = await _localLock.TryAcquireLockAsync($"{LockKey}:{documentType.Name}", timeout, timeout);
+
+            if (!locked)
+            {
+                throw new TimeoutException($"Couldn't acquire a lock to write document within {timeout.Seconds} seconds.");
+            }
+
+            using (locker)
             {
                 using var stream = File.Create(filename);
                 await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
-            }
-            finally
-            {
-                _semaphore.Release();
             }
         }
 

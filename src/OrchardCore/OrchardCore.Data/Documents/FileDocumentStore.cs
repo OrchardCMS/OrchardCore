@@ -6,12 +6,10 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Data.Documents
 {
     /// <summary>
-    /// An <see cref="IDocumentFileStore"/> using the <see cref="IFileDocumentStore"/>.
+    /// A base implementation of <see cref="IFileDocumentStore"/>.
     /// </summary>
-    public class FileDocumentStore : IFileDocumentStore
+    public abstract class FileDocumentStore : IFileDocumentStore
     {
-        private readonly IDocumentFileStore _documentFileStore;
-
         private readonly Dictionary<Type, object> _updated = new();
 
         private readonly List<Type> _afterCommitsSuccess = new();
@@ -20,12 +18,7 @@ namespace OrchardCore.Data.Documents
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
-        private bool _canceled;
-
-        public FileDocumentStore(IDocumentFileStore documentFileStore)
-        {
-            _documentFileStore = documentFileStore;
-        }
+        private bool _canceled, _commitHandlersRegistered;
 
         /// <inheritdoc />
         public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
@@ -36,7 +29,7 @@ namespace OrchardCore.Data.Documents
                 return loaded;
             }
 
-            var document = (T)await _documentFileStore.GetDocumentAsync(typeof(T))
+            var document = (T)await GetDocumentAsync(typeof(T))
                 ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
                 ?? new T();
 
@@ -55,13 +48,28 @@ namespace OrchardCore.Data.Documents
                 return (false, loaded);
             }
 
-            return (true, (T)await _documentFileStore.GetDocumentAsync(typeof(T)) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
+            return (true, (T)await GetDocumentAsync(typeof(T)) ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
         }
 
         /// <inheritdoc />
         public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
             _updated[typeof(T)] = document;
+
+            if (!_commitHandlersRegistered)
+            {
+                ShellScope.Current
+                    .RegisterBeforeDispose(scope =>
+                    {
+                        return CommitAsync();
+                    })
+                    .AddExceptionHandler((scope, e) =>
+                    {
+                        return CancelAsync();
+                    });
+
+                _commitHandlersRegistered = true;
+            }
 
             AfterCommitSuccess<T>(async () =>
             {
@@ -106,7 +114,7 @@ namespace OrchardCore.Data.Documents
             {
                 foreach(var updated in _updated)
                 {
-                    await _documentFileStore.SaveDocumentAsync(updated.Key, updated.Value);
+                    await SaveDocumentAsync(updated.Key, updated.Value);
                 }
 
                 _updated.Clear();
@@ -134,5 +142,9 @@ namespace OrchardCore.Data.Documents
                 }
             }
         }
+
+        protected abstract Task<object> GetDocumentAsync(Type documentType);
+
+        protected abstract Task SaveDocumentAsync(Type documentType, object document);
     }
 }
