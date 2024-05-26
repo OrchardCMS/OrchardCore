@@ -62,7 +62,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnDocuments && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
@@ -86,7 +86,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
         private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"].AsObject();
+            var properties = querySchema["properties"]?.AsObject();
             if (properties == null)
             {
                 return null;
