@@ -85,7 +85,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
         private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"].AsObject();
+            var properties = querySchema["properties"]?.AsObject(); 
             if (properties == null)
             {
                 return null;
