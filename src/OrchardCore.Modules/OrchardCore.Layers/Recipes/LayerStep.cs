@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Layers.Models;
@@ -25,16 +26,20 @@ namespace OrchardCore.Layers.Recipes
         private readonly IEnumerable<IConditionFactory> _factories;
         private readonly JsonSerializerOptions _serializationOptions;
 
+        protected readonly IStringLocalizer S;
+
         public LayerStep(
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<DocumentJsonSerializerOptions> serializationOptions)
+            IOptions<DocumentJsonSerializerOptions> serializationOptions,
+            IStringLocalizer<LayerStep> stringLocalizer)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
             _serializationOptions = serializationOptions.Value.SerializerOptions;
+            S = stringLocalizer;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -76,7 +81,9 @@ namespace OrchardCore.Layers.Recipes
                 }
                 else
                 {
-                    throw new InvalidOperationException($"The layer '{nameof(layer.Name)}' is required.");
+                    context.Errors.Add(S["The layer '{0}' is required.", layer.Name]);
+
+                    continue;
                 }
 
                 if (layerStep.LayerRule != null)
@@ -112,10 +119,9 @@ namespace OrchardCore.Layers.Recipes
 
             if (unknownTypes.Count != 0)
             {
-                var prefix = "No changes have been made. The following types of conditions cannot be added:";
-                var suffix = "Please ensure that the related features are enabled to add these types of conditions.";
+                context.Errors.Add(S["No changes have been made. The following types of conditions cannot be added: {0}. Please ensure that the related features are enabled to add these types of conditions.", string.Join(", ", unknownTypes)]);
 
-                throw new InvalidOperationException($"{prefix} {string.Join(", ", unknownTypes)}. {suffix}");
+                return;
             }
 
             await _layerService.UpdateAsync(allLayers);

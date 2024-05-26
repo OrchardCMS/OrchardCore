@@ -20,7 +20,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.1.860-beta | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [ImageSharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 3.1.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
-| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.1.1 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
+| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.1.2 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [JsonPath.NET](https://github.com/gregsdennis/json-everything/tree/master/JsonPath) | A string syntax for selecting and extracting JSON values from within a given JSON value. | 1.1.0 | [MIT](https://github.com/gregsdennis/json-everything/blob/master/LICENSE) |
 | [libphonenumber-csharp](https://github.com/twcclegg/libphonenumber-csharp) | .NET library for parsing, formatting, and validating international phone numbers | 8.13.37 | [Apache-2.0](https://github.com/twcclegg/libphonenumber-csharp/blob/main/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
@@ -99,6 +99,6 @@ The below table lists the different Tests libraries:
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.20.70 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.9.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
-| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.8.0 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
-| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.13.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
-| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.8.0 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
+| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.8.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
+| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.14.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
+| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.8.1 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
