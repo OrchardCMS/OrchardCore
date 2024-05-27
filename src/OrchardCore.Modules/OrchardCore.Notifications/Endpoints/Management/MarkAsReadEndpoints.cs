@@ -54,7 +54,6 @@ public static class MarkAsReadEndpoints
         }
 
         var updated = false;
-
         var readInfo = notification.As<NotificationReadInfo>();
 
         if (!readInfo.IsRead)

@@ -31,7 +31,6 @@ notificationManager = function () {
           }
           if (reading.includes(messageId)) {
             // If a message is pending request, no need to send another request.
-
             return;
           }
           reading.push(messageId);
