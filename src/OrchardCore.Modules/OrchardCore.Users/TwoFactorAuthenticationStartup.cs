@@ -11,6 +11,8 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Endpoints.EmailAuthenticator;
+using OrchardCore.Users.Endpoints.SmsAuthenticator;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Filters;
 using OrchardCore.Users.Models;
@@ -43,17 +45,25 @@ public class TwoFactorAuthenticationStartup : StartupBase
         _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
 
         routes.MapAreaControllerRoute(
-            name: "LoginWithTwoFactorAuthentication",
-            areaName: UserConstants.Features.Users,
-            pattern: "LoginWithTwoFactorAuthentication",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
-        );
+                name: "LoginWithTwoFactorAuthentication",
+                areaName: UserConstants.Features.Users,
+                pattern: "LoginWithTwoFactorAuthentication",
+                defaults: new
+                {
+                    controller = _twoFactorControllerName,
+                    action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                }
+            );
 
         routes.MapAreaControllerRoute(
             name: "TwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: _userOptions.TwoFactorAuthenticationPath,
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.Index),
+            }
         );
 
         routes.MapAreaControllerRoute(
@@ -155,14 +165,7 @@ public class EmailAuthenticatorStartup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var _controllerName = typeof(EmailAuthenticatorController).ControllerName();
-
-        routes.MapAreaControllerRoute(
-            name: "ConfigureEmailAuthenticator",
-            areaName: UserConstants.Features.Users,
-            pattern: "Authenticator/Configure/Email",
-            defaults: new { controller = _controllerName, action = nameof(EmailAuthenticatorController.Index) }
-        );
+        routes.AddEmailSendCodeEndpoint<EmailAuthenticatorStartup>();
     }
 }
 
@@ -186,20 +189,6 @@ public class SmsAuthenticatorStartup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var controllerName = typeof(SmsAuthenticatorController).ControllerName();
-
-        routes.MapAreaControllerRoute(
-            name: "ConfigureSmsAuthenticator",
-            areaName: UserConstants.Features.Users,
-            pattern: "Authenticator/Configure/Sms",
-            defaults: new { controller = controllerName, action = nameof(SmsAuthenticatorController.Index) }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ConfigureSmsAuthenticatorValidateCode",
-            areaName: UserConstants.Features.Users,
-            pattern: "Authenticator/Configure/Sms/ValidateCode",
-            defaults: new { controller = controllerName, action = nameof(SmsAuthenticatorController.ValidateCode) }
-        );
+        routes.AddSmsSendCodeEndpoint<SmsAuthenticatorStartup>();
     }
 }
