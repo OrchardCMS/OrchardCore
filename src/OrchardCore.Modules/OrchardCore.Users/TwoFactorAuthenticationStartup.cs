@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
@@ -22,7 +23,7 @@ namespace OrchardCore.Users;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public class TwoFactorAuthenticationStartup : StartupBase
 {
-    private UserOptions _userOptions;
+    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName(); private UserOptions _userOptions;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -47,7 +48,7 @@ public class TwoFactorAuthenticationStartup : StartupBase
                 pattern: "LoginWithTwoFactorAuthentication",
                 defaults: new
                 {
-                    controller = TwoFactorAuthenticationController.ControllerName,
+                    controller = _twoFactorControllerName,
                     action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                 }
             );
@@ -58,7 +59,7 @@ public class TwoFactorAuthenticationStartup : StartupBase
             pattern: _userOptions.TwoFactorAuthenticationPath,
             defaults: new
             {
-                controller = TwoFactorAuthenticationController.ControllerName,
+                controller = _twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.Index),
             }
         );

@@ -16,7 +16,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -28,8 +27,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
 {
-    public static readonly string ControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
-
     private readonly ILogger _logger;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly IdentityOptions _identityOptions;
