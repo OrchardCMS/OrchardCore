@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddTransient<DynamicPartGraphType>();
             services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
-            services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
+            services.AddScoped<IContentTypeBuilder, DynamicContentTypeQueryBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
             services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
@@ -37,7 +37,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             services.AddTransient<DynamicPartInputGraphType>();
             services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
-            services.AddScoped<DynamicContentTypeBuilder.FieldsInputMarker>();
+            services.AddScoped<IContentTypeBuilder, DynamicContentTypeInputBuilder>();
             services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
 
             return services;

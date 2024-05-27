@@ -1,4 +1,3 @@
-using System;
 using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
@@ -10,7 +9,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     [GraphQLFieldName("Or", "OR")]
     [GraphQLFieldName("And", "AND")]
     [GraphQLFieldName("Not", "NOT")]
-    public class ContentItemWhereInput : WhereInputObjectGraphType
+    public class ContentItemWhereInput : WhereInputObjectGraphType<ContentItem>
     {
         private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
 
@@ -37,19 +36,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<ListGraphType<ContentItemWhereInput>>("Not").Description("NOT logical operation").Type(whereInputType);
         }
 
-        public void AddFilterField<TGraphType>(string name, string description)
+        private void AddFilterField<T>(string name, string description)
         {
-            AddFilterField(typeof(TGraphType), name, description);
-        }
-
-        public void AddFilterField(Type graphType, string name, string description)
-        {
-            if (_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
+            if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
             {
-                return;
+                AddScalarFilterFields<T>(name, description);
             }
-
-            AddScalarFilterFields(graphType, name, description);
         }
     }
 }

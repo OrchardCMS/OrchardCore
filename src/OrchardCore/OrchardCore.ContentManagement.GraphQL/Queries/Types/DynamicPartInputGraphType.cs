@@ -1,5 +1,4 @@
 using System.Linq;
-using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -26,7 +25,7 @@ public sealed class DynamicPartInputGraphType : WhereInputObjectGraphType<Conten
                 {
                     continue;
                 }
-                
+
                 AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                 break;
             }

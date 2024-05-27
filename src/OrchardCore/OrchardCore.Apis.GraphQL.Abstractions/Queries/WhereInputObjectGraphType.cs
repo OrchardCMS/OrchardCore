@@ -52,6 +52,11 @@ namespace OrchardCore.Apis.GraphQL.Queries
             {"_not_ends_with", "does not end with the string"},
         };
 
+        public void AddScalarFilterFields(FieldType fieldType)
+        {
+            AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+        }
+
         public void AddScalarFilterFields<TGraphType>(string fieldName, string description)
         {
             AddScalarFilterFields(typeof(TGraphType), fieldName, description);
