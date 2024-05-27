@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void OnDisplaying(Action<ShapeDisplayContext> context)
         {
-            Displaying = [..Displaying, context];
+            Displaying = [.. Displaying, context];
         }
 
         public void OnProcessing(Func<IShape, Task> context)

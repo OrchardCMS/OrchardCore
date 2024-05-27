@@ -35,7 +35,7 @@ namespace OrchardCore.Media.AmazonS3
             {
                 return Forbid();
             }
-            
+
             if (_options.Validate().Any())
             {
                 await _notifier.ErrorAsync(H["The Amazon S3 Media feature is enabled, but it was not configured with appsettings.json."]);

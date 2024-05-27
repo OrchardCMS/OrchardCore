@@ -36,7 +36,7 @@ namespace OrchardCore.Workflows.Deployment
         public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
         {
             var data = new JsonArray();
-            
+
             foreach (var workflowType in workflowTypes)
             {
                 var objectData = JObject.FromObject(workflowType, jsonSerializerOptions);

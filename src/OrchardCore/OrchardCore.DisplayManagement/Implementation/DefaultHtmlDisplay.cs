@@ -259,7 +259,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             });
 
             foreach (var shapeTypeSegment in alternateShapeTypes)
-            { 
+            {
                 foreach (var shapeBindingResolver in _shapeBindingResolvers)
                 {
                     var binding = await shapeBindingResolver.GetShapeBindingAsync(shapeTypeSegment);

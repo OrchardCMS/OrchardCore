@@ -247,7 +247,7 @@ namespace OrchardCore.Roles.Controllers
         {
             var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-            
+
             foreach (var permissionProvider in _permissionProviders)
             {
                 // Two features could use the same permission.

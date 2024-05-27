@@ -14,12 +14,12 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
         _manifest
             .DefineStyle("flowpart-edit")
             .SetDependencies("widgetslist-edit")
-            .SetUrl( "~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
-            
+            .SetUrl("~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
+
         _manifest
             .DefineScript("flowpart-edit")
             .SetDependencies("jQuery")
-            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js","~/OrchardCore.Flows/Scripts/flows.edit.js");
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
     }
 
     public void Configure(ResourceManagementOptions options)
