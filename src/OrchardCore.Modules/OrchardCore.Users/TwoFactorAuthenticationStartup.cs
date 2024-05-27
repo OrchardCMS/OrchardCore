@@ -70,28 +70,44 @@ public class TwoFactorAuthenticationStartup : StartupBase
             name: "LoginWithRecoveryCode",
             areaName: UserConstants.Features.Users,
             pattern: "LoginWithRecoveryCode",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode),
+            }
         );
 
         routes.MapAreaControllerRoute(
             name: "GenerateRecoveryCodes",
             areaName: UserConstants.Features.Users,
             pattern: "GenerateRecoveryCodes",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes),
+            }
         );
 
         routes.MapAreaControllerRoute(
             name: "ShowRecoveryCodes",
             areaName: UserConstants.Features.Users,
             pattern: "ShowRecoveryCodes",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes),
+            }
         );
 
         routes.MapAreaControllerRoute(
             name: "DisableTwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: "DisableTwoFactorAuthentication",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
+            }
         );
     }
 }
@@ -134,14 +150,22 @@ public class AuthenticatorAppStartup : StartupBase
             name: "ConfigureAuthenticatorApp",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Configure/App",
-            defaults: new { controller = controllerName, action = nameof(AuthenticatorAppController.Index) }
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Index),
+            }
         );
 
         routes.MapAreaControllerRoute(
             name: "RemoveAuthenticatorApp",
             areaName: UserConstants.Features.Users,
             pattern: "Authenticator/Reset/App",
-            defaults: new { controller = controllerName, action = nameof(AuthenticatorAppController.Reset) }
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Reset),
+            }
         );
     }
 }
