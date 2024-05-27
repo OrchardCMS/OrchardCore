@@ -78,7 +78,7 @@ namespace OrchardCore.Users.Controllers
                         UserName = model.UserName,
                         Email = model.Email,
                         EmailConfirmed = !settings.UsersMustValidateEmail,
-                        IsEnabled = !settings.UsersAreModerated
+                        IsEnabled = !settings.UsersAreModerated,
                     }, model.Password, controller.ModelState.AddModelError) as User;
 
                     if (user != null && controller.ModelState.IsValid)
@@ -114,11 +114,15 @@ namespace OrchardCore.Users.Controllers
                 new
                 {
                     userId = user.UserId,
-                    code
+                    code,
                 },
                 protocol: controller.HttpContext.Request.Scheme);
 
-            await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
+            await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel()
+            {
+                User = user,
+                ConfirmEmailUrl = callbackUrl,
+            });
 
             return callbackUrl;
         }
