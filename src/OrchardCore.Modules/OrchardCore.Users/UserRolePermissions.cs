@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace OrchardCore.Users;
 
 public class UserRolePermissions : IPermissionProvider
 {
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.AssignRoleToUsers'.")]
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
     private readonly IRoleService _roleService;
@@ -21,7 +23,7 @@ public class UserRolePermissions : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            AssignRoleToUsers,
+            CommonPermissions.AssignRoleToUsers,
         };
 
         var roleNames = (await _roleService.GetRoleNamesAsync())

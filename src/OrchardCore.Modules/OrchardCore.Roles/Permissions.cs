@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,13 @@ namespace OrchardCore.Roles;
 
 public class Permissions : IPermissionProvider
 {
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ManageRoles'.")]
     public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.AssignRoles'.")]
     public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
+
+    [Obsolete("This property will be removed in future release. Instead use 'StandardPermissions.SiteOwner'.")]
     public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
 
     private readonly IRoleService _roleService;

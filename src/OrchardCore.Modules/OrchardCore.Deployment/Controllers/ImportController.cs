@@ -50,7 +50,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -61,7 +61,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(IFormFile importedPackage)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -133,7 +133,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Json()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -144,7 +144,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Json(ImportJsonViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }

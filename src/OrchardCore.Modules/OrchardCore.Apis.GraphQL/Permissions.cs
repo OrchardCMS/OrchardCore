@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
@@ -6,13 +7,17 @@ namespace OrchardCore.Apis.GraphQL;
 
 public class Permissions : IPermissionProvider
 {
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ExecuteGraphQLMutations'.")]
     public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ExecuteGraphQL'.")]
     public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ExecuteGraphQL,
-        ExecuteGraphQLMutations,
+        CommonPermissions.ExecuteGraphQL,
+        CommonPermissions.ExecuteGraphQLMutations,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

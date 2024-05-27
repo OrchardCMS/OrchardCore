@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
@@ -11,44 +12,72 @@ public class Permissions : IPermissionProvider
 
     // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController.
 
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.PublishContent'.")]
     public static readonly Permission PublishContent = CommonPermissions.PublishContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.PublishOwnContent'.")]
     public static readonly Permission PublishOwnContent = CommonPermissions.PublishOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.EditContent'.")]
     public static readonly Permission EditContent = CommonPermissions.EditContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.EditOwnContent'.")]
     public static readonly Permission EditOwnContent = CommonPermissions.EditOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.DeleteContent'.")]
     public static readonly Permission DeleteContent = CommonPermissions.DeleteContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.DeleteOwnContent'.")]
     public static readonly Permission DeleteOwnContent = CommonPermissions.DeleteOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ViewContent'.")]
     public static readonly Permission ViewContent = CommonPermissions.ViewContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ViewOwnContent'.")]
     public static readonly Permission ViewOwnContent = CommonPermissions.ViewOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.PreviewContent'.")]
     public static readonly Permission PreviewContent = CommonPermissions.PreviewContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.PreviewOwnContent'.")]
     public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.CloneContent'.")]
     public static readonly Permission CloneContent = CommonPermissions.CloneContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.CloneOwnContent'.")]
     public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.ListContent'.")]
     public static readonly Permission ListContent = CommonPermissions.ListContent;
+
+    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.EditContentOwner'.")]
     public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
+
     public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
 
     private readonly IEnumerable<Permission> _readerPermissions =
     [
-        ViewContent,
+        CommonPermissions.ViewContent,
     ];
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        EditContent,
-        EditOwnContent,
-        PublishContent,
-        PublishOwnContent,
-        DeleteContent,
-        DeleteOwnContent,
-        ViewContent,
-        ViewOwnContent,
-        PreviewContent,
-        PreviewOwnContent,
-        CloneContent,
-        CloneOwnContent,
+        CommonPermissions.EditContent,
+        CommonPermissions.EditOwnContent,
+        CommonPermissions.PublishContent,
+        CommonPermissions.PublishOwnContent,
+        CommonPermissions.DeleteContent,
+        CommonPermissions.DeleteOwnContent,
+        CommonPermissions.ViewContent,
+        CommonPermissions.ViewOwnContent,
+        CommonPermissions.PreviewContent,
+        CommonPermissions.PreviewOwnContent,
+        CommonPermissions.CloneContent,
+        CommonPermissions.CloneOwnContent,
         AccessContentApi,
-        ListContent,
-        EditContentOwner,
+        CommonPermissions.ListContent,
+        CommonPermissions.EditContentOwner,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -61,14 +90,14 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
+                CommonPermissions.PublishContent,
+                CommonPermissions.EditContent,
+                CommonPermissions.DeleteContent,
+                CommonPermissions.PreviewContent,
+                CommonPermissions.CloneContent,
                 AccessContentApi,
-                ListContent,
-                EditContentOwner,
+                CommonPermissions.ListContent,
+                CommonPermissions.EditContentOwner,
             ],
         },
         new PermissionStereotype
@@ -76,12 +105,12 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
-                ListContent,
+                CommonPermissions.PublishContent,
+                CommonPermissions.EditContent,
+                CommonPermissions.DeleteContent,
+                CommonPermissions.PreviewContent,
+                CommonPermissions.CloneContent,
+                CommonPermissions.ListContent,
             ],
         },
         new PermissionStereotype
@@ -89,11 +118,11 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Author,
             Permissions =
             [
-                PublishOwnContent,
-                EditOwnContent,
-                DeleteOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
+                CommonPermissions.PublishOwnContent,
+                CommonPermissions.EditOwnContent,
+                CommonPermissions.DeleteOwnContent,
+                CommonPermissions.PreviewOwnContent,
+                CommonPermissions.CloneOwnContent,
             ],
         },
         new PermissionStereotype
@@ -101,9 +130,9 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Contributor,
             Permissions =
             [
-                EditOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
+                CommonPermissions.EditOwnContent,
+                CommonPermissions.PreviewOwnContent,
+                CommonPermissions.CloneOwnContent,
             ],
         },
         new PermissionStereotype

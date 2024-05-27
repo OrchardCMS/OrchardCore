@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -7,8 +8,10 @@ namespace OrchardCore.Search.Elasticsearch;
 
 public class Permissions : IPermissionProvider
 {
+    [Obsolete("This property will be removed in future release. Instead use 'ElasticsearchIndexPermissionHelper.ManageElasticIndexes'.")]
     public static readonly Permission ManageElasticIndexes = ElasticsearchIndexPermissionHelper.ManageElasticIndexes;
-    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
+
+    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ElasticsearchIndexPermissionHelper.ManageElasticIndexes });
 
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
@@ -21,7 +24,7 @@ public class Permissions : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            ManageElasticIndexes,
+            ElasticsearchIndexPermissionHelper.ManageElasticIndexes,
             QueryElasticApi,
         };
 
@@ -42,7 +45,7 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                ManageElasticIndexes,
+                ElasticsearchIndexPermissionHelper.ManageElasticIndexes,
             ],
         },
         new PermissionStereotype
