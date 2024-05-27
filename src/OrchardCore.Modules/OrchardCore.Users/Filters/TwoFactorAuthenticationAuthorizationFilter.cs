@@ -17,7 +17,6 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
     [
         typeof(EmailConfirmationController).ControllerName(),
         typeof(TwoFactorAuthenticationController).ControllerName(),
-        typeof(EmailAuthenticatorController).ControllerName(),
         typeof(AuthenticatorAppController).ControllerName(),
         typeof(SmsAuthenticatorController).ControllerName(),
     ];
@@ -42,7 +41,8 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 
         if (context.HttpContext?.User?.Identity?.IsAuthenticated == false ||
             context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase) ||
-            context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase))
+            context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase) ||
+            context.HttpContext.Request.Path.Equals("/TwoFactor-Authenticator/", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
