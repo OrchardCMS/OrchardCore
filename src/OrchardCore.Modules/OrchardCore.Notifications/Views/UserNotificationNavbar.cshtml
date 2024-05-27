@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Notifications.Endpoints.Management
 
 @inject IDisplayManager<Notification> NotificationDisplayDriver
 @inject IUpdateModelAccessor UpdateModelAccessor
@@ -44,12 +45,16 @@
                         </div>
                     }
                 </li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
+            }
+            else
+            {
+                <li class="text-center">@T["You have no unread notifications."]</li>
             }
             <li>
-                <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="OrchardCore.Notifications">@T["Notification Center"]</a>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="@NotificationConstants.Features.Notifications">@T["Notification Center"]</a>
             </li>
         </ul>
     </div>
@@ -57,7 +62,7 @@
 
 <script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
     (function () {
-        notificationManager.initializeContainer('@Url.Action("Read", "Api", new { area = "OrchardCore.Notifications" })')
+        notificationManager.initializeContainer('@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))')
     })();
 </script>
 
