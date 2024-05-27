@@ -61,8 +61,9 @@ public static class SendCode
         return TypedResults.Ok(new
         {
             success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value
-            : errorMessage.Value,
+            message = result.Succeeded
+                ? S["A verification code has been sent via email. Please check your email for the code."].Value
+                : errorMessage.Value,
         });
     }
 
