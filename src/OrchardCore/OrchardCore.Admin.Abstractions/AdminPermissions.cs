@@ -4,6 +4,6 @@ namespace OrchardCore.Admin;
 
 public class AdminPermissions
 {
-    // This was moved to the abstractions class since it need to access it from other modules.
+    // This was moved to the abstractions class since it needs to be accessed from other modules.
     public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
 }
