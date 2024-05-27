@@ -70,6 +70,7 @@ public static class SendCode
             : errorMessage.Value,
         });
     }
+    
     private static Task<string> GetBodyAsync(
         SmsAuthenticatorLoginSettings settings,
         IUser user,
