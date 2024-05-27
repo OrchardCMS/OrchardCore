@@ -32,8 +32,7 @@ public static class MarkAsReadEndpoints
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
         YesSql.ISession session,
-        IClock clock
-        )
+        IClock clock)
     {
         if (string.IsNullOrEmpty(model?.MessageId))
         {
