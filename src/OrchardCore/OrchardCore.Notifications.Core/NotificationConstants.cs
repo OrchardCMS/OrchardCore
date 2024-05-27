@@ -11,4 +11,9 @@ public class NotificationConstants
     // minus 4 to allow a new integer column, for example the 'Id' column,
     // minus 2 to allow a new date time, for example 'ReadAtUtc'.
     public const int NotificationIndexContentLength = 705;
+
+    public class Features
+    {
+        public const string Notifications = "OrchardCore.Notifications";
+    }
 }
