@@ -23,7 +23,9 @@ namespace OrchardCore.Users;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public class TwoFactorAuthenticationStartup : StartupBase
 {
-    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName(); private UserOptions _userOptions;
+    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+
+    private UserOptions _userOptions;
 
     public override void ConfigureServices(IServiceCollection services)
     {
