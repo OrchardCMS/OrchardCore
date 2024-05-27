@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication
 {
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -46,7 +44,6 @@ namespace OrchardCore.Microsoft.Authentication
         }
     }
 
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AdminMenuAAD : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()

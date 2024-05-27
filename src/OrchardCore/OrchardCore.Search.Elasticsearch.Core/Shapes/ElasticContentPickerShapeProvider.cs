@@ -3,11 +3,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
     public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
     {
         protected readonly IStringLocalizer S;

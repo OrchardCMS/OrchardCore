@@ -358,10 +358,7 @@ namespace OrchardCore.Documents
             {
                 await _distributedCache.RemoveAsync(_options.CacheIdKey);
             }
-            else
-            {
-                _memoryCache.Remove(_options.CacheIdKey);
-            }
+            _memoryCache.Remove(_options.CacheIdKey);
         }
 
         private async Task<TDocument> GetFromDistributedCacheAsync()
