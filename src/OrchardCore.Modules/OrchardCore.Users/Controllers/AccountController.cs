@@ -810,9 +810,12 @@ namespace OrchardCore.Users.Controllers
                 userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
             }
 
-            var currentClaims = user.UserClaims.Where(x => !x.ClaimType.IsNullOrEmpty()).DistinctBy(x => new { x.ClaimType, x.ClaimValue }).ToList();
-            var claimsChanged = false;
+            var currentClaims = user.UserClaims.
+            Where(x => !x.ClaimType.IsNullOrEmpty()).
+            DistinctBy(x => new { x.ClaimType, x.ClaimValue }).
+            ToList();
 
+            var claimsChanged = false;
             if (context.ClaimsToRemove != null)
             {
                 var claimsToRemove = context.ClaimsToRemove.ToHashSet();
