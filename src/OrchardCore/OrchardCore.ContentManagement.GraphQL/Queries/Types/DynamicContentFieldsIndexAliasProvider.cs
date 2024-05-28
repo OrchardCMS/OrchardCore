@@ -58,7 +58,8 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
                     }
 
                     var fieldIndex = fieldProvider.GetFieldIndex(field);
-                    if(fieldIndex is null)
+
+                    if (fieldIndex is null)
                     {
                         continue;
                     }
