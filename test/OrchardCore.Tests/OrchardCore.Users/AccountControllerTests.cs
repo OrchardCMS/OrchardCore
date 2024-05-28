@@ -181,7 +181,6 @@ public class AccountControllerTests
             // validate user properties
             Assert.Equal("Sam Zhang", userFromDb.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
         });
-
     }
 
     [Fact]
