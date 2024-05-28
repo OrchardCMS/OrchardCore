@@ -7,7 +7,7 @@ namespace OrchardCore.Notifications;
 
 public class NotificationPermissionsProvider : IPermissionProvider
 {
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Notifications.NotificationPermissions.ManageNotifications'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Notifications.NotificationPermissions.ManageNotifications'.")]
     public static readonly Permission ManageNotifications = NotificationPermissions.ManageNotifications;
 
     private readonly IEnumerable<Permission> _allPermissions =

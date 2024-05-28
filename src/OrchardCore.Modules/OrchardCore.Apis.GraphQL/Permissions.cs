@@ -7,10 +7,10 @@ namespace OrchardCore.Apis.GraphQL;
 
 public class Permissions : IPermissionProvider
 {
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQLMutations'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQLMutations'.")]
     public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQL'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQL'.")]
     public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
 
     private readonly IEnumerable<Permission> _allPermissions =

@@ -12,49 +12,49 @@ public class Permissions : IPermissionProvider
 
     // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController.
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PublishContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PublishContent'.")]
     public static readonly Permission PublishContent = CommonPermissions.PublishContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PublishOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PublishOwnContent'.")]
     public static readonly Permission PublishOwnContent = CommonPermissions.PublishOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditContent'.")]
     public static readonly Permission EditContent = CommonPermissions.EditContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditOwnContent'.")]
     public static readonly Permission EditOwnContent = CommonPermissions.EditOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.DeleteContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.DeleteContent'.")]
     public static readonly Permission DeleteContent = CommonPermissions.DeleteContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.DeleteOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.DeleteOwnContent'.")]
     public static readonly Permission DeleteOwnContent = CommonPermissions.DeleteOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ViewContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ViewContent'.")]
     public static readonly Permission ViewContent = CommonPermissions.ViewContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ViewOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ViewOwnContent'.")]
     public static readonly Permission ViewOwnContent = CommonPermissions.ViewOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PreviewContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PreviewContent'.")]
     public static readonly Permission PreviewContent = CommonPermissions.PreviewContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PreviewOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.PreviewOwnContent'.")]
     public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.CloneContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.CloneContent'.")]
     public static readonly Permission CloneContent = CommonPermissions.CloneContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.CloneOwnContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.CloneOwnContent'.")]
     public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ListContent'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.ListContent'.")]
     public static readonly Permission ListContent = CommonPermissions.ListContent;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditContentOwner'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.EditContentOwner'.")]
     public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
 
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.AccessContentApi'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Contents.CommonPermissions.AccessContentApi'.")]
     public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
 
     private readonly IEnumerable<Permission> _readerPermissions =

@@ -7,7 +7,7 @@ namespace OrchardCore.Google;
 
 public class GoogleAnalyticsPermissionsProvider : IPermissionProvider
 {
-    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Google.Permissions.ManageGoogleAnalytics'.")]
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Google.Permissions.ManageGoogleAnalytics'.")]
     public static readonly Permission ManageGoogleAnalytics = Permissions.ManageGoogleAnalytics;
 
     private readonly IEnumerable<Permission> _allPermissions =
