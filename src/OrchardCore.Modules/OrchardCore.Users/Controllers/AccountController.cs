@@ -416,11 +416,11 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
                     {
-                        return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                             new
                             {
-                                Area = "OrchardCore.Users",
-                                Controller = typeof(RegistrationController).ControllerName(),
+                                Area = UserConstants.Features.Users,
+                                Controller = typeof(EmailConfirmationController).ControllerName(),
                                 ReturnUrl = returnUrl,
                             });
                     }
@@ -480,11 +480,11 @@ namespace OrchardCore.Users.Controllers
                                 {
                                     if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
                                     {
-                                        return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                             new
                                             {
-                                                Area = "OrchardCore.Users",
-                                                Controller = typeof(RegistrationController).ControllerName(),
+                                                Area = UserConstants.Features.Users,
+                                                Controller = typeof(EmailConfirmationController).ControllerName(),
                                                 ReturnUrl = returnUrl,
                                             });
                                     }
@@ -494,7 +494,7 @@ namespace OrchardCore.Users.Controllers
                                         return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                             new
                                             {
-                                                Area = "OrchardCore.Users",
+                                                Area = UserConstants.Features.Users,
                                                 Controller = typeof(RegistrationController).ControllerName(),
                                                 ReturnUrl = returnUrl,
                                             });
@@ -599,11 +599,11 @@ namespace OrchardCore.Users.Controllers
                         {
                             if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                             {
-                                return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                                return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                     new
                                     {
-                                        Area = "OrchardCore.Users",
-                                        Controller = typeof(RegistrationController).ControllerName(),
+                                        Area = UserConstants.Features.Users,
+                                        Controller = typeof(EmailConfirmationController).ControllerName(),
                                         ReturnUrl = returnUrl,
                                     });
                             }
@@ -613,7 +613,7 @@ namespace OrchardCore.Users.Controllers
                                 return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                     new
                                     {
-                                        Area = "OrchardCore.Users",
+                                        Area = UserConstants.Features.Users,
                                         Controller = typeof(RegistrationController).ControllerName(),
                                         ReturnUrl = returnUrl,
                                     });

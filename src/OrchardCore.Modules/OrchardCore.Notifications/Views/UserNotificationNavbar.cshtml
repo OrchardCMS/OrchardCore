@@ -1,9 +1,12 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement.ModelBinding
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Admin
 @using OrchardCore.Notifications.Endpoints.Management
 
 @inject IDisplayManager<Notification> NotificationDisplayDriver
 @inject IUpdateModelAccessor UpdateModelAccessor
+@inject IAuthorizationService AuthorizationService
 
 @model UserNotificationNavbarViewModel
 
@@ -53,9 +56,12 @@
             <li>
                 <hr class="dropdown-divider">
             </li>
-            <li>
-                <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="@NotificationConstants.Features.Notifications">@T["Notification Center"]</a>
-            </li>
+            @if (await AuthorizationService.AuthorizeAsync(ViewContext.HttpContext.User, AdminPermissions.AccessAdminPanel))
+            {
+                <li>
+                    <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="@NotificationConstants.Features.Notifications">@T["Notification Center"]</a>
+                </li>
+            }
         </ul>
     </div>
 </li>
