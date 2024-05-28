@@ -26,9 +26,7 @@ public class AccountControllerTests
             UsersCanRegister = UserRegistrationType.AllowRegistration,
         });
 
-        var responseFromGet = await context.Client.GetAsync("Register");
 
-        Assert.True(responseFromGet.IsSuccessStatusCode);
 
         // Act
         var model = new RegisterViewModel()
@@ -39,6 +37,8 @@ public class AccountControllerTests
             ConfirmPassword = "test@OC!123",
         };
 
+        var responseFromGet = await context.Client.GetAsync("Register");
+        responseFromGet.EnsureSuccessStatusCode();
         var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
 
         // Assert
