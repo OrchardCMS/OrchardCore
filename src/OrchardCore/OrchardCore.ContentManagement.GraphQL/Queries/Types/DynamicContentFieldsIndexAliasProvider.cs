@@ -57,13 +57,13 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
                         continue;
                     }
 
-                    var (index, indexType) = fieldProvider.GetFieldIndex(field);
+                    var fieldIndex = fieldProvider.GetFieldIndex(field);
 
                     tenantAliases.Add(new IndexAlias
                     {
                         Alias = alias,
-                        Index = index,
-                        IndexType = indexType
+                        Index = fieldIndex.Index,
+                        IndexType = fieldIndex.IndexType
                     });
 
                     break;

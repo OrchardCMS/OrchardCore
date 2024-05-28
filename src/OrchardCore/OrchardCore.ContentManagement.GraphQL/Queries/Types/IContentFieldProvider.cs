@@ -10,8 +10,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         bool HasField(ContentPartFieldDefinition field);
 
-        (string, Type) GetFieldIndex(ContentPartFieldDefinition field);
+        FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field);
 
         bool HasFieldIndex(ContentPartFieldDefinition field);
+    }
+
+    public sealed class FieldTypeIndexDescriptor
+    {
+        public required string Index { get; set; }
+        public required Type IndexType { get; set; }
     }
 }

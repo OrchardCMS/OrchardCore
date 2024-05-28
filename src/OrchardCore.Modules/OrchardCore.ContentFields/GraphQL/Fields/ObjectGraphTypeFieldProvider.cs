@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,9 +52,9 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             return null;
         }
 
-        public (string, Type) GetFieldIndex(ContentPartFieldDefinition field)
+        public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
         {
-            return (null, null);
+            return null;
         }
 
         private IObjectGraphType GetObjectGraphType(ContentPartFieldDefinition field)
