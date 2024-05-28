@@ -12,12 +12,12 @@ namespace OrchardCore.Search.Elasticsearch
     [Route("api/elasticsearch")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : ControllerBase
+    public class ElasticsearchApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ElasticQuerySource _elasticQuerySource;
 
-        public ApiController(
+        public ElasticsearchApiController(
             IAuthorizationService authorizationService,
             ElasticQuerySource elasticQuerySource)
         {

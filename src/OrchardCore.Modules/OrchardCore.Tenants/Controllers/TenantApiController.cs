@@ -32,7 +32,7 @@ namespace OrchardCore.Tenants.Controllers
     [Route("api/tenants")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : ControllerBase
+    public class TenantApiController : ControllerBase
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _currentShellSettings;
@@ -50,7 +50,7 @@ namespace OrchardCore.Tenants.Controllers
         protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
-        public ApiController(
+        public TenantApiController(
             IShellHost shellHost,
             ShellSettings currentShellSettings,
             IShellRemovalManager shellRemovalManager,
@@ -64,8 +64,8 @@ namespace OrchardCore.Tenants.Controllers
             IOptions<TenantsOptions> tenantsOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
             ITenantValidator tenantValidator,
-            IStringLocalizer<ApiController> stringLocalizer,
-            ILogger<ApiController> logger)
+            IStringLocalizer<TenantApiController> stringLocalizer,
+            ILogger<TenantApiController> logger)
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
