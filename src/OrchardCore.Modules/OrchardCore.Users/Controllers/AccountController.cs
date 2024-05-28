@@ -801,8 +801,8 @@ namespace OrchardCore.Users.Controllers
         {
             await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
             await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
-            var userNeedUpdate = false;
 
+            var userNeedUpdate = false;
             if (context.PropertiesToUpdate != null)
             {
                 var currentProperties = user.Properties.DeepClone();
