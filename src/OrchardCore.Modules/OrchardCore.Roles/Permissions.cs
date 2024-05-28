@@ -34,9 +34,9 @@ public class Permissions : IPermissionProvider
 
         var list = new List<Permission>(roleNames.Count + 3)
         {
-            ManageRoles,
-            AssignRoles,
-            SiteOwner,
+            CommonPermissions.ManageRoles,
+            CommonPermissions.AssignRoles,
+            StandardPermissions.SiteOwner,
         };
 
         foreach (var roleName in roleNames)
@@ -54,8 +54,8 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                ManageRoles,
-                SiteOwner,
+                CommonPermissions.ManageRoles,
+                StandardPermissions.SiteOwner,
             ],
         },
     ];

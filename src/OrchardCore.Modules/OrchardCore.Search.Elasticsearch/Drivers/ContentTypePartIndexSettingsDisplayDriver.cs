@@ -23,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return null;
             }
@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return null;
             }

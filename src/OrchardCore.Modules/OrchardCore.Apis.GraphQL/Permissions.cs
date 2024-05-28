@@ -30,7 +30,7 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                ExecuteGraphQLMutations,
+                CommonPermissions.ExecuteGraphQLMutations,
             ],
         },
     ];

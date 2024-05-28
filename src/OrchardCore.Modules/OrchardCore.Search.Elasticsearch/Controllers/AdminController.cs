@@ -105,7 +105,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -174,7 +174,7 @@ namespace OrchardCore.Search.Elasticsearch
             var IsCreate = string.IsNullOrWhiteSpace(indexName);
             var settings = new ElasticIndexSettings();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost, ActionName(nameof(Edit))]
         public async Task<ActionResult> EditPost(ElasticIndexSettingsViewModel model, string[] indexedContentTypes)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -313,7 +313,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost]
         public async Task<ActionResult> Reset(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -339,7 +339,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost]
         public async Task<ActionResult> Rebuild(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -377,7 +377,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost]
         public async Task<ActionResult> Delete(ElasticIndexSettingsViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -411,7 +411,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost]
         public async Task<ActionResult> ForceDelete(ElasticIndexSettingsViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -439,7 +439,7 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IActionResult> Mappings(string indexName)
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-            var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JOptions.Indented);
+            var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
             return View(new MappingsViewModel
             {
                 IndexName = _elasticIndexManager.GetFullIndexName(indexName),
@@ -449,7 +449,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<IActionResult> SyncSettings()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -476,7 +476,7 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost]
         public async Task<IActionResult> Query(AdminQueryViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
@@ -546,7 +546,7 @@ namespace OrchardCore.Search.Elasticsearch
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+            if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
             {
                 return Forbid();
             }
