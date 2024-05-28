@@ -10,7 +10,7 @@ namespace OrchardCore.Search.Lucene.Controllers
     [Route("api/lucene")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : Controller
+    public class ApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly LuceneQuerySource _luceneQuerySource;

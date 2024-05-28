@@ -32,7 +32,7 @@ namespace OrchardCore.Tenants.Controllers
     [Route("api/tenants")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : Controller
+    public class ApiController : ControllerBase
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _currentShellSettings;

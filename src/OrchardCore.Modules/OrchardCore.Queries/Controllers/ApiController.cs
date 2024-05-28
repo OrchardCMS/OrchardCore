@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Controllers
     [Route("api/queries")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ApiController : Controller
+    public class ApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IQueryManager _queryManager;
