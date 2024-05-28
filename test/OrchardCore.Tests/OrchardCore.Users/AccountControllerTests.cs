@@ -112,11 +112,7 @@ public class AccountControllerTests
             Assert.Equal("Sam", claimsDict["firstName"]);
             Assert.Equal("Zhang", claimsDict["lastName"]);
             Assert.Equal("CEO", claimsDict["jobTitle"]);
-
-            // validate user roles
             Assert.Contains("Administrator", sam.RoleNames.FirstOrDefault());
-
-            // validate user properties
             Assert.Equal("Sam Zhang(CEO)", sam.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
 
         });
