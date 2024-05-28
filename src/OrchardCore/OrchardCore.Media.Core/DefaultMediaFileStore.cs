@@ -212,7 +212,7 @@ namespace OrchardCore.Media.Core
                 }
             }
 
-            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
+            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizeAndEscapePath(path);
         }
 
         private void ValidateRequestBasePath(HttpContext httpContext)

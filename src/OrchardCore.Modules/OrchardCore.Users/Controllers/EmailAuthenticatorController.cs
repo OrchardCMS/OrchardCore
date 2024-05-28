@@ -148,37 +148,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View(nameof(RequestCode), model);
     }
 
-    [HttpPost, Produces("application/json"), AllowAnonymous]
-    public async Task<IActionResult> SendCode()
-    {
-        var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-        var errorMessage = S["The email could not be sent. Please attempt to request the code at a later time."];
-
-        if (user == null)
-        {
-            return BadRequest(new
-            {
-                success = false,
-                message = errorMessage.Value,
-            });
-        }
-
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
-        var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
-
-        var to = await UserManager.GetEmailAsync(user);
-        var subject = await GetSubjectAsync(settings, user, code);
-        var body = await GetBodyAsync(settings, user, code);
-        var result = await _emailService.SendAsync(to, subject, body);
-
-        return Ok(new
-        {
-            success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value
-            : errorMessage.Value,
-        });
-    }
-
     private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
         var message = string.IsNullOrWhiteSpace(settings.Subject)
