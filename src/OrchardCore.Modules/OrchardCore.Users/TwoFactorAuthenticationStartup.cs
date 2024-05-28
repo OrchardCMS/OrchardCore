@@ -65,6 +65,50 @@ public class TwoFactorAuthenticationStartup : StartupBase
                 action = nameof(TwoFactorAuthenticationController.Index),
             }
         );
+
+        routes.MapAreaControllerRoute(
+            name: "LoginWithRecoveryCode",
+            areaName: UserConstants.Features.Users,
+            pattern: "LoginWithRecoveryCode",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "GenerateRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "GenerateRecoveryCodes",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ShowRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "ShowRecoveryCodes",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "DisableTwoFactorAuthentication",
+            areaName: UserConstants.Features.Users,
+            pattern: "DisableTwoFactorAuthentication",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
+            }
+        );
     }
 }
 
@@ -96,6 +140,33 @@ public class AuthenticatorAppStartup : StartupBase
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, AuthenticatorAppProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var controllerName = typeof(AuthenticatorAppController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/App",
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Index),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "RemoveAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Reset/App",
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Reset),
+            }
+        );
     }
 }
 
