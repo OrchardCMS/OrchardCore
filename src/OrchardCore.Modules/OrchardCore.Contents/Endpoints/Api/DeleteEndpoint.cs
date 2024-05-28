@@ -26,7 +26,7 @@ public static class DeleteEndpoint
         IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
             return httpContext.ChallengeOrForbid("Api");
         }

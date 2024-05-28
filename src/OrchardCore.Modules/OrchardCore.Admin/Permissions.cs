@@ -7,7 +7,7 @@ namespace OrchardCore.Admin;
 
 public class Permissions : IPermissionProvider
 {
-    [Obsolete("This property will be removed in future release. Instead use 'AdminPermissions.AccessAdminPanel'.")]
+    [Obsolete("This property will be removed in a future release. Instead use 'AdminPermissions.AccessAdminPanel'.")]
     public static readonly Permission AccessAdminPanel = AdminPermissions.AccessAdminPanel;
 
     private readonly IEnumerable<Permission> _allPermissions =

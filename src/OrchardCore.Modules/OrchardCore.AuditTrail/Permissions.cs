@@ -7,10 +7,10 @@ namespace OrchardCore.AuditTrail;
 
 public class Permissions : IPermissionProvider
 {
-    [Obsolete("This property will be removed in future release. Instead use 'AuditTrailPermissions.ViewAuditTrail'.")]
+    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.AuditTrail.AuditTrailPermissions.ViewAuditTrail'.")]
     public static readonly Permission ViewAuditTrail = AuditTrailPermissions.ViewAuditTrail;
 
-    [Obsolete("This property will be removed in future release. Instead use 'AuditTrailPermissions.ManageAuditTrailSettings'.")]
+    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.AuditTrail.AuditTrailPermissions.ManageAuditTrailSettings'.")]
     public static readonly Permission ManageAuditTrailSettings = AuditTrailPermissions.ManageAuditTrailSettings;
 
     private readonly IEnumerable<Permission> _allPermissions =

@@ -9,7 +9,7 @@ namespace OrchardCore.Users;
 
 public class UserRolePermissions : IPermissionProvider
 {
-    [Obsolete("This property will be removed in future release. Instead use 'CommonPermissions.AssignRoleToUsers'.")]
+    [Obsolete("This property will be removed in a future release. Instead use 'OrchardCore.Users.CommonPermissions.AssignRoleToUsers'.")]
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
     private readonly IRoleService _roleService;

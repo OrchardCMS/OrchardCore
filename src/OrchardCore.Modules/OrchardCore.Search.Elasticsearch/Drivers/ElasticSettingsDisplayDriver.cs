@@ -65,7 +65,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
             ];
         }).Location("Content:2#Elasticsearch;10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, UpdateEditorContext context)
@@ -80,7 +80,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, ElasticsearchIndexPermissionHelper.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageElasticIndexes))
         {
             return null;
         }
