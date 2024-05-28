@@ -49,7 +49,7 @@ public class UserRolePermissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                AssignRoleToUsers,
+                CommonPermissions.AssignRoleToUsers,
             ],
         },
     ];
