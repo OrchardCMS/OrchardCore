@@ -165,13 +165,8 @@ public class AccountControllerTests
                          .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang")
                          .FirstOrDefaultAsync();
 
-            // validate user roles
             Assert.DoesNotContain("Administrator", userFromDb.RoleNames);
-
-            // validate user claims
             Assert.DoesNotContain(userFromDb.UserClaims, x => x.ClaimType == "jobTitle" && x.ClaimValue == "CEO");
-
-            // validate user properties
             Assert.Equal("Sam Zhang", userFromDb.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
         });
     }
