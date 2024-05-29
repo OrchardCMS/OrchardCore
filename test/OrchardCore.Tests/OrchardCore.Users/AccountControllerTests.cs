@@ -99,7 +99,6 @@ public class AccountControllerTests
                 await userManager.UpdateAsync(user);
             }
 
-            // validate user claims
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
             var sam = await session.Query<User, UserByClaimIndex>()
                     .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang(CEO)")
