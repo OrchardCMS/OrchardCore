@@ -22,10 +22,9 @@ namespace OrchardCore.Twitter.Services
             S = stringLocalizer;
         }
 
-        public async Task<TwitterSettings> GetSettingsAsync()
+        public Task<TwitterSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterSettings>();
+            return _siteService.GetSettingsAsync<TwitterSettings>();
         }
 
         public async Task<TwitterSettings> LoadSettingsAsync()

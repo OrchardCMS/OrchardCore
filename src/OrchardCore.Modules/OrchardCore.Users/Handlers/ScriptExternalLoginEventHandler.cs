@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Handlers
 
         public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
         {
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Handlers
 
         public async Task UpdateRoles(UpdateRolesContext context)
         {
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
             {
                 var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";

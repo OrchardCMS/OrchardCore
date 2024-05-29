@@ -16,10 +16,9 @@ namespace OrchardCore.Twitter.Signin.Services
             _siteService = siteService;
         }
 
-        public async Task<TwitterSigninSettings> GetSettingsAsync()
+        public Task<TwitterSigninSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterSigninSettings>();
+            return _siteService.GetSettingsAsync<TwitterSigninSettings>();
         }
 
         public async Task<TwitterSigninSettings> LoadSettingsAsync()

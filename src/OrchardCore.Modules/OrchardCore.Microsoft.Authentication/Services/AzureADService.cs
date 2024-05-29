@@ -22,10 +22,9 @@ namespace OrchardCore.Microsoft.Authentication.Services
             S = stringLocalizer;
         }
 
-        public async Task<AzureADSettings> GetSettingsAsync()
+        public Task<AzureADSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<AzureADSettings>();
+            return _siteService.GetSettingsAsync<AzureADSettings>();
         }
 
         public async Task<AzureADSettings> LoadSettingsAsync()

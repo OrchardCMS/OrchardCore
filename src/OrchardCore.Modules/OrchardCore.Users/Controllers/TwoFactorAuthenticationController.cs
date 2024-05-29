@@ -86,7 +86,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAccountLogin();
         }
 
-        var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
+        var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
 
         var model = new LoginWithTwoFactorAuthenticationViewModel
         {
@@ -125,7 +125,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         if (ModelState.IsValid)
         {
-            var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
+            var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
             var rememberDevice = twoFactorSettings.AllowRememberClientTwoFactorAuthentication && model.RememberDevice;
 
             var authenticatorCode = StripToken(model.VerificationCode);
@@ -322,7 +322,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAction(nameof(Index));
         }
 
-        var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
+        var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
         var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
         await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
 

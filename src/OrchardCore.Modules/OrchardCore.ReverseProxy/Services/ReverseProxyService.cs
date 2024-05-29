@@ -13,10 +13,9 @@ namespace OrchardCore.ReverseProxy.Services
             _siteService = siteService;
         }
 
-        public async Task<ReverseProxySettings> GetSettingsAsync()
+        public Task<ReverseProxySettings> GetSettingsAsync()
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<ReverseProxySettings>();
+            return _siteService.GetSettingsAsync<ReverseProxySettings>();
         }
     }
 }

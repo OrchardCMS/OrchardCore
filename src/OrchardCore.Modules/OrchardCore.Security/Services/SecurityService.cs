@@ -13,11 +13,9 @@ namespace OrchardCore.Security.Services
             _siteService = siteService;
         }
 
-        public async Task<SecuritySettings> GetSettingsAsync()
+        public Task<SecuritySettings> GetSettingsAsync()
         {
-            var securityHeadersSettings = await _siteService.GetSiteSettingsAsync();
-
-            return securityHeadersSettings.As<SecuritySettings>();
+            return _siteService.GetSettingsAsync<SecuritySettings>();
         }
     }
 }

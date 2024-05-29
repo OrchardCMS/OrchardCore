@@ -32,9 +32,7 @@ public class EmailMigrations : DataMigration
                 return;
             }
 
-            var site = await siteService.GetSiteSettingsAsync();
-
-            var smtpSettings = site.As<SmtpSettings>();
+            var smtpSettings = await siteService.GetSettingsAsync<SmtpSettings>();
 
             if (!string.IsNullOrEmpty(smtpSettings.DefaultSender)
                 || scope.ServiceProvider.GetService<IOptions<SmtpOptions>>()?.Value.ConfigurationExists() == true)

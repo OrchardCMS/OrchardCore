@@ -13,10 +13,9 @@ namespace OrchardCore.Google.TagManager.Services
             _siteService = siteService;
         }
 
-        public async Task<GoogleTagManagerSettings> GetSettingsAsync()
+        public Task<GoogleTagManagerSettings> GetSettingsAsync()
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GoogleTagManagerSettings>();
+            return _siteService.GetSettingsAsync<GoogleTagManagerSettings>();
         }
     }
 }

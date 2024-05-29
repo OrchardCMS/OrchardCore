@@ -69,9 +69,7 @@ public class SearchController : Controller
             return View();
         }
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        var searchSettings = siteSettings.As<SearchSettings>();
+        var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
         ISearchService searchService = null;
 
         if (!string.IsNullOrEmpty(searchSettings.ProviderName))
