@@ -113,9 +113,6 @@ public class AccountControllerTests
             Assert.Equal("Sam Zhang(CEO)", sam.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
 
         });
-
-
-        // TestUpdate
         await context.UsingTenantScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
