@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
 using OrchardCore.Search.Lucene;
-using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
