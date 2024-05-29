@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -25,19 +26,18 @@ namespace OrchardCore.Html.GraphQL
             Name = "HtmlBodyPart";
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
+        private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
         {
             var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             var html = ctx.Source.Html;

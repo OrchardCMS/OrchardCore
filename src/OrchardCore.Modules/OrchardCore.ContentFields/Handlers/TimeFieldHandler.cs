@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class TimeFieldHandler : ContentFieldHandler<TimeField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public TimeFieldHandler(IStringLocalizer<TimeFieldHandler> stringLocalizer)
     {

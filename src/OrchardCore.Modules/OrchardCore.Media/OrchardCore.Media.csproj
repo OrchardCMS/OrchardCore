@@ -4,9 +4,11 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Media</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    The media module adds media management support.</Description>
+      The media module adds media management support.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
@@ -39,10 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="PdfPig" />
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
 </Project>

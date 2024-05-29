@@ -1,9 +1,9 @@
 # Meeting
 
-Every week, we organize 2 meetings on http://orchardcore.net/meeting.  
+Every week, we organize 2 meetings on <http://orchardcore.net/meeting>.  
 You can join by using the online webclient or install Microsoft Teams.
 
-## Steering commitee meeting
+## Steering committee meeting
 
 On Tuesday at [12:00 PST](https://www.google.com/search?q=12%3A00+pst).  
 During this meeting we discuss about:

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,9 @@ namespace OrchardCore.Users;
 
 public class UserRolePermissions : IPermissionProvider
 {
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Users.CommonPermissions.AssignRoleToUsers'.")]
+    public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
+
     private readonly IRoleService _roleService;
 
     public UserRolePermissions(IRoleService roleService)
@@ -17,37 +21,36 @@ public class UserRolePermissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
-            .OrderBy(roleName => roleName);
-
-        var list = new List<Permission>()
+        var permissions = new List<Permission>()
         {
             CommonPermissions.AssignRoleToUsers,
         };
 
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+        .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+        .OrderBy(roleName => roleName);
+
         foreach (var roleName in roleNames)
         {
-            list.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
-            list.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
-            list.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
-            list.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
-            list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
+            permissions.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
+            permissions.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
+            permissions.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
+            permissions.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
+            permissions.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
-        return list;
+        return permissions;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[] {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] {
-                    CommonPermissions.AssignRoleToUsers,
-                }
-            }
-        };
-    }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions =
+            [
+                CommonPermissions.AssignRoleToUsers,
+            ],
+        },
+    ];
 }

@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
-            _dynamicPartFields = new Dictionary<string, FieldType>();
+            _dynamicPartFields = [];
 
             S = localizer;
         }
@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(field)))))
                 {
                     continue;
                 }
@@ -64,7 +64,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var fieldProvider in contentFieldProviders)
                         {
-                            var fieldType = fieldProvider.GetField(field);
+                            var customFieldName = GraphQLContentOptions.GetFieldName(part, part.Name, field.Name);
+
+                            var fieldType = fieldProvider.GetField(field, part.Name, customFieldName);
 
                             if (fieldType != null)
                             {
@@ -90,7 +92,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             foreach (var fieldProvider in contentFieldProviders)
                             {
-                                var contentFieldType = fieldProvider.GetField(field);
+                                var contentFieldType = fieldProvider.GetField(field, part.Name);
 
                                 if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
                                 {
@@ -108,11 +110,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
                     else
                     {
-                        var field = contentItemType.Field(
-                            typeof(DynamicPartGraphType),
-                            partName.ToFieldName(),
-                            description: S["Represents a {0}.", part.PartDefinition.Name],
-                            resolve: context =>
+                        var field = contentItemType
+                            .Field<DynamicPartGraphType>(partName.ToFieldName())
+                            .Description(S["Represents a {0}.", part.PartDefinition.Name])
+                            .Resolve(context =>
                             {
                                 var nameToResolve = partName;
                                 var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
@@ -120,8 +121,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 return context.Source.Get(typeToResolve, nameToResolve);
                             });
 
-                        field.ResolvedType = new DynamicPartGraphType(_httpContextAccessor, part);
-                        _dynamicPartFields[partName] = field;
+                        field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+                        _dynamicPartFields[partName] = field.FieldType;
                     }
                 }
             }

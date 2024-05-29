@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +39,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -47,7 +48,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }

@@ -6,15 +6,14 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Mvc;
 
 namespace OrchardCore.Admin
 {
-    internal class AdminPageRouteModelProvider : IPageRouteModelProvider
+    internal sealed class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
-        private static readonly string RazorPageDocumentKind = "mvc.1.0.razor-page";
-
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;
 
@@ -28,10 +27,7 @@ namespace OrchardCore.Admin
 
         public void OnProvidersExecuting(PageRouteModelProviderContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             IEnumerable<CompiledViewDescriptor> descriptors;
 
@@ -75,12 +71,10 @@ namespace OrchardCore.Admin
         {
         }
 
-        private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+        private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager)
+            where T : ViewsFeature, new()
         {
-            if (applicationManager == null)
-            {
-                throw new ArgumentNullException(nameof(applicationManager));
-            }
+            ArgumentNullException.ThrowIfNull(applicationManager);
 
             var viewsFeature = GetViewFeature<T>(applicationManager);
 
@@ -100,7 +94,8 @@ namespace OrchardCore.Admin
             }
         }
 
-        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentKind;
+        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) =>
+            viewDescriptor.Item?.Kind == RazorPageDocumentClassifierPass.RazorPageDocumentKind;
 
         private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
         {

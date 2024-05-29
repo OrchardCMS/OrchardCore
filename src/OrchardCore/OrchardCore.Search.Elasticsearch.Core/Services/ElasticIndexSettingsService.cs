@@ -9,19 +9,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticIndexSettingsService
     {
-        public ElasticIndexSettingsService()
-        {
-        }
-
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
+#pragma warning disable CA1822 // Mark members as static
         public Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+#pragma warning restore CA1822 // Mark members as static
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
+#pragma warning disable CA1822 // Mark members as static
         public async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
             var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -50,28 +50,40 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return null;
         }
 
+        /// <summary>
+        /// Returns the name of he index-time analyzer.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
         public async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
-            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings))
+            return GetAnalyzerName(document, indexName);
+        }
+
+        /// <summary>
+        /// Returns the name of the query-time analyzer.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public async Task<string> GetQueryAnalyzerAsync(string indexName)
+        {
+            var document = await GetDocumentAsync();
+
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !string.IsNullOrEmpty(settings.QueryAnalyzerName))
             {
-                return settings.AnalyzerName;
+                return settings.QueryAnalyzerName;
             }
 
-            return ElasticSettings.StandardAnalyzer;
+            return ElasticsearchConstants.DefaultAnalyzer;
         }
 
         public async Task<string> LoadIndexAnalyzerAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
 
-            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings))
-            {
-                return settings.AnalyzerName;
-            }
-
-            return ElasticSettings.StandardAnalyzer;
+            return GetAnalyzerName(document, indexName);
         }
 
         public async Task UpdateIndexAsync(ElasticIndexSettings settings)
@@ -90,5 +102,17 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         private static IDocumentManager<ElasticIndexSettingsDocument> DocumentManager =>
             ShellScope.Services.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
+
+        // Returns the name of the analyzer configured for the given index name.
+        private static string GetAnalyzerName(ElasticIndexSettingsDocument document, string indexName)
+        {
+            // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && settings.AnalyzerName != "standardanalyzer")
+            {
+                return settings.AnalyzerName;
+            }
+
+            return ElasticsearchConstants.DefaultAnalyzer;
+        }
     }
 }

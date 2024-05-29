@@ -12,7 +12,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
     public class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
     {
         private readonly IContentManager _contentManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ContentItemDeploymentStepDriver(IContentManager contentManager,
             IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
@@ -42,17 +42,16 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             var model = new ContentItemDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId))
+            await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId);
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+
+            if (contentItem == null)
             {
-                var contentItem = await _contentManager.GetAsync(model.ContentItemId);
-                if (contentItem == null)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.ContentItemId), S["Your content item does not exist."]);
-                }
-                else
-                {
-                    step.ContentItemId = model.ContentItemId;
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(step.ContentItemId), S["Your content item does not exist."]);
+            }
+            else
+            {
+                step.ContentItemId = model.ContentItemId;
             }
 
             return Edit(step);

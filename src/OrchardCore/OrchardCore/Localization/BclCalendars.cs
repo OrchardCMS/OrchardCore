@@ -13,35 +13,23 @@ namespace OrchardCore.Localization
         public readonly static Calendar Persian = new PersianCalendar();
         public readonly static Calendar UmAlQura = new UmAlQuraCalendar();
 
-        public static CalendarSystem GetCalendarByName(CalendarName calendarName)
-        {
-            switch (calendarName)
+        public static CalendarSystem GetCalendarByName(CalendarName calendarName) =>
+            calendarName switch
             {
-                case CalendarName.Hebrew:
-                    return CalendarSystem.HebrewCivil;
-                case CalendarName.Hijri:
-                    return CalendarSystem.IslamicBcl;
-                case CalendarName.Gregorian:
-                    return CalendarSystem.Iso;
-                case CalendarName.Julian:
-                    return CalendarSystem.Julian;
-                case CalendarName.Persian:
-                    return CultureInfo.CurrentUICulture.Calendar.IsLeapYear(1)
-                        ? CalendarSystem.PersianSimple
-                        : CalendarSystem.PersianAstronomical;
-                case CalendarName.UmAlQura:
-                    return CalendarSystem.UmAlQura;
-                default:
-                    throw new NotSupportedException($"The calendar is not supported.");
-            }
-        }
+                CalendarName.Hebrew => CalendarSystem.HebrewCivil,
+                CalendarName.Hijri => CalendarSystem.IslamicBcl,
+                CalendarName.Gregorian => CalendarSystem.Iso,
+                CalendarName.Julian => CalendarSystem.Julian,
+                CalendarName.Persian => CultureInfo.CurrentUICulture.Calendar.IsLeapYear(1)
+                    ? CalendarSystem.PersianSimple
+                    : CalendarSystem.PersianAstronomical,
+                CalendarName.UmAlQura => CalendarSystem.UmAlQura,
+                _ => throw new NotSupportedException($"The calendar is not supported."),
+            };
 
         public static CalendarName GetCalendarName(Calendar calendar)
         {
-            if (calendar == null)
-            {
-                throw new ArgumentNullException(nameof(calendar));
-            }
+            ArgumentNullException.ThrowIfNull(calendar);
 
             var calendarType = calendar.GetType();
             if (calendarType == typeof(GregorianCalendar))
@@ -69,15 +57,14 @@ namespace OrchardCore.Localization
                 return CalendarName.UmAlQura;
             }
             else
+            {
                 return CalendarName.Unknown;
+            }
         }
 
         public static CalendarSystem ConvertToCalendarSystem(Calendar calendar)
         {
-            if (calendar == null)
-            {
-                throw new ArgumentNullException(nameof(calendar));
-            }
+            ArgumentNullException.ThrowIfNull(calendar);
 
             var calendarType = calendar.GetType();
             if (calendarType == typeof(GregorianCalendar))
@@ -107,7 +94,9 @@ namespace OrchardCore.Localization
                 return CalendarSystem.UmAlQura;
             }
             else
+            {
                 return null;
+            }
         }
     }
 }

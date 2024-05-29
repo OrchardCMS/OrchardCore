@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
@@ -8,18 +9,15 @@ namespace OrchardCore.Autoroute.Core.Services
     {
         private readonly IAutorouteEntries _autorouteEntries;
 
-        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
-        {
-            _autorouteEntries = autorouteEntries;
-        }
+        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries) => _autorouteEntries = autorouteEntries;
 
         public int Order => 10;
 
         public async Task<string> GetContentItemIdAsync(string handle)
         {
-            if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                handle = handle.Substring(5);
+                handle = handle[5..];
 
                 if (!handle.StartsWith('/'))
                 {

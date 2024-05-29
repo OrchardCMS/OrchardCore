@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
-    internal class StartupBaseMock : StartupBase
+    internal sealed class StartupBaseMock : StartupBase
     {
         private readonly object _startup;
         private readonly MethodInfo _configureService;
@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            _configureService.Invoke(_startup, new[] { services });
+            _configureService.Invoke(_startup, [services]);
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

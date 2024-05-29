@@ -3,21 +3,18 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using OrchardCore.ResourceManagement;
 using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
-using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
     public class ResourceManagerTests
     {
-        private const string basePath = "http://host";
+        private const string BasePath = "http://host";
 
-        private readonly static FileVersionProviderStub _fileVersionProviderStub = new();
-
-        private readonly IBrowsingContext browsingContext;
+        private readonly IBrowsingContext _browsingContext;
 
         public ResourceManagerTests()
         {
-            browsingContext = BrowsingContext.New();
+            _browsingContext = BrowsingContext.New();
         }
 
         [Fact]
@@ -34,7 +31,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar2" });
@@ -47,11 +44,43 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void FindHighestVersionedResourceFromManifest()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar1.js");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar2.js")
+                .SetVersion("1.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar3.js")
+                .SetVersion("2.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar4.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager(
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar" });
+            Assert.NotNull(resourceDefinition);
+            Assert.Equal("foo", resourceDefinition.Type);
+            Assert.Equal("bar", resourceDefinition.Name);
+            Assert.Contains("~/bar3.js", resourceDefinition.Url);
+            Assert.Contains("2.0.0", resourceDefinition.Version);
+        }
+
+        [Fact]
         public void RegisterResouceUrl()
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var requireSetting = resourceManager.RegisterUrl("foo", "schema://domain.ext/resource", "schema://domain.ext/resource.debug");
@@ -68,7 +97,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterUrl("foo", "schema://domain.ext/resource", "schema://domain.ext/resource.debug");
@@ -94,7 +123,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "bar");
@@ -137,7 +166,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "last-resource");
@@ -186,7 +215,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -212,7 +241,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "requires-indirect-dependency");
@@ -237,7 +266,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "resource");
@@ -271,7 +300,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "first-resource");
@@ -308,7 +337,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "first-resource");
@@ -332,7 +361,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -365,7 +394,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterResource("foo", "required");
@@ -388,7 +417,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var customScript = "<script>doSomeAction();</script>";
@@ -404,7 +433,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var customScript = "<script>doSomeAction();</script>";
@@ -420,7 +449,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var customStyle = "<style>.my-class { prop: value; }</style>";
@@ -436,7 +465,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var linkEntry = new LinkEntry
@@ -457,7 +486,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var metaEntry = new MetaEntry(name: "foo", content: "bar");
@@ -474,7 +503,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var first = new MetaEntry(name: "keywords", content: "bar")
@@ -502,7 +531,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterMeta(new MetaEntry { Charset = "utf-8" });
@@ -529,7 +558,7 @@ namespace OrchardCore.Tests.ResourceManagement
         {
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterUrl("stylesheet", "other.min.css", "other.css");    // Should not be rendered
@@ -546,8 +575,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlLinkElement>("link");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{basePath}/favicon.ico");
-            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{basePath}/pdf");
+            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico");
+            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{BasePath}/pdf");
         }
 
         [Fact]
@@ -565,7 +594,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });    // Should not be rendered
@@ -589,18 +618,18 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlStyleElement>("style");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Href == $"{basePath}/dependency.css");
-            Assert.Contains(links, link => link.Href == $"{basePath}/required.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/dependency.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/required.css");
             Assert.Single(styles);
             Assert.Contains(styles, style => style.InnerHtml == customStyle);
             // Required stylesheet after its dependency
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/dependency.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/dependency.css")
                 .CompareDocumentPosition(
-                    links.First(link => link.Href == $"{basePath}/required.css")
+                    links.First(link => link.Href == $"{BasePath}/required.css")
                 )
             );
             // Custom style after resources
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/required.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/required.css")
                 .CompareDocumentPosition(
                     styles.First(style => style.InnerHtml == customStyle)
                 )
@@ -622,7 +651,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             // Require resource
@@ -674,7 +703,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             // Require resource
@@ -736,7 +765,7 @@ namespace OrchardCore.Tests.ResourceManagement
             var resourceManager = new ResourceManager
             (
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             // Require resource.
@@ -794,7 +823,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
@@ -834,7 +863,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var resourceManager = new ResourceManager(
                 new OptionsWrapper<ResourceManagementOptions>(options),
-                _fileVersionProviderStub
+                StubFileVersionProvider.Instance
             );
 
             var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
@@ -861,11 +890,38 @@ namespace OrchardCore.Tests.ResourceManagement
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath));
+        }
+
+        #endregion
+
+        #region Stubs
+        private sealed class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
+        {
+            private readonly Action<ResourceManagementOptions> _configureManifestAction;
+
+            public StubResourceManifestProvider(Action<ResourceManagementOptions> configureManifestAction)
+            {
+                _configureManifestAction = configureManifestAction;
+            }
+
+            public void Configure(ResourceManagementOptions options)
+            {
+                _configureManifestAction?.Invoke(options);
+            }
+        }
+
+        private sealed class StubFileVersionProvider : IFileVersionProvider
+        {
+            public static StubFileVersionProvider Instance { get; } = new StubFileVersionProvider();
+
+            public string AddFileVersionToPath(PathString requestPathBase, string path)
+            {
+                return path;
             }
         }
 

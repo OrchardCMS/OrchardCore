@@ -25,9 +25,9 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapManager _sitemapManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public SourceController(
             IAuthorizationService authorizationService,
@@ -36,7 +36,6 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapManager sitemapManager,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<SourceController> stringLocalizer,
             IHtmlLocalizer<SourceController> htmlLocalizer)
         {
@@ -46,11 +45,11 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapManager = sitemapManager;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
+        [Admin("SitemapSource/Create/{sitemapId}/{sourceType}", "SitemapsSourceCreate")]
         public async Task<IActionResult> Create(string sitemapId, string sourceType)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -108,8 +107,8 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-            editor.SitemapStep = source;
+            var editor = await _displayManager.UpdateEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            editor.Properties["SitemapStep"] = source;
 
             if (ModelState.IsValid)
             {
@@ -128,6 +127,7 @@ namespace OrchardCore.Sitemaps.Controllers
             return View(model);
         }
 
+        [Admin("SitemapSource/Edit/{sitemapId}/{sourceId}", "SitemapsSourceEdit")]
         public async Task<IActionResult> Edit(string sitemapId, string sourceId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -142,7 +142,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -177,7 +177,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -202,6 +202,7 @@ namespace OrchardCore.Sitemaps.Controllers
         }
 
         [HttpPost]
+        [Admin("SitemapSource/Delete/{sitemapId}/{sourceId}", "SitemapsSourceDelete")]
         public async Task<IActionResult> Delete(string sitemapId, string sourceId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -216,7 +217,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {

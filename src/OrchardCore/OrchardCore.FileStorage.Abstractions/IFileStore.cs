@@ -117,6 +117,9 @@ namespace OrchardCore.FileStorage
 
     public static class IFileStoreExtensions
     {
+        private readonly static char[] _pathSeparators = ['\\', '/'];
+        private readonly static char[] _trimChars = ['/', ' '];
+
         /// <summary>
         /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
         /// </summary>
@@ -131,10 +134,9 @@ namespace OrchardCore.FileStorage
             var normalizedParts =
                 paths
                     .Select(x => fileStore.NormalizePath(x))
-                    .Where(x => !String.IsNullOrEmpty(x))
-                    .ToArray();
+                    .Where(x => !string.IsNullOrEmpty(x));
 
-            var combined = String.Join("/", normalizedParts);
+            var combined = string.Join("/", normalizedParts);
 
             // Preserve the initial '/' if it's present.
             if (paths[0]?.StartsWith('/') == true)
@@ -150,12 +152,36 @@ namespace OrchardCore.FileStorage
         /// Backslash is converted to forward slash and any leading or trailing slashes
         /// are removed.
         /// </remarks>
-        public static string NormalizePath(this IFileStore fileStore, string path)
+        public static string NormalizePath(this IFileStore _, string path)
         {
             if (path == null)
+            {
                 return null;
+            }
 
-            return path.Replace('\\', '/').Trim('/', ' ');
+            return path.Replace('\\', '/').Trim(_trimChars);
+        }
+
+        /// <summary>
+        /// Normalizes a path using the path delimiter semantics of the abstract virtual file store and
+        /// escapes each part of the path to be usable in an URI.
+        /// </summary>
+        /// <remarks>
+        /// Backslash is converted to forward slash and any leading or trailing slashes
+        /// are removed. Each part of the path will be escaped by using <c>Uri.EscapeDataString</c>.
+        /// </remarks>
+        public static string NormalizeAndEscapePath(this IFileStore _, string path)
+        {
+            if (path == null)
+            {
+                return null;
+            }
+
+            var normalizedParts = path
+                    .Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(Uri.EscapeDataString);
+
+            return string.Join('/', normalizedParts);
         }
     }
 }

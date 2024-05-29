@@ -5,7 +5,7 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.WorkflowTypes.Count - 1;
 }
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
@@ -14,12 +14,12 @@
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -32,7 +32,7 @@
     <ul class="list-group with-checkbox">
         @if (Model.WorkflowTypes.Count > 0)
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col text-nowrap">
                         <div class="form-check my-1">
@@ -48,6 +48,7 @@
                                 @T["Actions"]
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="Export" data-title="@T["Bulk Action"]">Export</a></li>
                                 @foreach (var item in Model.Options.WorkflowTypesBulkAction)
                                 {
                                     <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
@@ -63,6 +64,7 @@
                 <li class="list-group-item">
                     <div class="properties">
                         <div class="float-end">
+                            <a asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary">@T["Export"]</a>
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Properties"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
@@ -76,11 +78,11 @@
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
                         @if (!entry.WorkflowType.IsEnabled)
                         {
-                            <span class="badge text-danger"><i class="fas fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
+                            <span class="badge text-danger"><i class="fa-solid fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
                         }
-                        @if (entry.WorkflowCount > 0)
+                        @if (entry.HasInstances)
                         {
-                            <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa fa-list-ol" aria-hidden="true"></i> @T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
+                            <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa-solid fa-list-ol" aria-hidden="true"></i> @T["Instances"]</a>
                         }
 
                         <div class="metadata">
@@ -121,14 +123,22 @@
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({
-                    title: $this.data('title'), message: $this.data('message'), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }
-                });
+                switch ($this.data("action")) {
+                    case "Delete":
+                        confirmDialog({
+                            title: $this.data('title'), message: $this.data('message'), callback: function (r) {
+                                if (r) {
+                                    $("[name='Options.BulkAction']").val($this.data("action"));
+                                    $("[name='submit.BulkAction']").click();
+                                }
+                            }
+                        });
+                        break;
+                    case "Export":
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                        break;
+                }
             }
         });
 

@@ -10,22 +10,21 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
 <script asp-name="nouislider" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
-            <div class="@Orchard.GetLimitedWidthCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@name</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
                 <div class="input-group mb-2">
                     @if (settings.Minimum.HasValue)
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
@@ -39,13 +38,13 @@
                 <span class="ms-1 me-3">@min</span>
             }
 
-            <div id="@(id)-nouislider" class="w-100 w-md-50 mx-3"></div>
+            <div id="@(id)-nouislider" class="w-100 w-lg-75 w-xl-50 mx-3"></div>
             @if (settings.Maximum.HasValue)
             {
                 <span class="ms-3 me-1">@max</span>
             }
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
@@ -65,7 +64,7 @@
         range: {
             'min': @min,
             'max': @max
-            }
+                }
     });
 
     slider.noUiSlider.set("@Model.Value");

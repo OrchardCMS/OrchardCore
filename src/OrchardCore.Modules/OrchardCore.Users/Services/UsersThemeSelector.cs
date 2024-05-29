@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -11,7 +10,8 @@ namespace OrchardCore.Users.Services
 {
     /// <summary>
     /// Provides the theme defined in the site configuration for the current scope (request).
-    /// This selector provides AdminTheme as default or fallback for Account|Registration|ResetPassword
+    /// This selector provides AdminTheme as default or fallback for Account for Registration,
+    /// ResetPassword, TwoFactorAuthentication, SmsAuthenticator and AuthenticatorApp
     /// controllers based on SiteSettings.
     /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
@@ -36,7 +36,7 @@ namespace OrchardCore.Users.Services
         {
             var routeValues = _httpContextAccessor.HttpContext.Request.RouteValues;
 
-            if (routeValues["area"]?.ToString() == "OrchardCore.Users")
+            if (routeValues["area"]?.ToString() == UserConstants.Features.Users)
             {
                 bool useSiteTheme;
 
@@ -44,6 +44,26 @@ namespace OrchardCore.Users.Services
                 {
                     case "Account":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        break;
+                    case "TwoFactorAuthentication":
+                        {
+                            if (routeValues["action"] != null
+                               && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
+                               && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme)
+                            {
+                                useSiteTheme = true;
+                            }
+                            else
+                            {
+                                useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                            }
+                        }
+                        break;
+                    case "SmsAuthenticator":
+                    case "AuthenticatorApp":
+                        {
+                            useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                        }
                         break;
                     case "Registration":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UseSiteTheme;
@@ -57,7 +77,7 @@ namespace OrchardCore.Users.Services
 
                 var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
-                if (String.IsNullOrEmpty(adminThemeName))
+                if (string.IsNullOrEmpty(adminThemeName))
                 {
                     return null;
                 }

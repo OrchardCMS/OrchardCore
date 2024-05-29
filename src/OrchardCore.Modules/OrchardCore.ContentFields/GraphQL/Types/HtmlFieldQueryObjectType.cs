@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -27,28 +28,27 @@ namespace OrchardCore.ContentFields.GraphQL
             Name = nameof(HtmlField);
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
+        private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
         {
             var serviceProvider = ctx.RequestServices;
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var jObject = ctx.Source.Content as JObject;
+            var jObject = (JsonObject)ctx.Source.Content;
             // The JObject.Path is consistent here even when contained in a bag part.
-            var jsonPath = jObject.Path;
+            var jsonPath = jObject.GetNormalizedPath();
             var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefintion = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
-            var settings = contentPartFieldDefintion.GetSettings<HtmlFieldSettings>();
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
+            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
+            var settings = contentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
             var html = ctx.Source.Html;
 
@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.GraphQL
                     Html = ctx.Source.Html,
                     Field = ctx.Source,
                     Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                    PartFieldDefinition = contentPartFieldDefintion
+                    PartFieldDefinition = contentPartFieldDefinition
                 };
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
@@ -72,7 +72,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 new Context
                 {
                     ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentPartFieldDefintion
+                    ["PartFieldDefinition"] = contentPartFieldDefinition
                 });
         }
     }

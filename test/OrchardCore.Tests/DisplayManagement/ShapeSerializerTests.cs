@@ -3,13 +3,14 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Testing.Stubs;
+using OrchardCore.Tests.Stubs;
+using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeSerializerTests
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         public ShapeSerializerTests()
         {
@@ -17,10 +18,10 @@ namespace OrchardCore.Tests.DisplayManagement
 
             serviceCollection.AddLogging();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-            serviceCollection.AddScoped<IExtensionManager, NullExtensionManager>();
+            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-            serviceCollection.AddScoped<IShapeTableManager, ShapeTableManagerStub>();
+            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
             var defaultShapeTable = new ShapeTable
             (

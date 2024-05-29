@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
@@ -17,16 +16,18 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class RegisterUserTask : TaskActivity
+    public class RegisterUserTask : TaskActivity<RegisterUserTask>
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailService _emailService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
+
+        protected readonly IStringLocalizer S;
 
         public RegisterUserTask(
             IUserService userService,
@@ -34,6 +35,7 @@ namespace OrchardCore.Users.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
+            IEmailService emailService,
             IUpdateModelAccessor updateModelAccessor,
             IStringLocalizer<RegisterUserTask> localizer,
             HtmlEncoder htmlEncoder)
@@ -43,13 +45,11 @@ namespace OrchardCore.Users.Workflows.Activities
             _expressionEvaluator = expressionEvaluator;
             _linkGenerator = linkGenerator;
             _httpContextAccessor = httpContextAccessor;
+            _emailService = emailService;
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        // The technical name of the activity. Activities on a workflow definition reference this name.
-        public override string Name => nameof(RegisterUserTask);
 
         public override LocalizedString DisplayText => S["Register User Task"];
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            bool isValid = false;
+            var isValid = false;
             IFormCollection form = null;
             string email = null;
             if (_httpContextAccessor.HttpContext != null)
@@ -128,7 +128,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
-                        "Registration", new { area = "OrchardCore.Users", userId = user.UserId, code });
+                        "Registration", new { area = UserConstants.Features.Users, userId = user.UserId, code });
 
                     workflowContext.Properties["EmailConfirmationUrl"] = uri;
 
@@ -136,39 +136,22 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
 
-                    var message = new MailMessage()
-                    {
-                        To = email,
-                        Subject = subject,
-                        Body = body,
-                        IsBodyHtml = true
-                    };
-                    var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
+                    var result = await _emailService.SendAsync(email, subject, body);
 
-                    if (smtpService == null)
+                    if (!result.Succeeded)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
                         if (updater != null)
                         {
-                            updater.ModelState.TryAddModelError("", S["No email service is available"]);
-                        }
-                        outcome = "Invalid";
-                    }
-                    else
-                    {
-                        var result = await smtpService.SendAsync(message);
-                        if (!result.Succeeded)
-                        {
-                            var updater = _updateModelAccessor.ModelUpdater;
-                            if (updater != null)
+                            foreach (var error in result.Errors)
                             {
-                                foreach (var item in result.Errors)
+                                foreach (var errorMessage in error.Value)
                                 {
-                                    updater.ModelState.TryAddModelError(item.Name, item.Value);
+                                    updater.ModelState.TryAddModelError(error.Key, errorMessage);
                                 }
                             }
-                            outcome = "Invalid";
                         }
+                        outcome = "Invalid";
                     }
                 }
             }

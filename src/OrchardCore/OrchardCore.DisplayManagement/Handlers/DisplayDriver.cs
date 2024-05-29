@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -13,6 +12,8 @@ namespace OrchardCore.DisplayManagement.Handlers
         where TEditorContext : BuildEditorContext
         where TUpdateContext : UpdateEditorContext
     {
+        protected static readonly string ModelName = typeof(TModel).Name;
+
         /// <summary>
         /// Returns <c>true</c> if the model can be handle by the current driver.
         /// </summary>
@@ -115,11 +116,13 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)
         {
-            Prefix = typeof(TModel).Name;
-
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
-                Prefix = htmlFieldPrefix + "." + Prefix;
+                Prefix = $"{htmlFieldPrefix}.{ModelName}";
+            }
+            else
+            {
+                Prefix = ModelName;
             }
         }
     }

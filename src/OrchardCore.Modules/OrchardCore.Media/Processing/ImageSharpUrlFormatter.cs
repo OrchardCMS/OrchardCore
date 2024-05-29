@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
@@ -28,7 +27,7 @@ namespace OrchardCore.Media.Processing
         WebP
     }
 
-    internal class ImageSharpUrlFormatter
+    internal sealed class ImageSharpUrlFormatter
     {
         public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
         {
@@ -37,10 +36,7 @@ namespace OrchardCore.Media.Processing
                 return path;
             }
 
-            if (queryStringParams == null)
-            {
-                queryStringParams = new Dictionary<string, string>();
-            }
+            queryStringParams ??= new Dictionary<string, string>();
 
             if (width.HasValue)
             {
@@ -57,7 +53,7 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
-            // The format is set before quality such that the quality is not 
+            // The format is set before quality such that the quality is not
             // invalidated when the url is generated.
             if (format != Format.Undefined)
             {
@@ -74,7 +70,7 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
             }
 
-            if (!String.IsNullOrEmpty(bgcolor))
+            if (!string.IsNullOrEmpty(bgcolor))
             {
                 queryStringParams["bgcolor"] = bgcolor;
             }

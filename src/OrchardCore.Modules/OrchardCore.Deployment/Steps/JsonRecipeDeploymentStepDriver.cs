@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -31,7 +31,7 @@ namespace OrchardCore.Deployment.Steps
 }
 ";
 
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
         {
@@ -60,25 +60,25 @@ namespace OrchardCore.Deployment.Steps
         {
             var model = new JsonRecipeDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            try
             {
-                try
+                var jObject = JObject.Parse(model.Json);
+                if (!jObject.ContainsKey("name"))
                 {
-                    var jObject = JObject.Parse(model.Json);
-                    if (!jObject.ContainsKey("name"))
-                    {
 
-                        updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
-                    }
-
+                    updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
                 }
-                catch (Exception)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
 
-                }
-                step.Json = model.Json;
             }
+            catch (Exception)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
+
+            }
+
+            step.Json = model.Json;
 
             return Edit(step);
         }

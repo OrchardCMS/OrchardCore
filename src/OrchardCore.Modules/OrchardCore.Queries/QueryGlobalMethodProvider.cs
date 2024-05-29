@@ -11,7 +11,7 @@ namespace OrchardCore.Queries
 
         /// <summary>
         /// Usage: executeQuery(name, parameters)
-        /// Ex: executeQuery("MySqlQuery", {"Owner":"bob"});
+        /// Ex: executeQuery("MySqlQuery", {"Owner":"bob"});.
         /// </summary>
         public QueryGlobalMethodProvider()
         {
@@ -29,7 +29,7 @@ namespace OrchardCore.Queries
 
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
                     return result.Items;
-                })
+                }),
             };
         }
 

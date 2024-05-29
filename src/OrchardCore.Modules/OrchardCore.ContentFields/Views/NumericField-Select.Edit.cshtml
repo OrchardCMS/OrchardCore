@@ -6,12 +6,11 @@
     decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
     decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@name</label>
+    <div class="@Orchard.GetEndClasses()">
 
         <select asp-for="Value" class="form-select content-preview-select">
             @if (!settings.Required)
@@ -24,7 +23,7 @@
             }
         </select>
 
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

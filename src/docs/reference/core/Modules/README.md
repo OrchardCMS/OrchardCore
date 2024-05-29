@@ -54,7 +54,7 @@ Next, within `Startup.cs`, modify the method `ConfigureServices` to look like th
 
 Asp.Net Mvc is now part of your pipeline.
 
-You can find a sample application here: [`OrchardCore.Mvc.Web`](../../../../OrchardCore.Mvc.Web/Startup.cs)
+You can find a sample application here: [`OrchardCore.Mvc.Web`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Mvc.Web/Program.cs)
 
 ## Configuration
 
@@ -66,3 +66,7 @@ The following configuration values are used by default for module embedded stati
       "CacheControl": "public, max-age=2592000, s-maxage=31557600"
     }
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yMzqwvr6Lgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

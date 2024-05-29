@@ -1,5 +1,8 @@
+using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,27 +10,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/Import/{action}", "DeploymentPlanImport{action}")]
     public class ImportController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
+            ILogger<ImportController> logger,
             IHtmlLocalizer<ImportController> htmlLocalizer,
             IStringLocalizer<ImportController> stringLocalizer
         )
@@ -35,14 +43,14 @@ namespace OrchardCore.Deployment.Controllers
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
-
+            _logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -53,7 +61,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(IFormFile importedPackage)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -90,6 +98,18 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _notifier.SuccessAsync(H["Deployment package imported."]);
                 }
+                catch (RecipeExecutionException e)
+                {
+                    _logger.LogError(e, "Unable to import a deployment package.");
+
+                    await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to import a deployment package.");
+
+                    await _notifier.ErrorAsync(H["Unexpected error occurred while importing the deployment package."]);
+                }
                 finally
                 {
                     if (System.IO.File.Exists(tempArchiveName))
@@ -113,7 +133,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Json()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -124,14 +144,14 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Json(ImportJsonViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
 
-            if (!model.Json.IsJson())
+            if (!model.Json.IsJson(JOptions.Document))
             {
-                ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
+                ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect JSON format."]);
             }
 
             if (ModelState.IsValid)
@@ -145,7 +165,19 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    await _notifier.SuccessAsync(H["Recipe imported."]);
+                    await _notifier.SuccessAsync(H["Recipe imported successfully!"]);
+                }
+                catch (RecipeExecutionException e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+
+                    ModelState.AddModelError(nameof(model.Json), string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe from JSON input.");
+
+                    ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
                 }
                 finally
                 {

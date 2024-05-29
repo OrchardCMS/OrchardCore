@@ -11,7 +11,6 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Setup.Services;
 
@@ -55,7 +54,7 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<AutoSetupMiddleware> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// The auto setup lock options.
@@ -109,7 +108,7 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
+            if (_setupOptions is not null && _shellSettings.IsUninitialized())
             {
                 // Try to acquire a lock before starting installation, it guaranties an atomic setup in multi instances environment.
                 (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
@@ -120,7 +119,7 @@ namespace OrchardCore.AutoSetup
 
                 await using var acquiredLock = locker;
 
-                if (_shellSettings.State == TenantState.Uninitialized)
+                if (_shellSettings.IsUninitialized())
                 {
                     var pathBase = httpContext.Request.PathBase;
                     if (!pathBase.HasValue)
@@ -129,8 +128,11 @@ namespace OrchardCore.AutoSetup
                     }
 
                     // Check if the tenant was installed by another instance.
-                    var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
-                    if (settings.State != TenantState.Uninitialized)
+                    using var settings = (await _shellSettingsManager
+                        .LoadSettingsAsync(_shellSettings.Name))
+                        .AsDisposable();
+
+                    if (!settings.IsUninitialized())
                     {
                         await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
                         httpContext.Response.Redirect(pathBase);
@@ -182,7 +184,7 @@ namespace OrchardCore.AutoSetup
 
             if (setupContext.Errors.Count == 0)
             {
-                _logger.LogInformation($"AutoSetup successfully provisioned the site {setupOptions.SiteName}");
+                _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
                 return true;
             }
@@ -205,12 +207,14 @@ namespace OrchardCore.AutoSetup
         /// <returns>The <see cref="ShellSettings"/>.</returns>
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = _shellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
             shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
-            shellSettings.State = TenantState.Uninitialized;
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
@@ -244,6 +248,14 @@ namespace OrchardCore.AutoSetup
                 ShellSettings = shellSettings,
                 Errors = new Dictionary<string, string>()
             };
+
+            if (shellSettings.IsDefaultShell())
+            {
+                // The 'Default' shell is first created by the infrastructure,
+                // so the following 'Autosetup' options need to be passed.
+                shellSettings.RequestUrlHost = options.RequestUrlHost;
+                shellSettings.RequestUrlPrefix = options.RequestUrlPrefix;
+            }
 
             setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
             setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Deployment;
 using OrchardCore.CustomSettings.Drivers;
 using OrchardCore.CustomSettings.Recipes;
@@ -21,12 +23,23 @@ namespace OrchardCore.CustomSettings
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
             services.AddScoped<CustomSettingsService>();
-
+            services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
             // Permissions
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
 
             services.AddRecipeExecutionStep<CustomSettingsStep>();
+
+            services.Configure<ContentTypeDefinitionOptions>(options =>
+            {
+                options.Stereotypes.TryAdd("CustomSettings", new ContentTypeDefinitionDriverOptions
+                {
+                    ShowCreatable = false,
+                    ShowListable = false,
+                    ShowDraftable = false,
+                    ShowVersionable = false,
+                });
+            });
         }
     }
 
@@ -35,9 +48,7 @@ namespace OrchardCore.CustomSettings
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, CustomSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomSettingsDeploymentStepDriver>();
+            services.AddDeployment<CustomSettingsDeploymentSource, CustomSettingsDeploymentStep, CustomSettingsDeploymentStepDriver>();
         }
     }
 }

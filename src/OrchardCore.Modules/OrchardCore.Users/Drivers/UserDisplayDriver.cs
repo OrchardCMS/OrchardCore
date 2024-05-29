@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -22,15 +21,14 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
         private readonly UserManager<IUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -94,7 +92,7 @@ namespace OrchardCore.Users.Drivers
 
             if (context.IsNew)
             {
-                if (String.IsNullOrWhiteSpace(model.Password))
+                if (string.IsNullOrWhiteSpace(model.Password))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["A password is required"]);
                 }
@@ -114,7 +112,7 @@ namespace OrchardCore.Users.Drivers
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
                     .Cast<User>()
                     .Where(user => user.IsEnabled)
                     .ToList();

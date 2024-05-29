@@ -23,15 +23,14 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+
+        protected readonly IHtmlLocalizer H;
 
         public StepController(
             IAuthorizationService authorizationService,
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -42,13 +41,13 @@ namespace OrchardCore.Deployment.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(int id, string type)
+        [Admin("DeploymentPlan/{id}/Step/Create", "DeploymentPlanCreateStep")]
+        public async Task<IActionResult> Create(long id, string type)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -75,7 +74,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
             };
 
             model.Editor.DeploymentStep = step;
@@ -86,7 +85,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(EditDeploymentPlanStepViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -105,14 +104,14 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-            editor.DeploymentStep = step;
+            var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+            editor.Properties["DeploymentStep"] = step;
 
             if (ModelState.IsValid)
             {
                 step.Id = model.DeploymentStepId;
                 deploymentPlan.DeploymentSteps.Add(step);
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -124,9 +123,10 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id, string stepId)
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Edit", "DeploymentPlanEditStep")]
+        public async Task<IActionResult> Edit(long id, string stepId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -138,7 +138,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -162,7 +162,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditDeploymentPlanStepViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -174,7 +174,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -185,7 +185,7 @@ namespace OrchardCore.Deployment.Controllers
 
             if (ModelState.IsValid)
             {
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -199,9 +199,10 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, string stepId)
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Delete", "DeploymentPlanDeleteStep")]
+        public async Task<IActionResult> Delete(long id, string stepId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -213,7 +214,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -221,7 +222,7 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             deploymentPlan.DeploymentSteps.Remove(step);
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
 
@@ -229,9 +230,9 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        public async Task<IActionResult> UpdateOrder(long id, int oldIndex, int newIndex)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -254,7 +255,7 @@ namespace OrchardCore.Deployment.Controllers
 
             deploymentPlan.DeploymentSteps.Insert(newIndex, step);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return Ok();
         }

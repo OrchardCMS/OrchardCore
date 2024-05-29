@@ -2,7 +2,7 @@
 @model WhileLoopTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="ConditionExpression">
-    <label asp-for="ConditionExpression">@T["Condition Expression"]</label>
+    <label asp-for="ConditionExpression" class="form-label">@T["Condition Expression"]</label>
     <input type="text" asp-for="ConditionExpression" class="form-control code" autofocus />
     <span asp-validation-for="ConditionExpression"></span>
     <span class="hint">@T["A JavaScript script expression that evaluates to true or false."]</span>

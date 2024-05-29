@@ -38,7 +38,7 @@ namespace OrchardCore.Twitter.Services
 
         public virtual string GetNonce()
         {
-            return Convert.ToBase64String(new ASCIIEncoding().GetBytes(_clock.UtcNow.Ticks.ToString()));
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(_clock.UtcNow.Ticks.ToString()));
         }
 
         public async Task ConfigureOAuthAsync(HttpRequestMessage request)
@@ -46,12 +46,12 @@ namespace OrchardCore.Twitter.Services
             var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
             var queryString = request.RequestUri.Query;
 
-            if (!String.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
+            if (!string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
             {
                 _twitterSettings.ConsumerSecret = protrector.Unprotect(_twitterSettings.ConsumerSecret);
             }
 
-            if (!String.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
+            if (!string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
             {
                 _twitterSettings.AccessTokenSecret = protrector.Unprotect(_twitterSettings.AccessTokenSecret);
             }
@@ -59,14 +59,15 @@ namespace OrchardCore.Twitter.Services
             var nonce = GetNonce();
             var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
 
-            var sortedParameters = new SortedDictionary<string, string>();
-
-            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
+            var sortedParameters = new SortedDictionary<string, string>
+            {
+                { Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey) },
+                { Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce) },
+                { Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1") },
+                { Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp) },
+                { Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken) },
+                { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") },
+            };
 
             if (!string.IsNullOrEmpty(request.RequestUri.Query))
             {
@@ -98,11 +99,10 @@ namespace OrchardCore.Twitter.Services
                 Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
             var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
-            string signature;
-            using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
-            {
-                signature = Convert.ToBase64String(hasher.ComputeHash(ASCIIEncoding.ASCII.GetBytes(baseString)));
-            }
+
+#pragma warning disable CA5350 // Do not use weak cryptographic hashing algorithm
+            var signature = Convert.ToBase64String(HMACSHA1.HashData(key: Encoding.UTF8.GetBytes(secret), source: Encoding.UTF8.GetBytes(baseString)));
+#pragma warning restore CA5350
 
             var sb = new StringBuilder();
             sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(_twitterSettings.ConsumerKey)).Append("\", ");

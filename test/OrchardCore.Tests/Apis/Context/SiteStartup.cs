@@ -1,34 +1,71 @@
+using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
+using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Testing;
-using OrchardCore.Testing.Apis;
-using OrchardCore.Testing.Apis.Security;
-using OrchardCore.Testing.Recipes;
-using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteStartup
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms(builder => builder
-                .AddSetupFeatures("OrchardCore.Tenants")
-                .AddTenantFeatures("OrchardCore.Apis.GraphQL")
-                .ConfigureServices(serviceCollection =>
-                {
-                    serviceCollection.AddScoped<IRecipeFileProvider, RecipeFileProvider>();
-                    serviceCollection.AddScoped<IRecipeHarvester, RecipeHarvesterStub>();
+        public static readonly ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
 
-                    serviceCollection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
-                        new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(),
-                        SiteContextOptions.PermissionsContexts));
+        static SiteStartup()
+        {
+            PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
+        }
+
+#pragma warning disable CA1822 // Mark members as static
+        public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
+        {
+            services.AddOrchardCms(builder =>
+                builder.AddSetupFeatures(
+                    "OrchardCore.Tenants"
+                )
+                .AddTenantFeatures(
+                    "OrchardCore.Apis.GraphQL"
+                )
+                .ConfigureServices(collection =>
+                {
+                    collection.Configure<YesSqlOptions>(options =>
+                    {
+                        // To ensure we don't encounter any concurrent issue, enable EnableThreadSafetyChecks for all test.
+                        options.EnableThreadSafetyChecks = true;
+                    });
+
+                    collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
+
+                    collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
+                    {
+                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
+                    });
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
 
-            services.AddSingleton<IModuleNamesProvider>(new ModuleNamesProvider(typeof(Program).Assembly));
+            services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory) => app.UseOrchardCore();
+#pragma warning disable CA1822 // Mark members as static
+        public void Configure(IApplicationBuilder app)
+#pragma warning restore CA1822 // Mark members as static
+        {
+            app.UseOrchardCore();
+        }
+
+        private sealed class ModuleNamesProvider : IModuleNamesProvider
+        {
+            private readonly string[] _moduleNames;
+
+            public ModuleNamesProvider()
+            {
+                var assembly = Assembly.Load(new AssemblyName(typeof(Program).Assembly.GetName().Name));
+                _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToArray();
+            }
+
+            public IEnumerable<string> GetModuleNames()
+            {
+                return _moduleNames;
+            }
+        }
     }
 }

@@ -12,14 +12,16 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity, TActivity> where TActivity : class, IActivity
     {
-        private static string ThumbnailshapeType = $"{typeof(TActivity).Name}_Fields_Thumbnail";
-        private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
+        protected static readonly string ActivityName = typeof(TActivity).Name;
+
+        private static readonly string _thumbnailShapeType = $"{ActivityName}_Fields_Thumbnail";
+        private static readonly string _designShapeType = $"{ActivityName}_Fields_Design";
 
         public override IDisplayResult Display(TActivity model)
         {
             return Combine(
-                Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
-                Shape(DesignShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
+                Shape(_thumbnailShapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
+                Shape(_designShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
             );
         }
     }
@@ -29,11 +31,11 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
-        private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
+        private static readonly string _editShapeType = $"{ActivityName}_Fields_Edit";
 
         public override IDisplayResult Edit(TActivity model)
         {
-            return Initialize(EditShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
+            return Initialize(_editShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
             {
                 return EditActivityAsync(model, viewModel);
             })).Location("Content");
@@ -42,10 +44,8 @@ namespace OrchardCore.Workflows.Display
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TEditViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                await UpdateActivityAsync(viewModel, model);
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await UpdateActivityAsync(viewModel, model);
 
             return Edit(model);
         }

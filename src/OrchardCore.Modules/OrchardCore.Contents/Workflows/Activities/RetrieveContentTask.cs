@@ -13,7 +13,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class RetrieveContentTask : ContentTask
     {
-        public RetrieveContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public RetrieveContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<RetrieveContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
@@ -30,21 +34,17 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var contentItemId = await GetContentItemIdAsync(workflowContext);
+            var contentItemId = (await GetContentItemIdAsync(workflowContext))
+                ?? throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
 
-            if (contentItemId == null)
+            var contentItem = (await ContentManager.GetAsync(contentItemId, VersionOptions.Latest))
+                ?? throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
+
+            if (string.IsNullOrEmpty(workflowContext.CorrelationId))
             {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
+                workflowContext.CorrelationId = contentItem.ContentItemId;
             }
-
-            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            if (contentItem == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
-            }
-
-            workflowContext.CorrelationId = contentItem.ContentItemId;
+            
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
 

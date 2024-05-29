@@ -11,10 +11,9 @@
     }
 
     var readInfo = notification.As<NotificationReadInfo>();
-    var bodyInfo = notification.As<NotificationBodyInfo>();
 }
 
-<div class="list-group-item notification-container-item p-3@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
+<div class="list-group-item notification-container-item p-3 @(readInfo.IsRead ? "notification-is-read": "notification-is-unread")">
     <div class="row">
         <div class="col-lg col-12 title d-flex">
 
@@ -34,14 +33,11 @@
             <div class="summary d-flex flex-column flex-md-row">
                 <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
 
-                    <h5 class="mb-0">@notification.Summary</h5>
+                    <h5 class="mb-2">@notification.Subject</h5>
 
-                    @if (!String.IsNullOrWhiteSpace(bodyInfo.TextBody))
-                    {
-                        <p class="mb-0 mt-2">
-                            @bodyInfo.TextBody
-                        </p>
-                    }
+                    <p class="mb-0">
+                        @Html.Raw(notification.Summary)
+                    </p>
 
                 </div>
                 @if (Model.Header != null)
@@ -103,4 +99,4 @@
     }
 </style>
 
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>

@@ -39,8 +39,8 @@ namespace OrchardCore.DisplayManagement.Zones
                 ? "before."
                 : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
 
-            var xParts = x.Split(new[] { '.', ':' });
-            var yParts = y.Split(new[] { '.', ':' });
+            var xParts = x.Split(['.', ':']);
+            var yParts = y.Split(['.', ':']);
             for (var i = 0; i < xParts.Length; i++)
             {
                 // x is further defined meaning it comes after y (e.g. x == 1.2.3 and y == 1.2)
@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 if (!xIsInt && !yIsInt)
                 {
-                    return String.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
+                    return string.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
                 }
 
                 // Non-int after int or greater x pos than y pos (which is an int)
@@ -89,12 +89,12 @@ namespace OrchardCore.DisplayManagement.Zones
                 return partition;
             }
 
-            if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Equals(partition, "before", StringComparison.OrdinalIgnoreCase))
             {
                 return "-9999";
             }
 
-            if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Equals(partition, "after", StringComparison.OrdinalIgnoreCase))
             {
                 return "9999";
             }

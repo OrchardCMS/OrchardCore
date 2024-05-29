@@ -2,11 +2,9 @@ using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
@@ -18,11 +16,15 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<PolicySchemeOptions>,
         IConfigureNamedOptions<MicrosoftIdentityOptions>
     {
-        private readonly AzureADSettings _azureADSettings;
+        public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
 
-        public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings)
+        private readonly AzureADSettings _azureADSettings;
+        private readonly ILogger _logger;
+
+        public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings, ILogger<AzureADOptionsConfiguration> logger)
         {
             _azureADSettings = azureADSettings.Value;
+            _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -33,6 +35,13 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(settings.AppId) || string.IsNullOrWhiteSpace(settings.TenantId))
+            {
+                _logger.LogWarning("The AzureAD login provider is enabled but not configured.");
+
+                return;
+            }
+
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(Constants.AzureAd, builder =>
             {
@@ -40,16 +49,15 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 builder.HandlerType = typeof(PolicySchemeHandler);
             });
 
-            options.AddScheme(OpenIdConnectDefaults.AuthenticationScheme, builder =>
+            options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
             {
-                builder.DisplayName = "";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }
 
         public void Configure(string name, MicrosoftIdentityOptions options)
         {
-            if (!String.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
             {
                 return;
             }
@@ -74,13 +82,13 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!String.Equals(name, MicrosoftIdentityDefaults.AzureAd))
+            if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
             {
                 return;
             }
 
             options.ForwardDefault = "Identity.External";
-            options.ForwardChallenge = OpenIdConnectDefaults.AuthenticationScheme;
+            options.ForwardChallenge = AzureAdOpenIdConnectScheme;
         }
         public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }

@@ -14,28 +14,28 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             requiredAttributeParser.AddRequiredAttributes(ruleBuilder);
         }
 
-        private class DefaultRequiredAttributeParser
+        private sealed class DefaultRequiredAttributeParser
         {
             private const char RequiredAttributeWildcardSuffix = '*';
 
-            private static readonly IReadOnlyDictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> CssValueComparisons =
-                new Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode>
+            private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
+                new()
                 {
                     { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
                     { '^', RequiredAttributeDescriptor.ValueComparisonMode.PrefixMatch },
-                    { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch }
+                    { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
                 };
 
-            private static readonly char[] InvalidPlainAttributeNameCharacters = { ' ', '\t', ',', RequiredAttributeWildcardSuffix };
+            private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
 
-            private static readonly char[] InvalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
-                .Concat(CssValueComparisons.Keys)
+            private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
+                .Concat(_cssValueComparisons.Keys)
                 .ToArray();
 
-            private static readonly char[] InvalidCssQuotelessValueCharacters = { ' ', '\t', ']' };
+            private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
 
             private int _index;
-            private string _requiredAttributes;
+            private readonly string _requiredAttributes;
 
             public DefaultRequiredAttributeParser(string requiredAttributes)
             {
@@ -87,8 +87,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         }
                         else if (!AtEnd)
                         {
-                            //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
-                            //attributeBuilder.Diagnostics.Add(diagnostic);
+                            // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
+                            // attributeBuilder.Diagnostics.Add(diagnostic);
                             successfulParse = false;
                             return;
                         }
@@ -106,18 +106,18 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
             {
-                var nameEndIndex = _requiredAttributes.IndexOfAny(InvalidPlainAttributeNameCharacters, _index);
+                var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidPlainAttributeNameCharacters, _index);
                 string attributeName;
 
                 var nameComparison = RequiredAttributeDescriptor.NameComparisonMode.FullMatch;
                 if (nameEndIndex == -1)
                 {
-                    attributeName = _requiredAttributes.Substring(_index);
+                    attributeName = _requiredAttributes[_index..];
                     _index = _requiredAttributes.Length;
                 }
                 else
                 {
-                    attributeName = _requiredAttributes.Substring(_index, nameEndIndex - _index);
+                    attributeName = _requiredAttributes[_index..nameEndIndex];
                     _index = nameEndIndex;
 
                     if (_requiredAttributes[nameEndIndex] == RequiredAttributeWildcardSuffix)
@@ -136,11 +136,11 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             private void ParseCssAttributeName(RequiredAttributeDescriptorBuilder builder)
             {
                 var nameStartIndex = _index;
-                var nameEndIndex = _requiredAttributes.IndexOfAny(InvalidCssAttributeNameCharacters, _index);
+                var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidCssAttributeNameCharacters, _index);
                 nameEndIndex = nameEndIndex == -1 ? _requiredAttributes.Length : nameEndIndex;
                 _index = nameEndIndex;
 
-                var attributeName = _requiredAttributes.Substring(nameStartIndex, nameEndIndex - nameStartIndex);
+                var attributeName = _requiredAttributes[nameStartIndex..nameEndIndex];
 
                 builder.Name = attributeName;
             }
@@ -149,7 +149,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             {
                 Debug.Assert(!AtEnd);
 
-                if (CssValueComparisons.TryGetValue(Current, out valueComparison))
+                if (_cssValueComparisons.TryGetValue(Current, out valueComparison))
                 {
                     var op = Current;
                     _index++;
@@ -161,16 +161,16 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                     else if (op != '=') // We're at an incomplete operator (ex: [foo^]
                     {
-                        //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
-                        //builder.Diagnostics.Add(diagnostic);
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_PartialRequiredAttributeOperator(op, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
 
                         return false;
                     }
                 }
                 else if (!At(']'))
                 {
-                    //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
-                    //builder.Diagnostics.Add(diagnostic);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeOperator(Current, _requiredAttributes);
+                    // builder.Diagnostics.Add(diagnostic);
 
                     return false;
                 }
@@ -195,8 +195,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     valueEnd = _requiredAttributes.IndexOf(quote, _index);
                     if (valueEnd == -1)
                     {
-                        //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
-                        //builder.Diagnostics.Add(diagnostic);
+                        // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeMismatchedQuotes(quote, _requiredAttributes);
+                        // builder.Diagnostics.Add(diagnostic);
 
                         return false;
                     }
@@ -205,12 +205,12 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 else
                 {
                     valueStart = _index;
-                    var valueEndIndex = _requiredAttributes.IndexOfAny(InvalidCssQuotelessValueCharacters, _index);
+                    var valueEndIndex = _requiredAttributes.IndexOfAny(_invalidCssQuotelessValueCharacters, _index);
                     valueEnd = valueEndIndex == -1 ? _requiredAttributes.Length : valueEndIndex;
                     _index = valueEnd;
                 }
 
-                var value = _requiredAttributes.Substring(valueStart, valueEnd - valueStart);
+                var value = _requiredAttributes[valueStart..valueEnd];
 
                 builder.Value = value;
 
@@ -234,7 +234,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     return false;
                 }
 
-                if (!TryParseCssValueComparison(attributeBuilder, out RequiredAttributeDescriptor.ValueComparisonMode valueComparison))
+                if (!TryParseCssValueComparison(attributeBuilder, out var valueComparison))
                 {
                     return false;
                 }
@@ -261,24 +261,24 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 }
                 else if (AtEnd)
                 {
-                    //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
-                    //attributeBuilder.Diagnostics.Add(diagnostic);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
+                    // attributeBuilder.Diagnostics.Add(diagnostic);
                 }
                 else
                 {
-                    //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
-                    //attributeBuilder.Diagnostics.Add(diagnostic);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
+                    // attributeBuilder.Diagnostics.Add(diagnostic);
                 }
 
                 return false;
             }
 
-            private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder builder)
+            private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder _)
             {
                 if (AtEnd)
                 {
-                    //var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
-                    //builder.Diagnostics.Add(diagnostic);
+                    // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
+                    // builder.Diagnostics.Add(diagnostic);
 
                     return false;
                 }

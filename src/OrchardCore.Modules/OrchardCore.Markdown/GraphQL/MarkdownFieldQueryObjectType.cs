@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -31,13 +32,12 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML representation of the markdown content"])
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(IResolveFieldContext<MarkdownField> ctx)
+        private static async ValueTask<object> ToHtml(IResolveFieldContext<MarkdownField> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {
@@ -50,23 +50,23 @@ namespace OrchardCore.Markdown.GraphQL
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var jObject = ctx.Source.Content as JObject;
+            var jObject = (JsonObject)ctx.Source.Content;
             // The JObject.Path is consistent here even when contained in a bag part.
-            var jsonPath = jObject.Path;
+            var jsonPath = jObject.GetNormalizedPath();
             var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefintion = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
+            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
 
-            var settings = contentPartFieldDefintion.GetSettings<MarkdownFieldSettings>();
+            var settings = contentPartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
             // The default Markdown option is to entity escape html
             // so filters must be run after the markdown has been processed.
             var html = markdownService.ToHtml(ctx.Source.Markdown);
 
-            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
@@ -78,7 +78,7 @@ namespace OrchardCore.Markdown.GraphQL
                     Html = html,
                     Field = ctx.Source,
                     Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                    PartFieldDefinition = contentPartFieldDefintion
+                    PartFieldDefinition = contentPartFieldDefinition
                 };
 
                 html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
@@ -89,7 +89,7 @@ namespace OrchardCore.Markdown.GraphQL
                 new Context
                 {
                     ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentPartFieldDefintion
+                    ["PartFieldDefinition"] = contentPartFieldDefinition
                 });
 
             if (settings.SanitizeHtml)

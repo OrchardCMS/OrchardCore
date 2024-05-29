@@ -14,7 +14,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             Prefix = $"{model.PartDefinition.Name}.{model.Name}";
 
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
             }
@@ -38,7 +38,7 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return string.Equals(typeof(TField).Name, model.FieldDefinition.Name);
+            return string.Equals(typeof(TField).Name, model.FieldDefinition.Name, StringComparison.Ordinal);
         }
     }
 }

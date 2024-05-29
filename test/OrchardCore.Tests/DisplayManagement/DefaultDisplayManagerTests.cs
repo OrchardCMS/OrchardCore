@@ -5,15 +5,14 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
-using OrchardCore.Testing;
-using OrchardCore.Testing.Stubs;
+using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
         private readonly ShapeTable _defaultShapeTable;
-        private readonly ShapeBindingsDictionary _additionalBindings;
+        private readonly TestShapeBindingsDictionary _additionalBindings;
         private readonly IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
@@ -23,16 +22,16 @@ namespace OrchardCore.Tests.DisplayManagement
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             );
-            _additionalBindings = new ShapeBindingsDictionary();
+            _additionalBindings = [];
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-            serviceCollection.AddScoped<IShapeTableManager, ShapeTableManagerStub>();
-            serviceCollection.AddScoped<IShapeBindingResolver, ShapeBindingResolverStub>();
+            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+            serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
-            serviceCollection.AddScoped<IExtensionManager, NullExtensionManager>();
+            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
             serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
@@ -45,7 +44,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        private class TestDisplayEvents : IShapeDisplayEvents
+        private sealed class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };

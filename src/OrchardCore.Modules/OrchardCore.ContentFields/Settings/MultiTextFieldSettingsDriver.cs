@@ -1,6 +1,6 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
         {
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = JsonConvert.SerializeObject(settings.Options, Formatting.Indented);
+                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
             })
             .Location("Content");
         }
@@ -36,22 +36,22 @@ namespace OrchardCore.ContentFields.Settings
             var model = new MultiTextFieldSettingsViewModel();
             var settings = new MultiTextFieldSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.Required = model.Required;
-                settings.Hint = model.Hint;
-                try
-                {
-                    settings.Options = JsonConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
-                }
-                catch
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                    return Edit(partFieldDefinition);
-                }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
+            settings.Required = model.Required;
+            settings.Hint = model.Hint;
+
+            try
+            {
+                settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
             }
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                return Edit(partFieldDefinition);
+            }
+
+            context.Builder.WithSettings(settings);
 
             return Edit(partFieldDefinition);
         }

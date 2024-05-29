@@ -39,12 +39,12 @@ namespace OrchardCore.Recipes.Services
 
         public async Task<string> ExecuteAsync(string recipeFileName, IDataMigration migration)
         {
-            var featureInfo = _typeFeatureProvider.GetFeatureForDependency(migration.GetType());
+            var extensionInfo = _typeFeatureProvider.GetExtensionForDependency(migration.GetType());
 
-            var recipeBasePath = Path.Combine(featureInfo.Extension.SubPath, "Migrations").Replace('\\', '/');
+            var recipeBasePath = Path.Combine(extensionInfo.SubPath, "Migrations").Replace('\\', '/');
             var recipeFilePath = Path.Combine(recipeBasePath, recipeFileName).Replace('\\', '/');
             var recipeFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(recipeFilePath);
-            var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
+            var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
             recipeDescriptor.RequireNewScope = false;
 
             var environment = new Dictionary<string, object>();

@@ -14,7 +14,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TimeFieldDisplayDriver(IStringLocalizer<TimeFieldDisplayDriver> localizer)
         {
@@ -46,13 +46,12 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Value))
+            await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+            var settings = context.PartFieldDefinition.GetSettings<TimeFieldSettings>();
+
+            if (settings.Required && field.Value == null)
             {
-                var settings = context.PartFieldDefinition.GetSettings<TimeFieldSettings>();
-                if (settings.Required && field.Value == null)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

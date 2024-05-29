@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +33,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
+        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
@@ -49,11 +50,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Execute IStartup registrations
 
-            var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
-
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
                 tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
             }
 
@@ -69,8 +67,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     continue;
                 }
 
-                // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                // Ignore Startup class from main application.
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
                 {
                     continue;
                 }
@@ -81,7 +79,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     BindingFlags.Public | BindingFlags.Instance,
                     null,
                     CallingConventions.Any,
-                    new Type[] { typeof(IServiceCollection) },
+                    [typeof(IServiceCollection)],
                     null);
 
                 var configureMethod = rawStartup.GetMethod(
@@ -98,14 +96,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 // Add the startup class to the DI so we can instantiate it with
                 // valid ctor arguments
-                moduleServiceCollection.AddSingleton(rawStartup);
                 tenantServiceCollection.AddSingleton(rawStartup);
-
-                moduleServiceCollection.AddSingleton<IStartup>(sp =>
-                {
-                    var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
-                });
 
                 tenantServiceCollection.AddSingleton<IStartup>(sp =>
                 {
@@ -114,30 +105,20 @@ namespace OrchardCore.Environment.Shell.Builders
                 });
             }
 
-            // Make shell settings available to the modules
-            moduleServiceCollection.AddSingleton(settings);
-            moduleServiceCollection.AddSingleton(sp =>
-            {
-                // Resolve it lazily as it's constructed lazily
-                var shellSettings = sp.GetRequiredService<ShellSettings>();
-                return shellSettings.ShellConfiguration;
-            });
-
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
-
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
-            var startups = moduleServiceProvider.GetServices<IStartup>();
+            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            var startups = shellServiceProvider.GetServices<IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            // Let any module add custom service descriptors to the tenant
+            // Let any module add custom service descriptors to the tenant.
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();
 
                 // If the startup is not coming from an extension, associate it to the application feature.
                 // For instance when Startup classes are registered with Configure<Startup>() from the application.
@@ -146,20 +127,75 @@ namespace OrchardCore.Environment.Shell.Builders
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
 
-            (moduleServiceProvider as IDisposable).Dispose();
+            await shellServiceProvider.DisposeAsync();
 
-            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            // Rebuild the service provider from the updated collection.
+            shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
-            // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+            PopulateTypeFeatureProvider(typeFeatureProvider, featureAwareServiceCollection);
 
+            return shellServiceProvider;
+        }
+
+        private void EnsureApplicationFeature()
+        {
+            if (_applicationFeature is null)
+            {
+                lock (this)
+                {
+                    _applicationFeature ??= _extensionManager.GetFeatures()
+                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
+                }
+            }
+        }
+
+        private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
+        {
+            // Get all types from all extension and add them to the type feature provider.
+            var extensions = _extensionManager.GetExtensions();
+
+            var allTypesByExtension = extensions
+                .SelectMany(extension =>
+                    _extensionManager.GetExportedExtensionTypes(extension)
+                        .Where(IsComponentType)
+                        .Select(type => new
+                        {
+                            Extension = extension,
+                            Type = type
+                        }));
+
+            var typesByFeature = allTypesByExtension
+                .GroupBy(typeByExtension => GetSourceFeatureNameForType(
+                    typeByExtension.Type,
+                    typeByExtension.Extension.Id))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(typesByExtension => typesByExtension.Type));
+
+            foreach (var extension in extensions)
+            {
+                foreach (var feature in extension.Features)
+                {
+                    // Features can have no types.
+                    if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
+                    {
+                        foreach (var type in featureTypes)
+                        {
+                            typeFeatureProvider.TryAdd(type, feature);
+                        }
+                    }
+                }
+            }
+
+            // Register all DIed types in ITypeFeatureProvider.
             foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {
                     var type = serviceDescriptor.GetImplementationType();
 
-                    if (type != null)
+                    if (type is not null)
                     {
                         var feature = featureServiceCollection.Key;
 
@@ -167,7 +203,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-                            if (attribute != null)
+                            if (attribute is not null)
                             {
                                 feature = featureServiceCollection.Key.Extension.Features
                                     .FirstOrDefault(f => f.Id == attribute.FeatureName)
@@ -179,23 +215,18 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-
-            return shellServiceProvider;
         }
 
-        private void EnsureApplicationFeature()
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
         {
-            if (_applicationFeature == null)
-            {
-                lock (this)
-                {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
-                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
-                }
-            }
+            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+            return attribute?.FeatureName ?? extensionId;
+        }
+
+        private static bool IsComponentType(Type type)
+        {
+            return type.IsClass && !type.IsAbstract && type.IsPublic;
         }
     }
 }

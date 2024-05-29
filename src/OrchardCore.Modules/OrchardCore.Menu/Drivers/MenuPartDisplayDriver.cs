@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -20,28 +20,32 @@ namespace OrchardCore.Menu.Drivers
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
+        protected readonly IHtmlLocalizer H;
+
         public MenuPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
-            IHtmlLocalizer<MenuPartDisplayDriver> htmlLocalizer,
             INotifier notifier,
-            ILogger<MenuPartDisplayDriver> logger
+            ILogger<MenuPartDisplayDriver> logger,
+            IHtmlLocalizer<MenuPartDisplayDriver> htmlLocalizer
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
-            H = htmlLocalizer;
             _notifier = notifier;
             _logger = logger;
+            H = htmlLocalizer;
         }
 
         public override IDisplayResult Edit(MenuPart part)
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
-                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "MenuItem");
+                var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                    .Where(t => t.StereotypeEquals("MenuItem"))
+                    .ToArray();
+
                 var notify = false;
 
                 foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
@@ -67,21 +71,28 @@ namespace OrchardCore.Menu.Drivers
         public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
         {
             var model = new MenuPartEditViewModel();
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy);
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !String.IsNullOrWhiteSpace(model.Hierarchy))
+            if (!string.IsNullOrWhiteSpace(model.Hierarchy))
             {
+                var menuItems = new JsonArray();
+
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 
-                var newHierarchy = JArray.Parse(model.Hierarchy);
-
-                var menuItems = new JArray();
-
-                foreach (var item in newHierarchy)
+                if (originalMenuItems is not null)
                 {
-                    menuItems.Add(ProcessItem(originalMenuItems, item as JObject));
+                    var newHierarchy = JArray.Parse(model.Hierarchy);
+
+                    foreach (var item in newHierarchy)
+                    {
+                        menuItems.Add(ProcessItem(originalMenuItems, item as JsonObject));
+                    }
                 }
 
-                part.ContentItem.Content["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+                part.ContentItem.Content[nameof(MenuItemsListPart)] = new JsonObject
+                {
+                    [nameof(MenuItemsListPart.MenuItems)] = menuItems,
+                };
             }
 
             return Edit(part);
@@ -90,7 +101,7 @@ namespace OrchardCore.Menu.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
+        private static JsonObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
         {
             ContentItem menuItem = null;
 
@@ -100,30 +111,40 @@ namespace OrchardCore.Menu.Drivers
                 menuItems = menuItem.As<MenuItemsListPart>();
             }
 
-            var newObj = JObject.Parse(JsonConvert.SerializeObject(menuItem));
-            if (newObj["MenuItemsListPart"] != null)
+            var newObj = JObject.FromObject(menuItem, JOptions.Default);
+
+            if (newObj[nameof(MenuItemsListPart)] != null)
             {
-                newObj["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", new JArray()));
+                newObj[nameof(MenuItemsListPart)] = new JsonObject
+                {
+                    [nameof(MenuItemsListPart.MenuItems)] = new JsonArray()
+                };
             }
 
             return newObj;
         }
 
-        private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
+        private static JsonObject ProcessItem(MenuItemsListPart originalItems, JsonObject item)
         {
-            var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
+            var indexes = item["index"]?.ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray() ?? [];
 
-            var children = item["children"] as JArray;
+            var contentItem = GetMenuItemAt(originalItems, indexes);
 
-            if (children != null)
+            var children = item["children"] as JsonArray;
+
+            if (children is not null)
             {
-                var menuItems = new JArray();
+                var menuItems = new JsonArray();
 
                 for (var i = 0; i < children.Count; i++)
                 {
-                    menuItems.Add(ProcessItem(originalItems, children[i] as JObject));
-                    contentItem["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+                    menuItems.Add(ProcessItem(originalItems, children[i] as JsonObject));
                 }
+
+                contentItem[nameof(MenuItemsListPart)] = new JsonObject
+                {
+                    [nameof(MenuItemsListPart.MenuItems)] = menuItems,
+                };
             }
 
             return contentItem;

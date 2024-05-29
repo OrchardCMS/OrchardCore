@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Security.Services
@@ -7,8 +7,8 @@ namespace OrchardCore.Security.Services
     {
         public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Anonymous",
-            "Authenticated",
+            OrchardCoreConstants.Roles.Anonymous,
+            OrchardCoreConstants.Roles.Authenticated,
         };
     }
 }

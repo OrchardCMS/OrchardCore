@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
@@ -9,9 +10,9 @@ namespace OrchardCore.Contents.Services
 
         public Task<string> GetContentItemIdAsync(string handle)
         {
-            if (handle.StartsWith("contentitemid:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith("contentitemid:", StringComparison.OrdinalIgnoreCase))
             {
-                string contentItemId = handle.Substring(14);
+                var contentItemId = handle[14..];
 
                 return Task.FromResult(contentItemId);
             }

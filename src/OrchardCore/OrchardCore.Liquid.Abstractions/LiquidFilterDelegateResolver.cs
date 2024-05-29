@@ -10,11 +10,8 @@ namespace OrchardCore.Liquid
     {
         public ValueTask<FluidValue> ResolveAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var ctx = context as LiquidTemplateContext;
-            if (ctx == null)
-            {
-                throw new InvalidOperationException("An implementation of 'LiquidTemplateContext' is required");
-            }
+            var ctx = context as LiquidTemplateContext
+                ?? throw new InvalidOperationException("An implementation of 'LiquidTemplateContext' is required");
 
             var services = ctx.Services;
             var filter = services.GetRequiredService<TLiquidFilter>();

@@ -100,7 +100,7 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
-Here is an example of a custom Query from a manually added table in a database : 
+Here is an example of a custom Query from a manually added table in a database :
 
 ```sql
 -- On the Query don't check the "return content items" checkbox
@@ -294,9 +294,13 @@ The following JavaScript functions are available with this module.
 | -------- | ----------- | --------- |
 | `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 
-## Tutorial
+## Videos
 
-<https://www.youtube.com/watch?v=6ZaqWmq8Pog&t=2891s>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6ZaqWmq8Pog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IYKEeYxeNck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Breaking changes
 

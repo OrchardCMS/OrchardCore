@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Hashing;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -14,21 +13,24 @@ using OrchardCore.Media.ViewModels;
 namespace OrchardCore.Media.Services
 {
     /// <summary>
-    /// Handles file management operations related to the attached media field
+    /// Handles file management operations related to the attached media field.
     /// </summary>
     public class AttachedMediaFieldFileService
     {
         private readonly IMediaFileStore _fileStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly ILogger _logger;
 
         public AttachedMediaFieldFileService(
             IMediaFileStore fileStore,
             IHttpContextAccessor httpContextAccessor,
+            IUserAssetFolderNameProvider userAssetFolderNameProvider,
             ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
             _httpContextAccessor = httpContextAccessor;
+            _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _logger = logger;
 
             MediaFieldsFolder = "mediafields";
@@ -42,7 +44,7 @@ namespace OrchardCore.Media.Services
         /// Removes the assets attached to a content item through an attached media field.
         /// </summary>
         /// <remarks>
-        /// To be used by content handlers when the content item is deleted
+        /// To be used by content handlers when the content item is deleted.
         /// </remarks>
         public Task DeleteContentItemFolderAsync(ContentItem contentItem)
         {
@@ -50,14 +52,11 @@ namespace OrchardCore.Media.Services
         }
 
         /// <summary>
-        /// Moves uploaded files to a folder specific for the content item
+        /// Moves uploaded files to a folder specific for the content item.
         /// </summary>
         public async Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            ArgumentNullException.ThrowIfNull(items);
 
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
             {
@@ -70,6 +69,13 @@ namespace OrchardCore.Media.Services
 
             await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem);
         }
+
+        /// <summary>
+        /// Gets the per-user temporary upload directory.
+        /// </summary>
+        /// <returns></returns>
+        public string GetMediaFieldsTempSubFolder()
+            => _fileStore.Combine(MediaFieldsTempSubFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(_httpContextAccessor.HttpContext.User));
 
         private async Task EnsureGlobalDirectoriesAsync()
         {
@@ -89,7 +95,7 @@ namespace OrchardCore.Media.Services
         // Newly added files
         private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            foreach (var item in items.Where(i => !i.IsRemoved && !String.IsNullOrEmpty(i.Path)))
+            foreach (var item in items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)))
             {
                 var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
 
@@ -128,29 +134,16 @@ namespace OrchardCore.Media.Services
 
         private async Task<string> GetFileHashAsync(string filePath)
         {
-            using (var fs = await _fileStore.GetFileStreamAsync(filePath))
-            using (HashAlgorithm hashAlgorithm = MD5.Create())
-            {
-                var hash = hashAlgorithm.ComputeHash(fs);
-                return ByteArrayToHexString(hash);
-            }
+            using var fs = await _fileStore.GetFileStreamAsync(filePath);
+            var hash = new XxHash32();
+            await hash.AppendAsync(fs);
+            return Convert.ToHexString(hash.GetCurrentHash()).ToLowerInvariant();
         }
 
-        public string ByteArrayToHexString(byte[] bytes)
-        {
-            var sb = new StringBuilder();
-            foreach (var b in bytes)
-            {
-                sb.Append(b.ToString("x2").ToLower());
-            }
-
-            return sb.ToString();
-        }
-
-        private string GetFileExtension(string path)
+        private static string GetFileExtension(string path)
         {
             var lastPoint = path.LastIndexOf('.');
-            return lastPoint > -1 ? path.Substring(lastPoint) : "";
+            return lastPoint > -1 ? path[lastPoint..] : "";
         }
 
         private async Task DeleteDirIfEmptyAsync(string previousDirPath)

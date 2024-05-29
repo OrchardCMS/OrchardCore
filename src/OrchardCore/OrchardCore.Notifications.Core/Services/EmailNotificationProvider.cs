@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
@@ -8,18 +7,18 @@ namespace OrchardCore.Notifications.Services;
 
 public class EmailNotificationProvider : INotificationMethodProvider
 {
-    private readonly ISmtpService _smtpService;
-    private readonly IStringLocalizer S;
+    private readonly IEmailService _emailService;
+    protected readonly IStringLocalizer S;
 
     public EmailNotificationProvider(
-        ISmtpService smtpService,
+        IEmailService emailService,
         IStringLocalizer<EmailNotificationProvider> stringLocalizer)
     {
-        _smtpService = smtpService;
+        _emailService = emailService;
         S = stringLocalizer;
     }
 
-    public string Method => "Email";
+    public string Method { get; } = "Email";
 
     public LocalizedString Name => S["Email Notifications"];
 
@@ -27,29 +26,26 @@ public class EmailNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (String.IsNullOrEmpty(user?.Email))
+        if (string.IsNullOrEmpty(user?.Email))
         {
             return false;
         }
 
-        var mailMessage = new MailMessage()
+        string body;
+        bool isHtmlBody;
+        
+        if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
-            To = user.Email,
-            Subject = message.Summary,
-        };
-
-        if (message.IsHtmlPreferred && !String.IsNullOrWhiteSpace(message.HtmlBody))
-        {
-            mailMessage.Body = message.HtmlBody;
-            mailMessage.IsBodyHtml = true;
+            body = message.HtmlBody;
+            isHtmlBody = true;
         }
         else
         {
-            mailMessage.BodyText = message.TextBody;
-            mailMessage.IsBodyText = true;
+            body = message.TextBody;
+            isHtmlBody = false;
         }
 
-        var result = await _smtpService.SendAsync(mailMessage);
+        var result = await _emailService.SendAsync(user.Email, message.Subject, body, isHtmlBody);
 
         return result.Succeeded;
     }

@@ -1,68 +1,70 @@
-@inject DarkModeService DarkModeService
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Themes.Services
+@using OrchardCore.Users.Models
+
+@inject ThemeTogglerService ThemeTogglerService
+@inject IDisplayManager<Navbar> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.As<AdminSettings>();
-    var darkMode = await DarkModeService.IsDarkModeAsync();
 
-    // Branding is pre-rendered to allow resource injection
+    // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
+    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <!-- Bootstrap CSS -->
-    <style media="all" asp-name="admin" version="1"></style>
-    <style asp-name="material-icons" version="1"></style>
+    <!-- This script can't wait till the footer -->
+    <script asp-name="admin-main" version="1" at="Head"></script>
 
-    <script asp-name="font-awesome" at="Head" version="6"></script>
-    <script asp-name="font-awesome-v4-shims" at="Head" version="6"></script>
-    <script asp-name="js-cookie" at="Foot"></script>
+    <style asp-name="TheAdminLayout" asp-src="~/TheAdmin/css/admin-layout.min.css" debug-src="~/TheAdmin/css/admin-layout.css" at="Head"></style>
+
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap-rtl,TheAdminLayout" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap,TheAdminLayout" at="Head"></style>
+    }
+    <script asp-name="font-awesome" at="Foot" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
+
     <resources type="Header" />
 
-    <!-- This script can't wait till the footer -->
-    <script asp-name="admin-head" version="1"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <div class="d-flex w-100">
-                @brandingHtml
-                <div class="flex-grow-1">
-                    @if (adminSettings.DisplayTitlesInTopbar)
-                    {
-                        @await RenderSectionAsync("Title", required: false)
-                    }
-                </div>
-                <div class="d-flex align-items-center">
-                    @await RenderSectionAsync("NavbarTop", required: false)
-                    @if (adminSettings.DisplayDarkMode)
-                    {
-                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                            @if (darkMode)
+        <nav class="ta-navbar-top navbar text-bg-theme fixed-top">
+            <div class="container-fluid">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div class="brand-wrapper">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            @brandingHtml
+
+                            @if (adminSettings.DisplayTitlesInTopbar)
                             {
-                                <i class="fas fa-sun" aria-hidden="true"></i>
-                                <span class="d-none">@T["Light mode"]</span>
+                                <div class="brand-wrapper-title">
+                                    @await RenderSectionAsync("Title", required: false)
+                                </div>
                             }
-                            else
-                            {
-                                <i class="fas fa-moon" aria-hidden="true"></i>
-                                <span class="d-none">@T["Dark mode"]</span>
-                            }
-                        </a>
-                    }
-                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                        <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
-                    </a>
-                    @await DisplayAsync(await New.UserMenu())
+                        </div>
+                    </div>
+                    @navbar
                 </div>
             </div>
-        </div>
+        </nav>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)

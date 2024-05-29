@@ -9,18 +9,24 @@
 @await DisplayAsync(await New.ShortcodeModal())
 
 <div class="row mb-3">
-    <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
         <span class="hint">@T["The body of the content item."]</span>
     </div>
 </div>
 
-<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
+
+            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+
+            if (!divEditor) {
+                return;
+            }
 
             var settings = @Html.Raw(monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
@@ -28,13 +34,13 @@
             }
             settings.language = 'html';
 
-            var html = document.getElementsByTagName("html")[0];
+            var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')
@@ -43,7 +49,7 @@
 
             setTheme();
 
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Html)_editor'), settings);
+            var editor = monaco.editor.create(divEditor, settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
 
             editor.getModel().onDidChangeContent((event) => {
@@ -68,7 +74,7 @@
                 contextMenuGroupId: 'orchardcore',
                 contextMenuOrder: 0,
                 keybindings: [
-                    monaco.KeyMod.Alt | monaco.KeyCode.KEY_S, 
+                    monaco.KeyMod.Alt | monaco.KeyCode.KEY_S,
                 ]
             }
             editor.addAction(shortcodesAction);

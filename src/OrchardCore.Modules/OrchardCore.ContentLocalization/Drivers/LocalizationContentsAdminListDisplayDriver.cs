@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace OrchardCore.ContentLocalization.Drivers
     public class LocalizationContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LocalizationContentsAdminListDisplayDriver(
             ILocalizationService localizationService,
@@ -42,7 +41,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                     var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
                     var cultures = new List<SelectListItem>
                     {
-                        new SelectListItem() { Text = S["All cultures"], Value = "", Selected = String.IsNullOrEmpty(m.SelectedCulture) }
+                        new() { Text = S["All cultures"], Value = "", Selected = string.IsNullOrEmpty(m.SelectedCulture) }
                     };
                     cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture, Selected = culture == m.SelectedCulture }));
 
@@ -53,15 +52,14 @@ namespace OrchardCore.ContentLocalization.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
             var viewModel = new LocalizationContentsAdminFilterViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, "Localization"))
-            {
-                if (viewModel.ShowLocalizedContentTypes)
-                {
-                    model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
-                }
+            await updater.TryUpdateModelAsync(viewModel, "Localization");
 
-                model.FilterResult.MapFrom(viewModel);
+            if (viewModel.ShowLocalizedContentTypes)
+            {
+                model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
             }
+
+            model.FilterResult.MapFrom(viewModel);
 
             return Edit(model, updater);
         }

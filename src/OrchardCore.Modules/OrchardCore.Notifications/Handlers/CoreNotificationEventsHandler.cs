@@ -10,16 +10,13 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
 {
     public override Task CreatingAsync(NotificationContext context)
     {
-        var user = context.Notify as User;
-
-        if (user != null)
+        if (context.Notify is User user)
         {
             context.Notification.UserId = user.UserId;
         }
 
         var bodyPart = context.Notification.As<NotificationBodyInfo>();
 
-        bodyPart.Summary = context.NotificationMessage.Summary;
         bodyPart.TextBody = context.NotificationMessage.TextBody;
         bodyPart.HtmlBody = context.NotificationMessage.HtmlBody;
 

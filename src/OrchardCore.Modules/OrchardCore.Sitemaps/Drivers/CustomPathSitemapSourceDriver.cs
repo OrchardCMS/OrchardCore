@@ -13,7 +13,7 @@ namespace OrchardCore.Sitemaps.Drivers
 {
     public class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource, CustomPathSitemapSource>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public CustomPathSitemapSourceDriver(IStringLocalizer<CustomPathSitemapSourceDriver> localizer)
         {
@@ -43,29 +43,28 @@ namespace OrchardCore.Sitemaps.Drivers
         {
             var model = new CustomPathSitemapSourceViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model,
+            await context.Updater.TryUpdateModelAsync(model,
                     Prefix,
                     m => m.Path,
                     m => m.Priority,
                     m => m.ChangeFrequency
-                ))
+                );
+
+            sitemap.Path = model.Path;
+            sitemap.Priority = model.Priority;
+            sitemap.ChangeFrequency = model.ChangeFrequency;
+            sitemap.LastUpdate = DateTime.Now;
+
+            if (sitemap.Path?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Path?.IndexOf(' ') > -1 || sitemap.Path?.IndexOf("//") > -1)
             {
-                sitemap.Path = model.Path;
-                sitemap.Priority = model.Priority;
-                sitemap.ChangeFrequency = model.ChangeFrequency;
-                sitemap.LastUpdate = DateTime.Now;
+                var invalidCharactersForMessage = string.Join(", ", CustomPathSitemapSource.InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+            }
 
-                if (sitemap.Path?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Path?.IndexOf(' ') > -1 || sitemap.Path?.IndexOf("//") > -1)
-                {
-                    var invalidCharactersForMessage = string.Join(", ", CustomPathSitemapSource.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
-                }
-
-                if (sitemap.Path?.Length > CustomPathSitemapSource.MaxPathLength)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
-                }
-            };
+            if (sitemap.Path?.Length > CustomPathSitemapSource.MaxPathLength)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
+            }
 
             return Edit(sitemap, context.Updater);
         }

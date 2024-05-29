@@ -11,7 +11,7 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Http.Services
 {
-    internal class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTypeRouteDocument>, IWorkflowTypeRouteEntries
+    internal sealed class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTypeRouteDocument>, IWorkflowTypeRouteEntries
     {
         public WorkflowTypeRouteEntries(IVolatileDocumentManager<WorkflowTypeRouteDocument> documentManager) : base(documentManager) { }
 

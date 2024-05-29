@@ -1,18 +1,24 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    internal class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
+    internal sealed class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
         private readonly string _tenantPrefix;
 
-        public CookieOptionsConfiguration(ShellSettings shellSettings)
+        public CookieOptionsConfiguration(IHttpContextAccessor httpContextAccessor)
         {
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+            var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+            if (!pathBase.HasValue)
+            {
+                pathBase = "/";
+            }
+
+            _tenantPrefix = pathBase;
         }
 
         public void Configure(string name, CookieAuthenticationOptions options)

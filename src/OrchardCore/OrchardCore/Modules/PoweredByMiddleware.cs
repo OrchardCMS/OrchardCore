@@ -35,7 +35,7 @@ namespace OrchardCore.Modules
         string HeaderValue { get; set; }
     }
 
-    internal class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
+    internal sealed class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
     {
         private const string PoweredByHeaderName = "X-Powered-By";
         private const string PoweredByHeaderValue = "OrchardCore";

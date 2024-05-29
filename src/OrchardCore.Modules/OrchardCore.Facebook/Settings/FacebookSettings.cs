@@ -4,7 +4,7 @@ namespace OrchardCore.Facebook.Settings
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }
-        public bool FBInit { get; set; } = false;
+        public bool FBInit { get; set; }
 
         public string FBInitParams { get; set; } = @"status:true,
 xfbml:true,

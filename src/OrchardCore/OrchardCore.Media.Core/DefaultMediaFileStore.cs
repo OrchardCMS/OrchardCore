@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
@@ -12,11 +17,13 @@ namespace OrchardCore.Media.Core
     public class DefaultMediaFileStore : IMediaFileStore
     {
         private readonly IFileStore _fileStore;
-        private readonly string _requestBasePath;
+        private string _requestBasePath;
         private readonly string _cdnBaseUrl;
         private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
         private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
         private readonly ILogger _logger;
+
+        private bool _requestBasePathValidated;
 
         public DefaultMediaFileStore(
             IFileStore fileStore,
@@ -55,9 +62,26 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
         }
 
-        public virtual Task<bool> TryCreateDirectoryAsync(string path)
+        public virtual async Task<bool> TryCreateDirectoryAsync(string path)
         {
-            return _fileStore.TryCreateDirectoryAsync(path);
+            var creatingContext = new MediaCreatingContext
+            {
+                Path = path
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatingDirectoryAsync(context), creatingContext, _logger);
+
+            var result = await _fileStore.TryCreateDirectoryAsync(path);
+
+            var createdContext = new MediaCreatedContext
+            {
+                Path = path,
+                Result = result
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatedDirectoryAsync(context), createdContext, _logger);
+
+            return result;
         }
 
         public virtual async Task<bool> TryDeleteFileAsync(string path)
@@ -151,15 +175,15 @@ namespace OrchardCore.Media.Core
                     foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                     {
                         // Creating stream disposed by using.
-                        using (var creatingStream = outputStream)
-                        {
-                            // Stop disposal of inputStream, as creating stream is the object to dispose.
-                            inputStream = null;
-                            // Outputstream must be created by event handler.
-                            outputStream = null;
+                        using var creatingStream = outputStream;
 
-                            outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
-                        }
+                        // Stop disposal of inputStream, as creating stream is the object to dispose.
+                        inputStream = null;
+
+                        // Outputstream must be created by event handler.
+                        outputStream = null;
+
+                        outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                     }
 
                     return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
@@ -178,7 +202,30 @@ namespace OrchardCore.Media.Core
 
         public virtual string MapPathToPublicUrl(string path)
         {
-            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
+            if (!_requestBasePathValidated)
+            {
+                var httpContext = ShellScope.Services?.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                if (httpContext is not null && !httpContext.Items.ContainsKey("IsBackground"))
+                {
+                    ValidateRequestBasePath(httpContext);
+                    _requestBasePathValidated = true;
+                }
+            }
+
+            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizeAndEscapePath(path);
+        }
+
+        private void ValidateRequestBasePath(HttpContext httpContext)
+        {
+            var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+            if (originalPathBase.HasValue)
+            {
+                var requestBasePath = _requestBasePath;
+                if (!requestBasePath.StartsWith(originalPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    _requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
+                }
+            }
         }
     }
 }

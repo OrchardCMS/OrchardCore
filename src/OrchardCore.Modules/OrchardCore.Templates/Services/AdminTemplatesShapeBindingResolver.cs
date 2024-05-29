@@ -17,6 +17,7 @@ namespace OrchardCore.Templates.Services
         private readonly AdminPreviewTemplatesProvider _previewTemplatesProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HtmlEncoder _htmlEncoder;
+        private bool? _isAdmin;
 
         public AdminTemplatesShapeBindingResolver(
             AdminTemplatesManager templatesManager,
@@ -34,34 +35,30 @@ namespace OrchardCore.Templates.Services
 
         public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
         {
-            if (!AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            // Cache this value since the service is scoped and this method is invoked for every
+            // alternate of every shape.
+            _isAdmin ??= AdminAttribute.IsApplied(_httpContextAccessor.HttpContext);
+
+            if (!_isAdmin.Value)
             {
                 return null;
             }
 
             var localTemplates = _previewTemplatesProvider.GetTemplates();
 
-            if (localTemplates != null)
+            if (localTemplates != null && localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
             {
-                if (localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
-                {
-                    return BuildShapeBinding(shapeType, localTemplate);
-                }
+                return BuildShapeBinding(shapeType, localTemplate);
             }
 
-            if (_templatesDocument == null)
-            {
-                _templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
-            }
+            _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
 
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {
                 return BuildShapeBinding(shapeType, template);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         private ShapeBinding BuildShapeBinding(string shapeType, Template template)
@@ -70,11 +67,7 @@ namespace OrchardCore.Templates.Services
             {
                 BindingName = shapeType,
                 BindingSource = shapeType,
-                BindingAsync = async displayContext =>
-                {
-                    var content = await _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value);
-                    return content;
-                }
+                BindingAsync = displayContext => _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value)
             };
         }
     }

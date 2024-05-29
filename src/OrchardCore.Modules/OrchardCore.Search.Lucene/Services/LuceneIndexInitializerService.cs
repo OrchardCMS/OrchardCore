@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
@@ -18,7 +17,7 @@ namespace OrchardCore.Search.Lucene
 
         public override Task ActivatedAsync()
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 ShellScope.AddDeferredTask(async scope =>
                 {

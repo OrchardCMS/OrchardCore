@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -19,22 +20,24 @@ namespace OrchardCore.Media.Recipes
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
-        private readonly static HttpClient _httpClient = new HttpClient();
 
         public MediaStep(
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
+            IHttpClientFactory httpClientFactory,
             ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -52,19 +55,22 @@ namespace OrchardCore.Media.Recipes
 
                 Stream stream = null;
 
-                if (!String.IsNullOrWhiteSpace(file.Base64))
+                if (!string.IsNullOrWhiteSpace(file.Base64))
                 {
                     stream = new MemoryStream(Convert.FromBase64String(file.Base64));
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourcePath))
+                else if (!string.IsNullOrWhiteSpace(file.SourcePath))
                 {
                     var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
 
                     stream = fileInfo.CreateReadStream();
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourceUrl))
+                else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
                 {
-                    var response = await _httpClient.GetAsync(file.SourceUrl);
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    var response = await httpClient.GetAsync(file.SourceUrl);
+
                     if (response.IsSuccessStatusCode)
                     {
                         stream = await response.Content.ReadAsStreamAsync();
@@ -79,13 +85,13 @@ namespace OrchardCore.Media.Recipes
                     }
                     finally
                     {
-                        stream?.Dispose();
+                        await stream.DisposeAsync();
                     }
                 }
             }
         }
 
-        private class MediaStepModel
+        private sealed class MediaStepModel
         {
             /// <summary>
             /// Collection of <see cref="MediaStepFile"/> objects.
@@ -93,7 +99,7 @@ namespace OrchardCore.Media.Recipes
             public MediaStepFile[] Files { get; set; }
         }
 
-        private class MediaStepFile
+        private sealed class MediaStepFile
         {
             /// <summary>
             /// Path where the content will be written.

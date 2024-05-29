@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement
     /// Rationale:
     ///    If there is no intent for reusing the object, do not use pool - just use "new".
     /// </summary>
-    internal class ObjectPool<T> where T : class
+    internal sealed class ObjectPool<T> where T : class
     {
         [DebuggerDisplay("{Value,nq}")]
         private struct Element
@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement
 #if DETECT_LEAKS
         private static readonly ConditionalWeakTable<T, LeakTracker> leakTrackers = new ConditionalWeakTable<T, LeakTracker>();
 
-        private class LeakTracker : IDisposable
+        private sealed class LeakTracker : IDisposable
         {
             private volatile bool disposed;
 
@@ -121,7 +121,7 @@ namespace OrchardCore.DisplayManagement
             // Note that the initial read is optimistically not synchronized. That is intentional.
             // We will interlock only when we have a candidate. in a worst case we may miss some
             // recently returned objects. Not a big deal.
-            T inst = _firstItem;
+            var inst = _firstItem;
             if (inst == null || inst != Interlocked.CompareExchange(ref _firstItem, null, inst))
             {
                 inst = AllocateSlow();
@@ -143,12 +143,12 @@ namespace OrchardCore.DisplayManagement
         {
             var items = _items;
 
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 // Note that the initial read is optimistically not synchronized. That is intentional.
                 // We will interlock only when we have a candidate. in a worst case we may miss some
                 // recently returned objects. Not a big deal.
-                T inst = items[i].Value;
+                var inst = items[i].Value;
                 if (inst != null)
                 {
                     if (inst == Interlocked.CompareExchange(ref items[i].Value, null, inst))
@@ -187,7 +187,7 @@ namespace OrchardCore.DisplayManagement
         private void FreeSlow(T obj)
         {
             var items = _items;
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 if (items[i].Value == null)
                 {
@@ -207,16 +207,16 @@ namespace OrchardCore.DisplayManagement
     ///        var sb = inst.builder;
     ///        ... Do Stuff...
     ///        ... sb.ToString() ...
-    ///        inst.Free();
+    ///        inst.Free();.
     /// </summary>
     public sealed class StringBuilderPool : IDisposable
     {
         private const int DefaultCapacity = 1 * 1024;
 
-        // global pool
-        private static readonly ObjectPool<StringBuilderPool> s_poolInstance = CreatePool();
+        // Global pool.
+        private static readonly ObjectPool<StringBuilderPool> _poolInstance = CreatePool();
 
-        public readonly StringBuilder Builder = new StringBuilder(DefaultCapacity);
+        public readonly StringBuilder Builder = new(DefaultCapacity);
         private readonly ObjectPool<StringBuilderPool> _pool;
 
         private StringBuilderPool(ObjectPool<StringBuilderPool> pool)
@@ -236,7 +236,7 @@ namespace OrchardCore.DisplayManagement
 
         public static StringBuilderPool GetInstance()
         {
-            var builder = s_poolInstance.Allocate();
+            var builder = _poolInstance.Allocate();
             Debug.Assert(builder.Builder.Length == 0);
             return builder;
         }
@@ -251,7 +251,6 @@ namespace OrchardCore.DisplayManagement
             var builder = Builder;
 
             // Do not store builders that are too large.
-
             if (builder.Capacity == DefaultCapacity)
             {
                 builder.Clear();

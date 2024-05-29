@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,13 +11,13 @@ namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
     {
-        private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeDefinitionProviders;
+        private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
         public ContentTypesSitemapSourceDriver(
-            IEnumerable<IRouteableContentTypeProvider> routeableContentTypeDefinitionProviders
+            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
             )
         {
-            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
+            _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
         public override IDisplayResult Display(ContentTypesSitemapSource sitemapSource)
@@ -29,19 +28,18 @@ namespace OrchardCore.Contents.Sitemaps
             );
         }
 
-        public override IDisplayResult Edit(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
         {
-            var contentTypeDefinitions = _routeableContentTypeDefinitionProviders
-                .SelectMany(x => x.ListRoutableTypeDefinitions());
+            var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
             var entries = contentTypeDefinitions
                 .Select(ctd => new ContentTypeSitemapEntryViewModel
                 {
                     ContentTypeName = ctd.Name,
                     ContentTypeDisplayName = ctd.DisplayName,
-                    IsChecked = sitemapSource.ContentTypes.Any(s => String.Equals(s.ContentTypeName, ctd.Name)),
-                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => String.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
-                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => String.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
+                    IsChecked = sitemapSource.ContentTypes.Any(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal)),
+                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal))?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name, StringComparison.Ordinal))?.Priority ?? 5,
                 })
                 .OrderBy(ctd => ctd.ContentTypeDisplayName)
                 .ToArray();
@@ -56,11 +54,11 @@ namespace OrchardCore.Contents.Sitemaps
                 .ToArray();
 
             var limitedCtd = contentTypeDefinitions
-                .FirstOrDefault(ctd => String.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
+                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
             if (limitedCtd != null)
             {
-                var limitedEntry = limitedEntries.FirstOrDefault(le => String.Equals(le.ContentTypeName, limitedCtd.Name));
+                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name, StringComparison.Ordinal));
                 limitedEntry.Priority = sitemapSource.LimitedContentType.Priority;
                 limitedEntry.ChangeFrequency = sitemapSource.LimitedContentType.ChangeFrequency;
                 limitedEntry.Skip = sitemapSource.LimitedContentType.Skip;
@@ -84,7 +82,7 @@ namespace OrchardCore.Contents.Sitemaps
         {
             var model = new ContentTypesSitemapSourceViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model,
+            await context.Updater.TryUpdateModelAsync(model,
                     Prefix,
                     m => m.IndexAll,
                     m => m.LimitItems,
@@ -93,36 +91,35 @@ namespace OrchardCore.Contents.Sitemaps
                     m => m.ContentTypes,
                     m => m.LimitedContentTypes,
                     m => m.LimitedContentType
-                ))
-            {
-                sitemap.IndexAll = model.IndexAll;
-                sitemap.LimitItems = model.LimitItems;
-                sitemap.Priority = model.Priority;
-                sitemap.ChangeFrequency = model.ChangeFrequency;
-                sitemap.ContentTypes = model.ContentTypes
-                    .Where(x => x.IsChecked == true)
-                    .Select(x => new ContentTypeSitemapEntry
-                    {
-                        ContentTypeName = x.ContentTypeName,
-                        ChangeFrequency = x.ChangeFrequency,
-                        Priority = x.Priority,
-                    })
-                    .ToArray();
+                );
 
-                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => String.Equals(lct.ContentTypeName, model.LimitedContentType));
-                if (limitedEntry != null)
+            sitemap.IndexAll = model.IndexAll;
+            sitemap.LimitItems = model.LimitItems;
+            sitemap.Priority = model.Priority;
+            sitemap.ChangeFrequency = model.ChangeFrequency;
+            sitemap.ContentTypes = model.ContentTypes
+                .Where(x => x.IsChecked == true)
+                .Select(x => new ContentTypeSitemapEntry
                 {
-                    sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
-                    sitemap.LimitedContentType.ChangeFrequency = limitedEntry.ChangeFrequency;
-                    sitemap.LimitedContentType.Priority = limitedEntry.Priority;
-                    sitemap.LimitedContentType.Skip = limitedEntry.Skip;
-                    sitemap.LimitedContentType.Take = limitedEntry.Take;
-                }
-                else
-                {
-                    sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
-                }
-            };
+                    ContentTypeName = x.ContentTypeName,
+                    ChangeFrequency = x.ChangeFrequency,
+                    Priority = x.Priority,
+                })
+                .ToArray();
+
+            var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType, StringComparison.Ordinal));
+            if (limitedEntry != null)
+            {
+                sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
+                sitemap.LimitedContentType.ChangeFrequency = limitedEntry.ChangeFrequency;
+                sitemap.LimitedContentType.Priority = limitedEntry.Priority;
+                sitemap.LimitedContentType.Skip = limitedEntry.Skip;
+                sitemap.LimitedContentType.Take = limitedEntry.Take;
+            }
+            else
+            {
+                sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
+            }
 
             return Edit(sitemap, context.Updater);
         }

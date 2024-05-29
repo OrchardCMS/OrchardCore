@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.Localization
 
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
-            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
+            var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
 
             Assert.Equal("cs", dictionary.CultureName);
             Assert.Equal(PluralizationRule.Czech, dictionary.PluralRule);
@@ -45,8 +45,8 @@ namespace OrchardCore.Tests.Localization
 
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
-            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
-            var key = new CultureDictionaryRecordKey("ball");
+            var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
+            var key = new CultureDictionaryRecordKey { MessageId = "ball" };
 
             dictionary.Translations.TryGetValue(key, out var translations);
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.Localization
 
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
-            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
+            var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
 
             Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);
         }

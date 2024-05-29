@@ -1,0 +1,18 @@
+@using OrchardCore
+@using OrchardCore.Roles.Workflows.ViewModels
+
+@model GetUsersByRoleTaskViewModel
+
+<div class="mb-3" asp-validation-class-for="OutputKeyName">
+    <label asp-for="OutputKeyName" class="form-label">@T["Output Key Name"]</label>
+    <input type="text" asp-for="OutputKeyName" class="form-control code" />
+    <span asp-validation-for="OutputKeyName"></span>
+    <span class="hint">@T["The designated key name for storing the users' list in the workflow output. This key enables later access to the list within the workflow.With Liquid support."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="Roles">
+    <label asp-for="Roles" class="form-label">@T["Roles"]</label>
+    @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { OrchardCoreConstants.Roles.Anonymous, OrchardCoreConstants.Roles.Authenticated } })
+    <span asp-validation-for="Roles"></span>
+    <span class="hint">@T["Choose the roles used to identify users during list generation."]</span>
+</div>

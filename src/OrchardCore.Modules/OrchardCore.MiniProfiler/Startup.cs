@@ -19,7 +19,7 @@ namespace OrchardCore.MiniProfiler
         {
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(MiniProfilerFilter));
+                options.Filters.Add<MiniProfilerFilter>();
             });
 
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();
@@ -35,7 +35,7 @@ namespace OrchardCore.MiniProfiler
 
             var store = serviceProvider.GetService<IStore>();
 
-            // Wrap the current factory with MiniProfilerConnectionFactory
+            // Wrap the current factory with MiniProfilerConnectionFactory.
             store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
         }
     }

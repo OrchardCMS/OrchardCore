@@ -2,19 +2,19 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">
-    <label asp-for="LocalDateTime" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
-            <div class="@Orchard.GetLimitedWidthCssClasses()">
-                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" required="@settings.Required" />
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">
+    <label asp-for="LocalDateTime" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
+                <input asp-for="LocalDateTime" type="datetime-local" class="form-control content-preview-select" />
+                <span asp-validation-for="LocalDateTime"></span>
             </div>
         </div>
 
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

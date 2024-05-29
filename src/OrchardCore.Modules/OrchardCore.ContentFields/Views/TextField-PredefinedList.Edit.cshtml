@@ -5,21 +5,20 @@
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();
-    var selectedValue = String.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
+    var selectedValue = string.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
 
     foreach (var option in listSettings.Options)
     {
         var isSelected = option.Value == selectedValue
-            || (String.IsNullOrEmpty(option.Value) && String.IsNullOrEmpty(selectedValue));
+            || (string.IsNullOrEmpty(option.Value) && string.IsNullOrEmpty(selectedValue));
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         @if (listSettings.Editor == EditorOption.Radio)
         {
             var i = 0;
@@ -36,8 +35,8 @@
         {
             <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
         }
-
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        <span asp-validation-for="Text"></span>
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

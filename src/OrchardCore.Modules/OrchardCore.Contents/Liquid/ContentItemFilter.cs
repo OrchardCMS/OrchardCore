@@ -20,17 +20,15 @@ namespace OrchardCore.Contents.Liquid
         {
             if (input.Type == FluidValues.Array)
             {
-                // List of content item ids
-                var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
+                // List of content item ids to return.
+                var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue());
 
                 return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
             }
-            else
-            {
-                var contentItemId = input.ToStringValue();
 
-                return FluidValue.Create(await _contentManager.GetAsync(contentItemId), ctx.Options);
-            }
+            var contentItemId = input.ToStringValue();
+
+            return FluidValue.Create(await _contentManager.GetAsync(contentItemId), ctx.Options);
         }
     }
 }

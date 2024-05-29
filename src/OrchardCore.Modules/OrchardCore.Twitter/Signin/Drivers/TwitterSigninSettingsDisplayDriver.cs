@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,24 +13,18 @@ namespace OrchardCore.Twitter.Signin.Drivers
 {
     public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public TwitterSigninSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
-            IDataProtectionProvider dataProtectionProvider,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
-            _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(TwitterSigninSettings settings, BuildEditorContext context)
@@ -42,7 +35,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
+            return Initialize<TwitterSigninSettingsViewModel>("XSigninSettings_Edit", model =>
             {
                 if (settings.CallbackPath.HasValue)
                 {
@@ -51,8 +44,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
-
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Signin)
             {
@@ -65,14 +57,12 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 var model = new TwitterSigninSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
+                _shellReleaseManager.RequestRelease();
             }
+
             return await EditAsync(settings, context);
         }
     }

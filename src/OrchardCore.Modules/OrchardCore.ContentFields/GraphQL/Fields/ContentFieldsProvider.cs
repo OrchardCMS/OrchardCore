@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.GraphQL.Types;
 using OrchardCore.ContentManagement;
@@ -13,7 +12,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static readonly Dictionary<string, FieldTypeDescriptor> ContentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
+        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new()
         {
             {
                 nameof(BooleanField),
@@ -22,7 +21,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Boolean field",
                     FieldType = typeof(BooleanGraphType),
                     UnderlyingType = typeof(BooleanField),
-                    FieldAccessor = field => (bool)field.Content.Value
+                    FieldAccessor = field => ((BooleanField)field).Value,
                 }
             },
             {
@@ -32,7 +31,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date field",
                     FieldType = typeof(DateGraphType),
                     UnderlyingType = typeof(DateField),
-                    FieldAccessor = field => (DateTime?)field.Content.Value
+                    FieldAccessor = field => ((DateField)field).Value,
                 }
             },
             {
@@ -42,7 +41,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date & time field",
                     FieldType = typeof(DateTimeGraphType),
                     UnderlyingType = typeof(DateTimeField),
-                    FieldAccessor = field => (DateTime?)field.Content.Value
+                    FieldAccessor = field => ((DateTimeField)field).Value,
                 }
             },
             {
@@ -52,7 +51,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Numeric field",
                     FieldType = typeof(DecimalGraphType),
                     UnderlyingType = typeof(NumericField),
-                    FieldAccessor = field => (decimal?)field.Content.Value
+                    FieldAccessor = field => ((NumericField)field).Value,
                 }
             },
             {
@@ -62,7 +61,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => (string)field.Content.Text
+                    FieldAccessor = field => ((TextField)field).Text,
                 }
             },
             {
@@ -72,7 +71,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Time field",
                     FieldType = typeof(TimeSpanGraphType),
                     UnderlyingType = typeof(TimeField),
-                    FieldAccessor = field => (TimeSpan?)field.Content.Value
+                    FieldAccessor = field => ((TimeField)field).Value,
                 }
             },
             {
@@ -82,44 +81,44 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => ((JArray)field.Content.Values)?.ToObject<string[]>()
+                    FieldAccessor = field => ((MultiTextField)field).Values,
                 }
             }
         };
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
+            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
+            {
+                return null;
+            }
 
-            var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
+            var fieldDescriptor = value;
             return new FieldType
             {
-                Name = field.Name,
+                Name = customFieldName ?? field.Name,
                 Description = fieldDescriptor.Description,
                 Type = fieldDescriptor.FieldType,
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                 {
                     // Check if part has been collapsed by trying to get the parent part.
-                    var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if (contentPart == null)
-                    {
-                        // Part is not collapsed, access field directly.
-                        contentPart = context.Source;
-                    }
+                    ContentElement contentPart = context.Source.Get<ContentPart>(field.PartDefinition.Name);
+
+                    // Part is not collapsed, access field directly.
+                    contentPart ??= context.Source;
 
                     var contentField = contentPart?.Get(fieldDescriptor.UnderlyingType, field.Name);
 
-                    if (contentField == null)
-                    {
-                        contentField = context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
-                    }
+                    contentField ??= context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
 
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
-                })
+                }),
             };
         }
 
-        private class FieldTypeDescriptor
+        public bool HasField(ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+
+        private sealed class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }

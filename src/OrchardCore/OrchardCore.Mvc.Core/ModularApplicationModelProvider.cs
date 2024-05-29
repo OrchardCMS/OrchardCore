@@ -1,8 +1,8 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Mvc
 {
@@ -43,26 +43,23 @@ namespace OrchardCore.Mvc
             foreach (var controller in context.Result.Controllers)
             {
                 var controllerType = controller.ControllerType.AsType();
-                var blueprint = _typeFeatureProvider.GetFeatureForDependency(controllerType);
 
-                if (blueprint != null)
+                var extension = _typeFeatureProvider.GetExtensionForDependency(controllerType);
+
+                if (extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
                 {
-                    if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName &&
-                        _shellSettings.State != TenantState.Running)
+                    // Don't serve any action of the application's module which is enabled during a setup.
+                    foreach (var action in controller.Actions)
                     {
-                        // Don't serve any action of the application'module which is enabled during a setup.
-                        foreach (var action in controller.Actions)
-                        {
-                            action.Selectors.Clear();
-                        }
+                        action.Selectors.Clear();
+                    }
 
-                        controller.Selectors.Clear();
-                    }
-                    else
-                    {
-                        // Add an "area" route value equal to the module id.
-                        controller.RouteValues.Add("area", blueprint.Extension.Id);
-                    }
+                    controller.Selectors.Clear();
+                }
+                else
+                {
+                    // Add an "area" route value equal to the module id.
+                    controller.RouteValues.Add("area", extension.Id);
                 }
             }
         }

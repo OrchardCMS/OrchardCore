@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Services
             return new InternalMediaSizeFilter(options.Value.MaxFileSize);
         }
 
-        private class InternalMediaSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
+        private sealed class InternalMediaSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
         {
             private readonly long _maxFileSize;
 
@@ -34,10 +34,7 @@ namespace OrchardCore.Media.Services
 
             public void OnAuthorization(AuthorizationFilterContext context)
             {
-                if (context == null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
+                ArgumentNullException.ThrowIfNull(context);
 
                 var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
                 if (effectiveFormPolicy == null || effectiveFormPolicy == this)
@@ -58,9 +55,9 @@ namespace OrchardCore.Media.Services
                 }
 
                 var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
-                if (effectiveRequestSizePolicy == null || effectiveRequestSizePolicy == this)
+                if (effectiveRequestSizePolicy == null)
                 {
-                    //  Will only be available when running OutOfProcess with Kestrel
+                    // Will only be available when running OutOfProcess with Kestrel.
                     var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
 
                     if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
