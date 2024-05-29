@@ -25,9 +25,7 @@ namespace OrchardCore.OpenId.Services
         }
 
         public Task<OpenIdClientSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<OpenIdClientSettings>();
-        }
+            => _siteService.GetSettingsAsync<OpenIdClientSettings>();
 
         public async Task<OpenIdClientSettings> LoadSettingsAsync()
         {

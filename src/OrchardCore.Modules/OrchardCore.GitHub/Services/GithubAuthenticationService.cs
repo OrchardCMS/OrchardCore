@@ -23,9 +23,8 @@ namespace OrchardCore.GitHub.Services
         }
 
         public Task<GitHubAuthenticationSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<GitHubAuthenticationSettings>();
-        }
+            => _siteService.GetSettingsAsync<GitHubAuthenticationSettings>();
+
 
         public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
         {

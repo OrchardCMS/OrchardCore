@@ -24,9 +24,7 @@ namespace OrchardCore.Facebook.Services
         }
 
         public Task<FacebookSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<FacebookSettings>();
-        }
+            => _siteService.GetSettingsAsync<FacebookSettings>();
 
         public async Task UpdateSettingsAsync(FacebookSettings settings)
         {

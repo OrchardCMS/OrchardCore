@@ -23,9 +23,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
         }
 
         public Task<MicrosoftAccountSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<MicrosoftAccountSettings>();
-        }
+            => _siteService.GetSettingsAsync<MicrosoftAccountSettings>();
 
         public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
         {

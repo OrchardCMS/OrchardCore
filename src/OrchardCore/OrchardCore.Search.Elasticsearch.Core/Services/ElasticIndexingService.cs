@@ -279,12 +279,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             await ResetIndexAsync(elasticIndexSettings.IndexName);
         }
 
-        public async Task<ElasticSettings> GetElasticSettingsAsync()
-        {
-            var elasticSettings = await _siteService.GetSettingsAsync<ElasticSettings>();
-
-            return elasticSettings ?? new ElasticSettings();
-        }
+        public async Task<ElasticSettings> GetElasticSettingsAsync()        
+            => await _siteService.GetSettingsAsync<ElasticSettings>() ?? new ElasticSettings();
 
         /// <summary>
         /// Synchronizes Elasticsearch content index settings with Lucene ones.

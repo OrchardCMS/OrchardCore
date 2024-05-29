@@ -14,8 +14,6 @@ namespace OrchardCore.Https.Services
         }
 
         public Task<HttpsSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<HttpsSettings>();
-        }
+            => _siteService.GetSettingsAsync<HttpsSettings>();
     }
 }

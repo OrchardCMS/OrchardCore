@@ -23,9 +23,7 @@ namespace OrchardCore.Twitter.Services
         }
 
         public Task<TwitterSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<TwitterSettings>();
-        }
+            => _siteService.GetSettingsAsync<TwitterSettings>();
 
         public async Task<TwitterSettings> LoadSettingsAsync()
         {

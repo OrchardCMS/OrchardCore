@@ -15,8 +15,6 @@ namespace OrchardCore.Google.Analytics.Services
         }
 
         public Task<GoogleAnalyticsSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
-        }
+            => _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
     }
 }

@@ -14,8 +14,6 @@ namespace OrchardCore.Security.Services
         }
 
         public Task<SecuritySettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<SecuritySettings>();
-        }
+            => _siteService.GetSettingsAsync<SecuritySettings>();
     }
 }

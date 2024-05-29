@@ -23,9 +23,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
         }
 
         public Task<AzureADSettings> GetSettingsAsync()
-        {
-            return _siteService.GetSettingsAsync<AzureADSettings>();
-        }
+            => _siteService.GetSettingsAsync<AzureADSettings>();
 
         public async Task<AzureADSettings> LoadSettingsAsync()
         {
