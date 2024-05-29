@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Esprima.Ast;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Testing.Stubs;
@@ -11,5 +13,5 @@ public class ShapeTableManagerStub : IShapeTableManager
         _defaultShapeTable = defaultShapeTable;
     }
 
-    public ShapeTable GetShapeTable(string themeId) => _defaultShapeTable;
+    public Task<ShapeTable> GetShapeTableAsync(string themeId) => Task.FromResult(_defaultShapeTable);
 }

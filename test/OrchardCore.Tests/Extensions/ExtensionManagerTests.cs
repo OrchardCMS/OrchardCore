@@ -3,14 +3,14 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Modules;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
         private static readonly IHostEnvironment _hostingEnvironment
-            = new StubHostingEnvironment();
+            = new HostingEnvironmentStub();
 
         private static readonly IApplicationContext _applicationContext
             = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);

@@ -18,7 +18,6 @@ public class MemoryFileBuilder : IFileBuilder
         using var memoryStream = new MemoryStream();
 
         await stream.CopyToAsync(memoryStream);
-
         _virtualFiles[subpath] = memoryStream.ToArray();
     }
 
@@ -28,5 +27,6 @@ public class MemoryFileBuilder : IFileBuilder
     /// <param name="subpath">The file path.</param>
     /// <param name="encoding">The encoding used to convert the byte array to string.</param>
     /// <returns></returns>
-    public string GetFileContents(string subpath, Encoding encoding) => encoding.GetString(_virtualFiles[subpath]);
+    public string GetFileContents(string subpath, Encoding encoding) =>
+        encoding.GetString(_virtualFiles[subpath]);
 }

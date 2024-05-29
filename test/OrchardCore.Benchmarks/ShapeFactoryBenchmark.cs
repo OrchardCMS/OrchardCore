@@ -13,7 +13,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Benchmark
 {
@@ -36,8 +36,8 @@ namespace OrchardCore.Benchmark
             var shapeFactory = new DefaultShapeFactory(
                 serviceProvider: new ServiceCollection().BuildServiceProvider(),
                 events: [],
-                shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
+                shapeTableManager: new ShapeTableManagerStub(defaultShapeTable),
+                themeManager: new ThemeManagerStub(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
 
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }
