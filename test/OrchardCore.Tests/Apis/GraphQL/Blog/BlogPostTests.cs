@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -217,11 +218,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .WithPermissionsContext(new PermissionsContext
                 {
                     UsePermissionsContext = true,
-                    AuthorizedPermissions = new[]
-                    {
-                        GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewContent,
-                    },
+                    AuthorizedPermissions =
+                    [
+                        CommonPermissions.ExecuteGraphQL,
+                        Contents.CommonPermissions.ViewContent,
+                    ],
                 });
 
             await context.InitializeAsync();
@@ -242,11 +243,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .WithPermissionsContext(new PermissionsContext
                 {
                     UsePermissionsContext = true,
-                    AuthorizedPermissions = new[]
-                    {
-                        GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewOwnContent,
-                    },
+                    AuthorizedPermissions =
+                    [
+                        CommonPermissions.ExecuteGraphQL,
+                        Contents.CommonPermissions.ViewOwnContent,
+                    ],
                 });
 
             await context.InitializeAsync();
@@ -267,10 +268,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 .WithPermissionsContext(new PermissionsContext
                 {
                     UsePermissionsContext = true,
-                    AuthorizedPermissions = new[]
-                    {
-                        GraphQLApi.Permissions.ExecuteGraphQL,
-                    },
+                    AuthorizedPermissions =
+                    [
+                        CommonPermissions.ExecuteGraphQL,
+                    ],
                 });
 
             await context.InitializeAsync();
