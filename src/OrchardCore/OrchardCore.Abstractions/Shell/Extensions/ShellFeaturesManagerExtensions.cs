@@ -26,6 +26,11 @@ namespace OrchardCore.Environment.Shell
         {
             ArgumentNullException.ThrowIfNull(featureIds);
 
+            if (featureIds.Length == 0) 
+            {
+                return;
+            }
+
             var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
 
             var featuresToEnable = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
