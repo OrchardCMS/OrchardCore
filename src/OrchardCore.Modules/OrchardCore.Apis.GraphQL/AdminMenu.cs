@@ -24,7 +24,7 @@ namespace OrchardCore.Apis.GraphQL
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
                         .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
-                        .Permission(Permissions.ExecuteGraphQL)
+                        .Permission(CommonPermissions.ExecuteGraphQL)
                         .LocalNav()
                     )
                 );

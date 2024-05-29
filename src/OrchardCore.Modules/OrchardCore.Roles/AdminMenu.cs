@@ -25,7 +25,7 @@ namespace OrchardCore.Roles
                     .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
                         .AddClass("roles").Id("roles")
                         .Action("Index", "Admin", "OrchardCore.Roles")
-                        .Permission(Permissions.ManageRoles)
+                        .Permission(CommonPermissions.ManageRoles)
                         .LocalNav()
                     )
                 );

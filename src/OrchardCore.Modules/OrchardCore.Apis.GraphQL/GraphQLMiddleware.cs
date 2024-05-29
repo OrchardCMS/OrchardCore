@@ -64,7 +64,7 @@ namespace OrchardCore.Apis.GraphQL
                     context.User = authenticateResult.Principal;
                 }
                 var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-                var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
+                var authorized = await authorizationService.AuthorizeAsync(context.User, CommonPermissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
