@@ -26,8 +26,6 @@ public class AccountControllerTests
             UsersCanRegister = UserRegistrationType.AllowRegistration,
         });
 
-
-
         // Act
         var model = new RegisterViewModel()
         {
