@@ -65,12 +65,12 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Export))
             {
                 return Forbid();
             }
@@ -129,7 +129,7 @@ namespace OrchardCore.Deployment.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<long> itemIds)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -158,7 +158,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Display(long id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Create()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -212,7 +212,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateDeploymentPlanViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -246,7 +246,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Edit(long id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -270,7 +270,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditDeploymentPlanViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }
@@ -316,7 +316,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(long id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
             {
                 return Forbid();
             }

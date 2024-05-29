@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -7,13 +8,166 @@ using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Tests.OrchardCore.Users;
 
-public class RegistrationControllerTests
+public class AccountControllerTests
 {
+    [Fact]
+    public async Task ExternalLoginSignIn_Test()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings()
+        {
+            UsersCanRegister = UserRegistrationType.AllowRegistration,
+        });
+
+        // Act
+        var model = new RegisterViewModel()
+        {
+            UserName = "TestUserName",
+            Email = "test@orchardcore.com",
+            Password = "test@OC!123",
+            ConfirmPassword = "test@OC!123",
+        };
+
+        var responseFromGet = await context.Client.GetAsync("Register");
+        responseFromGet.EnsureSuccessStatusCode();
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
+
+            var externalClaims = new List<SerializableClaim>();
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            {
+                UserClaims = user.UserClaims,
+                UserRoles = userRoles
+            };
+
+            context.UserProperties["Test"] = 111;
+            Assert.NotEqual(user.Properties["Test"], context.UserProperties["Test"]);
+
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
+                        .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var loginSettings = new LoginSettings
+            {
+                UseScriptToSyncRoles = true,
+                SyncRolesScript = """
+                    if(!context.user.userClaims?.find(x=> x.claimType=="lastName" && claimValue=="Zhang")){
+                        context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                    }
+                    context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang(CEO)"});
+                    context.claimsToUpdate.push({claimType:"jobTitle",    claimValue:"CEO"});
+
+                    if(!context.user.userRoles?.includes('Administrator')){
+                        context.rolesToAdd.push("Administrator");
+                    }
+
+                    if(context.user.userProperties?.UserProfile?.UserProfile?.DisplayName?.Text!="Sam Zhang(CEO)")
+                    {
+                        context.propertiesToUpdate = {
+                            "UserProfile": {
+                                "UserProfile": {
+                                    "DisplayName": {
+                                        "Text": "Sam Zhang(CEO)"
+                                    }
+                                }
+                            }
+                        };
+                    }
+                    """
+            };
+            scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
+
+            if (await AccountController.UpdateUserPropertiesAsync(userManager, user, context))
+            {
+                await userManager.UpdateAsync(user);
+            }
+
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+            var sam = await session.Query<User, UserByClaimIndex>()
+                    .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang(CEO)")
+                    .FirstOrDefaultAsync();
+            Assert.NotNull(sam);
+
+             var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
+            Assert.Equal("Sam", claimsDict["firstName"]);
+            Assert.Equal("Zhang", claimsDict["lastName"]);
+            Assert.Equal("CEO", claimsDict["jobTitle"]);
+            Assert.Contains("Administrator", sam.RoleNames.FirstOrDefault());
+            Assert.Equal("Sam Zhang(CEO)", sam.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
+
+        });
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
+
+            var externalClaims = new List<SerializableClaim>();
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            {
+                UserClaims = user.UserClaims,
+                UserRoles = userRoles,
+            };
+
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
+                      .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var loginSettings = new LoginSettings
+            {
+                UseScriptToSyncRoles = true,
+                SyncRolesScript = """
+                    context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
+                    context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
+                    context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
+                    context.claimsToRemove.push({claimType:"jobTitle",    claimValue:"CEO"});
+                    context.rolesToRemove.push("Administrator");
+                    context.propertiesToUpdate = {
+                        "UserProfile": {
+                            "UserProfile": {
+                                "DisplayName": {
+                                    "Text": "Sam Zhang"
+                                }
+                            }
+                        }
+                    };
+                    """
+            };
+            scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
+
+            if (await AccountController.UpdateUserPropertiesAsync(userManager, user as User, updateContext))
+            {
+                await userManager.UpdateAsync(user);
+            }
+
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+            var userFromDb = await session.Query<User, UserByClaimIndex>()
+                         .Where(claim => claim.ClaimType == "displayName" && claim.ClaimValue == "Sam Zhang")
+                         .FirstOrDefaultAsync();
+
+            Assert.DoesNotContain("Administrator", userFromDb.RoleNames);
+            Assert.DoesNotContain(userFromDb.UserClaims, x => x.ClaimType == "jobTitle" && x.ClaimValue == "CEO");
+            Assert.Equal("Sam Zhang", userFromDb.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
+        });
+    }
+
     [Fact]
     public async Task Register_WhenAllowed_RegisterUser()
     {
@@ -251,7 +405,7 @@ public class RegistrationControllerTests
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
-        Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.ConfirmEmailSent)}", responseFromPost.Headers.Location.ToString());
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromPost.Headers.Location.ToString());
 
         await context.UsingTenantScopeAsync(async scope =>
         {

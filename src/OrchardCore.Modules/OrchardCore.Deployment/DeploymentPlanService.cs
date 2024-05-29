@@ -43,8 +43,8 @@ namespace OrchardCore.Deployment
         {
             var user = _httpContextAccessor.HttpContext.User;
 
-            var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan) &&
-                         await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+            var result = await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageDeploymentPlan) &&
+                         await _authorizationService.AuthorizeAsync(user, CommonPermissions.Export);
 
             return result;
         }
@@ -53,7 +53,7 @@ namespace OrchardCore.Deployment
         {
             var user = _httpContextAccessor.HttpContext.User;
 
-            var result = await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+            var result = await _authorizationService.AuthorizeAsync(user, CommonPermissions.Export);
 
             return result;
         }
