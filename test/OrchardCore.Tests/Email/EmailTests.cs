@@ -1,6 +1,6 @@
 using MimeKit;
 using OrchardCore.Email;
-using OrchardCore.Email.Smtp.Services;
+using OrchardCore.Testing.Mocks;
 
 namespace OrchardCore.Tests.Email
 {
@@ -198,7 +198,7 @@ namespace OrchardCore.Tests.Email
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
 
-            var smtp = CreateSmtpService(options);
+            var smtp = OrchardCoreMock.CreateSmtpService(options);
 
             // Act
             var result = await smtp.SendAsync(message);
@@ -222,7 +222,7 @@ namespace OrchardCore.Tests.Email
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
 
-            var smtp = CreateSmtpService(settings);
+            var smtp = OrchardCoreMock.CreateSmtpService(settings);
 
             // Act
             var result = await smtp.SendAsync(message);
@@ -250,7 +250,7 @@ namespace OrchardCore.Tests.Email
                 PickupDirectoryLocation = pickupDirectoryPath,
                 IsEnabled = true,
             };
-            var smtp = CreateSmtpService(options);
+            var smtp = OrchardCoreMock.CreateSmtpService(options);
 
             var result = await smtp.SendAsync(message);
 
@@ -265,22 +265,5 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static SmtpEmailProvider CreateSmtpService(SmtpOptions smtpOptions)
-        {
-            var options = new Mock<IOptions<SmtpOptions>>();
-            options.Setup(o => o.Value)
-                .Returns(smtpOptions);
-
-            var logger = new Mock<ILogger<SmtpEmailProvider>>();
-            var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
-            var emailValidator = new Mock<IEmailAddressValidator>();
-
-            emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
-                .Returns(true);
-
-            var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
-
-            return smtp;
-        }
     }
 }

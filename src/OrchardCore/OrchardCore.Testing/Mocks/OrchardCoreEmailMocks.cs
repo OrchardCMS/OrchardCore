@@ -3,22 +3,27 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Email;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Smtp.Services;
 
 namespace OrchardCore.Testing.Mocks;
 
 public static partial class OrchardCoreMock
 {
-    public static ISmtpService CreateSmtpService(SmtpSettings settings)
+    public static SmtpEmailProvider CreateSmtpService(SmtpOptions smtpOptions)
     {
-        var smtpSettings = new Mock<IOptions<SmtpSettings>>();
-        smtpSettings
-            .Setup(o => o.Value)
-            .Returns(settings);
+        var options = new Mock<IOptions<SmtpOptions>>();
+        options.Setup(o => o.Value)
+            .Returns(smtpOptions);
 
-        var logger = new Mock<ILogger<SmtpService>>();
-        var localizer = new Mock<IStringLocalizer<SmtpService>>();
+        var logger = new Mock<ILogger<SmtpEmailProvider>>();
+        var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
+        var emailValidator = new Mock<IEmailAddressValidator>();
 
-        return new SmtpService(smtpSettings.Object, logger.Object, localizer.Object);
+        emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
+            .Returns(true);
+
+        var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
+
+        return smtp;
     }
 }
