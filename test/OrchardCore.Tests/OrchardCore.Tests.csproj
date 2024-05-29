@@ -82,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Security\" />
     <Folder Include="Stubs\" />
   </ItemGroup>
 

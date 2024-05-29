@@ -26,7 +26,7 @@ namespace OrchardCore.Testing.Stubs
             {
                 if (recipeFile.Exists)
                 {
-                    var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(
+                    var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(
                         recipeFile.PhysicalPath,
                         recipeFile,
                         _recipeFileProvider.FileProvider);
