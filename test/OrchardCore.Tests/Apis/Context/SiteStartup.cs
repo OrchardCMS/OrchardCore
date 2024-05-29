@@ -2,6 +2,7 @@ using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing.Apis.Security;
 
 namespace OrchardCore.Tests.Apis.Context
 {
