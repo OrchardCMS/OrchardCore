@@ -88,6 +88,8 @@ namespace OrchardCore.Tests.Shell
                 .CreateScope()
                 .ServiceProvider;
 
+            var appSingleton = _applicationServiceProvider.GetRequiredService<ITestSingleton>();
+
             var singleton1 = container.GetRequiredService<ITestSingleton>();
             var singleton2 = container.GetRequiredService<ITestSingleton>();
             var transient1 = container.GetRequiredService<ITestTransient>();
@@ -109,6 +111,7 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<TestScoped>(scoped3);
 
             Assert.Equal(singleton1, singleton2);
+            Assert.Same(appSingleton, singleton1);
             Assert.NotEqual(transient1, transient2);
             Assert.NotEqual(scoped1, scoped3);
             Assert.Equal(scoped1, scoped2);
