@@ -57,9 +57,9 @@ namespace OrchardCore.Markdown.Drivers
 
                 // The default Markdown option is to entity escape html
                 // so filters must be run after the markdown has been processed.
-                model.Html = _markdownService.ToHtml(model.Markdown ?? "");
+                model.Html = _markdownService.ToHtml(model.Markdown ?? string.Empty);
 
-                // The liquid rendering is for backwards compatability and can be removed in a future version.
+                // The liquid rendering is for backwards compatibility and can be removed in a future version.
                 if (!settings.SanitizeHtml)
                 {
                     model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
@@ -75,7 +75,7 @@ namespace OrchardCore.Markdown.Drivers
 
                 if (settings.SanitizeHtml)
                 {
-                    model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
+                    model.Html = _htmlSanitizerService.Sanitize(model.Html ?? string.Empty);
                 }
             })
             .Location("Detail", "Content")
