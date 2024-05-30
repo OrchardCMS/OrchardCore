@@ -43,7 +43,9 @@ public class AccountControllerTests
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingServiceScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
@@ -105,7 +107,7 @@ public class AccountControllerTests
                     .FirstOrDefaultAsync();
             Assert.NotNull(sam);
 
-             var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
+            var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
             Assert.Equal("Sam", claimsDict["firstName"]);
             Assert.Equal("Zhang", claimsDict["lastName"]);
             Assert.Equal("CEO", claimsDict["jobTitle"]);
@@ -113,7 +115,10 @@ public class AccountControllerTests
             Assert.Equal("Sam Zhang(CEO)", sam.Properties.SelectNode("$.UserProfile.UserProfile.DisplayName.Text").ToString());
 
         });
-        await context.UsingTenantScopeAsync(async scope =>
+
+        var subShellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await subShellScope.UsingServiceScopeAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 

@@ -20,39 +20,6 @@ namespace OrchardCore.Tests.Apis.Context
                 .WithDatabaseProvider("Sqlite");
         }
 
-        public override async Task InitializeAsync()
-        {
-            await base.InitializeAsync();
-            GraphQLClient = new OrchardGraphQLClient(Client);
-        }
-
-        public async Task RunRecipeAsync(string recipeName, string recipePath)
-        {
-            var shellScope = await ShellHost.GetScopeAsync(TenantName);
-
-            await shellScope.UsingServiceScopeAsync(async scope =>
-            {
-                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
-                var recipe = recipes
-                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
-            });
-        }
-
         public async Task ResetLuceneIndiciesAsync(string indexName)
         {
             var shellScope = await ShellHost.GetScopeAsync(TenantName);
