@@ -124,7 +124,7 @@ namespace OrchardCore.Recipes.Controllers
             {
                 _logger.LogError(e, "Unable to import a recipe file.");
 
-                await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
             }
             catch (Exception e)
             {

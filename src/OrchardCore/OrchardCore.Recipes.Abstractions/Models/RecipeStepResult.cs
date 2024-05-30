@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Recipes.Models;
 
 public class RecipeStepResult
@@ -10,5 +8,5 @@ public class RecipeStepResult
 
     public bool IsSuccessful { get; set; }
 
-    public Dictionary<string, string[]> Errors { get; set; }
+    public string[] Errors { get; set; }
 }
