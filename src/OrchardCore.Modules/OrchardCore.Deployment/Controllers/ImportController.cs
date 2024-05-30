@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -50,7 +49,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -61,7 +60,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Import(IFormFile importedPackage)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -102,7 +101,7 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     _logger.LogError(e, "Unable to import a deployment package.");
 
-                    await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                    await _notifier.ErrorAsync(H["The import failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors)]);
                 }
                 catch (Exception e)
                 {
@@ -133,7 +132,7 @@ namespace OrchardCore.Deployment.Controllers
 
         public async Task<IActionResult> Json()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -144,7 +143,7 @@ namespace OrchardCore.Deployment.Controllers
         [HttpPost]
         public async Task<IActionResult> Json(ImportJsonViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
             {
                 return Forbid();
             }
@@ -171,7 +170,7 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     _logger.LogError(e, "Unable to import a recipe from JSON input.");
 
-                    ModelState.AddModelError(nameof(model.Json), string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
+                    ModelState.AddModelError(nameof(model.Json), string.Join(' ', e.StepResult.Errors));
                 }
                 catch (Exception e)
                 {
