@@ -13,10 +13,7 @@ namespace OrchardCore.Testing
 
         public ModuleNamesProvider(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
+            ArgumentNullException.ThrowIfNullOrEmpty(nameof(assembly));
 
             _moduleNames = Assembly.Load(new AssemblyName(assembly.GetName().Name))
                 .GetCustomAttributes<ModuleNameAttribute>()
@@ -26,3 +23,4 @@ namespace OrchardCore.Testing
         public IEnumerable<string> GetModuleNames() => _moduleNames;
     }
 }
+

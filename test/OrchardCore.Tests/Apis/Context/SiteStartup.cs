@@ -2,6 +2,7 @@ using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Testing;
 using OrchardCore.Testing.Apis.Security;
 
 namespace OrchardCore.Tests.Apis.Context
@@ -51,22 +52,6 @@ namespace OrchardCore.Tests.Apis.Context
 #pragma warning restore CA1822 // Mark members as static
         {
             app.UseOrchardCore();
-        }
-
-        private sealed class ModuleNamesProvider : IModuleNamesProvider
-        {
-            private readonly string[] _moduleNames;
-
-            public ModuleNamesProvider()
-            {
-                var assembly = Assembly.Load(new AssemblyName(typeof(Program).Assembly.GetName().Name));
-                _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToArray();
-            }
-
-            public IEnumerable<string> GetModuleNames()
-            {
-                return _moduleNames;
-            }
         }
     }
 }
