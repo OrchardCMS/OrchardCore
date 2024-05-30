@@ -61,7 +61,10 @@ namespace OrchardCore.Recipes
         {
             var context = new BlogContext();
             await context.InitializeAsync();
-            await context.UsingTenantScopeAsync(async scope =>
+
+            var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+            await shellScope.UsingAsync(async scope =>
             {
                 var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
                 // Act

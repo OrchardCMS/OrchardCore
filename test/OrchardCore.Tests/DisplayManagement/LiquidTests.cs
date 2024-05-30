@@ -2,6 +2,7 @@ using System.Text.Json;
 using Fluid;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Tests.Apis.Context;
 
@@ -14,7 +15,9 @@ public class LiquidTests
     {
         var context = new SiteContext();
         await context.InitializeAsync();
-        await context.UsingTenantScopeAsync(async scope =>
+
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+        await shellScope.UsingAsync(async scope =>
         {
             var template = """
                 {% if Model.ContentItem.Content.MyPart.myField.Text == "Some test value" %}true{% else %}false{% endif %}
@@ -47,7 +50,11 @@ public class LiquidTests
     {
         var context = new SiteContext();
         await context.InitializeAsync();
-        await context.UsingTenantScopeAsync(async scope =>
+
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
+
         {
             var template = """
                             {% assign myDate = "2024-05-14 08:00:00Z" | date %}
@@ -82,7 +89,9 @@ public class LiquidTests
     {
         var context = new SiteContext();
         await context.InitializeAsync();
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var template = """
                 {% if Model.ContentItem.Content.MyPart.myField.Value == 123 %}true{% else %}false{% endif %}

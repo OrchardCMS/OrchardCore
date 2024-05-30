@@ -42,7 +42,9 @@ public class RegistrationControllerTests
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.Equal($"/{context.TenantName}/", response.Headers.Location.ToString());
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
@@ -210,7 +212,9 @@ public class RegistrationControllerTests
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
         Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.RegistrationPending)}", responseFromPost.Headers.Location.ToString());
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
@@ -253,7 +257,9 @@ public class RegistrationControllerTests
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
         Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromPost.Headers.Location.ToString());
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
@@ -285,7 +291,9 @@ public class RegistrationControllerTests
 
         await context.InitializeAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             if (!requireUniqueEmail)
             {

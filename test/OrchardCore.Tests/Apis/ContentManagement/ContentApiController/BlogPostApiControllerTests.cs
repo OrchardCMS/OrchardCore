@@ -2,6 +2,7 @@ using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
@@ -64,9 +65,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             // Act
             await context.Client.PostAsJsonAsync("api/content", context.BlogPost);
 
+            // Test
             var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
 
-            // Test
             await shellScope.UsingAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();

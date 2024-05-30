@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Benchmark.Support;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Benchmark;
@@ -22,7 +23,10 @@ public class ShapeDescriptorIndexBenchmark
     {
         using var content = new BlogContext();
         await content.InitializeAsync();
-        await content.UsingTenantScopeAsync(async scope =>
+
+        var shellScope = await BlogContext.ShellHost.GetScopeAsync(content.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var bindingStrategies = scope.ServiceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
             var typeFeatureProvider = scope.ServiceProvider.GetRequiredService<ITypeFeatureProvider>();

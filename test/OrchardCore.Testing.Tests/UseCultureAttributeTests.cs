@@ -18,7 +18,7 @@ public class UseCultureAttributeTests
     }
 
     [Fact]
-    public void UseCulture_BeforeAndAfterTest()
+    public void UseCultureBeforeAndAfterTest()
     {
         // Arrange
         var originalCulture = CultureInfo.CurrentCulture;
@@ -44,7 +44,7 @@ public class UseCultureAttributeTests
 
     [Fact]
     [UseCulture("ar-YE")]
-    public void UseCultureAttribute_UsesSuppliedCulture()
+    public void UseCultureAttributeUsesSuppliedCulture()
     {
         // Assert
         Assert.Equal(new CultureInfo("ar-YE"), CultureInfo.CurrentCulture);
@@ -53,7 +53,7 @@ public class UseCultureAttributeTests
 
     [Fact]
     [UseCulture("ar-YE", "ar-SA")]
-    public void UseCultureAttribute_UsesSuppliedCultureAndUICulture()
+    public void UseCultureAttributeUsesSuppliedCultureAndUICulture()
     {
         // Assert
         Assert.Equal(new CultureInfo("ar-YE"), CultureInfo.CurrentCulture);

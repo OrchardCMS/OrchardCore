@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Apis.Context
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
 
-            services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
+            services.AddSingleton<IModuleNamesProvider>(new ModuleNamesProvider(Assembly.Load("OrchardCore.Cms.Web")));
         }
 
 #pragma warning disable CA1822 // Mark members as static

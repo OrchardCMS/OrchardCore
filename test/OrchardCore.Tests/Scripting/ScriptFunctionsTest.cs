@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.Apis.Context;
 
@@ -10,7 +11,10 @@ public class ScriptFunctionsTest
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
-        await context.UsingTenantScopeAsync(scope =>
+
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
         {
             var findUser = new GlobalMethod
             {
@@ -80,9 +84,6 @@ public class ScriptFunctionsTest
              return steps.join(',')
             ");
             Assert.Equal("1,2,3,4,5,false,false", result1);
-
-
-            return Task.CompletedTask;
         });
     }
 }

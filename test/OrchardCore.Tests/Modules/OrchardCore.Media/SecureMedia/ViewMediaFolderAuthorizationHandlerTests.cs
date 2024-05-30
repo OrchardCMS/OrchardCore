@@ -4,7 +4,7 @@ using OrchardCore.Media;
 using OrchardCore.Media.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
-using OrchardCore.Tests.Security;
+using OrchardCore.Testing.Security;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media.SecureMedia;
 

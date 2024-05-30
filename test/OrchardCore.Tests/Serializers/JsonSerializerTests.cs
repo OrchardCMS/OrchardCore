@@ -1,5 +1,6 @@
 using System.Text.Json;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users.Core.Json;
 using OrchardCore.Users.Indexes;
@@ -55,7 +56,11 @@ public class JsonSerializerTests
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
-        await context.UsingTenantScopeAsync(async scope =>
+
+        var shellScope = await SiteContext.ShellHost.GetScopeAsync(context.TenantName);
+
+        await shellScope.UsingAsync(async scope =>
+
         {
             var loginInfo = new UserLoginInfo("OpenIdConnect", "abc", "default");
 
