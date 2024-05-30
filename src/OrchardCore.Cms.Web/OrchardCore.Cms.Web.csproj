@@ -14,11 +14,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   
-  <!-- For Unit Tests-->
-  <ItemGroup>
-    <InternalsVisibleTo Include="OrchardCore.Tests" />
-  </ItemGroup>
-
   <!-- Watcher include and excludes -->
   <ItemGroup>
       <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />

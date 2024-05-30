@@ -7,13 +7,14 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Testing.Apis.Security;
 using OrchardCore.Testing.Data;
+using OrchardCore.Testing.Infrastructure;
 
 namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext : IDisposable
     {
         private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
-        public static OrchardTestFixture<SiteStartup> Site { get; }
+        public static OrchardCoreTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
         public static IShellSettingsManager ShellSettingsManager { get; private set; }
         public static IHttpContextAccessor HttpContextAccessor { get; }
@@ -30,7 +31,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         static SiteContext()
         {
-            Site = new OrchardTestFixture<SiteStartup>();
+            Site = new OrchardCoreTestFixture<SiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
             ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
             HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
