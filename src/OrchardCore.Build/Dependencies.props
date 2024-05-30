@@ -26,8 +26,8 @@
     <PackageManagement Include="GraphQL.DataLoader" Version="7.8.0" />
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="7.8.0" />
-    <PackageManagement Include="Jint" Version="3.1.1" />
-    <PackageManagement Include="JsonPath.Net" Version="1.0.4" />
+    <PackageManagement Include="Jint" Version="3.1.2" />
+    <PackageManagement Include="JsonPath.Net" Version="1.1.0" />
     <PackageManagement Include="HtmlSanitizer" Version="8.1.860-beta" />
     <PackageManagement Include="Irony" Version="1.5.1" />
     <PackageManagement Include="libphonenumber-csharp" Version="8.13.37" />
@@ -41,7 +41,7 @@
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.3" />
     <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="8.5.0" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.18.1" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.18.2" />
 
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
@@ -52,7 +52,7 @@
     -->
 
     <PackageManagement Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.5.1" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.6.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
@@ -79,9 +79,9 @@
     <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
     <PackageManagement Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageManagement Include="xunit" Version="2.8.0" />
-    <PackageManagement Include="xunit.analyzers" Version="1.13.0" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.8.0" />
+    <PackageManagement Include="xunit" Version="2.8.1" />
+    <PackageManagement Include="xunit.analyzers" Version="1.14.0" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.8.1" />
     <PackageManagement Include="YesSql" Version="5.0.0" />
     <PackageManagement Include="YesSql.Abstractions" Version="5.0.0" />
     <PackageManagement Include="YesSql.Core" Version="5.0.0" />

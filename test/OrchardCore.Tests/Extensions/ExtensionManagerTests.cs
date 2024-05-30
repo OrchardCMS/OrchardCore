@@ -31,7 +31,6 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
-                new TypeFeatureProvider(),
                 _moduleFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
@@ -40,7 +39,6 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
-                new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
@@ -49,7 +47,6 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
-                new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
