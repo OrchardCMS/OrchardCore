@@ -27,6 +27,7 @@ public class EmailMigrations : DataMigration
                 return;
             }
 
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
             var smtpSettings = await siteService.GetSettingsAsync<SmtpSettings>();
 
             if (!string.IsNullOrEmpty(smtpSettings.DefaultSender) ||
