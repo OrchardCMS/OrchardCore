@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Microsoft.AspNetCore.Mvc
 {
-    public static class ControllerExtensions
+    public static class ControllerBaseExtensions
     {
         /// <summary>
         /// Returns the proper actionresult for unauthorized or unauthenticated users.
@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// </summary>
         /// <param name="controller"></param>
         /// <returns>The proper actionresult based upon if the user is authenticated.</returns>
-        public static ActionResult ChallengeOrForbid(this Controller controller)
+        public static ActionResult ChallengeOrForbid(this ControllerBase controller)
             => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid() : controller.Challenge();
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// <param name="controller"></param>
         /// <param name="authenticationSchemes">The authentication schemes to challenge.</param>
         /// <returns>The proper actionresult based upon if the user is authenticated.</returns>
-        public static ActionResult ChallengeOrForbid(this Controller controller, params string[] authenticationSchemes)
+        public static ActionResult ChallengeOrForbid(this ControllerBase controller, params string[] authenticationSchemes)
             => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid(authenticationSchemes) : controller.Challenge(authenticationSchemes);
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// </summary>
         /// <param name="controller">The <see cref="Controller"/>.</param>
         /// <param name="value">An optional value to set on <see cref="ObjectResult"/>.</param>
-        public static ActionResult InternalServerError(this Controller controller, object value = null)
+        public static ActionResult InternalServerError(this ControllerBase controller, object value = null)
             => controller.StatusCode((int)HttpStatusCode.InternalServerError, value);
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// <param name="controller"></param>
         /// <param name="localUrl">The local URL to redirect to.</param>
         /// <param name="escapeUrl">Whether to escape the url.</param>
-        public static ActionResult LocalRedirect(this Controller controller, string localUrl, bool escapeUrl)
+        public static ActionResult LocalRedirect(this ControllerBase controller, string localUrl, bool escapeUrl)
         {
             if (!escapeUrl)
             {
@@ -59,7 +59,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// <param name="controller"></param>
         /// <param name="url">The URL to redirect to.</param>
         /// <param name="escapeUrl">Whether to escape the url.</param>
-        public static ActionResult Redirect(this Controller controller, string url, bool escapeUrl)
+        public static ActionResult Redirect(this ControllerBase controller, string url, bool escapeUrl)
         {
             if (!escapeUrl)
             {
