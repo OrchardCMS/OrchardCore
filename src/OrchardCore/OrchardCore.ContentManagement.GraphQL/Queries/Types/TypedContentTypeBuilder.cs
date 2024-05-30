@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             _contentOptions = contentOptionsAccessor.Value;
         }
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();

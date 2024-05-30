@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             S = localizer;
         }
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
@@ -92,31 +92,68 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 else
                 {
                     // Check if another builder has already added a field for this part.
-                    // We do not modify the existing field here again. The other builder
-                    // must take care to fully populate the part type.
                     var partFieldName = partName.ToFieldName();
-                    if (contentItemType.HasField(partFieldName))
-                        continue;
+                    var partFieldType = contentItemType.GetField(partFieldName);
 
-                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                    if (partFieldType != null)
                     {
-                        contentItemType.AddField(fieldType);
+                        // Add dynamic content field types to the static part type.
+                        var partContentItemType = schema.AdditionalTypeInstances
+                            .OfType<IObjectGraphType>()
+                            .Where(type => type.GetType() == partFieldType.Type)
+                            .FirstOrDefault();
+
+                        if (partContentItemType != null)
+                        {
+                            foreach (var field in part.PartDefinition.Fields)
+                            {
+                                foreach (var fieldProvider in contentFieldProviders)
+                                {
+                                    var contentFieldType = fieldProvider.GetField(field, part.Name);
+
+                                    if (contentFieldType != null)
+                                    {
+                                        if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name))
+                                        {
+                                            continue;
+                                        }
+
+                                        // Do not add field if it collides with existing ones. Note that we may have fields with different
+                                        // casing here too, which must be prevented as well.
+                                        if (partContentItemType.Fields.Any(f => f.Name.Equals(contentFieldType.Name, StringComparison.OrdinalIgnoreCase)))
+                                        {
+                                            continue;
+                                        }
+
+                                        partContentItemType.AddField(contentFieldType);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        var field = contentItemType
-                            .Field<DynamicPartGraphType>(partFieldName)
-                            .Description(S["Represents a {0}.", part.PartDefinition.Name])
-                            .Resolve(context =>
-                            {
-                                var nameToResolve = partName;
-                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                        if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                        {
+                            contentItemType.AddField(fieldType);
+                        }
+                        else
+                        {
+                            var field = contentItemType
+                                .Field<DynamicPartGraphType>(partFieldName)
+                                .Description(S["Represents a {0}.", part.PartDefinition.Name])
+                                .Resolve(context =>
+                                {
+                                    var nameToResolve = partName;
+                                    var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
+                                    return context.Source.Get(typeToResolve, nameToResolve);
+                                });
 
-                        field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
-                        _dynamicPartFields[partName] = field.FieldType;
+                            field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+                            _dynamicPartFields[partName] = field.FieldType;
+                        }
                     }
                 }
             }
