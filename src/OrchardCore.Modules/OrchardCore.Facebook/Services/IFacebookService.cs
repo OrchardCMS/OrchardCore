@@ -3,14 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.Facebook.Settings;
 
-namespace OrchardCore.Facebook.Services
+namespace OrchardCore.Facebook.Services;
+
+public interface IFacebookService
 {
-    public interface IFacebookService
-    {
-        Task<FacebookSettings> GetSettingsAsync();
+    Task<FacebookSettings> GetSettingsAsync();
 
-        Task UpdateSettingsAsync(FacebookSettings settings);
+    Task UpdateSettingsAsync(FacebookSettings settings);
 
-        IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings);
-    }
+    IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings);
 }

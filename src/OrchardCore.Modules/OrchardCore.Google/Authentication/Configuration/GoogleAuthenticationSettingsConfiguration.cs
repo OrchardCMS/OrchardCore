@@ -10,12 +10,12 @@ namespace OrchardCore.Google.Authentication.Services;
 
 public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
 {
-    private readonly GoogleAuthenticationService _googleAuthenticationService;
+    private readonly IGoogleAuthenticationService _googleAuthenticationService;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public GoogleAuthenticationSettingsConfiguration(
-        GoogleAuthenticationService gitHubAuthenticationService,
+        IGoogleAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
         ILogger<GoogleAuthenticationSettingsConfiguration> logger)
     {

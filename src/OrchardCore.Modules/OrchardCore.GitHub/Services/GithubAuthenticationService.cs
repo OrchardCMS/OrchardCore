@@ -3,65 +3,32 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Entities;
 using OrchardCore.GitHub.Settings;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 
-namespace OrchardCore.GitHub.Services
+namespace OrchardCore.GitHub.Services;
+
+public class GitHubAuthenticationService : OAuthSettingsService<GitHubAuthenticationSettings>, IGitHubAuthenticationService
 {
-    public class GitHubAuthenticationService : IGitHubAuthenticationService
+    public GitHubAuthenticationService(
+        ISiteService siteService,
+        IStringLocalizer<OAuthSettingsService<GitHubAuthenticationSettings>> stringLocalizer) : base(siteService, stringLocalizer)
     {
-        private readonly ISiteService _siteService;
-        protected readonly IStringLocalizer S;
+    }
 
-        public GitHubAuthenticationService(
-            ISiteService siteService,
-            IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
+    public override IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        if (string.IsNullOrWhiteSpace(settings.ClientID))
         {
-            _siteService = siteService;
-            S = stringLocalizer;
+            yield return new ValidationResult(S["ClientID is required"], [nameof(settings.ClientID)]);
         }
 
-        public async Task<GitHubAuthenticationSettings> GetSettingsAsync()
+        if (string.IsNullOrWhiteSpace(settings.ClientSecret))
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GitHubAuthenticationSettings>();
-        }
-
-        public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
-        {
-            var container = await _siteService.LoadSiteSettingsAsync();
-            return container.As<GitHubAuthenticationSettings>();
-        }
-
-        public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
-        {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
-            {
-                aspect.ClientID = settings.ClientID;
-                aspect.ClientSecret = settings.ClientSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
-
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
-
-        public IEnumerable<ValidationResult> ValidateSettings(GitHubAuthenticationSettings settings)
-        {
-            ArgumentNullException.ThrowIfNull(settings);
-
-            if (string.IsNullOrWhiteSpace(settings.ClientID))
-            {
-                yield return new ValidationResult(S["ClientID is required"], new string[] { nameof(settings.ClientID) });
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ClientSecret))
-            {
-                yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
-            }
+            yield return new ValidationResult(S["ClientSecret is required"], [nameof(settings.ClientSecret)]);
         }
     }
 }
