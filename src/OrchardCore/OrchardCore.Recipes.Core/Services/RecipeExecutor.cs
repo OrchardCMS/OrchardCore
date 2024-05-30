@@ -105,10 +105,7 @@ namespace OrchardCore.Recipes.Services
                                     if (recipeStep.Errors.Count > 0)
                                     {
                                         stepResult.IsSuccessful = false;
-                                        stepResult.Errors = new Dictionary<string, string[]>
-                                        {
-                                            { recipeStep.Name, recipeStep.Errors.ToArray() }
-                                        };
+                                        stepResult.Errors = recipeStep.Errors.ToArray();
                                     }
                                     else
                                     {
@@ -118,10 +115,7 @@ namespace OrchardCore.Recipes.Services
                                 catch (Exception e)
                                 {
                                     stepResult.IsSuccessful = false;
-                                    stepResult.Errors = new Dictionary<string, string[]>
-                                    {
-                                        { recipeStep.Name, [S["Unexpected error occurred while executing the '{0}' step.", stepResult.StepName]] }
-                                    };
+                                    stepResult.Errors = [S["Unexpected error occurred while executing the '{0}' step.", stepResult.StepName]];
 
                                     // Because we can't do some async processing the in catch or finally
                                     // blocks, we store the exception to throw it later.
