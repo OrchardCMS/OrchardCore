@@ -104,9 +104,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         }
                     }
                 }
-
-                // If all services of the same type are not singletons.
-                else
+                else    // If all services of the same type are not singletons.
                 {
                     // We don't need to resolve them.
                     foreach (var service in services)
