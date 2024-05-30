@@ -105,7 +105,11 @@ namespace OrchardCore.Testing.Apis
             });
         }
 
-        public void Dispose() => Client?.Dispose();
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Client?.Dispose();
+        }
 
         private async Task<HttpResponseMessage> CreateSiteAsync(string tenantName)
         {

@@ -64,8 +64,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             // Act
             await context.Client.PostAsJsonAsync("api/content", context.BlogPost);
 
+            var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
+
             // Test
-            await context.UsingTenantScopeAsync(async scope =>
+            await shellScope.UsingAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -240,7 +242,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
             Assert.Contains("Your permalink is already in use.", problemDetails.Detail);
 
-            await context.UsingTenantScopeAsync(async scope =>
+            var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
+
+            await shellScope.UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -299,7 +303,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 publishedContentItem.ContentItemId,
             };
 
-            await context.UsingTenantScopeAsync(async scope =>
+            var shellScope = await BlogPostApiControllerContext.ShellHost.GetScopeAsync(context.TenantName);
+
+            await shellScope.UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var newAutoroutePartIndex = await session

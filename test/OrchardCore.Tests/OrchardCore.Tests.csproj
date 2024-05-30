@@ -82,6 +82,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Apis\Context\Extensions\" />
     <Folder Include="Security\" />
     <Folder Include="Stubs\" />
   </ItemGroup>
