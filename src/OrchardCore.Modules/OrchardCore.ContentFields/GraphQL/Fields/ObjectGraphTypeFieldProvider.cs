@@ -48,7 +48,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         private static IObjectGraphType GetObjectGraphType(ISchema schema, ContentPartFieldDefinition field) =>
             schema.AdditionalTypeInstances
-                .OfType<IObjectGraphType>()
-                .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == field.FieldDefinition.Name);
+                .FirstOrDefault(x => x is IObjectGraphType && x.GetType().BaseType.GetGenericArguments().First().Name == field.FieldDefinition.Name) as IObjectGraphType;
     }
 }
