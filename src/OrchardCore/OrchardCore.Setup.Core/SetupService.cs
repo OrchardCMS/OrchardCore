@@ -235,7 +235,7 @@ namespace OrchardCore.Setup.Services
                 {
                     _logger.LogError(e, "Unable to import a recipe during setup.");
 
-                    context.Errors.Add(string.Empty, string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value)));
+                    context.Errors.Add(string.Empty, string.Join(' ', e.StepResult.Errors));
                 }
                 catch (Exception e)
                 {
