@@ -1,9 +1,9 @@
 using OrchardCore.Data.YesSql;
 using OrchardCore.Modules;
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Testing;
 using OrchardCore.Testing.Apis.Security;
+using OrchardCore.Testing.Recipes;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -35,6 +35,7 @@ namespace OrchardCore.Tests.Apis.Context
                         options.EnableThreadSafetyChecks = true;
                     });
 
+                    collection.AddScoped<IRecipeFileProvider, RecipeFileProvider>();
                     collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
 
                     collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
