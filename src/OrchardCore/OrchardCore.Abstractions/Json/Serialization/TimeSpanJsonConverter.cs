@@ -27,5 +27,4 @@ namespace OrchardCore.Json.Serialization
             writer.WriteStringValue(value.ToString());
         }
     }
-
 }
