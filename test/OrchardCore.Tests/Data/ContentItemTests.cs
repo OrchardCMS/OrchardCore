@@ -1,12 +1,27 @@
 using System.Text.Json;
 using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Data
 {
     public class ContentItemTests
     {
+        [Fact]
+        public void TimeFiledTests()
+        {
+            var jsonStr = """
+                {
+                    "Value":"13:05"
+                }
+                """;
+            var jobject = JsonNode.Parse(jsonStr);
+            var timeFiled = jobject.ToObject<TimeField>();
+
+            Assert.Equal("13:05", timeFiled.Value.ToString());
+        }
+
         [Fact]
         public void ShouldSerializeContent()
         {
