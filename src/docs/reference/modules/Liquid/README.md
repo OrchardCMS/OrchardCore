@@ -507,6 +507,14 @@ The following properties are available on the `Culture` object.
 | `Name` | `en-US` | The request's culture as an ISO language code. |
 | `Dir` | `rtl` | The text writing direction. |
 
+##### supported_cultures filter
+
+Returns the currently supported cultures.
+
+```liquid
+{{ Culture | supported_cultures }}
+```
+
 ### Environment
 
 Represents the current hosting environment.
