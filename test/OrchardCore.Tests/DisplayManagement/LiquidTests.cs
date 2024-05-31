@@ -43,7 +43,7 @@ public class LiquidTests
     }
 
     [Fact]
-     public async Task ComparingDateTimeField_ReturnsCorrectValue()
+    public async Task ComparingDateTimeField_ReturnsCorrectValue()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
