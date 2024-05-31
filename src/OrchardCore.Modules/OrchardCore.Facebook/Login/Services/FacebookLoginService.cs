@@ -19,11 +19,8 @@ namespace OrchardCore.Facebook.Login.Services
             _siteService = siteService;
         }
 
-        public async Task<FacebookLoginSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<FacebookLoginSettings>();
-        }
+        public Task<FacebookLoginSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<FacebookLoginSettings>();
 
         public async Task<FacebookLoginSettings> LoadSettingsAsync()
         {

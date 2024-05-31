@@ -66,8 +66,7 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<ElasticSettings>();
+        var searchSettings = await _siteService.GetSettingsAsync<ElasticSettings>();
 
         var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
 
