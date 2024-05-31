@@ -29,8 +29,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                     {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
-                            var siteSettings = await _siteService.GetSiteSettingsAsync();
-                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+
                             if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                             {
                                 return true;
@@ -45,8 +45,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                     {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
-                            var siteSettings = await _siteService.GetSiteSettingsAsync();
-                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+
                             if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                             {
                                 return true;

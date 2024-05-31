@@ -17,7 +17,7 @@ public class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
     public override IDisplayResult Display(Navbar model)
     {
         return View("ToggleTheme", model)
-            .RenderWhen(async () => (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>().DisplayThemeToggler)
+            .RenderWhen(async () => (await _siteService.GetSettingsAsync<AdminSettings>()).DisplayThemeToggler)
             .Location("Detail", "Content:10")
             .Location("DetailAdmin", "Content:10");
     }

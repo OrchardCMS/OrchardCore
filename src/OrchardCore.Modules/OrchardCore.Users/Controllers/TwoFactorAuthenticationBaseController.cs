@@ -139,7 +139,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         if (await UserManager.CountRecoveryCodesAsync(user) == 0)
         {
-            var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
+            var twoFactorSettings = await SiteService.GetSettingsAsync<TwoFactorLoginSettings>();
             var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
 
             await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));

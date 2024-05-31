@@ -67,7 +67,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<AuthenticatorAppLoginSettings>();
+        var loginSettings = await SiteService.GetSettingsAsync<AuthenticatorAppLoginSettings>();
 
         var model = await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings);
 
@@ -96,7 +96,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         {
             ModelState.AddModelError(model.Code, S["Verification code is invalid."]);
 
-            var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<AuthenticatorAppLoginSettings>();
+            var loginSettings = await SiteService.GetSettingsAsync<AuthenticatorAppLoginSettings>();
 
             return View(await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings));
         }

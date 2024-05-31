@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
         {
-            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+            var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
 
             if (disableLocalLogin)
             {
