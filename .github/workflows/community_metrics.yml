@@ -14,7 +14,7 @@ jobs:
     - name: Close Previous Issue
       shell: pwsh
       run: |
-        $issues = gh issue list --repo '${{ github.repository }}' --label 'community metrics' --state open --json number --jq '.[].number'
+        $issues = gh issue list --label 'community metrics' --state open --json number --jq '.[].number'
         foreach ($issue in $issues)
         {
             Write-Output "Closing issue $issue"
