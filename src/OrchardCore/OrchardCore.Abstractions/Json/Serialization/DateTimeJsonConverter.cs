@@ -30,5 +30,3 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
         writer.WriteStringValue(value.ToString(DateTimeFormat, CultureInfo.InvariantCulture));
     }
 }
-
-
