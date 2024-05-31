@@ -34,7 +34,6 @@ namespace OrchardCore.Tests.Data
 
             var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
-
         }
 
         [Fact]
