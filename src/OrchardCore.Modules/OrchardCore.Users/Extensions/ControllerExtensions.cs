@@ -61,7 +61,7 @@ namespace OrchardCore.Users.Controllers
                 return null;
             }
 
-            var settings = (await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettingsAsync<RegistrationSettings>();
 
             if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
             {

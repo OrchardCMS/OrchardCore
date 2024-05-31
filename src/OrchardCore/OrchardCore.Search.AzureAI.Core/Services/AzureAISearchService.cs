@@ -47,8 +47,7 @@ public class AzureAISearchService : ISearchService
             return result;
         }
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<AzureAISearchSettings>();
+        var searchSettings = await _siteService.GetSettingsAsync<AzureAISearchSettings>();
 
         var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
 

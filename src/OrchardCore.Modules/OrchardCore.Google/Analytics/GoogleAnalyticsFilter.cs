@@ -33,7 +33,7 @@ namespace OrchardCore.Google.Analytics
 
                 if (_scriptsCache == null && canTrack)
                 {
-                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
+                    var settings = await _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
 
                     if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
                     {

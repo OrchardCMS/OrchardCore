@@ -24,7 +24,7 @@ public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandle
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<RoleLoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<RoleLoginSettings>();
 
         if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles != null)
         {

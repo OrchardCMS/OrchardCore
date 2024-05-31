@@ -13,8 +13,8 @@ namespace OrchardCore.ContentFields.GraphQL
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
-            services.AddScoped<IContentFieldProvider, ContentFieldsProvider>();
+            services.AddTransient<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
+            services.AddTransient<IContentFieldProvider, ContentFieldsProvider>();
 
             services.AddObjectGraphType<LinkField, LinkFieldQueryObjectType>();
             services.AddObjectGraphType<HtmlField, HtmlFieldQueryObjectType>();

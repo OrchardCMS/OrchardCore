@@ -33,7 +33,7 @@ namespace OrchardCore.Google.TagManager
 
                 if (_scriptsCache == null && canTrack)
                 {
-                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleTagManagerSettings>();
+                    var settings = await _siteService.GetSettingsAsync<GoogleTagManagerSettings>();
 
                     if (!string.IsNullOrWhiteSpace(settings?.ContainerID))
                     {
