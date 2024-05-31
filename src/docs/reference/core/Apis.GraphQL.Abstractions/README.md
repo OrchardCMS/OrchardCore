@@ -233,7 +233,6 @@ These filters are checked against an index that is bound to the given ```Content
 
 To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvider```. Ensure that field names in your filter object are the same as fields in the index. It is needed for filter automatching.
 
-
 ```csharp
 public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
 {
@@ -281,7 +280,6 @@ With these configurations, you can navigate to your GraphQL interface, and you s
 
 Below are resulting query filters applied to an autoroutePart:
 
-
 ```json
 {
   person(where: {path: {path_contains: "", path: "", path_ends_with: "", path_in: "", path_not: "", path_not_contains: "", path_not_ends_with: "", path_not_in: "", path_not_starts_with: "", path_starts_with: ""}}) {
@@ -304,7 +302,7 @@ For a more detailed understanding, refer to the implementation of [WhereInputObj
 
 ### Using arguments for query filtering
 
-There is also the possibility to utilize query arguments and use them for filtering query results inside the `Resolve` method. For more information visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
+There is also the possibility to utilize query arguments and use them for filtering query results inside the `Resolve` method. For more information, visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
 
 Use this approach if you:
 
