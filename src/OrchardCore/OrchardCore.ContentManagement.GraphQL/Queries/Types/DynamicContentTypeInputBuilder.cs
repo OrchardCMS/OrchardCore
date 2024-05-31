@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -12,18 +11,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     public class DynamicContentTypeInputBuilder : DynamicContentTypeBuilder
     {
         public DynamicContentTypeInputBuilder(IHttpContextAccessor httpContextAccessor,
-            IEnumerable<IContentFieldProvider> contentFieldProviders,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
             IStringLocalizer<DynamicContentTypeInputBuilder> localizer)
-            : base(httpContextAccessor, contentFieldProviders, contentOptionsAccessor, localizer) { }
+            : base(httpContextAccessor, contentOptionsAccessor, localizer) { }
 
-        public override void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public override void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var whereInputType = (ContentItemWhereInput)contentQuery.Arguments?.FirstOrDefault(x => x.Name == "where")?.ResolvedType;
 
             if (whereInputType != null)
             {
-                BuildInternal(contentQuery, contentTypeDefinition, whereInputType);
+                BuildInternal(schema, contentQuery, contentTypeDefinition, whereInputType);
             }
         }
     }

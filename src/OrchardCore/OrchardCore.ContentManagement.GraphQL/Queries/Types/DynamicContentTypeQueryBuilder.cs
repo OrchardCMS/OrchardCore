@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -11,14 +10,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     public class DynamicContentTypeQueryBuilder : DynamicContentTypeBuilder
     {
         public DynamicContentTypeQueryBuilder(IHttpContextAccessor httpContextAccessor,
-            IEnumerable<IContentFieldProvider> contentFieldProviders,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
             IStringLocalizer<DynamicContentTypeQueryBuilder> localizer)
-            : base(httpContextAccessor, contentFieldProviders, contentOptionsAccessor, localizer) { }
+            : base(httpContextAccessor, contentOptionsAccessor, localizer) { }
 
-        public override void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public override void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
-            BuildInternal(contentQuery, contentTypeDefinition, contentItemType);
+            BuildInternal(schema, contentQuery, contentTypeDefinition, contentItemType);
         }
     }
 }
