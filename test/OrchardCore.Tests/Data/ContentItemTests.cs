@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Data
     public class ContentItemTests
     {
         [Fact]
-        public void TimeFiledTests()
+        public void TimeFieldTests()
         {
             var jsonStr = """
                 {
