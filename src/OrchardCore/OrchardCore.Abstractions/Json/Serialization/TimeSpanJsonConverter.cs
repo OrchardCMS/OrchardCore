@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Json.Serialization
 {
-    public class TimeSpanConverter : JsonConverter<TimeSpan>
+    public class TimeSpanJsonConverter : JsonConverter<TimeSpan>
     {
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Json.Serialization
 
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString(@"hh\:mm"));
+            writer.WriteStringValue(value.ToString());
         }
     }
 

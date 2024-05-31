@@ -12,14 +12,29 @@ namespace OrchardCore.Tests.Data
         public void TimeFieldTests()
         {
             var jsonStr = """
-                {
-                    "Value":"13:05"
+             {
+                "TimeFieldTest": {
+                    "Value": "13:05"
+                },
+                "DateTimeFieldTest": {
+                    "Value": "2024-5-31 13:05"
+                },
+                "DateFieldTest": {
+                    "Value": "2024-5-31"
                 }
-                """;
+            }
+            """;
             var jobject = JsonNode.Parse(jsonStr);
-            var timeFiled = jobject.ToObject<TimeField>();
 
-            Assert.Equal("13:05", timeFiled.Value.Value.ToString(@"hh\:mm"));
+            var timeField = jobject.SelectNode("TimeFieldTest").ToObject<TimeField>();
+            Assert.Equal("13:05:00", timeField.Value.Value.ToString());
+
+            var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
+            Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
+
+            var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
+            Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
+
         }
 
         [Fact]
