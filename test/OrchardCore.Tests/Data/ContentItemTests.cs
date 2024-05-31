@@ -19,7 +19,7 @@ namespace OrchardCore.Tests.Data
             var jobject = JsonNode.Parse(jsonStr);
             var timeFiled = jobject.ToObject<TimeField>();
 
-            Assert.Equal("13:05", timeFiled.Value.ToString());
+            Assert.Equal("13:05", timeFiled.Value.Value.ToString(@"hh\:mm"));
         }
 
         [Fact]
