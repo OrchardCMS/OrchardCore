@@ -314,7 +314,7 @@ Use this approach if you;
 
 OrchardCore implementation of filtering query by argument can be seen [in ContentItemQuery](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or ```MediaAssetQuery```.
 
-OrchardCore implementation of applying argument on field can be seen in ```MediaFieldQueryObjectType```.
+Orchard Core's implementation of applying an argument on a field can be seen in `MediaFieldQueryObjectType`.
 
 ## Querying related content items
 
