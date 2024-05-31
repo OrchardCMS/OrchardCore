@@ -79,11 +79,7 @@ public class LuceneSearchService : ISearchService
     }
 
     private async Task<string> DefaultIndexAsync()
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        return siteSettings.As<LuceneSettings>().SearchIndex;
-    }
+        => (await _siteService.GetSettingsAsync<LuceneSettings>()).SearchIndex;
 
     private async Task<string[]> GetSearchFieldsAsync()
     {

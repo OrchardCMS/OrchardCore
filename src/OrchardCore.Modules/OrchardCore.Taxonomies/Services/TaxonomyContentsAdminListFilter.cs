@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Services
 
         public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
+            var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();

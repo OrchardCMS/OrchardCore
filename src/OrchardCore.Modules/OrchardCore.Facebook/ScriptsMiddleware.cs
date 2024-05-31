@@ -26,8 +26,8 @@ namespace OrchardCore.Facebook
             if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk", StringComparison.OrdinalIgnoreCase))
             {
                 var script = default(string);
-                var site = (await _siteService.GetSiteSettingsAsync());
-                var settings = site.As<FacebookSettings>();
+                var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
+
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
                 {
                     var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');

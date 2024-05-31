@@ -6,9 +6,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public interface IContentFieldProvider
     {
-        FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName = null);
+        FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName = null);
 
-        bool HasField(ContentPartFieldDefinition field);
+        bool HasField(ISchema schema, ContentPartFieldDefinition field);
 
         FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field);
 

@@ -23,7 +23,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-            var settings = (await siteService.GetSiteSettingsAsync()).As<AuditTrailTrimmingSettings>();
+            var settings = await siteService.GetSettingsAsync<AuditTrailTrimmingSettings>();
             if (settings.Disabled)
             {
                 return;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new()
+        private static readonly FrozenDictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>()
         {
             {
                 nameof(BooleanField),
@@ -97,16 +98,15 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldAccessor = field => ((MultiTextField)field).Values,
                 }
             }
-        };
+        }.ToFrozenDictionary();
 
-        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
+        public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
+            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldDescriptor))
             {
                 return null;
             }
 
-            var fieldDescriptor = value;
             return new FieldType
             {
                 Name = customFieldName ?? field.Name,
@@ -129,7 +129,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        public bool HasField(ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+        public bool HasField(ISchema schema, ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
         public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
         {

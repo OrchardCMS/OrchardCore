@@ -34,7 +34,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
 
             if (_scriptsCache == null && canTrack)
             {
-                var settings = (await _siteService.GetSiteSettingsAsync()).As<FacebookPixelSettings>();
+                var settings = await _siteService.GetSettingsAsync<FacebookPixelSettings>();
 
                 if (!string.IsNullOrWhiteSpace(settings?.PixelId))
                 {
