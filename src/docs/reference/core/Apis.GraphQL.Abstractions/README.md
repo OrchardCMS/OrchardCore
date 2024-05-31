@@ -186,7 +186,7 @@ Done.
 
 ### Using default Content Type query filters
 
-In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add filter on Content Type queries, there is also a simpler solution for many usecases.
+In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add a filter on Content Type queries, there is also a simpler solution for many use cases.
 
 Use this approach if you:
 
