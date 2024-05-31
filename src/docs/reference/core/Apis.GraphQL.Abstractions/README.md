@@ -188,11 +188,11 @@ Done.
 
 In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add filter on Content Type queries, there is also a simpler solution for many usecases.
 
-Use this approach if you;
+Use this approach if you:
 
-* want to add new filter on Content Type queries
-* will have database index with data for your filters
-* you can use simple comparison (equals, contains, in, ...) against index values. For example ```AutoroutePartIndex.path = filterValue```.
+* want to add a new filter on Content Type queries,
+* will have a database index with data for your filters,
+* you can use simple comparison (equals, contains, in...) against index values. For example, `AutoroutePartIndex.Path = filterValue`.
 
 We will cover:
 
