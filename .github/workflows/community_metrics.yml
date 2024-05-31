@@ -14,6 +14,8 @@ jobs:
     - name: Close Previous Issue
       shell: pwsh
       run: |
+        # Without the --repo switch, the GH CLI will try to look it up from the current clone, which doesn't exist
+        # because we don't otherwise need checkout.
         $issues = gh issue list --repo '${{ github.repository }}' --label 'community metrics' --state open --json number --jq '.[].number'
         foreach ($issue in $issues)
         {
