@@ -303,16 +303,16 @@ Alternatively, if you register the part with ```collapse = true```, fields will 
 
 For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also might check the existing index for [`AutoroutePart`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs).
 
-### Using arguments for query filtration
+### Using arguments for query filtering
 
-There is also possibility to utilize query arguments and use them for filtering query results inside ```Resolve``` method. For more information visit [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
+There is also the possibility to utilize query arguments and use them for filtering query results inside the `Resolve` method. For more information visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
 
-Use this approach if you;
+Use this approach if you:
 
-* want to add new filter on any type of query, content part or field
-* will use custom logic for filtration
+* want to add a new filter on any type of query, content part, or field,
+* or will use custom logic for filtration.
 
-OrchardCore implementation of filtering query by argument can be seen [in ContentItemQuery](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or ```MediaAssetQuery```.
+Orchard Core's implementation of a filtering query by argument can be seen in [`ContentItemQuery`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or `MediaAssetQuery`.
 
 Orchard Core's implementation of applying an argument on a field can be seen in `MediaFieldQueryObjectType`.
 
