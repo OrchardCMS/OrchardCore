@@ -134,8 +134,7 @@ When an input part is registered, it adds in that part as the parent query, in t
 }
 ```
 
-Next we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
-Note that GraphQLFilter also provides PostQueryAsync and can be used also in other usecases as checking permissions etc.
+Next, we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it. Note that `GraphQLFilter` also provides `PostQueryAsync` that can be used in other use cases too, like checking permissions.
 
 ```csharp
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
