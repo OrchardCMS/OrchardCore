@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             // Do not add field if it collides with existing ones. Note that we may have fields with different
                             // casing here too, which must be prevented as well.
-                            if (contentItemType.Fields.Any(f => f.Name.Equals(field.Name, StringComparison.OrdinalIgnoreCase)))
+                            if (contentItemType.HasFieldIgnoreCase(field.Name))
                             {
                                 continue;
                             }

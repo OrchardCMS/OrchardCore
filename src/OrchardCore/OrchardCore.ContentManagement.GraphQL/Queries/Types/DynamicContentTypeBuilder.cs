@@ -78,7 +78,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                                 // Do not add field if it collides with existing ones. Note that we may have fields with different
                                 // casing here too, which must be prevented as well.
-                                if (contentItemType.Fields.Any(f => f.Name.Equals(fieldType.Name, StringComparison.OrdinalIgnoreCase)))
+                                if (contentItemType.HasFieldIgnoreCase(fieldType.Name))
                                 {
                                     continue;
                                 }
@@ -120,7 +120,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                                         // Do not add field if it collides with existing ones. Note that we may have fields with different
                                         // casing here too, which must be prevented as well.
-                                        if (partContentItemType.Fields.Any(f => f.Name.Equals(contentFieldType.Name, StringComparison.OrdinalIgnoreCase)))
+                                        if (partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
                                         {
                                             continue;
                                         }
