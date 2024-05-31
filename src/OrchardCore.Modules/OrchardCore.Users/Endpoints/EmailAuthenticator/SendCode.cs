@@ -50,7 +50,7 @@ public static class SendCode
             });
         }
 
-        var settings = (await siteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
+        var settings = await siteService.GetSettingsAsync<EmailAuthenticatorLoginSettings>();
         var code = await userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
         var to = await userManager.GetEmailAsync(user);

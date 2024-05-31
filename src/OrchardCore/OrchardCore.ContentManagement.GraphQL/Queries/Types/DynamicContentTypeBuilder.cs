@@ -54,7 +54,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(field)))))
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(schema, field)))))
                 {
                     continue;
                 }
@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             var customFieldName = GraphQLContentOptions.GetFieldName(part, part.Name, field.Name);
 
-                            var fieldType = fieldProvider.GetField(field, part.Name, customFieldName);
+                            var fieldType = fieldProvider.GetField(schema, field, part.Name, customFieldName);
 
                             if (fieldType != null)
                             {
@@ -109,7 +109,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                             {
                                 foreach (var fieldProvider in contentFieldProviders)
                                 {
-                                    var contentFieldType = fieldProvider.GetField(field, part.Name);
+                                    var contentFieldType = fieldProvider.GetField(schema, field, part.Name);
 
                                     if (contentFieldType != null)
                                     {
@@ -151,7 +151,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     return context.Source.Get(typeToResolve, nameToResolve);
                                 });
 
-                            field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+                            field.Type(new DynamicPartGraphType(part));
                             _dynamicPartFields[partName] = field.FieldType;
                         }
                     }

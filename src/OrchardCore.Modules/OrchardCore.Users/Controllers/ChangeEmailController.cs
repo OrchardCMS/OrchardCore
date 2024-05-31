@@ -37,7 +37,7 @@ namespace OrchardCore.Users.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail)
+            if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
             {
                 return NotFound();
             }
@@ -51,7 +51,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ChangeEmailViewModel model)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail)
+            if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
             {
                 return NotFound();
             }

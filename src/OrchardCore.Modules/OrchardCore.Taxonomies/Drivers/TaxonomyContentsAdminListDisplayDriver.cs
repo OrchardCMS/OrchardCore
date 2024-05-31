@@ -45,7 +45,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
+            var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
 
             if (settings.TaxonomyContentItemIds.Length == 0)
             {
@@ -117,7 +117,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
+            var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
