@@ -57,6 +57,23 @@ namespace OrchardCore.Recipes
         }
 
         [Fact]
+        public async Task TestingCommonFieldsAndSqlIndexFields()
+        {
+            var context = new BlogContext();
+            await context.InitializeAsync();
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+                // Act
+                var executionId = Guid.NewGuid().ToString("n");
+                var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("fieldTest.recipe") };
+
+                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+
+            });
+        }
+
+        [Fact]
         public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
         {
             var context = new BlogContext();
