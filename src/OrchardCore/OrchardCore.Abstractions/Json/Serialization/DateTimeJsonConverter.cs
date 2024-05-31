@@ -7,7 +7,7 @@ namespace OrchardCore.Json.Serialization;
 public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     // ISO 8601 format with milliseconds and time zone
-    private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss"; 
+    private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ssZ"; 
 
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -17,7 +17,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
         }
 
         var stringValue = reader.GetString();
-        if (DateTime.TryParse(stringValue, out var dateTime))
+        if (DateTime.TryParse(stringValue, null, DateTimeStyles.RoundtripKind, out var dateTime))
         {
             return dateTime;
         }
