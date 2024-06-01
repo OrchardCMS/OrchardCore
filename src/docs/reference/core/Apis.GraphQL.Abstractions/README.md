@@ -87,7 +87,7 @@ Use this approach if you:
 - want to add a new filter on Content Type queries,
 - need to use custom logic for filtering. For example, fetching data from service, or comparing complex objects.
 
-What we are going to cover here is;
+What we are going to cover here is:
 
 1. Implement an Input type.
 2. Register it in Startup class.
@@ -185,7 +185,7 @@ Done.
 
 ### Using default Content Type query filters
 
-In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add a filter on Content Type queries, there is also a simpler solution for many use cases.
+In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you just need to add a simple filter on Content Type queries, there is also a simpler solution.
 
 Use this approach if you:
 
@@ -201,12 +201,15 @@ We will cover:
 
 #### Implementing WhereInputObjectGraphType
 
-The `WhereInputObjectGraphType` enhances the `InputObjectGraphType` by introducing methods to define filters such as equality, array filters, etc. This is essential since it's the expected type for the `ContentItemsFieldType` responsible for the filtering logic.
+The `WhereInputObjectGraphType` enhances the `InputObjectGraphType` by introducing methods to define filters such as equality, substrings, or array filters. Inheriting from `WhereInputObjectGraphType` is essential since it's the expected type for the `ContentItemsFieldType` that is responsible for the filtering logic.
 
 Here is an example implementation:
 
 ```csharp
-// Assuming we've added the necessary using directives.
+// Assuming we've added the necessary using directives. 
+// It is essential to inherit from WhereInputObjectGraphType. 
+// Do not use the InputObjectGraphType type as it will not be 
+// handled by default ContentItem queries.
 public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
 {
     // Binds the filter fields to the GraphQL type representing AutoroutePart
@@ -220,7 +223,7 @@ public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
 }
 ```
 
-This method will add scalar filters to all ContentItem queries, including custom Content Types.
+This method will add scalar filters to all ContentItem queries, including your own custom Content Types. Scalar filters include following:
 
 1. equals, not equals
 2. contains, not contains
@@ -298,16 +301,17 @@ Alternatively, if you register the part with ```collapse = true```, fields will 
 }
 ```
 
-For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also, might check the existing index for [`AutoroutePart`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs).
+For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also, you can check the [`AutoroutePartIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs) that was used for examples.
 
 ### Using arguments for query filtering
 
-There is also the possibility to utilize query arguments and use them for filtering query results inside the `Resolve` method. For more information, visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
+There is also the possibility to utilize query arguments and use them for filtering query results, or customizing query output inside the `Resolve` method. For more information, visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
 
 Use this approach if you:
 
 * want to add a new filter on any type of query, content part, or field,
 * or will use custom logic for filtration.
+* or you need to switch data sources, or logic, based on argument's value
 
 Orchard Core's implementation of a filtering query by argument can be seen in [`ContentItemQuery`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or `MediaAssetQuery`.
 
