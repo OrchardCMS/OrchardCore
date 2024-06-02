@@ -72,11 +72,6 @@ namespace OrchardCore.ContentManagement
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
 
-            if (_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition))
-            {
-                return typeDefinition;
-            }
-
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
             return LoadTypeDefinition(document, name);
@@ -96,11 +91,6 @@ namespace OrchardCore.ContentManagement
         public async Task<ContentPartDefinition> LoadPartDefinitionAsync(string name)
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
-
-            if (_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
-            {
-                return partDefinition;
-            }
 
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
