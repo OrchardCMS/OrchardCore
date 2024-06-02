@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Controllers
             // Clear the existing external cookie to ensure a clean login process.
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
             {
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -142,7 +142,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
         {
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
             {
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -185,7 +185,7 @@ namespace OrchardCore.Users.Controllers
 
             var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+            var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
 
             if (disableLocalLogin)
             {
@@ -378,7 +378,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToLogin(returnUrl);
             }
 
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
             CopyTempDataErrorsToModelState();
@@ -539,7 +539,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
             if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
             {
@@ -942,7 +942,7 @@ namespace OrchardCore.Users.Controllers
                 return false;
             }
 
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail)
             {
                 // Require that the users have a confirmed email before they can log on.

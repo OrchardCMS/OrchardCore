@@ -8,11 +8,11 @@ namespace OrchardCore.Search.Deployment
 {
     public class SearchSettingsDeploymentSource : IDeploymentSource
     {
-        private readonly ISiteService _site;
+        private readonly ISiteService _siteService;
 
         public SearchSettingsDeploymentSource(ISiteService site)
         {
-            _site = site;
+            _siteService = site;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -22,8 +22,7 @@ namespace OrchardCore.Search.Deployment
                 return;
             }
 
-            var settings = await _site.GetSiteSettingsAsync();
-            var searchSettings = settings.As<SearchSettings>();
+            var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
 
             result.Steps.Add(new JsonObject
             {

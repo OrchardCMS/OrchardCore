@@ -78,7 +78,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
@@ -103,7 +103,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
@@ -123,7 +123,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var phoneNumber = canSetNewPhone ? model.PhoneNumber : currentPhoneNumber;
 
         var code = await UserManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
-        var smsSettings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
+        var smsSettings = await SiteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
 
         var message = new SmsMessage()
         {

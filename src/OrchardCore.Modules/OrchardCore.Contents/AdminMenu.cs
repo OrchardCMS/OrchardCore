@@ -83,7 +83,7 @@ namespace OrchardCore.Contents
                 });
             });
 
-            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+            var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 
             if (adminSettings.DisplayNewMenu && contentTypes.Any())
             {

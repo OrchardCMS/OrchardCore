@@ -42,8 +42,7 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            var site = await _siteService.GetSiteSettingsAsync();
-            var settings = site.As<LoginSettings>();
+            var settings = await _siteService.GetSettingsAsync<LoginSettings>();
             var canEditUserInfo = await CanEditUserInfoAsync(user);
             return Combine(
                 Initialize<EditUserNameViewModel>("UserName_Edit", model =>
@@ -113,8 +112,7 @@ namespace OrchardCore.Users.Drivers
             }
             else
             {
-                var site = await _siteService.GetSiteSettingsAsync();
-                var settings = site.As<LoginSettings>();
+                var settings = await _siteService.GetSettingsAsync<LoginSettings>();
 
                 if (await CanEditUserInfoAsync(user))
                 {

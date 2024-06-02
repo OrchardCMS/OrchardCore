@@ -99,10 +99,9 @@ namespace OrchardCore.Layers.Controllers
 
             var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
             var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? [];
+            model.Zones = (await _siteService.GetSettingsAsync<LayerSettings>()).Zones ?? [];
             model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))

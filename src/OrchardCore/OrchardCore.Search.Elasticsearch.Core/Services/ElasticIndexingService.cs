@@ -9,7 +9,6 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -280,17 +279,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             await ResetIndexAsync(elasticIndexSettings.IndexName);
         }
 
-        public async Task<ElasticSettings> GetElasticSettingsAsync()
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            if (siteSettings.Has<ElasticSettings>())
-            {
-                return siteSettings.As<ElasticSettings>();
-            }
-
-            return new ElasticSettings();
-        }
+        public async Task<ElasticSettings> GetElasticSettingsAsync()        
+            => await _siteService.GetSettingsAsync<ElasticSettings>() ?? new ElasticSettings();
 
         /// <summary>
         /// Synchronizes Elasticsearch content index settings with Lucene ones.

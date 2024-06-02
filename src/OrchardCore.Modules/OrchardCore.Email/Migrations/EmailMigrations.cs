@@ -28,9 +28,7 @@ public class EmailMigrations : DataMigration
             }
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-            var site = await siteService.GetSiteSettingsAsync();
-
-            var smtpSettings = site.As<SmtpSettings>();
+            var smtpSettings = await siteService.GetSettingsAsync<SmtpSettings>();
 
             if (!string.IsNullOrEmpty(smtpSettings.DefaultSender) ||
                 scope.ServiceProvider.GetService<IOptions<SmtpOptions>>()?.Value.ConfigurationExists() == true)
