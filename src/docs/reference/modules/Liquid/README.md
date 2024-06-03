@@ -521,6 +521,7 @@ Returns the currently supported cultures. Here is an example of how to print the
     <li>{{ culture.Name }}</li>
 {% endfor %}
 </ul>
+```
 
 ### Environment
 
