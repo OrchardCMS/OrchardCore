@@ -39,7 +39,8 @@ public class OrchardCoreConstants
         // The reverse proxy should always be configured before the 'Authentication' and security initialization logic.
         public const int ReverseProxy = Authentication * 2;
 
-        public const int Cors = ReverseProxy;
+        // The CORS module should be registered after the reverse proxy module to ensure that the correct host is used.
+        public const int Cors = ReverseProxy + 10;
 
         public const int Media = Default;
 
