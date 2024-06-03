@@ -158,7 +158,7 @@ namespace OrchardCore.Media.Azure
         }
 
         public override int Order
-            => OrchardCoreConstants.ConfigureOrder.AzureImageSharpImageCache;
+            => OrchardCoreConstants.ConfigureOrder.AzureImageSharpCache;
 
         public override void ConfigureServices(IServiceCollection services)
         {

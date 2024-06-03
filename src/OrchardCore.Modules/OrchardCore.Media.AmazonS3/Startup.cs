@@ -151,7 +151,7 @@ public class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
     }
 
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.ImageSharpImageCache;
+        => OrchardCoreConstants.ConfigureOrder.ImageSharpCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {
