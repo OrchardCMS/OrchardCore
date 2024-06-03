@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Routing;
+using static OrchardCore.Mvc.Routing.IAreaControllerRouteMapper;
 
 namespace OrchardCore.Admin
 {
@@ -43,17 +44,12 @@ namespace OrchardCore.Admin
                 pattern = controllerAttribute.Template;
             }
 
-            var area = descriptor.RouteValues["area"];
-            var controller = descriptor.ControllerName;
-            var action = descriptor.ActionName;
+            var (area, controller, action) = GetMvcRouteValues(descriptor);
 
             routes.MapAreaControllerRoute(
-                name: name?
-                    .Replace("{area}", area)
-                    .Replace("{controller}", controller)
-                    .Replace("{action}", action) ?? descriptor.DisplayName,
+                name: ReplaceMvcPlaceholders(name, area, controller, action) ?? descriptor.DisplayName,
                 areaName: area,
-                pattern: $"{_adminUrlPrefix}/{pattern.TrimStart('/').Replace("{action}", action)}",
+                pattern: $"{_adminUrlPrefix}/{ReplaceMvcPlaceholders(pattern.TrimStart('/'), area, controller, action)}",
                 defaults: new { controller, action }
             );
 

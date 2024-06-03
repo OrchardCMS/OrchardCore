@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
+using static OrchardCore.Mvc.Routing.IAreaControllerRouteMapper;
 
 namespace OrchardCore.Mvc.Routing
 {
@@ -12,11 +13,13 @@ namespace OrchardCore.Mvc.Routing
 
         public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
         {
+            var (area, controller, action) = GetMvcRouteValues(descriptor);
+
             routes.MapAreaControllerRoute(
                name: descriptor.DisplayName,
-               areaName: descriptor.RouteValues["area"],
-               pattern: DefaultAreaPattern.Replace("{action}", descriptor.ActionName),
-               defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+               areaName: area,
+               pattern: ReplaceMvcPlaceholders(DefaultAreaPattern, area, controller, action),
+               defaults: new { controller, action }
             );
 
             return true;
