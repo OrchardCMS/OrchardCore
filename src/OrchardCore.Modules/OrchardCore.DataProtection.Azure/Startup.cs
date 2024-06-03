@@ -19,7 +19,6 @@ public class Startup : StartupBase
         _logger = logger;
     }
 
-    // Assume that this module will override default configuration, so set the Order to a value above the default.
     public override int Order
         => OrchardCoreConstants.ConfigureOrder.AzureDataProtection;
 
