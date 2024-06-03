@@ -504,8 +504,11 @@ The following properties are available on the `Culture` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `Name` | `en-US` | The request's culture as an ISO language code. |
+| `Name` | `en-US` | The ISO language code of the current culture. |
 | `Dir` | `rtl` | The text writing direction. |
+| `DisplayName` | `English (United States)` | The display name of the current culture. |
+| `NativeName` | `English (United States)` | The native name of the current culture. |
+| `TwoLetterISOLanguageName` | `en` | The two-letter ISO language name of the current culture. |
 
 ##### supported_cultures filter
 

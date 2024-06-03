@@ -77,6 +77,9 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             nameof(CultureInfo.Name) => new StringValue(CultureInfo.CurrentUICulture.Name),
                             "Dir" => new StringValue(CultureInfo.CurrentUICulture.GetLanguageDirection()),
+                            nameof(CultureInfo.NativeName) => new StringValue(CultureInfo.CurrentUICulture.NativeName),
+                            nameof(CultureInfo.DisplayName) => new StringValue(CultureInfo.CurrentUICulture.DisplayName),
+                            nameof(CultureInfo.TwoLetterISOLanguageName) => new StringValue(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName),
                             _ => NilValue.Instance
                         };
                     });
