@@ -79,7 +79,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
             {
-                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
+                if (contentEvent is not JsonObject er)
+                {
+                    er = [];
+                    if (contentEvent is Dictionary<string, object> items)
+                    {
+                        foreach (var item in items)
+                        {
+                            er[item.Key] = JsonSerializer.SerializeToNode(item.Value);
+                        }
+                    }
+                }
+
+                var contentEventContext = er.ToObject<ContentEventContext>();
 
                 if (contentEventContext?.ContentItemVersionId != null)
                 {
@@ -93,11 +105,23 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
             {
-                var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>();
-
-                if (item?.ContentItemId != null)
+                if (contentItemEvent is not JsonObject er)
                 {
-                    contentItem = await ContentManager.GetAsync(item.ContentItemId);
+                    er = [];
+                    if (contentEvent is Dictionary<string, object> items)
+                    {
+                        foreach (var item in items)
+                        {
+                            er[item.Key] = JsonSerializer.SerializeToNode(item.Value);
+                        }
+                    }
+                }
+
+                var existingContentItem = er.ToObject<ContentItem>();
+
+                if (existingContentItem?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(existingContentItem.ContentItemId);
                 }
             }
 
@@ -135,8 +159,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             else
             {
                 // If no expression was provided, see if the content item was provided as an input or as a property.
-                content = workflowContext.Input.GetValue<ContentItem>(ContentEventConstants.ContentItemInputKey)
-                    ?? workflowContext.Properties.GetValue<ContentItem>(ContentEventConstants.ContentItemInputKey);
+                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 
             if (content?.ContentItem?.ContentItemId != null)
