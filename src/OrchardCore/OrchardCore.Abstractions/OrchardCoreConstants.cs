@@ -42,6 +42,9 @@ public class OrchardCoreConstants
         // The CORS module should be registered after the reverse proxy module to ensure that the correct host is used.
         public const int Cors = ReverseProxy + 10;
 
+        // The Security module should be registered after the reverse proxy module.
+        public const int Security = ReverseProxy + 10;
+
         public const int Media = Default;
 
         // Image cache overrides Media configurations and services.
