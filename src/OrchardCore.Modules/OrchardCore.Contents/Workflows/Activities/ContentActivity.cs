@@ -79,19 +79,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
             {
-                if (contentEvent is not JsonObject er)
+                if (contentEvent is not JsonObject jsonObject)
                 {
-                    er = [];
+                    jsonObject = [];
                     if (contentEvent is Dictionary<string, object> items)
                     {
                         foreach (var item in items)
                         {
-                            er[item.Key] = JsonSerializer.SerializeToNode(item.Value);
+                            jsonObject[item.Key] = JsonSerializer.SerializeToNode(item.Value);
                         }
                     }
                 }
 
-                var contentEventContext = er.ToObject<ContentEventContext>();
+                var contentEventContext = jsonObject.ToObject<ContentEventContext>();
 
                 if (contentEventContext?.ContentItemVersionId != null)
                 {
@@ -105,19 +105,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
             {
-                if (contentItemEvent is not JsonObject er)
+                if (contentItemEvent is not JsonObject jsonObject)
                 {
-                    er = [];
+                    jsonObject = [];
                     if (contentEvent is Dictionary<string, object> items)
                     {
                         foreach (var item in items)
                         {
-                            er[item.Key] = JsonSerializer.SerializeToNode(item.Value);
+                            jsonObject[item.Key] = JsonSerializer.SerializeToNode(item.Value);
                         }
                     }
                 }
 
-                var existingContentItem = er.ToObject<ContentItem>();
+                var existingContentItem = jsonObject.ToObject<ContentItem>();
 
                 if (existingContentItem?.ContentItemId != null)
                 {
