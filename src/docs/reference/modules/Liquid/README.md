@@ -512,11 +512,15 @@ The following properties are available on the `Culture` object.
 
 ##### supported_cultures filter
 
-Returns the currently supported cultures.
+Returns the currently supported cultures. Here is an example of how to print the names of supported cultures using a list:
 
 ```liquid
-{{ Culture | supported_cultures }}
-```
+{% assign cultures = Culture | supported_cultures %}
+<ul>
+{% for culture in cultures %}
+    <li>{{ culture.Name }}</li>
+{% endfor %}
+</ul>
 
 ### Environment
 
