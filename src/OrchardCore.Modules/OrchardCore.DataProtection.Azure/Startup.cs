@@ -20,7 +20,8 @@ public class Startup : StartupBase
     }
 
     // Assume that this module will override default configuration, so set the Order to a value above the default.
-    public override int Order => 10;
+    public override int Order
+        => OrchardCoreConstants.ConfigureOrder.AzureDataProtection;
 
     public override void ConfigureServices(IServiceCollection services)
     {

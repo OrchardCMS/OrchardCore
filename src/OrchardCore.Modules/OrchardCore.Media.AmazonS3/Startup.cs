@@ -150,9 +150,8 @@ public class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
         _logger = logger;
     }
 
-    // The order should exceed that of the 'OrchardCore.Media' module to substitute the default implementation of 'IImageCache'.
-    // there.
-    public override int Order => Media.MediaConstants.StartupOrder + 5;
+    public override int Order
+        => OrchardCoreConstants.ConfigureOrder.ImageSharpImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {

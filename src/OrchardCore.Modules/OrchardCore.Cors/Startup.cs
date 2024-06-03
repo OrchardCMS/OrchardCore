@@ -15,7 +15,8 @@ namespace OrchardCore.Cors
 {
     public class Startup : StartupBase
     {
-        public override int Order => -1;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.Cors;
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {

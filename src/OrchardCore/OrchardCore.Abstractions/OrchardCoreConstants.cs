@@ -28,4 +28,44 @@ public class OrchardCoreConstants
 
         public const string Anonymous = "Anonymous";
     }
+
+    public class ConfigureOrder
+    {
+        public const int Default = 0;
+
+        // The configuration for authentication should be set up early, prior to any non-security modules.
+        public const int Authentication = -150;
+
+        // The reverse proxy should always be configured before the 'Authentication' and security initialization logic.
+        public const int ReverseProxy = Authentication * 2;
+
+        public const int Cors = ReverseProxy;
+
+        public const int Media = Default;
+
+        // Image cache overrides Media configurations and services.
+        // The order number should always be greater than Media module. 
+        public const int ImageSharpImageCache = Media + 5;
+
+        // Image cache overrides Media configurations and services.
+        // The order number should always be greater than Media module. 
+        public const int AzureImageSharpImageCache = Media + 5;
+
+        // Azure media storage overrides Media configurations and services.
+        // The order number should always be greater than Media module.
+        public const int AzureMediaStorage = Media + 10;
+
+        public const int DataProtection = Default;
+
+        // Azure DataProtection will override default data-protection configurations.
+        // The order number should always be greater than data protection modules. 
+        public const int AzureDataProtection = DataProtection + 10;
+
+        public const int HomeRoute = -150;
+
+        public const int AdminPages = 1000;
+
+        // Services that should always be registered before everything else.
+        public const int InfrastructureService = int.MinValue + 100;
+    }
 }
