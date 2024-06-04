@@ -8,7 +8,7 @@ namespace OrchardCore.Flows.GraphQL
 {
     public class FlowMetadataContentTypeBuilder : IContentTypeBuilder
     {
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             if (contentTypeDefinition.GetStereotype() != "Widget")
             {

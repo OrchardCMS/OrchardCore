@@ -7,6 +7,8 @@
     <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+    <!-- Remove the underscores from member name -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

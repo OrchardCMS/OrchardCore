@@ -18,7 +18,7 @@ public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<For
 
     public override async Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
     {
-        var _reCaptchaSettings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+        var _reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
         if (!_reCaptchaSettings.IsValid())
         {

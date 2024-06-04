@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Workflows.Models;
 
@@ -21,12 +19,5 @@ namespace OrchardCore.Workflows.Services
         Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> uids);
         Task SaveAsync(Workflow workflow);
         Task DeleteAsync(Workflow workflow);
-    }
-
-    public static class WorkflowStoreExtensions
-    {
-        [Obsolete("This method will be removed in a future version, use the method accepting a collection of long ids.", false)]
-        public static Task<IEnumerable<Workflow>> GetAsync(this IWorkflowStore store, IEnumerable<int> ids) =>
-            store.GetAsync(ids.Select(id => Convert.ToInt64(id)));
     }
 }

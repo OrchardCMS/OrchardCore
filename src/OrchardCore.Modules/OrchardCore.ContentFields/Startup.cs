@@ -16,6 +16,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Users;
 
 namespace OrchardCore.ContentFields
 {
@@ -176,7 +177,7 @@ namespace OrchardCore.ContentFields
         }
     }
 
-    [RequireFeatures("OrchardCore.Users")]
+    [RequireFeatures(UserConstants.Features.Users)]
     public class UserPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

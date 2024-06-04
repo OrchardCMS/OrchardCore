@@ -14,9 +14,9 @@ namespace OrchardCore.Media.Processing
 
         public void Configure(MediaTokenOptions options)
         {
-            options.HashKey = _siteService.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
-                .As<MediaTokenSettings>()
+            options.HashKey = _siteService.GetSettingsAsync<MediaTokenSettings>()
+                .GetAwaiter()
+                .GetResult()
                 .HashKey;
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -34,10 +33,11 @@ public class Startup : StartupBase
     {
         services.Configure<TemplateOptions>(o =>
         {
-            o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
-            o.MemberAccessStrategy.Register<CultureInfo>();
-        })
-        .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
+            })
+            .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
         services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
         services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
