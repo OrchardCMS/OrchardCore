@@ -311,9 +311,9 @@ Use this approach if you:
 
 * want to add a new filter on any type of query, content part, or field,
 * or will use custom logic for filtration.
-* or you need to switch data sources, or logic, based on argument's value
+* or you need to switch data sources, or logic, based on the argument's value
 
-Orchard Core's implementation of a filtering query by argument can be seen in [`ContentItemQuery`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or `MediaAssetQuery`.
+Orchard Core's implementation of a filtering query by an argument can be seen in [`ContentItemQuery`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or `MediaAssetQuery`.
 
 Orchard Core's implementation of applying an argument on a field can be seen in `MediaFieldQueryObjectType`.
 
