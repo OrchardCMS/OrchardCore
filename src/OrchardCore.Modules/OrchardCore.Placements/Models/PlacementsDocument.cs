@@ -7,6 +7,6 @@ namespace OrchardCore.Placements.Models
 {
     public class PlacementsDocument : Document
     {
-        public Dictionary<string, PlacementNode[]> Placements { get;init; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, PlacementNode[]> Placements { get; init; } = new(StringComparer.OrdinalIgnoreCase);
     }
 }
