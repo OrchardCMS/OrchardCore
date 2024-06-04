@@ -49,8 +49,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         else
         {
             // At this point, we can allow the user to update the settings from UI.
-            var site = await _siteService.GetSiteSettingsAsync();
-            var settings = site.As<AzureAISearchDefaultSettings>();
+            var settings = await _siteService.GetSettingsAsync<AzureAISearchDefaultSettings>();
 
             if (settings.UseCustomConfiguration)
             {

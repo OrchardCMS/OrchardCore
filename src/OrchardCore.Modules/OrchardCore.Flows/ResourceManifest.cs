@@ -13,6 +13,7 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
 
         _manifest
             .DefineStyle("flowpart-edit")
+            .SetDependencies("widgetslist-edit")
             .SetUrl( "~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
             
         _manifest

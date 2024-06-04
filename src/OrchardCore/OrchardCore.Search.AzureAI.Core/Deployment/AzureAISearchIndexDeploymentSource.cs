@@ -8,9 +8,14 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService) : IDeploymentSource
+public class AzureAISearchIndexDeploymentSource : IDeploymentSource
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
+
+    public AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService)
+    {
+        _indexSettingsService = indexSettingsService;
+    }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
@@ -22,6 +27,7 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
+
         var indicesToAdd = indexStep.IncludeAll
             ? indexSettings.Select(x => x.IndexName).ToArray()
             : indexStep.IndexNames;

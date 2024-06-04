@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter
 {
-    [Feature(TwitterConstants.Features.Signin)]
     public class AdminMenuSignin : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
@@ -45,7 +43,6 @@ namespace OrchardCore.Twitter
         }
     }
 
-    [Feature(TwitterConstants.Features.Twitter)]
     public class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
