@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Routing;
-using static OrchardCore.Mvc.Routing.IAreaControllerRouteMapper;
+using static OrchardCore.Mvc.Routing.RoutingHelper;
 
 namespace OrchardCore.Admin
 {

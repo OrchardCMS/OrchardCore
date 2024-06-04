@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
-using static OrchardCore.Mvc.Routing.IAreaControllerRouteMapper;
+using static OrchardCore.Mvc.Routing.RoutingHelper;
 
 namespace OrchardCore.Mvc.Routing
 {
