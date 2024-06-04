@@ -46,11 +46,10 @@ namespace OrchardCore.Admin
 
             var (area, controller, action) = GetMvcRouteValues(descriptor);
 
-            routes.MapAreaControllerRoute(
+            routes.MapControllerRoute(
                 name: ReplaceMvcPlaceholders(name, area, controller, action) ?? descriptor.DisplayName,
-                areaName: area,
                 pattern: $"{_adminUrlPrefix}/{ReplaceMvcPlaceholders(pattern.TrimStart('/'), area, controller, action)}",
-                defaults: new { controller, action }
+                defaults: new { area, controller, action }
             );
 
             return true;

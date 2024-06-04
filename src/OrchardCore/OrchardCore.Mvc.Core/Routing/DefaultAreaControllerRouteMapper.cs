@@ -15,11 +15,10 @@ namespace OrchardCore.Mvc.Routing
         {
             var (area, controller, action) = GetMvcRouteValues(descriptor);
 
-            routes.MapAreaControllerRoute(
+            routes.MapControllerRoute(
                name: descriptor.DisplayName,
-               areaName: area,
                pattern: ReplaceMvcPlaceholders(DefaultAreaPattern, area, controller, action),
-               defaults: new { controller, action }
+               defaults: new { area, controller, action }
             );
 
             return true;
