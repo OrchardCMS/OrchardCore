@@ -9,6 +9,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
@@ -71,7 +72,20 @@ namespace OrchardCore.Queries.Sql
                 IEnumerable<long> documentIds;
 
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
-                documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
+                var queryResult = await connection.QueryAsync(rawQuery, parameters, transaction);
+
+                documentIds = queryResult.Select(row =>
+                {
+                    var rowDict = (IDictionary<string, object>)row;
+
+                    if (rowDict.TryGetValue(nameof(ContentItemIndex.DocumentId), out var docIdObj) &&
+                        docIdObj is long docId)
+                    {
+                        return docId;
+                    }
+
+                    return rowDict.FirstOrDefault(kv => kv.Value is long).Value as long? ?? 0;
+                });
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
 
