@@ -1,5 +1,4 @@
 @model HtmlBodyPartViewModel
-@using Microsoft.AspNetCore.Mvc.Routing
 @using OrchardCore
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -7,9 +6,6 @@
 }
 
 @await DisplayAsync(await New.ShortcodeModal())
-
-<h1>WITHOUT AREA: @Url.RouteUrl("AuditTrailIndex")</h1>
-<h1>WITH AREA: @Url.RouteUrl(new UrlRouteContext { RouteName = "AuditTrailIndex", Values = new { area = "OrchardCore.AuditTrail" } })</h1>
 
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
