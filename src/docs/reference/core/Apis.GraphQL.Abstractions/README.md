@@ -281,7 +281,7 @@ With these configurations, you can navigate to your GraphQL interface, and you s
 
 #### Example Query Filters
 
-Below are resulting query filters applied to an autoroutePart:
+Below are the resulting query filters applied to an autoroutePart:
 
 ```json
 {
