@@ -17,10 +17,8 @@ namespace OrchardCore.Mvc.Routing
         public static (string Area, string Controller, string Action) GetMvcRouteValues(ControllerActionDescriptor descriptor)
         {
             var area = descriptor.RouteValues["area"];
-            var controller = descriptor.ControllerName;
-            var action = descriptor.ActionName;
 
-            return (area, controller, action);
+            return (area, descriptor.ControllerName, descriptor.ActionName);
         }
     }
 }
