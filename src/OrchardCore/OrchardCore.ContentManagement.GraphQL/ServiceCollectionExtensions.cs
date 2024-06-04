@@ -35,9 +35,8 @@ namespace OrchardCore.ContentManagement.GraphQL
 
         public static IServiceCollection AddContentFieldsInputGraphQL(this IServiceCollection services)
         {
-            services.AddTransient<DynamicPartInputGraphType>();
             services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
-            services.AddScoped<IContentTypeBuilder, DynamicContentTypeInputBuilder>();
+            services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
             services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
 
             return services;

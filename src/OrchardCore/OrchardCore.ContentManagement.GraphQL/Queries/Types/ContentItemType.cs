@@ -13,7 +13,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public class ContentItemType : ObjectGraphType<ContentItem>
+    public class ContentItemType : ObjectGraphType<ContentItem>, IContentItemObjectGraphType
     {
         private readonly GraphQLContentOptions _options;
 
@@ -56,6 +56,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             }
 
             return null;
+        }
+
+        public void AddOutputField(FieldType fieldType)
+        {
+            AddField(fieldType);
         }
 
         private static async ValueTask<string> RenderShapeAsync(IResolveFieldContext<ContentItem> context)

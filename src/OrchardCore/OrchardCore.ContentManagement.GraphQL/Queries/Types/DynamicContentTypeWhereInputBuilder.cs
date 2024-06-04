@@ -1,3 +1,4 @@
+using System.Linq;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -7,15 +8,20 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class DynamicContentTypeQueryBuilder : DynamicContentTypeBuilder
+public class DynamicContentTypeWhereInputBuilder : DynamicContentTypeBuilder
 {
-    public DynamicContentTypeQueryBuilder(IHttpContextAccessor httpContextAccessor,
+    public DynamicContentTypeWhereInputBuilder(IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
-        IStringLocalizer<DynamicContentTypeQueryBuilder> localizer)
+        IStringLocalizer<DynamicContentTypeWhereInputBuilder> localizer)
         : base(httpContextAccessor, contentOptionsAccessor, localizer) { }
 
     public override void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
     {
-        BuildObjectGraphType(schema, contentQuery, contentTypeDefinition, contentItemType);
+        var whereInputType = (ContentItemWhereInput)contentQuery.Arguments?.FirstOrDefault(x => x.Name == "where")?.ResolvedType;
+
+        if (whereInputType != null)
+        {
+            BuildInputObjectGraphType(schema, contentQuery, contentTypeDefinition, whereInputType);
+        }
     }
 }

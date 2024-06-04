@@ -7,11 +7,11 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public sealed class DynamicPartInputGraphType : WhereInputObjectGraphType<ContentPart>
+public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<ContentPart>
 {
     private ContentTypePartDefinition _part;
 
-    public DynamicPartInputGraphType(ContentTypePartDefinition part)
+    public DynamicPartWhereInputGraphType(ContentTypePartDefinition part)
     {
         Name = $"{part.Name}WhereInput";
         _part = part;

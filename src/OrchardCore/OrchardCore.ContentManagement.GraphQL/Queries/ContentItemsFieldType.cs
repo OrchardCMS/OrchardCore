@@ -283,7 +283,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                     if (whereArgument != null)
                     {
-                        var whereInput = (WhereInputObjectGraphType<ContentItem>)whereArgument.ResolvedType;
+                        var whereInput = (WhereInputObjectGraphType)whereArgument.ResolvedType;
 
                         foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
                         {
