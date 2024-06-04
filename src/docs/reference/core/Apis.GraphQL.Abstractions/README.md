@@ -244,7 +244,7 @@ public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
         new IndexAlias
         {
             Alias = "autoroutePart", // alias of graphql ContentPart. You may also use nameof(AutoroutPart).ToFieldName()
-            Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has same name in index and part.
+            Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has the same name in the index and part.
             IndexType = typeof(AutoroutePartIndex)
         }
     ];
