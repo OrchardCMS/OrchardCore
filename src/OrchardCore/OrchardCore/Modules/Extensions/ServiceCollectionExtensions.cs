@@ -308,7 +308,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddMetrics();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -378,7 +378,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
                 collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -407,7 +407,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -429,7 +429,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Cookie.Name = cookieName;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                        // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                        // set by the pipeline and coming from the request 'PathBase' which already ends with the
                         // tenant prefix but may also start by a path related e.g to a virtual folder.
                     });
 
@@ -522,7 +522,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure(app =>
             {
                 app.UseAuthentication();
-            }, order: -150);
+            }, order: OrchardCoreConstants.ConfigureOrder.Authentication);
         }
 
         /// <summary>
@@ -557,7 +557,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
 
                 services.Add(collection);
-            });
+            }, order: OrchardCoreConstants.ConfigureOrder.DataProtection);
         }
     }
 }
