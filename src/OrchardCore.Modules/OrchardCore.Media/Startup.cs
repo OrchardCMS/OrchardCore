@@ -55,7 +55,8 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        public override int Order => MediaConstants.StartupOrder;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.Media;
 
         private const string ImageSharpCacheFolder = "is-cache";
 
