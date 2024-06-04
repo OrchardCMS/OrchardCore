@@ -100,6 +100,10 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
+!!! note
+    When returning documents from a SQL query, make sure your query returns a list of document IDs.
+
+
 Here is an example of a custom Query from a manually added table in a database :
 
 ```sql
