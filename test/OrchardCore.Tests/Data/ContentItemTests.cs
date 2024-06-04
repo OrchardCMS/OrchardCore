@@ -205,7 +205,7 @@ namespace OrchardCore.Tests.Data
 
             var json = JConvert.SerializeObject(contentItem);
 
-            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":""2024-01-01T10:42:00""}}", json);
+            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":""2024-01-01T10:42:00Z""}}", json);
         }
 
         [Fact]
