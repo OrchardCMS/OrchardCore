@@ -47,8 +47,8 @@ namespace OrchardCore.Seo.Drivers
             {
                 // This handlers provides defaults, either from the Seo Meta Settings, or ensures values by default. (title etc)
                 _contentManager ??= _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-
-                var metaSettings = await _siteService.GetCustomSettingsAsync("SocialMetaSettings");
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                var metaSettings = siteSettings.As<ContentItem>("SocialMetaSettings");
 
                 var actionContext = _actionContextAccessor.ActionContext;
 
