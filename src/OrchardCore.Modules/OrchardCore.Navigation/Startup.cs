@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Navigation
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 

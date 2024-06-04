@@ -1,9 +1,6 @@
 #if (AddPart)
 using Fluid;
 #endif
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 #if (AddPart)
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -16,11 +13,9 @@ using OrchardCore.Templates.Cms.Module.Models;
 using OrchardCore.Templates.Cms.Module.Settings;
 using OrchardCore.Templates.Cms.Module.ViewModels;
 #endif
-using OrchardCore.Modules;
-
 namespace OrchardCore.Templates.Cms.Module
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
