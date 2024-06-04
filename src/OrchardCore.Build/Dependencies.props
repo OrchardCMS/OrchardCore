@@ -1,7 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="Dependencies.AspNetCore.props" />
-  <Import Project="TargetFrameworks.props" />
 
   <PropertyGroup>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
