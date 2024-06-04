@@ -18,11 +18,13 @@ public class DynamicContentTypeQueryTests
                             price
                         }
                         sku
-                        productCodeCode
+                        metadataCode
+                        metadataAvailabilityDate
                     }");
 
-        Assert.Single(
-            result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product2ContentItemId));
+        Assert.Single(result["data"]["product"].AsArray());
+
+        Assert.Equal(context.Product2ContentItemId, result["data"]["product"].AsArray().First()["contentItemId"].ToString());
     }
 
     [Fact]
@@ -41,11 +43,13 @@ public class DynamicContentTypeQueryTests
                             price
                         }
                         sku
-                        productCodeCode
+                        metadataCode
+                        metadataAvailabilityDate
                     }");
 
-        Assert.Single(
-            result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product2ContentItemId));
+        Assert.Single(result["data"]["product"].AsArray());
+
+        Assert.Equal(context.Product2ContentItemId, result["data"]["product"].AsArray().First()["contentItemId"].ToString());
     }
 
     [Fact]
@@ -57,17 +61,52 @@ public class DynamicContentTypeQueryTests
         var result = await context
             .GraphQLClient
             .Content
-            .Query(@"product(where: {productCodeCode: ""100000987""}) {
+            .Query(@"product(where: {metadataCode: ""100000987""}) {
                         contentItemId
                         displayText
                         price {
                             price
                         }
                         sku
-                        productCodeCode
+                        metadataCode
+                        metadataAvailabilityDate
                     }");
 
-        Assert.Single(
-            result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product1ContentItemId));
+        Assert.Single(result["data"]["product"].AsArray());
+
+        Assert.Equal(context.Product1ContentItemId, result["data"]["product"].AsArray().First()["contentItemId"].ToString());
+    }
+
+    [Fact]
+    public async Task ShouldQueryMultipleContentFields()
+    {
+        using var context = new DynamicContentTypeContext();
+        await context.InitializeAsync();
+
+        var result = await context
+            .GraphQLClient
+            .Content
+            .Query(@"product(
+                        where: {
+                            AND: {
+                                OR: {price: {price: 10}, sku_ends_with: ""44""},
+                                metadataAvailabilityDate_gt: ""2024-05-01""
+                            }
+                        }, 
+                        orderBy: {createdUtc: ASC}
+                    ) {
+                        contentItemId
+                        displayText
+                        price {
+                            price
+                        }
+                        sku
+                        metadataCode
+                        metadataAvailabilityDate
+                    }");
+
+        Assert.Single(result["data"]["product"].AsArray());
+
+        Assert.Equal(context.Product2ContentItemId, result["data"]["product"].AsArray().First()["contentItemId"].ToString());
     }
 }

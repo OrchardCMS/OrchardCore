@@ -64,8 +64,8 @@
               }
             },
             {
-              "PartName": "ProductCodePart",
-              "Name": "ProductCodePart",
+              "PartName": "MetadataPart",
+              "Name": "MetadataPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
@@ -114,7 +114,7 @@
           ]
         },
         {
-          "Name": "ProductCodePart",
+          "Name": "MetadataPart",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
             {
@@ -123,6 +123,16 @@
               "Settings": {
                 "ContentPartFieldSettings": {
                   "DisplayName": "Code",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "DateField",
+              "Name": "AvailabilityDate",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Availability Date",
                   "Position": "0"
                 }
               }
@@ -150,9 +160,12 @@
               "Text": "3000-01"
             }
           },
-          "ProductCodePart": {
+          "MetadataPart": {
             "Code": {
               "Text": "100000987"
+            },
+            "AvailabilityDate": {
+              "Value": "2024-04-07"
             }
           }
         },
@@ -172,9 +185,12 @@
               "Text": "4000-44"
             }
           },
-          "ProductCodePart": {
+          "MetadataPart": {
             "Code": {
               "Text": "100000988"
+            },
+            "AvailabilityDate": {
+              "Value": "2024-05-18"
             }
           }
         }
