@@ -10,7 +10,8 @@ namespace OrchardCore.HomeRoute
 {
     public class Startup : StartupBase
     {
-        public override int Order => -150;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.HomeRoute;
 
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -78,7 +78,8 @@ namespace OrchardCore.Admin
 
     public class AdminPagesStartup : StartupBase
     {
-        public override int Order => 1000;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.AdminPages;
 
         public override void ConfigureServices(IServiceCollection services)
         {
