@@ -74,17 +74,29 @@ namespace OrchardCore.Queries.Sql
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
                 var queryResult = await connection.QueryAsync(rawQuery, parameters, transaction);
 
+                string column = null;
+
                 documentIds = queryResult.Select(row =>
                 {
                     var rowDictionary = (IDictionary<string, object>)row;
 
-                    if (rowDictionary.TryGetValue(nameof(ContentItemIndex.DocumentId), out var documentIdObject) &&
-                        documentIdObject is long documentId)
+                    if (column == null)
                     {
-                        return documentId;
+                        if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
+                        {
+                            column = nameof(ContentItemIndex.DocumentId);
+                        }
+                        else
+                        {
+                            column = rowDictionary
+                                .FirstOrDefault(kv => kv.Value is long).Key
+                                ?? rowDictionary.First().Key;
+                        }
                     }
 
-                    return rowDictionary.FirstOrDefault(kv => kv.Value is long).Value as long? ?? 0;
+                    return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
+                        ? documentId
+                        : 0;
                 });
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
