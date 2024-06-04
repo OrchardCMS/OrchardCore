@@ -183,13 +183,13 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 
 Done.
 
-### Using default Content Type query filters
+### Using default Content-Type query filters
 
-In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you just need to add a simple filter on Content Type queries, there is also a simpler solution.
+In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add a simple filter on Content-Type queries, there is also a simpler solution.
 
 Use this approach if you:
 
-* want to add a new filter on Content Type queries,
+* want to add a new filter on Content-Type queries,
 * will have a database index with data for your filters,
 * you can use simple comparison (equals, contains, in...) against index values. For example, `AutoroutePartIndex.Path = filterValue`.
 
