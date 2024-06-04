@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\src\OrchardCore.Build\Dependencies.AspNetCore.props" />
+  <Import Project="..\..\src\OrchardCore.Build\TargetFrameworks.props" />
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
