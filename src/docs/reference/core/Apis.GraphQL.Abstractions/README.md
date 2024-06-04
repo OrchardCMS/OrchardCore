@@ -84,8 +84,8 @@ We follow a similar process from step #1, so at this point I will make the assum
 
 Use this approach if you:
 
-- want to add a new filter on Content Type queries,
-- need to use custom logic for filtering. For example, fetching data from service, or comparing complex objects.
+- want to add a new filter on Content-Type queries,
+- need to use custom logic for filtering. For example, fetching data from a service, or comparing complex objects.
 
 What we are going to cover here is:
 
