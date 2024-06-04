@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Routing;
-using OrchardCore.Mvc.Routing;
 
 namespace OrchardCore.Admin
 {
@@ -48,7 +47,7 @@ namespace OrchardCore.Admin
 
             routes.MapControllerRoute(
                 name: RoutingHelper.ReplaceMvcPlaceholders(name, area, controller, action) ?? descriptor.DisplayName,
-                pattern: $"{_adminUrlPrefix}/{ReplaceMvcPlaceholders(pattern.TrimStart('/'), area, controller, action)}",
+                pattern: $"{_adminUrlPrefix}/{RoutingHelper.ReplaceMvcPlaceholders(pattern.TrimStart('/'), area, controller, action)}",
                 defaults: new { area, controller, action }
             );
 
