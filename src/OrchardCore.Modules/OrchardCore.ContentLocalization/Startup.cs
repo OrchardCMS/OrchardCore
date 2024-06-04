@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +34,6 @@ namespace OrchardCore.ContentLocalization
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
-                o.MemberAccessStrategy.Register<CultureInfo>();
             })
             .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
