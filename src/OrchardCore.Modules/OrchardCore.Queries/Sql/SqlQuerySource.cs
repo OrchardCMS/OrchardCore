@@ -76,15 +76,15 @@ namespace OrchardCore.Queries.Sql
 
                 documentIds = queryResult.Select(row =>
                 {
-                    var rowDict = (IDictionary<string, object>)row;
+                    var rowDictionary = (IDictionary<string, object>)row;
 
-                    if (rowDict.TryGetValue(nameof(ContentItemIndex.DocumentId), out var docIdObj) &&
-                        docIdObj is long docId)
+                    if (rowDictionary.TryGetValue(nameof(ContentItemIndex.DocumentId), out var documentIdObject) &&
+                        documentIdObject is long documentId)
                     {
-                        return docId;
+                        return documentId;
                     }
 
-                    return rowDict.FirstOrDefault(kv => kv.Value is long).Value as long? ?? 0;
+                    return rowDictionary.FirstOrDefault(kv => kv.Value is long).Value as long? ?? 0;
                 });
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
