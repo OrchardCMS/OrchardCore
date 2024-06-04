@@ -14,8 +14,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.Security;
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, SecurityPermissions>();
