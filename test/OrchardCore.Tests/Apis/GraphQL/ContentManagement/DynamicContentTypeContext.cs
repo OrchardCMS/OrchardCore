@@ -9,7 +9,7 @@ public class DynamicContentTypeContext : SiteContext
 
     public DynamicContentTypeContext()
     {
-        this.WithRecipe("DynamicContentTypeBuilderTest");
+        this.WithRecipe("DynamicContentTypeQueryTest");
     }
 
     public override async Task InitializeAsync()

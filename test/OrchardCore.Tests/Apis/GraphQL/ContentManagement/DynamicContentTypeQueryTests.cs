@@ -11,7 +11,15 @@ public class DynamicContentTypeQueryTests
         var result = await context
             .GraphQLClient
             .Content
-            .Query("product(where: {price: {price_gt: 10}}) {contentItemId, displayText}");
+            .Query(@"product(where: {price: {price_gt: 10}}) {
+                        contentItemId
+                        displayText
+                        price {
+                            price
+                        }
+                        sku
+                        productCodeCode
+                    }");
 
         Assert.Single(
             result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product2ContentItemId));
@@ -26,7 +34,15 @@ public class DynamicContentTypeQueryTests
         var result = await context
             .GraphQLClient
             .Content
-            .Query("product(where: {sku_starts_with: \"4000\"}) {contentItemId, displayText}");
+            .Query(@"product(where: {sku_starts_with: ""4000""}) {
+                        contentItemId
+                        displayText
+                        price {
+                            price
+                        }
+                        sku
+                        productCodeCode
+                    }");
 
         Assert.Single(
             result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product2ContentItemId));
@@ -41,7 +57,15 @@ public class DynamicContentTypeQueryTests
         var result = await context
             .GraphQLClient
             .Content
-            .Query("product(where: {productCodeCode: \"100000987\"}) {contentItemId, displayText}");
+            .Query(@"product(where: {productCodeCode: ""100000987""}) {
+                        contentItemId
+                        displayText
+                        price {
+                            price
+                        }
+                        sku
+                        productCodeCode
+                    }");
 
         Assert.Single(
             result["data"]["product"].AsArray().Where(node => node["contentItemId"].ToString() == context.Product1ContentItemId));
