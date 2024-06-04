@@ -71,10 +71,10 @@ namespace OrchardCore.Apis.GraphQL.Queries
             }
 
             AddEqualityFilters(graphType, fieldName, description);
-            AddMultiValueFilters(graphType, fieldName, description);
 
             if (graphType == typeof(StringGraphType))
             {
+                AddMultiValueFilters(graphType, fieldName, description);
                 AddStringFilters(graphType, fieldName, description);
             }
             else if (graphType == typeof(DateTimeGraphType) ||
@@ -87,6 +87,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
                 graphType == typeof(FloatGraphType) ||
                 graphType == typeof(BigIntGraphType))
             {
+                AddMultiValueFilters(graphType, fieldName, description);
                 AddNonStringFilters(graphType, fieldName, description);
             }
         }
