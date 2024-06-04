@@ -13,11 +13,11 @@ namespace OrchardCore.Mvc.Routing
 
         public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
         {
-            var (area, controller, action) = GetMvcRouteValues(descriptor);
+            var (area, controller, action) = RoutingHelper.GetMvcRouteValues(descriptor);
 
             routes.MapControllerRoute(
                name: descriptor.DisplayName,
-               pattern: ReplaceMvcPlaceholders(DefaultAreaPattern, area, controller, action),
+               pattern: RoutingHelper.ReplaceMvcPlaceholders(DefaultAreaPattern, area, controller, action),
                defaults: new { area, controller, action }
             );
 
