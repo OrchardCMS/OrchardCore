@@ -1,1 +1,1 @@
-<a href="@(Model.Href ?? "#")" @(!string.IsNullOrEmpty(Model.Target) ? $"target=\"" + Model.Target + "\"" : string.Empty)>@Model.Text</a>
+<a href="@(Model.Href ?? "#")" target="@Model.Target">@Model.Text</a>
