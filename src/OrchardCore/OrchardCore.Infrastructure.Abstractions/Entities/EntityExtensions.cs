@@ -27,8 +27,9 @@ namespace OrchardCore.Entities
         /// <returns>A new instance of the requested type if the property was not found.</returns>
         public static T As<T>(this IEntity entity, string name) where T : new()
         {
-            JsonNode value;
-            if (entity.Properties.TryGetPropertyValue(name, out value))
+            ArgumentNullException.ThrowIfNull(name);
+
+            if (entity.Properties.TryGetPropertyValue(name, out var value))
             {
                 return value.Deserialize<T>(JOptions.Default);
             }
