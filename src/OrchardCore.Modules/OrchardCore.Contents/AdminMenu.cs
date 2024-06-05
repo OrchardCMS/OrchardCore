@@ -67,7 +67,7 @@ namespace OrchardCore.Contents
             var context = _httpContextAccessor.HttpContext;
 
             var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
+            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
                 content.AddClass("content").Id("content");
@@ -85,27 +85,32 @@ namespace OrchardCore.Contents
 
             var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 
-            if (adminSettings.DisplayNewMenu && contentTypes.Any())
+            if (adminSettings.DisplayNewMenu)
             {
-                await builder.AddAsync(S["New"], "-1", async newMenu =>
-                {
-                    newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
-                    foreach (var contentTypeDefinition in contentTypes)
-                    {
-                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
-                        var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
+                contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
 
-                        if (createRouteValues.Count > 0)
+                if (contentTypes.Any())
+                {
+                    await builder.AddAsync(S["New"], "-1", async newMenu =>
+                    {
+                        newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
+                        foreach (var contentTypeDefinition in contentTypes)
                         {
-                            newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
-                                .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                                .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
-                                );
+                            var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                            var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
+                            var createRouteValues = cim.CreateRouteValues;
+                            createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
+
+                            if (createRouteValues.Count > 0)
+                            {
+                                newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
+                                    .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
+                                    .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
+                                    );
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }
