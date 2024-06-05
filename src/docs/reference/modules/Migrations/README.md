@@ -27,7 +27,9 @@ public sealed class Migrations : DataMigration
     private readonly IRecipeMigrator _recipeMigrator;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public Migrations(IRecipeMigrator recipeMigrator, IContentDefinitionManager contentDefinitionManager)
+    public Migrations(
+        IRecipeMigrator recipeMigrator, 
+        IContentDefinitionManager contentDefinitionManager)
     {
         _recipeMigrator = recipeMigrator;
         _contentDefinitionManager = contentDefinitionManager;
@@ -81,7 +83,6 @@ public sealed class Migrations : DataMigration
         );
         return 4;
     }
-
 }
 ```
 
