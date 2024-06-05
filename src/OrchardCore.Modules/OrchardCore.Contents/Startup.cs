@@ -156,6 +156,8 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
+            services.AddDataMigration<Migrations>();
+
             // Common Part
             services.AddContentPart<CommonPart>()
                 .UseDisplayDriver<DateEditorDriver>()
@@ -237,15 +239,6 @@ namespace OrchardCore.Contents
                 pattern: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
                 defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-    public class ExportContentToDeploymentTargetStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
         }
     }
 
