@@ -3,7 +3,7 @@ using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services
 {
-    public class ConditionOperatorConfigureOptions : IConfigureOptions<ConditionOperatorOptions>
+    public sealed class ConditionOperatorConfigureOptions : IConfigureOptions<ConditionOperatorOptions>
     {
         public void Configure(ConditionOperatorOptions options)
         {

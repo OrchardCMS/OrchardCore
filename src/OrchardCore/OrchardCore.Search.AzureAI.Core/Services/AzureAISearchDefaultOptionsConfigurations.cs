@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
+public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
 {
     public const string ProtectorName = "AzureAISearch";
 

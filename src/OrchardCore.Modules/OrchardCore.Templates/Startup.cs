@@ -15,7 +15,7 @@ using OrchardCore.Templates.Settings;
 
 namespace OrchardCore.Templates
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -41,7 +41,7 @@ namespace OrchardCore.Templates
     }
 
     [Feature("OrchardCore.AdminTemplates")]
-    public class AdminTemplatesStartup : StartupBase
+    public sealed class AdminTemplatesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
