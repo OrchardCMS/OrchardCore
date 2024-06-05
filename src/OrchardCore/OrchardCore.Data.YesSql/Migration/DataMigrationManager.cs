@@ -211,7 +211,7 @@ namespace OrchardCore.Data.Migration
 
                         if (createMethod == null)
                         {
-                            _logger.LogWarning("The migration '{migrationName}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migrationName, featureId);
+                            _logger.LogWarning("The migration '{MigrationName}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migrationName, featureId);
                             continue;
                         }
 
@@ -222,7 +222,7 @@ namespace OrchardCore.Data.Migration
 
                     while (lookupTable.TryGetValue(current, out var methodInfo))
                     {
-                        _logger.LogInformation("Applying migration '{migrationName}' for '{FeatureName}' from version {Version}.", migrationName, featureId, current);
+                        _logger.LogInformation("Applying migration '{MigrationName}' for '{FeatureName}' from version {Version}.", migrationName, featureId, current);
 
                         current = await InvokeMethodAsync(methodInfo, migration);
                     }
@@ -237,7 +237,7 @@ namespace OrchardCore.Data.Migration
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while running migration '{migrationName}' version {Version} for '{FeatureName}'.", migrationName, current, featureId);
+                    _logger.LogError(ex, "Error while running migration '{MigrationName}' version {Version} for '{FeatureName}'.", migrationName, current, featureId);
 
                     await _session.CancelAsync();
                 }
