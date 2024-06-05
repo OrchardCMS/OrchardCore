@@ -87,10 +87,10 @@
           "ContentPartFieldDefinitionRecords": [
             {
               "FieldName": "NumericField",
-              "Name": "Price",
+              "Name": "Amount",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Price",
+                  "DisplayName": "Amount",
                   "Position": "0"
                 }
               }
@@ -151,7 +151,7 @@
           "Latest": true,
           "Published": true,
           "PricePart": {
-            "Price": {
+            "Amount": {
               "Value": 10
             }
           },
@@ -176,7 +176,7 @@
           "Latest": true,
           "Published": true,
           "PricePart": {
-            "Price": {
+            "Amount": {
               "Value": 22
             }
           },

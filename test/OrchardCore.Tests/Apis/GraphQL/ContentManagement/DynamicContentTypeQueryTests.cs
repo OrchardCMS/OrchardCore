@@ -11,11 +11,11 @@ public class DynamicContentTypeQueryTests
         var result = await context
             .GraphQLClient
             .Content
-            .Query(@"product(where: {price: {price_gt: 10}}) {
+            .Query(@"product(where: {price: {amount_gt: 10}}) {
                         contentItemId
                         displayText
                         price {
-                            price
+                            amount
                         }
                         sku
                         metadataCode
@@ -40,7 +40,7 @@ public class DynamicContentTypeQueryTests
                         contentItemId
                         displayText
                         price {
-                            price
+                            amount
                         }
                         sku
                         metadataCode
@@ -65,7 +65,7 @@ public class DynamicContentTypeQueryTests
                         contentItemId
                         displayText
                         price {
-                            price
+                            amount
                         }
                         sku
                         metadataCode
@@ -89,7 +89,7 @@ public class DynamicContentTypeQueryTests
             .Query(@"product(
                         where: {
                             AND: {
-                                OR: {price: {price: 10}, sku_ends_with: ""44""},
+                                OR: {price: {amount: 10}, sku_ends_with: ""44""},
                                 metadataAvailabilityDate_gt: ""2024-05-01""
                             }
                         }, 
@@ -98,7 +98,7 @@ public class DynamicContentTypeQueryTests
                         contentItemId
                         displayText
                         price {
-                            price
+                            amount
                         }
                         sku
                         metadataCode
