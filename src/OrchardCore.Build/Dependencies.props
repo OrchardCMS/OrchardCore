@@ -41,9 +41,7 @@
     <PackageVersion Include="MessagePack" Version="2.2.60" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.3" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.5.0" />
-
-    <!-- Using older version that depends on Microsoft.IdentityModel.Protocols.OpenIdConnect 7.5.1 -->
-    <PackageVersion Include="Microsoft.Identity.Web" Version="2.18.1" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="2.19.0" />
 
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
