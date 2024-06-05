@@ -10,7 +10,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticConnectionOptions>
+public sealed class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticConnectionOptions>
 {
     public const string ConfigSectionName = "OrchardCore_Elasticsearch";
 

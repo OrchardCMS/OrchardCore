@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
 

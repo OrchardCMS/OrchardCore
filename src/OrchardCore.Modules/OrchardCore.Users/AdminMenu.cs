@@ -7,7 +7,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -15,7 +15,7 @@ namespace OrchardCore.Users
             { "groupId", LoginSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -54,7 +54,7 @@ namespace OrchardCore.Users
         }
     }
 
-    public class ChangeEmailAdminMenu : INavigationProvider
+    public sealed class ChangeEmailAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -62,7 +62,7 @@ namespace OrchardCore.Users
             { "groupId", ChangeEmailSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
         {
@@ -91,7 +91,7 @@ namespace OrchardCore.Users
         }
     }
 
-    public class RegistrationAdminMenu : INavigationProvider
+    public sealed class RegistrationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -99,7 +99,7 @@ namespace OrchardCore.Users
             { "groupId", RegistrationSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
@@ -128,7 +128,7 @@ namespace OrchardCore.Users
         }
     }
 
-    public class ResetPasswordAdminMenu : INavigationProvider
+    public sealed class ResetPasswordAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -136,7 +136,7 @@ namespace OrchardCore.Users
             { "groupId", ResetPasswordSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {

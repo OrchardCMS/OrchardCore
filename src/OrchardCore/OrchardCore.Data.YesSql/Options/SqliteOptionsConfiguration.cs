@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Data
 {
-    public class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions>
+    public sealed class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions>
     {
         private readonly IShellConfiguration _shellConfiguration;
 

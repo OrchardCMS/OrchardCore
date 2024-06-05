@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageSqlQueries = new("ManageSqlQueries", "Manage SQL Queries");
 

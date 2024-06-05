@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ReverseProxy;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", "Manage Reverse Proxy Settings");
 

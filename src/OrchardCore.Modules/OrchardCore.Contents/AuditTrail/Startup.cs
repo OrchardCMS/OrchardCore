@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Contents.AuditTrail
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

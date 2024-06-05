@@ -6,7 +6,7 @@ using OrchardCore.Settings.Drivers;
 
 namespace OrchardCore.Settings
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -14,7 +14,7 @@ namespace OrchardCore.Settings
             { "groupId", DefaultSiteSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

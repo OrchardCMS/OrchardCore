@@ -7,7 +7,7 @@ using OrchardCore.XmlRpc.Services;
 
 namespace OrchardCore.XmlRpc
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -27,7 +27,7 @@ namespace OrchardCore.XmlRpc
     }
 
     [Feature("OrchardCore.RemotePublishing")]
-    public class MetaWeblogStartup : StartupBase
+    public sealed class MetaWeblogStartup : StartupBase
     {
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {

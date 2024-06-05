@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services;
 
-public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOptions>
+public sealed class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOptions>
 {
     public const string ProtectorName = "AzureEmailProtector";
 

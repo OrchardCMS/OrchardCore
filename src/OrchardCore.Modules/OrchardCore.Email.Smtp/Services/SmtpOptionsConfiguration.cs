@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
+public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 {
     public const string ProtectorName = "SmtpSettingsConfiguration";
 
