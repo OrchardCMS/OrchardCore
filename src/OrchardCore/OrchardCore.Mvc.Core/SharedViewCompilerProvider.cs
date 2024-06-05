@@ -36,7 +36,7 @@ namespace OrchardCore.Mvc
                 _compiler = _services
                     .GetServices<IViewCompilerProvider>()
                     .FirstOrDefault()
-                    .GetCompiler();
+                    ?.GetCompiler();
             }
 
             return _compiler;
