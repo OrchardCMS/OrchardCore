@@ -156,8 +156,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddDataMigration<Migrations>();
-
             // Common Part
             services.AddContentPart<CommonPart>()
                 .UseDisplayDriver<DateEditorDriver>()
@@ -241,6 +239,16 @@ namespace OrchardCore.Contents
             );
         }
     }
+
+    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
+    public class ExportContentToDeploymentTargetStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDataMigration<Migrations>();
+        }
+    }
+
 
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
