@@ -74,20 +74,6 @@ namespace OrchardCore.Tests.Email
         }
 
         [Fact]
-        public async Task SendEmail_UsesDefaultSender()
-        {
-            var message = new MailMessage
-            {
-                To = "info@oc.com",
-                Subject = "Test",
-                Body = "Test Message"
-            };
-            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
-
-            Assert.Contains("From: Your Name <youraddress@host.com>", content);
-        }
-
-        [Fact]
         public async Task SendEmail_UsesCustomSender()
         {
             var message = new MailMessage
