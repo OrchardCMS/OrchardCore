@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.MiniProfiler
 {
-    public class MiniProfilerFilter : IAsyncResultFilter
+    public sealed class MiniProfilerFilter : IAsyncResultFilter
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;

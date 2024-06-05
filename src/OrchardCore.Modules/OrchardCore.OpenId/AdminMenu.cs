@@ -8,7 +8,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.OpenId
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _clientRouteValues = new()
         {
@@ -17,7 +17,8 @@ namespace OrchardCore.OpenId
         };
 
         private readonly ShellDescriptor _shellDescriptor;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,

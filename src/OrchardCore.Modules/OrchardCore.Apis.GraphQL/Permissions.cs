@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQLMutations'.")]
     public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;

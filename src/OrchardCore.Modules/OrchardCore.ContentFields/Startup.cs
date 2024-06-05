@@ -20,7 +20,7 @@ using OrchardCore.Users;
 
 namespace OrchardCore.ContentFields
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -145,7 +145,7 @@ namespace OrchardCore.ContentFields
     }
 
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class LocalizationSetContentPickerStartup : StartupBase
+    public sealed class LocalizationSetContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -159,7 +159,7 @@ namespace OrchardCore.ContentFields
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL")]
-    public class IndexingStartup : StartupBase
+    public sealed class IndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -178,7 +178,7 @@ namespace OrchardCore.ContentFields
     }
 
     [RequireFeatures(UserConstants.Features.Users)]
-    public class UserPickerStartup : StartupBase
+    public sealed class UserPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -201,7 +201,7 @@ namespace OrchardCore.ContentFields
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
-    public class UserPickerSqlIndexingStartup : StartupBase
+    public sealed class UserPickerSqlIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

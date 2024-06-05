@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

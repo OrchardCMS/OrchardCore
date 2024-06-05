@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Helpers;
 namespace OrchardCore.Workflows.Timers
 {
     [Feature("OrchardCore.Workflows.Timers")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

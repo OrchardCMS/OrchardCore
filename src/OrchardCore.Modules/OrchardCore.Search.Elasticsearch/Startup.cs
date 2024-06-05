@@ -28,7 +28,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -98,7 +98,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [RequireFeatures("OrchardCore.Search")]
-    public class SearchStartup : StartupBase
+    public sealed class SearchStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -109,7 +109,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -121,7 +121,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [Feature("OrchardCore.Search.Elasticsearch.Worker")]
-    public class ElasticWorkerStartup : StartupBase
+    public sealed class ElasticWorkerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -130,7 +130,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
-    public class ElasticContentPickerStartup : StartupBase
+    public sealed class ElasticContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -141,7 +141,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [RequireFeatures("OrchardCore.ContentTypes")]
-    public class ContentTypesStartup : StartupBase
+    public sealed class ContentTypesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

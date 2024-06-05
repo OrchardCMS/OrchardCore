@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub
 {
-    public class AdminMenuGitHubLogin : INavigationProvider
+    public sealed class AdminMenuGitHubLogin : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -13,7 +13,7 @@ namespace OrchardCore.GitHub
             { "groupId", GitHubConstants.Features.GitHubAuthentication },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
         {
