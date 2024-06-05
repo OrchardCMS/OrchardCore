@@ -240,7 +240,7 @@ namespace OrchardCore.Contents
         }
     }
 
-    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
+    [RequireFeatures("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
     public class ExportContentToDeploymentTargetStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
