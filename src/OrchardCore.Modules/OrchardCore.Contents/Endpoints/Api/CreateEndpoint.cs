@@ -46,6 +46,11 @@ public static class CreateEndpoint
             return httpContext.ChallengeOrForbid("Api");
         }
 
+        if (model is null)
+        {
+            return TypedResults.BadRequest();
+        }
+
         var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
         var modelState = updateModelAccessor.ModelUpdater.ModelState;
 
