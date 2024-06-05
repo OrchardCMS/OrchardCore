@@ -11,7 +11,7 @@ namespace OrchardCore.Admin
     /// This filter inject a Navigation shape in the Navigation zone of the Layout
     /// for any ViewResult returned from an Admin controller.
     /// </summary>
-    public class AdminMenuFilter : IAsyncResultFilter
+    public sealed class AdminMenuFilter : IAsyncResultFilter
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;

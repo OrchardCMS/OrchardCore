@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageMediaFolder = new("ManageMediaFolder", "Manage All Media Folders");
     public static readonly Permission ManageOthersMedia = new("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });

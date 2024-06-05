@@ -4,7 +4,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Configuration
 {
-    public class SearchSettingsConfiguration : IConfigureOptions<SearchSettings>
+    public sealed class SearchSettingsConfiguration : IConfigureOptions<SearchSettings>
     {
         private readonly ISiteService _siteService;
 

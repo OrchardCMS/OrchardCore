@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Redis.Options
 {
-    public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
+    public sealed class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {
         private readonly IRedisService _redis;
         private readonly string _tenant;

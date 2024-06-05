@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AuditTrail;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.AuditTrail.AuditTrailPermissions.ViewAuditTrail'.")]
     public static readonly Permission ViewAuditTrail = AuditTrailPermissions.ViewAuditTrail;

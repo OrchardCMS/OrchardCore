@@ -22,7 +22,7 @@ using YesSql;
 
 namespace OrchardCore.Alias
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
