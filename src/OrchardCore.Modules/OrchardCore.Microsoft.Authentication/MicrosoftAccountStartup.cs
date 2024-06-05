@@ -22,7 +22,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Microsoft.Authentication
 {
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class MicrosoftAccountStartup : StartupBase
+    public sealed class MicrosoftAccountStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -48,7 +48,7 @@ namespace OrchardCore.Microsoft.Authentication
     }
 
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AzureADStartup : StartupBase
+    public sealed class AzureADStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -78,7 +78,7 @@ namespace OrchardCore.Microsoft.Authentication
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

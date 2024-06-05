@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     // Note - in code you should demand PublishContent, EditContent, or DeleteContent.
     // Do not demand the "Own" variations - those are applied automatically when you demand the main ones.

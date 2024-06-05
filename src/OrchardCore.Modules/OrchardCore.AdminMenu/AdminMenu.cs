@@ -5,10 +5,11 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
-        private protected IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
             IStringLocalizer<AdminMenu> localizer)

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.ContentPreview
 {
-    public class PreviewStartupFilter : IStartupFilter
+    public sealed class PreviewStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {

@@ -25,7 +25,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Mvc
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override int Order => -1000;
         public override int ConfigureOrder => 1000;
@@ -44,8 +44,7 @@ namespace OrchardCore.Mvc
             var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
                 .ActionDescriptors.Items
                 .OfType<ControllerActionDescriptor>()
-                .ToArray()
-                ;
+                .ToArray();
 
             var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
 

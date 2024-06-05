@@ -3,7 +3,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Configuration
 {
-    public class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
+    public sealed class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
     {
         private readonly ISiteService _site;
 

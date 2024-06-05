@@ -25,7 +25,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

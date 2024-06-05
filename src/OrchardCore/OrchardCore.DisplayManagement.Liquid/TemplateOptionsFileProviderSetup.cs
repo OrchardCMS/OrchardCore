@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public class TemplateOptionsFileProviderSetup : IConfigureOptions<TemplateOptions>
+    public sealed class TemplateOptionsFileProviderSetup : IConfigureOptions<TemplateOptions>
     {
         private readonly LiquidViewOptions _liquidViewOptions;
 

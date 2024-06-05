@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     [Obsolete("This will be removed in a future release. Instead use 'AdminPermissions.AccessAdminPanel'.")]
     public static readonly Permission AccessAdminPanel = AdminPermissions.AccessAdminPanel;

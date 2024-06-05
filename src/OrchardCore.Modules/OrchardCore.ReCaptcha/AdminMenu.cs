@@ -6,7 +6,7 @@ using OrchardCore.ReCaptcha.Drivers;
 
 namespace OrchardCore.ReCaptcha
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -14,7 +14,7 @@ namespace OrchardCore.ReCaptcha
             { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media;
 
-public class MediaCachePermissions : IPermissionProvider
+public sealed class MediaCachePermissions : IPermissionProvider
 {
     public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
 

@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Templates
 {
-    public class AdminTemplatesAdminMenu : INavigationProvider
+    public sealed class AdminTemplatesAdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
         {

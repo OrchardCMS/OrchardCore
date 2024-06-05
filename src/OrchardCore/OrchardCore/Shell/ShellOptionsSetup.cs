@@ -1,14 +1,13 @@
 using System.IO;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Setup;
 
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
     /// Sets up default options for <see cref="ShellOptions"/>.
     /// </summary>
-    public class ShellOptionsSetup : IConfigureOptions<ShellOptions>
+    public sealed class ShellOptionsSetup : IConfigureOptions<ShellOptions>
     {
         private readonly IHostEnvironment _hostingEnvironment;
 
