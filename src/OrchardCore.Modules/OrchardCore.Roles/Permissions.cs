@@ -8,7 +8,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Roles.CommonPermissions.ManageRoles'.")]
     public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
