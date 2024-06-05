@@ -11,11 +11,10 @@ using System.Text.Json.Nodes;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
-public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
+public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
-
-    public readonly Dictionary<int, object?> _dictionary = [];
+    private readonly Dictionary<int, object?> _dictionary = [];
 
     public JsonDynamicArray() => _jsonArray = [];
 
@@ -133,7 +132,16 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
         }
     }
 
-    public IEnumerator<JsonNode?> GetEnumerator() => _jsonArray.AsEnumerable().GetEnumerator();
+    public IEnumerator<object?> GetEnumerator()
+    {
+        for (var i = 0; i < _jsonArray.Count; i++)
+        {
+            yield return GetValue(i);
+        }
+    }
+
+    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator() 
+        => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
