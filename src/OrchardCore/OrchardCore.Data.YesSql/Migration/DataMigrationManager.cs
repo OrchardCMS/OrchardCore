@@ -278,8 +278,8 @@ namespace OrchardCore.Data.Migration
         private IDataMigration[] GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
-                    .Where(dm => _typeFeatureProvider.GetFeaturesForDependency(dm.GetType()).Any(feature => feature.Id == featureId))
-                    .ToArray();
+                            .Where(dm => _typeFeatureProvider.GetFeaturesForDependency(dm.GetType()).FirstOrDefault()?.Id == featureId)
+                            .ToArray();
 
             return migrations;
         }
