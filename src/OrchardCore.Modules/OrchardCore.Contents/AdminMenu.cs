@@ -67,13 +67,13 @@ namespace OrchardCore.Contents
             var context = _httpContextAccessor.HttpContext;
 
             var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
+            var listableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, contentTypes, _contentManager))
+                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, listableContentTypes, _contentManager))
                     {
                         contentItems.Permission(CommonPermissions.ListContent);
                     }
@@ -87,14 +87,14 @@ namespace OrchardCore.Contents
 
             if (adminSettings.DisplayNewMenu)
             {
-                contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
+                var creatableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
 
-                if (contentTypes.Any())
+                if (creatableContentTypes.Any())
                 {
                     await builder.AddAsync(S["New"], "-1", async newMenu =>
                     {
                         newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
-                        foreach (var contentTypeDefinition in contentTypes)
+                        foreach (var contentTypeDefinition in creatableContentTypes)
                         {
                             var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                             var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
