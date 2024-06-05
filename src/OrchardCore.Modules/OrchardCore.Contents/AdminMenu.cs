@@ -66,7 +66,7 @@ namespace OrchardCore.Contents
 
             var context = _httpContextAccessor.HttpContext;
 
-            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
