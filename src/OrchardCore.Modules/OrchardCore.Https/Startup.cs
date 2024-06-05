@@ -17,7 +17,7 @@ using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Https
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -64,7 +64,7 @@ namespace OrchardCore.Https
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

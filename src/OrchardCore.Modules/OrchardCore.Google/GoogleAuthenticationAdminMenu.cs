@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Google
 {
-    public class GoogleAuthenticationAdminMenu : INavigationProvider
+    public sealed class GoogleAuthenticationAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -13,7 +13,7 @@ namespace OrchardCore.Google
             { "groupId", GoogleConstants.Features.GoogleAuthentication },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> localizer)
         {
@@ -44,7 +44,7 @@ namespace OrchardCore.Google
         }
     }
 
-    public class GoogleAnalyticsAdminMenu : INavigationProvider
+    public sealed class GoogleAnalyticsAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -52,7 +52,7 @@ namespace OrchardCore.Google
             { "groupId", GoogleConstants.Features.GoogleAnalytics },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
         {
@@ -82,7 +82,7 @@ namespace OrchardCore.Google
         }
     }
 
-    public class GoogleTagManagerAdminMenu : INavigationProvider
+    public sealed class GoogleTagManagerAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -90,7 +90,7 @@ namespace OrchardCore.Google
             { "groupId", GoogleConstants.Features.GoogleTagManager },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
         {

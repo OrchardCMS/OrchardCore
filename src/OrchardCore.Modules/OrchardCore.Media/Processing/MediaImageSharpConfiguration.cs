@@ -12,7 +12,7 @@ namespace OrchardCore.Media.Processing
     /// <summary>
     /// Provides default configuration for ImageSharp.
     /// </summary>
-    public class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpMiddlewareOptions>
+    public sealed class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpMiddlewareOptions>
     {
         private readonly MediaOptions _mediaOptions;
 

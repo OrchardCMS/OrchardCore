@@ -31,9 +31,10 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Autoroute
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
-        public override int ConfigureOrder => -100;
+        public override int ConfigureOrder
+            => OrchardCoreConstants.ConfigureOrder.Autoroute;
 
         public override void ConfigureServices(IServiceCollection services)
         {

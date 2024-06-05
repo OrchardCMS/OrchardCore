@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Diagnostics
 {
-    public class DiagnosticsStartupFilter : IStartupFilter
+    public sealed class DiagnosticsStartupFilter : IStartupFilter
     {
         private readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
 

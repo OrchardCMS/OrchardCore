@@ -17,7 +17,7 @@ using Sc = Shortcodes;
 
 namespace OrchardCore.Shortcodes
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -54,7 +54,7 @@ namespace OrchardCore.Shortcodes
     }
 
     [Feature("OrchardCore.Shortcodes.Templates")]
-    public class ShortcodeTemplatesStartup : StartupBase
+    public sealed class ShortcodeTemplatesStartup : StartupBase
     {
         // Register this first so the templates provide overrides for any code driven shortcodes.
         public override int Order => -10;
@@ -73,7 +73,7 @@ namespace OrchardCore.Shortcodes
     }
 
     [RequireFeatures("OrchardCore.Localization")]
-    public class LocaleShortcodeProviderStartup : StartupBase
+    public sealed class LocaleShortcodeProviderStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -95,7 +95,7 @@ namespace OrchardCore.Shortcodes
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
-    public class ShortcodeTemplatesDeploymentStartup : StartupBase
+    public sealed class ShortcodeTemplatesDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

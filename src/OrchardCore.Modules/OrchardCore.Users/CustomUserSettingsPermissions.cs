@@ -7,7 +7,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users;
 
-public class CustomUserSettingsPermissions : IPermissionProvider
+public sealed class CustomUserSettingsPermissions : IPermissionProvider
 {
     // This permission is never checked it is only used as a template.
     private static readonly Permission _manageOwnCustomUserSettings = new("ManageOwnCustomUserSettings_{0}", "Manage Own Custom User Settings - {0}", new[] { Permissions.ManageUsers });

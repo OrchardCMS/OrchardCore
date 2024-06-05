@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Templates;
 
-public class AdminTemplatesPermissions : IPermissionProvider
+public sealed class AdminTemplatesPermissions : IPermissionProvider
 {
     public static readonly Permission ManageAdminTemplates = new("ManageAdminTemplates", "Manage admin templates", isSecurityCritical: true);
 
