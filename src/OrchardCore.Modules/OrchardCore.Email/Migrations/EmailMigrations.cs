@@ -7,7 +7,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Migrations;
 
-public class EmailMigrations : DataMigration
+public sealed class EmailMigrations : DataMigration
 {
     private const string SmtpFeatureId = "OrchardCore.Email.Smtp";
 

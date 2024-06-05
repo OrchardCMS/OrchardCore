@@ -31,7 +31,7 @@ Migration classes can be used to alter the content type definitions, like by add
 This service provides a way to modify the content type definitions. From a migrations class, we can inject an instance of this interface.
 
 ```csharp
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     IContentDefinitionManager _contentDefinitionManager;
 

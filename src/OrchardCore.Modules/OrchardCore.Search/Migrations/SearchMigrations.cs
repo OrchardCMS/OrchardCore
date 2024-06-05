@@ -5,7 +5,7 @@ using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Search.Migrations;
 
-public class SearchMigrations : DataMigration
+public sealed class SearchMigrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
