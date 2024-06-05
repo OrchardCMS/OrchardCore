@@ -187,7 +187,7 @@ namespace OrchardCore.Data.Migration
                 // Get current version for this migration.
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
-                var name = migration.GetType().FullName;
+                var migrationName = migration.GetType().FullName;
 
                 var current = 0;
                 if (dataMigrationRecord != null)
@@ -197,7 +197,7 @@ namespace OrchardCore.Data.Migration
                 }
                 else
                 {
-                    dataMigrationRecord = new Records.DataMigration { DataMigrationClass = name };
+                    dataMigrationRecord = new Records.DataMigration { DataMigrationClass = migrationName };
                     _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
                 }
 
@@ -211,7 +211,7 @@ namespace OrchardCore.Data.Migration
 
                         if (createMethod == null)
                         {
-                            _logger.LogWarning("The migration '{name}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", name, featureId);
+                            _logger.LogWarning("The migration '{migrationName}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migrationName, featureId);
                             continue;
                         }
 
@@ -222,7 +222,7 @@ namespace OrchardCore.Data.Migration
 
                     while (lookupTable.TryGetValue(current, out var methodInfo))
                     {
-                        _logger.LogInformation("Applying migration '{name}' for '{FeatureName}' from version {Version}.", name, featureId, current);
+                        _logger.LogInformation("Applying migration '{migrationName}' for '{FeatureName}' from version {Version}.", migrationName, featureId, current);
 
                         current = await InvokeMethodAsync(methodInfo, migration);
                     }
@@ -237,7 +237,7 @@ namespace OrchardCore.Data.Migration
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while running migration '{name}' version {Version} for '{FeatureName}'.", migration.GetType().FullName, current, featureId);
+                    _logger.LogError(ex, "Error while running migration '{migrationName}' version {Version} for '{FeatureName}'.", migrationName, current, featureId);
 
                     await _session.CancelAsync();
                 }
