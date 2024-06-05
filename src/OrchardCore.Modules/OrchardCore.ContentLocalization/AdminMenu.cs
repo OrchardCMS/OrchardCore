@@ -6,7 +6,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentLocalization
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _providersRouteValues = new()
         {
@@ -20,7 +20,7 @@ namespace OrchardCore.ContentLocalization
             { "groupId", ContentCulturePickerSettingsDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
