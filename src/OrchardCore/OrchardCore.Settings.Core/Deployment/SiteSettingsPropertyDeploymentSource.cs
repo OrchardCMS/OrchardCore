@@ -21,10 +21,8 @@ namespace OrchardCore.Settings.Deployment
                 return;
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
             var settingJPropertyName = typeof(TModel).Name;
-            var settingJPropertyValue = JObject.FromObject(siteSettings.As<TModel>());
+            var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());
 
             var settingsStepJObject = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Settings");
             if (settingsStepJObject != null)

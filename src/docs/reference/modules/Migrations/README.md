@@ -59,9 +59,9 @@ namespace Members
             return 2;
         }
 
-        public int UpdateFrom2()
+        public Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Product", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
                 // Content items of this type can have drafts
                 .Draftable()
                 // Content items versions of this type are versionable
@@ -74,9 +74,9 @@ namespace Members
             return 3;
         }
 
-        public int UpdateFrom3()
+        public Task<int> UpdateFrom3Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Product", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
                 .WithPart("TitlePart")
             );
             return 4;

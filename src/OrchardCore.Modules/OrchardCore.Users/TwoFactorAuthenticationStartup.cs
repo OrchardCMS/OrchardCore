@@ -11,6 +11,8 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Endpoints.EmailAuthenticator;
+using OrchardCore.Users.Endpoints.SmsAuthenticator;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Filters;
 using OrchardCore.Users.Models;
@@ -43,17 +45,69 @@ public class TwoFactorAuthenticationStartup : StartupBase
         _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
 
         routes.MapAreaControllerRoute(
-            name: "LoginWithTwoFactorAuthentication",
-            areaName: UserConstants.Features.Users,
-            pattern: "LoginWithTwoFactorAuthentication",
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
-        );
+                name: "LoginWithTwoFactorAuthentication",
+                areaName: UserConstants.Features.Users,
+                pattern: "LoginWithTwoFactorAuthentication",
+                defaults: new
+                {
+                    controller = _twoFactorControllerName,
+                    action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                }
+            );
 
         routes.MapAreaControllerRoute(
             name: "TwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: _userOptions.TwoFactorAuthenticationPath,
-            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.Index),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "LoginWithRecoveryCode",
+            areaName: UserConstants.Features.Users,
+            pattern: "LoginWithRecoveryCode",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "GenerateRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "GenerateRecoveryCodes",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ShowRecoveryCodes",
+            areaName: UserConstants.Features.Users,
+            pattern: "ShowRecoveryCodes",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "DisableTwoFactorAuthentication",
+            areaName: UserConstants.Features.Users,
+            pattern: "DisableTwoFactorAuthentication",
+            defaults: new
+            {
+                controller = _twoFactorControllerName,
+                action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
+            }
         );
     }
 }
@@ -87,6 +141,33 @@ public class AuthenticatorAppStartup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var controllerName = typeof(AuthenticatorAppController).ControllerName();
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Configure/App",
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Index),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "RemoveAuthenticatorApp",
+            areaName: UserConstants.Features.Users,
+            pattern: "Authenticator/Reset/App",
+            defaults: new
+            {
+                controller = controllerName,
+                action = nameof(AuthenticatorAppController.Reset),
+            }
+        );
+    }
 }
 
 [Feature(UserConstants.Features.EmailAuthenticator)]
@@ -104,6 +185,11 @@ public class EmailAuthenticatorStartup : StartupBase
 
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddEmailSendCodeEndpoint<EmailAuthenticatorStartup>();
     }
 }
 
@@ -123,5 +209,10 @@ public class SmsAuthenticatorStartup : StartupBase
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddSmsSendCodeEndpoint<SmsAuthenticatorStartup>();
     }
 }

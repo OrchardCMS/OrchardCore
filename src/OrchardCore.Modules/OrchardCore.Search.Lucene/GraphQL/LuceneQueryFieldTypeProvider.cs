@@ -85,7 +85,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
         private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"].AsObject(); ;
+            var properties = querySchema["properties"]?.AsObject(); 
             if (properties == null)
             {
                 return null;
@@ -199,9 +199,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 

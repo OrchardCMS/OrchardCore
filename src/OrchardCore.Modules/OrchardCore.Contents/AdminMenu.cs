@@ -75,7 +75,7 @@ namespace OrchardCore.Contents
                 {
                     if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, contentTypes, _contentManager))
                     {
-                        contentItems.Permission(Permissions.ListContent);
+                        contentItems.Permission(CommonPermissions.ListContent);
                     }
 
                     contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
@@ -83,7 +83,7 @@ namespace OrchardCore.Contents
                 });
             });
 
-            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+            var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 
             if (adminSettings.DisplayNewMenu && contentTypes.Any())
             {

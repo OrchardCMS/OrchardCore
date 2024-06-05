@@ -93,7 +93,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 _logger.LogError(e, "Unable to import a recipe from deployment plan.");
 
-                await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors.SelectMany(x => x.Value))]);
+                await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors)]);
             }
             catch (Exception e)
             {
