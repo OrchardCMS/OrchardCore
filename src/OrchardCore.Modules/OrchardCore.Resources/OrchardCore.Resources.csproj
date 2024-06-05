@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.Resources\OrchardCore.SourceGenerators.Resources.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
