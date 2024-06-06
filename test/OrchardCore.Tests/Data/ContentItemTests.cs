@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Data
             // Assert
             Assert.Equal("13:05:00", timeField.Value.Value.ToString());
             Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
-            Assert.Equal("2024-05-31 13:05", timezoneDateTimeFieldTest.Value.Value.ToUniversalTime().ToString("yyyy-MM-dd HH:mm"));
+            Assert.Equal("2024-05-31 05:05", timezoneDateTimeFieldTest.Value.Value.ToUniversalTime().ToString("yyyy-MM-dd HH:mm"));
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
 
             Assert.Equal("13:05:00", JObject.FromObject(timeField).SelectNode("Value").ToString());
