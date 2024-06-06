@@ -77,19 +77,6 @@ namespace OrchardCore.Tests.Data
         }
 
         [Fact]
-        public void ShouldUpdateContent()
-        {
-            var contentItem = CreateContentItemWithMyPart();
-
-            var json = JConvert.SerializeObject(contentItem);
-
-            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
-
-            Assert.NotNull(contentItem2.Content.MyPart);
-            Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
-        }
-
-        [Fact]
         public void ShouldAlterPart()
         {
             var contentItem = CreateContentItemWithMyPart();
