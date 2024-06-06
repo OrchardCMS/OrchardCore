@@ -6,25 +6,26 @@ using System.Text.Json.Serialization;
 namespace OrchardCore.Json.Serialization;
 public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
-    // ISO 8601 format with milliseconds and time zone.
-    private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ssZ"; 
-
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType != JsonTokenType.String)
+        Debug.Assert(typeToConvert == typeof(DateTime));
+
+        if (Utf8Parser.TryParse(reader.ValueSpan, out DateTime value, out _, 'O'))
         {
-            throw new JsonException($"Unexpected token parsing DateTime. Expected a string, got '{reader.TokenType}'.");
+            return value;
         }
 
-        var stringValue = reader.GetString();
-        if (DateTime.TryParse(stringValue, null, DateTimeStyles.RoundtripKind, out var dateTime))
-        {
-            return dateTime;
-        }
-
-        throw new JsonException($"Unable to convert '{stringValue}' to DateTime.");
+        throw new FormatException("Invalid date format.");
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        => writer.WriteStringValue(value.ToString(DateTimeFormat, CultureInfo.InvariantCulture));
+    {
+        // The "O" standard format length can vary (up to 33 bytes for the round-trip format).
+        Span<byte> utf8Date = new byte[33];
+
+        bool result = Utf8Formatter.TryFormat(value, utf8Date, out int bytesWritten, new StandardFormat('O'));
+        Debug.Assert(result);
+
+        writer.WriteStringValue(utf8Date.Slice(0, bytesWritten));
+    }
 }
