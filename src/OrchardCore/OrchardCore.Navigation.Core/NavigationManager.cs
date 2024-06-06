@@ -110,6 +110,7 @@ namespace OrchardCore.Navigation
                             source.RouteValues = cursor.RouteValues;
                             source.Text = cursor.Text;
                             source.Url = cursor.Url;
+                            source.Target = cursor.Target;
 
                             source.Permissions.Clear();
                             source.Permissions.AddRange(cursor.Permissions);
@@ -133,6 +134,7 @@ namespace OrchardCore.Navigation
                                 source.RouteValues = cursor.RouteValues;
                                 source.Text = cursor.Text;
                                 source.Url = cursor.Url;
+                                source.Target = cursor.Target;
 
                                 source.Permissions.Clear();
                                 source.Permissions.AddRange(cursor.Permissions);
