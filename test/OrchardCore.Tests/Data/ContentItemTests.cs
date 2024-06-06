@@ -11,6 +11,7 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void JsonNode_WhenParseCalled_ConvertShortTimeFormatToTimeField()
         {
+           // Arrange
             var jsonStr = """
              {
                 "TimeFieldTest": {
@@ -24,15 +25,16 @@ namespace OrchardCore.Tests.Data
                 }
             }
             """;
+
+            // Act
             var jobject = JsonNode.Parse(jsonStr);
-
             var timeField = jobject.SelectNode("TimeFieldTest").ToObject<TimeField>();
-            Assert.Equal("13:05:00", timeField.Value.Value.ToString());
-
             var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
-            Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
-
             var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
+            
+            // Assert
+            Assert.Equal("13:05:00", timeField.Value.Value.ToString());
+            Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
         }
 
