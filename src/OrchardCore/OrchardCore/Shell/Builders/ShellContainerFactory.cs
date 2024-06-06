@@ -182,6 +182,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         foreach (var type in featureTypes)
                         {
+                            // If the attribute is present then we explicitly ignore the backward compatibility and skip the registration
+                            // in the main feature.
                             if (!SkipExtensionFeatureRegistration(type))
                             {
                                 typeFeatureProvider.TryAdd(type, feature);
