@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Filters;
 
-public class FacebookPixelFilter : IAsyncResultFilter
+public sealed class FacebookPixelFilter : IAsyncResultFilter
 {
     private readonly IResourceManager _resourceManager;
     private readonly ISiteService _siteService;

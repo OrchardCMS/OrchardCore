@@ -27,7 +27,7 @@ using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -51,7 +51,7 @@ namespace OrchardCore.ContentLocalization
     }
 
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class ContentPickerStartup : StartupBase
+    public sealed class ContentPickerStartup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
         public ContentPickerStartup(IShellConfiguration shellConfiguration)
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentLocalization
     }
 
     [Feature("OrchardCore.ContentLocalization.Sitemaps")]
-    public class SitemapsStartup : StartupBase
+    public sealed class SitemapsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

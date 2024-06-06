@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
 
-public class PixelPermissionProvider : IPermissionProvider
+public sealed class PixelPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageFacebookPixelPermission = FacebookConstants.ManageFacebookPixelPermission;
 

@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.HealthChecks
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 
