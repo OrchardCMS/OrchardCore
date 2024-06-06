@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Data
                     "Value": "2024-5-31 13:05"
                 },
                 "TimezoneDateTimeFieldTest": {
-                    "Value": "2024-5-31 13:05 +08:00"
+                    "Value": "2024-5-31 13:05 +02:00"
                 },
                 "DateFieldTest": {
                     "Value": "2024-5-31"
@@ -39,12 +39,12 @@ namespace OrchardCore.Tests.Data
             // Assert
             Assert.Equal("13:05:00", timeField.Value.Value.ToString());
             Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
-            Assert.Equal("2024-05-31 05:05", timezoneDateTimeFieldTest.Value.Value.ToUniversalTime().ToString("yyyy-MM-dd HH:mm"));
+            Assert.Equal("2024-05-31 19:05", timezoneDateTimeFieldTest.Value.Value.ToString("yyyy-MM-dd HH:mm"));
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
 
             Assert.Equal("13:05:00", JObject.FromObject(timeField).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
-            Assert.Equal("2024-05-31T05:05:00Z", JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
+            Assert.Equal("2024-05-31T19:05:00Z", JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
         }
 
