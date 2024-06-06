@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Facebook.Widgets
 {
-    public class WidgetMigrations : DataMigration
+    public sealed class WidgetMigrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly IContentDefinitionManager _contentDefinitionManager;

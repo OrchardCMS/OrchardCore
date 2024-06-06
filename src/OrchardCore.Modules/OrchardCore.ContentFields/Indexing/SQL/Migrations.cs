@@ -7,7 +7,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly ILogger _logger;
 
