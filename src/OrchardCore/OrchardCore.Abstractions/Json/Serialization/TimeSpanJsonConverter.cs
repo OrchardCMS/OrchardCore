@@ -23,8 +23,6 @@ namespace OrchardCore.Json.Serialization
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
-        }
+            => writer.WriteStringValue(value.ToString());
     }
 }
