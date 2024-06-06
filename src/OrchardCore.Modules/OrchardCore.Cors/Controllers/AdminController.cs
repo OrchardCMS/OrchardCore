@@ -115,7 +115,7 @@ namespace OrchardCore.Cors.Controllers
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
                     IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
-                    ExposedHeaders = settingViewModel.ExposedHeaders
+                    ExposedHeaders = settingViewModel.ExposedHeaders,
                 });
                 
                 if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
