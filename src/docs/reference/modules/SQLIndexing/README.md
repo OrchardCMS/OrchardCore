@@ -274,7 +274,7 @@ The following examples demonstrate filtering products based on a numeric content
 
 Normal usage:
 
-```
+```graphql
 product(where: {price: {amount_gt: 10}}) {
     contentItemId
     displayText
@@ -286,7 +286,7 @@ product(where: {price: {amount_gt: 10}}) {
 
 If the `PricePart` is collapsed:
 
-```
+```graphql
 product(where: {amount_gt: 10}) {
     contentItemId
     displayText
@@ -296,7 +296,7 @@ product(where: {amount_gt: 10}) {
 
 If the `PricePart` is collaped with prevent field name collision option enabled:
 
-```
+```graphql
 product(where: {priceAmount_gt: 10}) {
     contentItemId
     displayText
