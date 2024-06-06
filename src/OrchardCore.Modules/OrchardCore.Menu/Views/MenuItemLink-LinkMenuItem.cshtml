@@ -16,6 +16,7 @@
         url = Url.Content(linkMenuItemPart.Url);
     }
 
+    tag.Attributes["target"] = linkMenuItemPart.Target;
     tag.Attributes["href"] = url;
     tag.InnerHtml.Append(contentItem.DisplayText);
 }

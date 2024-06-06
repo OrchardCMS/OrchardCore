@@ -5,7 +5,7 @@ using OrchardCore.Users;
 
 namespace OrchardCore.Demo;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
     public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });

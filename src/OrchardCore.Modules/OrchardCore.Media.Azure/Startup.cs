@@ -25,7 +25,7 @@ using SixLabors.ImageSharp.Web.Caching.Azure;
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
-    public class Startup : Modules.StartupBase
+    public sealed class Startup : Modules.StartupBase
     {
         private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
@@ -144,7 +144,7 @@ namespace OrchardCore.Media.Azure
     }
 
     [Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
-    public class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
+    public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
     {
         private readonly IShellConfiguration _configuration;
         private readonly ILogger _logger;

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
@@ -9,11 +10,12 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Events;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -35,11 +37,12 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
 
             services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

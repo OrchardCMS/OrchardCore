@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Media.AmazonS3
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

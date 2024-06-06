@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetMigrations : DataMigration
+    public sealed class ExportContentToDeploymentTargetMigrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly IDeploymentPlanService _deploymentPlanService;

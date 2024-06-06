@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Seo;
 
-public class SeoPermissionProvider : IPermissionProvider
+public sealed class SeoPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageSeoSettings = SeoConstants.ManageSeoSettings;
 

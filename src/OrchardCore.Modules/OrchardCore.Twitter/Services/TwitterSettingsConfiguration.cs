@@ -8,7 +8,7 @@ using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services;
 
-public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
+public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
 {
     private readonly ITwitterSettingsService _twitterSettingsService;
     private readonly ShellSettings _shellSettings;

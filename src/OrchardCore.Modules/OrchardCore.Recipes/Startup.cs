@@ -10,7 +10,7 @@ namespace OrchardCore.Recipes
     /// <summary>
     /// These services are registered on the tenant service collection.
     /// </summary>
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Recipes
     }
 
     [Feature("OrchardCore.Recipes.Core")]
-    public class RecipesCoreStartup : StartupBase
+    public sealed class RecipesCoreStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

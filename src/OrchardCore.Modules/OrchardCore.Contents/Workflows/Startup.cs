@@ -10,7 +10,7 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Contents.Workflows
 {
     [RequireFeatures("OrchardCore.Workflows")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -24,7 +24,7 @@ using SystemEnvironment = System.Environment;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
+    public sealed class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureOptions<OpenIddictValidationOptions>,
         IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
         IConfigureNamedOptions<ApiAuthorizationOptions>

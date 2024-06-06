@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Media
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -50,9 +50,9 @@ namespace OrchardCore.Media
         }
     }
 
-    public class MediaCacheAdminMenu : INavigationProvider
+    public sealed class MediaCacheAdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
