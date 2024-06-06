@@ -180,6 +180,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     // Features can have no types.
                     if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                     {
+                        // This is adding the types to the main feature for backward compatibility.
+                        // In the future we could stop doing it as we don't expect this to be necessary, and remove the FeatureTypeDiscovery attribute.
                         foreach (var type in featureTypes)
                         {
                             // If the attribute is present then we explicitly ignore the backward compatibility and skip the registration
