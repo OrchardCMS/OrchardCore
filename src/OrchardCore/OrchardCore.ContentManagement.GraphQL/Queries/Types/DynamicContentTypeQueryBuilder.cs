@@ -16,6 +16,6 @@ public class DynamicContentTypeQueryBuilder : DynamicContentTypeBuilder
 
     public override void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
     {
-        BuildObjectGraphType(schema, contentQuery, contentTypeDefinition, contentItemType);
+        BuildObjectGraphType(schema, contentTypeDefinition, contentItemType);
     }
 }

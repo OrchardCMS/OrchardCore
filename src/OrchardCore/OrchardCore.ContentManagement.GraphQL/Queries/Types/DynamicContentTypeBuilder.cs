@@ -31,17 +31,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public abstract void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType);
 
-        protected void BuildObjectGraphType(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, IContentItemObjectGraphType objectGraphType)
+        protected void BuildObjectGraphType(ISchema schema, ContentTypeDefinition contentTypeDefinition, IContentItemObjectGraphType objectGraphType)
         {
-            BuildInternal(schema, contentQuery, contentTypeDefinition, objectGraphType);
+            BuildInternal(schema, contentTypeDefinition, objectGraphType);
         }
 
-        protected void BuildInputObjectGraphType(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, IContentItemInputObjectGraphType inputObjectGraphType)
+        protected void BuildInputObjectGraphType(ISchema schema, ContentTypeDefinition contentTypeDefinition, IContentItemInputObjectGraphType inputObjectGraphType)
         {
-            BuildInternal(schema, contentQuery, contentTypeDefinition, inputObjectGraphType);
+            BuildInternal(schema, contentTypeDefinition, inputObjectGraphType);
         }
 
-        private void BuildInternal(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, IComplexGraphType graphType)
+        private void BuildInternal(ISchema schema, ContentTypeDefinition contentTypeDefinition, IComplexGraphType graphType)
         {
             if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
