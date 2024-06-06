@@ -111,15 +111,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                                     if (contentFieldType != null)
                                     {
-                                        if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name))
+                                        if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name) || partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
                                         {
                                             continue;
                                         }
 
-                                        if (partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
-                                        {
-                                            continue;
-                                        }
 
                                         partContentItemType.AddField(contentFieldType);
                                         break;
