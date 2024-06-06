@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene
         Title = "Lucene Indexes Updater",
         Schedule = "* * * * *",
         Description = "Updates lucene indexes.")]
-    public class IndexingBackgroundTask : IBackgroundTask
+    public sealed class IndexingBackgroundTask : IBackgroundTask
     {
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
