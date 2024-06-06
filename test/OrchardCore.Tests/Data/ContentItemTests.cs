@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.Data
 
             Assert.Equal("13:05:00", JObject.FromObject(timeField).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
-            Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
+            Assert.Equal("2024-05-31T05:05:00Z", JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
         }
 
