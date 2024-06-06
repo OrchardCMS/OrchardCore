@@ -32,7 +32,7 @@ public class FeatureTypeDiscoveryAttribute : Attribute
     {
         return type.GetCustomAttribute<FeatureTypeDiscoveryAttribute>(true)
             ?? type.GetInterfaces()
-                    .Select(i => i.GetCustomAttribute<FeatureTypeDiscoveryAttribute>(true))
-                    .FirstOrDefault(c => c != null);
+                    .Select(dmType => dmType.GetCustomAttribute<FeatureTypeDiscoveryAttribute>(true))
+                    .FirstOrDefault(featureTypeDiscoveryAttr => featureTypeDiscoveryAttr != null);
     }
 }
