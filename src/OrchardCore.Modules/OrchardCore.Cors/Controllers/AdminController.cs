@@ -69,7 +69,7 @@ namespace OrchardCore.Cors.Controllers
                         AllowedOrigins = policySetting.AllowedOrigins,
                         AllowCredentials = policySetting.AllowCredentials,
                         IsDefaultPolicy = policySetting.IsDefaultPolicy,
-                        ExposedHeaders = policySetting.ExposedHeaders
+                        ExposedHeaders = policySetting.ExposedHeaders,
                     };
 
                     list.Add(policyViewModel);
