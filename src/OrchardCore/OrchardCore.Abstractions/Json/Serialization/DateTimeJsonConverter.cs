@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
@@ -9,9 +10,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        Debug.Assert(typeToConvert == typeof(DateTime));
-
-        if (Utf8Parser.TryParse(reader.ValueSpan, out DateTime value, out _, 'O'))
+        if (DateTime.TryParse(reader.GetString(), out DateTime value))
         {
             return value;
         }
@@ -24,7 +23,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
         // The "O" standard format length can vary (up to 33 bytes for the round-trip format).
         Span<byte> utf8Date = new byte[33];
 
-        bool result = Utf8Formatter.TryFormat(value, utf8Date, out int bytesWritten, new StandardFormat('O'));
+        bool result = Utf8Formatter.TryFormat(value, utf8Date, out var bytesWritten, new StandardFormat('O'));
         Debug.Assert(result);
 
         writer.WriteStringValue(utf8Date.Slice(0, bytesWritten));
