@@ -14,7 +14,7 @@ using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    public class OpenIdClientConfiguration :
+    public sealed class OpenIdClientConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<OpenIdConnectOptions>
     {

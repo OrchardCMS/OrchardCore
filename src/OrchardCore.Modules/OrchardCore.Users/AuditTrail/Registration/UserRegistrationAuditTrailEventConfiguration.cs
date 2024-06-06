@@ -3,7 +3,7 @@ using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.Users.AuditTrail.Registration
 {
-    public class UserRegistrationAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
+    public sealed class UserRegistrationAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
     {
         public const string User = nameof(User);
         public const string Registered = nameof(Registered);

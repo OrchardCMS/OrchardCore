@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Microsoft.Authentication;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageMicrosoftAuthentication
         = new("ManageMicrosoftAuthentication", "Manage Microsoft Authentication settings");

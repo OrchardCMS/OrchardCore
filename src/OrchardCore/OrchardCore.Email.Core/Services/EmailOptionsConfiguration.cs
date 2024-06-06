@@ -4,7 +4,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Core.Services;
 
-public class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
+public sealed class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
 {
     private readonly ISiteService _siteService;
     private readonly EmailProviderOptions _emailProviderOptions;

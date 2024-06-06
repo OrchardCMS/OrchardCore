@@ -65,6 +65,8 @@ public class OrchardCoreConstants
         // The order number should always be greater than data protection modules. 
         public const int AzureDataProtection = DataProtection + 10;
 
+        public const int Autoroute = -100;
+
         public const int HomeRoute = -150;
 
         public const int AdminPages = 1000;

@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Resources
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private readonly ResourceOptions _resourceOptions;
         private readonly IHostEnvironment _env;

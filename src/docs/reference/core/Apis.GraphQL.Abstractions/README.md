@@ -62,7 +62,7 @@ The last part is to tell the Orchard Subsystem about your new type, once this is
 
 ```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public class Startup : StartupBase
+public class sealed Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -72,7 +72,7 @@ public class Startup : StartupBase
 }
 ```
 
-Thats it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
+That's it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
 
 ## Filtration
 
@@ -111,7 +111,7 @@ Update Startup class like below.
 
 ```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -262,7 +262,7 @@ Update Startup class like below.
 
 ```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     // Assuming we've added the necessary using directives.
     public override void ConfigureServices(IServiceCollection services)

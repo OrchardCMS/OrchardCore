@@ -11,7 +11,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media
 {
-    public class SecureMediaPermissions : IPermissionProvider
+    public sealed class SecureMediaPermissions : IPermissionProvider
     {
         // Note: The ManageMediaFolder permission grants all access, so viewing must be implied by it too.
         public static readonly Permission ViewMedia = new("ViewMediaContent", "View media content in all folders", new[] { Permissions.ManageMediaFolder });

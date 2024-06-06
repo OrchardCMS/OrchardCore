@@ -27,7 +27,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _shellConfiguration;
 
@@ -79,7 +79,7 @@ public class Startup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
-public class WorkflowsStartup : StartupBase
+public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -88,7 +88,7 @@ public class WorkflowsStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Workflows", UserConstants.Features.Users, "OrchardCore.Contents")]
-public class UsersWorkflowStartup : StartupBase
+public sealed class UsersWorkflowStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -97,7 +97,7 @@ public class UsersWorkflowStartup : StartupBase
 }
 
 [Feature("OrchardCore.Notifications.Email")]
-public class EmailNotificationsStartup : StartupBase
+public sealed class EmailNotificationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.TagManager
 {
-    public class GoogleTagManagerFilter : IAsyncResultFilter
+    public sealed class GoogleTagManagerFilter : IAsyncResultFilter
     {
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;

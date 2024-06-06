@@ -22,7 +22,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private const string DefaultMarkdownExtensions = "nohtml+advanced";
 
