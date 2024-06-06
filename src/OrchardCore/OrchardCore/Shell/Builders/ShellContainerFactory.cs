@@ -182,7 +182,10 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         foreach (var type in featureTypes)
                         {
-                            typeFeatureProvider.TryAdd(type, feature);
+                            if (!SkipExtensionFeatureRegistration(type))
+                            {
+                                typeFeatureProvider.TryAdd(type, feature);
+                            }
                         }
                     }
                 }
@@ -227,6 +230,11 @@ namespace OrchardCore.Environment.Shell.Builders
         private static bool IsComponentType(Type type)
         {
             return type.IsClass && !type.IsAbstract && type.IsPublic;
+        }
+
+        private static bool SkipExtensionFeatureRegistration(Type type)
+        {
+            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
         }
     }
 }
