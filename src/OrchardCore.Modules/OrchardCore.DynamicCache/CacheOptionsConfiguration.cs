@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DynamicCache
 {
-    public class CacheOptionsConfiguration : IConfigureOptions<CacheOptions>
+    public sealed class CacheOptionsConfiguration : IConfigureOptions<CacheOptions>
     {
         private readonly ISiteService _siteService;
         private readonly IHostEnvironment _env;

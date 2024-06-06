@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
     public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;

@@ -15,7 +15,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Setup
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
 

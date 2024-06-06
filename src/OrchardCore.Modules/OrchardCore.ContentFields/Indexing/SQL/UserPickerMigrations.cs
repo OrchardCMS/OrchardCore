@@ -5,7 +5,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
-    public class UserPickerMigrations : DataMigration
+    public sealed class UserPickerMigrations : DataMigration
     {
         public async Task<int> CreateAsync()
         {

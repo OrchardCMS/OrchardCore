@@ -6,7 +6,7 @@ using OrchardCore.ReverseProxy.Drivers;
 
 namespace OrchardCore.ReverseProxy
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -14,7 +14,7 @@ namespace OrchardCore.ReverseProxy
             { "groupId", ReverseProxySettingsDisplayDriver.GroupId},
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

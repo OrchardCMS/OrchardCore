@@ -57,7 +57,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -243,7 +243,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -254,7 +254,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.AdminMenu")]
-    public class AdminMenuStartup : StartupBase
+    public sealed class AdminMenuStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -263,7 +263,7 @@ namespace OrchardCore.Contents
     }
 
     [Feature("OrchardCore.Contents.FileContentDefinition")]
-    public class FileContentDefinitionStartup : StartupBase
+    public sealed class FileContentDefinitionStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -272,7 +272,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Sitemaps")]
-    public class SitemapsStartup : StartupBase
+    public sealed class SitemapsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -287,7 +287,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Feeds")]
-    public class FeedsStartup : StartupBase
+    public sealed class FeedsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

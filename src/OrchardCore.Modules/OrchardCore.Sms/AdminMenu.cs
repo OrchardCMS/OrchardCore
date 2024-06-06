@@ -7,7 +7,7 @@ using OrchardCore.Sms.Controllers;
 
 namespace OrchardCore.Sms;
 
-public class AdminMenu : INavigationProvider
+public sealed class AdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,7 +15,7 @@ public class AdminMenu : INavigationProvider
         { "groupId", SmsSettings.GroupId },
     };
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {

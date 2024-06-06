@@ -5,7 +5,7 @@ using OrchardCore.Forms.Helpers;
 
 namespace OrchardCore.Forms.Filters
 {
-    public class ExportModelStateAttribute : ModelStateTransferAttribute
+    public sealed class ExportModelStateAttribute : ModelStateTransferAttribute
     {
         public override void OnActionExecuted(ActionExecutedContext context)
         {
