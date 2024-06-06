@@ -1,7 +1,5 @@
 using System;
-using System.Buffers;
-using System.Buffers.Text;
-using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -19,13 +17,5 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-    {
-        // The "O" standard format length can vary (up to 33 bytes for the round-trip format).
-        Span<byte> utf8Date = new byte[33];
-
-        bool result = Utf8Formatter.TryFormat(value, utf8Date, out var bytesWritten, new StandardFormat('O'));
-        Debug.Assert(result);
-
-        writer.WriteStringValue(utf8Date.Slice(0, bytesWritten));
-    }
+        => writer.WriteStringValue(value.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
 }
