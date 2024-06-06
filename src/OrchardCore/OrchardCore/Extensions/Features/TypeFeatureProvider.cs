@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Extensions
 
             if (features.Count() > 1 && (FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SingleFeatureOnly ?? false))
             {
-                throw new InvalidOperationException($"The type {type} can only be assigned to a single feature. Make sure the type is not added to DI by mulitple startup classes.");
+                throw new InvalidOperationException($"The type {type} can only be assigned to a single feature. Make sure the type is not added to DI by multiple startup classes.");
             }
         }
     }
