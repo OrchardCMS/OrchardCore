@@ -17,7 +17,7 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    public class OpenIdServerConfiguration : IConfigureOptions<AuthenticationOptions>,
+    public sealed class OpenIdServerConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureOptions<OpenIddictServerOptions>,
         IConfigureOptions<OpenIddictServerDataProtectionOptions>,
         IConfigureNamedOptions<OpenIddictServerAspNetCoreOptions>

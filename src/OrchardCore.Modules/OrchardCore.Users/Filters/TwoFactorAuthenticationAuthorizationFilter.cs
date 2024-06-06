@@ -11,7 +11,7 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.Filters;
 
-public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
+public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private static readonly string[] _allowedControllerNames =
     [

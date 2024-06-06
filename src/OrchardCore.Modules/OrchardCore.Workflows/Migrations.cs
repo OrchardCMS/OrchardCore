@@ -6,7 +6,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Workflows
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         public async Task<int> CreateAsync()
         {

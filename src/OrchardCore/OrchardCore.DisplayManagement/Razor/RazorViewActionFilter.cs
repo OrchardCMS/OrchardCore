@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Razor
     /// Inject commonly used data through an HttpContext feature <see cref="RazorViewFeature"/> such that
     /// e.g a <see cref="RazorPage"/> can reuse them when it's executed.
     /// </summary>
-    public class RazorViewActionFilter : IAsyncViewActionFilter
+    public sealed class RazorViewActionFilter : IAsyncViewActionFilter
     {
         public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

@@ -15,9 +15,8 @@ using OrchardCore.PublishLater.ViewModels;
 
 namespace OrchardCore.PublishLater
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>

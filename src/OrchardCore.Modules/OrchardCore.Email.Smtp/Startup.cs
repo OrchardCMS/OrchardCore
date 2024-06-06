@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp;
 
-public class Startup
+public sealed class Startup
 {
     private readonly IShellConfiguration _shellConfiguration;
 

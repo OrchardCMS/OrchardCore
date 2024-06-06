@@ -25,7 +25,7 @@ using SixLabors.ImageSharp.Web.Caching.AWS;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public class Startup : Modules.StartupBase
+public sealed class Startup : Modules.StartupBase
 {
     private readonly ILogger _logger;
     private readonly IShellConfiguration _configuration;
@@ -137,7 +137,7 @@ public class Startup : Modules.StartupBase
 }
 
 [Feature("OrchardCore.Media.AmazonS3.ImageSharpImageCache")]
-public class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
+public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
@@ -183,6 +183,5 @@ public class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
 
             services.AddScoped<IModularTenantEvents, ImageSharpS3ImageCacheBucketTenantEvents>();
         }
-
     }
 }

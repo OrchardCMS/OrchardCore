@@ -8,7 +8,7 @@ using OrchardCore.Media.Settings;
 
 namespace OrchardCore.Media
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellDescriptor _shellDescriptor;

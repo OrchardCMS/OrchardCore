@@ -16,7 +16,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -37,7 +37,8 @@ namespace OrchardCore.Contents
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(
             IContentDefinitionManager contentDefinitionManager,

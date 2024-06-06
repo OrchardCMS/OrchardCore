@@ -32,7 +32,7 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -80,7 +80,7 @@ namespace OrchardCore.Taxonomies
     }
 
     [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
-    public class ContentsAdminListStartup : StartupBase
+    public sealed class ContentsAdminListStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -94,7 +94,7 @@ namespace OrchardCore.Taxonomies
 
     [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class ContentsAdminListDeploymentStartup : StartupBase
+    public sealed class ContentsAdminListDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -103,7 +103,7 @@ namespace OrchardCore.Taxonomies
     }
 
     [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class GraphQLStartup : StartupBase
+    public sealed class GraphQLStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
