@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DataProtection.Azure;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;

@@ -3,7 +3,7 @@ using System;
 namespace OrchardCore.BackgroundTasks
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class BackgroundTaskAttribute : Attribute
+    public sealed class BackgroundTaskAttribute : Attribute
     {
         /// <summary>
         /// The display name of this background task.

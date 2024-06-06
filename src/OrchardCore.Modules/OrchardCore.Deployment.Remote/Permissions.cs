@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment.Remote;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageRemoteInstances = new("ManageRemoteInstances", "Manage remote instances");
     public static readonly Permission ManageRemoteClients = new("ManageRemoteClients", "Manage remote clients");

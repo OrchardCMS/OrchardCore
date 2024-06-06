@@ -52,11 +52,6 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    if (!contentItem.Latest && !contentItem.Published)
-                    {
-                        return null;
-                    }
-
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 

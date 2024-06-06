@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ReverseProxy.Services
 {
-    public class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
+    public sealed class ForwardedHeadersOptionsConfiguration : IConfigureOptions<ForwardedHeadersOptions>
     {
         private readonly ReverseProxyService _reverseProxyService;
 

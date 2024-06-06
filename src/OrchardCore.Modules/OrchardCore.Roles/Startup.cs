@@ -16,7 +16,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -32,7 +32,7 @@ namespace OrchardCore.Roles
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -41,7 +41,7 @@ namespace OrchardCore.Roles
     }
 
     [Feature("OrchardCore.Roles.Core")]
-    public class RoleUpdaterStartup : StartupBase
+    public sealed class RoleUpdaterStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -7,7 +7,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Filters
 {
-    public class FBInitFilter : IAsyncResultFilter
+    public sealed class FBInitFilter : IAsyncResultFilter
     {
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;

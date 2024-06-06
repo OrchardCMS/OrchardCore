@@ -3,7 +3,7 @@ using OrchardCore.Security.Settings;
 
 namespace OrchardCore.Security.Services
 {
-    public class SecuritySettingsConfiguration : IConfigureOptions<SecuritySettings>
+    public sealed class SecuritySettingsConfiguration : IConfigureOptions<SecuritySettings>
     {
         private readonly ISecurityService _securityService;
 

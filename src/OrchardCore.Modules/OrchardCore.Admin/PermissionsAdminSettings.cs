@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin;
 
-public class PermissionsAdminSettings : IPermissionProvider
+public sealed class PermissionsAdminSettings : IPermissionProvider
 {
     public static readonly Permission ManageAdminSettings = new("ManageAdminSettings", "Manage Admin Settings");
 

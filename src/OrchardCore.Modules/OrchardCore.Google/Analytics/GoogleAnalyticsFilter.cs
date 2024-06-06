@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Analytics
 {
-    public class GoogleAnalyticsFilter : IAsyncResultFilter
+    public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
     {
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;
