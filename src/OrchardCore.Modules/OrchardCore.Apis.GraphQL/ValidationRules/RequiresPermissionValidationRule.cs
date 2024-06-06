@@ -59,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
         {
-            if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, Permissions.ExecuteGraphQLMutations)))
+            if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, CommonPermissions.ExecuteGraphQLMutations)))
             {
                 validationContext.ReportError(new ValidationError(
                     validationContext.Document.Source,

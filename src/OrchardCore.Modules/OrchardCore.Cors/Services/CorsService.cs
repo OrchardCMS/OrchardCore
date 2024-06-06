@@ -16,8 +16,7 @@ namespace OrchardCore.Cors.Services
 
         public async Task<CorsSettings> GetSettingsAsync()
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<CorsSettings>();
+            return await _siteService.GetSettingsAsync<CorsSettings>();
         }
 
         internal async Task UpdateSettingsAsync(CorsSettings corsSettings)

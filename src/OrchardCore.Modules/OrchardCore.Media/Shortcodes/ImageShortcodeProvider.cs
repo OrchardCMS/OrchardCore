@@ -72,7 +72,8 @@ namespace OrchardCore.Media.Shortcodes
                 }
                 else
                 {
-                    content = _mediaFileStore.MapPathToPublicUrl(content);
+                    content = content.RemoveQueryString(out var queryString);
+                    content = _mediaFileStore.MapPathToPublicUrl(content) + queryString;
                 }
             }
             var className = string.Empty;

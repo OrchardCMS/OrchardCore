@@ -15,7 +15,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Controllers
 {
-    [RequireFeatures("OrchardCore.Users")]
+    [RequireFeatures(OrchardCore.Users.UserConstants.Features.Users)]
     [Admin]
     public class UserPickerAdminController : Controller
     {

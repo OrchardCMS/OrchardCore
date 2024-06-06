@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security;
 
-public class SecurityPermissions : IPermissionProvider
+public sealed class SecurityPermissions : IPermissionProvider
 {
     public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
 

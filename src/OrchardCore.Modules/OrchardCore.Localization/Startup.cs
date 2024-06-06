@@ -23,7 +23,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a localization module entry point.
     /// </summary>
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override int ConfigureOrder => -100;
 
@@ -63,7 +63,7 @@ namespace OrchardCore.Localization
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class LocalizationDeploymentStartup : StartupBase
+    public sealed class LocalizationDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -72,7 +72,7 @@ namespace OrchardCore.Localization
     }
 
     [Feature("OrchardCore.Localization.ContentLanguageHeader")]
-    public class ContentLanguageHeaderStartup : StartupBase
+    public sealed class ContentLanguageHeaderStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -81,7 +81,7 @@ namespace OrchardCore.Localization
     }
 
     [Feature("OrchardCore.Localization.AdminCulturePicker")]
-    public class CulturePickerStartup : StartupBase
+    public sealed class CulturePickerStartup : StartupBase
     {
         private readonly ShellSettings _shellSettings;
         private readonly AdminOptions _adminOptions;

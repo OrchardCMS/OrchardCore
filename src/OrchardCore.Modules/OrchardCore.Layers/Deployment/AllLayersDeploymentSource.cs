@@ -41,13 +41,13 @@ namespace OrchardCore.Layers.Deployment
                 ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
             });
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var layerSettings = await _siteService.GetSettingsAsync<LayerSettings>();
 
             // Adding Layer settings
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Settings",
-                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()),
+                ["LayerSettings"] = JObject.FromObject(layerSettings),
             });
         }
     }

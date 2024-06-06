@@ -54,7 +54,7 @@ namespace OrchardCore.Roles.Services
             _installedFeatures.Add(feature.Id);
 
             var providers = _permissionProviders
-                .Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
+                .Where(provider => _typeFeatureProvider.GetFeaturesForDependency(provider.GetType()).Any(p => p.Id == feature.Id));
 
             if (!providers.Any())
             {
@@ -98,7 +98,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var providers = _permissionProviders
-                .Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
+                .Where(provider => _typeFeatureProvider.GetFeaturesForDependency(provider.GetType()).Any(p => p.Id == feature.Id));
 
             if (!providers.Any())
             {
@@ -144,8 +144,8 @@ namespace OrchardCore.Roles.Services
 
             // And defining at least one 'IPermissionProvider'.
             rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))
-                .Where(entry => entry.ExportedTypes.Any(type => type.IsAssignableTo(typeof(IPermissionProvider))))
-                .Select(entry => entry.FeatureInfo.Id)
+                .Where(entry => _typeFeatureProvider.GetTypesForFeature(entry).Any(type => type.IsAssignableTo(typeof(IPermissionProvider))))
+                .Select(entry => entry.Id)
                 .ToList();
 
             await _documentManager.UpdateAsync(rolesDocument);
