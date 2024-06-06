@@ -60,12 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in queryGraphType.Fields)
                         {
-                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name))
-                            {
-                                continue;
-                            }
-
-                            if (contentItemType.HasFieldIgnoreCase(field.Name))
+                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name) ||
+                                contentItemType.HasFieldIgnoreCase(field.Name))
                             {
                                 continue;
                             }

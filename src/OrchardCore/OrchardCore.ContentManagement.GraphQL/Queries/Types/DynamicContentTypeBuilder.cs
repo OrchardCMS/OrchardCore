@@ -71,12 +71,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             if (fieldType != null)
                             {
-                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
-                                {
-                                    continue;
-                                }
-
-                                if (contentItemType.HasFieldIgnoreCase(fieldType.Name))
+                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name) ||
+                                    contentItemType.HasFieldIgnoreCase(fieldType.Name))
                                 {
                                     continue;
                                 }
@@ -111,7 +107,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                                     if (contentFieldType != null)
                                     {
-                                        if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name) || partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
+                                        if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name) ||
+                                            partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
                                         {
                                             continue;
                                         }
