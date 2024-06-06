@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -19,12 +18,6 @@ namespace OrchardCore.ContentManagement
         private readonly IContentDefinitionStore _contentDefinitionStore;
         private readonly IMemoryCache _memoryCache;
 
-        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _cachedTypeDefinitions;
-        private readonly ConcurrentDictionary<string, ContentPartDefinition> _cachedPartDefinitions;
-
-        private readonly Dictionary<string, ContentTypeDefinition> _scopedTypeDefinitions = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new(StringComparer.OrdinalIgnoreCase);
-
         public ContentDefinitionManager(
             IContentDefinitionStore contentDefinitionStore,
             IMemoryCache memoryCache)
@@ -32,8 +25,6 @@ namespace OrchardCore.ContentManagement
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
 
-            _cachedTypeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>(StringComparer.OrdinalIgnoreCase));
-            _cachedPartDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>(StringComparer.OrdinalIgnoreCase));
         }
 
         public async Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync()
@@ -172,27 +163,20 @@ namespace OrchardCore.ContentManagement
 
         public async Task<string> GetIdentifierAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
-        private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
-            !_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
-            ? _scopedTypeDefinitions[name] = Build(
+        private static ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) => Build(
                 document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                document.ContentPartDefinitionRecords)
-            : typeDefinition;
+                document.ContentPartDefinitionRecords);
 
-        private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
-            _cachedTypeDefinitions.GetOrAdd(name, name => Build(
+        private static ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
+           Build(
                 document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                document.ContentPartDefinitionRecords));
+                document.ContentPartDefinitionRecords);
 
-        private ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
-            !_scopedPartDefinitions.TryGetValue(name, out var partDefinition)
-            ? _scopedPartDefinitions[name] = Build(
-                document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
-            : partDefinition;
+        private static ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
+           Build(document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)));
 
-        private ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) =>
-            _cachedPartDefinitions.GetOrAdd(name, name => Build(
-                document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))));
+        private static ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) => Build(
+                document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name)));
 
         private static ContentTypeDefinitionRecord Acquire(
             ContentDefinitionRecord document,
@@ -366,10 +350,6 @@ namespace OrchardCore.ContentManagement
         private async Task UpdateContentDefinitionRecordAsync(ContentDefinitionRecord document)
         {
             await _contentDefinitionStore.SaveContentDefinitionAsync(document);
-
-            // If multiple updates in the same scope, types and parts may need to be rebuilt.
-            _scopedTypeDefinitions.Clear();
-            _scopedPartDefinitions.Clear();
         }
 
         /// <summary>
@@ -383,10 +363,6 @@ namespace OrchardCore.ContentManagement
                 {
                     Identifier = document.Identifier,
                 };
-
-                _cachedTypeDefinitions.Clear();
-                _cachedPartDefinitions.Clear();
-
                 _memoryCache.Set(CacheKey, cacheEntry);
             }
         }
