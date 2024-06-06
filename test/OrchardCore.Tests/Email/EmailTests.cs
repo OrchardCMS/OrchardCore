@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Email
     public class EmailTests
     {
         [Fact]
-        public async Task SendEmail_WithToHeader()
+        public async Task SendEmail_UsesDefaultSender()
         {
             // Arrange
             var message = new MailMessage
