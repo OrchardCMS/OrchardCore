@@ -10,7 +10,7 @@ namespace OrchardCore.Json.Serialization
         {
             if (reader.TokenType != JsonTokenType.String)
             {
-                throw new JsonException($"Unexpected token parsing TimeSpan. Expected a string, got {reader.TokenType}.");
+                throw new JsonException($"Unexpected token parsing TimeSpan. Expected a string, got '{reader.TokenType}'.");
             }
 
             var stringValue = reader.GetString();
@@ -19,7 +19,7 @@ namespace OrchardCore.Json.Serialization
                 return timeSpan;
             }
 
-            throw new JsonException($"Unable to convert \"{stringValue}\" to TimeSpan.");
+            throw new JsonException($"Unable to convert '{stringValue}' to TimeSpan.");
         }
 
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
