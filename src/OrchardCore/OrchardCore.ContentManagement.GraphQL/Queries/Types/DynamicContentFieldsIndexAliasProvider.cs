@@ -46,7 +46,7 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
         {
             foreach (var field in part.PartDefinition.Fields)
             {
-                string alias = _contentOptions.ShouldCollapse(part) ?
+                var alias = _contentOptions.ShouldCollapse(part) ?
                     GraphQLContentOptions.GetFieldName(part, part.Name, field.Name) :
                     $"{field.PartDefinition.Name.ToFieldName()}.{field.Name.ToCamelCase()}";
 
