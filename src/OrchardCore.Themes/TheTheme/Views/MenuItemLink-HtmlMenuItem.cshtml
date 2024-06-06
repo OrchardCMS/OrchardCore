@@ -18,7 +18,11 @@
     }
 
     tag.Attributes["href"] = url;
-    tag.Attributes["target"] = htmlMenuItemPart.Target;
+
+    if (!string.IsNullOrEmpty(htmlMenuItemPart.Target))
+    {
+        tag.Attributes["target"] = htmlMenuItemPart.Target;
+    }
 
     tag.InnerHtml.AppendHtml(Html.Raw(htmlMenuItemPart.Html));
 
