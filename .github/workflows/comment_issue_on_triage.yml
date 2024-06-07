@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-    if: github.event.issue.state == 'open'
+    # Despite the trigger being called "issues", this would still run for setting the milestone of PRs too.
+    if: github.event.issue.pull_request == null && github.event.issue.state == 'open'
     steps:
       - name: Add Comment
         run: gh issue comment "$NUMBER" --body "$BODY"

@@ -68,6 +68,7 @@ public static class NavigationHelper
         var menuItemShape = (await shapeFactory.NavigationItem())
             .Text(menuItem.Text)
             .Href(menuItem.Href)
+            .Target(menuItem.Target)
             .Url(menuItem.Url)
             .LinkToFirstChild(menuItem.LinkToFirstChild)
             .RouteValues(menuItem.RouteValues)
@@ -155,7 +156,7 @@ public static class NavigationHelper
     {
         dynamic result = null;
 
-        var tempStack = new Stack<dynamic>([parentShape]);
+        var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
 
         while (tempStack.Count > 0)
         {
