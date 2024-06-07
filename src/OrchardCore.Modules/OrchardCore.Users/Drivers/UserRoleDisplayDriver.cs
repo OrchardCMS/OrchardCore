@@ -106,7 +106,7 @@ namespace OrchardCore.Users.Drivers
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
 
-                var roles = await GetRoleAsync();
+            var roles = await GetRoleAsync();
             // Authorize each role in the model to prevent html injection.
             var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
             var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);

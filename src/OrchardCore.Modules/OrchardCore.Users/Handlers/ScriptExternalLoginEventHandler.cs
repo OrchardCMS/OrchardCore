@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Handlers
         public async Task UpdateUserAsync(UpdateUserContext context)
         {
             var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
-            
+
             UpdateUserInternal(context, loginSettings);
         }
 

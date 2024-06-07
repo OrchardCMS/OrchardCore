@@ -73,7 +73,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             // Check if the shape is wrapper, return underlying IHtmlContent
-            if( shape is PositionWrapper wrapper)
+            if (shape is PositionWrapper wrapper)
             {
                 return Task.FromResult(PositionWrapper.UnWrap(wrapper));
             }

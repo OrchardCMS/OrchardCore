@@ -316,7 +316,7 @@ namespace OrchardCore.Users.Controllers
             var userInfo = user as User;
 
             var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
-            { 
+            {
                 UserClaims = userInfo.UserClaims,
                 UserRoles = userRoles,
             };

@@ -140,7 +140,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
         }
     }
 
-    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator() 
+    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator()
         => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

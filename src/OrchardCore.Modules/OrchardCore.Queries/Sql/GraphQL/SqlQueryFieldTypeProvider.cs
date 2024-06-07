@@ -133,7 +133,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
                         }),
                     };
-              
+
                     field.Metadata.Add("Name", name);
                     typetype.AddField(field);
                 }
@@ -159,9 +159,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -199,9 +199,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 return result.Items;

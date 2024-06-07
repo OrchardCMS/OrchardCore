@@ -105,7 +105,7 @@ public class AccountControllerTests
                     .FirstOrDefaultAsync();
             Assert.NotNull(sam);
 
-             var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
+            var claimsDict = sam.UserClaims.ToDictionary(claim => claim.ClaimType, claim => claim.ClaimValue);
             Assert.Equal("Sam", claimsDict["firstName"]);
             Assert.Equal("Zhang", claimsDict["lastName"]);
             Assert.Equal("CEO", claimsDict["jobTitle"]);

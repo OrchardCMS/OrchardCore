@@ -55,7 +55,8 @@ namespace OrchardCore.Localization
 
             return new CultureDictionaryRecordKey
             {
-                MessageId = messageId, Context = context
+                MessageId = messageId,
+                Context = context
             };
         }
     }

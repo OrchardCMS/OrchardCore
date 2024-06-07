@@ -279,7 +279,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             await ResetIndexAsync(elasticIndexSettings.IndexName);
         }
 
-        public async Task<ElasticSettings> GetElasticSettingsAsync()        
+        public async Task<ElasticSettings> GetElasticSettingsAsync()
             => await _siteService.GetSettingsAsync<ElasticSettings>() ?? new ElasticSettings();
 
         /// <summary>

@@ -29,19 +29,19 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (string.IsNullOrEmpty(part.LocalizationSet))
             {
-                context.ContentItem.Alter<LocalizationPart>(p => 
+                context.ContentItem.Alter<LocalizationPart>(p =>
                     p.LocalizationSet = _idGenerator.GenerateUniqueId()
                 );
             }
 
             if (string.IsNullOrEmpty(part.Culture))
             {
-                await context.ContentItem.AlterAsync<LocalizationPart>(async p => 
+                await context.ContentItem.AlterAsync<LocalizationPart>(async p =>
                     p.Culture = await _localizationService.GetDefaultCultureAsync()
                 );
             }
         }
-        
+
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, LocalizationPart part)
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>

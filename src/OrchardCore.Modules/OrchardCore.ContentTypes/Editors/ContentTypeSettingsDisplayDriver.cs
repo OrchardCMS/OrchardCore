@@ -13,7 +13,7 @@ namespace OrchardCore.ContentTypes.Editors
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
-        private readonly IStereotypeService  _stereotypeService;
+        private readonly IStereotypeService _stereotypeService;
         private readonly ContentTypeDefinitionOptions _options;
 
         protected readonly IStringLocalizer S;

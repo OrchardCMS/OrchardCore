@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell
         {
             ArgumentNullException.ThrowIfNull(featureIds);
 
-            if (featureIds.Length == 0) 
+            if (featureIds.Length == 0)
             {
                 return;
             }

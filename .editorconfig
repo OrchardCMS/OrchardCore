@@ -10,6 +10,8 @@ indent_size = 4
 indent_size = 2
 
 [*.cs]
+dotnet_diagnostic.IDE0300.severity                         = suggestion
+dotnet_style_prefer_collection_expression                  = true
 # Prefer "var" everywhere
 csharp_style_var_for_built_in_types                        = true : suggestion
 csharp_style_var_when_type_is_apparent                     = true : suggestion

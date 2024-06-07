@@ -12,7 +12,7 @@ using OrchardCore.Modules.Manifest;
     Id = "Sample1",
     Name = "Sample 1",
     Description = "Feature with no dependencies.",
-    Dependencies = new string[0]
+    Dependencies = []
 )]
 
 [assembly: Feature(

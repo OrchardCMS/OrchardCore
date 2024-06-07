@@ -21,6 +21,6 @@ namespace OrchardCore.Users.Handlers
         /// </summary>
         /// <param name="context">The <see cref="UpdateUserContext"/>.</param>
         Task UpdateUserAsync(UpdateUserContext context);
-       
+
     }
 }
