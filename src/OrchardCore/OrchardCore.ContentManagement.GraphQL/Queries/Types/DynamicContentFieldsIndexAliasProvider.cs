@@ -32,16 +32,12 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
 
     public IEnumerable<IndexAlias> GetAliases()
     {
-        if (!_aliases.TryGetValue(_shellSettings.Name, out var tenantAliases))
-        {
-            _aliases.TryAdd(_shellSettings.Name, tenantAliases = []);
-        }
+        return _aliases.GetOrAdd(_shellSettings.Name, _ => GetAliasesInternal());
+    }
 
-        if (tenantAliases.Count != 0)
-        {
-            return tenantAliases;
-        }
-
+    private List<IndexAlias> GetAliasesInternal()
+    {
+        var tenantAliases = new List<IndexAlias>();
         var types = _contentDefinitionManager.ListTypeDefinitionsAsync().GetAwaiter().GetResult();
         var parts = types.SelectMany(t => t.Parts);
 
@@ -84,10 +80,7 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
 
     private void ClearAliases()
     {
-        if (_aliases.TryRemove(_shellSettings.Name, out var tenantAliases))
-        {
-            tenantAliases.Clear();
-        }
+        _aliases.TryRemove(_shellSettings.Name, out _);
     }
 
     public void ContentFieldAttached(ContentFieldAttachedContext context) => ClearAliases();
