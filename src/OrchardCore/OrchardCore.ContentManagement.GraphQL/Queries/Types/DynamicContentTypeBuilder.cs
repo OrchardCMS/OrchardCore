@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (partFieldType != null)
                 {
-                    // Add dynamic content field types to the static part type.
+                    // Add dynamic content fields to the registered part type.
                     var partContentItemType = schema.AdditionalTypeInstances
                         .Where(type => type is IObjectGraphType || type is IFilterInputObjectGraphType)
                         .Where(type => type.GetType() == partFieldType.Type)
