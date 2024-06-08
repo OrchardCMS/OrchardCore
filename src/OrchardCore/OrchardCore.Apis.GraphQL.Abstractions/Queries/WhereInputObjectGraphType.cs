@@ -5,11 +5,18 @@ using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
+    public interface IFilterInputObjectGraphType : IInputObjectGraphType
+    {
+        void AddScalarFilterFields<TGraphType>(string fieldName, string description);
+
+        void AddScalarFilterFields(Type graphType, string fieldName, string description);
+    }
+
+    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
     {
     }
 
-    public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
+    public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
     {
         // arguments of typed input graph types return typed object, without additional input fields (_in, _contains,..)
         // so we return dictionary as it was before.
@@ -52,17 +59,12 @@ namespace OrchardCore.Apis.GraphQL.Queries
             {"_not_ends_with", "does not end with the string"},
         };
 
-        public void AddScalarFilterFields(FieldType fieldType)
-        {
-            AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
-        }
-
-        public void AddScalarFilterFields<TGraphType>(string fieldName, string description)
+        public virtual void AddScalarFilterFields<TGraphType>(string fieldName, string description)
         {
             AddScalarFilterFields(typeof(TGraphType), fieldName, description);
         }
 
-        public void AddScalarFilterFields(Type graphType, string fieldName, string description)
+        public virtual void AddScalarFilterFields(Type graphType, string fieldName, string description)
         {
             if (!typeof(ScalarGraphType).IsAssignableFrom(graphType) &&
                 !typeof(IInputObjectGraphType).IsAssignableFrom(graphType))

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -31,17 +32,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public abstract void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType);
 
-        protected void BuildObjectGraphType(ISchema schema, ContentTypeDefinition contentTypeDefinition, IContentItemObjectGraphType objectGraphType)
-        {
-            BuildInternal(schema, contentTypeDefinition, objectGraphType);
-        }
-
-        protected void BuildInputObjectGraphType(ISchema schema, ContentTypeDefinition contentTypeDefinition, IContentItemInputObjectGraphType inputObjectGraphType)
-        {
-            BuildInternal(schema, contentTypeDefinition, inputObjectGraphType);
-        }
-
-        private void BuildInternal(ISchema schema, ContentTypeDefinition contentTypeDefinition, IComplexGraphType graphType)
+        protected void BuildInternal(ISchema schema, ContentTypeDefinition contentTypeDefinition, IComplexGraphType graphType)
         {
             if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
@@ -88,16 +79,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     continue;
                                 }
 
-                                if (graphType is IContentItemInputObjectGraphType _inputGraphType)
+                                if (graphType is IFilterInputObjectGraphType _inputGraphType)
                                 {
                                     if (fieldProvider.HasFieldIndex(field))
                                     {
-                                        _inputGraphType.AddInputField(contentFieldType);
+                                        _inputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
                                     }
                                 }
-                                else if (graphType is IContentItemObjectGraphType _graphType)
+                                else if (graphType is IObjectGraphType _graphType)
                                 {
-                                    _graphType.AddOutputField(contentFieldType);
+                                    _graphType.AddField(contentFieldType);
                                 }
 
                                 break;
@@ -121,16 +112,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             if (contentFieldType != null && !graphType.HasField(contentFieldType.Name))
                             {
-                                if (graphType is IContentItemInputObjectGraphType _inputGraphType)
+                                if (graphType is IFilterInputObjectGraphType _inputGraphType)
                                 {
                                     if (fieldProvider.HasFieldIndex(field))
                                     {
-                                        _inputGraphType.AddInputField(contentFieldType);
+                                        _inputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
                                     }
                                 }
-                                else if (graphType is IContentItemObjectGraphType _graphType)
+                                else if (graphType is IObjectGraphType _graphType)
                                 {
-                                    _graphType.AddOutputField(contentFieldType);
+                                    _graphType.AddField(contentFieldType);
                                 }
 
                                 break;
@@ -143,19 +134,19 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
                 {
-                    if (graphType is IContentItemInputObjectGraphType _inputGraphType)
+                    if (graphType is IFilterInputObjectGraphType _inputGraphType)
                     {
-                        _inputGraphType.AddInputField(fieldType);
+                        _inputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                     }
-                    else if (graphType is IContentItemObjectGraphType _graphType)
+                    else if (graphType is IObjectGraphType _graphType)
                     {
-                        _graphType.AddOutputField(fieldType);
+                        _graphType.AddField(fieldType);
                     }
 
                     continue;
                 }
 
-                if (graphType is IContentItemInputObjectGraphType inputGraphType)
+                if (graphType is IFilterInputObjectGraphType inputGraphType)
                 {
                     if (part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(cfp => cfp.HasFieldIndex(field))))
                     {
@@ -163,6 +154,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             Name = partName.ToFieldName(),
                             Description = S["Represents a {0}.", part.PartDefinition.Name],
+                            Type = graphType.GetType(),
                             ResolvedType = new DynamicPartWhereInputGraphType(part)
                         };
 
@@ -170,12 +162,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         _dynamicPartFields[partName] = field;
                     }
                 }
-                else if (graphType is IContentItemObjectGraphType _graphType)
+                else if (graphType is IObjectGraphType _graphType)
                 {
                     var field = new FieldType
                     {
                         Name = partName.ToFieldName(),
                         Description = S["Represents a {0}.", part.PartDefinition.Name],
+                        Type = graphType.GetType(),
                         ResolvedType = new DynamicPartGraphType(part),
                         Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                         {

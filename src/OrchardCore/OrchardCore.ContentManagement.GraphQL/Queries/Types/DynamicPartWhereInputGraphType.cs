@@ -28,9 +28,10 @@ public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<C
                 foreach (var fieldProvider in contentFieldProviders)
                 {
                     var fieldType = fieldProvider.GetField(schema, field, _part.Name);
+
                     if (fieldType != null)
                     {
-                        AddScalarFilterFields(fieldType);
+                        AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                         break;
                     }
                 }

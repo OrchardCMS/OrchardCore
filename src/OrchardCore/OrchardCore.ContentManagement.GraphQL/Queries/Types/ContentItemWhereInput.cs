@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     [GraphQLFieldName("Or", "OR")]
     [GraphQLFieldName("And", "AND")]
     [GraphQLFieldName("Not", "NOT")]
-    public class ContentItemWhereInput : WhereInputObjectGraphType, IContentItemInputObjectGraphType
+    public class ContentItemWhereInput : WhereInputObjectGraphType
     {
         private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
 
@@ -22,14 +22,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
             Description = $"the {contentItemName} content item filters";
 
-            AddFilterField<IdGraphType>("contentItemId", "content item id");
-            AddFilterField<IdGraphType>("contentItemVersionId", "the content item version id");
-            AddFilterField<StringGraphType>("displayText", "the display text of the content item");
-            AddFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation");
-            AddFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification");
-            AddFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication");
-            AddFilterField<StringGraphType>("owner", "the owner of the content item");
-            AddFilterField<StringGraphType>("author", "the author of the content item");
+            AddScalarFilterFields<IdGraphType>("contentItemId", "content item id");
+            AddScalarFilterFields<IdGraphType>("contentItemVersionId", "the content item version id");
+            AddScalarFilterFields<StringGraphType>("displayText", "the display text of the content item");
+            AddScalarFilterFields<DateTimeGraphType>("createdUtc", "the date and time of creation");
+            AddScalarFilterFields<DateTimeGraphType>("modifiedUtc", "the date and time of modification");
+            AddScalarFilterFields<DateTimeGraphType>("publishedUtc", "the date and time of publication");
+            AddScalarFilterFields<StringGraphType>("owner", "the owner of the content item");
+            AddScalarFilterFields<StringGraphType>("author", "the author of the content item");
 
             var whereInputType = new ListGraphType(this);
             Field<ListGraphType<ContentItemWhereInput>>("Or").Description("OR logical operation").Type(whereInputType);
@@ -37,21 +37,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<ListGraphType<ContentItemWhereInput>>("Not").Description("NOT logical operation").Type(whereInputType);
         }
 
-        public void AddInputField(FieldType fieldType)
+        public override void AddScalarFilterFields(Type graphType, string fieldName, string description)
         {
-            AddFilterField(fieldType.Type, fieldType.Name, fieldType.Description);
-        }
-
-        private void AddFilterField<TGraphType>(string name, string description)
-        {
-            AddFilterField(typeof(TGraphType), name, description);
-        }
-
-        private void AddFilterField(Type graphType, string name, string description)
-        {
-            if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), name))
+            if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), fieldName))
             {
-                AddScalarFilterFields(graphType, name, description);
+                base.AddScalarFilterFields(graphType, fieldName, description);
             }
         }
     }

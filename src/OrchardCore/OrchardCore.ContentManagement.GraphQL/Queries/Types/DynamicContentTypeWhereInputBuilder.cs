@@ -21,7 +21,7 @@ public class DynamicContentTypeWhereInputBuilder : DynamicContentTypeBuilder
 
         if (whereInputType != null)
         {
-            BuildInputObjectGraphType(schema, contentTypeDefinition, whereInputType);
+            BuildInternal(schema, contentTypeDefinition, whereInputType);
         }
     }
 }
