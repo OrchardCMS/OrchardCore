@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,12 +9,16 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (DateTime.TryParse(reader.GetString(), out DateTime value))
-        {
-            return value;
-        }
+        Debug.Assert(typeToConvert == typeof(DateTime));
 
-        throw new FormatException("Invalid date format.");
+        if (!reader.TryGetDateTime(out DateTime value))
+        {
+            if (DateTime.TryParse(reader.GetString()!, out value))
+            {
+                return value;
+            }
+        }
+        return value;
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
