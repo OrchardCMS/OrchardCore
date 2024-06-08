@@ -1,5 +1,4 @@
 <Project>
-  <Import Project="src\OrchardCore.Build\TargetFrameworks.props" />
 
   <PropertyGroup>
     <!-- https://aka.ms/vs-build-acceleration -->
