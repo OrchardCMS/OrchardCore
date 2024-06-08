@@ -5,19 +5,18 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Json.Serialization;
+
 public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         Debug.Assert(typeToConvert == typeof(DateTime));
 
-        if (!reader.TryGetDateTime(out DateTime value))
+        if (!reader.TryGetDateTime(out DateTime value) && DateTime.TryParse(reader.GetString()!, out value))
         {
-            if (DateTime.TryParse(reader.GetString()!, out value))
-            {
-                return value;
-            }
+            return value;
         }
+        
         return value;
     }
 

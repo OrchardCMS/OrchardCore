@@ -33,14 +33,14 @@ namespace OrchardCore.Tests.Data
             }
             """;
 
-            // Act
+            // Act.
             var jobject = JsonNode.Parse(jsonStr);
             var timeField = jobject.SelectNode("TimeFieldTest").ToObject<TimeField>();
             var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
             var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
             var timezoneDateTimeFieldTest = jobject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
 
-            // Assert
+            // Assert.
             Assert.Equal("13:05:00", timeField.Value.Value.ToString());
             Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
@@ -48,8 +48,7 @@ namespace OrchardCore.Tests.Data
             Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
 
-
-            // timezone tests
+            // Validate.
             var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
             Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
             //Assert.Equal(utcTime.ToString("yyyy-MM-ddTHH:mm:ssZ"), JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
