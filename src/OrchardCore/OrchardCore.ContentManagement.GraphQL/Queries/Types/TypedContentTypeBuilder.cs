@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -40,9 +41,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 var partName = part.Name;
+                var partFieldName = partName.ToFieldName();
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName))
+                if (contentItemType.HasField(partFieldName))
                 {
                     continue;
                 }
@@ -58,7 +60,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in queryGraphType.Fields)
                         {
-                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name))
+                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name) ||
+                                contentItemType.HasFieldIgnoreCase(field.Name))
                             {
                                 continue;
                             }
@@ -94,11 +97,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         var field = new FieldType
                         {
-                            Name = partName.ToFieldName(),
+                            Name = partFieldName,
                             Type = queryGraphType.GetType(),
                             Description = queryGraphType.Description,
                         };
-                        contentItemType.Field(partName.ToFieldName(), queryGraphType.GetType())
+                        contentItemType.Field(partFieldName, queryGraphType.GetType())
                                        .Description(queryGraphType.Description)
                                        .Resolve(context =>
                                        {
@@ -135,7 +138,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         whereInput.AddField(new FieldType
                         {
                             Type = inputGraphTypeResolved.GetType(),
-                            Name = partName.ToFieldName(),
+                            Name = partFieldName,
                             Description = inputGraphTypeResolved.Description
                         }.WithPartNameMetaData(partName));
                     }

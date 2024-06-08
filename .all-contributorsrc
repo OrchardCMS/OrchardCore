@@ -3149,6 +3149,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vsezima",
+      "name": "Václav Sezima",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15254338?v=4",
+      "profile": "https://github.com/vsezima",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
