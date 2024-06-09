@@ -1,4 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <_OrchardCoreBuildTasksAssembly>$(ProjectDir)..\..\OrchardCore.Build.Tasks\bin\$(Configuration)\$(CommonTargetFrameworks)\OrchardCore.Build.Tasks.dll</_OrchardCoreBuildTasksAssembly>
+  </PropertyGroup>
+
+  <UsingTask TaskName="CopyTranslationFilesTask" AssemblyFile="$(_OrchardCoreBuildTasksAssembly)" />
+  <UsingTask TaskName="CreateLocalizationFolderTask" AssemblyFile="$(_OrchardCoreBuildTasksAssembly)" />
+  <UsingTask TaskName="CreateWebRootFolderTask" AssemblyFile="$(_OrchardCoreBuildTasksAssembly)" />
 
   <ItemGroup>
     <Compile Remove="App_Data\**;Localization\**" />
@@ -12,25 +20,19 @@
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
+  
 
-  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder">
+    <CreateWebRootFolderTask />
   </Target>
 
-  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  <Target Name="MakeLocalizationFolder" BeforeTargets="Build">
+    <CreateLocalizationFolderTask />
   </Target>
 
-  <Target
-    Name="CopyPackageTranslationFiles"
-    AfterTargets="Build">
+  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
-    <Copy
-      SourceFiles="%(PackageTranslationFiles.FullPath)"
-      DestinationFolder="Localization\%(RecursiveDir)"
-      Condition="'@(PackageTranslationFiles)' != ''"
-      SkipUnchangedFiles="true"
-      OverwriteReadOnlyFiles="false" />
+    <CopyTranslationFilesTask Condition="'@(PackageTranslationFiles)' != ''" SourceFilePath="%(PackageTranslationFiles.FullPath)" DestinationFolderPath="Localization\%(RecursiveDir)" />
   </Target>
 
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
