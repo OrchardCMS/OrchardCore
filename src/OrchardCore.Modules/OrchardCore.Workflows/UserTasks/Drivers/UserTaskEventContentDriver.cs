@@ -93,7 +93,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         { ContentEventConstants.UserActionInputKey, action },
                         { ContentEventConstants.ContentItemInputKey, model },
-                        { ContentEventConstants.ContentEventInputKey, contentEvent }
+                        { ContentEventConstants.ContentEventInputKey, contentEvent },
                     };
 
                     await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);

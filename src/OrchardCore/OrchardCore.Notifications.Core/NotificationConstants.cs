@@ -1,6 +1,6 @@
 namespace OrchardCore.Notifications;
 
-public class NotificationConstants
+public static class NotificationConstants
 {
     public const string NotificationCollection = "Notification";
 
@@ -12,7 +12,7 @@ public class NotificationConstants
     // minus 2 to allow a new date time, for example 'ReadAtUtc'.
     public const int NotificationIndexContentLength = 705;
 
-    public class Features
+    public static class Features
     {
         public const string Notifications = "OrchardCore.Notifications";
     }
