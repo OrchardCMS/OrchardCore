@@ -80,16 +80,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     continue;
                                 }
 
-                                if (graphType is IFilterInputObjectGraphType _inputGraphType)
+                                if (graphType is IFilterInputObjectGraphType curInputGraphType)
                                 {
                                     if (fieldProvider.HasFieldIndex(field))
                                     {
-                                        _inputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                        curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
                                     }
                                 }
-                                else if (graphType is IObjectGraphType _graphType)
+                                else if (graphType is IObjectGraphType curObjectGraphType)
                                 {
-                                    _graphType.AddField(contentFieldType);
+                                    curObjectGraphType.AddField(contentFieldType);
                                 }
 
                                 break;
@@ -128,16 +128,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                         continue;
                                     }
 
-                                    if (partContentItemType is IFilterInputObjectGraphType _partInputContentItemType)
+                                    if (partContentItemType is IFilterInputObjectGraphType partInputContentItemType)
                                     {
                                         if (fieldProvider.HasFieldIndex(field))
                                         {
-                                            _partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                            partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
                                         }
                                     }
-                                    else if (partContentItemType is IObjectGraphType _partContentItemType)
+                                    else if (partContentItemType is IObjectGraphType partContentItemObjectType)
                                     {
-                                        _partContentItemType.AddField(contentFieldType);
+                                        partContentItemObjectType.AddField(contentFieldType);
                                     }
 
                                     break;
@@ -151,13 +151,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
                 {
-                    if (graphType is IFilterInputObjectGraphType _inputGraphType)
+                    if (graphType is IFilterInputObjectGraphType curInputGraphType)
                     {
-                        _inputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+                        curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                     }
-                    else if (graphType is IObjectGraphType _graphType)
+                    else if (graphType is IObjectGraphType curObjectGraphType)
                     {
-                        _graphType.AddField(fieldType);
+                        curObjectGraphType.AddField(fieldType);
                     }
 
                     continue;
@@ -179,7 +179,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         _dynamicPartFields[partName] = field;
                     }
                 }
-                else if (graphType is IObjectGraphType _graphType)
+                else if (graphType is IObjectGraphType objectGraphType)
                 {
                     var field = new FieldType
                     {
@@ -196,7 +196,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         })
                     };
 
-                    _graphType.AddField(field);
+                    objectGraphType.AddField(field);
                     _dynamicPartFields[partName] = field;
                 }
             }
