@@ -9,15 +9,11 @@ namespace OrchardCore.Users;
 public interface IUserToExternalLoginProvider
 {
     /// <summary>
-    /// Method <c>CanHandle</c> establish if the service that implement this interface can handle
-    /// this kind of external login.
+    /// Checks of the implement can handle the given external login information.
     /// </summary>
-    /// <param name="info">
-    /// external login information with type and other data to establish if
-    /// service can handle this kind of external login.
-    /// </param>
+    /// <param name="info">The external login information.</param>
     /// <returns>
-    /// True, if the service can handle the external login by the informations in the parameter. False, instead.
+    /// True if the service can handle the given external login information. False otherwise.
     /// </returns>
     bool CanHandle(ExternalLoginInfo info);
 
