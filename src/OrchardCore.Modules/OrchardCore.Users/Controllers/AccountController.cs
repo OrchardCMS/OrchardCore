@@ -97,8 +97,7 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
-            // reverse services loaded from DI context to select before last services registered
-            // really important the order of the services registration in the dependency injection context
+            // Reverse the order of services to prioritize external services first, placing them before the default implementation.
             _externalLoginUserLocator = externalLoginUserLocator.Reverse();
 
             H = htmlLocalizer;
@@ -302,7 +301,6 @@ namespace OrchardCore.Users.Controllers
         public IActionResult ChangePasswordConfirmation()
             => View();
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -409,7 +407,9 @@ namespace OrchardCore.Users.Controllers
             else
             {
                 var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
-                iUser = userLocator == null ? null : await userLocator.GetUserAsync(info);
+                if (userLocator != null) {
+                    iUser = await userLocator.GetUserAsync(info);
+                }
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
@@ -429,7 +429,14 @@ namespace OrchardCore.Users.Controllers
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    ViewData["LinkParameterValue"] = userLocator?.GetValueThatLinkAccount(info);
+                    if (userLocator != null)
+                    {
+                        ViewData["LinkParameterValue"] = userLocator.GetValueThatLinkAccount(info);
+                    } 
+                    else 
+                    {
+                        ViewData["LinkParameterValue"] = info.GetEmail();
+                    }
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -443,8 +450,6 @@ namespace OrchardCore.Users.Controllers
                 }
                 else
                 {
-                    var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
-
                     var externalLoginViewModel = new RegisterExternalLoginViewModel
                     {
                         NoPassword = registrationSettings.NoPasswordForExternalUsers,
@@ -453,7 +458,7 @@ namespace OrchardCore.Users.Controllers
 
                         // If registrationSettings.NoUsernameForExternalUsers is true, this username will not be used
                         UserName = await GenerateUsernameAsync(info),
-                        Email = email
+                        Email = info.GetEmail(),
                     };
 
                     // The user doesn't exist and no information required, we can create the account locally
@@ -652,8 +657,9 @@ namespace OrchardCore.Users.Controllers
 
                 return NotFound();
             }
+
             var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
-            var user = await userLocator?.GetUserAsync(info) ?? null;
+            var user = await userLocator?.GetUserAsync(info);
 
             if (user == null)
             {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace OrchardCore.Users.Abstractions;
+namespace OrchardCore.Users;
 
 public interface IExternalLoginUserToRelateFinder
 {

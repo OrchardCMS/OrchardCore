@@ -15,26 +15,20 @@ public class DefaultExternalLoginUserToRelateFinder : IExternalLoginUserToRelate
     }
 
     public bool CanHandle(ExternalLoginInfo info)
-    {
-        return true;
-    }
-
+        => true;
+    
     public async Task<IUser> GetUserAsync(ExternalLoginInfo info)
     {
-        // the default behavior previously used in OrchardCore
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
+        var email = info.GetEmail();
 
-        IUser iUser = null;
         if (!string.IsNullOrWhiteSpace(email))
         {
-            iUser = await _userManager.FindByEmailAsync(email);
+            return await _userManager.FindByEmailAsync(email);
         }
 
-        return iUser;
+        return null;
     }
 
     public string GetValueThatLinkAccount(ExternalLoginInfo info)
-    {
-        return info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
-    }
+        => info.GetEmail();
 }
