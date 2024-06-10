@@ -30,7 +30,7 @@ using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
 

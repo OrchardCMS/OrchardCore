@@ -1,6 +1,6 @@
 namespace OrchardCore.Tests.OrchardCore.Users;
 
-public class PostRequestHelper
+public static class PostRequestHelper
 {
     public static HttpRequestMessage Create(string path, Dictionary<string, string> data)
     {

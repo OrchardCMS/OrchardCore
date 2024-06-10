@@ -25,7 +25,7 @@ using SixLabors.ImageSharp.Web.Caching.Azure;
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
-    public class Startup : Modules.StartupBase
+    public sealed class Startup : Modules.StartupBase
     {
         private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
@@ -36,7 +36,8 @@ namespace OrchardCore.Media.Azure
             _configuration = configuration;
         }
 
-        public override int Order => MediaConstants.StartupOrder + 10;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.AzureMediaStorage;
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -143,7 +144,7 @@ namespace OrchardCore.Media.Azure
     }
 
     [Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
-    public class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
+    public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
     {
         private readonly IShellConfiguration _configuration;
         private readonly ILogger _logger;
@@ -156,9 +157,8 @@ namespace OrchardCore.Media.Azure
             _logger = logger;
         }
 
-        // The order should exceed that of the 'OrchardCore.Media' module to substitute the default implementation of 'IImageCache'.
-        // there.
-        public override int Order => MediaConstants.StartupOrder + 5;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.AzureImageSharpCache;
 
         public override void ConfigureServices(IServiceCollection services)
         {

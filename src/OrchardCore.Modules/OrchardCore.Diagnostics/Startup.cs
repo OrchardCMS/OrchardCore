@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Diagnostics
 {
-    public class Startup : Modules.StartupBase
+    public sealed class Startup : Modules.StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -14,17 +14,9 @@ using OrchardCore.Users;
     Description = "The users module enables authentication UI and user management.",
     Dependencies =
     [
-        "OrchardCore.Roles.Core"
+        "OrchardCore.Roles.Core",
     ],
     Category = "Security"
-)]
-
-[assembly: Feature(
-    Id = UserConstants.Features.UserEmailConfirmation,
-    Name = "Users Email Confirmation",
-    Description = "Provides services to handler user email confirmation.",
-    Category = "Security",
-    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(
@@ -34,7 +26,6 @@ using OrchardCore.Users;
     Dependencies =
     [
         UserConstants.Features.Users,
-        UserConstants.Features.UserEmailConfirmation,
     ],
     Category = "Security"
 )]
@@ -46,7 +37,6 @@ using OrchardCore.Users;
     Dependencies =
     [
         UserConstants.Features.Users,
-        UserConstants.Features.UserEmailConfirmation,
         "OrchardCore.Email",
     ],
     Category = "Security"
@@ -78,7 +68,7 @@ using OrchardCore.Users;
     Description = "Provides a way to set the culture per user.",
     Dependencies =
     [
-        "OrchardCore.Users",
+        UserConstants.Features.Users,
         "OrchardCore.Localization"
     ],
     Category = "Settings",
@@ -146,7 +136,6 @@ using OrchardCore.Users;
     [
         UserConstants.Features.Users,
         UserConstants.Features.TwoFactorAuthentication,
-        UserConstants.Features.UserEmailConfirmation,
         "OrchardCore.Liquid",
         "OrchardCore.Email",
     ],

@@ -72,7 +72,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 foreach (var builder in contentTypeBuilders)
                 {
-                    builder.Build(query, typeDefinition, typeType);
+                    builder.Build(schema, query, typeDefinition, typeType);
                 }
 
                 // Limit queries to standard content types or those content types that are explicitly configured.

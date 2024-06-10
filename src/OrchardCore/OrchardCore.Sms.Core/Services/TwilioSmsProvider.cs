@@ -116,7 +116,7 @@ public class TwilioSmsProvider : ISmsProvider
     {
         if (_settings == null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<TwilioSettings>();
+            var settings = await _siteService.GetSettingsAsync<TwilioSettings>();
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 

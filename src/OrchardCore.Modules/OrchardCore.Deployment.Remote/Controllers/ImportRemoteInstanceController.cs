@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -6,10 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -17,15 +23,28 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private readonly RemoteClientService _remoteClientService;
         private readonly IDeploymentManager _deploymentManager;
+        private readonly INotifier _notifier;
+        private readonly ILogger _logger;
         private readonly IDataProtector _dataProtector;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public ImportRemoteInstanceController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager)
+            IDeploymentManager deploymentManager,
+            INotifier notifier,
+            IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
+            IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
+            ILogger<ImportRemoteInstanceController> logger)
         {
             _deploymentManager = deploymentManager;
+            _notifier = notifier;
+            _logger = logger;
             _remoteClientService = remoteClientService;
+            H = htmlLocalizer;
+            S = stringLocalizer;
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
 
@@ -69,6 +88,18 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+            }
+            catch (RecipeExecutionException e)
+            {
+                _logger.LogError(e, "Unable to import a recipe from deployment plan.");
+
+                await _notifier.ErrorAsync(H["The deployment plan failed with the following errors: {0}", string.Join(' ', e.StepResult.Errors)]);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected error occurred while executing a deployment plan.");
+
+                await _notifier.ErrorAsync(H["Unexpected error occurred while executing a deployment plan."]);
             }
             finally
             {

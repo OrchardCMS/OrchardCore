@@ -8,11 +8,11 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AdminMenu(
+public sealed class AdminMenu(
     IStringLocalizer<AdminMenu> stringLocalizer,
     IOptions<AzureAISearchDefaultOptions> azureAISearchSettings) : INavigationProvider
 {
-    protected readonly IStringLocalizer S = stringLocalizer;
+    internal readonly IStringLocalizer S = stringLocalizer;
     private readonly AzureAISearchDefaultOptions _azureAISearchSettings = azureAISearchSettings.Value;
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)

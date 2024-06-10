@@ -1,13 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter
 {
-    [Feature(TwitterConstants.Features.Signin)]
-    public class AdminMenuSignin : INavigationProvider
+    public sealed class AdminMenuSignin : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -15,7 +13,7 @@ namespace OrchardCore.Twitter
             { "groupId", TwitterConstants.Features.Signin },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
         {
@@ -45,8 +43,7 @@ namespace OrchardCore.Twitter
         }
     }
 
-    [Feature(TwitterConstants.Features.Twitter)]
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -54,7 +51,7 @@ namespace OrchardCore.Twitter
             { "groupId", TwitterConstants.Features.Twitter },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

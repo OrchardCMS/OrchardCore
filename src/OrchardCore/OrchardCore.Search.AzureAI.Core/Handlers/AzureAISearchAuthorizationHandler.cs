@@ -66,8 +66,7 @@ public class AzureAISearchAuthorizationHandler : AuthorizationHandler<Permission
         }
 
         _siteService ??= _serviceProvider.GetRequiredService<ISiteService>();
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-        return siteSettings.As<AzureAISearchSettings>().SearchIndex;
+        return (await _siteService.GetSettingsAsync<AzureAISearchSettings>()).SearchIndex;
     }
 }

@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.ReCaptcha.Forms
 {
     [RequireFeatures("OrchardCore.Forms", "OrchardCore.ReCaptcha")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

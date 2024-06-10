@@ -2,7 +2,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace OrchardCore.Tests.OrchardCore.Users;
 
-public class CookiesHelper
+public static class CookiesHelper
 {
     public static IDictionary<string, string> ExtractCookies(HttpResponseMessage response)
     {

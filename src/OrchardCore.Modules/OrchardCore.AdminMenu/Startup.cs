@@ -11,7 +11,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

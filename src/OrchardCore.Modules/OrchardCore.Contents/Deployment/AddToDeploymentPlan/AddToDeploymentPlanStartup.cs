@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    public class AddToDeploymentPlanStartup : StartupBase
+    public sealed class AddToDeploymentPlanStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -34,6 +34,8 @@ extra:
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore
+    - icon: fontawesome/brands/discord
+      link: https://orchardcore.net/discord
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/OrchardCMS
 
@@ -127,6 +129,7 @@ nav:
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
       - Contributing:
           - Contributing to Orchard Core: guides/contributing/README.md
+          - Opening and managing issues: guides/contributing/managing-issues.md
           - Contributing code: guides/contributing/contributing-code.md
           - Contributing documentation: guides/contributing/contributing-documentation.md
           - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
