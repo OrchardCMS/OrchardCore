@@ -52,7 +52,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IEnumerable<IUserToExternalLoginProvider> _externalLoginUserLocator;
+        private readonly IEnumerable<IUserToExternalLoginProvider> _userToExternalLoginProviders;
 
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
@@ -80,7 +80,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
-            IEnumerable<IUserToExternalLoginProvider> externalLoginUserLocator)
+            IEnumerable<IUserToExternalLoginProvider> userToExternalLoginProviders)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -97,7 +97,7 @@ namespace OrchardCore.Users.Controllers
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
             // Reverse the order of services to prioritize external services first, placing them before the default implementation.
-            _externalLoginUserLocator = externalLoginUserLocator.Reverse();
+            _userToExternalLoginProviders = userToExternalLoginProviders.Reverse();
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -405,7 +405,7 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
+                var userLocator = _externalLoginUserLocator.FirstOrDefault(x => x.CanHandle(info));
                 if (userLocator != null) {
                     iUser = await userLocator.GetUserAsync(info);
                 }
@@ -657,7 +657,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
+            var userLocator = _userToExternalLoginProviders.FirstOrDefault(x => x.CanHandle(info));
             var user = await userLocator?.GetUserAsync(info);
 
             if (user == null)
