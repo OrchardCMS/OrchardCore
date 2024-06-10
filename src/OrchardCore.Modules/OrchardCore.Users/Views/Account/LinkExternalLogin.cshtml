@@ -7,7 +7,7 @@
 <form asp-controller="Account" asp-action="LinkExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Link your account."]</h4>
     <p class="text-info">
-        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account assosiated with <strong>{1}</strong>. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"], ViewData["LinkParameterValue"]]
+        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account associated with <strong>{1}</strong>. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"], ViewData["ExternalUserIdentifier"]]
     </p>
     <hr />
     <div asp-validation-summary="ModelOnly"></div>
