@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Identity;
 namespace OrchardCore.Users;
 
 /// <summary>
-/// Interface <c>IUserToExternalLoginProvider</c> allow to create services used to decide
-/// when link an existing local user account to the login informations that comes from an external
-/// login system like OpenId or GitHub.
+/// Provides a methods to link a local user with an externally authenticated user during registration.
 /// </summary>
 public interface IUserToExternalLoginProvider
 {
