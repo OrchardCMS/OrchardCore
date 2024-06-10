@@ -52,7 +52,7 @@ Update everything in the [Translations project](https://github.com/OrchardCMS/Or
 
 - [ ] Update .po files with [PoExtractor](https://github.com/lukaskabrt/PoExtractor). This will also update [Crowdin](https://crowdin.com/project/orchard-core).
 - [ ] Publish the new version on NuGet.
-- [ ] Update the `OrchardCore.Translations.All` package reference in the main repo's _src/OrchardCore.Build/Dependencies.props_ file to refer to the new NuGet package.
+- [ ] Update the `OrchardCore.Translations.All` package reference in the main repo's _./Dependencies.Packages.props_ file to refer to the new NuGet package.
 
 ### Publish the release
 

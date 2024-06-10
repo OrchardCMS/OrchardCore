@@ -12,7 +12,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class FluidTagHelper
+    public static class FluidTagHelper
     {
         public static readonly Dictionary<string, string> DefaultArgumentsMapping = [];
         private static long _uniqueId;

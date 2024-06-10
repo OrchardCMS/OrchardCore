@@ -3158,6 +3158,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tmat",
+      "name": "Tomáš Matoušek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41759?v=4",
+      "profile": "https://github.com/tmat",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
