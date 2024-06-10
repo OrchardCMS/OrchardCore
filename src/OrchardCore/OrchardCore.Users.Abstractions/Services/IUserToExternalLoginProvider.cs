@@ -18,13 +18,12 @@ public interface IUserToExternalLoginProvider
     bool CanHandle(ExternalLoginInfo info);
 
     /// <summary>
-    /// Method <c>GetUserAsync</c> return a local user account that match the login data in the parameter.
+    /// <summary>
+    /// Retrieves a local user account that corresponds to the provided external login information, if one exists.
     /// </summary>
-    /// <param name="info">
-    /// external login information, used to establish if exists a local user account that match login data.
-    /// </param>
+    /// <param name="info">The external login information.</param>
     /// <returns>
-    /// an object that implement <c>IUser</c>, if the exist a local account that match the external login data. Null, instead.
+    /// An instance of <see cref="IUser" /> if there's a local account matching the external login data; otherwise, null.
     /// </returns>
     Task<IUser> GetUserAsync(ExternalLoginInfo info);
 
