@@ -38,8 +38,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IUserAuthenticatorKeyStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserPhoneNumberStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
-            
-            services.AddScoped<IExternalLoginUserToRelateFinder, DefaultExternalLoginUserToRelateFinder>();
+
+            services.AddScoped<IUserToExternalLoginProvider, DefaultUserToExternalLoginProvider>();
 
             services.AddScoped<NullRoleStore>();
             services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());

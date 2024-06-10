@@ -24,7 +24,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
-using OrchardCore.Users.Abstractions;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
@@ -53,7 +52,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IEnumerable<IExternalLoginUserToRelateFinder> _externalLoginUserLocator;
+        private readonly IEnumerable<IUserToExternalLoginProvider> _externalLoginUserLocator;
 
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
@@ -81,7 +80,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
-            IEnumerable<IExternalLoginUserToRelateFinder> externalLoginUserLocator)
+            IEnumerable<IUserToExternalLoginProvider> externalLoginUserLocator)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -431,11 +430,11 @@ namespace OrchardCore.Users.Controllers
                     ViewData["UserName"] = iUser.UserName;
                     if (userLocator != null)
                     {
-                        ViewData["LinkParameterValue"] = userLocator.GetValueThatLinkAccount(info);
-                    } 
-                    else 
+                        ViewData["ExternalUserIdentifier"] = userLocator.GetIdentifierKey(info);
+                    }
+                    else
                     {
-                        ViewData["LinkParameterValue"] = info.GetEmail();
+                        ViewData["ExternalUserIdentifier"] = info.GetEmail();
                     }
 
                     return View(nameof(LinkExternalLogin));
