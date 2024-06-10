@@ -53,7 +53,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IEnumerable<IExternalLoginUserToRelateFinder> _externalLoginUsrFinder;
+        private readonly IEnumerable<IExternalLoginUserToRelateFinder> _externalLoginUserLocator;
 
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
@@ -81,7 +81,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
-            IEnumerable<IExternalLoginUserToRelateFinder> externalLoginUsrFinder)
+            IEnumerable<IExternalLoginUserToRelateFinder> externalLoginUserLocator)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -97,7 +97,9 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
-            _externalLoginUsrFinder = externalLoginUsrFinder.Reverse();
+            // reverse services loaded from DI context to select before last services registered
+            // really important the order of the services registration in the dependency injection context
+            _externalLoginUserLocator = externalLoginUserLocator.Reverse();
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -320,7 +322,7 @@ namespace OrchardCore.Users.Controllers
             var userInfo = user as User;
 
             var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
-            { 
+            {
                 UserClaims = userInfo.UserClaims,
                 UserRoles = userRoles,
             };
@@ -406,9 +408,8 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                //really important the order of the services registration in the dependency injection context
-                var usrFinder = _externalLoginUsrFinder.Where(x => x.CanManageThis(info.LoginProvider)).FirstOrDefault();
-                iUser = usrFinder == null ? null : await usrFinder.FindUserToRelateAsync(info);
+                var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
+                iUser = userLocator == null ? null : await userLocator.GetUserAsync(info);
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
@@ -428,7 +429,7 @@ namespace OrchardCore.Users.Controllers
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    ViewData["LinkParameterValue"] = usrFinder?.GetValueThatLinkAccount(info);
+                    ViewData["LinkParameterValue"] = userLocator?.GetValueThatLinkAccount(info);
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -651,9 +652,8 @@ namespace OrchardCore.Users.Controllers
 
                 return NotFound();
             }
-            //really important the order of the services registration in the dependency injection context
-            var usrFinder = _externalLoginUsrFinder.Where(x => x.CanManageThis(info.LoginProvider)).FirstOrDefault();
-            var user = await usrFinder?.FindUserToRelateAsync(info) ?? null;
+            var userLocator = _externalLoginUserLocator.Where(x => x.CanHandle(info)).FirstOrDefault();
+            var user = await userLocator?.GetUserAsync(info) ?? null;
 
             if (user == null)
             {
