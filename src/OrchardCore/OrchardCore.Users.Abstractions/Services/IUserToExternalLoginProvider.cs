@@ -28,15 +28,10 @@ public interface IUserToExternalLoginProvider
     Task<IUser> GetUserAsync(ExternalLoginInfo info);
 
     /// <summary>
-    /// Method <c>GetIdentifierKey</c> return the value of the login data used by the service to
-    /// match a local user account to the external login informations.
+    /// Gets the identifier's key used by the implementation.
     /// </summary>
     /// <param name="info">
-    /// external login informations.
-    /// </param>
-    /// <returns>
-    /// a <c>string</c> that is used like an identifier to match an existing local user account.
-    /// Used in the related views to render the value that cause the page display.
-    /// </returns>
+    /// <param name="info">The external login information.</param>
+    /// <returns>A string identifier denoting the property name utilized for user identification.</returns>
     string GetIdentifierKey(ExternalLoginInfo info);
 }
