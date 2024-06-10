@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
@@ -228,6 +229,13 @@ namespace OrchardCore.ContentManagement
                 contentItem.Data.Remove(nameof(contentItem.ContentType));
             }
 
+            return contentItem;
+        }
+        public static ContentItem ToContentItem(this JsonDynamicObject jsonDynamic)
+        {
+            var contentItem = new ContentItem();
+            var contentProperties = jsonDynamic.ToString();
+            contentItem.Merge(JObject.Parse(contentProperties));
             return contentItem;
         }
     }

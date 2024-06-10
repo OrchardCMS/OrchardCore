@@ -148,7 +148,10 @@ public class JsonDynamicObject : DynamicObject
             return;
         }
     }
-
+    public override string ToString()
+    {
+        return _jsonObject.ToJsonString();
+    }
     public static implicit operator JsonObject(JsonDynamicObject value) => value._jsonObject;
 
     public static implicit operator JsonDynamicObject(JsonObject value) => new(value);
