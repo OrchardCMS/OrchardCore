@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
@@ -475,8 +476,8 @@ namespace OrchardCore.Workflows.Controllers
             foreach (var activityState in activities)
             {
                 var activity = currentActivities[activityState["id"].ToString()];
-                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString());
-                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString());
+                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString(), CultureInfo.InvariantCulture);
+                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString(), CultureInfo.InvariantCulture);
                 activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 
