@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Json.Serialization;
+
 namespace OrchardCore.Tests.Data
 {
     public class ContentItemTests
@@ -51,7 +52,6 @@ namespace OrchardCore.Tests.Data
             // Validate.
             var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
             Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
-            //Assert.Equal(utcTime.ToString("yyyy-MM-ddTHH:mm:ssZ"), JObject.FromObject(timezoneDateTimeFieldTest).SelectNode("Value").ToString());
         }
 
         [Fact]

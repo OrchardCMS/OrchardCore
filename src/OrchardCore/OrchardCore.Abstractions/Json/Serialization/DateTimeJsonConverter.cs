@@ -12,10 +12,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
     {
         Debug.Assert(typeToConvert == typeof(DateTime));
 
-        if (!reader.TryGetDateTime(out DateTime value) && DateTime.TryParse(reader.GetString()!, out value))
-        {
-            return value;
-        }
+        reader.TryGetDateTime(out DateTime value) && DateTime.TryParse(reader.GetString()!, out value);
         
         return value;
     }
