@@ -25,7 +25,7 @@
             "Height": 2.0
           },
           "HtmlBodyPart": {
-            "Html": "<ul class=\"list-group list-group-flush\">\n\t<li class=\"list-group-item\"><a href=\"https://orchardcore.net\" target=\"_blank\">Orchard Core site</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://docs.orchardcore.net\" target=\"_blank\">Orchard Core docs</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://github.com/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core repo</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://gitter.im/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core chat</a></li>\n</ul>"
+            "Html": "<ul class=\"list-group list-group-flush\">\n\t<li class=\"list-group-item\"><a href=\"https://orchardcore.net\" target=\"_blank\">Orchard Core site</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://docs.orchardcore.net\" target=\"_blank\">Orchard Core docs</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://github.com/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core repo</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://orchardcore.net/discord\" target=\"_blank\">Orchard Core chat</a></li>\n</ul>"
           },
           "TitlePart": {
             "Title": "Orchard Core"
