@@ -16,7 +16,7 @@ public interface IUserToExternalLoginProvider
     /// </summary>
     /// <param name="info">
     /// external login information with type and other data to extabilish if
-    /// service can hadle this kind of external login.
+    /// service can handle this kind of external login.
     /// </param>
     /// <returns>
     /// True, if the service can handle the external login by the informations in the parameter. False, instead.
@@ -24,15 +24,13 @@ public interface IUserToExternalLoginProvider
     bool CanHandle(ExternalLoginInfo info);
 
     /// <summary>
-    /// Method <c>GetUserAsync</c> return a local user account that match an identifier used by the
-    /// service to return an existing local user account.
+    /// Method <c>GetUserAsync</c> return a local user account that match the login data in the parameter.
     /// </summary>
     /// <param name="info">
-    /// external login information to extabilish if
-    /// exist a local user account that match login data.
+    /// external login information, used to establish if exists a local user account that match login data.
     /// </param>
     /// <returns>
-    /// an object that implement <c>IUser</c>, if the exit a local account that match the external login data. Null, instead.
+    /// an object that implement <c>IUser</c>, if the exist a local account that match the external login data. Null, instead.
     /// </returns>
     Task<IUser> GetUserAsync(ExternalLoginInfo info);
 
@@ -41,7 +39,7 @@ public interface IUserToExternalLoginProvider
     /// match a local user account to the external login informations.
     /// </summary>
     /// <param name="info">
-    /// external login information.
+    /// external login informations.
     /// </param>
     /// <returns>
     /// a <c>string</c> that is used like an identifier to match an existing local user account.
