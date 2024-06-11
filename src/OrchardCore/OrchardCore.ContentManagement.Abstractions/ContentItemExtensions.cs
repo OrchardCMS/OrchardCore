@@ -231,11 +231,13 @@ namespace OrchardCore.ContentManagement
 
             return contentItem;
         }
+
         public static ContentItem ToContentItem(this JsonDynamicObject jsonDynamic)
         {
             var contentItem = new ContentItem();
             var contentProperties = jsonDynamic.ToString();
             contentItem.Merge(JObject.Parse(contentProperties));
+
             return contentItem;
         }
     }
