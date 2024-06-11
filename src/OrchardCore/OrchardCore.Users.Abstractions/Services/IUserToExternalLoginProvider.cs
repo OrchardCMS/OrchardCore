@@ -18,7 +18,6 @@ public interface IUserToExternalLoginProvider
     bool CanHandle(ExternalLoginInfo info);
 
     /// <summary>
-    /// <summary>
     /// Retrieves a local user account that corresponds to the provided external login information, if one exists.
     /// </summary>
     /// <param name="info">The external login information.</param>
@@ -30,7 +29,6 @@ public interface IUserToExternalLoginProvider
     /// <summary>
     /// Gets the identifier's key used by the implementation.
     /// </summary>
-    /// <param name="info">
     /// <param name="info">The external login information.</param>
     /// <returns>A string identifier denoting the property name utilized for user identification.</returns>
     string GetIdentifierKey(ExternalLoginInfo info);
