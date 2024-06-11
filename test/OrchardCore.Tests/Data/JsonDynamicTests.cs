@@ -355,7 +355,6 @@ public class JsonDynamicTests
         expandoValue.stringValue = contentItem.Content.TestPart.TextFeildProp.Text;
 
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
-        // Actual:"{\"stringValue\":{\"JsonValue\":\"test\"}}"
         Assert.Equal("{\"stringValue\":\"test\"}", jsonStr);
     }
 
