@@ -42,6 +42,8 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
         _jsonArray.RemoveAt(index);
     }
 
+    public T? ToObject<T>() => _jsonArray.ToObject<T>();
+
     public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)
     {
         result = GetValue((int)indexes[0]);

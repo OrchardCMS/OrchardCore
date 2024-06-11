@@ -39,6 +39,8 @@ public class JsonDynamicObject : DynamicObject
         set => SetValue(key, value);
     }
 
+    public T? ToObject<T>() => _jsonObject.ToObject<T>();
+
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
         if (binder.Name == "{No Member}")
