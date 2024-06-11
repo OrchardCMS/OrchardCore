@@ -111,13 +111,13 @@ public class JsonDynamicObject : DynamicObject
             switch (valueKind)
             {
                 case JsonValueKind.String:
-                    return _dictionary[key] = new JsonDynamicValueWrapper<string?>(jsonValue.GetString());
+                    return _dictionary[key] = jsonValue.GetString();
                 case JsonValueKind.Number:
-                    return _dictionary[key] = new JsonDynamicValueWrapper<decimal?>(jsonValue.GetNumber());
+                    return _dictionary[key] = jsonValue.GetNumber();
                 case JsonValueKind.True:
-                    return _dictionary[key] = new JsonDynamicValueWrapper<bool>(true);
+                    return _dictionary[key] = true;
                 case JsonValueKind.False:
-                    return _dictionary[key] = new JsonDynamicValueWrapper<bool>(false);
+                    return _dictionary[key] = false;
             }
             return _dictionary[key] = new JsonDynamicValue(jsonValue);
         }

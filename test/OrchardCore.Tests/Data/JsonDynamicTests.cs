@@ -360,15 +360,7 @@ public class JsonDynamicTests
         expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
 
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
-        Assert.Equal("{\"stringValue\":null,\"numberValue\":{\"Value\":123,\"HasValue\":true},\"booleanValue\":{\"Value\":true,\"HasValue\":true}}", jsonStr);
-
-        dynamic expandoValue2 = new ExpandoObject();
-        expandoValue.stringValue = contentItem.Content.TestPart.TextFeildProp.Text.Value;
-        expandoValue.numberValue = contentItem.Content.TestPart.NumericFieldProp.Value.Value;
-        expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value.Value;
-
-        var jsonStr2 = JConvert.SerializeObject((ExpandoObject)expandoValue2);
-        Assert.Equal("{\"stringValue\":null,\"numberValue\":{\"Value\":123,\"HasValue\":true},\"booleanValue\":{\"Value\":true,\"HasValue\":true}}", jsonStr2);
+        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
     }
 
 
