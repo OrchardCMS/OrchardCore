@@ -10,7 +10,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if(typeToConvert is not typeof(DateTime))
+        if (typeToConvert != typeof(DateTime))
         {
             throw new ArgumentException("Unexpected type to convert.", nameof(typeToConvert));
         }
