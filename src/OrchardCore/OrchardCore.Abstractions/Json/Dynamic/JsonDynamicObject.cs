@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
+using Json.More;
 
 #nullable enable
 
@@ -52,7 +53,6 @@ public class JsonDynamicObject : DynamicObject
             result = "{null}";
             return true;
         }
-
         result = GetValue(binder.Name);
         return true;
     }
@@ -107,6 +107,21 @@ public class JsonDynamicObject : DynamicObject
 
         if (jsonNode is JsonValue jsonValue)
         {
+            var valueKind = jsonValue.GetValueKind();
+            switch (valueKind)
+            {
+                case JsonValueKind.String:
+                    return _dictionary[key] = jsonValue.GetString();
+                case JsonValueKind.Number:
+                    return _dictionary[key] = jsonValue.GetNumber();
+                case JsonValueKind.True:
+                    return _dictionary[key] = true; 
+                case JsonValueKind.False:
+                    return _dictionary[key] = false; 
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
+                    return _dictionary[key] = null; 
+            }
             return _dictionary[key] = new JsonDynamicValue(jsonValue);
         }
 

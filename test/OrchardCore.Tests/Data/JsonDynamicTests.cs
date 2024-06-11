@@ -1,5 +1,9 @@
+using System.Dynamic;
+using System.Text.Json;
 using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Data;
 
@@ -336,5 +340,27 @@ public class JsonDynamicTests
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue.ToString()));
 
         Assert.Equal(expectedValue, (Uri)myDynamic);
+    }
+
+    [Fact]
+    public void ExpandoObjectSerializeTest()
+    {
+        dynamic expandoValue = new ExpandoObject();
+
+        var contentItem = new ContentItem();
+        contentItem.Alter<TestPart>(part =>
+        {
+            part.TextFeildProp = new TextField { Text = "test" };
+        });
+        expandoValue.stringValue = contentItem.Content.TestPart.TextFeildProp.Text;
+
+        var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
+        // Actual:"{\"stringValue\":{\"JsonValue\":\"test\"}}"
+        Assert.Equal("{\"stringValue\":\"strValue\"}", jsonStr);
+    }
+
+    public class TestPart : ContentPart
+    {
+        public TextField TextFeildProp { get; set; }
     }
 }
