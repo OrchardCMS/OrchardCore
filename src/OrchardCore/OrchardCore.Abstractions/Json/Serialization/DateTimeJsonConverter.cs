@@ -10,7 +10,10 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        Debug.Assert(typeToConvert == typeof(DateTime));
+        if(typeToConvert is not typeof(DateTime))
+        {
+            throw new ArgumentException("Unexpected type to convert.", nameof(typeToConvert));
+        }
 
         if (!reader.TryGetDateTime(out DateTime value) && DateTime.TryParse(reader.GetString()!, out value))
         {
