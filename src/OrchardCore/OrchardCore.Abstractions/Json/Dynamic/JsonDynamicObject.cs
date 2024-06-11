@@ -118,9 +118,6 @@ public class JsonDynamicObject : DynamicObject
                     return _dictionary[key] = true; 
                 case JsonValueKind.False:
                     return _dictionary[key] = false; 
-                case JsonValueKind.Undefined:
-                case JsonValueKind.Null:
-                    return _dictionary[key] = null; 
             }
             return _dictionary[key] = new JsonDynamicValue(jsonValue);
         }

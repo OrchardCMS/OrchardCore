@@ -356,7 +356,7 @@ public class JsonDynamicTests
 
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
         // Actual:"{\"stringValue\":{\"JsonValue\":\"test\"}}"
-        Assert.Equal("{\"stringValue\":\"strValue\"}", jsonStr);
+        Assert.Equal("{\"stringValue\":\"test\"}", jsonStr);
     }
 
     public class TestPart : ContentPart
