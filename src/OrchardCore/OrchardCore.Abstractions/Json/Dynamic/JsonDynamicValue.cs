@@ -654,6 +654,7 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
         {
             return 0;
         }
+
         if (objB == null)
         {
             return 1;
