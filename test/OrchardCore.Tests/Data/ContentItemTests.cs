@@ -25,10 +25,10 @@ namespace OrchardCore.Tests.Data
                 "DateTimeFieldTest": {
                     "Value": "2024-5-31 13:05"
                 },
-                "NullDateTimeFieldTest": {
+                "NullValueDateTimeFieldTest": {
                     "Value": null 
                 },
-                "EmptyDateTimeFieldTest": {
+                "EmptyValueDateTimeFieldTest": {
                     "Value": ""
                 },
                 "ErrorFormatDateTimeFieldTest": {
@@ -49,17 +49,18 @@ namespace OrchardCore.Tests.Data
             var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
             var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
             var timezoneDateTimeFieldTest = jobject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
-            var nullDateTimeField = jobject.SelectNode("NullDateTimeFieldTest").ToObject<DateTimeField>();
+            var nullValueDateTimeField = jobject.SelectNode("NullValueDateTimeFieldTest").ToObject<DateTimeField>();
 
             // Assert
 
-            Assert.Null(nullDateTimeField.Value);
+            Assert.Null(nullValueDateTimeField.Value);
 
-            var emptyValueTestexcepion = Assert.Throws<JsonException>(() => jobject.SelectNode("EmptyDateTimeFieldTest").ToObject<DateTimeField>());
+            var emptyValueTestexcepion = Assert.Throws<JsonException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
             Assert.Equal("Unable to convert \"\" to DateTime.", emptyValueTestexcepion.Message);
 
             var errorFormatValueTestexcepion = Assert.Throws<JsonException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
             Assert.Equal("Unable to convert \"ErrorFormatValue\" to DateTime.", errorFormatValueTestexcepion.Message);
+
             Assert.Equal("13:05:00", timeField.Value.Value.ToString());
             Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
             Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
@@ -67,7 +68,7 @@ namespace OrchardCore.Tests.Data
             Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
             Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
 
-            Assert.Null(JObject.FromObject(nullDateTimeField).SelectNode("Value"));
+            Assert.Null(JObject.FromObject(nullValueDateTimeField).SelectNode("Value"));
 
             var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
             Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
