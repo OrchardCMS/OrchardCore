@@ -663,7 +663,6 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
             return -1;
         }
 
-
         switch (valueType)
         {
             case JsonValueKind.False:
