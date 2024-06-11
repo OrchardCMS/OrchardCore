@@ -352,15 +352,19 @@ public class JsonDynamicTests
             part.TextFeildProp = new TextField { Text = "test" };
             part.NumericFieldProp = new NumericField { Value = 123 };
             part.BooleanFieldProp = new BooleanField { Value = true };
+            part.TimeFieldProp = new TimeField { Value = new TimeSpan(12, 12, 23) };
+            part.DateTimeFieldProp = new DateTimeField { Value = new DateTime(2024, 06, 12, 0, 43, 00) };
         });
 
         dynamic expandoValue = new ExpandoObject();
         expandoValue.stringValue = contentItem.Content.TestPart.TextFeildProp.Text;
         expandoValue.numberValue = contentItem.Content.TestPart.NumericFieldProp.Value;
         expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
+        expandoValue.timeValue = contentItem.Content.TestPart.TimeFieldProp.Value;
+        expandoValue.dateTimeValue = contentItem.Content.TestPart.DateTimeFieldProp.Value;
 
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
-        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
+        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true,\"timeValue\":\"12:12:23\",\"dateTimeValue\":\"2024-06-12T00:43:00Z\"}", jsonStr);
     }
 
 
@@ -370,5 +374,7 @@ public class JsonDynamicTests
         public TextField TextFeildProp { get; set; }
         public NumericField NumericFieldProp { get; set; }
         public BooleanField BooleanFieldProp { get; set; }
+        public TimeField TimeFieldProp { get; set; }
+        public DateTimeField DateTimeFieldProp { get; set; }
     }
 }

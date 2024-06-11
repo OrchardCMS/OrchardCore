@@ -111,7 +111,15 @@ public class JsonDynamicObject : DynamicObject
             switch (valueKind)
             {
                 case JsonValueKind.String:
-                    return _dictionary[key] = jsonValue.GetString();
+                    if(jsonValue.TryGetValue<DateTime>(out var datetime))
+                    {
+                        return _dictionary[key] = datetime;
+                    }
+                    if (jsonValue.TryGetValue<TimeSpan>(out var timeSpan))
+                    {
+                        return _dictionary[key] = timeSpan;
+                    }
+                    return _dictionary[key] =  jsonValue.GetString();
                 case JsonValueKind.Number:
                     return _dictionary[key] = jsonValue.GetNumber();
                 case JsonValueKind.True:
