@@ -1,44 +1,44 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.Events;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
-    private static readonly ConcurrentDictionary<string, List<IndexAlias>> _aliases = new ConcurrentDictionary<string, List<IndexAlias>>();
+    private static string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
-    private readonly ShellSettings _shellSettings;
+    private readonly IMemoryCache _memoryCache;
     private readonly GraphQLContentOptions _contentOptions;
 
     public DynamicContentFieldsIndexAliasProvider(IContentDefinitionManager contentDefinitionManager,
         IEnumerable<IContentFieldProvider> contentFieldProviders,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
-        ShellSettings shellSettings)
+        IMemoryCache memoryCache)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentFieldProviders = contentFieldProviders;
+        _memoryCache = memoryCache;
         _contentOptions = contentOptionsAccessor.Value;
-        _shellSettings = shellSettings;
     }
 
-    public IEnumerable<IndexAlias> GetAliases()
+    public async ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return _aliases.GetOrAdd(_shellSettings.Name, _ => GetAliasesInternal());
+        return await _memoryCache.GetOrCreateAsync(_cacheKey, async _ => await GetAliasesInternalAsync());
     }
 
-    private List<IndexAlias> GetAliasesInternal()
+    private async ValueTask<IEnumerable<IndexAlias>> GetAliasesInternalAsync()
     {
-        var tenantAliases = new List<IndexAlias>();
-        var types = _contentDefinitionManager.ListTypeDefinitionsAsync().GetAwaiter().GetResult();
+        var aliases = new List<IndexAlias>();
+        var types = await _contentDefinitionManager.ListTypeDefinitionsAsync();
         var parts = types.SelectMany(t => t.Parts);
 
         foreach (var part in parts)
@@ -63,7 +63,7 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
                         continue;
                     }
 
-                    tenantAliases.Add(new IndexAlias
+                    aliases.Add(new IndexAlias
                     {
                         Alias = alias,
                         Index = fieldIndex.Index,
@@ -75,45 +75,42 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
             }
         }
 
-        return tenantAliases;
+        return aliases;
     }
 
-    private void ClearAliases()
-    {
-        _aliases.TryRemove(_shellSettings.Name, out _);
-    }
+    private void InvalidateInternalAsync() => _memoryCache.Remove(_cacheKey);
 
-    public void ContentFieldAttached(ContentFieldAttachedContext context) => ClearAliases();
+    public void ContentFieldAttached(ContentFieldAttachedContext context) => InvalidateInternalAsync();
 
-    public void ContentFieldDetached(ContentFieldDetachedContext context) => ClearAliases();
+    public void ContentFieldDetached(ContentFieldDetachedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartAttached(ContentPartAttachedContext context) => ClearAliases();
+    public void ContentPartAttached(ContentPartAttachedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartCreated(ContentPartCreatedContext context) => ClearAliases();
+    public void ContentPartCreated(ContentPartCreatedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartDetached(ContentPartDetachedContext context) => ClearAliases();
+    public void ContentPartDetached(ContentPartDetachedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartImported(ContentPartImportedContext context) => ClearAliases();
+    public void ContentPartImported(ContentPartImportedContext context) => InvalidateInternalAsync();
 
     public void ContentPartImporting(ContentPartImportingContext context) { }
 
-    public void ContentPartRemoved(ContentPartRemovedContext context) => ClearAliases();
+    public void ContentPartRemoved(ContentPartRemovedContext context) => InvalidateInternalAsync();
 
-    public void ContentTypeCreated(ContentTypeCreatedContext context) => ClearAliases();
+    public void ContentTypeCreated(ContentTypeCreatedContext context) => InvalidateInternalAsync();
 
-    public void ContentTypeImported(ContentTypeImportedContext context) => ClearAliases();
+    public void ContentTypeImported(ContentTypeImportedContext context) => InvalidateInternalAsync();
 
     public void ContentTypeImporting(ContentTypeImportingContext context) { }
 
-    public void ContentTypeRemoved(ContentTypeRemovedContext context) => ClearAliases();
+    public void ContentTypeRemoved(ContentTypeRemovedContext context) => InvalidateInternalAsync();
 
-    public void ContentTypeUpdated(ContentTypeUpdatedContext context) => ClearAliases();
+    public void ContentTypeUpdated(ContentTypeUpdatedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartUpdated(ContentPartUpdatedContext context) => ClearAliases();
+    public void ContentPartUpdated(ContentPartUpdatedContext context) => InvalidateInternalAsync();
 
-    public void ContentTypePartUpdated(ContentTypePartUpdatedContext context) => ClearAliases();
+    public void ContentTypePartUpdated(ContentTypePartUpdatedContext context) => InvalidateInternalAsync();
 
-    public void ContentFieldUpdated(ContentFieldUpdatedContext context) => ClearAliases();
+    public void ContentFieldUpdated(ContentFieldUpdatedContext context) => InvalidateInternalAsync();
 
-    public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) => ClearAliases();
+    public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) => InvalidateInternalAsync();
 }
