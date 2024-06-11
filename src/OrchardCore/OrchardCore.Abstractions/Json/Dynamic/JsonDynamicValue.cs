@@ -29,7 +29,9 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
     int IComparable.CompareTo(object? obj)
     {
         if (obj is null)
+        {
             return 1;
+        }
 
         object? otherValue;
         JsonValueKind valueKind;
@@ -51,7 +53,9 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
     public int CompareTo(JsonDynamicValue? other)
     {
         if (other is null)
+        {
             return 1;
+        }
 
         var valueKind = other.JsonValue?.GetValueKind() ?? JsonValue?.GetValueKind() ?? JsonValueKind.Undefined;
 
@@ -64,20 +68,28 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
     public bool Equals(JsonDynamicValue? other)
     {
         if (ReferenceEquals(this, other))
+        {
             return true;
+        }
 
         if (ReferenceEquals(other, null))
+        {
             return false;
+        }
 
         var obj = JsonValue.GetObjectValue();
         var objOther = other.JsonValue.GetObjectValue();
 
         if (ReferenceEquals(obj, objOther))
+        {
             return true;
+        }
 
         if (ReferenceEquals(obj, null) ||
             ReferenceEquals(objOther, null))
+        {
             return false;
+        }
 
         return obj.Equals(objOther);
     }
@@ -723,7 +735,7 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
             return result;
         }
 
-        // converting a fractional number to a BigInteger will lose the fraction
+        // Converting a fractional number to a BigInteger will lose the fraction
         // check for fraction if result is two numbers are equal
         if (i2 is decimal d1)
         {
