@@ -9,11 +9,11 @@ namespace OrchardCore.Users;
 public interface IUserToExternalLoginProvider
 {
     /// <summary>
-    /// Checks of the implement can handle the given external login information.
+    /// Checks if the implementation can handle the given external login information.
     /// </summary>
     /// <param name="info">The external login information.</param>
     /// <returns>
-    /// True if the service can handle the given external login information. False otherwise.
+    /// <see langword="true"/> if the service can handle the given external login information, <see langword="false"/> otherwise.
     /// </returns>
     bool CanHandle(ExternalLoginInfo info);
 
@@ -22,7 +22,7 @@ public interface IUserToExternalLoginProvider
     /// </summary>
     /// <param name="info">The external login information.</param>
     /// <returns>
-    /// An instance of <see cref="IUser" /> if there's a local account matching the external login data; otherwise, null.
+    /// An instance of <see cref="IUser" /> if there's a local account matching the external login data; otherwise, <see langword="null"/>.
     /// </returns>
     Task<IUser> GetUserAsync(ExternalLoginInfo info);
 
