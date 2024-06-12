@@ -96,7 +96,7 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
-            // Reverse the order of services to prioritize external services first, placing them before the default implementation.
+            // Reverse the order of services to prioritize third-party implementations first, placing them before the default one.
             _userToExternalLoginProviders = userToExternalLoginProviders.Reverse();
 
             H = htmlLocalizer;
