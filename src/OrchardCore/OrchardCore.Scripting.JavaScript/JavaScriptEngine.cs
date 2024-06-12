@@ -28,20 +28,17 @@ namespace OrchardCore.Scripting.JavaScript
                 {
                     if (target is JsonDynamicObject dynamicObject)
                     {
-                        var wrapped = ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
-                        return wrapped;
+                        return ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
                     }
 
                     if (target is JsonDynamicArray dynamicArray)
                     {
-                        var wrapped = ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
-                        return wrapped;
+                        return ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
                     }
 
                     if (target is JsonDynamicValue dynamicValue)
                     {
-                        var wrapped = ObjectWrapper.Create(e, dynamicValue.JsonValue, type);
-                        return wrapped;
+                        return ObjectWrapper.Create(e, dynamicValue.JsonValue, type);
                     }
 
                     return ObjectWrapper.Create(e, target, type);
