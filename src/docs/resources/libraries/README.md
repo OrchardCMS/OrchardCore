@@ -2,8 +2,8 @@
 
 The below table lists the different .NET libraries used in Orchard Core:
 
-| Library | Usage | Version | License |
-|--- | --- | --- | --- |
+| Library | Usage | License |
+|--- | --- | --- |
 | [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | [MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
 | [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | [Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | [Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
@@ -50,8 +50,8 @@ The below table lists the different .NET libraries used in Orchard Core:
 
 The below table lists the different libraries used as Resources:
 
-| Library | Usage | Version | License |
-|--- | --- | --- | --- |
+| Library | Usage | License |
+|--- | --- | --- |
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
@@ -73,8 +73,8 @@ The below table lists the different libraries used as Resources:
 
 The below table lists the different Client side libraries:
 
-| Library | Usage | Version | License |
-|--- | --- | --- | --- |
+| Library | Usage | License |
+|--- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
 | [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
@@ -92,8 +92,8 @@ The below table lists the different Client side libraries:
 
 The below table lists the different Tests libraries:
 
-| Library | Usage | Version | License |
-|--- | --- | --- | --- |
+| Library | Usage | License |
+|--- | --- | --- |
 | [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
 | [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | MIT |
