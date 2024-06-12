@@ -36,7 +36,6 @@ public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDyna
 
         object? otherValue;
         JsonValueKind valueKind;
-
         if (obj is JsonDynamicValue value)
         {
             otherValue = value.JsonValue.GetObjectValue();
