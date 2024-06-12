@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using Json.More;
+using OrchardCore.Json.Dynamic;
 
 #nullable enable
 
@@ -80,6 +81,7 @@ public class JsonDynamicObject : DynamicObject
 
     public object? GetValue(string key)
     {
+
         if (_dictionary.TryGetValue(key, out var value))
         {
             return value;
@@ -95,6 +97,14 @@ public class JsonDynamicObject : DynamicObject
             return null;
         }
 
+        foreach (var handler in JsonDynamicConfigurations.ValueHandlers)
+        {
+            if (handler.GetValue(_jsonObject, _dictionary, key, jsonNode))
+            {
+                return _dictionary;
+            }
+        }
+
         if (jsonNode is JsonObject jsonObject)
         {
             return _dictionary[key] = new JsonDynamicObject(jsonObject);
@@ -107,28 +117,6 @@ public class JsonDynamicObject : DynamicObject
 
         if (jsonNode is JsonValue jsonValue)
         {
-            var valueKind = jsonValue.GetValueKind();
-            switch (valueKind)
-            {
-                case JsonValueKind.String:
-                    if (jsonValue.TryGetValue<DateTime>(out var datetime))
-                    {
-                        return _dictionary[key] = datetime;
-                    }
-                    
-                    if (jsonValue.TryGetValue<TimeSpan>(out var timeSpan))
-                    {
-                        return _dictionary[key] = timeSpan;
-                    }
-                    
-                    return _dictionary[key] =  jsonValue.GetString();
-                case JsonValueKind.Number:
-                    return _dictionary[key] = jsonValue.GetNumber();
-                case JsonValueKind.True:
-                    return _dictionary[key] = true;
-                case JsonValueKind.False:
-                    return _dictionary[key] = false;
-            }
             return _dictionary[key] = new JsonDynamicValue(jsonValue);
         }
 

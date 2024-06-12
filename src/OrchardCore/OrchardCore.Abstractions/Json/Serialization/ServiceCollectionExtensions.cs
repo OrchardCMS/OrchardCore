@@ -1,5 +1,7 @@
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Json;
+using OrchardCore.Json.Dynamic;
 
 namespace System.Text.Json.Serialization;
 
@@ -21,4 +23,13 @@ public static class ServiceCollectionExtensions
 
             derivedTypes.Add(new JsonDerivedTypeInfo<TDerived, TBase>());
         });
+
+    public static IServiceCollection AddJsonDynamicValueHandler<T>(this IServiceCollection services) where T : IJsonDynamicValueHandler, new()
+    {
+        if (JsonDynamicConfigurations.ValueHandlers.Any(x => x.GetType() != typeof(T)))
+        {
+            JsonDynamicConfigurations.ValueHandlers.Add(new T());
+        }
+        return services;
+    }
 }
