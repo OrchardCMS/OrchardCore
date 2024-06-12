@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.Json.Settings;
 
 #nullable enable
@@ -10,6 +11,7 @@ using System.Text.Json.Settings;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]
+[JsonConverter(typeof(JsonDynamicObjectJsonConverter))]
 public class JsonDynamicObject : DynamicObject
 {
     private readonly JsonObject _jsonObject;

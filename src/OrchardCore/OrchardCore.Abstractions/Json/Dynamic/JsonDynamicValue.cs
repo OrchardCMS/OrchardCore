@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Frozen;
 using System.Dynamic;
 using System.Globalization;
@@ -7,11 +6,13 @@ using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace System.Text.Json.Dynamic;
 
 #nullable enable
 
+[JsonConverter(typeof(JsonDynamicValueJsonConverter))]
 public class JsonDynamicValue : DynamicObject, IComparable, IComparable<JsonDynamicValue>, IConvertible, IEquatable<JsonDynamicValue>
 {
     public JsonDynamicValue(JsonValue? jsonValue)

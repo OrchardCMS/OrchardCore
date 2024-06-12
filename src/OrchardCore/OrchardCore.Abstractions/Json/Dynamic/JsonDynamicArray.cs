@@ -5,12 +5,14 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 #nullable enable
 
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
+[JsonConverter(typeof(JsonDynamicArrayJsonConverter))]
 public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
