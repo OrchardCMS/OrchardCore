@@ -101,7 +101,7 @@ public class JsonDynamicObject : DynamicObject
         {
             if (handler.GetValue(_jsonObject, _dictionary, key, jsonNode))
             {
-                return _dictionary;
+                return _dictionary[key];
             }
         }
 

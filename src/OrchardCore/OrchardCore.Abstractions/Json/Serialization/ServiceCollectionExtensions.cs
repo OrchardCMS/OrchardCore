@@ -24,6 +24,12 @@ public static class ServiceCollectionExtensions
             derivedTypes.Add(new JsonDerivedTypeInfo<TDerived, TBase>());
         });
 
+    /// <summary>
+    /// Add additional dynamic object fetching logic.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddJsonDynamicValueHandler<T>(this IServiceCollection services) where T : IJsonDynamicValueHandler, new()
     {
         if (JsonDynamicConfigurations.ValueHandlers.Any(x => x.GetType() != typeof(T)))
