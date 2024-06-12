@@ -4,8 +4,13 @@ using Microsoft.AspNetCore.Identity;
 namespace OrchardCore.Users;
 
 /// <summary>
-/// Provides a methods to link a local user with an externally authenticated user during registration.
+/// Service to link a local user with an externally authenticated user during registration.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Implement this interface if you want to provide an alternative way to link a local user with an external login provider.
+/// </para>
+/// </remarks>
 public interface IUserToExternalLoginProvider
 {
     /// <summary>
