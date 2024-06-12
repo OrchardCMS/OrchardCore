@@ -406,7 +406,8 @@ namespace OrchardCore.Users.Controllers
             else
             {
                 var userLocator = _userToExternalLoginProviders.FirstOrDefault(x => x.CanHandle(info));
-                if (userLocator != null) {
+                if (userLocator != null)
+                {
                     iUser = await userLocator.GetUserAsync(info);
                 }
 
