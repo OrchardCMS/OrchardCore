@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace OrchardCore.Users.Services;
 
-public class DefaultUserToExternalLoginProvider : IUserToExternalLoginProvider
+public class DefaultExternalLoginMapper : IExternalLoginMapper
 {
     private readonly UserManager<IUser> _userManager;
 
-    public DefaultUserToExternalLoginProvider(UserManager<IUser> userManager)
+    public DefaultExternalLoginMapper(UserManager<IUser> userManager)
     {
         _userManager = userManager;
     }
@@ -21,7 +21,4 @@ public class DefaultUserToExternalLoginProvider : IUserToExternalLoginProvider
 
         return !string.IsNullOrWhiteSpace(email) ? await _userManager.FindByEmailAsync(email) : null;
     }
-
-    public string GetIdentifierKey(ExternalLoginInfo info)
-        => info.GetEmail();
 }

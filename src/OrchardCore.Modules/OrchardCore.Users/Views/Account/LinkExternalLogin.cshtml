@@ -7,7 +7,7 @@
 <form asp-controller="Account" asp-action="LinkExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Link your account."]</h4>
     <p class="text-info">
-        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account associated with <strong>{1}</strong>. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"], ViewData["ExternalUserIdentifier"]]
+        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account associated with this external login. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"]]
     </p>
     <hr />
     <div asp-validation-summary="ModelOnly"></div>
@@ -16,13 +16,6 @@
         <label for="UserName" class="col-md-3 form-label">@T["Username"]</label>
         <div class="col-md-9">
             <input id="UserName" value="@ViewData["UserName"]" class="form-control" disabled />
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label for="ExternalUserIdentifier" class="col-md-3 form-label">@T["The parameter that identifies the existing account"]</label>
-        <div class="col-md-9">
-            <input id="ExternalUserIdentifier" value="@ViewData["ExternalUserIdentifier"]" class="form-control" disabled />
         </div>
     </div>
 

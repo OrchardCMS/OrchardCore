@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserPhoneNumberStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
-            services.AddScoped<IUserToExternalLoginProvider, DefaultUserToExternalLoginProvider>();
+            services.AddScoped<IExternalLoginMapper, DefaultExternalLoginMapper>();
 
             services.AddScoped<NullRoleStore>();
             services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());

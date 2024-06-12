@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IEnumerable<IUserToExternalLoginProvider> _userToExternalLoginProviders;
+        private readonly IEnumerable<IExternalLoginMapper> _externalLoginMappers;
 
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
@@ -80,7 +79,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
-            IEnumerable<IUserToExternalLoginProvider> userToExternalLoginProviders)
+            IEnumerable<IExternalLoginMapper> externalLoginMappers)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -97,7 +96,7 @@ namespace OrchardCore.Users.Controllers
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
             // Reverse the order of services to prioritize third-party implementations first, placing them before the default one.
-            _userToExternalLoginProviders = userToExternalLoginProviders.Reverse();
+            _externalLoginMappers = externalLoginMappers.Reverse();
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -405,10 +404,10 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var userLocator = _userToExternalLoginProviders.FirstOrDefault(x => x.CanHandle(info));
-                if (userLocator != null)
+                var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
+                if (extLoginMapper != null)
                 {
-                    iUser = await userLocator.GetUserAsync(info);
+                    iUser = await extLoginMapper.GetUserAsync(info);
                 }
 
                 ViewData["ReturnUrl"] = returnUrl;
@@ -429,14 +428,6 @@ namespace OrchardCore.Users.Controllers
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    if (userLocator != null)
-                    {
-                        ViewData["ExternalUserIdentifier"] = userLocator.GetIdentifierKey(info);
-                    }
-                    else
-                    {
-                        ViewData["ExternalUserIdentifier"] = info.GetEmail();
-                    }
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -658,8 +649,8 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var userLocator = _userToExternalLoginProviders.FirstOrDefault(x => x.CanHandle(info));
-            var user = await userLocator?.GetUserAsync(info);
+            var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
+            var user = await extLoginMapper?.GetUserAsync(info);
 
             if (user == null)
             {
