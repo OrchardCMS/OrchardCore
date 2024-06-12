@@ -364,7 +364,7 @@ public class JsonDynamicTests
         expandoValue.dateTimeValue = contentItem.Content.TestPart.DateTimeFieldProp.Value;
 
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
-        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true,\"timeValue\":\"12:12:23\",\"dateTimeValue\":\"2024-06-12T00:43:00Z\"}", jsonStr);
+        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true,\"timeValue\":\"12:12:23\",\"dateTimeValue\":\"2024-06-12T00:43:00Z\"}", jsonAsString);
     }
 
 
