@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Jint;
-using Jint.Native;
 using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -23,7 +22,31 @@ namespace OrchardCore.Scripting.JavaScript
 
         public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
-            var engine = new Engine();
+            var engine = new Engine(options =>
+            {
+                options.SetWrapObjectHandler(static (e, target, type) =>
+                {
+                    if (target is JsonDynamicObject dynamicObject)
+                    {
+                        var wrapped = ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
+                        return wrapped;
+                    }
+
+                    if (target is JsonDynamicArray dynamicArray)
+                    {
+                        var wrapped = ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
+                        return wrapped;
+                    }
+
+                    if (target is JsonDynamicValue dynamicValue)
+                    {
+                        var wrapped = ObjectWrapper.Create(e, dynamicValue.JsonValue, type);
+                        return wrapped;
+                    }
+
+                    return ObjectWrapper.Create(e, target, type);
+                });
+            });
 
             foreach (var method in methods)
             {
@@ -45,7 +68,7 @@ namespace OrchardCore.Scripting.JavaScript
                 ThrowInvalidScopeTypeException();
             }
 
-            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string) entry.Key));
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
 
             var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
