@@ -829,7 +829,7 @@ public class JsonDynamicTests
             var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);
             var contentStr = (string)scriptingEngine.Evaluate(scriptingScope, "return JSON.stringify(getTestContent().Content)");
 
-            Assert.Equal("{\"content\":{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}}", contentStr);
+            Assert.Equal("{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}", contentStr);
 
             return Task.CompletedTask;
         });
