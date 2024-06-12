@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
@@ -97,14 +98,6 @@ public class JsonDynamicObject : DynamicObject
             return null;
         }
 
-        foreach (var handler in JsonDynamicConfigurations.ValueHandlers)
-        {
-            if (handler.GetValue(_jsonObject, _dictionary, key, jsonNode))
-            {
-                return _dictionary[key];
-            }
-        }
-
         if (jsonNode is JsonObject jsonObject)
         {
             return _dictionary[key] = new JsonDynamicObject(jsonObject);
@@ -117,6 +110,15 @@ public class JsonDynamicObject : DynamicObject
 
         if (jsonNode is JsonValue jsonValue)
         {
+            foreach (var handler in JsonDynamicConfigurations.ValueHandlers.OrderBy(x => x.Order))
+            {
+                if (handler.GetValue(jsonValue, key, out var result))
+                {
+                    _dictionary[key] = new JsonDynamicValue(JsonValue.Create(result));
+                    return result;
+                }
+            }
+
             return _dictionary[key] = new JsonDynamicValue(jsonValue);
         }
 

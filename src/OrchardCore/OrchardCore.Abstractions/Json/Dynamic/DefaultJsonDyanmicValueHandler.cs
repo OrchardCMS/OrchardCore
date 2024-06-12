@@ -7,41 +7,43 @@ using Json.More;
 namespace OrchardCore.Json.Dynamic;
 public class DefaultJsonDyanmicValueHandler : IJsonDynamicValueHandler
 {
-    public bool GetValue(JsonObject jsonObject, Dictionary<string, object> dynamicValueDict, string memberName, JsonNode currentNode)
-    {
-        if (currentNode is JsonValue jsonValue)
-        {
-            var valueKind = jsonValue.GetValueKind();
-            switch (valueKind)
-            {
-                case JsonValueKind.String:
-                    if (memberName == "Value")
-                    {
-                        if (jsonValue.TryGetValue<DateTime>(out var datetime))
-                        {
-                            dynamicValueDict[memberName] = datetime;
-                            return true;
-                        }
+    public int Order => 0;
 
-                        if (jsonValue.TryGetValue<TimeSpan>(out var timeSpan))
-                        {
-                            dynamicValueDict[memberName] = timeSpan;
-                            return true;
-                        }
+    public bool GetValue(JsonValue currentNodeValue, string memberName, out object result)
+    {
+        var valueKind = currentNodeValue.GetValueKind();
+        switch (valueKind)
+        {
+            case JsonValueKind.String:
+                if (memberName == "Value")
+                {
+                    if (currentNodeValue.TryGetValue<DateTime>(out var datetime))
+                    {
+                        result = datetime;
+                        return true;
                     }
-                    dynamicValueDict[memberName] = jsonValue.GetString();
-                    return true;
-                case JsonValueKind.Number:
-                    dynamicValueDict[memberName] = jsonValue.GetNumber();
-                    return true;
-                case JsonValueKind.True:
-                    dynamicValueDict[memberName] = true;
-                    return true;
-                case JsonValueKind.False:
-                    dynamicValueDict[memberName] = false;
-                    return true;
-            }
+
+                    if (currentNodeValue.TryGetValue<TimeSpan>(out var timeSpan))
+                    {
+                        result = timeSpan;
+                        return true;
+                    }
+                }
+
+                result = currentNodeValue.GetString();
+                return true;
+            case JsonValueKind.Number:
+                result = currentNodeValue.GetNumber();
+                return true;
+            case JsonValueKind.True:
+                result = true;
+                return true;
+            case JsonValueKind.False:
+                result = false;
+                return true;
         }
+
+        result = null;
         return false;
     }
 }

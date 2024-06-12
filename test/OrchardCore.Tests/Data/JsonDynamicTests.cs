@@ -345,7 +345,7 @@ public class JsonDynamicTests
     [Fact]
     public void TestDynamicValueAssignToOther()
     {
-       // Arrange
+        // Arrange
         var contentItem = new ContentItem();
         contentItem.Alter<TestPart>(part =>
         {
@@ -354,6 +354,7 @@ public class JsonDynamicTests
             part.BooleanFieldProp = new BooleanField { Value = true };
             part.TimeFieldProp = new TimeField { Value = new TimeSpan(12, 12, 23) };
             part.DateTimeFieldProp = new DateTimeField { Value = new DateTime(2024, 06, 12, 0, 43, 00) };
+            part.MultiTextFieldProp = new MultiTextField { Values = ["1", "2", "3"] };
         });
 
         // Act
@@ -363,8 +364,9 @@ public class JsonDynamicTests
         expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
         expandoValue.timeValue = contentItem.Content.TestPart.TimeFieldProp.Value;
         expandoValue.dateTimeValue = contentItem.Content.TestPart.DateTimeFieldProp.Value;
+        expandoValue.multiTextValue = contentItem.Content.TestPart.MultiTextFieldProp.Values;
 
-       // Assert
+        // Assert
         var jsonAsString = JConvert.SerializeObject((ExpandoObject)expandoValue);
         Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true,\"timeValue\":\"12:12:23\",\"dateTimeValue\":\"2024-06-12T00:43:00Z\"}", jsonAsString);
     }
@@ -380,5 +382,6 @@ public class JsonDynamicTests
         public TimeField TimeFieldProp { get; set; }
 
         public DateTimeField DateTimeFieldProp { get; set; }
+        public MultiTextField MultiTextFieldProp { get; set; }
     }
 }

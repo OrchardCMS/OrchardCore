@@ -5,15 +5,16 @@ using System.Text.Json.Nodes;
 namespace OrchardCore.Json.Dynamic;
 public interface IJsonDynamicValueHandler
 {
+    int Order { get; }
+
     /// <summary>
-    /// Building dynamic fetch logic for the ContentItem.Content property.
+    /// Building dynamic fetch logic for the `ContentItem.Content` property.
     /// <para><see cref="JsonDynamicObject.GetValue(string)"/></para>
     /// <para><seealso cref="DefaultJsonDyanmicValueHandler"/></para>
     /// </summary>
-    /// <param name="parentNode"></param>
-    /// <param name="dynamicValueDict"></param>
+    /// <param name="currentNodeValue"></param>
     /// <param name="memberName"></param>
-    /// <param name="memberNode"></param>
+    /// <param name="result"></param>
     /// <returns></returns>
-    bool GetValue(JsonObject parentNode, Dictionary<string, object> dynamicValueDict, string memberName, JsonNode memberNode);
+    bool GetValue(JsonValue currentNodeValue, string memberName, out object result);
 }

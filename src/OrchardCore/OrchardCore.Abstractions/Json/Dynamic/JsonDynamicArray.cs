@@ -5,6 +5,8 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using OrchardCore.Json.Dynamic;
 
 #nullable enable
 
@@ -90,7 +92,9 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
 
         if (jsonNode is JsonValue jsonValue)
         {
-            return _dictionary[index] = new JsonDynamicValue(jsonValue);
+            _dictionary[index] = new JsonDynamicValue(jsonValue);
+
+            return jsonValue;
         }
 
         return null;
