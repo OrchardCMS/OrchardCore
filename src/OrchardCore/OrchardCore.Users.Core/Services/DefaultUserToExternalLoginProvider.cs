@@ -19,12 +19,7 @@ public class DefaultUserToExternalLoginProvider : IUserToExternalLoginProvider
     {
         var email = info.GetEmail();
 
-        if (!string.IsNullOrWhiteSpace(email))
-        {
-            return await _userManager.FindByEmailAsync(email);
-        }
-
-        return null;
+        return !string.IsNullOrWhiteSpace(email) ? await _userManager.FindByEmailAsync(email) : null;
     }
 
     public string GetIdentifierKey(ExternalLoginInfo info)
