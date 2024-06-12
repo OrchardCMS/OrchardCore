@@ -15,7 +15,7 @@ public class DefaultExternalLoginMapper : IExternalLoginMapper
     public bool CanHandle(ExternalLoginInfo info)
         => true;
 
-    public async Task<IUser> GetUserAsync(ExternalLoginInfo info)
+    public async Task<IUser> FindByLoginAsync(ExternalLoginInfo info)
     {
         var email = info.GetEmail();
 

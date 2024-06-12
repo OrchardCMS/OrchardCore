@@ -407,7 +407,7 @@ namespace OrchardCore.Users.Controllers
                 var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
                 if (extLoginMapper != null)
                 {
-                    iUser = await extLoginMapper.GetUserAsync(info);
+                    iUser = await extLoginMapper.FindByLoginAsync(info);
                 }
 
                 ViewData["ReturnUrl"] = returnUrl;
@@ -650,7 +650,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
-            var user = await extLoginMapper?.GetUserAsync(info);
+            var user = await extLoginMapper?.FindByLoginAsync(info);
 
             if (user == null)
             {

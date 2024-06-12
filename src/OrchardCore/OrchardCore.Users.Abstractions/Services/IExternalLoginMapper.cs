@@ -29,5 +29,5 @@ public interface IExternalLoginMapper
     /// <returns>
     /// An instance of <see cref="IUser" /> if there's a local account matching the external login data; otherwise, <see langword="null"/>.
     /// </returns>
-    Task<IUser> GetUserAsync(ExternalLoginInfo info);
+    Task<IUser> FindByLoginAsync(ExternalLoginInfo info);
 }
