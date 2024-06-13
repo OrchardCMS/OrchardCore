@@ -53,11 +53,6 @@
     <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
 
-    <!-- These are NuGet audit warnings, see https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904.
-    Security issues being discovered in NuGet packages we use can happen any time, and thus all our CI builds that
-    treat warnings as errors could break anytime, without us changing the code. This prevents that. -->
-    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
-
   </PropertyGroup>
 
 </Project>
