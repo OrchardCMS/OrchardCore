@@ -30,7 +30,7 @@ jobs:
       # treat warnings as errors could break anytime, without us changing the code. This prevents that. Treaing them as
       # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NoWarn=NU1901%3BNU1902%3BNU1903%3BNU1904
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
