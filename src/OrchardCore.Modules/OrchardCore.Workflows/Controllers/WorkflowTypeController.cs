@@ -476,8 +476,8 @@ namespace OrchardCore.Workflows.Controllers
             foreach (var activityState in activities)
             {
                 var activity = currentActivities[activityState["id"].ToString()];
-                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString(), CultureInfo.InvariantCulture);
-                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString(), CultureInfo.InvariantCulture);
+                activity.X = (int)Math.Round(Convert.ToDecimal(activityState["x"].ToString(), CultureInfo.InvariantCulture), 0);
+                activity.Y = (int)Math.Round(Convert.ToDecimal(activityState["y"].ToString(), CultureInfo.InvariantCulture), 0);
                 activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 
