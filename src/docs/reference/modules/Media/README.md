@@ -311,7 +311,7 @@ The following configuration values are used by default and can be customized:
       // The path used when serving media assets.
       "AssetsRequestPath": "/media",
 
-      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+      // The name of the folder used to store media assets inside the App_Data folder.
       "AssetsPath": "Media",
 
       // Whether to use a token in the query string to prevent disc filling.
