@@ -12,8 +12,8 @@ using System.Text.Json.Serialization;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
-[JsonConverter(typeof(JsonDynamicArrayJsonConverter))]
-public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable<JsonNode?>
+[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicArray>))]
+public class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
     private readonly Dictionary<int, object?> _dictionary = [];
@@ -23,6 +23,8 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 
     public int Count => _jsonArray.Count;
+
+    public override JsonNode Node => _jsonArray;
 
     public object? this[int index]
     {
@@ -43,8 +45,6 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
         _dictionary.Remove(index);
         _jsonArray.RemoveAt(index);
     }
-
-    public T? ToObject<T>() => _jsonArray.ToObject<T>();
 
     public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)
     {
@@ -144,7 +144,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
         }
     }
 
-    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator() 
+    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator()
         => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

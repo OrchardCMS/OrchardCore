@@ -11,11 +11,10 @@ using System.Text.Json.Settings;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]
-[JsonConverter(typeof(JsonDynamicObjectJsonConverter))]
-public class JsonDynamicObject : DynamicObject
+[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicObject>))]
+public class JsonDynamicObject : JsonDynamicBase
 {
     private readonly JsonObject _jsonObject;
-
     private readonly Dictionary<string, object?> _dictionary = [];
 
     public JsonDynamicObject()
@@ -30,10 +29,7 @@ public class JsonDynamicObject : DynamicObject
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
-    {
-        _jsonObject.Merge(content, settings);
-    }
+    public override JsonNode Node => _jsonObject;
 
     public object? this[string key]
     {
@@ -41,7 +37,10 @@ public class JsonDynamicObject : DynamicObject
         set => SetValue(key, value);
     }
 
-    public T? ToObject<T>() => _jsonObject.ToObject<T>();
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    {
+        _jsonObject.Merge(content, settings);
+    }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
