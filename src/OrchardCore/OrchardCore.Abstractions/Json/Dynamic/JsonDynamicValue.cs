@@ -8,7 +8,7 @@ namespace System.Text.Json.Dynamic;
 #nullable enable
 
 [JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicValue>))]
-public class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable<JsonDynamicValue>, IConvertible, IEquatable<JsonDynamicValue>
+public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable<JsonDynamicValue>, IConvertible, IEquatable<JsonDynamicValue>
 {
     private readonly JsonValue? _jsonValue;
 

@@ -13,7 +13,7 @@ namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
 [JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicArray>))]
-public class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
+public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
     private readonly Dictionary<int, object?> _dictionary = [];

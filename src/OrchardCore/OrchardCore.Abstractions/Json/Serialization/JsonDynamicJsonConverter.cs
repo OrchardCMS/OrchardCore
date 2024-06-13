@@ -4,7 +4,7 @@ using System.Text.Json.Dynamic;
 
 namespace System.Text.Json.Serialization;
 
-public class JsonDynamicJsonConverter<T> : JsonConverter<T> where T : JsonDynamicBase
+public sealed class JsonDynamicJsonConverter<T> : JsonConverter<T> where T : JsonDynamicBase
 {
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
