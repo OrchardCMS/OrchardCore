@@ -810,7 +810,7 @@ public class JsonDynamicTests
         Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
     }
 
-    public class TestPart : ContentPart
+    public sealed class TestPart : ContentPart
     {
         public TextField TextFieldProp { get; set; }
         public NumericField NumericFieldProp { get; set; }
