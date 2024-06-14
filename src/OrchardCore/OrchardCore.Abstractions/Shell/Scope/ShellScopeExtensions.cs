@@ -8,22 +8,22 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate task to be invoked before this shell scope will be disposed.
         /// </summary>
-        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback)
+        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)
         {
-            scope?.BeforeDispose(callback);
+            scope?.BeforeDispose(callback, last);
             return scope;
         }
 
         /// <summary>
         /// Registers a delegate action to be invoked before this shell scope will be disposed.
         /// </summary>
-        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback)
+        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback, bool last = false)
         {
             scope?.BeforeDispose(scope =>
             {
                 callback(scope);
                 return Task.CompletedTask;
-            });
+            }, last);
 
             return scope;
         }
