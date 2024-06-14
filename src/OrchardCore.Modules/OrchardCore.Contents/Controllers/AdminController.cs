@@ -409,7 +409,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
-        public async Task<IActionResult> Edit(string contentItemId)
+        public async Task<IActionResult> Edit(string contentItemId, string returnUrl = null)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -424,6 +424,11 @@ namespace OrchardCore.Contents.Controllers
             }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+
+            if(!string.IsNullOrEmpty(returnUrl))
+            {
+                TempData["returnUrl"] = returnUrl;
+            }
 
             return View(model);
         }

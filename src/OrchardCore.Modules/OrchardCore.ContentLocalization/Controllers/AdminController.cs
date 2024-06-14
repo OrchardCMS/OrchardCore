@@ -36,7 +36,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
         [HttpPost]
         [Admin("ContentLocalization", "ContentLocalization.Localize")]
-        public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
+        public async Task<IActionResult> Localize(string contentItemId, string targetCulture, string returnUrl = null)
         {
             // Invariant culture name is empty so a null value is bound.
             targetCulture ??= string.Empty;
@@ -82,6 +82,12 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
                 await _notifier.InformationAsync(H["Localized version of the content created successfully."]);
+
+                if(!string.IsNullOrEmpty(returnUrl))
+                {
+                    TempData["returnUrl"] = returnUrl;
+                }
+
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId });
             }
             catch (InvalidOperationException)
