@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -51,8 +52,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IEnumerable<IExternalLoginMapper> _externalLoginMappers;
-
+        private readonly IdentityOptions _identityOptions;
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
             MergeArrayHandling = MergeArrayHandling.Replace,
@@ -79,7 +79,7 @@ namespace OrchardCore.Users.Controllers
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
-            IEnumerable<IExternalLoginMapper> externalLoginMappers)
+            IOptions<IdentityOptions> identityOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -95,8 +95,7 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
-            // Reverse the order of services to prioritize third-party implementations first, placing them before the default one.
-            _externalLoginMappers = externalLoginMappers.Reverse();
+            _identityOptions = identityOptions.Value;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -404,32 +403,31 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
-                if (extLoginMapper != null)
+                if (_identityOptions.User.RequireUniqueEmail)
                 {
-                    iUser = await extLoginMapper.FindByLoginAsync(info);
-                }
+                    iUser = await _userManager.FindByEmailAsync(info.GetEmail());
 
-                ViewData["ReturnUrl"] = returnUrl;
-                ViewData["LoginProvider"] = info.LoginProvider;
+                    ViewData["ReturnUrl"] = returnUrl;
+                    ViewData["LoginProvider"] = info.LoginProvider;
 
-                if (iUser != null)
-                {
-                    if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                    if (iUser != null)
                     {
-                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
-                            new
-                            {
-                                Area = UserConstants.Features.Users,
-                                Controller = typeof(EmailConfirmationController).ControllerName(),
-                                ReturnUrl = returnUrl,
-                            });
+                        if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                        {
+                            return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
+                                new
+                                {
+                                    Area = UserConstants.Features.Users,
+                                    Controller = typeof(EmailConfirmationController).ControllerName(),
+                                    ReturnUrl = returnUrl,
+                                });
+                        }
+
+                        // Link external login to an existing user
+                        ViewData["UserName"] = iUser.UserName;
+
+                        return View(nameof(LinkExternalLogin));
                     }
-
-                    // Link external login to an existing user
-                    ViewData["UserName"] = iUser.UserName;
-
-                    return View(nameof(LinkExternalLogin));
                 }
 
                 // No user could be matched, check if a new user can register.
@@ -649,8 +647,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var extLoginMapper = _externalLoginMappers.FirstOrDefault(x => x.CanHandle(info));
-            var user = await extLoginMapper?.FindByLoginAsync(info);
+            var user = await _userManager.FindByEmailAsync(info.GetEmail());
 
             if (user == null)
             {
