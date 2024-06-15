@@ -3,7 +3,7 @@ using System.Globalization;
 using GraphQL.Types;
 using GraphQLParser.AST;
 
-namespace OrchardCore.ContentFields.GraphQL.Types
+namespace OrchardCore.Apis.GraphQL.Queries.Types
 {
     public class TimeSpanGraphType : ScalarGraphType
     {
