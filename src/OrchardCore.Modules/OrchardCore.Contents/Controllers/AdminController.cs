@@ -147,7 +147,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem(S["All versions"], nameof(ContentsStatus.AllVersions)),
             ];
 
-            if (await IsAuthorizedAsync(Permissions.ListContent))
+            if (await IsAuthorizedAsync(CommonPermissions.ListContent))
             {
                 options.ContentStatuses.Insert(1, new SelectListItem(S["Owned by me"], nameof(ContentsStatus.Owner)));
             }

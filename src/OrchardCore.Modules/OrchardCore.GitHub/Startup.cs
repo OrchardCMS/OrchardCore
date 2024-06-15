@@ -16,7 +16,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.GitHub
     }
 
     [Feature(GitHubConstants.Features.GitHubAuthentication)]
-    public class GitHubLoginStartup : StartupBase
+    public sealed class GitHubLoginStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -59,7 +59,8 @@ var corsApp = new Vue({
         allowedHeaders: [],
         allowAnyHeader: true,
         allowCredentials: true,
-        isDefaultPolicy: false
+        isDefaultPolicy: false,
+        exposedHeaders: []
       };
     },
     editPolicy: function editPolicy(policy) {

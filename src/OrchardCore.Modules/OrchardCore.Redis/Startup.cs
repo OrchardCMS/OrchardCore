@@ -21,7 +21,7 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Redis
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly string _tenant;
         private readonly IShellConfiguration _configuration;
@@ -74,7 +74,7 @@ namespace OrchardCore.Redis
     }
 
     [Feature("OrchardCore.Redis.Cache")]
-    public class RedisCacheStartup : StartupBase
+    public sealed class RedisCacheStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -88,7 +88,7 @@ namespace OrchardCore.Redis
     }
 
     [Feature("OrchardCore.Redis.Bus")]
-    public class RedisBusStartup : StartupBase
+    public sealed class RedisBusStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -100,7 +100,7 @@ namespace OrchardCore.Redis
     }
 
     [Feature("OrchardCore.Redis.Lock")]
-    public class RedisLockStartup : StartupBase
+    public sealed class RedisLockStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -112,7 +112,7 @@ namespace OrchardCore.Redis
     }
 
     [Feature("OrchardCore.Redis.DataProtection")]
-    public class RedisDataProtectionStartup : StartupBase
+    public sealed class RedisDataProtectionStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

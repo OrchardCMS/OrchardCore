@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AzureAISearchIndexNamingHelper
+public static class AzureAISearchIndexNamingHelper
 {
     /// <summary>
     /// Makes sure that the index names are compliant with Azure AI Search specifications.

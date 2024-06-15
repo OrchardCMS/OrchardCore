@@ -7,7 +7,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Layers
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;

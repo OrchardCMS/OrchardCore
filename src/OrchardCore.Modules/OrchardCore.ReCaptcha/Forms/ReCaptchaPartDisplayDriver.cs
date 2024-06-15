@@ -19,8 +19,7 @@ namespace OrchardCore.ReCaptcha.Forms
         {
             return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", async model =>
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var settings = siteSettings.As<ReCaptchaSettings>();
+                var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
                 model.SettingsAreConfigured = settings.IsValid();
             }).Location("Detail", "Content");
         }
@@ -29,8 +28,7 @@ namespace OrchardCore.ReCaptcha.Forms
         {
             return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart_Fields_Edit", async model =>
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var settings = siteSettings.As<ReCaptchaSettings>();
+                var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
                 model.SettingsAreConfigured = settings.IsValid();
             });
         }

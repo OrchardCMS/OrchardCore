@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
+    public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -13,7 +13,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             { "groupId", ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

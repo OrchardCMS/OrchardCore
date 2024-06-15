@@ -23,11 +23,8 @@ namespace OrchardCore.Facebook.Services
             S = stringLocalizer;
         }
 
-        public async Task<FacebookSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<FacebookSettings>();
-        }
+        public Task<FacebookSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<FacebookSettings>();
 
         public async Task UpdateSettingsAsync(FacebookSettings settings)
         {

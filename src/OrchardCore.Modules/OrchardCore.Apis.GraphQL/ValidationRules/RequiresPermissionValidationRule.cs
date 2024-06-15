@@ -26,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public async ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            // shouldn't we access UserContext from validationcontext inside MatchingNodeVisitor actions?
+            // shouldn't we access UserContext from validation-context inside MatchingNodeVisitor actions?
             var userContext = (GraphQLUserContext)validationContext.UserContext;
 
             return await Task.FromResult(new NodeVisitors(
@@ -59,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
         {
-            if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, Permissions.ExecuteGraphQLMutations)))
+            if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, CommonPermissions.ExecuteGraphQLMutations)))
             {
                 validationContext.ReportError(new ValidationError(
                     validationContext.Document.Source,

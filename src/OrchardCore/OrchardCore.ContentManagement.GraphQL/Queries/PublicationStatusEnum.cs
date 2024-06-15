@@ -5,6 +5,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         Published,
         Draft,
         Latest,
-        All
+        All,
     }
 }

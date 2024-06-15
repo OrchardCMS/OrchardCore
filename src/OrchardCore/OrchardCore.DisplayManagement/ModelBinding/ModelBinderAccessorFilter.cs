@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.ModelBinding
 {
-    public class ModelBinderAccessorFilter : IActionFilter, IPageFilter
+    public sealed class ModelBinderAccessorFilter : IActionFilter, IPageFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {

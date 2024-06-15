@@ -47,11 +47,7 @@ namespace OrchardCore.Localization.Services
 
         private async Task InitializeLocalizationSettingsAsync()
         {
-            if (_localizationSettings == null)
-            {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                _localizationSettings = siteSettings.As<LocalizationSettings>();
-            }
+            _localizationSettings ??= await _siteService.GetSettingsAsync<LocalizationSettings>();
         }
     }
 }
