@@ -403,32 +403,35 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                if (_identityOptions.User.RequireUniqueEmail)
+                var email = info.GetEmail();
+
+                if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrWhiteSpace(email))
                 {
-                    iUser = await _userManager.FindByEmailAsync(info.GetEmail());
-
-                    ViewData["ReturnUrl"] = returnUrl;
-                    ViewData["LoginProvider"] = info.LoginProvider;
-
-                    if (iUser != null)
-                    {
-                        if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
-                        {
-                            return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
-                                new
-                                {
-                                    Area = UserConstants.Features.Users,
-                                    Controller = typeof(EmailConfirmationController).ControllerName(),
-                                    ReturnUrl = returnUrl,
-                                });
-                        }
-
-                        // Link external login to an existing user
-                        ViewData["UserName"] = iUser.UserName;
-
-                        return View(nameof(LinkExternalLogin));
-                    }
+                    iUser = await _userManager.FindByEmailAsync(email);
                 }
+
+                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["LoginProvider"] = info.LoginProvider;
+
+                if (iUser != null)
+                {
+                    if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                    {
+                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
+                            new
+                            {
+                                Area = UserConstants.Features.Users,
+                                Controller = typeof(EmailConfirmationController).ControllerName(),
+                                ReturnUrl = returnUrl,
+                            });
+                    }
+
+                    // Link external login to an existing user
+                    ViewData["UserName"] = iUser.UserName;
+
+                    return View(nameof(LinkExternalLogin));
+                }
+
 
                 // No user could be matched, check if a new user can register.
                 if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
