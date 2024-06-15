@@ -8,7 +8,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Media.Services
 {
-    public class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
+    public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     {
         private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 

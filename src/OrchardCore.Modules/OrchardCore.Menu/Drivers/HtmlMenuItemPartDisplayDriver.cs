@@ -67,6 +67,7 @@ namespace OrchardCore.Menu.Drivers
             {
                 model.Name = part.ContentItem.DisplayText;
                 model.Url = part.Url;
+                model.Target = part.Target;
                 model.Html = part.Html;
                 model.MenuItemPart = part;
             });
@@ -81,6 +82,7 @@ namespace OrchardCore.Menu.Drivers
             part.ContentItem.DisplayText = model.Name;
             part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
             part.Url = model.Url;
+            part.Target = model.Target;
 
             var urlToValidate = part.Url;
 

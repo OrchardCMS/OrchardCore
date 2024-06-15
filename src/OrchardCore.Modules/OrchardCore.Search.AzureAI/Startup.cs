@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -25,7 +25,7 @@ public class Startup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Search")]
-public class SearchStartup : StartupBase
+public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -36,7 +36,7 @@ public class SearchStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.ContentTypes")]
-public class ContentTypesStartup : StartupBase
+public sealed class ContentTypesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -47,7 +47,7 @@ public class ContentTypesStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Deployment")]
-public class DeploymentStartup : StartupBase
+public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

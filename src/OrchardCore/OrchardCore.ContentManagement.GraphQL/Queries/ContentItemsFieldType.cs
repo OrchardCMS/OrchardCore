@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(ResolveAsync);
 
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
@@ -65,16 +65,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async ValueTask<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+        private async ValueTask<IEnumerable<ContentItem>> ResolveAsync(IResolveFieldContext context)
 
         {
-            var versionOption = VersionOptions.Published;
-
-            if (context.HasPopulatedArgument("status"))
-            {
-                versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
-            }
-
             JsonObject where = null;
             if (context.HasArgument("where"))
             {
@@ -95,7 +88,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = preQuery.With<ContentItemIndex>();
 
-            query = FilterVersion(query, versionOption);
+            query = FilterVersion(query, GetVersionOptions(context));
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
@@ -130,7 +123,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias.
-            predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+            predicateQuery.CreateAlias(string.Empty, nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query.
@@ -206,7 +199,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 PublicationStatusEnum.Published => VersionOptions.Published,
                 PublicationStatusEnum.Draft => VersionOptions.Draft,
                 PublicationStatusEnum.Latest => VersionOptions.Latest,
-                PublicationStatusEnum.All => VersionOptions.AllVersions,
                 _ => VersionOptions.Published,
             };
         }
@@ -217,6 +209,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
             return query.Where(q => q.ContentType == contentType);
+        }
+
+        private static VersionOptions GetVersionOptions(IResolveFieldContext context)
+        {
+            if (context.HasPopulatedArgument("status"))
+            {
+                return GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
+            }
+
+            return VersionOptions.Published;
         }
 
         private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)

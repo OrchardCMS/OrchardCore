@@ -138,6 +138,18 @@
                 </div>
             </div>
         </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@T["Exposed headers"]
+                    <span class="hint dashed">@T["Configure which headers should be exposed."]</span>
+                </h5>
+
+                <div>
+                    <span class="hint">@T["Sets response header 'Access-Control-Expose-Headers'."]</span>
+                    <options-list v-bind:options="policy.exposedHeaders" optionType="@T["Header"]" title="@T["Exposed headers"]" subTitle="" />
+                </div>
+            </div>
+        </div>
         <div class="mb-3">
             <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">@T["Save"]</button>
             <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">@T["Cancel"]</button>

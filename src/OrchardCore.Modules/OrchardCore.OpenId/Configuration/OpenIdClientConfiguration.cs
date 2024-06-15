@@ -9,14 +9,12 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    [Feature(OpenIdConstants.Features.Client)]
-    public class OpenIdClientConfiguration :
+    public sealed class OpenIdClientConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<OpenIdConnectOptions>
     {

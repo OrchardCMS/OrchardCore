@@ -13,6 +13,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -28,8 +29,10 @@ namespace OrchardCore.Roles.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -39,6 +42,7 @@ namespace OrchardCore.Roles.Controllers
             IAuthorizationService authorizationService,
             IEnumerable<IPermissionProvider> permissionProviders,
             ITypeFeatureProvider typeFeatureProvider,
+            IShellFeaturesManager shellFeaturesManager,
             IRoleService roleService,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -49,6 +53,7 @@ namespace OrchardCore.Roles.Controllers
             _authorizationService = authorizationService;
             _permissionProviders = permissionProviders;
             _typeFeatureProvider = typeFeatureProvider;
+            _shellFeaturesManager = shellFeaturesManager;
             _roleService = roleService;
             _notifier = notifier;
             S = stringLocalizer;
@@ -57,7 +62,7 @@ namespace OrchardCore.Roles.Controllers
 
         public async Task<ActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -74,7 +79,7 @@ namespace OrchardCore.Roles.Controllers
 
         public async Task<IActionResult> Create()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -87,7 +92,7 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateRoleViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -132,7 +137,7 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -167,7 +172,7 @@ namespace OrchardCore.Roles.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -195,7 +200,7 @@ namespace OrchardCore.Roles.Controllers
         [HttpPost, ActionName(nameof(Edit))]
         public async Task<IActionResult> EditPost(string id, string roleDescription)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
             {
                 return Forbid();
             }
@@ -241,9 +246,15 @@ namespace OrchardCore.Roles.Controllers
         private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
         {
             var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
+            var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+
             foreach (var permissionProvider in _permissionProviders)
             {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
+                // Two features could use the same permission.
+                var feature = _typeFeatureProvider
+                    .GetFeaturesForDependency(permissionProvider.GetType())
+                    .LastOrDefault(feature => enabledFeatures.Any(enabledFeature => feature.Id == enabledFeature.Id));
+
                 var permissions = await permissionProvider.GetPermissionsAsync();
 
                 foreach (var permission in permissions)

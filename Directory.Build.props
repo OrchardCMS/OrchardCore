@@ -1,5 +1,7 @@
 <Project>
 
+  <Import Project="src\OrchardCore.Build\TargetFrameworks.props" />
+  
   <PropertyGroup>
     <!-- https://aka.ms/vs-build-acceleration -->
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
@@ -8,9 +10,6 @@
   <PropertyGroup Label="Analysis rules">
 
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
-
-    <!-- Member is explicitly initialized to its default value -->
-    <NoWarn>$(NoWarn);CA1805</NoWarn>
 
     <!-- The behavior could vary based on the current user's locale setting -->
     <NoWarn>$(NoWarn);CA1304;CA1305;CA1310</NoWarn>
@@ -47,9 +46,6 @@
 
     <!-- Exception type is not sufficiently specific -->
     <NoWarn>$(NoWarn);CA2201</NoWarn>
-
-    <!-- Remove the underscores from member name -->
-    <NoWarn>$(NoWarn);CA1707</NoWarn>
 
     <!-- Use PascalCase for named placeholders in the logging message template -->
     <NoWarn>$(NoWarn);CA1727</NoWarn>

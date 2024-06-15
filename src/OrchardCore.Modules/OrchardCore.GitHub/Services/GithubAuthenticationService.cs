@@ -22,11 +22,8 @@ namespace OrchardCore.GitHub.Services
             S = stringLocalizer;
         }
 
-        public async Task<GitHubAuthenticationSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<GitHubAuthenticationSettings>();
-        }
+        public Task<GitHubAuthenticationSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<GitHubAuthenticationSettings>();
 
         public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
         {

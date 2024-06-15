@@ -3,7 +3,7 @@ using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.Contents.AuditTrail.Services
 {
-    public class ContentAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
+    public sealed class ContentAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
     {
         public const string Content = nameof(Content);
         public const string Created = nameof(Created);

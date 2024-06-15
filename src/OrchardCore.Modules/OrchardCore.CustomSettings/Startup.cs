@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Deployment;
 using OrchardCore.CustomSettings.Drivers;
@@ -15,14 +16,14 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
             services.AddScoped<CustomSettingsService>();
-
+            services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
             // Permissions
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
@@ -43,7 +44,7 @@ namespace OrchardCore.CustomSettings
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

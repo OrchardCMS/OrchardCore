@@ -9,12 +9,12 @@ using OrchardCore.Modules;
 namespace OrchardCore.ContentFields.GraphQL
 {
     [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
-            services.AddScoped<IContentFieldProvider, ContentFieldsProvider>();
+            services.AddTransient<IContentFieldProvider, ObjectGraphTypeFieldProvider>();
+            services.AddTransient<IContentFieldProvider, ContentFieldsProvider>();
 
             services.AddObjectGraphType<LinkField, LinkFieldQueryObjectType>();
             services.AddObjectGraphType<HtmlField, HtmlFieldQueryObjectType>();

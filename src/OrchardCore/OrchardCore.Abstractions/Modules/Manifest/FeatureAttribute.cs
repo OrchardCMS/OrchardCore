@@ -335,7 +335,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Once enabled, check whether the feature cannot be disabled. Defaults to <c>false</c>.
         /// </summary>
-        public virtual bool IsAlwaysEnabled { get; set; } = false;
+        public virtual bool IsAlwaysEnabled { get; set; }
 
         /// <summary>
         /// Set to <c>true</c> to make the feature available by dependency only.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
@@ -101,13 +102,6 @@ namespace OrchardCore.Workflows.Controllers
 
             var query = _session.Query<WorkflowType, WorkflowTypeIndex>();
 
-            switch (options.Filter)
-            {
-                case WorkflowTypeFilter.All:
-                default:
-                    break;
-            }
-
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 query = query.Where(x => x.Name.Contains(options.Search));
@@ -127,9 +121,6 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            // The existing session's connection is returned, don't dispose it
-            var connection = await _session.CreateConnectionAsync();
-
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
@@ -137,7 +128,9 @@ namespace OrchardCore.Workflows.Controllers
             sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
-            var workflowTypeIdsWithInstances = await connection.QueryAsync<string>(sqlBuilder.ToSqlString());
+            // Use existing session connection. Do not use 'using' or dispose the connection.
+            var connection = await _session.CreateConnectionAsync();
+            var workflowTypeIdsWithInstances = (await connection.QueryAsync<string>(sqlBuilder.ToSqlString(), param: null, _session.CurrentTransaction)).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -483,8 +476,8 @@ namespace OrchardCore.Workflows.Controllers
             foreach (var activityState in activities)
             {
                 var activity = currentActivities[activityState["id"].ToString()];
-                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString());
-                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString());
+                activity.X = (int)Math.Round(Convert.ToDecimal(activityState["x"].ToString(), CultureInfo.InvariantCulture), 0);
+                activity.Y = (int)Math.Round(Convert.ToDecimal(activityState["y"].ToString(), CultureInfo.InvariantCulture), 0);
                 activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 

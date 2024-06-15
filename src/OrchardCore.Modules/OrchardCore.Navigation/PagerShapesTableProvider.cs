@@ -1,3 +1,5 @@
+#pragma warning disable CA1707 // Remove the underscores from member name
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

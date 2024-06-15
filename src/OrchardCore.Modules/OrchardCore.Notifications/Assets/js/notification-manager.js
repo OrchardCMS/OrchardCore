@@ -1,5 +1,17 @@
 notificationManager = function () {
 
+    const removeItem = (values, value) => {
+        const index = values.indexOf(value);
+
+        if (index > -1) {
+            values.splice(index, 1);
+
+            return true;
+        }
+
+        return false;
+    }
+
     const initialize = (readUrl, wrapperSelector) => {
 
         if (!readUrl) {
@@ -7,6 +19,8 @@ notificationManager = function () {
 
             return;
         }
+
+        const reading = [];
 
         var elements = document.getElementsByClassName('mark-notification-as-read');
 
@@ -25,6 +39,13 @@ notificationManager = function () {
                         return;
                     }
 
+                    if (reading.includes(messageId)) {
+                        // If a message is pending request, no need to send another request.
+                        return;
+                    }
+
+                    reading.push(messageId);
+
                     fetch(readUrl, {
                         method: 'POST',
                         headers: {
@@ -40,11 +61,13 @@ notificationManager = function () {
                                         wrapper.classList.remove('notification-is-unread');
                                         wrapper.classList.add('notification-is-read');
                                         wrapper.setAttribute('data-is-read', true);
+                                        removeItem(reading, messageId);
                                     }
                                 } else {
                                     e.target.classList.remove('notification-is-unread');
                                     e.target.classList.add('notification-is-read');
                                     e.target.setAttribute('data-is-read', true);
+                                    removeItem(reading, messageId);
                                 }
                             }
 
@@ -55,7 +78,7 @@ notificationManager = function () {
                             }
                         });
                 });
-            })
+            });
         }
     }
 

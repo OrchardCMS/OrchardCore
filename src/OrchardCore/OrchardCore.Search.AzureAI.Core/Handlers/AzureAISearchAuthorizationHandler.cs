@@ -10,12 +10,17 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAISearchAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
+public class AzureAISearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     private IAuthorizationService _authorizationService;
     private ISiteService _siteService;
+
+    public AzureAISearchAuthorizationHandler(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
@@ -61,8 +66,7 @@ public class AzureAISearchAuthorizationHandler(IServiceProvider serviceProvider)
         }
 
         _siteService ??= _serviceProvider.GetRequiredService<ISiteService>();
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-        return siteSettings.As<AzureAISearchSettings>().SearchIndex;
+        return (await _siteService.GetSettingsAsync<AzureAISearchSettings>()).SearchIndex;
     }
 }
