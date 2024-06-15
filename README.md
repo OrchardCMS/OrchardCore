@@ -41,7 +41,7 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 - Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
 - Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
-- Do you want to chat with other community members? Check out [our Discord server](https://discord.gg/s3e2HtyPZc) and [Gitter chatroom](https://gitter.im/OrchardCMS/OrchardCore]).
+- Do you want to chat with other community members? Check out [our Discord server](https://orchardcore.net/discord).
 
 ## Get in Touch
 

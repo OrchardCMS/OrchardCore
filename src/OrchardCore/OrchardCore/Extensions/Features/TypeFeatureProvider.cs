@@ -49,7 +49,12 @@ namespace OrchardCore.Environment.Extensions
 
         public void TryAdd(Type type, IFeatureInfo feature)
         {
-            _features.AddOrUpdate(type, (key, value) => [value], (key, features, value) => features.Contains(value) ? features : features.Append(value).ToArray(), feature);
+            var features = _features.AddOrUpdate(type, (key, value) => [value], (key, features, value) => features.Contains(value) ? features : features.Append(value).ToArray(), feature);
+
+            if (features.Count() > 1 && (FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SingleFeatureOnly ?? false))
+            {
+                throw new InvalidOperationException($"The type {type} can only be assigned to a single feature. Make sure the type is not added to DI by multiple startup classes.");
+            }
         }
     }
 }

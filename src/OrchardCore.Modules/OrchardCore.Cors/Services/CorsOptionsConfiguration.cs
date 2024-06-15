@@ -69,6 +69,11 @@ namespace OrchardCore.Cors.Services
                     {
                         configurePolicy.DisallowCredentials();
                     }
+
+                    if (corsPolicy.ExposedHeaders?.Length > 0)
+                    {
+                        configurePolicy.WithExposedHeaders(corsPolicy.ExposedHeaders);
+                    }
                 });
 
                 if (corsPolicy.IsDefaultPolicy)

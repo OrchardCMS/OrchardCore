@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
             var input = new Dictionary<string, object>
             {
                 { ContentEventConstants.ContentItemInputKey, contentItem },
-                { ContentEventConstants.ContentEventInputKey, contentEvent }
+                { ContentEventConstants.ContentEventInputKey, contentEvent },
             };
 
             return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);

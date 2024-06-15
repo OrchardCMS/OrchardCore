@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AzureAISearchIndexPermissionHelper
+public static class AzureAISearchIndexPermissionHelper
 {
     public static readonly Permission ManageAzureAISearchIndexes =
         new("ManageAzureAISearchIndexes", "Manage Azure AI Search Indexes");
