@@ -6,7 +6,6 @@ The below table lists the different .NET libraries used in Orchard Core:
 |--- | --- | --- |
 | [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | [MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
 | [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | [Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | [Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | [Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | [MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Communication Services](https://github.com/Azure/Communication) | Azure Communication Services are cloud-based services with REST APIs and client library SDKs to help you integrate communication into your applications | [MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
