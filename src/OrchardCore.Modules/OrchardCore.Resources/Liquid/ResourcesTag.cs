@@ -18,48 +18,52 @@ namespace OrchardCore.Resources.Liquid
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
 
-            var type = ResourceType.Footer;
+            var type = ResourceTagType.Footer;
 
             foreach (var argument in argumentsList)
             {
                 switch (argument.Name)
                 {
-#pragma warning disable CA1806 // Do not ignore method results
-                    case "type": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type); break;
-#pragma warning restore CA1806 // Do not ignore method results
+                    case "type":
+                        var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        if (Enum.TryParse<ResourceTagType>(typeString, out var parsedType))
+                        {
+                            type = parsedType;
+                        }
+                        break;
                 }
             }
 
             switch (type)
             {
-                case ResourceType.Meta:
+                case ResourceTagType.Meta:
                     resourceManager.RenderMeta(writer);
                     break;
 
-                case ResourceType.HeadLink:
+                case ResourceTagType.HeadLink:
                     resourceManager.RenderHeadLink(writer);
                     break;
 
-                case ResourceType.Stylesheet:
+                case ResourceTagType.Stylesheet:
                     resourceManager.RenderStylesheet(writer);
                     break;
 
-                case ResourceType.HeadScript:
+                case ResourceTagType.HeadScript:
                     resourceManager.RenderHeadScript(writer);
                     break;
 
-                case ResourceType.FootScript:
+                case ResourceTagType.FootScript:
                     resourceManager.RenderFootScript(writer);
                     break;
 
-                case ResourceType.Header:
+                case ResourceTagType.Header:
                     resourceManager.RenderMeta(writer);
                     resourceManager.RenderHeadLink(writer);
                     resourceManager.RenderStylesheet(writer);
                     resourceManager.RenderHeadScript(writer);
                     break;
 
-                case ResourceType.Footer:
+                case ResourceTagType.Footer:
                     resourceManager.RenderFootScript(writer);
                     break;
 
@@ -68,17 +72,6 @@ namespace OrchardCore.Resources.Liquid
             }
 
             return Completion.Normal;
-        }
-
-        public enum ResourceType
-        {
-            Meta,
-            HeadLink,
-            Stylesheet,
-            HeadScript,
-            FootScript,
-            Header,
-            Footer
         }
     }
 }

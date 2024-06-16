@@ -5,21 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-    public enum ResourceType
-    {
-        Meta,
-        HeadLink,
-        Stylesheet,
-        HeadScript,
-        FootScript,
-        Header,
-        Footer
-    }
-
     [HtmlTargetElement("resources", Attributes = nameof(Type))]
     public class ResourcesTagHelper : TagHelper
     {
-        public ResourceType Type { get; set; }
+        public ResourceTagType Type { get; set; }
 
         private readonly IResourceManager _resourceManager;
         private readonly ILogger _logger;
@@ -40,38 +29,39 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 switch (Type)
                 {
-                    case ResourceType.Meta:
+                    case ResourceTagType.Meta:
                         _resourceManager.RenderMeta(sw);
                         break;
 
-                    case ResourceType.HeadLink:
+                    case ResourceTagType.HeadLink:
                         _resourceManager.RenderHeadLink(sw);
                         break;
 
-                    case ResourceType.Stylesheet:
+                    case ResourceTagType.Stylesheet:
                         _resourceManager.RenderStylesheet(sw);
                         break;
 
-                    case ResourceType.HeadScript:
+                    case ResourceTagType.HeadScript:
                         _resourceManager.RenderHeadScript(sw);
                         break;
 
-                    case ResourceType.FootScript:
+                    case ResourceTagType.FootScript:
                         _resourceManager.RenderFootScript(sw);
                         break;
 
-                    case ResourceType.Header:
+                    case ResourceTagType.Header:
                         _resourceManager.RenderMeta(sw);
                         _resourceManager.RenderHeadLink(sw);
                         _resourceManager.RenderStylesheet(sw);
                         _resourceManager.RenderHeadScript(sw);
                         break;
 
-                    case ResourceType.Footer:
+                    case ResourceTagType.Footer:
                         _resourceManager.RenderFootScript(sw);
                         break;
 
                     default:
+                        _logger.LogWarning("Unknown {TypeName} value \"{Value}\".", nameof(ResourceTagType), Type);
                         break;
                 }
 
