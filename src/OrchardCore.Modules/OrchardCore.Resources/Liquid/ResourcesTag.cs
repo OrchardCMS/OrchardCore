@@ -16,9 +16,9 @@ namespace OrchardCore.Resources.Liquid
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
-            var resourceManager = services.GetRequiredService<IResourceManager>();
+            var processors = services.GetRequiredService<IEnumerable<IResourcesTagHelperProcessor>>();
 
-            var type = ResourceTagType.Footer;
+            var processorContext = new ResourcesTagHelperProcessorContext(writer, ResourceTagType.Footer);
 
             foreach (var argument in argumentsList)
             {
@@ -26,49 +26,17 @@ namespace OrchardCore.Resources.Liquid
                 {
                     case "type":
                         var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
-                        if (Enum.TryParse<ResourceTagType>(typeString, out var parsedType))
+                        if (Enum.TryParse<ResourceTagType>(typeString, out var type))
                         {
-                            type = parsedType;
+                            processorContext = processorContext with { Type = type };
                         }
                         break;
                 }
             }
 
-            switch (type)
+            foreach (var processor in processors)
             {
-                case ResourceTagType.Meta:
-                    resourceManager.RenderMeta(writer);
-                    break;
-
-                case ResourceTagType.HeadLink:
-                    resourceManager.RenderHeadLink(writer);
-                    break;
-
-                case ResourceTagType.Stylesheet:
-                    resourceManager.RenderStylesheet(writer);
-                    break;
-
-                case ResourceTagType.HeadScript:
-                    resourceManager.RenderHeadScript(writer);
-                    break;
-
-                case ResourceTagType.FootScript:
-                    resourceManager.RenderFootScript(writer);
-                    break;
-
-                case ResourceTagType.Header:
-                    resourceManager.RenderMeta(writer);
-                    resourceManager.RenderHeadLink(writer);
-                    resourceManager.RenderStylesheet(writer);
-                    resourceManager.RenderHeadScript(writer);
-                    break;
-
-                case ResourceTagType.Footer:
-                    resourceManager.RenderFootScript(writer);
-                    break;
-
-                default:
-                    break;
+                await processor.ProcessAsync(processorContext);
             }
 
             return Completion.Normal;

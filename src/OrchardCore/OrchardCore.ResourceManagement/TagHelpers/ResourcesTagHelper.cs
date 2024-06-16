@@ -32,45 +32,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 await using var sw = new ZStringWriter();
 
-                switch (Type)
-                {
-                    case ResourceTagType.Meta:
-                        _resourceManager.RenderMeta(sw);
-                        break;
-
-                    case ResourceTagType.HeadLink:
-                        _resourceManager.RenderHeadLink(sw);
-                        break;
-
-                    case ResourceTagType.Stylesheet:
-                        _resourceManager.RenderStylesheet(sw);
-                        break;
-
-                    case ResourceTagType.HeadScript:
-                        _resourceManager.RenderHeadScript(sw);
-                        break;
-
-                    case ResourceTagType.FootScript:
-                        _resourceManager.RenderFootScript(sw);
-                        break;
-
-                    case ResourceTagType.Header:
-                        _resourceManager.RenderMeta(sw);
-                        _resourceManager.RenderHeadLink(sw);
-                        _resourceManager.RenderStylesheet(sw);
-                        _resourceManager.RenderHeadScript(sw);
-                        break;
-
-                    case ResourceTagType.Footer:
-                        _resourceManager.RenderFootScript(sw);
-                        break;
-
-                    default:
-                        _logger.LogWarning("Unknown {TypeName} value \"{Value}\".", nameof(ResourceTagType), Type);
-                        break;
-                }
-
-                var processorContext = new ResourcesTagHelperProcessorContext(context, output, Type);
+                var processorContext = new ResourcesTagHelperProcessorContext(sw, Type);
 
                 foreach (var processor in _processors)
                 {
