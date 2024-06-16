@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
@@ -12,20 +14,23 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         private readonly IResourceManager _resourceManager;
         private readonly ILogger _logger;
+        private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
 
         public ResourcesTagHelper(
             IResourceManager resourceManager,
-            ILogger<ResourcesTagHelper> logger)
+            ILogger<ResourcesTagHelper> logger,
+            IEnumerable<IResourcesTagHelperProcessor> processors)
         {
             _resourceManager = resourceManager;
             _logger = logger;
+            _processors = processors;
         }
 
-        public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             try
             {
-                using var sw = new ZStringWriter();
+                await using var sw = new ZStringWriter();
 
                 switch (Type)
                 {
@@ -63,6 +68,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     default:
                         _logger.LogWarning("Unknown {TypeName} value \"{Value}\".", nameof(ResourceTagType), Type);
                         break;
+                }
+
+                var processorContext = new ResourcesTagHelperProcessorContext(context, output, Type);
+
+                foreach (var processor in _processors)
+                {
+                    await processor.ProcessAsync(processorContext);
                 }
 
                 output.Content.AppendHtml(sw.ToString());
