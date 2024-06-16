@@ -19,5 +19,7 @@ namespace OrchardCore.Cors.ViewModels
         public bool AllowCredentials { get; set; }
 
         public bool IsDefaultPolicy { get; set; }
+
+        public string[] ExposedHeaders { get; set; }
     }
 }

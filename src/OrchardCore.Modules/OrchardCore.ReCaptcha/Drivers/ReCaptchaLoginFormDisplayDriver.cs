@@ -23,7 +23,7 @@ public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var _reCaptchaSettings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+        var _reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
         if (!_reCaptchaSettings.IsValid() || !_reCaptchaService.IsThisARobot())
         {

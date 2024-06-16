@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Html
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly ISession _session;
         private readonly ILogger _logger;

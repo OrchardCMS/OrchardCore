@@ -21,7 +21,7 @@ using OrchardCore.Users.Services;
 namespace OrchardCore.Users;
 
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
-public class TwoFactorAuthenticationStartup : StartupBase
+public sealed class TwoFactorAuthenticationStartup : StartupBase
 {
     private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
 
@@ -113,7 +113,7 @@ public class TwoFactorAuthenticationStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Roles", UserConstants.Features.TwoFactorAuthentication)]
-public class RoleTwoFactorAuthenticationStartup : StartupBase
+public sealed class RoleTwoFactorAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -124,7 +124,7 @@ public class RoleTwoFactorAuthenticationStartup : StartupBase
 
 [Feature(UserConstants.Features.AuthenticatorApp)]
 [RequireFeatures(UserConstants.Features.TwoFactorAuthentication)]
-public class AuthenticatorAppStartup : StartupBase
+public sealed class AuthenticatorAppStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -171,7 +171,7 @@ public class AuthenticatorAppStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.EmailAuthenticator)]
-public class EmailAuthenticatorStartup : StartupBase
+public sealed class EmailAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -194,7 +194,7 @@ public class EmailAuthenticatorStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.SmsAuthenticator)]
-public class SmsAuthenticatorStartup : StartupBase
+public sealed class SmsAuthenticatorStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

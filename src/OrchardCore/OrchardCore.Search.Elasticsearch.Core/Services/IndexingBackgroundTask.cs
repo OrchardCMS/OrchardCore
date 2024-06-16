@@ -18,7 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
     Description = "Updates Elasticsearch indexes.",
     LockTimeout = 1000,
     LockExpiration = 300000)]
-public class IndexingBackgroundTask : IBackgroundTask
+public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {

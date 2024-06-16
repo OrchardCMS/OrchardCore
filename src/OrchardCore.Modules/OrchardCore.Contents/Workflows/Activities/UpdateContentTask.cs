@@ -98,7 +98,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
             else
             {
-                contentItem = workflowContext.Input.GetValue<ContentItem>(ContentEventConstants.ContentItemInputKey)?.ContentItem;
+                contentItem = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)?.ContentItem;
             }
 
             if (contentItem == null)

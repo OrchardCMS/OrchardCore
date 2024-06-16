@@ -16,7 +16,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -44,7 +44,7 @@ namespace OrchardCore.CustomSettings
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

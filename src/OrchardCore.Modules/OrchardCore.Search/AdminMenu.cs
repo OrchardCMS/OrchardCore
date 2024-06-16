@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Search
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -13,7 +13,7 @@ namespace OrchardCore.Search
             { "groupId", SearchConstants.SearchSettingsGroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

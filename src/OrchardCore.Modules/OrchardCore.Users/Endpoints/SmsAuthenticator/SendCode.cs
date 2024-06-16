@@ -52,7 +52,7 @@ public static class SendCode
             });
         }
 
-        var settings = (await siteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
+        var settings = await siteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
         var code = await userManager.GenerateTwoFactorTokenAsync(user, identityOptions.Value.Tokens.ChangePhoneNumberTokenProvider);
 
         var message = new SmsMessage()
@@ -70,7 +70,7 @@ public static class SendCode
             : errorMessage.Value,
         });
     }
-    
+
     private static Task<string> GetBodyAsync(
         SmsAuthenticatorLoginSettings settings,
         IUser user,

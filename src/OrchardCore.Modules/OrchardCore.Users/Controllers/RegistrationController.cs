@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
@@ -74,7 +74,7 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(Register))]
         public async Task<IActionResult> RegisterPOST(string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
             if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {

@@ -14,7 +14,7 @@ namespace OrchardCore.DynamicCache
     /// <summary>
     /// These services are registered on the tenant service collection.
     /// </summary>
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 

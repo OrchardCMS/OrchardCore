@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ResponseCompression
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override int Order => -5;
 

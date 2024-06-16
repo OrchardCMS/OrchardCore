@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Tasks
         Title = "OpenID Cleaner",
         Schedule = "*/30 * * * *",
         Description = "Performs various cleanup operations for OpenID features.")]
-    public class OpenIdBackgroundTask : IBackgroundTask
+    public sealed class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger _logger;
         private readonly IOpenIdServerService _serverService;

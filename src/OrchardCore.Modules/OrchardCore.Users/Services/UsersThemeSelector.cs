@@ -43,33 +43,33 @@ namespace OrchardCore.Users.Services
                 switch (routeValues["controller"]?.ToString())
                 {
                     case "Account":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
                         break;
                     case "TwoFactorAuthentication":
                         {
                             if (routeValues["action"] != null
                                && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
-                               && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme)
+                               && (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme)
                             {
                                 useSiteTheme = true;
                             }
                             else
                             {
-                                useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                                useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
                             }
                         }
                         break;
                     case "SmsAuthenticator":
                     case "AuthenticatorApp":
                         {
-                            useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().UseSiteTheme;
+                            useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
                         }
                         break;
                     case "Registration":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;
                         break;
                     case "ResetPassword":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>()).UseSiteTheme;
                         break;
                     default:
                         return null;

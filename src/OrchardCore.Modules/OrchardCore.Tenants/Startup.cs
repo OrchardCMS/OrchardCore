@@ -22,7 +22,7 @@ using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Tenants
     }
 
     [Feature("OrchardCore.Tenants.FileProvider")]
-    public class FileProviderStartup : StartupBase
+    public sealed class FileProviderStartup : StartupBase
     {
         /// <summary>
         /// The path in the tenant's App_Data folder containing the files.
@@ -99,7 +99,7 @@ namespace OrchardCore.Tenants
     }
 
     [Feature("OrchardCore.Tenants.Distributed")]
-    public class DistributedStartup : StartupBase
+    public sealed class DistributedStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -108,7 +108,7 @@ namespace OrchardCore.Tenants
     }
 
     [Feature("OrchardCore.Tenants.FeatureProfiles")]
-    public class FeatureProfilesStartup : StartupBase
+    public sealed class FeatureProfilesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -123,7 +123,7 @@ namespace OrchardCore.Tenants
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
-    public class FeatureProfilesDeploymentStartup : StartupBase
+    public sealed class FeatureProfilesDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -132,7 +132,7 @@ namespace OrchardCore.Tenants
     }
 
     [RequireFeatures("OrchardCore.Features")]
-    public class TenantFeatureProfilesStartup : StartupBase
+    public sealed class TenantFeatureProfilesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

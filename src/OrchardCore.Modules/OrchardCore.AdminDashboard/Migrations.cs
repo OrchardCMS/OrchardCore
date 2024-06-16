@@ -9,7 +9,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.AdminDashboard
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IRecipeMigrator _recipeMigrator;
