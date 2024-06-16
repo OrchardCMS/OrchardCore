@@ -3,6 +3,7 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Cysharp.Text;
 
 namespace OrchardCore.Localization.PortableObject
@@ -61,23 +62,19 @@ namespace OrchardCore.Localization.PortableObject
 
         private static string Unescape(string str)
         {
-            var builder = default(Utf16ValueStringBuilder);
+            if (!str.Contains('\\'))
+            {
+                return str;
+            }
+
             var escaped = false;
+            using var builder = ZString.CreateStringBuilder();
+
             for (var i = 0; i < str.Length; i++)
             {
                 var c = str[i];
                 if (escaped)
                 {
-                    if (builder.Equals(default(Utf16ValueStringBuilder)))
-                    {
-                        builder = ZString.CreateStringBuilder();
-
-                        if (i > 1)
-                        {
-                            builder.Append(str[..(i - 1)]);
-                        }
-                    }
-
                     char unescaped;
                     if (_escapeTranslations.TryGetValue(c, out unescaped))
                     {
@@ -86,8 +83,9 @@ namespace OrchardCore.Localization.PortableObject
                     else
                     {
                         // General rule: \x ==> x
-                        TryAppend(builder, c);
+                        builder.Append(c);
                     }
+
                     escaped = false;
                 }
                 else
@@ -98,22 +96,12 @@ namespace OrchardCore.Localization.PortableObject
                     }
                     else
                     {
-                        TryAppend(builder, c);
+                        builder.Append(c);
                     }
                 }
             }
 
-            return builder.Equals(default(Utf16ValueStringBuilder))
-                ? str
-                : builder.ToString();
-
-            static void TryAppend(Utf16ValueStringBuilder builder, char c)
-            {
-                if (!builder.Equals(default(Utf16ValueStringBuilder)))
-                {
-                    builder.Append(c);
-                }
-            }
+            return builder.ToString();
         }
 
         private static string TrimQuote(string str)
