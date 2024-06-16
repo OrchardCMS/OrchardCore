@@ -93,7 +93,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 BigUrl = pair.Field.Url,
                                 Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)],
                                 BigText = pair.Field.Text,
-                                Target = pair.Field.Target
+                                Target = pair.Field.Target,
                             });
                 });
         }
