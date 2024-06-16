@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Generic;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
+    public interface IFilterInputObjectGraphType : IInputObjectGraphType
+    {
+        void AddScalarFilterFields<TGraphType>(string fieldName, string description);
+
+        void AddScalarFilterFields(Type graphType, string fieldName, string description);
+    }
+
+    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
     {
     }
 
-    public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
+    public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
     {
         // arguments of typed input graph types return typed object, without additional input fields (_in, _contains,..)
         // so we return dictionary as it was before.
@@ -51,22 +59,37 @@ namespace OrchardCore.Apis.GraphQL.Queries
             {"_not_ends_with", "does not end with the string"},
         };
 
-        public void AddScalarFilterFields<TGraphType>(string fieldName, string description)
+        public virtual void AddScalarFilterFields<TGraphType>(string fieldName, string description)
         {
             AddScalarFilterFields(typeof(TGraphType), fieldName, description);
         }
 
-        public void AddScalarFilterFields(Type graphType, string fieldName, string description)
+        public virtual void AddScalarFilterFields(Type graphType, string fieldName, string description)
         {
+            if (!typeof(ScalarGraphType).IsAssignableFrom(graphType) &&
+                !typeof(IInputObjectGraphType).IsAssignableFrom(graphType))
+            {
+                return;
+            }
+
             AddEqualityFilters(graphType, fieldName, description);
-            AddMultiValueFilters(graphType, fieldName, description);
 
             if (graphType == typeof(StringGraphType))
             {
+                AddMultiValueFilters(graphType, fieldName, description);
                 AddStringFilters(graphType, fieldName, description);
             }
-            else if (graphType == typeof(DateTimeGraphType))
+            else if (graphType == typeof(DateTimeGraphType) ||
+                graphType == typeof(DateGraphType) ||
+                graphType == typeof(DateOnlyGraphType) ||
+                graphType == typeof(TimeSpanGraphType) ||
+                graphType == typeof(DecimalGraphType) ||
+                graphType == typeof(IntGraphType) ||
+                graphType == typeof(LongGraphType) ||
+                graphType == typeof(FloatGraphType) ||
+                graphType == typeof(BigIntGraphType))
             {
+                AddMultiValueFilters(graphType, fieldName, description);
                 AddNonStringFilters(graphType, fieldName, description);
             }
         }
