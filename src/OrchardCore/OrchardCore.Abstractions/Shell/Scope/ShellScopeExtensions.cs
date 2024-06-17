@@ -11,6 +11,7 @@ namespace OrchardCore.Environment.Shell.Scope
         public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)
         {
             scope?.BeforeDispose(callback, last);
+
             return scope;
         }
 
