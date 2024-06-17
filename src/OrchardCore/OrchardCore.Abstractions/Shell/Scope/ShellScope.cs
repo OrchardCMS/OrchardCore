@@ -376,6 +376,9 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
+        /// <param name="callback">The delegate to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> parameter and returns a <see cref="Task"/>.</param>
+        /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
+        /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning.</param>
         internal void BeforeDispose(Func<ShellScope, Task> callback, bool last)
         {
             var list = _beforeDispose ??= [];
