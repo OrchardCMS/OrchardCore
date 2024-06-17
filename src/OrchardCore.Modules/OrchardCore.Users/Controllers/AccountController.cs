@@ -432,7 +432,6 @@ namespace OrchardCore.Users.Controllers
                     return View(nameof(LinkExternalLogin));
                 }
 
-
                 // No user could be matched, check if a new user can register.
                 if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
                 {
