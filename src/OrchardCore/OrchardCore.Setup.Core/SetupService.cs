@@ -227,8 +227,22 @@ namespace OrchardCore.Setup.Services
                 executionId = Guid.NewGuid().ToString("n");
 
                 var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+                try
+                {
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
+                }
+                catch (RecipeExecutionException e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe during setup.");
 
-                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
+                    context.Errors.Add(string.Empty, string.Join(' ', e.StepResult.Errors));
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to import a recipe during setup.");
+
+                    context.Errors.Add(string.Empty, S["Unexpected error occurred while importing the recipe."]);
+                }
             }
 
             // Reloading the shell context as the recipe has probably updated its features.

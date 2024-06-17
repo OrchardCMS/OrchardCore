@@ -26,11 +26,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
 {
     private static readonly char[] _separator = [',', ' '];
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        WriteIndented = true,
-    };
-
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -73,7 +68,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, UpdateEditorContext context)
     {
         if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {

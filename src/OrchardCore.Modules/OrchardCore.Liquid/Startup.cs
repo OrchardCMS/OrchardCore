@@ -25,7 +25,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Liquid
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -57,6 +57,7 @@ namespace OrchardCore.Liquid
                     {
                         JsonObject o => new ObjectValue(o),
                         JsonDynamicObject o => new ObjectValue((JsonObject)o),
+                        JsonValue o => o.GetObjectValue(),
                         DateTime d => new ObjectValue(d),
                         _ => null
                     };
@@ -80,7 +81,7 @@ namespace OrchardCore.Liquid
     }
 
     [RequireFeatures("OrchardCore.Contents")]
-    public class LiquidPartStartup : StartupBase
+    public sealed class LiquidPartStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -96,7 +97,7 @@ namespace OrchardCore.Liquid
     }
 
     [RequireFeatures("OrchardCore.Shortcodes")]
-    public class ShortcodesStartup : StartupBase
+    public sealed class ShortcodesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

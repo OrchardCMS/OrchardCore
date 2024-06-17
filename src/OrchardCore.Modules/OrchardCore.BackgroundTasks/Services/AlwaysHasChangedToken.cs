@@ -6,7 +6,7 @@ namespace OrchardCore.BackgroundTasks.Services
     /// <summary>
     /// An empty change token that is always in the changed state but without raising any change callbacks.
     /// </summary>
-    internal class AlwaysHasChangedToken : IChangeToken
+    internal sealed class AlwaysHasChangedToken : IChangeToken
     {
         public static AlwaysHasChangedToken Singleton { get; } = new AlwaysHasChangedToken();
 
@@ -24,7 +24,7 @@ namespace OrchardCore.BackgroundTasks.Services
         }
     }
 
-    internal class EmptyDisposable : IDisposable
+    internal sealed class EmptyDisposable : IDisposable
     {
         public static EmptyDisposable Instance { get; } = new EmptyDisposable();
 

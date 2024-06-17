@@ -17,7 +17,7 @@ namespace OrchardCore.PublishLater.Services;
     Title = "Scheduled Content Items Publisher",
     Schedule = "* * * * *",
     Description = "Publishes content items when their scheduled publish date time arrives.")]
-public class ScheduledPublishingBackgroundTask : IBackgroundTask
+public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
 {
     private readonly ILogger _logger;
     private readonly IClock _clock;

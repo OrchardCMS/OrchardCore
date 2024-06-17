@@ -6,7 +6,7 @@ using OrchardCore.Mvc;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public class LiquidViewOptionsSetup : IConfigureOptions<LiquidViewOptions>
+    public sealed class LiquidViewOptionsSetup : IConfigureOptions<LiquidViewOptions>
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;

@@ -18,6 +18,7 @@ using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
+using OrchardCore.Contents.Endpoints.Api;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
@@ -56,7 +57,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -212,6 +213,10 @@ namespace OrchardCore.Contents
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.AddGetContentEndpoint()
+                .AddCreateContentEndpoint()
+                .AddDeleteContentEndpoint();
+
             var itemControllerName = typeof(ItemController).ControllerName();
 
             routes.MapAreaControllerRoute(
@@ -238,7 +243,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -249,7 +254,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.AdminMenu")]
-    public class AdminMenuStartup : StartupBase
+    public sealed class AdminMenuStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -258,7 +263,7 @@ namespace OrchardCore.Contents
     }
 
     [Feature("OrchardCore.Contents.FileContentDefinition")]
-    public class FileContentDefinitionStartup : StartupBase
+    public sealed class FileContentDefinitionStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -267,7 +272,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Sitemaps")]
-    public class SitemapsStartup : StartupBase
+    public sealed class SitemapsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -282,7 +287,7 @@ namespace OrchardCore.Contents
     }
 
     [RequireFeatures("OrchardCore.Feeds")]
-    public class FeedsStartup : StartupBase
+    public sealed class FeedsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

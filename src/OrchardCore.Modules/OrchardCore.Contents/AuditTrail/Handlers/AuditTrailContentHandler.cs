@@ -65,16 +65,15 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task RestoredAsync(RestoreContentContext context)
             => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Restored, context.ContentItem);
 
-        private async Task RecordAuditTrailEventAsync(string name, IContent content)
+        private async Task RecordAuditTrailEventAsync(string name, ContentItem content)
         {
             if (name != ContentAuditTrailEventConfiguration.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
             {
                 return;
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var settings = await _siteService.GetSettingsAsync<ContentAuditTrailSettings>();
 
-            var settings = siteSettings.As<ContentAuditTrailSettings>();
             if (!settings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
             {
                 return;

@@ -16,7 +16,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -37,7 +37,8 @@ namespace OrchardCore.Contents
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(
             IContentDefinitionManager contentDefinitionManager,
@@ -66,16 +67,16 @@ namespace OrchardCore.Contents
 
             var context = _httpContextAccessor.HttpContext;
 
-            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
-            var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+            var listableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, contentTypes, _contentManager))
+                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, listableContentTypes, _contentManager))
                     {
-                        contentItems.Permission(Permissions.ListContent);
+                        contentItems.Permission(CommonPermissions.ListContent);
                     }
 
                     contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
@@ -83,29 +84,34 @@ namespace OrchardCore.Contents
                 });
             });
 
-            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+            var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 
-            if (adminSettings.DisplayNewMenu && contentTypes.Any())
+            if (adminSettings.DisplayNewMenu)
             {
-                await builder.AddAsync(S["New"], "-1", async newMenu =>
-                {
-                    newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
-                    foreach (var contentTypeDefinition in contentTypes)
-                    {
-                        var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                        var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
-                        var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
+                var creatableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
 
-                        if (createRouteValues.Count > 0)
+                if (creatableContentTypes.Any())
+                {
+                    await builder.AddAsync(S["New"], "-1", async newMenu =>
+                    {
+                        newMenu.LinkToFirstChild(false).AddClass("new").Id("new");
+                        foreach (var contentTypeDefinition in creatableContentTypes)
                         {
-                            newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
-                                .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                                .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
-                                );
+                            var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                            var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
+                            var createRouteValues = cim.CreateRouteValues;
+                            createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
+
+                            if (createRouteValues.Count > 0)
+                            {
+                                newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
+                                    .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
+                                    .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
+                                    );
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     }

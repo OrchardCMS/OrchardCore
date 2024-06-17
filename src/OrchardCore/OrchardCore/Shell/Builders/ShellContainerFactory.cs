@@ -67,8 +67,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     continue;
                 }
 
-                // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                // Ignore Startup class from main application.
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
                 {
                     continue;
                 }
@@ -115,10 +115,10 @@ namespace OrchardCore.Environment.Shell.Builders
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            // Let any module add custom service descriptors to the tenant
+            // Let any module add custom service descriptors to the tenant.
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();
 
                 // If the startup is not coming from an extension, associate it to the application feature.
                 // For instance when Startup classes are registered with Configure<Startup>() from the application.
@@ -132,9 +132,70 @@ namespace OrchardCore.Environment.Shell.Builders
             // Rebuild the service provider from the updated collection.
             shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
-            // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+            PopulateTypeFeatureProvider(typeFeatureProvider, featureAwareServiceCollection);
 
+            return shellServiceProvider;
+        }
+
+        private void EnsureApplicationFeature()
+        {
+            if (_applicationFeature is null)
+            {
+                lock (this)
+                {
+                    _applicationFeature ??= _extensionManager.GetFeatures()
+                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
+                }
+            }
+        }
+
+        private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
+        {
+            // Get all types from all extension and add them to the type feature provider.
+            var extensions = _extensionManager.GetExtensions();
+
+            var allTypesByExtension = extensions
+                .SelectMany(extension =>
+                    _extensionManager.GetExportedExtensionTypes(extension)
+                        .Where(IsComponentType)
+                        .Select(type => new
+                        {
+                            Extension = extension,
+                            Type = type
+                        }));
+
+            var typesByFeature = allTypesByExtension
+                .GroupBy(typeByExtension => GetSourceFeatureNameForType(
+                    typeByExtension.Type,
+                    typeByExtension.Extension.Id))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(typesByExtension => typesByExtension.Type));
+
+            foreach (var extension in extensions)
+            {
+                foreach (var feature in extension.Features)
+                {
+                    // Features can have no types.
+                    if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
+                    {
+                        // This is adding the types to the main feature for backward compatibility.
+                        // In the future we could stop doing it as we don't expect this to be necessary, and remove the FeatureTypeDiscovery attribute.
+                        foreach (var type in featureTypes)
+                        {
+                            // If the attribute is present then we explicitly ignore the backward compatibility and skip the registration
+                            // in the main feature.
+                            if (!SkipExtensionFeatureRegistration(type))
+                            {
+                                typeFeatureProvider.TryAdd(type, feature);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Register all DIed types in ITypeFeatureProvider.
             foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
@@ -161,20 +222,23 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-
-            return shellServiceProvider;
         }
 
-        private void EnsureApplicationFeature()
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
         {
-            if (_applicationFeature is null)
-            {
-                lock (this)
-                {
-                    _applicationFeature ??= _extensionManager.GetFeatures()
-                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                }
-            }
+            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+            return attribute?.FeatureName ?? extensionId;
+        }
+
+        private static bool IsComponentType(Type type)
+        {
+            return type.IsClass && !type.IsAbstract && type.IsPublic;
+        }
+
+        private static bool SkipExtensionFeatureRegistration(Type type)
+        {
+            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
         }
     }
 }

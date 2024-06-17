@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
-        private static IServiceProvider CreateServiceProvider()
+        private static ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddScoped(typeof(Resolver<>));
@@ -80,7 +80,7 @@ namespace OrchardCore.Tests.Workflows
             return services.BuildServiceProvider();
         }
 
-        private static IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+        private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
@@ -114,9 +114,9 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
-            var jsonOptionsMock = new Mock<IOptions<ContentSerializerJsonOptions>>();
+            var jsonOptionsMock = new Mock<IOptions<DocumentJsonSerializerOptions>>();
             jsonOptionsMock.Setup(x => x.Value)
-                .Returns(new ContentSerializerJsonOptions());
+                .Returns(new DocumentJsonSerializerOptions());
 
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,

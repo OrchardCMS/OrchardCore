@@ -25,7 +25,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Mvc
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override int Order => -1000;
         public override int ConfigureOrder => 1000;
@@ -44,8 +44,7 @@ namespace OrchardCore.Mvc
             var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
                 .ActionDescriptors.Items
                 .OfType<ControllerActionDescriptor>()
-                .ToArray()
-                ;
+                .ToArray();
 
             var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
 
@@ -78,7 +77,7 @@ namespace OrchardCore.Mvc
                 // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
                 // Load this filter after the MediaSizeFilterLimitAttribute, but before the
                 // IgnoreAntiforgeryTokenAttribute. refer : https://github.com/aspnet/AspNetCore/issues/10384
-                options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAttribute), 999);
+                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>(999);
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());

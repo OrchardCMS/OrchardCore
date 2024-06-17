@@ -20,6 +20,7 @@ You may configure the Default Azure Email Service provider by the configuration 
     "DefaultSender": "",
     "ConnectionString": ""
 }
+```
 
 For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
 

@@ -16,26 +16,23 @@ namespace OrchardCore.Twitter.Drivers
 {
     public class TwitterSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public TwitterSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<TwitterSettingsDisplayDriver> logger)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -48,7 +45,7 @@ namespace OrchardCore.Twitter.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
+            return Initialize<TwitterSettingsViewModel>("XSettings_Edit", model =>
             {
                 model.APIKey = settings.ConsumerKey;
                 if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
@@ -91,7 +88,7 @@ namespace OrchardCore.Twitter.Drivers
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == TwitterConstants.Features.Twitter)
             {
@@ -104,17 +101,20 @@ namespace OrchardCore.Twitter.Drivers
                 var model = new TwitterSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.ConsumerKey = model.APIKey;
+                settings.AccessToken = model.AccessToken;
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
-                    settings.ConsumerKey = model.APIKey;
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
-                    settings.AccessToken = model.AccessToken;
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
+
+                _shellReleaseManager.RequestRelease();
             }
+
             return await EditAsync(settings, context);
         }
     }

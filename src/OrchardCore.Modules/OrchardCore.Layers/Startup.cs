@@ -25,7 +25,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.Layers
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(LayerFilter));
+                options.Filters.Add<LayerFilter>();
             });
 
             services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();

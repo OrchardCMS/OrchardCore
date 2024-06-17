@@ -10,7 +10,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Taxonomies
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -169,12 +169,12 @@ namespace OrchardCore.Taxonomies
         }
     }
 
-    internal class AliasPartSettings
+    internal sealed class AliasPartSettings
     {
         public string Pattern { get; set; }
     }
 
-    internal class AutoroutePartSettings
+    internal sealed class AutoroutePartSettings
     {
         public string Pattern { get; set; }
         public bool AllowRouteContainedItems { get; set; }

@@ -35,18 +35,16 @@ namespace OrchardCore.Users.TimeZone.Drivers
             User user,
             UserTimeZone userTimeZone,
             IUpdateModel updater,
-            BuildEditorContext context
+            UpdateEditorContext context
         )
         {
             var model = new UserTimeZoneViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                userTimeZone.TimeZoneId = model.TimeZoneId;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            userTimeZone.TimeZoneId = model.TimeZoneId;
 
-                // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
-                await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
-            }
+            // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
+            await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
 
             return await EditAsync(userTimeZone, context);
         }

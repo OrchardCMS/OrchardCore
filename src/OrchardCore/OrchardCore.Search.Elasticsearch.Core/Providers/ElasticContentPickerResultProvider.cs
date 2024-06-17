@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -108,7 +109,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                         {
                             ContentItemId = doc["ContentItemId"].ToString(),
                             DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
-                            HasPublished = doc["Content.ContentItem.Published"].ToString().ToLowerInvariant().Equals("true")
+                            HasPublished = doc["Content.ContentItem.Published"].ToString().ToLowerInvariant().Equals("true", StringComparison.Ordinal)
                         });
                     }
                 }

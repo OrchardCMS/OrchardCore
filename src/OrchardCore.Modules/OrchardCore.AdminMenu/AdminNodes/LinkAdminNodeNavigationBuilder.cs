@@ -59,6 +59,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
                 // Add the actual link.
                 itemBuilder.Url(nodeLinkUrl);
+                itemBuilder.Target(node.Target);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 

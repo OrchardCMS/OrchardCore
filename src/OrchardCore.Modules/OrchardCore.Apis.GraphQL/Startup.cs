@@ -13,7 +13,6 @@ using OrchardCore.Apis.GraphQL.Json;
 using OrchardCore.Apis.GraphQL.Services;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Json.Extensions;
 using OrchardCore.Modules;
@@ -22,7 +21,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Apis.GraphQL
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IHostEnvironment _hostingEnvironment;
 
@@ -56,8 +55,8 @@ namespace OrchardCore.Apis.GraphQL
                 // Common types of converters are already configured in the assembly "GraphQL.SystemTextJson".
                 options.Converters.Add(GraphQLNamedQueryRequestJsonConverter.Instance);
 
-                var contentSerializerJsonOptions = sp.GetRequiredService<IOptions<ContentSerializerJsonOptions>>().Value;
-                options.Merge(contentSerializerJsonOptions.SerializerOptions);
+                var documentJsonSerializerOptions = sp.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>().Value;
+                options.Merge(documentJsonSerializerOptions.SerializerOptions);
             }));
 
             services.AddOptions<GraphQLSettings>().Configure<IShellConfiguration>((c, configuration) =>
