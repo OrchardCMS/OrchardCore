@@ -1,23 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
-    public class DynamicContentTypeBuilder : IContentTypeBuilder
+    public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly GraphQLContentOptions _contentOptions;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly GraphQLContentOptions _contentOptions;
         protected readonly IStringLocalizer S;
         private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
-        public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+        protected DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
             IStringLocalizer<DynamicContentTypeBuilder> localizer)
         {
@@ -28,15 +30,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             S = localizer;
         }
 
-        public void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
-        {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+        public abstract void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType);
 
+        protected void BuildInternal(ISchema schema, ContentTypeDefinition contentTypeDefinition, IComplexGraphType graphType)
+        {
             if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
                 return;
             }
+
+            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
 
             foreach (var part in contentTypeDefinition.Parts)
             {
@@ -53,7 +57,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(schema, field)))))
+                if (!part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(schema, field))))
                 {
                     continue;
                 }
@@ -66,64 +70,134 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             var customFieldName = GraphQLContentOptions.GetFieldName(part, part.Name, field.Name);
 
-                            var fieldType = fieldProvider.GetField(schema, field, part.Name, customFieldName);
+                            var contentFieldType = fieldProvider.GetField(schema, field, part.Name, customFieldName);
 
-                            if (fieldType != null)
+                            if (contentFieldType != null)
                             {
-                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
+                                if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name) ||
+                                    graphType.HasFieldIgnoreCase(contentFieldType.Name))
                                 {
                                     continue;
                                 }
 
-                                contentItemType.AddField(fieldType);
+                                if (graphType is IFilterInputObjectGraphType curInputGraphType)
+                                {
+                                    if (fieldProvider.HasFieldIndex(field))
+                                    {
+                                        curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                    }
+                                }
+                                else if (graphType is IObjectGraphType curObjectGraphType)
+                                {
+                                    curObjectGraphType.AddField(contentFieldType);
+                                }
+
                                 break;
                             }
                         }
                     }
+
+                    continue;
                 }
-                else
+
+                // Check if another builder has already added a field for this part.
+                var partFieldName = partName.ToFieldName();
+                var partFieldType = graphType.GetField(partFieldName);
+
+                if (partFieldType != null)
                 {
-                    // Check if another builder has already added a field for this part.
-                    var existingField = contentItemType.GetField(partName.ToFieldName());
-                    if (existingField != null)
+                    // Add dynamic content fields to the registered part type.
+                    var partContentItemType = schema.AdditionalTypeInstances
+                        .Where(type => type is IObjectGraphType || type is IFilterInputObjectGraphType)
+                        .Where(type => type.GetType() == partFieldType.Type)
+                        .FirstOrDefault() as IComplexGraphType;
+
+                    if (partContentItemType != null)
                     {
-                        // Add content field types.
                         foreach (var field in part.PartDefinition.Fields)
                         {
                             foreach (var fieldProvider in contentFieldProviders)
                             {
                                 var contentFieldType = fieldProvider.GetField(schema, field, part.Name);
 
-                                if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
+                                if (contentFieldType != null)
                                 {
-                                    contentItemType.AddField(contentFieldType);
+                                    if (_contentOptions.ShouldSkip(contentFieldType.Type, contentFieldType.Name) ||
+                                        partContentItemType.HasFieldIgnoreCase(contentFieldType.Name))
+                                    {
+                                        continue;
+                                    }
+
+                                    if (partContentItemType is IFilterInputObjectGraphType partInputContentItemType)
+                                    {
+                                        if (fieldProvider.HasFieldIndex(field))
+                                        {
+                                            partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                        }
+                                    }
+                                    else if (partContentItemType is IObjectGraphType partContentItemObjectType)
+                                    {
+                                        partContentItemObjectType.AddField(contentFieldType);
+                                    }
+
                                     break;
                                 }
                             }
                         }
-                        continue;
                     }
 
-                    if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                    continue;
+                }
+
+                if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
+                {
+                    if (graphType is IFilterInputObjectGraphType curInputGraphType)
                     {
-                        contentItemType.AddField(fieldType);
+                        curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
                     }
-                    else
+                    else if (graphType is IObjectGraphType curObjectGraphType)
                     {
-                        var field = contentItemType
-                            .Field<DynamicPartGraphType>(partName.ToFieldName())
-                            .Description(S["Represents a {0}.", part.PartDefinition.Name])
-                            .Resolve(context =>
-                            {
-                                var nameToResolve = partName;
-                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
-
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
-
-                        field.Type(new DynamicPartGraphType(part));
-                        _dynamicPartFields[partName] = field.FieldType;
+                        curObjectGraphType.AddField(fieldType);
                     }
+
+                    continue;
+                }
+
+                if (graphType is IFilterInputObjectGraphType inputGraphType)
+                {
+                    if (part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(cfp => cfp.HasFieldIndex(field))))
+                    {
+                        var field = new FieldType
+                        {
+                            Name = partFieldName,
+                            Description = S["Represents a {0}.", part.PartDefinition.Name],
+                            Type = typeof(DynamicPartWhereInputGraphType),
+                            ResolvedType = new DynamicPartWhereInputGraphType(part)
+                        };
+
+                        inputGraphType.AddField(field);
+                        _dynamicPartFields[partName] = field;
+                    }
+                }
+                else if (graphType is IObjectGraphType objectGraphType)
+                {
+                    var field = new FieldType
+                    {
+                        Name = partFieldName,
+                        Description = S["Represents a {0}.", part.PartDefinition.Name],
+                        Type = typeof(DynamicPartGraphType),
+                        ResolvedType = new DynamicPartGraphType(part),
+                        Resolver = new FuncFieldResolver<ContentElement, object>(context =>
+                        {
+                            var nameToResolve = partName;
+                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+
+                            return context.Source.Get(typeToResolve, nameToResolve);
+                        })
+                    };
+
+                    objectGraphType.AddField(field);
+                    _dynamicPartFields[partName] = field;
                 }
             }
         }

@@ -58,6 +58,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
                 model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
                 model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
+                model.Target = context.IsNew && field.Target == null ? settings.DefaultTarget : field.Target;
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -67,7 +68,7 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
+            var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text, f => f.Target);
 
             if (modelUpdated)
             {

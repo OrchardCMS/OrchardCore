@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Elasticsearch;
 
-public class ElasticsearchIndexPermissionHelper
+public static class ElasticsearchIndexPermissionHelper
 {
     [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Search.Elasticsearch.Permissions.ManageElasticIndexes'.")]
     public static readonly Permission ManageElasticIndexes = Permissions.ManageElasticIndexes;

@@ -219,6 +219,6 @@ namespace OrchardCore.DisplayManagement
             }
         }
 
-        public static readonly INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
+        public static readonly INamedEnumerable<object> Empty = From([], []);
     }
 }

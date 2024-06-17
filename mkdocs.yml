@@ -34,6 +34,8 @@ extra:
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore
+    - icon: fontawesome/brands/discord
+      link: https://orchardcore.net/discord
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/OrchardCMS
 

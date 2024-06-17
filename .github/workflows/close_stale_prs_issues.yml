@@ -23,12 +23,12 @@ jobs:
             Closing this pull request because it has been stale for very long. If you think this is still relevant, 
             feel free to reopen it.
           stale-issue-message: >
-            It seems that this issue didn't really move for quite a while. Is this something you'd like to revisit 
-            any time soon or should we close? Please reply.
+            It seems that this issue didn't really move for quite a while despite us asking the author for further 
+            feedback. Is this something you'd like to revisit any time soon or should we close? Please reply.
           stale-issue-label: stale
           days-before-issue-stale: 15
           days-before-issue-close: 7
           only-issue-labels: needs author feedback
           close-issue-message: >
-            Closing this issue because it has been stale for very long. If you think this is still relevant, 
-            feel free to reopen it.
+            Closing this issue because it didn't receive further feedback from the author for very long. If you think 
+            this is still relevant, feel free to reopen it with the requested details.

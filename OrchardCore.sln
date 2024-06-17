@@ -214,13 +214,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Https", "src\Or
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}"
 	ProjectSection(SolutionItems) = preProject
-		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
-		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		Directory.Build.props = Directory.Build.props
-		src\OrchardCore\Directory.Build.targets = src\OrchardCore\Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
 		src\OrchardCore.Build\OrchardCore.Commons.targets = src\OrchardCore.Build\OrchardCore.Commons.targets
+		src\OrchardCore.Build\TargetFrameworks.props = src\OrchardCore.Build\TargetFrameworks.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email", "src\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj", "{B3E9EC5B-171E-43FB-8620-7FC24D0A985A}"

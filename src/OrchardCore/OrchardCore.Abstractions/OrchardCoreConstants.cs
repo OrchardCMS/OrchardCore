@@ -1,18 +1,18 @@
 namespace OrchardCore;
 
-public class OrchardCoreConstants
+public static class OrchardCoreConstants
 {
-    public class Shell
+    public static class Shell
     {
         public const string TenantsFileName = "tenants.json";
     }
 
-    public class Configuration
+    public static class Configuration
     {
         public const string ApplicationSettingsFileName = "appsettings.json";
     }
 
-    public class Roles
+    public static class Roles
     {
         public const string Administrator = "Administrator";
 
@@ -29,7 +29,7 @@ public class OrchardCoreConstants
         public const string Anonymous = "Anonymous";
     }
 
-    public class ConfigureOrder
+    public static class ConfigureOrder
     {
         public const int Default = 0;
 

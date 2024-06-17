@@ -249,9 +249,9 @@ public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
         }
     ];
 
-    public IEnumerable<IndexAlias> GetAliases()
+    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return _aliases;
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
     }
 }
 ```
