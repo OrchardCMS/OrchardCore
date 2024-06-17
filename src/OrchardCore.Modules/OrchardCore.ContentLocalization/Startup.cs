@@ -39,16 +39,17 @@ public sealed class Startup : StartupBase
             })
             .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
-        services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
-        services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
-        services.AddContentLocalization();
+            services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
+            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
+            services.AddContentLocalization();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
-        services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
-        services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+            services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+            services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+        });
     }
 }
 
