@@ -14,4 +14,10 @@ public class MailMessageBody
     /// Gets or sets the body in HTML format.
     /// </summary>
     public string Html { get; set; }
+
+    public static implicit operator MailMessageBody(string body) => new()
+    {
+        Html = body,
+        Text = body
+    };
 }

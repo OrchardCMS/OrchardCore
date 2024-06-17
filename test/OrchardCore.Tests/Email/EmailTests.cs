@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
 
             // Act
@@ -32,7 +32,7 @@ namespace OrchardCore.Tests.Email
             {
                 Cc = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
 
             // Act
@@ -50,7 +50,7 @@ namespace OrchardCore.Tests.Email
             {
                 Bcc = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
 
             // Act
@@ -67,7 +67,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
 
             await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -80,7 +80,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" },
+                Body = "Test Message",
                 From = "My Name <youraddress@host.com>",
             };
             var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" },
+                Body = "Test Message",
                 Sender = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
             };
             var content = await SendEmailAsync(message, "Sebastien Ros <sebastienros@gmail.com>");
@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" },
+                Body = "Test Message",
                 From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
             };
             var content = await SendEmailAsync(message, "Hisham Bin Ateya <hishamco_2007@hotmail.com>");
@@ -128,7 +128,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" },
+                Body = "Test Message",
                 From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
                 ReplyTo = "Hisham Bin Ateya <hishamco_2007@yahoo.com>",
             };
@@ -145,7 +145,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" },
+                Body = "Test Message",
                 From = "Sebastien Ros <sebastienros@gmail.com>"
             };
             var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -176,7 +176,7 @@ namespace OrchardCore.Tests.Email
             var message = new MailMessage
             {
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
 
             var options = new SmtpOptions
@@ -201,7 +201,7 @@ namespace OrchardCore.Tests.Email
             {
                 To = "info@oc.com",
                 Subject = "Test",
-                Body = new MailMessageBody { Html = "Test Message" }
+                Body = "Test Message"
             };
             var settings = new SmtpOptions
             {
