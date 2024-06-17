@@ -261,7 +261,7 @@ namespace OrchardCore.Documents
                         return document;
                     }
 
-                    if (_isDistributed && (_options?.SlidingExpiration.HasValue ?? false))
+                    if (_isDistributed && _options.SlidingExpiration.HasValue)
                     {
                         await _distributedCache.RefreshAsync(_options.CacheKey);
                     }
