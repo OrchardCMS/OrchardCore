@@ -8,7 +8,7 @@ public class MailMessageBody
     /// <summary>
     /// Gets or sets the body in plain text format.
     /// </summary>
-    public string Text { get; set; }
+    public string PlainText { get; set; }
 
     /// <summary>
     /// Gets or sets the body in HTML format.
@@ -18,6 +18,6 @@ public class MailMessageBody
     public static implicit operator MailMessageBody(string body) => new()
     {
         Html = body,
-        Text = body
+        PlainText = body
     };
 }

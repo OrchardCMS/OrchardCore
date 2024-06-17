@@ -117,7 +117,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 Subject = subject?.Trim(),
                 Body = new MailMessageBody
                 {
-                    Text = textBody?.Trim(),
+                    PlainText = textBody?.Trim(),
                     Html = htmlBody?.Trim()
                 }
             };

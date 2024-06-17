@@ -115,7 +115,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
         var body = new BodyBuilder
         {
-            TextBody = message.Body?.Text,
+            TextBody = message.Body?.PlainText,
             HtmlBody = message.Body?.Html
         };
 

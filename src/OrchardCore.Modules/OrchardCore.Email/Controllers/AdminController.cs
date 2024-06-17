@@ -134,7 +134,7 @@ public class AdminController : Controller
 
         if (!string.IsNullOrWhiteSpace(testSettings.Body))
         {
-            message.Body = new MailMessageBody { Text = testSettings.Body };
+            message.Body = new MailMessageBody { PlainText = testSettings.Body };
         }
 
         return message;

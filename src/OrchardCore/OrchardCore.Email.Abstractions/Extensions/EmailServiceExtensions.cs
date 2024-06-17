@@ -25,7 +25,7 @@ public static class EmailServiceExtensions
             Body = new MailMessageBody
             {
                 Html = htmlBody,
-                Text = textBody
+                PlainText = textBody
             }
         };
 
