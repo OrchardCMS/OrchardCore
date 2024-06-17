@@ -14,6 +14,7 @@ namespace OrchardCore.ContentFields.Indexing
             {
                 context.DocumentIndex.Set(key, field.Url, options);
                 context.DocumentIndex.Set(key, field.Text, options);
+                context.DocumentIndex.Set(key, field.Target, options);
             }
 
             return Task.CompletedTask;

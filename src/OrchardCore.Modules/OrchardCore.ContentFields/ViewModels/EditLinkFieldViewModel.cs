@@ -8,6 +8,7 @@ namespace OrchardCore.ContentFields.ViewModels
     {
         public string Url { get; set; }
         public string Text { get; set; }
+        public string Target { get; set; }
         public LinkField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
