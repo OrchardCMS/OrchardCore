@@ -12,16 +12,17 @@ public class AddPropertyTagHelper : TagHelper
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var shape = (IShape)context.Items[typeof(IShape)];
-
-        if (!string.IsNullOrWhiteSpace(Name))
+        if (string.IsNullOrWhiteSpace(Name))
         {
-            var content = await output.GetChildContentAsync(useCachedResult: false);
-            shape.Properties[Name.Trim()] = output.Attributes.ContainsName("value")
-                ? output.Attributes["value"].Value
-                : new HtmlString(content.GetContent());
+            return;
         }
 
+        var content = await output.GetChildContentAsync(useCachedResult: false);
+        var shape = (IShape)context.Items[typeof(IShape)];
+        shape.Properties[Name.Trim()] = output.Attributes.ContainsName("value")
+            ? output.Attributes["value"].Value
+            : new HtmlString(content.GetContent());
+            
         output.SuppressOutput();
     }
 }
