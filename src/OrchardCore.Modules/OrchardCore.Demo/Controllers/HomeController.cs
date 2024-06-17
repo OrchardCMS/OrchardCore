@@ -109,6 +109,8 @@ namespace OrchardCore.Demo.Controllers
             return View(shape);
         }
 
+        public IActionResult AddProperty() => View();
+
         public ActionResult Raw()
         {
             return View();
