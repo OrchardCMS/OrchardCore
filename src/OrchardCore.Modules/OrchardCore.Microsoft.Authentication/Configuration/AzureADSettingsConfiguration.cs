@@ -9,7 +9,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
-public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
+public sealed class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 {
     private readonly IAzureADService _azureADService;
     private readonly ShellSettings _shellSettings;

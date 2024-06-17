@@ -13,18 +13,15 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
+        private readonly IShellReleaseManager _shellReleaseManager;
+
         protected readonly IStringLocalizer S;
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-
         public DefaultSiteSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
+            IShellReleaseManager shellReleaseManager,
             IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            _shellReleaseManager = shellReleaseManager;
             S = stringLocalizer;
         }
 
@@ -89,10 +86,7 @@ namespace OrchardCore.Settings.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
             }
 
-            if (context.Updater.ModelState.IsValid)
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            _shellReleaseManager.RequestRelease();
 
             return await EditAsync(site, context);
         }

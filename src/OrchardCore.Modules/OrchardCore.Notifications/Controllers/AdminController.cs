@@ -46,7 +46,6 @@ public class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-
         IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
@@ -143,7 +142,8 @@ public class AdminController : Controller, IUpdateModel
         return View(shapeViewModel);
     }
 
-    [HttpPost, ActionName(nameof(List))]
+    [HttpPost]
+    [ActionName(nameof(List))]
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ListNotificationOptions options)
     {
@@ -162,7 +162,8 @@ public class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List), options.RouteValues);
     }
 
-    [HttpPost, ActionName(nameof(List))]
+    [HttpPost]
+    [ActionName(nameof(List))]
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPOST(ListNotificationOptions options, IEnumerable<string> itemIds)
     {

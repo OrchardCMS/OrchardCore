@@ -15,7 +15,7 @@
     ViewLayout = "Layout__Login";
 
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+    var disableLocalLogin = (await SiteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
 }
 
 <style asp-name="font-awesome" version="6"></style>

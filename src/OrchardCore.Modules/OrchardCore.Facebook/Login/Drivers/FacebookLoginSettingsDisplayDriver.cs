@@ -13,21 +13,18 @@ namespace OrchardCore.Facebook.Login.Drivers
 {
     public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public FacebookLoginSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
@@ -56,15 +53,15 @@ namespace OrchardCore.Facebook.Login.Drivers
                 }
 
                 var model = new FacebookLoginSettingsViewModel();
+
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
+                _shellReleaseManager.RequestRelease();
             }
+
             return await EditAsync(settings, context);
         }
     }

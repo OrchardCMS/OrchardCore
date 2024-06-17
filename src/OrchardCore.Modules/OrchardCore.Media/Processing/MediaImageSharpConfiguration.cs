@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
@@ -11,7 +12,7 @@ namespace OrchardCore.Media.Processing
     /// <summary>
     /// Provides default configuration for ImageSharp.
     /// </summary>
-    public class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpMiddlewareOptions>
+    public sealed class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpMiddlewareOptions>
     {
         private readonly MediaOptions _mediaOptions;
 
@@ -82,6 +83,26 @@ namespace OrchardCore.Media.Processing
                 }
 
                 return Task.CompletedTask;
+            };
+
+            var onPrepareResponse = options.OnPrepareResponseAsync;
+            options.OnPrepareResponseAsync = async context =>
+            {
+                if (onPrepareResponse is not null)
+                {
+                    await onPrepareResponse(context);
+                }
+
+                // Override cache control for secure files
+                if (context.IsSecureMediaRequested())
+                {
+                    var mediaOptions = context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
+                    var secureCacheControl = mediaOptions.MaxSecureFilesBrowserCacheDays == 0
+                        ? "no-store"
+                        : "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxSecureFilesBrowserCacheDays).TotalSeconds.ToString();
+
+                    context.Response.Headers.CacheControl = secureCacheControl;
+                }
             };
         }
 

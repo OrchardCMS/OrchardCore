@@ -1,12 +1,14 @@
 name: Validating the Building of Public Assets
 
-on: 
+on:
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
   push:
     paths-ignore:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches: [ main ]
+    branches: [ main, release/** ]
   pull_request:
     branches: [ main, release/** ]
 
@@ -31,7 +33,7 @@ jobs:
 
         if ($changes)
         {
-            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/docs/guides/gulp-pipeline/.'
+            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/guides/gulp-pipeline/.'
             Write-Output 'The following files changed:'
             Write-Output $changes
             Write-Output 'You can also download the attached artifact to see the changes.'

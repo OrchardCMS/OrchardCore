@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc
 {
-    public class RazorCompilationOptionsSetup : IConfigureOptions<MvcRazorRuntimeCompilationOptions>
+    public sealed class RazorCompilationOptionsSetup : IConfigureOptions<MvcRazorRuntimeCompilationOptions>
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IApplicationContext _applicationContext;

@@ -199,7 +199,7 @@ namespace OrchardCore.ContentManagement.Utilities
         [Obsolete("Use Char.IsWhiteSpace() instead.")]
         public static bool IsSpace(this char c)
         {
-            return (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ');
+            return c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ';
         }
 
         public static bool IsReservedContentName(this string name) => _reservedNames.Contains(name);

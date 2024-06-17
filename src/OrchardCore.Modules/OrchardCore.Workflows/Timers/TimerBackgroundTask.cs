@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Timers
         Title = "Timed Workflow Starter",
         Schedule = "* * * * *",
         Description = "Triggers timed workflow events.")]
-    public class TimerBackgroundTask : IBackgroundTask
+    public sealed class TimerBackgroundTask : IBackgroundTask
     {
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {

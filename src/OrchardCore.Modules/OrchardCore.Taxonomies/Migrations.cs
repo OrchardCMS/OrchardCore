@@ -10,7 +10,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Taxonomies
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

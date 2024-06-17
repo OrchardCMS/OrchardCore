@@ -10,7 +10,7 @@ using OrchardCore.Users.Services;
 namespace OrchardCore.Users.Localization;
 
 [Feature("OrchardCore.Users.Localization")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

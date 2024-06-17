@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
@@ -8,18 +10,18 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Events;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
-            services.AddScoped<IStereotypesProvider, DefaultStereotypesProvider>();
             services.AddScoped<IStereotypeService, StereotypeService>();
             services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
             services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
@@ -35,11 +37,12 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
 
             services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

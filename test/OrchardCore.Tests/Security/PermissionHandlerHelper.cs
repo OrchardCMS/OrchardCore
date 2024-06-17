@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Security
 {
     public static class PermissionHandlerHelper
     {
-        public static AuthorizationHandlerContext CreateTestAuthorizationHandlerContext(Permission required, string[] allowed = null, bool authenticated = false)
+        public static AuthorizationHandlerContext CreateTestAuthorizationHandlerContext(Permission required, string[] allowed = null, bool authenticated = false, object resource = null)
         {
             var identity = authenticated ? new ClaimsIdentity("Test") : new ClaimsIdentity();
 
@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.Security
             return new AuthorizationHandlerContext(
                 new[] { new PermissionRequirement(required) },
                 principal,
-                null);
+                resource);
         }
 
         public static async Task SuccessAsync(this AuthorizationHandlerContext context, params string[] permissionNames)

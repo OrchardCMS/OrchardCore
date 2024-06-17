@@ -43,7 +43,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                 var featureIds = features.Select(sf => sf.Id).ToArray();
 
                 var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
-                    .Select(entry => entry.FeatureInfo.Id)
+                    .Select(entry => entry.Id)
                     .Except(featureIds)
                     .Select(id => new ShellFeature(id));
 

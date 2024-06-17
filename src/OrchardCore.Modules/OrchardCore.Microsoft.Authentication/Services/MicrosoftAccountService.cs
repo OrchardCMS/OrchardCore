@@ -22,11 +22,8 @@ namespace OrchardCore.Microsoft.Authentication.Services
             S = stringLocalizer;
         }
 
-        public async Task<MicrosoftAccountSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<MicrosoftAccountSettings>();
-        }
+        public Task<MicrosoftAccountSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<MicrosoftAccountSettings>();
 
         public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
         {

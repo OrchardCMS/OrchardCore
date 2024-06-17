@@ -9,7 +9,7 @@ using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Rules
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -22,8 +22,7 @@ namespace OrchardCore.Rules
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
                 .AddScoped<IConditionResolver, ConditionResolver>()
                 .AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>()
-                .AddScoped<IRuleService, RuleService>()
-                .AddScoped<IRuleMigrator, RuleMigrator>();
+                .AddScoped<IRuleService, RuleService>();
 
             // All condition.
             services.AddRule<AllConditionGroup, AllConditionEvaluator, AllConditionDisplayDriver>();

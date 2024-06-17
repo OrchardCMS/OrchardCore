@@ -10,7 +10,8 @@ namespace OrchardCore.Users.Services
 {
     /// <summary>
     /// Provides the theme defined in the site configuration for the current scope (request).
-    /// This selector provides AdminTheme as default or fallback for Account|Registration|ResetPassword
+    /// This selector provides AdminTheme as default or fallback for Account for Registration,
+    /// ResetPassword, TwoFactorAuthentication, SmsAuthenticator and AuthenticatorApp
     /// controllers based on SiteSettings.
     /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
@@ -35,25 +36,40 @@ namespace OrchardCore.Users.Services
         {
             var routeValues = _httpContextAccessor.HttpContext.Request.RouteValues;
 
-            if (routeValues["area"]?.ToString() == "OrchardCore.Users")
+            if (routeValues["area"]?.ToString() == UserConstants.Features.Users)
             {
                 bool useSiteTheme;
 
                 switch (routeValues["controller"]?.ToString())
                 {
                     case "Account":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
                         break;
                     case "TwoFactorAuthentication":
-                        useSiteTheme = routeValues["action"] != null
-                            && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
-                            && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        {
+                            if (routeValues["action"] != null
+                               && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
+                               && (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme)
+                            {
+                                useSiteTheme = true;
+                            }
+                            else
+                            {
+                                useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
+                            }
+                        }
+                        break;
+                    case "SmsAuthenticator":
+                    case "AuthenticatorApp":
+                        {
+                            useSiteTheme = (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).UseSiteTheme;
+                        }
                         break;
                     case "Registration":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;
                         break;
                     case "ResetPassword":
-                        useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().UseSiteTheme;
+                        useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>()).UseSiteTheme;
                         break;
                     default:
                         return null;

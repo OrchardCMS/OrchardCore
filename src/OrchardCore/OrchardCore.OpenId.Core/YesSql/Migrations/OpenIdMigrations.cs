@@ -8,7 +8,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.OpenId.YesSql.Migrations
 {
-    public class OpenIdMigrations : DataMigration
+    public sealed class OpenIdMigrations : DataMigration
     {
         private const string OpenIdTokenCollection = OpenIdToken.OpenIdCollection;
         private const string OpenIdAuthorizationCollection = OpenIdAuthorization.OpenIdCollection;
