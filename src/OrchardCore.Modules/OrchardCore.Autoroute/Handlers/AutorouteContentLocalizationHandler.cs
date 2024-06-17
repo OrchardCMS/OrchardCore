@@ -13,7 +13,7 @@ public class AutorouteContentLocalizationHandler : IContentLocalizationHandler
         if (context.ContentItem.Has<AutoroutePart>())
         {
             // Clearing the AutoroutePart path to regenerate the permalink automatically.
-            context.ContentItem.Alter<AutoroutePart>(p => p.Path = null);
+            context.ContentItem.Content.AutoroutePart.Path = null;
         }
 
         return Task.CompletedTask;
