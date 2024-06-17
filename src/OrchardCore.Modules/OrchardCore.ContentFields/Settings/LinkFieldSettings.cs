@@ -10,6 +10,7 @@ namespace OrchardCore.ContentFields.Settings
         public string TextPlaceholder { get; set; }
         public string DefaultUrl { get; set; }
         public string DefaultText { get; set; }
+        public string DefaultTarget { get; set; }
 
         public LinkFieldSettings()
         {
