@@ -179,7 +179,7 @@ Metadata tag helper example:
 
 Properties can be passed to a shape by adding attributes to the shape tag helper, as mentioned above. But you can also use the `<add-property>` tag helper inside `<shape>`. This even lets you pass Razor code as properties with `IHtmlContent` value, if you omit the `value` attribute. Something that can't be easily done otherwise.
 
-```razor
+```xml
 <shape type="MyShape">
     <add-property name="foo" value="1" />
     <add-property name="bar" value="a" />
