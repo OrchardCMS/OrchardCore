@@ -23,6 +23,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.TextPlaceholder = settings.TextPlaceholder;
                 model.DefaultUrl = settings.DefaultUrl;
                 model.DefaultText = settings.DefaultText;
+                model.DefaultTarget = settings.DefaultTarget;
             }).Location("Content");
         }
 
