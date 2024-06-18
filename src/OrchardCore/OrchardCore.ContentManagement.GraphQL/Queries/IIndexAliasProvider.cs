@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     public interface IIndexAliasProvider
     {
-        IEnumerable<IndexAlias> GetAliases();
+        ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync();
     }
 }
