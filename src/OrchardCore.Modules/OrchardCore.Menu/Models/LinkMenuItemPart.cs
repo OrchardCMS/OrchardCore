@@ -12,6 +12,6 @@ namespace OrchardCore.Menu.Models
         /// <summary>
         /// The target of the link to create.
         /// </summary>
-        public string Target { get; set; }
+        public string Target { get; set; } = "_self";
     }
 }

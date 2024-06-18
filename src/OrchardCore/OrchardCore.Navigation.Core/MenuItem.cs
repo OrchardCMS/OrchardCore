@@ -39,7 +39,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// The html target of the menu item.
         /// </summary>
-        public string Target { get; set; }
+        public string Target { get; set; } = "_self";
 
         /// <summary>
         /// The optional url the menu item should link to.
