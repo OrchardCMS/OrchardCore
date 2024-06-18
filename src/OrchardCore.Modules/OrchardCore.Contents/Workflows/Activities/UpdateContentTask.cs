@@ -151,7 +151,11 @@ namespace OrchardCore.Contents.Workflows.Activities
                     }
                 }
 
-                workflowContext.CorrelationId = contentItem.ContentItemId;
+                if (string.IsNullOrEmpty(workflowContext.CorrelationId))
+                {
+                    workflowContext.CorrelationId = contentItem.ContentItemId;
+                }
+
                 workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 

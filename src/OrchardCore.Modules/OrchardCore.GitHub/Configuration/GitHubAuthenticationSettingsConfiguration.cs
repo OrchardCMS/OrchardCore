@@ -9,7 +9,7 @@ using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
+public sealed class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
 {
     private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
     private readonly ShellSettings _shellSettings;

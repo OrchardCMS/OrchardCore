@@ -15,7 +15,7 @@ using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Forms
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -82,7 +82,7 @@ namespace OrchardCore.Forms
     }
 
     [RequireFeatures("OrchardCore.Workflows")]
-    public class WorkflowStartup : StartupBase
+    public sealed class WorkflowStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

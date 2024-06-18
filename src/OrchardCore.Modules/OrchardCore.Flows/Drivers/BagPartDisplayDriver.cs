@@ -79,6 +79,7 @@ namespace OrchardCore.Flows.Drivers
                 m.Updater = context.Updater;
                 m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
+                m.TypePartDefinition = context.TypePartDefinition;
             });
         }
 

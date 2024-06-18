@@ -32,7 +32,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Lists
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -64,7 +64,7 @@ namespace OrchardCore.Lists
     }
 
     [RequireFeatures("OrchardCore.AdminMenu")]
-    public class AdminMenuStartup : StartupBase
+    public sealed class AdminMenuStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -73,7 +73,7 @@ namespace OrchardCore.Lists
     }
 
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class ContentLocalizationStartup : StartupBase
+    public sealed class ContentLocalizationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -85,7 +85,7 @@ namespace OrchardCore.Lists
     }
 
     [RequireFeatures("OrchardCore.Feeds")]
-    public class FeedsStartup : StartupBase
+    public sealed class FeedsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

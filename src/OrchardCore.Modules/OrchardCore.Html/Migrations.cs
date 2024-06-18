@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Html
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly ISession _session;
         private readonly ILogger _logger;
@@ -54,7 +54,7 @@ namespace OrchardCore.Html
         }
 
         // This code can be removed in a later version.
-        public async Task<int> UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
             // Update content type definitions
             foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
@@ -131,7 +131,7 @@ namespace OrchardCore.Html
         }
 
         // This code can be removed in a later version.
-        public async Task<int> UpdateFrom4()
+        public async Task<int> UpdateFrom4Async()
         {
             // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
             foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())

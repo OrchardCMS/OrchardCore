@@ -466,7 +466,7 @@ The style block will only be injected once based on its name and can optionally 
 
 #### Link tag
 
-A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script).
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script-or-stylesheet).
 
 === "Liquid"
 

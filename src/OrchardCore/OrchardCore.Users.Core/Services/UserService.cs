@@ -20,11 +20,12 @@ namespace OrchardCore.Users.Services
     {
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
-        private readonly IOptions<IdentityOptions> _identityOptions;
+        private readonly IdentityOptions _identityOptions;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-        protected readonly IStringLocalizer S;
         private readonly ISiteService _siteService;
         private readonly ILogger _logger;
+
+        protected readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -37,16 +38,16 @@ namespace OrchardCore.Users.Services
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _identityOptions = identityOptions;
+            _identityOptions = identityOptions.Value;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
             S = stringLocalizer;
             _siteService = siteService;
             _logger = logger;
         }
 
-        public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
+        public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
         {
-            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+            var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
 
             if (disableLocalLogin)
             {
@@ -54,9 +55,9 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(usernameOrEmail))
             {
-                reportError("UserName", S["A user name is required."]);
+                reportError("Username", S["A user name is required."]);
                 return null;
             }
 
@@ -66,7 +67,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await GetUserAsync(userName);
+            var user = await GetUserAsync(usernameOrEmail);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -161,43 +162,46 @@ namespace OrchardCore.Users.Services
             return _userManager.GetUserAsync(principal);
         }
 
-        public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
+        public async Task<IUser> GetForgotPasswordUserAsync(string userId)
         {
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
+            var user = await GetUserAsync(userId);
 
             if (user == null)
             {
                 return await Task.FromResult<IUser>(null);
             }
 
-            user.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (user is User u)
+            {
+                u.ResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            }
 
             return user;
         }
 
-        public async Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ResetPasswordAsync(string usernameOrEmail, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(emailAddress))
+            if (string.IsNullOrWhiteSpace(usernameOrEmail))
             {
-                reportError("UserName", S["A email address is required."]);
+                reportError(nameof(ResetPasswordForm.UsernameOrEmail), S["A username or email address is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(newPassword))
             {
-                reportError("Password", S["A password is required."]);
+                reportError(nameof(ResetPasswordForm.NewPassword), S["A password is required."]);
                 result = false;
             }
 
             if (string.IsNullOrWhiteSpace(resetToken))
             {
-                reportError("Token", S["A token is required."]);
+                reportError(nameof(ResetPasswordForm.ResetToken), S["A token is required."]);
                 result = false;
             }
 
@@ -206,7 +210,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await _userManager.FindByEmailAsync(emailAddress) as User;
+            var user = await GetUserAsync(usernameOrEmail) as User;
 
             if (user == null)
             {
@@ -240,10 +244,20 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<IUser> GetUserAsync(string userName) =>
-            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
+        public async Task<IUser> GetUserAsync(string usernameOrEmail)
+        {
+            var user = await _userManager.FindByNameAsync(usernameOrEmail);
 
-        public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
+            if (user is null && _identityOptions.User.RequireUniqueEmail)
+            {
+                user = await _userManager.FindByEmailAsync(usernameOrEmail);
+            }
+
+            return user;
+        }
+
+        public Task<IUser> GetUserByUniqueIdAsync(string userId)
+            => _userManager.FindByIdAsync(userId);
 
         public void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
@@ -265,10 +279,10 @@ namespace OrchardCore.Users.Services
                         reportError("Password", S["Passwords must have at least one non letter or digit character."]);
                         break;
                     case "PasswordTooShort":
-                        reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                        reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Password.RequiredLength]);
                         break;
                     case "PasswordRequiresUniqueChars":
-                        reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
+                        reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword.

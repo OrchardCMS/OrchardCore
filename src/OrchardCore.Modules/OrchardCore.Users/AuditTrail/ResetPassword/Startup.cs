@@ -6,8 +6,8 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword
 {
-    [RequireFeatures("OrchardCore.Users.AuditTrail", "OrchardCore.Users.ResetPassword")]
-    public class Startup : StartupBase
+    [RequireFeatures("OrchardCore.Users.AuditTrail", UserConstants.Features.ResetPassword)]
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

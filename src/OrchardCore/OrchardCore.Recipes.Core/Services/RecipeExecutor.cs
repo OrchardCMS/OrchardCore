@@ -7,6 +7,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -23,19 +24,22 @@ namespace OrchardCore.Recipes.Services
         private readonly ShellSettings _shellSettings;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly ILogger _logger;
-
         private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = [];
+
+        protected readonly IStringLocalizer S;
 
         public RecipeExecutor(
             IShellHost shellHost,
             ShellSettings shellSettings,
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            ILogger<RecipeExecutor> logger)
+            ILogger<RecipeExecutor> logger,
+            IStringLocalizer<RecipeExecutor> stringLocalizer)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
             _logger = logger;
+            S = stringLocalizer;
         }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
@@ -97,24 +101,35 @@ namespace OrchardCore.Recipes.Services
                                 try
                                 {
                                     await ExecuteStepAsync(recipeStep);
-                                    stepResult.IsSuccessful = true;
+
+                                    if (recipeStep.Errors.Count > 0)
+                                    {
+                                        stepResult.IsSuccessful = false;
+                                        stepResult.Errors = recipeStep.Errors.ToArray();
+                                    }
+                                    else
+                                    {
+                                        stepResult.IsSuccessful = true;
+                                    }
                                 }
                                 catch (Exception e)
                                 {
                                     stepResult.IsSuccessful = false;
-                                    stepResult.ErrorMessage = e.ToString();
+                                    stepResult.Errors = [S["Unexpected error occurred while executing the '{0}' step.", stepResult.StepName]];
 
                                     // Because we can't do some async processing the in catch or finally
                                     // blocks, we store the exception to throw it later.
 
-                                    capturedException = ExceptionDispatchInfo.Capture(e);
+                                    capturedException = ExceptionDispatchInfo.Capture(new RecipeExecutionException(e, stepResult));
                                 }
 
                                 stepResult.IsCompleted = true;
 
-                                if (stepResult.IsSuccessful == false)
+                                capturedException?.Throw();
+
+                                if (!stepResult.IsSuccessful)
                                 {
-                                    capturedException.Throw();
+                                    throw new RecipeExecutionException(stepResult);
                                 }
 
                                 if (recipeStep.InnerRecipes != null)
@@ -230,7 +245,7 @@ namespace OrchardCore.Recipes.Services
                         var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
 
                         // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'.
-                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => char.IsLetter(c))))
+                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(char.IsLetter)))
                         {
                             break;
                         }
@@ -242,7 +257,7 @@ namespace OrchardCore.Recipes.Services
                             context.RecipeDescriptor.FileProvider,
                             context.RecipeDescriptor.BasePath,
                             _methodProviders[context.ExecutionId])
-                            ?? "").ToString();
+                            ?? string.Empty).ToString();
                     }
 
                     node = JsonValue.Create<string>(value);

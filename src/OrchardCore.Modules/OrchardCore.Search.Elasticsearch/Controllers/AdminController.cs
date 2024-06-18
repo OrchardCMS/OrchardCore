@@ -439,7 +439,7 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IActionResult> Mappings(string indexName)
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-            var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JOptions.Indented);
+            var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
             return View(new MappingsViewModel
             {
                 IndexName = _elasticIndexManager.GetFullIndexName(indexName),

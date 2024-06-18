@@ -8,7 +8,7 @@ using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
 
-public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
+public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
     private readonly ShellSettings _shellSettings;

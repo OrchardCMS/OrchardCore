@@ -7,7 +7,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security;
 
-public class ContentTypePermissions : IPermissionProvider
+public sealed class ContentTypePermissions : IPermissionProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
