@@ -53,6 +53,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
         private readonly IdentityOptions _identityOptions;
+
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
             MergeArrayHandling = MergeArrayHandling.Replace,
