@@ -3,6 +3,83 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function initializeItemsEditor(elem, data, modalBodyElement) {
+  var store = {
+    debug: false,
+    state: {
+      items: data
+    },
+    addItem: function addItem() {
+      if (this.debug) {
+        console.log('add item triggered');
+      }
+      this.state.items.push('');
+    },
+    removeItem: function removeItem(index) {
+      if (this.debug) {
+        console.log('remove item triggered with', index);
+      }
+      this.state.items.splice(index, 1);
+    },
+    getItemsFormattedList: function getItemsFormattedList() {
+      if (this.debug) {
+        console.log('getItemsFormattedList triggered');
+      }
+      return JSON.stringify(this.state.items.filter(function (x) {
+        return !IsNullOrWhiteSpace(x);
+      }));
+    }
+  };
+  var itemsTable = {
+    template: '#items-table',
+    props: ['data'],
+    name: 'items-table',
+    methods: {
+      add: function add() {
+        store.addItem();
+      },
+      remove: function remove(index) {
+        store.removeItem(index);
+      },
+      getItemsFormattedList: function getItemsFormattedList() {
+        return store.getItemsFormattedList();
+      }
+    }
+  };
+  var itemsModal = {
+    template: '#items-modal',
+    props: ['data'],
+    name: 'items-modal',
+    methods: {
+      getItemsFormattedList: function getItemsFormattedList() {
+        return store.getItemsFormattedList();
+      },
+      showModal: function showModal() {
+        valuesModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
+        valuesModal.props.data.modal.show();
+      },
+      closeModal: function closeModal() {
+        valuesModal.props.data.modal.hide();
+      }
+    }
+  };
+  new Vue({
+    components: {
+      itemsTable: itemsTable,
+      itemsModal: itemsModal
+    },
+    data: {
+      sharedState: store.state,
+      modal: null
+    },
+    el: elem,
+    methods: {
+      showModal: function showModal() {
+        valuesModal.methods.showModal();
+      }
+    }
+  });
+}
 function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
   var previouslyChecked;
   var store = {

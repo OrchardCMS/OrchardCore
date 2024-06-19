@@ -2,9 +2,10 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var editorSettings = Model.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
     var options = new List<SelectListItem>();
 
-    foreach (var option in settings.Options)
+    foreach (var option in editorSettings.Options)
     {
         bool isSelected = Model.Values.Contains(option.Value) ? true : false;
 

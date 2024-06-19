@@ -1,0 +1,83 @@
+@model OrchardCore.ContentFields.ViewModels.MultiTextFieldEditableListSettingsViewModel
+
+<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js"
+    debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot"
+    depends-on="vuejs, vuedraggable"></script>
+<style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css"
+    debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
+
+<script at="Foot">
+    initializeItemsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Items), document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+</script>
+
+<script type="text/x-template" id="items-table">
+    <table class="table table-bordered table-sm items-table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@T["Item"]</th>
+            </tr>
+        </thead>
+        <draggable v-model="data.items" :element="'tbody'">
+            <tr v-for="(item, index) in data.items" :key="index">
+                <td>
+                    <input type="text" class="form-control courrier" v-model="data.items[index]" placeholder="Enter a value" />
+                </td>
+                <td class="text-center">
+                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
+                        <i class="fa-solid fa-times" aria-hidden="true"></i>
+                    </a>
+                </td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+            </tr>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fa-solid fa-plus small" aria-hidden="true"></i> @T["Add a value"]</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.Items)" name="@Html.NameFor(m => m.Items)" type="hidden" v-bind:value="getItemsFormattedList()" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<script type="text/x-template" id="items-modal">
+    <div class="modal fade @Html.IdFor(m => m)-ModalBody text-start" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Edit Data"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="values-textarea" class="form-label">@T["Values"]</label>
+                        <textarea id="values-textarea" name="values-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.items)" v-on:input="data.values = JSON.parse($event.target.value)"></textarea>
+                        <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
+                    </div>
+                    <div class="mb-3">
+                        <label for="options-defaultvalue" class="form-label">@T["Default value"]</label>
+                        <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
+                        <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">@T["OK"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-editablelist">
+    <div class="row">
+        <div class="col-sm-6">
+            <label asp-for="Items" class="form-label">@T["Predefined Items"]</label>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i
+                    class="fa-solid fa-edit" aria-hidden="true"></i></a>
+            <items-table :data="sharedState"></items-table>
+            <items-modal :data="sharedState" v-on:reload-data="reloadData()"></items-modal>
+        </div>
+    </div>
+</div>

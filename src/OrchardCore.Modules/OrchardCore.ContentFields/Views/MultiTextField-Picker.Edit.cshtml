@@ -3,9 +3,10 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var editorSettings = Model.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
     var selectedValues = new List<object>();
 
-    foreach (var option in settings.Options)
+    foreach (var option in editorSettings.Options)
     {
         if (Model.Values?.Contains(option.Value) == true)
         {
@@ -14,7 +15,7 @@
     }
 
     var jSelectedValues = JConvert.SerializeObject(selectedValues);
-    var jOptions = JConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
+    var jOptions = JConvert.SerializeObject(editorSettings.Options.Select(o => new { value = o.Value, name = o.Name }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;

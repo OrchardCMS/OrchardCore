@@ -3,13 +3,14 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-    var options = settings.Options.Select(option =>
+    var editorSettings = Model.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
+    var options = editorSettings.Options.Select(option =>
         new SelectListItem
-                {
-                    Text = option.Name,
-                    Value = option.Value,
-                    Selected = Model.Values.Contains(option.Value)
-                }).ToList();
+            {
+                Text = option.Name,
+                Value = option.Value,
+                Selected = Model.Values.Contains(option.Value)
+            }).ToList();
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
