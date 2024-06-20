@@ -20,7 +20,8 @@
     padding: 0;
 }
 
-.trumbowyg-box svg, .trumbowyg-modal svg {
+.trumbowyg-box svg,
+.trumbowyg-modal svg {
     color: var(--bs-body-color);
     fill: var(--bs-body-color);
 }
@@ -35,9 +36,22 @@
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
 }
 
-[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
+[dir] .trumbowyg-dropdown button:hover,
+[dir] .trumbowyg-dropdown button:focus,
+[dir] .trumbowyg-button-pane button:hover,
+[dir] .trumbowyg-button-pane button:focus,
+[dir] .trumbowyg-button-pane button.trumbowyg-active {
     background-color: var(--bs-body-color) !important;
     color: var(--bs-body-bg) !important;
+}
+
+[dir] .trumbowyg-dropdown button:hover svg,
+[dir] .trumbowyg-dropdown button:focus svg,
+[dir] .trumbowyg-button-pane button:hover svg,
+[dir] .trumbowyg-button-pane button:focus svg,
+[dir] .trumbowyg-button-pane button.trumbowyg-active svg {
+    color: var(--bs-body-bg);
+    fill: var(--bs-body-bg);
 }
 
 [dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
@@ -53,7 +67,8 @@
     z-index: var(--oc-editor-fullscreen);
 }
 
-[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+[dir] .trumbowyg-fullscreen.trumbowyg-box,
+[dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }
@@ -63,7 +78,8 @@
     fill: var(--bs-body-color);
 }
 
-[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+[dir] .trumbowyg-box .trumbowyg-editor th,
+[dir] .trumbowyg-box .trumbowyg-editor td {
     border-width: var(--bs-border-width, 1px);
     border-style: var(--bs-border-style, solid);
     border-color: var(--bs-border-color, #dee2e6);
