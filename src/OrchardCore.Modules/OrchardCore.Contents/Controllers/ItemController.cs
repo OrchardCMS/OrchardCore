@@ -23,7 +23,7 @@ namespace OrchardCore.Contents.Controllers
             _authorizationService = authorizationService;
         }
 
-        public async Task<IActionResult> Display(string contentItemId, string jsonPath)
+        public async Task<IActionResult> Display(string contentItemId, string jsonPath, string displayType)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, displayType);
 
             return View(model);
         }

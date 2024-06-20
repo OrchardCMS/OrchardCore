@@ -222,7 +222,7 @@ namespace OrchardCore.Contents
             routes.MapAreaControllerRoute(
                 name: "DisplayContentItem",
                 areaName: "OrchardCore.Contents",
-                pattern: "Contents/ContentItems/{contentItemId}",
+                pattern: "Contents/ContentItems/{contentItemId}/{displayType?}",
                 defaults: new { controller = itemControllerName, action = nameof(ItemController.Display) }
             );
 
