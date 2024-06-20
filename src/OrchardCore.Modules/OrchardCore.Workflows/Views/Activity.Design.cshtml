@@ -28,6 +28,7 @@
         {
             <a class="btn btn-sm btn-secondary activity-start-action" href="#" data-bs-toggle="button" title="@T["Startup event"]"><i class="fa-solid fa-power-off" aria-hidden="true"></i></a>
         }
+
         @if (hasEditor)
         {
             <a class="btn btn-sm btn-primary activity-edit-action" asp-action="Edit" asp-controller="Activity" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@activityRecord.ActivityId" asp-route-returnurl="@Model.ReturnUrl" data-persist-workflow="true" title="@T["Edit"]"><i class="fa-solid fa-pencil" aria-hidden="true"></i></a>
