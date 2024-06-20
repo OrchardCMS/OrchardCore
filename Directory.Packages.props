@@ -28,11 +28,11 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="7.8.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="7.8.0" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="7.8.0" />
-    <PackageVersion Include="Jint" Version="3.1.2" />
+    <PackageVersion Include="Jint" Version="3.1.3" />
     <PackageVersion Include="JsonPath.Net" Version="1.1.0" />
     <PackageVersion Include="HtmlSanitizer" Version="8.1.860-beta" />
     <PackageVersion Include="Irony" Version="1.5.1" />
-    <PackageVersion Include="libphonenumber-csharp" Version="8.13.38" />
+    <PackageVersion Include="libphonenumber-csharp" Version="8.13.39" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
@@ -41,7 +41,7 @@
     <PackageVersion Include="MailKit" Version="4.6.0" />
     <PackageVersion Include="Markdig" Version="0.37.0" />
     <PackageVersion Include="MessagePack" Version="2.2.60" />
-    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.3" />
+    <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.4" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.6.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="2.19.1" />
 
