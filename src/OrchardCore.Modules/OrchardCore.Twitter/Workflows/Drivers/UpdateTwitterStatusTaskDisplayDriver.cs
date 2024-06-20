@@ -5,14 +5,14 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Twitter.Workflows.Drivers
 {
-    public class UpdateTwitterStatusTaskDisplayDriver : ActivityDisplayDriver<UpdateTwitterStatusTask, UpdateTwitterStatusTaskViewModel>
+    public class UpdateTwitterStatusTaskDisplayDriver : ActivityDisplayDriver<UpdateXStatusTask, UpdateTwitterStatusTaskViewModel>
     {
-        protected override void EditActivity(UpdateTwitterStatusTask activity, UpdateTwitterStatusTaskViewModel model)
+        protected override void EditActivity(UpdateXStatusTask activity, UpdateTwitterStatusTaskViewModel model)
         {
             model.StatusTemplate = activity.StatusTemplate.Expression;
         }
 
-        protected override void UpdateActivity(UpdateTwitterStatusTaskViewModel model, UpdateTwitterStatusTask activity)
+        protected override void UpdateActivity(UpdateTwitterStatusTaskViewModel model, UpdateXStatusTask activity)
         {
             activity.StatusTemplate = new WorkflowExpression<string>(model.StatusTemplate);
         }

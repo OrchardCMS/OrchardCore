@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -13,6 +14,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
+using OrchardCore.Twitter.Migrations;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
@@ -60,6 +62,7 @@ namespace OrchardCore.Twitter
                         }
                     })
                 );
+            services.AddDataMigration<TwitterMigrations>();
         }
     }
 
