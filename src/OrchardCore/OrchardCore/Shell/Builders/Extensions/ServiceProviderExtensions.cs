@@ -24,10 +24,11 @@ namespace OrchardCore.Environment.Shell.Builders
                 // Prevent hosting 'IStartupFilter' to re-add middleware to the tenant pipeline.
                 if (services.Key.ServiceType == typeof(IStartupFilter))
                 {
+                    continue;
                 }
 
                 // A generic type definition is rather used to create other constructed generic types.
-                else if (services.Key.ServiceType.IsGenericTypeDefinition)
+                if (services.Key.ServiceType.IsGenericTypeDefinition)
                 {
                     // So, we just need to pass the descriptor.
                     foreach (var service in services)
@@ -75,42 +76,10 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                // If all services of the same type are not singletons.
-                else if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
-                {
-                    // We don't need to resolve them.
-                    foreach (var service in services)
-                    {
-                        clonedCollection.Add(service);
-                    }
-                }
-
-                // If all services of the same type are singletons.
-                else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
+                // If services of the same type have at least one singleton.
+                else if (services.Any(s => s.Lifetime == ServiceLifetime.Singleton))
                 {
                     // We can resolve them from the main container.
-                    var instances = services.Key.ServiceKey is not null
-                        ? serviceProvider.GetKeyedServices(services.Key.ServiceType, services.Key.ServiceKey)
-                        : serviceProvider.GetServices(services.Key.ServiceType);
-
-                    for (var i = 0; i < services.Count(); i++)
-                    {
-                        var instance = instances.ElementAt(i);
-                        if (instance is null)
-                        {
-                            continue;
-                        }
-
-                        clonedCollection.CloneSingleton(services.ElementAt(i), instance);
-                    }
-                }
-
-                // If singletons and scoped services are mixed.
-                else
-                {
-                    // We need a service scope to resolve them.
-                    using var scope = serviceProvider.CreateScope();
-
                     var instances = services.Key.ServiceKey is not null
                         ? serviceProvider.GetKeyedServices(services.Key.ServiceType, services.Key.ServiceKey)
                         : serviceProvider.GetServices(services.Key.ServiceType);
@@ -118,7 +87,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     // Then we only keep singleton instances.
                     for (var i = 0; i < services.Count(); i++)
                     {
-                        if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
+                        var service = services.ElementAt(i);
+                        if (service.Lifetime == ServiceLifetime.Singleton)
                         {
                             var instance = instances.ElementAt(i);
                             if (instance is null)
@@ -126,12 +96,20 @@ namespace OrchardCore.Environment.Shell.Builders
                                 continue;
                             }
 
-                            clonedCollection.CloneSingleton(services.ElementAt(i), instance);
+                            clonedCollection.CloneSingleton(service, instance);
                         }
                         else
                         {
-                            clonedCollection.Add(services.ElementAt(i));
+                            clonedCollection.Add(service);
                         }
+                    }
+                }
+                else    // If all services of the same type are not singletons.
+                {
+                    // We don't need to resolve them.
+                    foreach (var service in services)
+                    {
+                        clonedCollection.Add(service);
                     }
                 }
             }

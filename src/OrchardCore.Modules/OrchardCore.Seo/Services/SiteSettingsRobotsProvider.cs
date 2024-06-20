@@ -21,7 +21,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
 
     public async Task<string> GetContentAsync()
     {
-        var settings = (await _siteService.GetSiteSettingsAsync()).As<RobotsSettings>();
+        var settings = await _siteService.GetSettingsAsync<RobotsSettings>();
 
         var content = new StringBuilder();
 

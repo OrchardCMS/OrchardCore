@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -14,10 +13,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 {
     public class TypedContentTypeBuilder : IContentTypeBuilder
     {
-        private static readonly ConcurrentDictionary<string, Type> _partTypes = new();
-        private static readonly ConcurrentDictionary<string, IObjectGraphType> _partObjectGraphTypes = new();
-        private static readonly ConcurrentDictionary<string, IInputObjectGraphType> _partInputObjectGraphTypes = new();
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
 
@@ -28,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             _contentOptions = contentOptionsAccessor.Value;
         }
 
-        public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
+        public void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentPart>>();
@@ -38,9 +33,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 return;
             }
 
-            var queryObjectGraphTypes = serviceProvider.GetServices<IObjectGraphType>();
-            var queryInputGraphTypes = serviceProvider.GetServices<IInputObjectGraphType>();
-
             foreach (var part in contentTypeDefinition.Parts)
             {
                 if (_contentOptions.ShouldSkip(part))
@@ -49,21 +41,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 var partName = part.Name;
+                var partFieldName = partName.ToFieldName();
 
                 // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName))
+                if (contentItemType.HasField(partFieldName))
                 {
                     continue;
                 }
 
-                var partType = _partTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
-                var queryGraphType = _partObjectGraphTypes
-                    .GetOrAdd(part.PartDefinition.Name,
-                        partName =>
-                        {
-                            return queryObjectGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
-                        }
-                    );
+                var queryGraphType = schema.AdditionalTypeInstances
+                    .FirstOrDefault(x => x is IObjectGraphType && x.GetType().BaseType.GetGenericArguments().First().Name == part.PartDefinition.Name) as IObjectGraphType;
 
                 var collapsePart = _contentOptions.ShouldCollapse(part);
 
@@ -73,11 +60,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var field in queryGraphType.Fields)
                         {
-                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name))
+                            if (_contentOptions.ShouldSkip(queryGraphType.GetType(), field.Name) ||
+                                contentItemType.HasFieldIgnoreCase(field.Name))
                             {
                                 continue;
                             }
 
+                            var partType = typeActivator.GetTypeActivator(part.PartDefinition.Name).Type;
                             var rolledUpField = new FieldType
                             {
                                 Name = field.Name,
@@ -108,11 +97,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         var field = new FieldType
                         {
-                            Name = partName.ToFieldName(),
+                            Name = partFieldName,
                             Type = queryGraphType.GetType(),
                             Description = queryGraphType.Description,
                         };
-                        contentItemType.Field(partName.ToFieldName(), queryGraphType.GetType())
+                        contentItemType.Field(partFieldName, queryGraphType.GetType())
                                        .Description(queryGraphType.Description)
                                        .Resolve(context =>
                                        {
@@ -124,10 +113,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
                 }
 
-                var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
-                {
-                    return queryInputGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
-                });
+                var inputGraphTypeResolved = schema.AdditionalTypeInstances
+                    .FirstOrDefault(x => x is IInputObjectGraphType && x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name) as IInputObjectGraphType;
 
                 if (inputGraphTypeResolved != null)
                 {
@@ -151,7 +138,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         whereInput.AddField(new FieldType
                         {
                             Type = inputGraphTypeResolved.GetType(),
-                            Name = partName.ToFieldName(),
+                            Name = partFieldName,
                             Description = inputGraphTypeResolved.Description
                         }.WithPartNameMetaData(partName));
                     }

@@ -11,6 +11,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
 
             Field(x => x.Url, nullable: true).Description("the url of the link");
             Field(x => x.Text, nullable: true).Description("the text of the link");
+            Field(x => x.Target, nullable: true).Description("the target of the link");
         }
     }
 }

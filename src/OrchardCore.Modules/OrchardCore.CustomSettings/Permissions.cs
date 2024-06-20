@@ -6,7 +6,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     private static readonly Permission _manageCustomSettings = new("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace System.IO
 {
-    public class PathExtensions
+    public static class PathExtensions
     {
         public static readonly char[] PathSeparators = ['/', '\\'];
         private const string CurrentDirectoryToken = ".";

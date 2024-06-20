@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.Cache
         Title = "Sitemap Cache Cleaner",
         Schedule = "*/5 * * * *",
         Description = "Cleans up sitemap cache files.")]
-    public class SitemapCacheBackgroundTask : IBackgroundTask
+    public sealed class SitemapCacheBackgroundTask : IBackgroundTask
     {
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {

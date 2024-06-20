@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public class LiquidShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
+    public sealed class LiquidShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
     {
         private readonly TemplateOptions _templateOptions;
 

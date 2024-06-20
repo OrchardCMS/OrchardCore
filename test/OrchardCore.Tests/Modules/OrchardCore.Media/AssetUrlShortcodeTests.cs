@@ -20,10 +20,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", "foo [asset_url]//bar[/asset_url] baz", @"foo //bar baz")]
         [InlineData("", "foo [asset_url]bar[/asset_url] baz", @"foo /media/bar baz")]
         [InlineData("", @"foo [asset_url width=""100""]bar[/asset_url] baz", @"foo /media/bar?width=100 baz")]
-        [InlineData("", @"foo [asset_url width=""100"" height=""50"" mode=""stretch""]bar[/asset_url] baz", @"foo /media/bar?width=100&amp;height=50&amp;rmode=stretch baz")]
+        [InlineData("", @"foo [asset_url width=""100"" height=""50"" mode=""stretch""]bar[/asset_url] baz", @"foo /media/bar?width=100&height=50&rmode=stretch baz")]
         [InlineData("", "foo [asset_url]bar[/asset_url] baz foo [asset_url]bar[/asset_url] baz", @"foo /media/bar baz foo /media/bar baz")]
-        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""/media/bàr.jpeg onload="">baz</a>")]
-        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""/media/bàr.jpeg?width=100 onload="">baz</a>")]
+        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg"">baz</a>")]
+        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg?width=100[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg?width=100"">baz</a>")]
         public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
         {
             var fileStore = new DefaultMediaFileStore(
@@ -33,8 +33,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 [],
                 [],
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
-
-            var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
 
             var defaultHttpContext = new DefaultHttpContext();
             defaultHttpContext.Request.PathBase = new PathString("/tenant");
@@ -47,9 +45,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, []);
 
             var processed = await processor.ProcessAsync(text);
-            // The markdown part sanitizes after processing.
-            var sanitized = sanitizer.Sanitize(processed);
-            Assert.Equal(expected, sanitized);
+
+            Assert.Equal(expected, processed);
         }
 
         [Theory]

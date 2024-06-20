@@ -4,7 +4,7 @@ using OrchardCore.Mvc.LocationExpander;
 
 namespace OrchardCore.Mvc
 {
-    public class ModularRazorViewEngineOptionsSetup : IConfigureOptions<RazorViewEngineOptions>
+    public sealed class ModularRazorViewEngineOptionsSetup : IConfigureOptions<RazorViewEngineOptions>
     {
         public ModularRazorViewEngineOptionsSetup()
         {

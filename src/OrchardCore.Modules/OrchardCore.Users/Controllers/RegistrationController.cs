@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -54,7 +55,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
                 return NotFound();
@@ -73,7 +74,7 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(Register))]
         public async Task<IActionResult> RegisterPOST(string returnUrl = null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
             if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
             {
@@ -95,7 +96,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                     {
-                        return RedirectToAction(nameof(ConfirmEmailSent), new { ReturnUrl = returnUrl });
+                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent), typeof(EmailConfirmationController).ControllerName(), new { ReturnUrl = returnUrl });
                     }
 
                     if (settings.UsersAreModerated && !user.IsEnabled)
@@ -111,62 +112,9 @@ namespace OrchardCore.Users.Controllers
             return View(shape);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return RedirectToAction(nameof(Register));
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            if (result.Succeeded)
-            {
-                return View();
-            }
-
-            return NotFound();
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ConfirmEmailSent(string returnUrl = null)
-            => View(new { ReturnUrl = returnUrl });
-
-        [HttpGet]
         [AllowAnonymous]
         public IActionResult RegistrationPending(string returnUrl = null)
             => View(new { ReturnUrl = returnUrl });
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendVerificationEmail(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(id) as User;
-            if (user != null)
-            {
-                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
-
-                await _notifier.SuccessAsync(H["Verification email sent."]);
-            }
-
-            return RedirectToAction(nameof(AdminController.Index), "Admin");
-        }
 
         private RedirectResult RedirectToLocal(string returnUrl)
         {

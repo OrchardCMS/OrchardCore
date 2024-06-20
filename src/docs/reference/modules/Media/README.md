@@ -118,7 +118,7 @@ The quality used when compressing the image.
 
 #### `format` (or fifth argument)
 
-The image format to use when processing the ouput of an image.
+The image format to use when processing the output of an image.
 
 Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
 
@@ -151,13 +151,13 @@ The anchor of the new image.
 
 The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
 
-#### bgcolor Input
+#### `bgcolor` Input
 
 ```
 {{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
 ```
 
-#### bgcolor Output
+#### `bgcolor` Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
 
@@ -311,7 +311,7 @@ The following configuration values are used by default and can be customized:
       // The path used when serving media assets.
       "AssetsRequestPath": "/media",
 
-      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+      // The name of the folder used to store media assets inside the App_Data folder.
       "AssetsPath": "Media",
 
       // Whether to use a token in the query string to prevent disc filling.

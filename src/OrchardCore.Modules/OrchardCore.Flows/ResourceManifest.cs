@@ -3,9 +3,9 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Flows;
 
-public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static ResourceManifest _manifest;
+    private static readonly ResourceManifest _manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
@@ -13,12 +13,13 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
 
         _manifest
             .DefineStyle("flowpart-edit")
-            .SetUrl( "~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
-            
+            .SetDependencies("widgetslist-edit")
+            .SetUrl("~/OrchardCore.Flows/Styles/flows.edit.min.css", "~/OrchardCore.Flows/Styles/flows.edit.css");
+
         _manifest
             .DefineScript("flowpart-edit")
             .SetDependencies("jQuery")
-            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js","~/OrchardCore.Flows/Scripts/flows.edit.js");
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
     }
 
     public void Configure(ResourceManagementOptions options)

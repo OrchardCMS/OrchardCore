@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentTypes.Events;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
@@ -23,11 +24,20 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddTransient<DynamicPartGraphType>();
             services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
-            services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
+            services.AddScoped<IContentTypeBuilder, DynamicContentTypeQueryBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
             services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
             services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddContentFieldsInputGraphQL(this IServiceCollection services)
+        {
+            services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
+            services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
+            services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
 
             return services;
         }

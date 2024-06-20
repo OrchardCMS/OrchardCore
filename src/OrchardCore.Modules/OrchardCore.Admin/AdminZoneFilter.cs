@@ -9,7 +9,7 @@ namespace OrchardCore.Admin
     /// This filter makes an controller that starts with Admin and Razor Pages in /Pages/Admin folder behave as
     /// it had the <see cref="AdminAttribute"/>.
     /// </summary>
-    public class AdminZoneFilter : IAsyncResourceFilter
+    public sealed class AdminZoneFilter : IAsyncResourceFilter
     {
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {

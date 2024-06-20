@@ -8,7 +8,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.PublishLater;
 
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 

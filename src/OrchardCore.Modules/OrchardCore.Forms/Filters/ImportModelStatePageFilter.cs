@@ -5,7 +5,7 @@ using OrchardCore.Forms.Helpers;
 namespace OrchardCore.Forms.Filters
 {
     // For Razor Pages IActionFilter\ActionFilterAttribute don't apply, IPageFilter have to be used instead.
-    public class ImportModelStatePageFilter : IPageFilter
+    public sealed class ImportModelStatePageFilter : IPageFilter
     {
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {

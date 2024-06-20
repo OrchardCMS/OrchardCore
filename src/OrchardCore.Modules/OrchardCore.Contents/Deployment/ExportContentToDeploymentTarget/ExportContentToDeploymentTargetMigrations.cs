@@ -3,15 +3,13 @@ using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-    public class ExportContentToDeploymentTargetMigrations : DataMigration
+    public sealed class ExportContentToDeploymentTargetMigrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly IDeploymentPlanService _deploymentPlanService;

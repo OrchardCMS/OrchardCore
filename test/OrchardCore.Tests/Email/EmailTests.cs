@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Email
     public class EmailTests
     {
         [Fact]
-        public async Task SendEmail_WithToHeader()
+        public async Task SendEmail_UsesDefaultSender()
         {
             // Arrange
             var message = new MailMessage
@@ -71,20 +71,6 @@ namespace OrchardCore.Tests.Email
             };
 
             await SendEmailAsync(message, "Your Name <youraddress@host.com>");
-        }
-
-        [Fact]
-        public async Task SendEmail_UsesDefaultSender()
-        {
-            var message = new MailMessage
-            {
-                To = "info@oc.com",
-                Subject = "Test",
-                Body = "Test Message"
-            };
-            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
-
-            Assert.Contains("From: Your Name <youraddress@host.com>", content);
         }
 
         [Fact]

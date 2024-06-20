@@ -13,8 +13,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", "foo bar baz", "foo bar baz")]
         [InlineData("", "foo [media]bar[/media] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [media]bar[/media] baz foo [media]bar[/media] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
-        [InlineData("", "foo [media]bàr.jpeg?width=100[/media] baz", @"foo <img src=""/media/bàr.jpeg?width=100""> baz")]
-        [InlineData("", "foo [media]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')[/media] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
+        [InlineData("", "foo [media]bàr.jpeg?width=100[/media] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100""> baz")]
+        [InlineData("", "foo [media]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')[/media] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100 onload=""> baz")]
         [InlineData("", "foo [image]bar baz", "foo [image]bar baz")]
         [InlineData("", @"foo [image ""bar""] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("", @"foo [image src=""bar""] baz", @"foo <img src=""/media/bar""> baz")]
@@ -33,8 +33,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", "foo [image]bar[/image] baz foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended", @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended")]
         [InlineData("", "foo [media]bar[/media] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
-        [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100""> baz")]
-        [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
+        [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100""> baz")]
+        [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100 onload=""> baz")]
         public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
         {
             var sanitizerOptions = new HtmlSanitizerOptions();

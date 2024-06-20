@@ -1,16 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
-public class GoogleAnalyticsPermissionsProvider : IPermissionProvider
+public sealed class GoogleAnalyticsPermissionsProvider : IPermissionProvider
 {
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Google.Permissions.ManageGoogleAnalytics'.")]
     public static readonly Permission ManageGoogleAnalytics = Permissions.ManageGoogleAnalytics;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageGoogleAnalytics,
+        Permissions.ManageGoogleAnalytics,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
