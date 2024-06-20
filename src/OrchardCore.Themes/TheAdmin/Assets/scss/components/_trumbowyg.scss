@@ -40,7 +40,7 @@
 [dir] .trumbowyg-dropdown button:focus,
 [dir] .trumbowyg-button-pane button:hover,
 [dir] .trumbowyg-button-pane button:focus,
-[dir] .trumbowyg-button-pane button.trumbowyg-active {
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-active {
     background-color: var(--bs-body-color) !important;
     color: var(--bs-body-bg) !important;
 }
@@ -49,13 +49,19 @@
 [dir] .trumbowyg-dropdown button:focus svg,
 [dir] .trumbowyg-button-pane button:hover svg,
 [dir] .trumbowyg-button-pane button:focus svg,
-[dir] .trumbowyg-button-pane button.trumbowyg-active svg {
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-active svg {
     color: var(--bs-body-bg);
     fill: var(--bs-body-bg);
 }
 
 [dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     border-top-color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown:hover::after,
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown:focus::after,
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-active::after {
+    border-top-color: var(--bs-body-bg);
 }
 
 [dir] .trumbowyg-dropdown button {
