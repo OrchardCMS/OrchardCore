@@ -14,7 +14,8 @@
     color: var(--bs-body-color);
 }
 
-[dir] .trumbowyg-button-pane {
+[dir] .trumbowyg-button-pane,
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
     border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
     background-color: var(--bs-border-color);
     padding: 0;
@@ -43,15 +44,11 @@
 [dir] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-active {
     background-color: var(--bs-body-color) !important;
     color: var(--bs-body-bg) !important;
-}
 
-[dir] .trumbowyg-dropdown button:hover svg,
-[dir] .trumbowyg-dropdown button:focus svg,
-[dir] .trumbowyg-button-pane button:hover svg,
-[dir] .trumbowyg-button-pane button:focus svg,
-[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown.trumbowyg-active svg {
-    color: var(--bs-body-bg);
-    fill: var(--bs-body-bg);
+    svg {
+        color: var(--bs-body-bg);
+        fill: var(--bs-body-bg);
+    }
 }
 
 [dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {

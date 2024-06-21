@@ -59,6 +59,19 @@ else
         </text>
     }
 }    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        function setTheme() {
+            var theme = document.documentElement.dataset.bsTheme;
+            var isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.querySelector('#@Html.IdFor(x => x.Html)_FieldWrapper').classList.toggle('trumbowyg-dark', isDark);
+        }
+        const mutationObserver = new MutationObserver(setTheme);
+        mutationObserver.observe(document.documentElement, { attributes: true });
+
+        setTheme();
+    });
+
     $(function () {
         @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
         {

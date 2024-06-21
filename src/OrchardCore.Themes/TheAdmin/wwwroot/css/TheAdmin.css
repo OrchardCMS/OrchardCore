@@ -8601,7 +8601,8 @@ ul.ui-sortable:not(:has(> li)) {
   color: var(--bs-body-color);
 }
 
-[dir] .trumbowyg-button-pane {
+[dir] .trumbowyg-button-pane,
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
   border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
   background-color: var(--bs-border-color);
   padding: 0;
@@ -8631,7 +8632,6 @@ ul.ui-sortable:not(:has(> li)) {
   background-color: var(--bs-body-color) !important;
   color: var(--bs-body-bg) !important;
 }
-
 [dir] .trumbowyg-dropdown button:hover svg,
 [dir] .trumbowyg-dropdown button:focus svg,
 [dir] .trumbowyg-button-pane button:hover svg,
