@@ -3,7 +3,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Themes.TheTheme;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection serviceCollection)
     {

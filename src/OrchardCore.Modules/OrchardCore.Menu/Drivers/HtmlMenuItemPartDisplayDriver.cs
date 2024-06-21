@@ -67,6 +67,7 @@ namespace OrchardCore.Menu.Drivers
             {
                 model.Name = part.ContentItem.DisplayText;
                 model.Url = part.Url;
+                model.Target = part.Target;
                 model.Html = part.Html;
                 model.MenuItemPart = part;
             });
@@ -76,38 +77,38 @@ namespace OrchardCore.Menu.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
             var model = new HtmlMenuItemPartEditViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            part.ContentItem.DisplayText = model.Name;
+            part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
+            part.Url = model.Url;
+            part.Target = model.Target;
+
+            var urlToValidate = part.Url;
+
+            if (!string.IsNullOrEmpty(urlToValidate))
             {
-                part.ContentItem.DisplayText = model.Name;
-                part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
-                part.Url = model.Url;
+                urlToValidate = urlToValidate.Split('#', 2)[0];
 
-                var urlToValidate = part.Url;
-
-                if (!string.IsNullOrEmpty(urlToValidate))
+                if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    urlToValidate = urlToValidate.Split('#', 2)[0];
+                    var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+                    urlToValidate = urlHelper.Content(urlToValidate);
+                }
 
-                    if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
-                    {
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-                        urlToValidate = urlHelper.Content(urlToValidate);
-                    }
+                urlToValidate = urlToValidate.ToUriComponents();
 
-                    urlToValidate = urlToValidate.ToUriComponents();
+                if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                {
+                    updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                }
+                else
+                {
+                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
 
-                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                    if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
                         updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                    }
-                    else
-                    {
-                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                        if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
-                        {
-                            updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                        }
                     }
                 }
             }

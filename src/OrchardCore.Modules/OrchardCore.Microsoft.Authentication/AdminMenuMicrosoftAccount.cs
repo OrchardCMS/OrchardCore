@@ -1,13 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication
 {
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    public class AdminMenuMicrosoftAccount : INavigationProvider
+    public sealed class AdminMenuMicrosoftAccount : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -15,7 +13,7 @@ namespace OrchardCore.Microsoft.Authentication
             { "groupId", MicrosoftAuthenticationConstants.Features.MicrosoftAccount },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
@@ -46,8 +44,7 @@ namespace OrchardCore.Microsoft.Authentication
         }
     }
 
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    public class AdminMenuAAD : INavigationProvider
+    public sealed class AdminMenuAAD : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -55,7 +52,7 @@ namespace OrchardCore.Microsoft.Authentication
             { "groupId", MicrosoftAuthenticationConstants.Features.AAD },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
 

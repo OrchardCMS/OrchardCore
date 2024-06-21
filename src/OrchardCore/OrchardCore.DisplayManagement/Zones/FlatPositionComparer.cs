@@ -89,12 +89,12 @@ namespace OrchardCore.DisplayManagement.Zones
                 return partition;
             }
 
-            if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Equals(partition, "before", StringComparison.OrdinalIgnoreCase))
             {
                 return "-9999";
             }
 
-            if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Equals(partition, "after", StringComparison.OrdinalIgnoreCase))
             {
                 return "9999";
             }

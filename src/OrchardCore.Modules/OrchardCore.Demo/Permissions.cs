@@ -5,7 +5,7 @@ using OrchardCore.Users;
 
 namespace OrchardCore.Demo;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
     public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
@@ -28,7 +28,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Authenticated",
+            Name = OrchardCoreConstants.Roles.Authenticated,
             Permissions =
             [
                 DemoAPIAccess,
@@ -36,22 +36,22 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Moderator",
+            Name = OrchardCoreConstants.Roles.Moderator,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions = _generalPermissions,
         },
     ];

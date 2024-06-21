@@ -53,8 +53,11 @@ using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.Media;
+
         private const string ImageSharpCacheFolder = "is-cache";
 
         private readonly ShellSettings _shellSettings;
@@ -199,6 +202,14 @@ namespace OrchardCore.Media
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
+            // Move middleware into SecureMediaStartup if it is possible to insert it between the users and media
+            // module. See issue https://github.com/OrchardCMS/OrchardCore/issues/15716.
+            // Secure media file middleware, but only if the feature is enabled.
+            if (serviceProvider.IsSecureMediaEnabled())
+            {
+                app.UseMiddleware<SecureMediaMiddleware>();
+            }
+
             // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
             if (mediaFileStoreCache != null)
             {
@@ -222,7 +233,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Cache")]
-    public class MediaCacheStartup : StartupBase
+    public sealed class MediaCacheStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -232,7 +243,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Slugify")]
-    public class MediaSlugifyStartup : StartupBase
+    public sealed class MediaSlugifyStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -242,7 +253,7 @@ namespace OrchardCore.Media
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -252,7 +263,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Indexing")]
-    public class MediaIndexingStartup : StartupBase
+    public sealed class MediaIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -261,7 +272,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Indexing.Text")]
-    public class TextIndexingStartup : StartupBase
+    public sealed class TextIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -271,7 +282,7 @@ namespace OrchardCore.Media
     }
 
     [RequireFeatures("OrchardCore.Shortcodes")]
-    public class ShortcodesStartup : StartupBase
+    public sealed class ShortcodesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -309,6 +320,20 @@ namespace OrchardCore.Media
 </table>";
                 d.Categories = ["HTML Content", "Media"];
             });
+        }
+    }
+
+    [Feature("OrchardCore.Media.Security")]
+    public sealed class SecureMediaStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Marker service to easily detect if the feature has been enabled.
+            services.AddSingleton<SecureMediaMarker>();
+            services.AddScoped<IPermissionProvider, SecureMediaPermissions>();
+            services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
+
+            services.AddSingleton<IMediaEventHandler, SecureMediaFileStoreEventHandler>();
         }
     }
 }

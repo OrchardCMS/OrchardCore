@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,12 +17,12 @@ using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Https
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var service = serviceProvider.GetRequiredService<IHttpsService>();
-            var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
+            var httpsService = serviceProvider.GetRequiredService<IHttpsService>();
+            var settings = await httpsService.GetSettingsAsync();
             if (settings.RequireHttps)
             {
                 app.UseHttpsRedirection();
@@ -63,7 +64,7 @@ namespace OrchardCore.Https
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

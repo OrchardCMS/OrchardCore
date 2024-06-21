@@ -86,8 +86,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
         private static FieldType BuildSchemaBasedFieldType(ElasticQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"].AsObject();
-
+            var properties = querySchema["properties"]?.AsObject();
             if (properties == null)
             {
                 return null;

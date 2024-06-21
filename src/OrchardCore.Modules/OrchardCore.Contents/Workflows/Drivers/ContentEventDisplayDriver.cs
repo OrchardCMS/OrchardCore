@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,10 +27,10 @@ namespace OrchardCore.Contents.Workflows.Drivers
         public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
-            {
-                model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
-            }
+            await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames);
+
+            model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
+
             return Edit(model);
         }
 
@@ -54,13 +53,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
                 }).Location("Design", "Content")
             );
         }
-
-        /// <summary>
-        /// Filters out any content type that doesn't exist.
-        /// </summary>
-        [Obsolete($"Instead, utilize the {nameof(FilterContentTypesQueryAsync)} method. This current method is slated for removal in upcoming releases.")]
-        protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames)
-            => FilterContentTypesQueryAsync(contentTypeNames).GetAwaiter().GetResult();
 
         protected async Task<IEnumerable<string>> FilterContentTypesQueryAsync(IEnumerable<string> contentTypeNames)
         {

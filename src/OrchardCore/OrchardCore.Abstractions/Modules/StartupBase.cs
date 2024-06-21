@@ -9,7 +9,7 @@ namespace OrchardCore.Modules
     public abstract class StartupBase : IStartup, IAsyncStartup
     {
         /// <inheritdoc />
-        public virtual int Order { get; } = 0;
+        public virtual int Order { get; } = OrchardCoreConstants.ConfigureOrder.Default;
 
         /// <inheritdoc />
         public virtual int ConfigureOrder => Order;

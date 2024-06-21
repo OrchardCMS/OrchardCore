@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Facebook;
 
 [Feature(FacebookConstants.Features.Pixel)]
-public class StartupPixel : StartupBase
+public sealed class StartupPixel : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -21,7 +21,7 @@ public class StartupPixel : StartupBase
 
         services.Configure<MvcOptions>((options) =>
         {
-            options.Filters.Add(typeof(FacebookPixelFilter));
+            options.Filters.Add<FacebookPixelFilter>();
         });
     }
 }

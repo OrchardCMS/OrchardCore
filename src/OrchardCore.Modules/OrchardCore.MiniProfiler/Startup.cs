@@ -10,7 +10,7 @@ using YesSql;
 
 namespace OrchardCore.MiniProfiler
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         // Early in the pipeline to wrap all other middleware
         public override int Order => -500;
@@ -19,7 +19,7 @@ namespace OrchardCore.MiniProfiler
         {
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(MiniProfilerFilter));
+                options.Filters.Add<MiniProfilerFilter>();
             });
 
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();

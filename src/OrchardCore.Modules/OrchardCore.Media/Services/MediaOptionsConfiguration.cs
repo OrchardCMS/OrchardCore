@@ -4,12 +4,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Media.Services
 {
-    public class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
+    public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     {
         private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
@@ -54,6 +53,7 @@ namespace OrchardCore.Media.Services
         ];
 
         private const int DefaultMaxBrowserCacheDays = 30;
+        private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
         private const int DefaultMaxCacheDays = 365;
         private const int DefaultMaxFileSize = 30_000_000;
 
@@ -92,6 +92,7 @@ namespace OrchardCore.Media.Services
                 StringComparer.OrdinalIgnoreCase);
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
+            options.MaxSecureFilesBrowserCacheDays = section.GetValue("MaxSecureFilesBrowserCacheDays", DefaultSecureFilesMaxBrowserCacheDays);
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
             options.ResizedCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.ResizedCacheMaxStale));
             options.RemoteCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.RemoteCacheMaxStale));
@@ -108,6 +109,10 @@ namespace OrchardCore.Media.Services
 
             // Use the same cache control header as ImageSharp does for resized images.
             var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds.ToString();
+            // Secure files are not cached at all.
+            var secureCacheControl = options.MaxSecureFilesBrowserCacheDays == 0
+                ? "no-store"
+                : "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxSecureFilesBrowserCacheDays).TotalSeconds.ToString();
 
             options.StaticFileOptions = new StaticFileOptions
             {
@@ -115,8 +120,8 @@ namespace OrchardCore.Media.Services
                 ServeUnknownFileTypes = true,
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                    ctx.Context.Response.Headers[HeaderNames.ContentSecurityPolicy] = contentSecurityPolicy;
+                    ctx.Context.Response.Headers.CacheControl = ctx.Context.IsSecureMediaRequested() ? secureCacheControl : cacheControl;
+                    ctx.Context.Response.Headers.ContentSecurityPolicy = contentSecurityPolicy;
                 }
             };
         }

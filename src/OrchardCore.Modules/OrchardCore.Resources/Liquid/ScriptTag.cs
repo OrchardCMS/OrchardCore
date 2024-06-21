@@ -92,10 +92,7 @@ namespace OrchardCore.Resources.Liquid
                         definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    if (!string.IsNullOrEmpty(dependsOn))
-                    {
-                        definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
-                    }
+                    definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
 
                     if (appendVersion.HasValue)
                     {

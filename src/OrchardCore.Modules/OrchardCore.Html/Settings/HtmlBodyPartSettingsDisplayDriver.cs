@@ -26,12 +26,11 @@ namespace OrchardCore.Html.Settings
             var model = new HtmlBodyPartSettingsViewModel();
             var settings = new HtmlBodyPartSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.SanitizeHtml = model.SanitizeHtml;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
-            }
+            settings.SanitizeHtml = model.SanitizeHtml;
+
+            context.Builder.WithSettings(settings);
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

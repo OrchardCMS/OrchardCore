@@ -544,9 +544,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         ];
 
-        public IEnumerable<IndexAlias> GetAliases()
+        public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
         {
-            return _aliases;
+            return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
         }
     }
 
@@ -574,9 +574,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         ];
 
-        public IEnumerable<IndexAlias> GetAliases()
+        public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
         {
-            return _aliases;
+            return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
         }
     }
 

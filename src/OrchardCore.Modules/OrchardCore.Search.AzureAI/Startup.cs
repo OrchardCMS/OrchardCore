@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
@@ -16,22 +14,18 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfiguration)
-    : StartupBase
+public sealed class Startup : StartupBase
 {
-    private readonly ILogger _logger = logger;
-    private readonly IShellConfiguration _shellConfiguration = shellConfiguration;
-
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddAzureAISearchServices(_shellConfiguration, _logger);
+        services.AddAzureAISearchServices();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, AzureAISearchDefaultSettingsDisplayDriver>();
     }
 }
 
 [RequireFeatures("OrchardCore.Search")]
-public class SearchStartup : StartupBase
+public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -42,7 +36,7 @@ public class SearchStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.ContentTypes")]
-public class ContentTypesStartup : StartupBase
+public sealed class ContentTypesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -53,7 +47,7 @@ public class ContentTypesStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Deployment")]
-public class DeploymentStartup : StartupBase
+public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

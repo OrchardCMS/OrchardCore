@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "Assets/Styles/mde.scss"
@@ -8,7 +7,6 @@
     "output": "wwwroot/Styles/mde.css"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "node_modules/easymde/dist/easymde.min.js",
       "Assets/Scripts/mde.mediatoolbar.js"
