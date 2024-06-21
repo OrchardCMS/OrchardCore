@@ -10,11 +10,13 @@ namespace OrchardCore.Workflows.Drivers
         protected override void EditActivity(CorrelateTask activity, CorrelateTaskViewModel model)
         {
             model.Value = activity.Value.Expression;
+            model.Syntax = activity.Syntax;
         }
 
         protected override void UpdateActivity(CorrelateTaskViewModel model, CorrelateTask activity)
         {
             activity.Value = new WorkflowExpression<string>(model.Value);
+            activity.Syntax = model.Syntax;
         }
     }
 }
