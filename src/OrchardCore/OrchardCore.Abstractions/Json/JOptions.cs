@@ -38,6 +38,8 @@ public static class JOptions
         Default.Converters.Add(new PathStringJsonConverter());
         Default.Converters.Add(new TimeSpanJsonConverter());
         Default.Converters.Add(new DateTimeJsonConverter());
+        Default.Converters.Add(new LocalizedStringConverter());
+        Default.Converters.Add(new LocalizedHtmlStringConverter());
 
         Indented = new JsonSerializerOptions(Default)
         {
