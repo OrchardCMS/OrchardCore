@@ -3,7 +3,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Workflows
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private static readonly ResourceManifest _manifest;
 

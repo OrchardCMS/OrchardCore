@@ -33,6 +33,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 model.LinkText = treeNode.LinkText;
                 model.LinkUrl = treeNode.LinkUrl;
                 model.IconClass = treeNode.IconClass;
+                model.Target = treeNode.Target;
 
                 var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
 
@@ -56,19 +57,19 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
         {
             var model = new LinkAdminNodeViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass, x => x.SelectedPermissionNames))
-            {
-                treeNode.LinkText = model.LinkText;
-                treeNode.LinkUrl = model.LinkUrl;
-                treeNode.IconClass = model.IconClass;
+            await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.Target, x => x.IconClass, x => x.SelectedPermissionNames);
 
-                var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            treeNode.LinkText = model.LinkText;
+            treeNode.LinkUrl = model.LinkUrl;
+            treeNode.Target = model.Target;
+            treeNode.IconClass = model.IconClass;
 
-                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-                treeNode.PermissionNames = permissions
-                    .Where(p => selectedPermissions.Contains(p.Name))
-                    .Select(p => p.Name).ToArray();
-            }
+            var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+            treeNode.PermissionNames = permissions
+                .Where(p => selectedPermissions.Contains(p.Name))
+                .Select(p => p.Name).ToArray();
 
             return Edit(treeNode);
         }

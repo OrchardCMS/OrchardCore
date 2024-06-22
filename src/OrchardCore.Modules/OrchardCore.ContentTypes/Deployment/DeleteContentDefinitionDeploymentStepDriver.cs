@@ -34,11 +34,10 @@ namespace OrchardCore.ContentTypes.Deployment
         {
             var model = new DeleteContentDefinitionStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
-            {
-                step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-                step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-            }
+            await updater.TryUpdateModelAsync(model, Prefix);
+
+            step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
             return Edit(step);
         }

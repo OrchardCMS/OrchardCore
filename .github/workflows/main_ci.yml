@@ -1,14 +1,19 @@
 name: Main - CI
+
 on:
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
   push:
     paths-ignore:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches: [ main ]
+    branches: [ main, release/** ]
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -18,16 +23,17 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
     - name: Build
+      # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -38,7 +44,7 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
         name: Functional Test failure

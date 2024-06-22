@@ -14,7 +14,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Placements
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -9,12 +9,14 @@ using YesSql.Sql;
 
 namespace OrchardCore.AdminDashboard
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IRecipeMigrator _recipeMigrator;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, IRecipeMigrator recipeMigrator)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IRecipeMigrator recipeMigrator)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _recipeMigrator = recipeMigrator;

@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Menu
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -15,7 +15,7 @@ namespace OrchardCore.Menu
             { "Options.CanCreateSelectedContentType", true }
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

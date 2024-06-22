@@ -6,7 +6,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Notifications.Migrations;
 
-public class NotificationMigrations : DataMigration
+public sealed class NotificationMigrations : DataMigration
 {
     public async Task<int> CreateAsync()
     {

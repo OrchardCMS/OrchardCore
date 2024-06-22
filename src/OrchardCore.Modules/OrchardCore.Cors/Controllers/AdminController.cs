@@ -68,7 +68,8 @@ namespace OrchardCore.Cors.Controllers
                         AllowAnyOrigin = policySetting.AllowAnyOrigin,
                         AllowedOrigins = policySetting.AllowedOrigins,
                         AllowCredentials = policySetting.AllowCredentials,
-                        IsDefaultPolicy = policySetting.IsDefaultPolicy
+                        IsDefaultPolicy = policySetting.IsDefaultPolicy,
+                        ExposedHeaders = policySetting.ExposedHeaders,
                     };
 
                     list.Add(policyViewModel);
@@ -113,7 +114,8 @@ namespace OrchardCore.Cors.Controllers
                     AllowedHeaders = settingViewModel.AllowedHeaders,
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
+                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
+                    ExposedHeaders = settingViewModel.ExposedHeaders,
                 });
                 
                 if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)

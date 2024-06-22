@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace OrchardCore.Search.Lucene.Settings
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return string.Equals("ContentPickerField", model.FieldDefinition.Name);
+            return string.Equals("ContentPickerField", model.FieldDefinition.Name, StringComparison.Ordinal);
         }
     }
 }

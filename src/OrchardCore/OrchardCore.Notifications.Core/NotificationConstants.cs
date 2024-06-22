@@ -1,6 +1,6 @@
 namespace OrchardCore.Notifications;
 
-public class NotificationConstants
+public static class NotificationConstants
 {
     public const string NotificationCollection = "Notification";
 
@@ -11,4 +11,9 @@ public class NotificationConstants
     // minus 4 to allow a new integer column, for example the 'Id' column,
     // minus 2 to allow a new date time, for example 'ReadAtUtc'.
     public const int NotificationIndexContentLength = 705;
+
+    public static class Features
+    {
+        public const string Notifications = "OrchardCore.Notifications";
+    }
 }

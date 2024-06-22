@@ -26,7 +26,7 @@ using OrchardCore.Settings.Deployment;
 namespace OrchardCore.Google
 {
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
-    public class GoogleAuthenticationStartup : StartupBase
+    public sealed class GoogleAuthenticationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.Google
     }
 
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
-    public class GoogleAnalyticsStartup : StartupBase
+    public sealed class GoogleAnalyticsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -66,7 +66,7 @@ namespace OrchardCore.Google
     }
 
     [Feature(GoogleConstants.Features.GoogleTagManager)]
-    public class GoogleTagManagerStartup : StartupBase
+    public sealed class GoogleTagManagerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -84,7 +84,7 @@ namespace OrchardCore.Google
 
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class GoogleAuthenticationDeploymentStartup : StartupBase
+    public sealed class GoogleAuthenticationDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -94,7 +94,7 @@ namespace OrchardCore.Google
 
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class GoogleAnalyticsDeploymentStartup : StartupBase
+    public sealed class GoogleAnalyticsDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -104,7 +104,7 @@ namespace OrchardCore.Google
 
     [Feature(GoogleConstants.Features.GoogleTagManager)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class GoogleTagManagerDeploymentStartup : StartupBase
+    public sealed class GoogleTagManagerDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

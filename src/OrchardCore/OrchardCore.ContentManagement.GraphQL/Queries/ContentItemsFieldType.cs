@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
             );
 
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(ResolveAsync);
 
             schema.RegisterType(whereInput);
             schema.RegisterType(orderByInput);
@@ -65,16 +65,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async ValueTask<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+        private async ValueTask<IEnumerable<ContentItem>> ResolveAsync(IResolveFieldContext context)
 
         {
-            var versionOption = VersionOptions.Published;
-
-            if (context.HasPopulatedArgument("status"))
-            {
-                versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
-            }
-
             JsonObject where = null;
             if (context.HasArgument("where"))
             {
@@ -95,11 +88,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var query = preQuery.With<ContentItemIndex>();
 
-            query = FilterVersion(query, versionOption);
+            query = FilterVersion(query, GetVersionOptions(context));
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var contentItemsQuery = FilterWhereArguments(query, where, context, session);
+            var contentItemsQuery = await FilterWhereArgumentsAsync(query, where, context, session);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
@@ -112,7 +105,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
-        private IQuery<ContentItem> FilterWhereArguments(
+        private async ValueTask<IQuery<ContentItem>> FilterWhereArgumentsAsync(
             IQuery<ContentItem, ContentItemIndex> query,
             JsonObject where,
             IResolveFieldContext fieldContext,
@@ -130,7 +123,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias.
-            predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+            predicateQuery.CreateAlias(string.Empty, nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query.
@@ -140,11 +133,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var aliasProvider in providers)
             {
-                foreach (var alias in aliasProvider.GetAliases())
+                foreach (var alias in await aliasProvider.GetAliasesAsync())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                    indexAliases.Add(alias.Alias, alias.Alias);
-                    indexes.TryAdd(alias.Index, alias);
+                    if (indexAliases.TryAdd(alias.Alias, alias.Alias))
+                    {
+                        indexes.TryAdd(alias.Index, alias);
+                    }
                 }
             }
 
@@ -206,7 +201,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 PublicationStatusEnum.Published => VersionOptions.Published,
                 PublicationStatusEnum.Draft => VersionOptions.Draft,
                 PublicationStatusEnum.Latest => VersionOptions.Latest,
-                PublicationStatusEnum.All => VersionOptions.AllVersions,
                 _ => VersionOptions.Published,
             };
         }
@@ -217,6 +211,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
             return query.Where(q => q.ContentType == contentType);
+        }
+
+        private static VersionOptions GetVersionOptions(IResolveFieldContext context)
+        {
+            if (context.HasPopulatedArgument("status"))
+            {
+                return GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
+            }
+
+            return VersionOptions.Published;
         }
 
         private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)

@@ -241,14 +241,14 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
             }
 
 #pragma warning disable CA1822 // Mark members as static
-            public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
+            public Task<IFeatureInfo> LoadFeatureAsync(IFeatureInfo feature)
             {
-                return Task.FromResult(new FeatureEntry(feature));
+                return Task.FromResult(feature);
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
-                return Task.FromResult(features.Select(x => new FeatureEntry(x)));
+                return Task.FromResult(features);
             }
 #pragma warning restore CA1822 // Mark members as static
 
@@ -267,12 +267,17 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerable<Type> GetExportedExtensionTypes(IExtensionInfo extensionInfo)
             {
                 throw new NotImplementedException();
             }
@@ -289,7 +294,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
             public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
                 => _featureShapes = featureShapes;
 
-            void IShapeTableProvider.Discover(ShapeTableBuilder builder)
+            ValueTask IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
             {
                 foreach (var pair in FeatureShapes)
                 {
@@ -300,6 +305,8 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
                 }
 
                 Discover(builder);
+
+                return ValueTask.CompletedTask;
             }
         }
 

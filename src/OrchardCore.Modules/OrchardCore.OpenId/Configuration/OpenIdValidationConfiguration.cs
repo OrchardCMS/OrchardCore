@@ -16,17 +16,15 @@ using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Security;
-using SystemEnvironment = System.Environment;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using SystemEnvironment = System.Environment;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    [Feature(OpenIdConstants.Features.Validation)]
-    public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
+    public sealed class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureOptions<OpenIddictValidationOptions>,
         IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
         IConfigureNamedOptions<ApiAuthorizationOptions>
@@ -181,7 +179,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant, StringComparison.Ordinal))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -203,7 +201,7 @@ namespace OrchardCore.OpenId.Configuration
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
             if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+                !string.Equals(settings.Tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
@@ -236,7 +234,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name, StringComparison.Ordinal))
             {
                 return ShellScope.Current;
             }

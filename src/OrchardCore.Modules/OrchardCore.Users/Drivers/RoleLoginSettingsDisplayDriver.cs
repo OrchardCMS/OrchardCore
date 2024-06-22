@@ -21,6 +21,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
+
     protected readonly IStringLocalizer S;
 
     public RoleLoginSettingsDisplayDriver(
@@ -52,7 +53,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
         .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RoleLoginSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RoleLoginSettings settings, UpdateEditorContext context)
     {
         if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))

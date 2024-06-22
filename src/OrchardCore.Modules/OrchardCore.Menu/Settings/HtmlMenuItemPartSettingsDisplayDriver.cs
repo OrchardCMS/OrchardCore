@@ -26,12 +26,11 @@ namespace OrchardCore.Menu.Settings
             var model = new HtmlMenuItemPartSettingsViewModel();
             var settings = new HtmlMenuItemPartSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.SanitizeHtml = model.SanitizeHtml;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
-            }
+            settings.SanitizeHtml = model.SanitizeHtml;
+
+            context.Builder.WithSettings(settings);
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

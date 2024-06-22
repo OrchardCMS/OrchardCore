@@ -22,6 +22,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public string BigUrl { get; set; }
         public string Text { get; set; }
         public string BigText { get; set; }
+        public string Target { get; set; }
     }
 
     public class LinkFieldIndexProvider : ContentFieldIndexProvider
@@ -48,11 +49,6 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
-                    {
-                        return null;
-                    }
-
-                    if (!contentItem.Latest && !contentItem.Published)
                     {
                         return null;
                     }
@@ -97,6 +93,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 BigUrl = pair.Field.Url,
                                 Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)],
                                 BigText = pair.Field.Text,
+                                Target = pair.Field.Target,
                             });
                 });
         }

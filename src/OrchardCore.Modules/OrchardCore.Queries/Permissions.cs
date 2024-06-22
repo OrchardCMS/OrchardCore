@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
     public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
@@ -43,12 +43,12 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions = _generalPermissions,
         },
     ];

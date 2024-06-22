@@ -62,9 +62,26 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
         }
 
-        public virtual Task<bool> TryCreateDirectoryAsync(string path)
+        public virtual async Task<bool> TryCreateDirectoryAsync(string path)
         {
-            return _fileStore.TryCreateDirectoryAsync(path);
+            var creatingContext = new MediaCreatingContext
+            {
+                Path = path
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatingDirectoryAsync(context), creatingContext, _logger);
+
+            var result = await _fileStore.TryCreateDirectoryAsync(path);
+
+            var createdContext = new MediaCreatedContext
+            {
+                Path = path,
+                Result = result
+            };
+
+            await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatedDirectoryAsync(context), createdContext, _logger);
+
+            return result;
         }
 
         public virtual async Task<bool> TryDeleteFileAsync(string path)
@@ -195,7 +212,7 @@ namespace OrchardCore.Media.Core
                 }
             }
 
-            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
+            return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizeAndEscapePath(path);
         }
 
         private void ValidateRequestBasePath(HttpContext httpContext)

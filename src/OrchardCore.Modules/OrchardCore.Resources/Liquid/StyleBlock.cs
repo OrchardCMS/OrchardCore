@@ -41,6 +41,7 @@ namespace OrchardCore.Resources.Liquid
                     case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
                     case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
                     default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }

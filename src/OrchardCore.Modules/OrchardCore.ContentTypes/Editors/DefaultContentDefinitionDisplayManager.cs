@@ -16,7 +16,6 @@ namespace OrchardCore.ContentTypes.Editors
     public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IContentDefinitionDisplayManager
     {
         private readonly IEnumerable<IContentDefinitionDisplayHandler> _handlers;
-        private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
@@ -24,7 +23,6 @@ namespace OrchardCore.ContentTypes.Editors
 
         public DefaultContentDefinitionDisplayManager(
             IEnumerable<IContentDefinitionDisplayHandler> handlers,
-            IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
@@ -33,7 +31,6 @@ namespace OrchardCore.ContentTypes.Editors
             ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
-            _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;

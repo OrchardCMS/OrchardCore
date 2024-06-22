@@ -37,7 +37,7 @@ namespace OrchardCore.AuditTrail.Drivers
             }).Location("Content:10#Trimming;0").OnGroup(AuditTrailSettingsGroup.Id);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))

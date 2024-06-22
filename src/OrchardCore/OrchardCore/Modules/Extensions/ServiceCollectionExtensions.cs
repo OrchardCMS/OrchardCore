@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -155,11 +154,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
-            services.AddTransient<IConfigureOptions<JsonOptions>, JsonOptionsConfigurations>();
+            services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>, JsonOptionsConfigurations>();
             services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<ISlugService, SlugService>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
@@ -171,8 +171,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
-
-            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -197,6 +195,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(shellServices =>
             {
+                shellServices.AddScoped<IShellReleaseManager, DefaultShellReleaseManager>();
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();
@@ -309,7 +308,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddMetrics();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -340,7 +339,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -379,7 +378,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
                 collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -408,7 +407,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
             },
-            order: int.MinValue + 100);
+            order: OrchardCoreConstants.ConfigureOrder.InfrastructureService);
         }
 
         /// <summary>
@@ -430,7 +429,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Cookie.Name = cookieName;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                        // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                        // set by the pipeline and coming from the request 'PathBase' which already ends with the
                         // tenant prefix but may also start by a path related e.g to a virtual folder.
                     });
 
@@ -523,7 +522,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure(app =>
             {
                 app.UseAuthentication();
-            }, order: -150);
+            }, order: OrchardCoreConstants.ConfigureOrder.Authentication);
         }
 
         /// <summary>
@@ -558,7 +557,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
 
                 services.Add(collection);
-            });
+            }, order: OrchardCoreConstants.ConfigureOrder.DataProtection);
         }
     }
 }

@@ -5,10 +5,11 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants
 {
-    public class FeatureProfilesAdminMenu : INavigationProvider
+    public sealed class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {

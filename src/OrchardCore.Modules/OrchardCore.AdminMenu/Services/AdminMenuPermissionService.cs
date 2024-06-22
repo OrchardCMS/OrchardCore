@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Services;
 
-public class AdminMenuPermissionService : IAdminMenuPermissionService
+public sealed class AdminMenuPermissionService : IAdminMenuPermissionService
 {
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 

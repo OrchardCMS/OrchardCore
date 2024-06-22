@@ -99,10 +99,9 @@ namespace OrchardCore.Layers.Controllers
 
             var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
             var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? [];
+            model.Zones = (await _siteService.GetSettingsAsync<LayerSettings>()).Zones ?? [];
             model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
@@ -191,7 +190,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.GetLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {
@@ -236,7 +235,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
+                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
 
                 if (layer == null)
                 {
@@ -264,7 +263,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.LoadLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
 
             if (layer == null)
             {

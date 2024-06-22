@@ -34,7 +34,7 @@ namespace OrchardCore.Demo.Drivers
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, UpdateEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile))
             {
@@ -43,13 +43,12 @@ namespace OrchardCore.Demo.Drivers
 
             var model = new EditUserProfileViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                profile.Age = model.Age;
-                profile.FirstName = model.FirstName;
-                profile.LastName = model.LastName;
-                profile.UpdatedAt = DateTime.UtcNow;
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            profile.Age = model.Age;
+            profile.FirstName = model.FirstName;
+            profile.LastName = model.LastName;
+            profile.UpdatedAt = DateTime.UtcNow;
 
             return Edit(profile, context);
         }

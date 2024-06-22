@@ -19,7 +19,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -40,7 +40,7 @@ namespace OrchardCore.Facebook
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(FBInitFilter));
+                options.Filters.Add<FBInitFilter>();
             });
         }
     }
