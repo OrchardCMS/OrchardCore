@@ -6,13 +6,15 @@
 document.addEventListener('DOMContentLoaded', function () {
   function setTheme() {
     var isDark = getPreferredTheme() == darkThemeName;
-    document.querySelectorAll('.trumbowyg-wrapper').forEach(function (element) {
-      return element.classList.toggle('trumbowyg-dark', isDark);
+    document.querySelectorAll('.trumbowyg').forEach(function (element) {
+      return element.parentElement.classList.toggle('trumbowyg-dark', isDark);
     });
   }
   var mutationObserver = new MutationObserver(setTheme);
   mutationObserver.observe(document.documentElement, {
-    attributes: true
+    attributes: true,
+    childList: true,
+    subtree: true
   });
   setTheme();
 });

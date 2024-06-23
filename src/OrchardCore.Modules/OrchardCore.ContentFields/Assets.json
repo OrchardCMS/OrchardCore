@@ -46,11 +46,5 @@
       "Assets/js/trumbowyg.media.url.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.media.url.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/trumbowyg.theme.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.theme.js"
   }
 ]

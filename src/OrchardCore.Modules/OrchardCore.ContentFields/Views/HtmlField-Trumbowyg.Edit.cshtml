@@ -24,7 +24,7 @@ else
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses("trumbowyg-wrapper")">
+    <div class="@Orchard.GetEndClasses()">
         @await DisplayAsync(await New.ShortcodeModal())
         @if (culture.IsRightToLeft())
         {

@@ -3,14 +3,18 @@ document.addEventListener('DOMContentLoaded', function () {
         var isDark = getPreferredTheme() == darkThemeName;
 
         document
-            .querySelectorAll('.trumbowyg-wrapper')
+            .querySelectorAll('.trumbowyg')
             .forEach((element) =>
-                element.classList.toggle('trumbowyg-dark', isDark)
+                element.parentElement.classList.toggle('trumbowyg-dark', isDark)
             );
     }
 
     const mutationObserver = new MutationObserver(setTheme);
-    mutationObserver.observe(document.documentElement, { attributes: true });
+    mutationObserver.observe(document.documentElement, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+    });
 
     setTheme();
 });

@@ -37,6 +37,12 @@
     z-index: var(--oc-editor-fullscreen);
 }
 
+[dir] .trumbowyg-textarea,
+[dir] .trumbowyg-dark .trumbowyg-textarea {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
 [dir] .trumbowyg-box .trumbowyg-editor th,
 [dir] .trumbowyg-box .trumbowyg-editor td {
     border-width: var(--bs-border-width, 1px);
