@@ -1,43 +1,53 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheAdmin
 {
     public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private static readonly ResourceManifest _manifest;
+        private readonly ShellSettings _shellSettings;
 
-        static ResourceManagementOptionsConfiguration()
+        public ResourceManagementOptionsConfiguration(ShellSettings shellSettings)
         {
-            _manifest = new ResourceManifest();
+            _shellSettings = shellSettings;
+        }
 
-            _manifest
+        public void Configure(ResourceManagementOptions options)
+        {
+            var manifest = new ResourceManifest();
+
+            manifest
                 .DefineScript("admin")
                 .SetDependencies("bootstrap", "admin-head", "jQuery")
                 .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
                 .SetVersion("1.0.0");
 
-            _manifest
-                .DefineScript("admin-head")
-                .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
-                .SetDependencies("js-cookie")
+            manifest
+                .DefineScript("admin-theme-manager")
+                .SetAttribute("data-tenant-name", _shellSettings.Name)
+                .SetAttribute("data-theme-store-key-suffix", "adminTheme")
+                .SetUrl("~/OrchardCore.Themes/Scripts/theme-manager.min.js", "~/OrchardCore.Themes/Scripts/theme-manager.js")
                 .SetVersion("1.0.0");
 
-            _manifest
+            manifest
+                .DefineScript("admin-head")
+                .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
+                .SetDependencies("js-cookie", "admin-theme-manager")
+                .SetVersion("1.0.0");
+
+            manifest
                 .DefineScript("admin-main")
                 .SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js")
                 .SetDependencies("admin-head")
                 .SetVersion("1.0.0");
 
-            _manifest
+            manifest
                 .DefineStyle("admin")
                 .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
                 .SetVersion("1.0.0");
-        }
 
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(_manifest);
+            options.ResourceManifests.Add(manifest);
         }
     }
 }
