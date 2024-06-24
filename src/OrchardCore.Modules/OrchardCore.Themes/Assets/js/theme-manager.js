@@ -1,10 +1,10 @@
 const darkThemeName = 'dark';
 const lightThemeName = 'light';
 const tenantName = document.currentScript.dataset.tenantName;
-const storeKeySuffix = document.currentScript.dataset.themeStoreKeySuffix;
+const themeStoreKeySuffix = 'theme';
 
 const getTenantName = () => tenantName || document.documentElement.getAttribute('data-tenant') || 'default';
-const getStoreKeySuffix = () => storeKeySuffix || 'theme';
+const getStoreKeySuffix = () => themeStoreKeySuffix || 'theme';
 const getStoreKey = () => `${getTenantName()}-${getStoreKeySuffix()}`;
 const getStoredTheme = () => localStorage.getItem(getStoreKey());
 const setStoredTheme = (theme) => localStorage.setItem(getStoreKey(), theme);

@@ -434,7 +434,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("trumbowyg-theme")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.js")
-                .SetDependencies("trumbowyg", "admin-head")
+                .SetDependencies("trumbowyg", "theme-manager")
                 .SetVersion("1.0.0");
 
             manifest

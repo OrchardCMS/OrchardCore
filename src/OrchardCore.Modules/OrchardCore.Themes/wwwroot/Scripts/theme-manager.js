@@ -6,12 +6,12 @@
 var darkThemeName = 'dark';
 var lightThemeName = 'light';
 var tenantName = document.currentScript.dataset.tenantName;
-var storeKeySuffix = document.currentScript.dataset.themeStoreKeySuffix;
+var themeStoreKeySuffix = 'theme';
 var getTenantName = function getTenantName() {
   return tenantName || document.documentElement.getAttribute('data-tenant') || 'default';
 };
 var getStoreKeySuffix = function getStoreKeySuffix() {
-  return storeKeySuffix || 'theme';
+  return themeStoreKeySuffix || 'theme';
 };
 var getStoreKey = function getStoreKey() {
   return "".concat(getTenantName(), "-").concat(getStoreKeySuffix());

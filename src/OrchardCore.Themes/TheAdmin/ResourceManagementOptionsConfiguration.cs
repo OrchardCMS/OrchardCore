@@ -24,16 +24,9 @@ namespace OrchardCore.Themes.TheAdmin
                 .SetVersion("1.0.0");
 
             manifest
-                .DefineScript("admin-theme-manager")
-                .SetAttribute("data-tenant-name", _shellSettings.Name)
-                .SetAttribute("data-theme-store-key-suffix", "adminTheme")
-                .SetUrl("~/OrchardCore.Themes/Scripts/theme-manager.min.js", "~/OrchardCore.Themes/Scripts/theme-manager.js")
-                .SetVersion("1.0.0");
-
-            manifest
                 .DefineScript("admin-head")
                 .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
-                .SetDependencies("js-cookie", "admin-theme-manager")
+                .SetDependencies("js-cookie", "theme-manager")
                 .SetVersion("1.0.0");
 
             manifest

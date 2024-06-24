@@ -1,3 +1,4 @@
+themeStoreKeySuffix = 'adminTheme';
 const getAdminPreferenceKey = () => getTenantName() + '-adminPreferences';
 const getAdminPreferences = () => JSON.parse(localStorage.getItem(getAdminPreferenceKey()));
 const setAdminPreferences = (adminPreferences) => {
