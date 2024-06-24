@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-themeStoreKeySuffix = 'adminTheme';
+themeStoreKeySuffix = 'admintheme';
 var getAdminPreferenceKey = function getAdminPreferenceKey() {
   return getTenantName() + '-adminPreferences';
 };
