@@ -36,10 +36,10 @@ namespace OrchardCore.Scripting.JavaScript
                         return ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
                     }
 
-                    if (target is JsonDynamicValue dynamicValue)
-                    {
-                        return ObjectWrapper.Create(e, dynamicValue.JsonValue, type);
-                    }
+                    //    if (target is JsonDynamicValue dynamicValue)
+                    //    {
+                    //        return ObjectWrapper.Create(e, dynamicValue, type);
+                    //    }
 
                     return ObjectWrapper.Create(e, target, type);
                 });
