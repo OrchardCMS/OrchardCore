@@ -793,6 +793,7 @@ public class JsonDynamicTests
     [Fact]
     public void SerializingJsonDynamicValueMustWriteValueOnly()
     {
+       // Arrange
         var contentItem = new ContentItem();
         contentItem.Alter<TestPart>(part =>
         {
@@ -801,11 +802,13 @@ public class JsonDynamicTests
             part.BooleanFieldProp = new BooleanField { Value = true };
         });
 
+        // Act
         dynamic expandoValue = new ExpandoObject();
         expandoValue.stringValue = contentItem.Content.TestPart.TextFieldProp.Text;
         expandoValue.numberValue = contentItem.Content.TestPart.NumericFieldProp.Value;
         expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
 
+       // Assert
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
         Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
     }
