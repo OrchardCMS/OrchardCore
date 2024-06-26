@@ -813,7 +813,9 @@ public class JsonDynamicTests
     public sealed class TestPart : ContentPart
     {
         public TextField TextFieldProp { get; set; }
+
         public NumericField NumericFieldProp { get; set; }
+
         public BooleanField BooleanFieldProp { get; set; }
     }
 }
