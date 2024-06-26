@@ -24,9 +24,7 @@
                 {
                     @if (!string.IsNullOrEmpty(Model.LocalizationSet))
                     {
-                        var returnUrl = string.IsNullOrEmpty(Context.Request.Query["returnUrl"]) 
-                            ? TempData["returnUrl"] ?? string.Empty 
-                            : Context.Request.Query["returnUrl"];
+                        var returnUrl = Context.Request.Query["returnUrl"];
 
                         <div class="list-group">
                             @foreach (var culture in Model.ContentItemCultures)

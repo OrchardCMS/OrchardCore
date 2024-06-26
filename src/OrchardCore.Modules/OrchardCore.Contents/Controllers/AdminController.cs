@@ -425,11 +425,6 @@ namespace OrchardCore.Contents.Controllers
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
-            if(!string.IsNullOrEmpty(returnUrl))
-            {
-                TempData["returnUrl"] = returnUrl;
-            }
-
             return View(model);
         }
 

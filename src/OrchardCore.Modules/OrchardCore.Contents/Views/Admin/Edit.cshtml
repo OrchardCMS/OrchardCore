@@ -9,9 +9,7 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
 
-    var returnUrl = string.IsNullOrEmpty(Context.Request.Query["returnUrl"]) 
-        ? TempData["returnUrl"] ?? string.Empty 
-        : Context.Request.Query["returnUrl"];
+    var returnUrl = Context.Request.Query["returnUrl"];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", typeDisplayName])</h1></zone>
