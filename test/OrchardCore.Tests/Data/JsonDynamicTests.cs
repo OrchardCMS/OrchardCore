@@ -850,7 +850,7 @@ public class JsonDynamicTests
         return contentItem;
     }
 
-    public class TestPart : ContentPart
+    public sealed class TestPart : ContentPart
     {
         public TextField TextFieldProp { get; set; }
 
