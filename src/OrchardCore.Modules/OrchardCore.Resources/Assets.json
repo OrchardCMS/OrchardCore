@@ -182,26 +182,32 @@
     "inputs": [
       "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss"
     ],
-    "output": "wwwroot/Styles/trumbowyg.css"
+    "output": "wwwroot/Styles/trumbowyg/trumbowyg.css"
   },
   {
     "generateRTL": true,
     "inputs": [
       "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
-    "output": "wwwroot/Styles/trumbowyg-plugins.css"
+    "output": "wwwroot/Styles/trumbowyg/trumbowyg-plugins.css"
   },
   {
     "inputs": [
       "node_modules/trumbowyg/dist/trumbowyg.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.js"
   },
   {
     "inputs": [
       "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.shortcodes.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/trumbowyg.theme.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.theme.js"
   },
   {
     "inputs": [
@@ -229,7 +235,7 @@
       "Assets/trumbowyg/plugins/template/trumbowyg.template.js",
       "Assets/trumbowyg/plugins/upload/trumbowyg.upload.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg-plugins.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg-plugins.js"
   },
   {
     "copy": true,
