@@ -90,9 +90,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentType = contentItem.ContentType,
                                 ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                                 ContentField = pair.Definition.Name,
-                                Url = pair.Field.Url?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxUrlSize)),
+                                Url = pair.Field.Url?.Substring(0, Math.Min(pair.Field.Url.Length, LinkFieldIndex.MaxUrlSize)),
                                 BigUrl = pair.Field.Url,
-                                Text = pair.Field.Text?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxTextSize)),
+                                Text = pair.Field.Text?.Substring(0, Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)),
                                 BigText = pair.Field.Text,
                                 Target = pair.Field.Target?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxTargetSize)),
                             });
