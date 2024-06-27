@@ -807,5 +807,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
             return 5;
         }
+
+        public async Task<int> UpdateFrom5Async()
+        {
+            await SchemaBuilder.AlterIndexTableAsync<LinkFieldIndex>(table => table
+                .AddColumn<string>("Target", column => column.WithLength(LinkFieldIndex.MaxTargetSize))
+            );
+
+            return 6;
+        }
     }
 }

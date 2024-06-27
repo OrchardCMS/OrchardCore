@@ -17,6 +17,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         // minus 1 (freeing 4 bytes) for the additional 'Published' and 'Latest' booleans.
         public const int MaxUrlSize = 766;
         public const int MaxTextSize = 766;
+        public const int MaxTargetSize = 100;
 
         public string Url { get; set; }
         public string BigUrl { get; set; }
@@ -53,10 +54,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    // Lazy initialization because of ISession cyclic dependency
+                    // Lazy initialization because of ISession cyclic dependency.
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for LinkField
+                    // Search for LinkField.
                     var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
@@ -70,7 +71,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(LinkField)))
                         .ToArray();
 
-                    // This type doesn't have any LinkField, ignore it
+                    // This type doesn't have any LinkField, ignore it.
                     if (fieldDefinitions.Length == 0)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
@@ -89,11 +90,11 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentType = contentItem.ContentType,
                                 ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                                 ContentField = pair.Definition.Name,
-                                Url = pair.Field.Url?[..Math.Min(pair.Field.Url.Length, LinkFieldIndex.MaxUrlSize)],
+                                Url = pair.Field.Url?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxUrlSize)),
                                 BigUrl = pair.Field.Url,
-                                Text = pair.Field.Text?[..Math.Min(pair.Field.Text.Length, LinkFieldIndex.MaxTextSize)],
+                                Text = pair.Field.Text?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxTextSize)),
                                 BigText = pair.Field.Text,
-                                Target = pair.Field.Target,
+                                Target = pair.Field.Target?.Substring(0, Math.Min(pair.Field.Target.Length, LinkFieldIndex.MaxTargetSize)),
                             });
                 });
         }
