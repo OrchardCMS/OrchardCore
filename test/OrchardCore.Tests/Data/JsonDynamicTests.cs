@@ -802,7 +802,7 @@ public class JsonDynamicTests
         contentExpando.content = contentItem.Content;
         var contentStr = JConvert.SerializeObject((ExpandoObject)contentExpando);
 
-        // Act
+        // Assert
         Assert.Equal("{\"content\":{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}}", contentStr);
 
         // Arrange
