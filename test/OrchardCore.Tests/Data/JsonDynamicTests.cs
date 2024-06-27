@@ -812,7 +812,7 @@ public class JsonDynamicTests
         expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
         var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
 
-        // Act
+        // Assert
         Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
     }
 
