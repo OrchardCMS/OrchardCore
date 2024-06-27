@@ -3,6 +3,7 @@ using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Json;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -44,6 +45,11 @@ namespace OrchardCore.Queries
                 });
             })
             .AddLiquidFilter<QueryFilter>("query");
+
+            services.Configure<DocumentJsonSerializerOptions>(options =>
+            {
+                options.SerializerOptions.Converters.Add(QueryJsonConverter.Instance);
+            });
         }
     }
 

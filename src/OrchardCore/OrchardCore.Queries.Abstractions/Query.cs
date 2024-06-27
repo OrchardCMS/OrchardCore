@@ -14,6 +14,13 @@ namespace OrchardCore.Queries
             Source = source;
         }
 
+        internal Query(string source, string name, string schema)
+            : this(source)
+        {
+            Name = name;
+            Schema = schema;
+        }
+
         /// <summary>
         /// Gets or sets the technical name of the query.
         /// </summary>
