@@ -4,5 +4,11 @@
       "Assets/scss/admin.scss"
     ],
     "output": "wwwroot/Styles/themes.admin.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/theme-manager.js"
+    ],
+    "output": "wwwroot/Scripts/theme-manager.js"
   }
 ]
