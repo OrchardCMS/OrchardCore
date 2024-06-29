@@ -152,6 +152,14 @@ namespace OrchardCore.Resources.Liquid
 
                 var setting = resourceManager.RegisterResource("script", name);
 
+                if (customAttributes != null)
+                {
+                    foreach (var attribute in customAttributes)
+                    {
+                        setting.SetAttribute(attribute.Key, attribute.Value);
+                    }
+                }
+
                 if (at != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(at);
