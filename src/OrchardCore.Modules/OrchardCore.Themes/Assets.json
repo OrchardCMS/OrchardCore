@@ -23,15 +23,6 @@
     "watch": [
       "Assets/js/theme-toggler.js"
     ],
-    "output": "wwwroot/Scripts/theme-manager.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/theme-toggler.js"
-    ],
-    "watch": [
-      "Assets/js/theme-toggler.js"
-    ],
     "output": "wwwroot/Scripts/theme-toggler.js"
   }
 ]

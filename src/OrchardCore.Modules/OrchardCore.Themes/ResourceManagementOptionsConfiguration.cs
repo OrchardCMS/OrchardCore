@@ -17,12 +17,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineScript("theme-manager")
-            .SetUrl("~/OrchardCore.Themes/Scripts/theme-manager.min.js", "~/OrchardCore.Themes/Scripts/theme-manager.js")
-            .SetDependencies("theme-head")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineScript("theme-toggler")
             .SetUrl("~/OrchardCore.Themes/Scripts/theme-toggler.min.js", "~/OrchardCore.Themes/Scripts/theme-toggler.js")
             .SetDependencies("theme-head")
