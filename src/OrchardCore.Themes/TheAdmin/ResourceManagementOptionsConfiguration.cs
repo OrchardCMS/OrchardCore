@@ -20,7 +20,7 @@ namespace OrchardCore.Themes.TheAdmin
             _manifest
                 .DefineScript("admin-head")
                 .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
-                .SetDependencies("js-cookie")
+                .SetDependencies("js-cookie", "theme-manager")
                 .SetVersion("1.0.0");
 
             _manifest
