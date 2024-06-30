@@ -797,9 +797,10 @@ public class JsonDynamicTests
     {
         // Arrange
         var contentItem = GetContentTestData();
-
         dynamic contentExpando = new ExpandoObject();
         contentExpando.content = contentItem.Content;
+        
+        // Act
         var contentStr = JConvert.SerializeObject((ExpandoObject)contentExpando);
 
         // Assert
@@ -809,6 +810,7 @@ public class JsonDynamicTests
     [Fact]
     public async Task SerializingJsonDynamicValueInScripting()
     {
+        // Arrange
         using var context = new SiteContext();
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(scope =>
@@ -820,8 +822,11 @@ public class JsonDynamicTests
             };
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);
+            
+            // Act
             var contentStr = (string)scriptingEngine.Evaluate(scriptingScope, "return JSON.stringify(getTestContent().Content)");
 
+            // Assert
             Assert.Equal("{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}", contentStr);
 
             return Task.CompletedTask;
