@@ -11,7 +11,7 @@ public class PredicateQueryTests
     public PredicateQueryTests()
     {
         _configuration = new Configuration()
-            .UseSqlServer("Server=.;Database=OrchardCore;", "TenantSchema")
+            .UseSqlServer("Fake database connection string for testing;", "TenantSchema")
             .SetTablePrefix("Tenant1");
     }
 
