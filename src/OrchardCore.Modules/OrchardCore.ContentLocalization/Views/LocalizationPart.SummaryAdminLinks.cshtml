@@ -2,14 +2,13 @@
 
 @if (!string.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
 {
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
     <div class="btn-group" title="@T["Localizations"]">
         <button type="button" class="btn btn-sm btn-info dropdown-toggle localizations" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span>@T["Localizations"]</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            @{
-                var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
-            }
             @foreach (var culture in Model.ContentItemCultures)
             {
                 <li>
