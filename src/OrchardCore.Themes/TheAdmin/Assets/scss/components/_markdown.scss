@@ -1,0 +1,11 @@
+.EasyMDEContainer blockquote {
+    background: var(--bs-secondary-bg-subtle);
+    border-left: 10px solid var(--bs-secondary-border-subtle) !important;
+    margin: 1.5em 10px;
+    padding: 1em 10px .1em;
+    quotes: "\201C""\201D""\2018""\2019";
+}
+
+.EasyMDEContainer blockquote > p {
+    color: var(--bs-secondary-text-emphasis);
+}
