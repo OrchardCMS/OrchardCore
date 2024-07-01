@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace OrchardCore.Queries
 {
     /// <summary>
@@ -14,6 +18,8 @@ namespace OrchardCore.Queries
             Source = source;
         }
 
+        public Query() : this("Unknown") { }
+
         /// <summary>
         /// Gets or sets the technical name of the query.
         /// </summary>
@@ -22,7 +28,7 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Gets the name of the source for this query.
         /// </summary>
-        public string Source { get; }
+        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets the return schema of the query.
@@ -31,5 +37,8 @@ namespace OrchardCore.Queries
         public string Schema { get; set; }
 
         public virtual bool ResultsOfType<T>() => typeof(T) == typeof(object);
+
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement> ExtensionData { get; set; }
     }
 }

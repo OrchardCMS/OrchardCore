@@ -3,6 +3,7 @@ using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -26,6 +27,7 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
+            services.AddScoped<IFeatureEventHandler, QueriesDocumentUpdater>();
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
