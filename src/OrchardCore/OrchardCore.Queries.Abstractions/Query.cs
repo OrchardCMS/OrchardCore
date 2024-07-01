@@ -5,6 +5,8 @@ namespace OrchardCore.Queries
     /// </summary>
     public class Query
     {
+        public const string DefaultSource = "Unknown";
+
         /// <summary>
         /// Initializes a new instance of a <see cref="Query"/>.
         /// </summary>
@@ -12,6 +14,11 @@ namespace OrchardCore.Queries
         protected Query(string source)
         {
             Source = source;
+        }
+
+        public Query() : this(DefaultSource)
+        {
+
         }
 
         /// <summary>
