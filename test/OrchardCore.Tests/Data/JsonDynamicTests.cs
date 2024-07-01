@@ -4,6 +4,8 @@ using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using OrchardCore.Scripting;
+using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Data;
 
@@ -721,7 +723,7 @@ public class JsonDynamicTests
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(value));
 
         Assert.True(value >= myDynamic);
-        Assert.True(value + 10 >  myDynamic);
+        Assert.True(value + 10 > myDynamic);
 
         Assert.False(value - 10 >= myDynamic);
         Assert.False(value > myDynamic);
@@ -793,7 +795,46 @@ public class JsonDynamicTests
     [Fact]
     public void SerializingJsonDynamicValueMustWriteValueOnly()
     {
-       // Arrange
+        // Arrange
+        var contentItem = GetContentTestData();
+        dynamic contentExpando = new ExpandoObject();
+        contentExpando.content = contentItem.Content;
+        
+        // Act
+        var contentStr = JConvert.SerializeObject((ExpandoObject)contentExpando);
+
+        // Assert
+        Assert.Equal("{\"content\":{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}}", contentStr);
+    }
+
+    [Fact]
+    public async Task SerializingJsonDynamicValueInScripting()
+    {
+        // Arrange
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(scope =>
+        {
+            var getTestContent = new GlobalMethod
+            {
+                Name = "getTestContent",
+                Method = sp => () => GetContentTestData()
+            };
+            var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
+            var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);
+            
+            // Act
+            var contentStr = (string)scriptingEngine.Evaluate(scriptingScope, "return JSON.stringify(getTestContent().Content)");
+
+            // Assert
+            Assert.Equal("{\"TestPart\":{\"TextFieldProp\":{\"Text\":\"test\"},\"NumericFieldProp\":{\"Value\":123},\"BooleanFieldProp\":{\"Value\":true}}}", contentStr);
+
+            return Task.CompletedTask;
+        });
+    }
+
+    private static ContentItem GetContentTestData()
+    {
         var contentItem = new ContentItem();
         contentItem.Alter<TestPart>(part =>
         {
@@ -801,16 +842,7 @@ public class JsonDynamicTests
             part.NumericFieldProp = new NumericField { Value = 123 };
             part.BooleanFieldProp = new BooleanField { Value = true };
         });
-
-        // Act
-        dynamic expandoValue = new ExpandoObject();
-        expandoValue.stringValue = contentItem.Content.TestPart.TextFieldProp.Text;
-        expandoValue.numberValue = contentItem.Content.TestPart.NumericFieldProp.Value;
-        expandoValue.booleanValue = contentItem.Content.TestPart.BooleanFieldProp.Value;
-        var jsonStr = JConvert.SerializeObject((ExpandoObject)expandoValue);
-
-       // Assert
-        Assert.Equal("{\"stringValue\":\"test\",\"numberValue\":123,\"booleanValue\":true}", jsonStr);
+        return contentItem;
     }
 
     public sealed class TestPart : ContentPart
