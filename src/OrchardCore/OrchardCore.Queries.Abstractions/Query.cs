@@ -18,7 +18,9 @@ namespace OrchardCore.Queries
             Source = source;
         }
 
-        public Query() : this("Unknown") { }
+        public Query() : this("Unknown") 
+        { 
+        }
 
         /// <summary>
         /// Gets or sets the technical name of the query.
