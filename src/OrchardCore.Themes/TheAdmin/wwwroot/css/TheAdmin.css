@@ -7971,7 +7971,7 @@ input[type=password]::-ms-clear {
   padding: 0.75rem 0.5rem;
 }
 
-.EasyMDEContainer blockquote {
+.EasyMDEContainer blockquote:not(.blockquote) {
   background: var(--bs-secondary-bg-subtle);
   border-left: 10px solid var(--bs-secondary-border-subtle) !important;
   margin: 1.5em 10px;
@@ -7979,7 +7979,7 @@ input[type=password]::-ms-clear {
   quotes: "“" "”" "‘" "’";
 }
 
-.EasyMDEContainer blockquote > p {
+.EasyMDEContainer blockquote:not(.blockquote) > p {
   color: var(--bs-secondary-text-emphasis);
 }
 
