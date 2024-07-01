@@ -16,9 +16,9 @@ namespace OrchardCore.Queries
             Source = source;
         }
 
-        public Query() : this(DefaultSource)
+        public Query()
+            : this(DefaultSource)
         {
-
         }
 
         /// <summary>
