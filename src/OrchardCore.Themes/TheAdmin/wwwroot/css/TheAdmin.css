@@ -7971,6 +7971,18 @@ input[type=password]::-ms-clear {
   padding: 0.75rem 0.5rem;
 }
 
+.EasyMDEContainer blockquote:not(.blockquote) {
+  background: var(--bs-secondary-bg-subtle);
+  border-left: 0.4rem solid var(--bs-secondary-border-subtle) !important;
+  margin: 1.5em 10px;
+  padding: 1em 10px 0.1em;
+  quotes: "“" "”" "‘" "’";
+}
+
+.EasyMDEContainer blockquote:not(.blockquote) > p {
+  color: var(--bs-secondary-text-emphasis);
+}
+
 .monaco-editor {
   --vscode-foreground: var(--bs-body-color) !important;
   --vscode-editor-background: var(--bs-body-bg) !important;
