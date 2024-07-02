@@ -22,7 +22,9 @@ namespace OrchardCore.Queries.Sql
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             // Allows to serialize 'SqlQuery' from its base type.
+#pragma warning disable CS0618 // Type or member is obsolete
             services.AddJsonDerivedTypeInfo<SqlQuery, Query>();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

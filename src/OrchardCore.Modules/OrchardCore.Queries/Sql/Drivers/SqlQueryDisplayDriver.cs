@@ -3,11 +3,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
+using OrchardCore.Queries.Sql.Models;
 using OrchardCore.Queries.Sql.ViewModels;
 
 namespace OrchardCore.Queries.Sql.Drivers
 {
-    public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
+    public class SqlQueryDisplayDriver : DisplayDriver<Query>
     {
         protected readonly IStringLocalizer S;
 
@@ -16,8 +18,13 @@ namespace OrchardCore.Queries.Sql.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(SqlQuery query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
+            if (query.Source != SqlQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Combine(
                 Dynamic("SqlQuery_SummaryAdmin", model =>
                 {
@@ -30,35 +37,49 @@ namespace OrchardCore.Queries.Sql.Drivers
             );
         }
 
-        public override IDisplayResult Edit(SqlQuery query, IUpdateModel updater)
+        public override IDisplayResult Edit(Query query, IUpdateModel updater)
         {
+            if (query.Source != SqlQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
             {
-                model.Query = query.Template;
-                model.ReturnDocuments = query.ReturnDocuments;
+                var metadata = query.As<SqlQueryMetadata>();
+                model.Query = metadata.Template;
+                model.ReturnDocuments = metadata.ReturnDocuments;
 
                 // Extract query from the query string if we come from the main query editor.
-                if (string.IsNullOrEmpty(query.Template))
+                if (string.IsNullOrEmpty(metadata.Template))
                 {
-                    updater.TryUpdateModelAsync(model, "", m => m.Query);
+                    updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
             }).Location("Content:5");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SqlQuery model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query query, IUpdateModel updater)
         {
+            if (query.Source != SqlQuerySource.SourceName)
+            {
+                return null;
+            }
+
             var viewModel = new SqlQueryViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments);
 
-            model.Template = viewModel.Query;
-            model.ReturnDocuments = viewModel.ReturnDocuments;
-
-            if (string.IsNullOrWhiteSpace(model.Template))
+            if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+                updater.ModelState.AddModelError(nameof(viewModel.Query), S["The query field is required"]);
             }
 
-            return Edit(model, updater);
+            query.Put(new SqlQueryMetadata()
+            {
+                Template = viewModel.Query,
+                ReturnDocuments = viewModel.ReturnDocuments,
+            });
+
+            return Edit(query, updater);
         }
     }
 }

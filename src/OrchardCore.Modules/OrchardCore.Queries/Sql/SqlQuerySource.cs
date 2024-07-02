@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -11,14 +10,18 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
+using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
+using OrchardCore.Queries.Sql.Models;
 using YesSql;
 
 namespace OrchardCore.Queries.Sql
 {
     public class SqlQuerySource : IQuerySource
     {
+        public const string SourceName = "Sql";
+
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
@@ -39,26 +42,29 @@ namespace OrchardCore.Queries.Sql
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Sql";
+        public string Name
+            => SourceName;
 
         public Query Create()
-        {
-            return new SqlQuery();
-        }
+            => new Query()
+            {
+                Source = SourceName,
+            };
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var sqlQuery = query as SqlQuery;
+            var sqlQueryMetadata = query.As<SqlQueryMetadata>();
+
             var sqlQueryResults = new SQLQueryResults();
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQueryMetadata.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             var dialect = _session.Store.Configuration.SqlDialect;
 
             if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                sqlQueryResults.Items = Array.Empty<object>();
+                sqlQueryResults.Items = [];
 
                 return sqlQueryResults;
             }
@@ -67,16 +73,14 @@ namespace OrchardCore.Queries.Sql
 
             await connection.OpenAsync();
 
-            if (sqlQuery.ReturnDocuments)
+            if (sqlQueryMetadata.ReturnDocuments)
             {
-                IEnumerable<long> documentIds;
-
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
                 var queryResult = await connection.QueryAsync(rawQuery, parameters, transaction);
 
                 string column = null;
 
-                documentIds = queryResult.Select(row =>
+                var documentIds = queryResult.Select(row =>
                 {
                     var rowDictionary = (IDictionary<string, object>)row;
 
@@ -97,9 +101,9 @@ namespace OrchardCore.Queries.Sql
                     return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
                         ? documentId
                         : 0;
-                });
+                }).ToArray();
 
-                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
 
                 return sqlQueryResults;
             }

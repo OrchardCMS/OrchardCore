@@ -14,7 +14,9 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Indexes;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using YesSql;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 {
@@ -30,16 +32,13 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         }
 
         public Task<string> GetIdentifierAsync()
-        {
-            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
-            return queryManager.GetIdentifierAsync();
-        }
+            => Task.FromResult(string.Empty);
 
         public async Task BuildAsync(ISchema schema)
         {
-            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            var session = _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
 
-            var queries = await queryManager.ListQueriesAsync();
+            var queries = await session.Query<Query, QueryIndex>().ListAsync();
 
             foreach (var query in queries.OfType<ElasticQuery>())
             {
@@ -92,7 +91,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
+            var typeType = new ObjectGraphType<JsonObject>
             {
                 Name = fieldTypeName
             };
@@ -118,7 +117,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                         }),
                     };
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
                 else if (type == "integer")
                 {
@@ -135,7 +134,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     };
 
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
             }
 
@@ -147,23 +146,28 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = new ListGraphType(typetype),
+                ResolvedType = new ListGraphType(typeType),
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
                 Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var session = context.RequestServices.GetService<YesSql.ISession>();
+                var querySources = context.RequestServices.GetServices<IQuerySource>();
+
+                var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
+                    ?? throw new ArgumentException("Query source not found: " + query.Source);
+
+                var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }
@@ -173,9 +177,9 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
         private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
         {
-            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
-            if (typetype == null)
+            if (typeType == null)
             {
                 return null;
             }
@@ -188,23 +192,28 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = typetype.ResolvedType,
+                ResolvedType = typeType.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-                Type = typetype.Type
+                Type = typeType.Type
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var session = context.RequestServices.GetService<YesSql.ISession>();
+                var querySources = context.RequestServices.GetServices<IQuerySource>();
+
+                var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
+                    ?? throw new ArgumentException("Query source not found: " + query.Source);
+
+                var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }

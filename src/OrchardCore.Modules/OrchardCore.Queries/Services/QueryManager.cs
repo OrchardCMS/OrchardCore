@@ -2,76 +2,88 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Documents;
+using OrchardCore.Queries.Indexes;
+using YesSql;
 
 namespace OrchardCore.Queries.Services
 {
     public class QueryManager : IQueryManager
     {
-        private readonly IDocumentManager<QueriesDocument> _documentManager;
         private readonly IEnumerable<IQuerySource> _querySources;
+        private readonly ISession _session;
 
-        public QueryManager(IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
+        public QueryManager(
+            IEnumerable<IQuerySource> querySources,
+            ISession session)
         {
-            _documentManager = documentManager;
             _querySources = querySources;
+            _session = session;
         }
-
-        public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
 
         public async Task DeleteQueryAsync(string name)
         {
-            var existing = await LoadDocumentAsync();
-            existing.Queries.Remove(name);
-            await _documentManager.UpdateAsync(existing);
-        }
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
-        public async Task<Query> LoadQueryAsync(string name)
-        {
-            var document = await LoadDocumentAsync();
-
-            if (document.Queries.TryGetValue(name, out var query))
-            {
-                return query;
-            }
-
-            return null;
+            await DeleteQueryInternalAsync(name, true);
         }
 
         public async Task<Query> GetQueryAsync(string name)
         {
-            var document = await GetDocumentAsync();
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
-            if (document.Queries.TryGetValue(name, out var query))
-            {
-                return query;
-            }
+            var query = await _session.Query<Query, QueryIndex>(x => x.Name == name).FirstOrDefaultAsync();
 
-            return null;
+            return query;
         }
 
-        public async Task<IEnumerable<Query>> ListQueriesAsync()
+        public async Task<QueryPageResult> ListQueriesAsync(Func<QueryIndex, bool> predicate = null, int? page = null, int? pageSize = null)
         {
-            return (await GetDocumentAsync()).Queries.Values.ToList();
+            var query = _session.Query<Query, QueryIndex>();
+
+            if (predicate != null)
+            {
+                query = query.Where(q => predicate(q));
+            }
+
+            query = query
+                .OrderBy(x => x.Name)
+                .ThenBy(x => x.Id);
+
+            if (page == null || page < 0)
+            {
+                page = 1;
+            }
+
+            var count = await query.CountAsync();
+
+            if (pageSize > 0)
+            {
+                return new QueryPageResult()
+                {
+                    Count = count,
+                    Queries = await query.Take(pageSize.Value)
+                    .Skip((page.Value - 1) * pageSize.Value)
+                    .ListAsync(),
+                };
+            }
+
+            return new QueryPageResult()
+            {
+                Count = count,
+                Queries = await query.ListAsync(),
+            };
         }
 
         public async Task SaveQueryAsync(string name, Query query)
         {
-            var existing = await LoadDocumentAsync();
-            existing.Queries.Remove(name);
-            existing.Queries[query.Name] = query;
-            await _documentManager.UpdateAsync(existing);
+            ArgumentException.ThrowIfNullOrEmpty(name);
+
+            ArgumentNullException.ThrowIfNull(query);
+
+            await DeleteQueryInternalAsync(name, false);
+
+            await _session.SaveAsync(query);
         }
-
-        /// <summary>
-        /// Loads the queries document from the store for updating and that should not be cached.
-        /// </summary>
-        public Task<QueriesDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
-
-        /// <summary>
-        /// Gets the queries document from the cache for sharing and that should not be updated.
-        /// </summary>
-        public Task<QueriesDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
@@ -79,6 +91,21 @@ namespace OrchardCore.Queries.Services
                 ?? throw new ArgumentException("Query source not found: " + query.Source);
 
             return querySource.ExecuteQueryAsync(query, parameters);
+        }
+
+        private async Task DeleteQueryInternalAsync(string name, bool commit)
+        {
+            var queries = await _session.Query<Query, QueryIndex>(x => x.Name == name).ListAsync();
+
+            foreach (var query in queries)
+            {
+                _session.Delete(query);
+            }
+
+            if (commit && queries.Any())
+            {
+                await _session.SaveChangesAsync();
+            }
         }
     }
 }

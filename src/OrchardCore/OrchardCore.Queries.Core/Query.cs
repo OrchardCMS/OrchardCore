@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+using OrchardCore.Entities;
+
 namespace OrchardCore.Queries
 {
     /// <summary>
     /// Represents a query.
     /// </summary>
-    public class Query
+    public class Query : Entity
     {
         /// <summary>
         /// Initializes a new instance of a <see cref="Query"/>.
@@ -14,6 +17,10 @@ namespace OrchardCore.Queries
             Source = source;
         }
 
+        public Query()
+        {
+        }
+
         /// <summary>
         /// Gets or sets the technical name of the query.
         /// </summary>
@@ -22,7 +29,7 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Gets the name of the source for this query.
         /// </summary>
-        public string Source { get; }
+        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets the return schema of the query.
@@ -31,5 +38,12 @@ namespace OrchardCore.Queries
         public string Schema { get; set; }
 
         public virtual bool ResultsOfType<T>() => typeof(T) == typeof(object);
+    }
+
+    public class QueryPageResult
+    {
+        public int? Count { get; set; }
+
+        public IEnumerable<Query> Queries { get; set; }
     }
 }
