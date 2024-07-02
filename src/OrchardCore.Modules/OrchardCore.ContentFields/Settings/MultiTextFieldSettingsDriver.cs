@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -26,7 +25,6 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
             })
             .Location("Content");
         }
@@ -40,16 +38,6 @@ namespace OrchardCore.ContentFields.Settings
 
             settings.Required = model.Required;
             settings.Hint = model.Hint;
-
-            try
-            {
-                settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
-            }
-            catch
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                return Edit(partFieldDefinition);
-            }
 
             context.Builder.WithSettings(settings);
 
