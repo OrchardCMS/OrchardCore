@@ -95,7 +95,6 @@ namespace OrchardCore.Media.GraphQL
                         return Array.Empty<string>();
                     }
                     return x.Page(x.Source.MediaTexts);
-
                 });
         }
     }
