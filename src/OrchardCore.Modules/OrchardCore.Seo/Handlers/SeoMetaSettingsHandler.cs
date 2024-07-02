@@ -105,7 +105,7 @@ namespace OrchardCore.Seo.Drivers
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                 {
-                    aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text.ToString();
+                    aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text?.ToString();
                     if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                     {
                         aspect.OpenGraphSiteName = siteSettings.SiteName;
@@ -114,7 +114,7 @@ namespace OrchardCore.Seo.Drivers
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphAppId))
                 {
-                    aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text.ToString();
+                    aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text?.ToString();
                 }
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphImage))

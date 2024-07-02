@@ -398,7 +398,7 @@ The resulting object has access to the following properties:
 | `UserName` | `admin` | The name of the authenticated user. |
 | `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
 | `Email` | `admin@gmail.com` | The email of the authenticated user. |
-| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL.COM` | The normalized email of the authenticated user. |
 | `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
 | `IsEnabled` | `true` | True if the user is enabled |
 | `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |

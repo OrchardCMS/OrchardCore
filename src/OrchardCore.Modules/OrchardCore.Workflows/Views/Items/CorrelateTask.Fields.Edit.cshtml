@@ -1,45 +1,62 @@
+@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
+<div class="form-group mb-3" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
+    <select asp-for="Syntax" class="form-select">
+        <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+        <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+    </select>
+    <span asp-validation-for="Syntax"></span>
+</div>
+
 <div class="mb-3" asp-validation-class-for="Value">
     <label asp-for="Value" class="form-label">@T["Value"]</label>
-    <input type="hidden" asp-for="Value" class="form-control " />
-    <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
+    <textarea asp-for="Value" class="form-control"></textarea>
     <span asp-validation-for="Value"></span>
-    <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
+    <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
 </div>
-<script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
-        require(['vs/editor/editor.main'], function () {
-            var settings = {
-                "automaticLayout": true,
-                "language": "javascript"
-            };
 
-            var html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot" depends-on="codemirror"></script>
+<script at="Foot" depends-on="codemirror">
 
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
+    const initializeEditor = (textArea) => {
+        textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
+            autoCloseTags: true,
+            autoRefresh: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            mode: { name: '@(Model.Syntax.GetSyntaxName())' }
+        });
+
+        return textArea.CoreMirrorEditor;
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const editor = initializeEditor(document.getElementById('@Html.IdFor(x => x.Value)'));
+
+        document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
+            const syntax = e.target.value.toLowerCase();
+            editor.setOption('mode', syntax);
+
+            if (syntax == 'javascript') {
+                document.getElementById('liquid_hint').classList.add('d-none');
+                document.getElementById('javascript_hint').classList.remove('d-none');
+            } else {
+                document.getElementById('javascript_hint').classList.add('d-none');
+                document.getElementById('liquid_hint').classList.remove('d-none');
             }
-
-            setTheme();
-
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Value)_editor'), settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Value)');
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
         });
     });
 </script>

@@ -92,7 +92,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var contentItemsQuery = FilterWhereArguments(query, where, context, session);
+            var contentItemsQuery = await FilterWhereArgumentsAsync(query, where, context, session);
             contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
@@ -105,7 +105,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
-        private IQuery<ContentItem> FilterWhereArguments(
+        private async ValueTask<IQuery<ContentItem>> FilterWhereArgumentsAsync(
             IQuery<ContentItem, ContentItemIndex> query,
             JsonObject where,
             IResolveFieldContext fieldContext,
@@ -133,11 +133,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var aliasProvider in providers)
             {
-                foreach (var alias in aliasProvider.GetAliases())
+                foreach (var alias in await aliasProvider.GetAliasesAsync())
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                    indexAliases.Add(alias.Alias, alias.Alias);
-                    indexes.TryAdd(alias.Index, alias);
+                    if (indexAliases.TryAdd(alias.Alias, alias.Alias))
+                    {
+                        indexes.TryAdd(alias.Index, alias);
+                    }
                 }
             }
 

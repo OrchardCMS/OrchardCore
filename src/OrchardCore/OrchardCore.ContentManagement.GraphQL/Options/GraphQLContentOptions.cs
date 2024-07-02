@@ -232,7 +232,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                 return partName.ToFieldName() + fieldName.ToPascalCase();
             }
 
-            return fieldName;
+            return fieldName.ToCamelCase();
         }
     }
 }

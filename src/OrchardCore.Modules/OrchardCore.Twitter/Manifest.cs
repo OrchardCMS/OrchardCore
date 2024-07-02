@@ -11,14 +11,14 @@ using OrchardCore.Twitter;
 
 [assembly: Feature(
     Id = TwitterConstants.Features.Twitter,
-    Name = "X Integration",
+    Name = "X (Twitter) Integration",
     Category = "X",
     Description = "Provides a TwitterClient and Workflow Activities to integrate with X"
 )]
 
 [assembly: Feature(
     Id = TwitterConstants.Features.Signin,
-    Name = "Sign in with X",
+    Name = "Sign in with X (Twitter)",
     Category = "X",
     Description = "Authenticates users with their X Account.",
     Dependencies = [TwitterConstants.Features.Twitter]
