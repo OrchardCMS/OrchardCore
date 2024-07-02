@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Data.Documents
@@ -8,7 +9,7 @@ namespace OrchardCore.Data.Documents
     /// <summary>
     /// An <see cref="IDocumentStore"/> using the <see cref="ISession"/>.
     /// </summary>
-    public class DocumentStore : IDocumentStore
+    public class DatabaseDocumentStore : IDocumentStore
     {
         private readonly ISession _session;
 
@@ -20,9 +21,9 @@ namespace OrchardCore.Data.Documents
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
-        private bool _canceled;
+        private bool _canceled, _commitHandlersRegistered;
 
-        public DocumentStore(ISession session)
+        public DatabaseDocumentStore(ISession session)
         {
             _session = session;
         }
@@ -67,6 +68,21 @@ namespace OrchardCore.Data.Documents
         public async Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
             await _session.SaveAsync(document, checkConcurrency);
+
+            if (!_commitHandlersRegistered)
+            {
+                ShellScope.Current
+                    .RegisterBeforeDispose(scope =>
+                    {
+                        return CommitAsync();
+                    })
+                    .AddExceptionHandler((scope, e) =>
+                    {
+                        return CancelAsync();
+                    });
+
+                _commitHandlersRegistered = true;
+            }
 
             AfterCommitSuccess<T>(() =>
             {
