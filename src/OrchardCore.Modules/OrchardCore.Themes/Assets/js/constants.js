@@ -1,9 +1,8 @@
 const darkThemeName = 'dark';
 const lightThemeName = 'light';
-const tenantName = document.currentScript.dataset.tenantName;
 const themeStoreKeySuffix = 'theme';
 
-const getTenantName = () => tenantName || document.documentElement.getAttribute('data-tenant') || 'default';
+const getTenantName = () => document.documentElement.getAttribute('data-tenant') || 'default';
 const getStoreKeySuffix = () => themeStoreKeySuffix || 'theme';
 const getStoreKey = () => `${getTenantName()}-${getStoreKeySuffix()}`;
 const getStoredTheme = () => localStorage.getItem(getStoreKey());

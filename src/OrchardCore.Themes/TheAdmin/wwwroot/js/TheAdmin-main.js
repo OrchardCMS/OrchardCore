@@ -3,6 +3,20 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+themeStoreKeySuffix = 'admintheme';
+var getAdminPreferenceKey = function getAdminPreferenceKey() {
+  return getTenantName() + '-adminPreferences';
+};
+var getAdminPreferences = function getAdminPreferences() {
+  return JSON.parse(localStorage.getItem(getAdminPreferenceKey()));
+};
+var setAdminPreferences = function setAdminPreferences(adminPreferences) {
+  var key = getAdminPreferenceKey();
+  localStorage.setItem(key, JSON.stringify(adminPreferences));
+  Cookies.set(key, JSON.stringify(adminPreferences), {
+    expires: 360
+  });
+};
 // We add some classes to the body tag to restore the sidebar to the state is was before reload.
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered.

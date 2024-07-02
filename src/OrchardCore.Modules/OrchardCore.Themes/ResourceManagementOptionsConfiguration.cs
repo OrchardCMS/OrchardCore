@@ -1,28 +1,30 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private readonly ShellSettings _shellSettings;
+    private static readonly ResourceManifest _manifest;
 
-    public ResourceManagementOptionsConfiguration(ShellSettings shellSettings)
+    static ResourceManagementOptionsConfiguration()
     {
-        _shellSettings = shellSettings;
+        _manifest = new ResourceManifest();
+
+        _manifest
+            .DefineScript("theme-head")
+            .SetUrl("~/OrchardCore.Themes/Scripts/theme-head.min.js", "~/OrchardCore.Themes/Scripts/theme-head.js")
+            .SetVersion("1.0.0");
+
+        _manifest
+            .DefineScript("theme-manager")
+            .SetUrl("~/OrchardCore.Themes/Scripts/theme-manager.min.js", "~/OrchardCore.Themes/Scripts/theme-manager.js")
+            .SetDependencies("theme-head")
+            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)
     {
-        var manifest = new ResourceManifest();
-
-        manifest
-            .DefineScript("theme-manager")
-            .SetAttribute("data-tenant-name", _shellSettings.Name)
-            .SetUrl("~/OrchardCore.Themes/Scripts/theme-manager.min.js", "~/OrchardCore.Themes/Scripts/theme-manager.js")
-            .SetVersion("1.0.0");
-
-        options.ResourceManifests.Add(manifest);
+        options.ResourceManifests.Add(_manifest);
     }
 }

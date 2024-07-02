@@ -1,5 +1,3 @@
-// We add some classes to the body tag to restore the sidebar to the state is was before reload.
-// That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
 const themeObserver = new MutationObserver(function (mutations) {
