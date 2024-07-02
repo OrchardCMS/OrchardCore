@@ -19,7 +19,8 @@ jobs:
         FIRST_ISSUE_COMMENT: >
           Thank you for submitting your first issue, awesome! 🚀 We're thrilled to receive your input. If you haven't
           completed the template yet, please take a moment to do so. This ensures that we fully understand your feature
-          request or bug report. A core team member will review your issue and get back to you.
+          request or bug report. On what happens next, see 
+          [the docs](https://docs.orchardcore.net/en/latest/guides/contributing/managing-issues/#what-happens-after-you-open-an-issue).
         FIRST_PR_COMMENT: >
           Thank you for submitting your first pull request, awesome! 🚀 If you haven't already, please take a moment
           to review our [contribution guide](https://docs.orchardcore.net/en/latest/guides/contributing/). This
