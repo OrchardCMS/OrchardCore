@@ -70,18 +70,20 @@ namespace OrchardCore.Media.GraphQL
                     var urls = paths.Select(p => mediaFileStore.MapPathToPublicUrl(p)).ToArray();
                     var fileNames = x.Page(x.Source?.GetAttachedFileNames()).ToArray();
                     var items = new List<MediaFileItem>();
+                    var mediaTexts = x.Source?.MediaTexts ?? [];
                     for (int i = 0; i < paths.Length; i++)
                     {
                         items.Add(new MediaFileItem
                         {
                             Path = paths[i],
                             FileName = fileNames.Length > i ? fileNames[i] : string.Empty,
-                            Url = urls.Length > i ? urls[i] : string.Empty
+                            Url = urls.Length > i ? urls[i] : string.Empty,
+                            MediaText = mediaTexts.Length > i ? mediaTexts[i] : string.Empty,
                         });
                     }
 
                     return items;
-              });
+                });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
                 .Description("the media texts")
@@ -113,5 +115,6 @@ namespace OrchardCore.Media.GraphQL
         public string FileName { get; set; }
         public string Path { get; set; }
         public string Url { get; set; }
+        public string MediaText { get; set; }
     }
 }
