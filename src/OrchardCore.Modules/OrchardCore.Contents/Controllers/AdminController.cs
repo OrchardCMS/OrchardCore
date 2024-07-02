@@ -409,7 +409,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
-        public async Task<IActionResult> Edit(string contentItemId)
+        public async Task<IActionResult> Edit(string contentItemId, string returnUrl = null)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
