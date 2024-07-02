@@ -22,8 +22,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             // For existing SQL databases update the TextFieldIndex tables Text column length manually.
             // INFO: The Text Length is now of 766 chars, but this is only used on a new installation.
             await SchemaBuilder.CreateMapIndexTableAsync<TextFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -65,8 +65,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<BooleanFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -98,8 +98,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<NumericFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -138,8 +138,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<DateTimeFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -178,8 +178,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<DateFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -219,8 +219,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<ContentPickerFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -259,8 +259,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<TimeFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -303,8 +303,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             // The BigText and BigUrl columns are new additions so will not be populated until the content item is republished.
             // INFO: The Url and Text Length is now of 766 chars, but this is only used on a new installation.
             await SchemaBuilder.CreateMapIndexTableAsync<LinkFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -359,8 +359,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<HtmlFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -391,8 +391,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<MultiTextFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
@@ -453,8 +453,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public async Task<int> UpdateFrom2Async()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<MultiTextFieldIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))

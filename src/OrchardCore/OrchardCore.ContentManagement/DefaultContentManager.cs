@@ -79,6 +79,8 @@ namespace OrchardCore.ContentManagement
             var context2 = new ActivatedContentContext(context.ContentItem);
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
+            context2.ContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(context2.ContentItem);
+            context2.ContentItem.Latest = true;
 
             await ReversedHandlers.InvokeAsync((handler, context2) => handler.ActivatedAsync(context2), context2, _logger);
 
@@ -561,19 +563,20 @@ namespace OrchardCore.ContentManagement
 
         public async Task CreateAsync(ContentItem contentItem, VersionOptions options = null)
         {
-            if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
-            {
-                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
-                contentItem.Published = true;
-                contentItem.Latest = true;
-            }
+            contentItem.Published = true;
 
             options ??= VersionOptions.Published;
 
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {
+                contentItem.Latest = true;
                 contentItem.Published = false;
+            }
+
+            if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            {
+                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
 
             // Build a context with the initialized instance to create

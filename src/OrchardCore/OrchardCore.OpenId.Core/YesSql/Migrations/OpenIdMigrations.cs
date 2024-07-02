@@ -25,7 +25,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .Column<string>("ApplicationId", column => column.WithLength(48))
+                .Column<string>("ApplicationId", column => column.NotNull().WithLength(48))
                 .Column<string>("ClientId", column => column.Unique()),
                 collection: OpenIdApplicationCollection);
 
@@ -68,7 +68,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
+                .Column<string>("AuthorizationId", column => column.NotNull().WithLength(48))
                 .Column<string>("ApplicationId", column => column.WithLength(48))
                 .Column<string>("Status")
                 .Column<string>("Subject")
@@ -97,7 +97,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdScopeIndex>(table => table
                 .Column<string>("Name", column => column.Unique())
-                .Column<string>("ScopeId", column => column.WithLength(48)),
+                .Column<string>("ScopeId", column => column.NotNull().WithLength(48)),
                 collection: OpenIdScopeCollection);
 
             await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(table => table
@@ -120,7 +120,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(table => table
-                .Column<string>("TokenId", column => column.WithLength(48))
+                .Column<string>("TokenId", column => column.NotNull().WithLength(48))
                 .Column<string>("ApplicationId", column => column.WithLength(48))
                 .Column<string>("AuthorizationId", column => column.WithLength(48))
                 .Column<DateTime>("ExpirationDate")
@@ -299,7 +299,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         {
             // Create all index tables with the new collection value.
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(table => table
-                .Column<string>("TokenId", column => column.WithLength(48))
+                .Column<string>("TokenId", column => column.NotNull().WithLength(48))
                 .Column<string>("ApplicationId", column => column.WithLength(48))
                 .Column<string>("AuthorizationId", column => column.WithLength(48))
                 .Column<DateTime>("ExpirationDate")
@@ -339,7 +339,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
+                .Column<string>("AuthorizationId", column => column.NotNull().WithLength(48))
                 .Column<string>("ApplicationId", column => column.WithLength(48))
                 .Column<string>("Status")
                 .Column<string>("Subject")
@@ -404,7 +404,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         {
             // Create all index tables with the new collection value.
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .Column<string>("ApplicationId", column => column.WithLength(48))
+                .Column<string>("ApplicationId", column => column.NotNull().WithLength(48))
                 .Column<string>("ClientId", column => column.Unique()),
                 collection: OpenIdApplicationCollection);
 
