@@ -27,14 +27,13 @@ namespace OrchardCore.ContentFields.GraphQL
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
                 .Description("the content items")
                 .PagingArguments()
-                .ResolveAsync(x =>
+                .ResolveLockedAsync(async x =>
                 {
                     var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
 
-                    return (contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds))).Then(itemResultSet =>
-                    {
-                        return itemResultSet.SelectMany(x => x);
-                    });
+                    var data = await contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds)).GetResultAsync();
+
+                    return data.SelectMany(x => x);
                 });
         }
     }
