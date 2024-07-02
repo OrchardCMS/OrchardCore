@@ -308,6 +308,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("Target", column => column.WithLength(LinkFieldIndex.MaxTargetSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
                 .Column<string>("Url", column => column.Nullable().WithLength(LinkFieldIndex.MaxUrlSize))
@@ -434,7 +435,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 5;
+            return 6;
         }
 
         // This code can be removed in a later version.
