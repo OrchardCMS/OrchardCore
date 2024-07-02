@@ -6,28 +6,28 @@ namespace OrchardCore.Tests.Localization
     public class PoParserTests
     {
         [Fact]
-        public void ParseRetursSimpleEntry()
+        public async Task ParseRetursSimpleEntry()
         {
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
-            var entries = ParseText("SimpleEntry");
+            var entries = await ParseTextAsync("SimpleEntry");
 
             Assert.Equal("Unknown system error", entries[0].Key);
             Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
         }
 
         [Fact]
-        public void ParseIgnoresEntryWithoutTranslation()
+        public async Task ParseIgnoresEntryWithoutTranslation()
         {
             // "msgid "Unknown system error"
             // "msgstr ""
-            var entries = ParseText("EntryWithoutTranslation");
+            var entries = await ParseTextAsync("EntryWithoutTranslation");
 
             Assert.Empty(entries);
         }
 
         [Fact]
-        public void ParseIgnoresPoeditHeader()
+        public async Task ParseIgnoresPoeditHeader()
         {
             // # Translation of kstars.po into Spanish.
             // # This file is distributed under the same license as the kdeedu package.
@@ -48,25 +48,25 @@ namespace OrchardCore.Tests.Localization
 
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
-            var entries = ParseText("PoeditHeader");
+            var entries = await ParseTextAsync("PoeditHeader");
 
             Assert.True(entries.Length == 1);
             Assert.True(entries[0].Translations.Length == 1);
         }
 
         [Fact]
-        public void ParseSetsContext()
+        public async Task ParseSetsContext()
         {
             // msgctxt "OrchardCore.Localization"
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
-            var entries = ParseText("EntryWithContext");
+            var entries = await ParseTextAsync("EntryWithContext");
 
             Assert.Equal("OrchardCore.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
         }
 
         [Fact]
-        public void ParseIgnoresComments()
+        public async Task ParseIgnoresComments()
         {
             // # translator-comments
             // #. extracted-comments
@@ -79,38 +79,38 @@ namespace OrchardCore.Tests.Localization
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
 
-            var entries = ParseText("EntryWithComments");
+            var entries = await ParseTextAsync("EntryWithComments");
 
             Assert.Equal("OrchardCore.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
             Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
         }
 
         [Fact]
-        public void ParseOnlyTrimsLeadingAndTrailingQuotes()
+        public async Task ParseOnlyTrimsLeadingAndTrailingQuotes()
         {
             // msgid "\"{0}\""
             // msgstr "\"{0}\""
 
-            var entries = ParseText("EntryWithQuotes");
+            var entries = await ParseTextAsync("EntryWithQuotes");
 
             Assert.Equal("\"{0}\"", entries[0].Key);
             Assert.Equal("\"{0}\"", entries[0].Translations[0]);
         }
 
         [Fact]
-        public void ParseHandleUnclosedQuote()
+        public async Task ParseHandleUnclosedQuote()
         {
             // msgctxt "
             // msgid "Foo \"{0}\""
             // msgstr "Foo \"{0}\""
 
-            var entries = ParseText("EntryWithUnclosedQuote");
+            var entries = await ParseTextAsync("EntryWithUnclosedQuote");
 
             Assert.Equal("Foo \"{0}\"", entries[0].Key);
         }
 
         [Fact]
-        public void ParseHandlesMultilineEntry()
+        public async Task ParseHandlesMultilineEntry()
         {
             // msgid ""
             // "Here is an example of how one might continue a very long string\n"
@@ -119,26 +119,26 @@ namespace OrchardCore.Tests.Localization
             // "Here is an example of how one might continue a very long translation\n"
             // "for the common case the string represents multi-line output."
 
-            var entries = ParseText("EntryWithMultilineText");
+            var entries = await ParseTextAsync("EntryWithMultilineText");
 
             Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
             Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
         }
 
         [Fact]
-        public void ParsePreservesEscapedCharacters()
+        public async Task ParsePreservesEscapedCharacters()
         {
             // msgid "Line:\t\"{0}\"\n"
             // msgstr "Line:\t\"{0}\"\n"
 
-            var entries = ParseText("EntryWithEscapedCharacters");
+            var entries = await ParseTextAsync("EntryWithEscapedCharacters");
 
             Assert.Equal("Line:\t\"{0}\"\n", entries[0].Key);
             Assert.Equal("Line:\t\"{0}\"\n", entries[0].Translations[0]);
         }
 
         [Fact]
-        public void ParseReadsPluralTranslations()
+        public async Task ParseReadsPluralTranslations()
         {
             // msgid "book"
             // msgid_plural "books"
@@ -146,7 +146,7 @@ namespace OrchardCore.Tests.Localization
             // msgstr[1] "knihy"
             // msgstr[2] "knih"
 
-            var entries = ParseText("EntryWithPlural");
+            var entries = await ParseTextAsync("EntryWithPlural");
 
             Assert.Equal("book", entries[0].Key);
             Assert.Equal("kniha", entries[0].Translations[0]);
@@ -155,7 +155,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void ParseReadsPluralAndMultilineText()
+        public async Task ParseReadsPluralAndMultilineText()
         {
             // msgid ""
             // "Here is an example of how one might continue a very long string\n"
@@ -170,7 +170,7 @@ namespace OrchardCore.Tests.Localization
             // "Here are examples of how one might continue a very long translation\n"
             // "for the common case the string represents multi-line output."
 
-            var entries = ParseText("EntryWithPluralAndMultilineText");
+            var entries = await ParseTextAsync("EntryWithPluralAndMultilineText");
 
             Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
             Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
@@ -178,7 +178,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void ParseReadsMultipleEntries()
+        public async Task ParseReadsMultipleEntries()
         {
             // #. "File {0} does not exist"
             // msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
@@ -190,7 +190,7 @@ namespace OrchardCore.Tests.Localization
             // msgid "Directory {0} does not exist"
             // msgstr "Složka {0} neexistuje"
 
-            var entries = ParseText("MultipleEntries");
+            var entries = await ParseTextAsync("MultipleEntries");
 
             Assert.Equal(2, entries.Length);
 
@@ -201,14 +201,15 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
         }
 
-        private static CultureDictionaryRecord[] ParseText(string resourceName)
+        private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
         {
             var parser = new PoParser();
 
             var testAssembly = typeof(PoParserTests).Assembly;
             using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
             using var reader = new StreamReader(resource);
-            return parser.Parse(reader).ToArray();
+
+            return (await parser.ParseAsync(reader).ToListAsync()).ToArray();
         }
     }
 }
