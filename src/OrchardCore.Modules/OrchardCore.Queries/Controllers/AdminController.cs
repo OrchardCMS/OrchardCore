@@ -25,13 +25,11 @@ namespace OrchardCore.Queries.Controllers
         private const string _optionsSearch = "Options.Search";
 
         private readonly IAuthorizationService _authorizationService;
-        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IShapeFactory _shapeFactory;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -39,8 +37,6 @@ namespace OrchardCore.Queries.Controllers
         public AdminController(
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
@@ -50,27 +46,31 @@ namespace OrchardCore.Queries.Controllers
         {
             _displayManager = displayManager;
             _authorizationService = authorizationService;
-            _pagerOptions = pagerOptions.Value;
             _queryManager = queryManager;
             _querySources = querySources;
             _updateModelAccessor = updateModelAccessor;
-            _shapeFactory = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(
+            [FromServices] IOptions<PagerOptions> pagerOptions,
+            [FromServices] IShapeFactory shapeFactory,
+            ContentOptions options,
+            PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+            var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
-            var queries = await _queryManager.ListQueriesAsync();
-            queries = queries.OrderBy(x => x.Name);
+            // Exclude DefaultSource since it'll mean that there is no registered query-source to handle it.
+            IEnumerable<Query> queries = (await _queryManager.ListQueriesAsync())
+                .Where(query => query.Source != Query.DefaultSource)
+                .OrderBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -94,7 +94,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 Queries = [],
                 Options = options,
-                Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
+                Pager = await shapeFactory.PagerAsync(pager, queries.Count(), routeData),
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()
             };
 
@@ -115,7 +115,8 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Index))]
+        [HttpPost]
+        [ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
             => RedirectToAction(nameof(Index), new RouteValueDictionary
@@ -146,7 +147,8 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Create))]
+        [HttpPost]
+        [ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(QueriesCreateViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
@@ -171,7 +173,7 @@ namespace OrchardCore.Queries.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             model.Editor = editor;
 
             return View(model);
@@ -186,7 +188,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.GetQueryAsync(id);
 
-            if (query == null)
+            if (query == null || query.Source == Query.DefaultSource)
             {
                 return NotFound();
             }
@@ -202,7 +204,8 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Edit))]
+        [HttpPost]
+        [ActionName(nameof(Edit))]
         public async Task<IActionResult> EditPost(QueriesEditViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
@@ -212,7 +215,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.LoadQueryAsync(model.Name);
 
-            if (query == null)
+            if (query == null || query.Source == Query.DefaultSource)
             {
                 return NotFound();
             }
@@ -243,7 +246,7 @@ namespace OrchardCore.Queries.Controllers
 
             var query = await _queryManager.LoadQueryAsync(id);
 
-            if (query == null)
+            if (query == null || query.Source == Query.DefaultSource)
             {
                 return NotFound();
             }
@@ -255,7 +258,8 @@ namespace OrchardCore.Queries.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName(nameof(Index))]
+        [HttpPost]
+        [ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
