@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Html
+
+<div class="border">
+    <p>The content is inserted below this line.</p>
+    <p>@Model.HtmlContent</p>
+    <p>The content is inserted above this line.</p>
+
+    @if (Model.SomeProperty != null)
+    {
+        <p>And here is another property: @Model.SomeProperty.</p>
+    }
+
+    @if (Model.OtherContent is IHtmlContent otherContent)
+    {
+        <div class="border">
+            <p>Another property called "OtherContent" starts here.</p>
+            <p>@otherContent</p>
+            <p>Another property called "OtherContent" ends here.</p>
+        </div>
+    }
+</div>

@@ -104,12 +104,12 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = Shape
-                .Foo()
-                .Line(contentItem.As<TestContentPartA>().Line);
+            var shape = await Shape.Foo(Line: contentItem.As<TestContentPartA>().Line);
 
             return View(shape);
         }
+
+        public IActionResult AddProperty() => View();
 
         public ActionResult Raw()
         {
