@@ -97,6 +97,8 @@ namespace OrchardCore.Layers.Services
 
                 foreach (var widget in widgets)
                 {
+                    if(widget == null) continue;
+
                     var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
 
                     if (layer == null)
@@ -117,7 +119,7 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                    if (widget.ContentItem != null && contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                     {
                         var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
