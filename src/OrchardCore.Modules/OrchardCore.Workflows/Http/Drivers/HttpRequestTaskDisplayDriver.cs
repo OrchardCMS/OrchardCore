@@ -15,6 +15,7 @@ namespace OrchardCore.Workflows.Http.Drivers
             model.ContentType = activity.ContentType.Expression;
             model.Headers = activity.Headers.Expression;
             model.HttpResponseCodes = activity.HttpResponseCodes;
+            model.IsBinary = activity.IsBinary;
         }
 
         protected override void UpdateActivity(HttpRequestTaskViewModel model, HttpRequestTask activity)
@@ -25,6 +26,7 @@ namespace OrchardCore.Workflows.Http.Drivers
             activity.ContentType = new WorkflowExpression<string>(model.ContentType?.Trim());
             activity.Headers = new WorkflowExpression<string>(model.Headers?.Trim());
             activity.HttpResponseCodes = model.HttpResponseCodes;
+            activity.IsBinary = model.IsBinary;
         }
     }
 }

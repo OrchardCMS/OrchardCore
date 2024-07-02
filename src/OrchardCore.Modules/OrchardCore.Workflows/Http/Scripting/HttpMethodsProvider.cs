@@ -27,6 +27,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         private readonly GlobalMethod _queryStringAsJsonMethod;
         private readonly GlobalMethod _requestFormAsJsonMethod;
         private readonly GlobalMethod _deserializeRequestDataMethod;
+        private readonly GlobalMethod _rawResponseWriteMethod;
 
         public HttpMethodsProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -75,6 +76,18 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Method = serviceProvider => (Action<string>)(text => {
                     httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
                     httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult();
+                })
+            };
+
+            _rawResponseWriteMethod = new GlobalMethod
+            {
+                Name = "rawResponseWrite",
+                Method = serviceProvider => (Action<byte[], string>)((bytes, contentType) => 
+                {
+                    httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+                    httpContextAccessor.HttpContext.Response.ContentType = contentType;
+                    httpContextAccessor.HttpContext.Response.ContentLength = bytes.Length;
+                    httpContextAccessor.HttpContext.Response.Body.WriteAsync(bytes.AsMemory()).GetAwaiter().GetResult();
                 })
             };
 
@@ -236,7 +249,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod, _rawResponseWriteMethod };
         }
     }
 }
