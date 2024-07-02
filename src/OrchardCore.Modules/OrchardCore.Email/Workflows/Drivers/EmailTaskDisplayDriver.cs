@@ -14,8 +14,8 @@ namespace OrchardCore.Email.Workflows.Drivers
             model.RecipientsExpression = activity.Recipients.Expression;
             model.ReplyToExpression = activity.ReplyTo.Expression;
             model.SubjectExpression = activity.Subject.Expression;
-            model.Body = activity.Body.Expression;
-            model.IsHtmlBody = activity.IsHtmlBody;
+            model.TextBody = activity.TextBody.Expression;
+            model.HtmlBody = activity.HtmlBody.Expression;
             model.BccExpression = activity.Bcc.Expression;
             model.CcExpression = activity.Cc.Expression;
         }
@@ -27,8 +27,8 @@ namespace OrchardCore.Email.Workflows.Drivers
             activity.Recipients = new WorkflowExpression<string>(model.RecipientsExpression);
             activity.ReplyTo = new WorkflowExpression<string>(model.ReplyToExpression);
             activity.Subject = new WorkflowExpression<string>(model.SubjectExpression);
-            activity.Body = new WorkflowExpression<string>(model.Body);
-            activity.IsHtmlBody = model.IsHtmlBody;
+            activity.TextBody = new WorkflowExpression<string>(model.TextBody);
+            activity.HtmlBody = new WorkflowExpression<string>(model.HtmlBody);
             activity.Bcc = new WorkflowExpression<string>(model.BccExpression);
             activity.Cc = new WorkflowExpression<string>(model.CcExpression);
         }
