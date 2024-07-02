@@ -4,12 +4,17 @@
 */
 
 document.addEventListener('DOMContentLoaded', function () {
-  function setTheme() {
-    var isDark = getPreferredTheme() == darkThemeName;
+  var setTheme = function setTheme() {
+    var isDark = false;
+    if (typeof getPreferredTheme === 'function') {
+      isDark = getPreferredTheme() == (darkThemeName || 'dark');
+    } else {
+      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
     document.querySelectorAll('.trumbowyg').forEach(function (element) {
       return element.parentElement.classList.toggle('trumbowyg-dark', isDark);
     });
-  }
+  };
   var mutationObserver = new MutationObserver(setTheme);
   mutationObserver.observe(document.documentElement, {
     attributes: true,
