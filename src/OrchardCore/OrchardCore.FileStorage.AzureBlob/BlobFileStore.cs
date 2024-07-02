@@ -65,10 +65,10 @@ namespace OrchardCore.FileStorage.AzureBlob
             try
             {
                 var blob = GetBlobReference(path);
-
                 var properties = await blob.GetPropertiesAsync();
+                var uriPath = this.Combine(Path.GetDirectoryName(path), Uri.EscapeDataString(Path.GetFileName(path).Trim('/')));
 
-                return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
+                return new BlobFile(uriPath, properties.Value.ContentLength, properties.Value.LastModified);
             }
             catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
             {
@@ -146,12 +146,11 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
                 else
                 {
-                    var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
-
+                    var itemName = Path.GetFileName(blob.Blob.Name).Trim('/');
                     // Ignore directory marker files.
                     if (itemName != DirectoryMarkerFileName)
                     {
-                        var itemPath = this.Combine(path?.Trim('/'), itemName);
+                        var itemPath = this.Combine(path?.Trim('/'), Uri.EscapeDataString(itemName));
                         yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
                     }
                 }
@@ -240,7 +239,8 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             try
             {
-                var blob = GetBlobReference(path);
+                var filePath = WebUtility.UrlDecode(path);
+                var blob = GetBlobReference(filePath);
 
                 return await blob.DeleteIfExistsAsync();
             }
@@ -248,7 +248,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             {
                 throw new FileStoreException($"Cannot delete file '{path}'.", ex);
             }
-        }
+            }
 
         public async Task<bool> TryDeleteDirectoryAsync(string path)
         {
@@ -396,6 +396,9 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 await blob.UploadAsync(inputStream, headers);
 
+                //var fileName = Path.GetFileName(path).Trim('/');
+                //var dirName = Path.GetDirectoryName(path);
+                //var uriPath = this.Combine(dirName, Uri.EscapeDataString(fileName));
                 return path;
             }
             catch (FileStoreException)
@@ -410,6 +413,10 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private BlobClient GetBlobReference(string path)
         {
+            //var fileName = Path.GetFileName(path).Trim('/');
+            //var dirName = Path.GetDirectoryName(path);
+            //var uriPath = this.Combine(dirName, Uri.EscapeDataString(fileName));
+
             var blobPath = this.Combine(_options.BasePath, path);
             var blob = _blobContainer.GetBlobClient(blobPath);
 
