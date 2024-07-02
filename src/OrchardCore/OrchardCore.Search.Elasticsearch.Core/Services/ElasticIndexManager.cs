@@ -123,7 +123,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 .Map(m => m
                     .SourceField(s => s
                         .Enabled(elasticIndexSettings.StoreSourceData)
-                        .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
+                        .Excludes([IndexingConstants.DisplayTextAnalyzedKey]))
                     .Meta(me => IndexingState));
 
             var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
@@ -27,16 +27,16 @@ namespace OrchardCore.Environment.Extensions
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IFeaturesProvider _featuresProvider;
 
-        private Dictionary<string, ExtensionEntry> _extensions;
+        private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
-        private Dictionary<string, FeatureEntry> _features;
+        private Dictionary<string, IFeatureInfo> _features;
         private IFeatureInfo[] _featureInfos;
 
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
 
         private bool _isInitialized;
-        private readonly SemaphoreSlim _semaphore = new(1);
+        private readonly object _synLock = new();
 
         public ExtensionManager(
             IApplicationContext applicationContext,
@@ -80,7 +80,7 @@ namespace OrchardCore.Environment.Extensions
             EnsureInitialized();
 
             var allDependencyIds = new HashSet<string>(featureIdsToLoad
-                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .SelectMany(GetFeatureDependencies)
                 .Select(x => x.Id));
 
             foreach (var featureInfo in _featureInfos)
@@ -101,22 +101,23 @@ namespace OrchardCore.Environment.Extensions
             return Task.FromResult(extension);
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
         {
-            await EnsureInitializedAsync();
-            return _features.Values;
+            EnsureInitialized();
+
+            return Task.FromResult<IEnumerable<IFeatureInfo>>(_features.Values);
         }
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
-            await EnsureInitializedAsync();
+            EnsureInitialized();
 
             var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
 
             var loadedFeatures = _features.Values
-                .Where(f => features.Contains(f.FeatureInfo.Id));
+                .Where(f => features.Contains(f.Id));
 
-            return loadedFeatures;
+            return Task.FromResult<IEnumerable<IFeatureInfo>>(loadedFeatures);
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -130,9 +131,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetFeatureDependencies(feature, _featureInfos);
+                return GetFeatureDependencies(entry, _featureInfos);
             })).Value;
         }
 
@@ -147,9 +146,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetDependentFeatures(feature, _featureInfos);
+                return GetDependentFeatures(entry, _featureInfos);
             })).Value;
         }
 
@@ -260,13 +257,6 @@ namespace OrchardCore.Environment.Extensions
             return list;
         }
 
-        private static string GetSourceFeatureNameForType(Type type, string extensionId)
-        {
-            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-
-            return attribute?.FeatureName ?? extensionId;
-        }
-
         private void EnsureInitialized()
         {
             if (_isInitialized)
@@ -274,20 +264,8 @@ namespace OrchardCore.Environment.Extensions
                 return;
             }
 
-            EnsureInitializedAsync().GetAwaiter().GetResult();
-        }
-
-        private async Task EnsureInitializedAsync()
-        {
-            if (_isInitialized)
+            lock (_synLock)
             {
-                return;
-            }
-
-            await _semaphore.WaitAsync();
-            try
-            {
-
                 if (_isInitialized)
                 {
                     return;
@@ -297,11 +275,11 @@ namespace OrchardCore.Environment.Extensions
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
                 // Load all extensions in parallel
-                await modules.ForEachAsync((module) =>
+                Parallel.ForEach(modules, (module, cancellationToken) =>
                 {
                     if (!module.ModuleInfo.Exists)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
@@ -318,28 +296,30 @@ namespace OrchardCore.Environment.Extensions
                     };
 
                     loadedExtensions.TryAdd(module.Name, entry);
-
-                    return Task.CompletedTask;
                 });
 
-                var loadedFeatures = new Dictionary<string, FeatureEntry>();
+                var loadedFeatures = new Dictionary<string, IFeatureInfo>();
 
-                // Get all valid types from any extension
-                var allTypesByExtension = loadedExtensions.SelectMany(extension =>
-                    extension.Value.ExportedTypes.Where(IsComponentType)
-                    .Select(type => new
-                    {
-                        ExtensionEntry = extension.Value,
-                        Type = type
-                    })).ToArray();
+                // Get all types from all extension and add them to the type feature provider.
+                var allTypesByExtension = loadedExtensions
+                    .SelectMany(extension =>
+                        extension
+                            .Value
+                            .ExportedTypes
+                            .Where(IsComponentType)
+                            .Select(type => new
+                            {
+                                Extension = extension.Value,
+                                Type = type
+                            }));
 
                 var typesByFeature = allTypesByExtension
                     .GroupBy(typeByExtension => GetSourceFeatureNameForType(
                         typeByExtension.Type,
-                        typeByExtension.ExtensionEntry.ExtensionInfo.Id))
+                        typeByExtension.Extension.ExtensionInfo.Id))
                     .ToDictionary(
                         group => group.Key,
-                        group => group.Select(typesByExtension => typesByExtension.Type).ToArray());
+                        group => group.Select(typesByExtension => typesByExtension.Type));
 
                 foreach (var loadedExtension in loadedExtensions)
                 {
@@ -347,25 +327,28 @@ namespace OrchardCore.Environment.Extensions
 
                     foreach (var feature in extension.ExtensionInfo.Features)
                     {
-                        // Features can have no types
+                        // Features can have no types.
                         if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                         {
+                            // This is adding the types to the main feature for backward compatibility.
+                            // In the future we could stop doing it as we don't expect this to be necessary, and remove the FeatureTypeDiscovery attribute.
                             foreach (var type in featureTypes)
                             {
-                                _typeFeatureProvider.TryAdd(type, feature);
+                                // If the attribute is present then we explicitly ignore the backward compatibility and skip the registration
+                                // in the main feature.
+                                if (!SkipExtensionFeatureRegistration(type))
+                                {
+                                    _typeFeatureProvider.TryAdd(type, feature);
+                                }
                             }
                         }
-                        else
-                        {
-                            featureTypes = [];
-                        }
 
-                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, feature);
                     }
                 }
 
                 // Feature infos and entries are ordered by priority and dependencies.
-                _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));
+                _featureInfos = Order(loadedFeatures.Values);
                 _features = _featureInfos.ToDictionary(f => f.Id, f => loadedFeatures[f.Id]);
 
                 // Extensions are also ordered according to the weight of their first features.
@@ -374,19 +357,10 @@ namespace OrchardCore.Environment.Extensions
                     .Select(f => f.Extension)
                     .ToList();
 
-                _extensions = _extensionsInfos.ToDictionary(e => e.Id, e => loadedExtensions[e.Id]);
+                _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
 
                 _isInitialized = true;
             }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private static bool IsComponentType(Type type)
-        {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
         }
 
         private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
@@ -419,6 +393,23 @@ namespace OrchardCore.Environment.Extensions
             }
 
             return sum;
+        }
+
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
+        {
+            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+            return attribute?.FeatureName ?? extensionId;
+        }
+
+        private static bool IsComponentType(Type type)
+        {
+            return type.IsClass && !type.IsAbstract && type.IsPublic;
+        }
+
+        private static bool SkipExtensionFeatureRegistration(Type type)
+        {
+            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
         }
     }
 }

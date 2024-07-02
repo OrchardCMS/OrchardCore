@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Facebook;
 
-public class AdminMenu : INavigationProvider
+public sealed class AdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -13,10 +13,9 @@ public class AdminMenu : INavigationProvider
         { "groupId", FacebookConstants.Features.Core },
     };
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
-    public AdminMenu(
-        IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
         S = localizer;
     }
@@ -45,7 +44,7 @@ public class AdminMenu : INavigationProvider
     }
 }
 
-public class AdminMenuLogin : INavigationProvider
+public sealed class AdminMenuLogin : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -53,7 +52,7 @@ public class AdminMenuLogin : INavigationProvider
         { "groupId", FacebookConstants.Features.Login },
     };
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AdminMenuLogin(
         IStringLocalizer<AdminMenuLogin> localizer)
@@ -85,7 +84,7 @@ public class AdminMenuLogin : INavigationProvider
     }
 }
 
-public class AdminMenuPixel : INavigationProvider
+public sealed class AdminMenuPixel : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -93,7 +92,7 @@ public class AdminMenuPixel : INavigationProvider
         { "groupId", FacebookConstants.PixelSettingsGroupId },
     };
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AdminMenuPixel(
         IStringLocalizer<AdminMenuLogin> stringLocalizer)

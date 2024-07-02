@@ -37,6 +37,11 @@ namespace OrchardCore.Navigation
         public string Href { get; set; }
 
         /// <summary>
+        /// The html target of the menu item.
+        /// </summary>
+        public string Target { get; set; }
+
+        /// <summary>
         /// The optional url the menu item should link to.
         /// </summary>
         public string Url { get; set; }

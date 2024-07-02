@@ -8,7 +8,7 @@ using OrchardCore.Users.TimeZone.Services;
 namespace OrchardCore.Users.TimeZone
 {
     [Feature("OrchardCore.Users.TimeZone")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

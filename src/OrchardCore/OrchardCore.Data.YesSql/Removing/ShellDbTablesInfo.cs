@@ -13,7 +13,7 @@ using YesSql.Sql.Schema;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-internal class ShellDbTablesInfo : ISchemaBuilder
+internal sealed class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
     public string TablePrefix { get; set; }

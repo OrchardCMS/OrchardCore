@@ -8,7 +8,7 @@ using OrchardCore.Facebook.Settings;
 
 namespace OrchardCore.Facebook.Services;
 
-public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
+public sealed class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 {
     private readonly IFacebookService _facebookService;
     private readonly ShellSettings _shellSettings;

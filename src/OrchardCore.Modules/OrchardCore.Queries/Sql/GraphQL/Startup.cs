@@ -10,7 +10,7 @@ namespace OrchardCore.Queries.Sql.GraphQL
     /// </summary>
     [Feature("OrchardCore.Queries.Sql")]
     [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

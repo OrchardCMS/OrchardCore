@@ -20,13 +20,13 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Workflows.Http
 {
     [Feature("OrchardCore.Workflows.Http")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MvcOptions>(o =>
             {
-                o.Filters.Add(typeof(WorkflowActionFilter));
+                o.Filters.Add<WorkflowActionFilter>();
             });
 
             services.AddHttpClient();

@@ -17,9 +17,7 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : I
             return;
         }
 
-        var site = await _siteService.GetSiteSettingsAsync();
-
-        var settings = site.As<AzureAISearchSettings>();
+        var settings = await _siteService.GetSettingsAsync<AzureAISearchSettings>();
 
         result.Steps.Add(new JsonObject
         {

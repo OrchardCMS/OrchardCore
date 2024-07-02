@@ -168,10 +168,8 @@
             var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
-
-        <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
-            debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="jQuery"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        
+        <script asp-name="widgetslist-edit" at="Foot"></script>
+        <style asp-name="widgetslist-edit" at="Head"></style>
     }
 </div>

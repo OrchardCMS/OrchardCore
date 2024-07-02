@@ -81,6 +81,19 @@ namespace OrchardCore.Media.GraphQL
                     }
 
                     return items;
+              });
+
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
+                .Description("the media texts")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    if (x.Source?.MediaTexts is null)
+                    {
+                        return Array.Empty<string>();
+                    }
+                    return x.Page(x.Source.MediaTexts);
+
                 });
         }
     }

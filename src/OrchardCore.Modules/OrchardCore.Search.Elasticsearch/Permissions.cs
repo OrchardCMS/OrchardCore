@@ -5,10 +5,11 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Elasticsearch;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageElasticIndexes = ElasticsearchIndexPermissionHelper.ManageElasticIndexes;
-    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
+    public static readonly Permission ManageElasticIndexes = new("ManageElasticIndexes", "Manage Elasticsearch Indexes");
+
+    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", [ManageElasticIndexes]);
 
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
@@ -39,7 +40,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 ManageElasticIndexes,
@@ -47,7 +48,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
                 QueryElasticApi,

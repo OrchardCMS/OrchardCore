@@ -9,14 +9,12 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    [Feature(OpenIdConstants.Features.Client)]
-    public class OpenIdClientConfiguration :
+    public sealed class OpenIdClientConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<OpenIdConnectOptions>
     {
@@ -52,7 +50,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIdConnectOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme))
+            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme, StringComparison.Ordinal))
             {
                 return;
             }

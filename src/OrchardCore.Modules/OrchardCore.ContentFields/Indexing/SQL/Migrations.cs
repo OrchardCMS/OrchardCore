@@ -3,15 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
-using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
-    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly ILogger _logger;
+
         public Migrations(ILogger<Migrations> logger)
         {
             _logger = logger;

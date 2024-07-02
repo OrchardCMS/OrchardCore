@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Roles
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.Roles
                     .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
                         .AddClass("roles").Id("roles")
                         .Action("Index", "Admin", "OrchardCore.Roles")
-                        .Permission(Permissions.ManageRoles)
+                        .Permission(CommonPermissions.ManageRoles)
                         .LocalNav()
                     )
                 );

@@ -8,7 +8,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.OpenId.YesSql.Migrations
 {
-    public class OpenIdMigrations : DataMigration
+    public sealed class OpenIdMigrations : DataMigration
     {
         private const string OpenIdTokenCollection = OpenIdToken.OpenIdCollection;
         private const string OpenIdAuthorizationCollection = OpenIdAuthorization.OpenIdCollection;
@@ -172,9 +172,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             return 2;
         }
 
-        private class OpenIdApplicationByPostLogoutRedirectUriIndex { }
-        private class OpenIdApplicationByRedirectUriIndex { }
-        private class OpenIdApplicationByRoleNameIndex { }
+        private sealed class OpenIdApplicationByPostLogoutRedirectUriIndex { }
+        private sealed class OpenIdApplicationByRedirectUriIndex { }
+        private sealed class OpenIdApplicationByRoleNameIndex { }
 
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
@@ -402,7 +402,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom7Async()
         {
-            // Create all index tables with the new collection value.  
+            // Create all index tables with the new collection value.
             await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(table => table
                 .Column<string>("ApplicationId", column => column.WithLength(48))
                 .Column<string>("ClientId", column => column.Unique()),

@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
 
-public class GoogleAuthenticationPermissionProvider : IPermissionProvider
+public sealed class GoogleAuthenticationPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageGoogleAuthentication = Permissions.ManageGoogleAuthentication;
 
@@ -20,7 +20,7 @@ public class GoogleAuthenticationPermissionProvider : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
         },
     ];

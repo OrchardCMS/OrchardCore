@@ -19,8 +19,6 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
-
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
@@ -105,68 +103,68 @@ namespace OrchardCore.Users.Drivers
 
             var model = new EditUserRoleViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+
                 var roles = await GetRoleAsync();
-                // Authorize each role in the model to prevent html injection.
-                var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
-                var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+            // Authorize each role in the model to prevent html injection.
+            var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
+            var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
-                var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
-                var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
-                var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
+            var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
+            var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
+            var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
 
-                if (context.IsNew)
+            if (context.IsNew)
+            {
+                // Only add authorized new roles.
+                foreach (var role in accessibleAndSelectedRoleNames)
                 {
-                    // Only add authorized new roles.
-                    foreach (var role in accessibleAndSelectedRoleNames)
+                    await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default);
+                }
+            }
+            else
+            {
+                // Remove roles in two steps to prevent an iteration on a modified collection.
+                var rolesToRemove = new List<string>();
+                foreach (var role in currentUserRoleNames)
+                {
+                    // When the user has permission to manage the role and it is no longer selected the role can be removed.
+                    if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase)
+                        && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
                     {
-                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default);
+                        rolesToRemove.Add(role);
                     }
                 }
-                else
+
+                foreach (var role in rolesToRemove)
                 {
-                    // Remove roles in two steps to prevent an iteration on a modified collection.
-                    var rolesToRemove = new List<string>();
-                    foreach (var role in currentUserRoleNames)
+                    if (string.Equals(role, OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                     {
-                        // When the user has permission to manage the role and it is no longer selected the role can be removed.
-                        if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase)
-                            && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+                        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+                            .Cast<User>()
+                            .Where(user => user.IsEnabled)
+                            .ToList();
+
+                        // Make sure we always have at least one enabled administrator account.
+                        if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                         {
-                            rolesToRemove.Add(role);
+                            await _notifier.WarningAsync(H[$"Cannot remove {OrchardCoreConstants.Roles.Administrator} role from the only enabled administrator."]);
+
+                            continue;
                         }
                     }
 
-                    foreach (var role in rolesToRemove)
+                    await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
+                }
+
+                // Add new roles.
+                foreach (var role in accessibleAndSelectedRoleNames)
+                {
+                    var normalizedName = _userManager.NormalizeName(role);
+                    if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default))
                     {
-                        if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
-                        {
-                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
-                                .Cast<User>()
-                                .Where(user => user.IsEnabled)
-                                .ToList();
-
-                            // Make sure we always have at least one enabled administrator account.
-                            if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
-                            {
-                                await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
-
-                                continue;
-                            }
-                        }
-
-                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
-                    }
-
-                    // Add new roles.
-                    foreach (var role in accessibleAndSelectedRoleNames)
-                    {
-                        var normalizedName = _userManager.NormalizeName(role);
-                        if (!await _userRoleStore.IsInRoleAsync(user, normalizedName, default))
-                        {
-                            await _userRoleStore.AddToRoleAsync(user, normalizedName, default);
-                        }
+                        await _userRoleStore.AddToRoleAsync(user, normalizedName, default);
                     }
                 }
             }

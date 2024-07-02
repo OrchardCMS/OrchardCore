@@ -3,7 +3,7 @@ using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword
 {
-    public class UserResetPasswordAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
+    public sealed class UserResetPasswordAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
     {
         public const string User = nameof(User);
         public const string PasswordReset = nameof(PasswordReset);

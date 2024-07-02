@@ -91,7 +91,7 @@ namespace OrchardCore.Media.Recipes
             }
         }
 
-        private class MediaStepModel
+        private sealed class MediaStepModel
         {
             /// <summary>
             /// Collection of <see cref="MediaStepFile"/> objects.
@@ -99,7 +99,7 @@ namespace OrchardCore.Media.Recipes
             public MediaStepFile[] Files { get; set; }
         }
 
-        private class MediaStepFile
+        private sealed class MediaStepFile
         {
             /// <summary>
             /// Path where the content will be written.

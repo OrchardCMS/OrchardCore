@@ -54,7 +54,7 @@
 
 <div class="mb-3" asp-validation-class-for="Scopes">
     <label asp-for="Scopes" class="form-label">@T["Scopes"]</label>
-    <input asp-for="Scopes" class="form-control" />
+    <input asp-for="Scopes" class="form-control" autocomplete="new-password" />
     <span asp-validation-for="Scopes"></span>
     <span class="hint">@T["extra scopes except openid and profile"]</span>
 </div>
@@ -144,7 +144,7 @@
 
 <div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
     <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
-    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
+    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" />
     <span asp-validation-for="ClientSecret"></span>
     <span class="hint">@T["set client secret."]</span>
 </div>

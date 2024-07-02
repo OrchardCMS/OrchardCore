@@ -16,6 +16,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+
     protected readonly IStringLocalizer S;
 
     public TwoFactorLoginSettingsDisplayDriver(
@@ -35,12 +36,13 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
             model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
             model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
             model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
+            model.UseSiteTheme = settings.UseSiteTheme;
         }).Location("Content:5#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings settings, UpdateEditorContext context)
     {
         if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
@@ -48,13 +50,13 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        if (section.NumberOfRecoveryCodesToGenerate < 1)
+        if (settings.NumberOfRecoveryCodesToGenerate < 1)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(section.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
         }
 
-        return Edit(section);
+        return Edit(settings);
     }
 }

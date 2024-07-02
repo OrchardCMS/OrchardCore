@@ -12,7 +12,7 @@ using OrchardCore.Settings.Deployment;
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-    public class ExportContentToDeploymentTargetStartup : StartupBase
+    public sealed class ExportContentToDeploymentTargetStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

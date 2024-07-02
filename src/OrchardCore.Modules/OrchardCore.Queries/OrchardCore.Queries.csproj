@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Irony.Core" />
+    <PackageReference Include="Irony" />
   </ItemGroup>
 
 </Project>

@@ -51,8 +51,16 @@ public class MyController : Controller
     }
     public async Task<IActionResult> Index()
     {
+        /*
+        For convenience, we have added an extension method named 'GetCustomSettingsAsync' to easily access the custom settings.
+        This method is available in the OrchardCore.Contents.Core package.
+
+        Alternatively, you can access the custom settings without using the 'GetCustomSettingsAsync' extension method as follow:
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var blogSettings = siteSettings.As<ContentItem>("BlogSettings");
+        */
+
+        ContentItem blogSettings = await _siteService.GetCustomSettingsAsync("BlogSettings");
         var blogHtml = blogSettings.As<HtmlBodyPart>();
 
         return View();

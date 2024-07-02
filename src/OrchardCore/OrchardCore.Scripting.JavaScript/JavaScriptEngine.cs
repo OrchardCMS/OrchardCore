@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Jint;
-using Jint.Native;
 using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -25,36 +24,24 @@ namespace OrchardCore.Scripting.JavaScript
         {
             var engine = new Engine(options =>
             {
-                // Make JsonArray behave like JS array.
                 options.SetWrapObjectHandler(static (e, target, type) =>
                 {
-                    if (target is JsonArray)
+                    if (target is JsonDynamicObject dynamicObject)
                     {
-                        var wrapped = new ObjectWrapper(e, target)
-                        {
-                            Prototype = e.Intrinsics.Array.PrototypeObject
-                        };
-                        return wrapped;
+                        return ObjectWrapper.Create(e, (JsonObject)dynamicObject, type);
                     }
 
-                    return new ObjectWrapper(e, target);
-                });
-
-                options.AddObjectConverter<JsonValueConverter>();
-
-                // We cannot access this[string] with anything else than JsonObject, otherwise itw will throw.
-                options.SetTypeResolver(new TypeResolver
-                {
-                    MemberFilter = static info =>
+                    if (target is JsonDynamicArray dynamicArray)
                     {
-                        if (info.ReflectedType != typeof(JsonObject) && info.Name == "Item" && info is PropertyInfo p)
-                        {
-                            var parameters = p.GetIndexParameters();
-                            return parameters.Length != 1 || parameters[0].ParameterType != typeof(string);
-                        }
-
-                        return true;
+                        return ObjectWrapper.Create(e, (JsonArray)dynamicArray, type);
                     }
+
+                    if (target is JsonDynamicValue dynamicValue)
+                    {
+                        return ObjectWrapper.Create(e, (JsonValue)dynamicValue, type);
+                    }
+
+                    return ObjectWrapper.Create(e, target, type);
                 });
             });
 

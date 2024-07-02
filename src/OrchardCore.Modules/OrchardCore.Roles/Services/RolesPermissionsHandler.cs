@@ -16,7 +16,8 @@ namespace OrchardCore.Roles
         private readonly IPermissionGrantingService _permissionGrantingService;
 
 
-        private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
+        private IEnumerable<RoleClaim> _anonymousClaims;
+        private IEnumerable<RoleClaim> _authenticatedClaims;
 
         public RolesPermissionsHandler(
             RoleManager<IRole> roleManager,
@@ -35,14 +36,14 @@ namespace OrchardCore.Roles
             }
 
             var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
+            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
             {
                 claims.Add(claim);
             }
 
             if (context.User.Identity.IsAuthenticated)
             {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
+                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
                 {
                     claims.Add(claim);
                 }
