@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -41,11 +44,17 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
+                    // Provide the route data for the term to the pager so it generates the pager links
+                    // using the Autoroute path instead of the jsonPath.
+                    var termContentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(model);
+                    termContentItemMetadata.DisplayRouteValues[nameof(AutorouteEntry.JsonPath)] = null;
+                    var termRouteData = new RouteData(termContentItemMetadata.DisplayRouteValues);
+
                     var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
-                    m.Pager = await context.New.PagerSlim(pager);
+                    m.Pager = (await context.New.PagerSlim(pager)).RouteData(termRouteData);
                 })
                 .Location("Detail", "Content:5"));
             }
