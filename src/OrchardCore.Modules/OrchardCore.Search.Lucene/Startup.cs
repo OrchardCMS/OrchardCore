@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Deployment;
@@ -53,15 +54,19 @@ namespace OrchardCore.Search.Lucene
             services.AddLuceneQueries();
 
             // LuceneQuerySource is registered for both the Queries module and local usage.
-            services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
+            services.AddScoped<IQuerySource>(sp => sp.GetService<LuceneQuerySource>());
+            services.AddKeyedScoped<IQuerySource>(LuceneQuerySource.SourceName, (sp, key) => sp.GetService<LuceneQuerySource>());
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
+            services.AddDataMigration<LuceneQueryMigrations>();
 
             // Allows to serialize 'LuceneQuery' from its base type.
+#pragma warning disable CS0618 // Type or member is obsolete
             services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 

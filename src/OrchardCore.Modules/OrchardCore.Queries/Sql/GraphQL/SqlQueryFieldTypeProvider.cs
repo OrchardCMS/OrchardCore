@@ -43,7 +43,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
         {
             var session = _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
 
-            var queries = await session.Query<Query, QueryIndex>().ListAsync();
+            var queries = await session.Query<Query, QueryIndex>(q => q.Source == SqlQuerySource.SourceName).ListAsync();
 
             foreach (var query in queries)
             {
@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (sqlQueryMetadata.ReturnDocuments && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
@@ -162,7 +162,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
                 var session = context.RequestServices.GetService<YesSql.ISession>();
-                var querySources = context.RequestServices.GetServices<IQuerySource>();
+                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
@@ -171,9 +171,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 var queryParameters = parameters != null ?
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
-
-                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
-                    ?? throw new ArgumentException("Query source not found: " + query.Source);
 
                 var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 
@@ -207,7 +204,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
                 var session = context.RequestServices.GetService<YesSql.ISession>();
-                var querySources = context.RequestServices.GetServices<IQuerySource>();
+                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
@@ -216,9 +213,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 var queryParameters = parameters != null ?
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
-
-                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
-                    ?? throw new ArgumentException("Query source not found: " + query.Source);
 
                 var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 

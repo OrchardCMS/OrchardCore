@@ -3,8 +3,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Entities;
+using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch
@@ -15,13 +18,16 @@ namespace OrchardCore.Search.Elasticsearch
     public class ElasticsearchApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
+        private readonly IQuerySource _querySource;
         private readonly ElasticQuerySource _elasticQuerySource;
 
         public ElasticsearchApiController(
             IAuthorizationService authorizationService,
+            [FromKeyedServices(ElasticQuerySource.SourceName)] IQuerySource querySource,
             ElasticQuerySource elasticQuerySource)
         {
             _authorizationService = authorizationService;
+            _querySource = querySource;
             _elasticQuerySource = elasticQuerySource;
         }
 
@@ -81,20 +87,23 @@ namespace OrchardCore.Search.Elasticsearch
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
+        private Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
         {
-            var elasticQuery = new ElasticQuery
+            var elasticQuery = _querySource.Create();
+            elasticQuery.ReturnContentItems = returnContentItems;
+
+            elasticQuery.Put(new ElasticsearchQueryMetadata
             {
                 Index = queryModel.IndexName,
                 Template = queryModel.Query,
-                ReturnContentItems = returnContentItems
-            };
+            });
 
             var queryParameters = queryModel.Parameters != null ?
                 JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
             var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
+
             return result;
         }
     }

@@ -13,9 +13,11 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Queries.Indexes;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
@@ -38,9 +40,9 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         {
             var session = _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
 
-            var queries = await session.Query<Query, QueryIndex>().ListAsync();
+            var queries = await session.Query<Query, QueryIndex>(q => q.Source == ElasticQuerySource.SourceName).ListAsync();
 
-            foreach (var query in queries.OfType<ElasticQuery>())
+            foreach (var query in queries)
             {
                 if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
@@ -59,7 +61,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-
+                    var queryMetadata = query.As<ElasticsearchQueryMetadata>();
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
@@ -83,7 +85,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             }
         }
 
-        private static FieldType BuildSchemaBasedFieldType(ElasticQuery query, JsonNode querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"]?.AsObject();
             if (properties == null)
@@ -154,7 +156,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
                 var session = context.RequestServices.GetService<YesSql.ISession>();
-                var querySources = context.RequestServices.GetServices<IQuerySource>();
+                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
@@ -164,9 +166,6 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
-                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
-                    ?? throw new ArgumentException("Query source not found: " + query.Source);
-
                 var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
@@ -175,7 +174,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             return fieldType;
         }
 
-        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
         {
             var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
@@ -200,7 +199,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
                 var session = context.RequestServices.GetService<YesSql.ISession>();
-                var querySources = context.RequestServices.GetServices<IQuerySource>();
+                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
 
@@ -209,9 +208,6 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 var queryParameters = parameters != null ?
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
-
-                var querySource = querySources.FirstOrDefault(q => q.Name == query.Source)
-                    ?? throw new ArgumentException("Query source not found: " + query.Source);
 
                 var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
 

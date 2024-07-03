@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -30,7 +31,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IEnumerable<IQuerySource> _querySources;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ISession _session;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -48,14 +49,14 @@ namespace OrchardCore.Queries.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
-            IEnumerable<IQuerySource> querySources,
+            IServiceProvider serviceProvider,
             IUpdateModelAccessor updateModelAccessor)
         {
             _session = session;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
-            _querySources = querySources;
+            _serviceProvider = serviceProvider;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
             _notifier = notifier;
@@ -94,7 +95,7 @@ namespace OrchardCore.Queries.Controllers
                 Queries = [],
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, count, routeData),
-                QuerySourceNames = _querySources.Select(x => x.Name).ToList()
+                QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList()
             };
 
             foreach (var qry in queries)
@@ -130,7 +131,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
+            var query = _serviceProvider.GetKeyedService<IQuerySource>(id)?.Create();
 
             if (query == null)
             {
@@ -154,7 +155,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
+            var query = _serviceProvider.GetKeyedService<IQuerySource>(model.SourceName)?.Create();
 
             if (query == null)
             {

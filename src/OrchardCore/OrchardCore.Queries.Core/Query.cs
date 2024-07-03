@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Queries
@@ -37,13 +38,11 @@ namespace OrchardCore.Queries
         /// </summary>
         public string Schema { get; set; }
 
-        public virtual bool ResultsOfType<T>() => typeof(T) == typeof(object);
-    }
+        [JsonIgnore]
+        public bool CanReturnContentItems { get; set; }
 
-    public class QueryPageResult
-    {
-        public int? Count { get; set; }
+        public bool ReturnContentItems { get; set; }
 
-        public IEnumerable<Query> Queries { get; set; }
+        public virtual bool ResultsOfType<T>() => CanReturnContentItems && ReturnContentItems ? typeof(T) == typeof(ContentItem) : typeof(T) == typeof(object);
     }
 }

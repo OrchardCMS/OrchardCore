@@ -9,9 +9,9 @@ public class QueryIndex : MapIndex
     public string Source { get; set; }
 }
 
-public class QueryIndexProvider : IndexProvider<QueryIndex>
+public class QueryIndexProvider : IndexProvider<Query>
 {
-    public override void Describe(DescribeContext<QueryIndex> context)
+    public override void Describe(DescribeContext<Query> context)
     {
         context
             .For<QueryIndex>()

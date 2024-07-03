@@ -1,26 +1,27 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Queries.Indexes;
 using OrchardCore.Security.Permissions;
+using YesSql;
 
 namespace OrchardCore.Queries;
 
 public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
-    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
+    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", [ManageQueries]);
 
-    private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", new[] { ManageQueries, ExecuteApiAll });
+    private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
 
+    private readonly ISession _session;
     private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageQueries,
     ];
 
-    private readonly IQueryManager _queryManager;
-
-    public Permissions(IQueryManager queryManager)
+    public Permissions(ISession session)
     {
-        _queryManager = queryManager;
+        _session = session;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -31,7 +32,9 @@ public sealed class Permissions : IPermissionProvider
             ExecuteApiAll,
         };
 
-        foreach (var query in await _queryManager.ListQueriesAsync())
+        var queries = await _session.Query<Query, QueryIndex>().ListAsync();
+
+        foreach (var query in queries)
         {
             list.Add(CreatePermissionForQuery(query.Name));
         }

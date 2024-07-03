@@ -13,9 +13,6 @@ namespace OrchardCore.Queries.Sql
         [Obsolete("Use .As<SqlQueryMetadata>() instead to get this property value.")]
         public string Template { get; set; }
 
-        [Obsolete("Use .As<SqlQueryMetadata>() instead to get this property value.")]
-        public bool ReturnDocuments { get; set; }
-
-        public override bool ResultsOfType<T>() => ReturnDocuments ? typeof(T) == typeof(ContentItem) : base.ResultsOfType<T>();
+        public override bool ResultsOfType<T>() => ReturnContentItems ? typeof(T) == typeof(ContentItem) : base.ResultsOfType<T>();
     }
 }

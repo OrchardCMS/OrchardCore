@@ -27,15 +27,18 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
 
         // ElasticQuerySource is registered for both the Queries module and local usage.
-        services.AddScoped<IQuerySource, ElasticQuerySource>();
         services.AddScoped<ElasticQuerySource>();
+        services.AddScoped<IQuerySource>(sp => sp.GetService<ElasticQuerySource>());
+        services.AddKeyedScoped<IQuerySource>(ElasticQuerySource.SourceName, (sp, key) => sp.GetService<ElasticQuerySource>());
         services.AddRecipeExecutionStep<ElasticIndexStep>();
         services.AddRecipeExecutionStep<ElasticSettingsStep>();
         services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
         services.AddRecipeExecutionStep<ElasticIndexResetStep>();
 
         // Allows to serialize 'ElasticQuery' from its base type.
-        services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
+#pragma warning disable CS0618 // Type or member is obsolete
+        var serviceCollection = services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         return services;
     }

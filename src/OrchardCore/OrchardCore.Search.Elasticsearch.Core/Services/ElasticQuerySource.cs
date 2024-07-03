@@ -8,9 +8,10 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -18,6 +19,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticQuerySource : IQuerySource
     {
+        public const string SourceName = "Elasticsearch";
+
         private readonly IElasticQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
@@ -38,23 +41,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Elasticsearch";
+        public string Name => SourceName;
 
         public Query Create()
-        {
-            return new ElasticQuery();
-        }
+            => new()
+            {
+                Source = SourceName,
+                CanReturnContentItems = true,
+            };
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var elasticQuery = query as ElasticQuery;
+            var queryMetadata = query.As<ElasticsearchQueryMetadata>();
             var elasticQueryResults = new ElasticQueryResults();
 
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(elasticQuery.Index, tokenizedContent);
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var docs = await _queryService.SearchAsync(queryMetadata.Index, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
-            if (elasticQuery.ReturnContentItems)
+            if (query.ReturnContentItems)
             {
                 // We always return an empty collection if the bottom lines queries have no results.
                 elasticQueryResults.Items = [];

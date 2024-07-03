@@ -3,19 +3,26 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Queries.Indexes;
+using OrchardCore.Queries.Migrations;
 using OrchardCore.Queries.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Queries.Drivers
 {
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
-        private readonly IQueryManager _queryManager;
+        private readonly ISession _session;
+
         protected readonly IStringLocalizer S;
 
-        public QueryDisplayDriver(IQueryManager queryManager, IStringLocalizer<QueryDisplayDriver> stringLocalizer)
+        public QueryDisplayDriver(
+            ISession session,
+            IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
-            _queryManager = queryManager;
+            _session = session;
             S = stringLocalizer;
         }
 
@@ -65,24 +72,29 @@ namespace OrchardCore.Queries.Drivers
 
             if (string.IsNullOrEmpty(model.Name))
             {
-                updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name is required"]);
             }
+            else if (model.Name.Length > QueryMigrations.MaxQueryNameLength)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name must be less than or equals {0} characters in length.", QueryMigrations.MaxQueryNameLength]);
+            }
+
             if (!string.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
             {
-                updater.ModelState.AddModelError(nameof(model.Schema), S["Invalid schema JSON supplied."]);
+                updater.ModelState.AddModelError(Prefix, nameof(model.Schema), S["Invalid schema JSON supplied."]);
             }
             var safeName = model.Name.ToSafeName();
             if (string.IsNullOrEmpty(safeName) || model.Name != safeName)
             {
-                updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
+                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name contains illegal characters"]);
             }
             else
             {
-                var existing = await _queryManager.LoadQueryAsync(safeName);
+                var existing = await _session.Query<Query, QueryIndex>(q => q.Name == safeName).FirstOrDefaultAsync();
 
                 if (existing != null && existing != model)
                 {
-                    updater.ModelState.AddModelError(nameof(model.Name), S["A query with the same name already exists"]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["A query with the same name already exists"]);
                 }
             }
 

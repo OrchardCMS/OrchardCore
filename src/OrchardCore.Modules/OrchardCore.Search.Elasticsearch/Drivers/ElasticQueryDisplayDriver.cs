@@ -4,14 +4,16 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
-using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
-    public class ElasticQueryDisplayDriver : DisplayDriver<Query, ElasticQuery>
+    public class ElasticQueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         protected readonly IStringLocalizer S;
@@ -24,51 +26,71 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(ElasticQuery query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
+            if (query.Source != ElasticQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Combine(
                 Dynamic("ElasticQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
                 Dynamic("ElasticQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
             );
         }
 
-        public override IDisplayResult Edit(ElasticQuery query, IUpdateModel updater)
+        public override IDisplayResult Edit(Query query, IUpdateModel updater)
         {
+            if (query.Source != ElasticQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
             {
-                model.Query = query.Template;
-                model.Index = query.Index;
+                var queryMetadata = query.As<ElasticsearchQueryMetadata>();
+
+                model.Query = queryMetadata.Template;
+                model.Index = queryMetadata.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
                 // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(query.Template))
+                if (string.IsNullOrEmpty(queryMetadata.Template))
                 {
-                    await updater.TryUpdateModelAsync(model, "", m => m.Query);
+                    await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
             }).Location("Content:5");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ElasticQuery model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query query, IUpdateModel updater)
         {
+            if (query.Source != ElasticQuerySource.SourceName)
+            {
+                return null;
+            }
+
             var viewModel = new ElasticQueryViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems);
 
-            model.Template = viewModel.Query;
-            model.Index = viewModel.Index;
-            model.ReturnContentItems = viewModel.ReturnContentItems;
-
-            if (string.IsNullOrWhiteSpace(model.Template))
+            if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.Index))
+            if (string.IsNullOrWhiteSpace(viewModel.Index))
             {
-                updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Index), S["The index field is required"]);
             }
 
-            return Edit(model, updater);
+            query.ReturnContentItems = viewModel.ReturnContentItems;
+            query.Put(new ElasticsearchQueryMetadata
+            {
+                Template = viewModel.Query,
+                Index = viewModel.Index,
+            });
+
+            return Edit(query, updater);
         }
     }
 }

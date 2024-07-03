@@ -1,6 +1,8 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
@@ -8,12 +10,14 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
+using OrchardCore.Queries.Indexes;
 using OrchardCore.Queries.Liquid;
+using OrchardCore.Queries.Migrations;
 using OrchardCore.Queries.Recipes;
-using OrchardCore.Queries.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
+using YesSql;
 
 namespace OrchardCore.Queries
 {
@@ -25,7 +29,6 @@ namespace OrchardCore.Queries
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IQueryManager, QueryManager>();
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -38,12 +41,17 @@ namespace OrchardCore.Queries
                 o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
-                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+                    var session = liquidTemplateContext.Services.GetRequiredService<ISession>();
 
-                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                    var query = await session.Query<Query, QueryIndex>(q => q.Name == name).FirstOrDefaultAsync();
+
+                    return FluidValue.Create(query, context.Options);
                 });
             })
             .AddLiquidFilter<QueryFilter>("query");
+
+            services.AddDataMigration<QueryMigrations>();
+            services.AddIndexProvider<QueryIndexProvider>();
         }
     }
 

@@ -1,14 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using YesSql;
 
 namespace OrchardCore.Queries.Recipes
 {
@@ -17,19 +18,19 @@ namespace OrchardCore.Queries.Recipes
     /// </summary>
     public class QueryStep : IRecipeStepHandler
     {
-        private readonly IQueryManager _queryManager;
-        private readonly IEnumerable<IQuerySource> _querySources;
+        private readonly ISession _session;
+        private readonly IServiceProvider _serviceProvider;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
         public QueryStep(
-            IQueryManager queryManager,
-            IEnumerable<IQuerySource> querySources,
+            ISession session,
+            IServiceProvider serviceProvider,
             IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             ILogger<QueryStep> logger)
         {
-            _queryManager = queryManager;
-            _querySources = querySources;
+            _session = session;
+            _serviceProvider = serviceProvider;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _logger = logger;
         }
@@ -46,7 +47,7 @@ namespace OrchardCore.Queries.Recipes
             foreach (var token in model.Queries.Cast<JsonObject>())
             {
                 var sourceName = token[nameof(Query.Source)].ToString();
-                var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();
+                var sample = _serviceProvider.GetKeyedService<IQuerySource>(sourceName)?.Create();
 
                 if (sample == null)
                 {
@@ -56,8 +57,10 @@ namespace OrchardCore.Queries.Recipes
                 }
 
                 var query = token.ToObject(sample.GetType(), _jsonSerializerOptions) as Query;
-                await _queryManager.SaveQueryAsync(query.Name, query);
+                await _session.SaveAsync(query);
             }
+
+            await _session.SaveChangesAsync();
         }
     }
 

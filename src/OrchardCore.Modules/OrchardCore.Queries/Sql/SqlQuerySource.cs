@@ -46,9 +46,10 @@ namespace OrchardCore.Queries.Sql
             => SourceName;
 
         public Query Create()
-            => new Query()
+            => new()
             {
                 Source = SourceName,
+                CanReturnContentItems = true,
             };
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
@@ -73,7 +74,7 @@ namespace OrchardCore.Queries.Sql
 
             await connection.OpenAsync();
 
-            if (sqlQueryMetadata.ReturnDocuments)
+            if (query.ReturnContentItems)
             {
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
                 var queryResult = await connection.QueryAsync(rawQuery, parameters, transaction);

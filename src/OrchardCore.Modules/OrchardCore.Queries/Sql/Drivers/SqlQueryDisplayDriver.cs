@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries.Sql.Models;
 using OrchardCore.Queries.Sql.ViewModels;
 
@@ -46,9 +47,10 @@ namespace OrchardCore.Queries.Sql.Drivers
 
             return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
             {
+                model.ReturnDocuments = query.ReturnContentItems;
+
                 var metadata = query.As<SqlQueryMetadata>();
                 model.Query = metadata.Template;
-                model.ReturnDocuments = metadata.ReturnDocuments;
 
                 // Extract query from the query string if we come from the main query editor.
                 if (string.IsNullOrEmpty(metadata.Template))
@@ -70,13 +72,13 @@ namespace OrchardCore.Queries.Sql.Drivers
 
             if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(nameof(viewModel.Query), S["The query field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
             }
 
+            query.ReturnContentItems = viewModel.ReturnDocuments;
             query.Put(new SqlQueryMetadata()
             {
                 Template = viewModel.Query,
-                ReturnDocuments = viewModel.ReturnDocuments,
             });
 
             return Edit(query, updater);
