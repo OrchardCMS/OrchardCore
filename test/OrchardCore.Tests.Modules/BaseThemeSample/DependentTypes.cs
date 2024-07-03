@@ -7,7 +7,11 @@ using OrchardCore.Modules;
 
 namespace BaseThemeSample;
 
-public class BaseThemeFeatureIndependentStartup : StartupBase { }
+public class BaseThemeFeatureIndependentStartup : StartupBase 
+{ 
+}
 
 [Feature("BaseThemeSample")]
-public class BaseThemeSampleStartup : StartupBase { }
+public class BaseThemeSampleStartup : StartupBase 
+{
+}

@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Extensions
         private readonly ExtensionManager _moduleScopedExtensionManager;
         private readonly ExtensionManager _themeScopedExtensionManager;
         private readonly ExtensionManager _moduleThemeScopedExtensionManager;
-
+        
         private readonly TypeFeatureProvider _moduleScopedTypeFeatureProvider = new TypeFeatureProvider();
 
         public ExtensionManagerTests()
