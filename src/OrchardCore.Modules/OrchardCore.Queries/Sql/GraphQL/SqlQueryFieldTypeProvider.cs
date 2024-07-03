@@ -161,7 +161,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var session = context.RequestServices.GetService<YesSql.ISession>();
+                var session = context.RequestServices.GetRequiredService<YesSql.ISession>();
                 var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
@@ -203,7 +203,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var session = context.RequestServices.GetService<YesSql.ISession>();
+                var session = context.RequestServices.GetRequiredService<YesSql.ISession>();
                 var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
 
                 var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();

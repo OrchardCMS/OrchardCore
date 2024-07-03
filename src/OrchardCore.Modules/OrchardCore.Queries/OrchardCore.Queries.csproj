@@ -35,8 +35,4 @@
     <PackageReference Include="Irony" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
