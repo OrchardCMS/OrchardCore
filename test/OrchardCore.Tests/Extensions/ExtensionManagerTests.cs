@@ -27,7 +27,9 @@ namespace OrchardCore.Tests.Extensions
         private readonly ExtensionManager _themeScopedExtensionManager;
         private readonly ExtensionManager _moduleThemeScopedExtensionManager;
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance - not relevant for unit tests.
         private readonly ITypeFeatureProvider _moduleScopedTypeFeatureProvider = new TypeFeatureProvider();
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
         public ExtensionManagerTests()
         {
