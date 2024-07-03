@@ -13,20 +13,14 @@ namespace OrchardCore.Themes.TheAdmin
 
             _manifest
                 .DefineScript("admin")
-                .SetDependencies("bootstrap", "admin-head", "jQuery")
+                .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery")
                 .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
-                .SetVersion("1.0.0");
-
-            _manifest
-                .DefineScript("admin-head")
-                .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
-                .SetDependencies("js-cookie", "theme-manager")
                 .SetVersion("1.0.0");
 
             _manifest
                 .DefineScript("admin-main")
                 .SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js")
-                .SetDependencies("admin-head")
+                .SetDependencies("theme-head", "js-cookie")
                 .SetVersion("1.0.0");
 
             _manifest
