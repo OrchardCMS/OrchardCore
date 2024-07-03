@@ -185,6 +185,13 @@
     "output": "wwwroot/Styles/trumbowyg/trumbowyg.css"
   },
   {
+    "copy": true,
+    "inputs": [
+      "node_modules/trumbowyg/dist/ui/icons.svg"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg/ui/icons.svg"
+  },
+  {
     "generateRTL": true,
     "inputs": [
       "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
