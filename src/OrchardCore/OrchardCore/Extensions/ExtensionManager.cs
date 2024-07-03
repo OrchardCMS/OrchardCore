@@ -16,334 +16,341 @@ using OrchardCore.Modules;
 // ReSharper disable ConvertClosureToMethodGroup
 // ReSharper disable LoopCanBeConvertedToQuery
 
-namespace OrchardCore.Environment.Extensions
+namespace OrchardCore.Environment.Extensions;
+
+public sealed class ExtensionManager : IExtensionManager
 {
-    public sealed class ExtensionManager : IExtensionManager
+    private readonly FrozenDictionary<string, ExtensionEntry> _extensions;
+    private readonly List<IExtensionInfo> _extensionsInfos;
+    private readonly FrozenDictionary<string, IFeatureInfo> _features;
+    private readonly IFeatureInfo[] _featureInfos;
+
+    private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
+    private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
+
+    public ExtensionManager(
+        IApplicationContext applicationContext,
+        IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
+        IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
+        ITypeFeatureProvider typeFeatureProvider,
+        IFeaturesProvider featuresProvider,
+        ILogger<ExtensionManager> logger)
     {
-        private readonly FrozenDictionary<string, ExtensionEntry> _extensions;
-        private readonly List<IExtensionInfo> _extensionsInfos;
-        private readonly FrozenDictionary<string, IFeatureInfo> _features;
-        private readonly IFeatureInfo[] _featureInfos;
+        L = logger;
 
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
+        var modules = applicationContext.Application.Modules;
+        var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
-        public ExtensionManager(
-            IApplicationContext applicationContext,
-            IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
-            IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
-            ITypeFeatureProvider typeFeatureProvider,
-            IFeaturesProvider featuresProvider,
-            ILogger<ExtensionManager> logger)
+        // Load all extensions in parallel
+        Parallel.ForEach(modules, (module, cancellationToken) =>
         {
-            L = logger;
-
-            var modules = applicationContext.Application.Modules;
-            var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
-
-            // Load all extensions in parallel
-            Parallel.ForEach(modules, (module, cancellationToken) =>
+            if (!module.ModuleInfo.Exists)
             {
-                if (!module.ModuleInfo.Exists)
-                {
-                    return;
-                }
+                return;
+            }
 
-                var manifestInfo = new ManifestInfo(module.ModuleInfo);
-                var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
-                {
-                    return featuresProvider.GetFeatures(ei, mi);
-                });
-
-                var entry = new ExtensionEntry
-                {
-                    ExtensionInfo = extensionInfo,
-                    Assembly = module.Assembly,
-                    ExportedTypes = module.Assembly.ExportedTypes
-                };
-
-                loadedExtensions.TryAdd(module.Name, entry);
+            var manifestInfo = new ManifestInfo(module.ModuleInfo);
+            var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
+            {
+                return featuresProvider.GetFeatures(ei, mi);
             });
 
-            // Get all types from all extension and add them to the type feature provider.
-            foreach (var loadedExtension in loadedExtensions)
+            var entry = new ExtensionEntry
             {
-                var extension = loadedExtension.Value;
+                ExtensionInfo = extensionInfo,
+                Assembly = module.Assembly,
+                ExportedTypes = module.Assembly.ExportedTypes
+            };
 
-                foreach (var exportedType in extension.ExportedTypes.Where(IsComponentType))
+            loadedExtensions.TryAdd(module.Name, entry);
+        });
+
+        // Get all types from all extension and add them to the type feature provider.
+        foreach (var loadedExtension in loadedExtensions)
+        {
+            var extension = loadedExtension.Value;
+
+            foreach (var exportedType in extension.ExportedTypes.Where(IsComponentType))
+            {
+                if (!SkipExtensionFeatureRegistration(exportedType))
                 {
-                    if (!SkipExtensionFeatureRegistration(exportedType))
+                    var sourceFeature = GetSourceFeatureNameForType(exportedType, extension.ExtensionInfo.Id);
+
+                    var feature = extension.ExtensionInfo.Features.FirstOrDefault(f => f.Id == sourceFeature);
+
+                    if (feature == null)
                     {
-                        var sourceFeature = GetSourceFeatureNameForType(exportedType, extension.ExtensionInfo.Id);
-
-                        var feature = extension.ExtensionInfo.Features.FirstOrDefault(f => f.Id == sourceFeature);
-
-                        if (feature == null)
+                        // Type has no specific feature, add it to all features
+                        foreach (var curFeature in extension.ExtensionInfo.Features)
                         {
-                            // Type has no specific feature, add it to all features
-                            foreach (var curFeature in extension.ExtensionInfo.Features)
-                            {
-                                typeFeatureProvider.TryAdd(exportedType, curFeature);
-                            }
-                        }
-                        else
-                        {
-                            typeFeatureProvider.TryAdd(exportedType, feature);
+                            typeFeatureProvider.TryAdd(exportedType, curFeature);
                         }
                     }
-                }
-            }
-
-            // Feature infos and entries are ordered by priority and dependencies.
-            _featureInfos = Order(
-                loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features),
-                extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray(),
-                extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray());
-            _features = _featureInfos.ToFrozenDictionary(f => f.Id, f => f);
-
-            // Extensions are also ordered according to the weight of their first features.
-            _extensionsInfos = _featureInfos
-                .Where(f => f.Id == f.Extension.Features.First().Id)
-                .Select(f => f.Extension)
-                .ToList();
-
-            _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
-        }
-
-        public ILogger L { get; set; }
-
-        public IExtensionInfo GetExtension(string extensionId)
-        {
-            if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
-            {
-                return extension.ExtensionInfo;
-            }
-
-            return new NotFoundExtensionInfo(extensionId);
-        }
-
-        public IEnumerable<IExtensionInfo> GetExtensions()
-        {
-            return _extensionsInfos;
-        }
-
-        public IEnumerable<IFeatureInfo> GetFeatures()
-        {
-            return _featureInfos;
-        }
-
-        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
-        {
-            var allDependencyIds = new HashSet<string>(featureIdsToLoad
-                .SelectMany(GetFeatureDependencies)
-                .Select(x => x.Id));
-
-            foreach (var featureInfo in _featureInfos)
-            {
-                if (allDependencyIds.Contains(featureInfo.Id))
-                {
-                    yield return featureInfo;
-                }
-            }
-        }
-
-        public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
-        {
-            _extensions.TryGetValue(extensionInfo.Id, out var extension);
-
-            return Task.FromResult(extension);
-        }
-
-        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
-        {
-            // Must return the features ordered by dependencies.
-            return Task.FromResult<IEnumerable<IFeatureInfo>>(_featureInfos);
-        }
-
-        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
-        {
-            var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
-
-            // Must return the features ordered by dependencies.
-            var loadedFeatures = _featureInfos
-                .Where(f => features.Contains(f.Id));
-
-            return Task.FromResult(loadedFeatures);
-        }
-
-        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
-        {
-            return _featureDependencies.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
-            {
-                if (!_features.TryGetValue(key, out var entry))
-                {
-                    return [];
-                }
-
-                return GetFeatureDependencies(entry, _featureInfos);
-            })).Value;
-        }
-
-        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
-        {
-            return _dependentFeatures.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
-            {
-                if (!_features.TryGetValue(key, out var entry))
-                {
-                    return [];
-                }
-
-                return GetDependentFeatures(entry, _featureInfos);
-            })).Value;
-        }
-
-        private static IEnumerable<IFeatureInfo> GetFeatureDependencies(
-            IFeatureInfo feature,
-            IFeatureInfo[] features)
-        {
-            var dependencyIds = new HashSet<string> { feature.Id };
-            var stack = new Stack<List<IFeatureInfo>>();
-
-            stack.Push(GetFeatureDependenciesFunc(feature, features));
-
-            while (stack.Count > 0)
-            {
-                var next = stack.Pop();
-                foreach (var dependency in next)
-                {
-                    if (dependencyIds.Add(dependency.Id))
+                    else
                     {
-                        stack.Push(GetFeatureDependenciesFunc(dependency, features));
+                        typeFeatureProvider.TryAdd(exportedType, feature);
                     }
                 }
             }
+        }
 
-            // Preserve the underlying order of feature infos.
-            foreach (var featureInfo in features)
+        // Feature infos and entries are ordered by priority and dependencies.
+        _featureInfos = Order(
+            loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features),
+            extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray(),
+            extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray());
+        _features = _featureInfos.ToFrozenDictionary(f => f.Id, f => f);
+
+        // Extensions are also ordered according to the weight of their first features.
+        _extensionsInfos = _featureInfos
+            .Where(f => f.Id == f.Extension.Features.First().Id)
+            .Select(f => f.Extension)
+            .ToList();
+
+        _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
+
+        if(L.IsEnabled(LogLevel.Trace))
+        {
+            foreach(var feature in _featureInfos)
             {
-                if (dependencyIds.Contains(featureInfo.Id))
+                L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", feature.Extension.Id, feature.Id, feature.Name);
+            }
+        }
+    }
+
+    public ILogger L { get; set; }
+
+    public IExtensionInfo GetExtension(string extensionId)
+    {
+        if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
+        {
+            return extension.ExtensionInfo;
+        }
+
+        return new NotFoundExtensionInfo(extensionId);
+    }
+
+    public IEnumerable<IExtensionInfo> GetExtensions()
+    {
+        return _extensionsInfos;
+    }
+
+    public IEnumerable<IFeatureInfo> GetFeatures()
+    {
+        return _featureInfos;
+    }
+
+    public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+    {
+        var allDependencyIds = new HashSet<string>(featureIdsToLoad
+            .SelectMany(GetFeatureDependencies)
+            .Select(x => x.Id));
+
+        foreach (var featureInfo in _featureInfos)
+        {
+            if (allDependencyIds.Contains(featureInfo.Id))
+            {
+                yield return featureInfo;
+            }
+        }
+    }
+
+    public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
+    {
+        _extensions.TryGetValue(extensionInfo.Id, out var extension);
+
+        return Task.FromResult(extension);
+    }
+
+    public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
+    {
+        // Must return the features ordered by dependencies.
+        return Task.FromResult<IEnumerable<IFeatureInfo>>(_featureInfos);
+    }
+
+    public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
+    {
+        var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
+
+        // Must return the features ordered by dependencies.
+        var loadedFeatures = _featureInfos
+            .Where(f => features.Contains(f.Id));
+
+        return Task.FromResult(loadedFeatures);
+    }
+
+    public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
+    {
+        return _featureDependencies.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
+        {
+            if (!_features.TryGetValue(key, out var entry))
+            {
+                return [];
+            }
+
+            return GetFeatureDependencies(entry, _featureInfos);
+        })).Value;
+    }
+
+    public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
+    {
+        return _dependentFeatures.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
+        {
+            if (!_features.TryGetValue(key, out var entry))
+            {
+                return [];
+            }
+
+            return GetDependentFeatures(entry, _featureInfos);
+        })).Value;
+    }
+
+    private static IEnumerable<IFeatureInfo> GetFeatureDependencies(
+        IFeatureInfo feature,
+        IFeatureInfo[] features)
+    {
+        var dependencyIds = new HashSet<string> { feature.Id };
+        var stack = new Stack<List<IFeatureInfo>>();
+
+        stack.Push(GetFeatureDependenciesFunc(feature, features));
+
+        while (stack.Count > 0)
+        {
+            var next = stack.Pop();
+            foreach (var dependency in next)
+            {
+                if (dependencyIds.Add(dependency.Id))
                 {
-                    yield return featureInfo;
+                    stack.Push(GetFeatureDependenciesFunc(dependency, features));
                 }
             }
         }
 
-        private static IEnumerable<IFeatureInfo> GetDependentFeatures(
-            IFeatureInfo feature,
-            IFeatureInfo[] features)
+        // Preserve the underlying order of feature infos.
+        foreach (var featureInfo in features)
         {
-            var dependencyIds = new HashSet<string> { feature.Id };
-            var stack = new Stack<List<IFeatureInfo>>();
-
-            stack.Push(GetDependentFeaturesFunc(feature, features));
-
-            while (stack.Count > 0)
+            if (dependencyIds.Contains(featureInfo.Id))
             {
-                var next = stack.Pop();
-                foreach (var dependency in next)
+                yield return featureInfo;
+            }
+        }
+    }
+
+    private static IEnumerable<IFeatureInfo> GetDependentFeatures(
+        IFeatureInfo feature,
+        IFeatureInfo[] features)
+    {
+        var dependencyIds = new HashSet<string> { feature.Id };
+        var stack = new Stack<List<IFeatureInfo>>();
+
+        stack.Push(GetDependentFeaturesFunc(feature, features));
+
+        while (stack.Count > 0)
+        {
+            var next = stack.Pop();
+            foreach (var dependency in next)
+            {
+                if (dependencyIds.Add(dependency.Id))
                 {
-                    if (dependencyIds.Add(dependency.Id))
-                    {
-                        stack.Push(GetDependentFeaturesFunc(dependency, features));
-                    }
+                    stack.Push(GetDependentFeaturesFunc(dependency, features));
                 }
             }
+        }
 
-            // Preserve the underlying order of feature infos.
-            foreach (var featureInfo in features)
+        // Preserve the underlying order of feature infos.
+        foreach (var featureInfo in features)
+        {
+            if (dependencyIds.Contains(featureInfo.Id))
             {
-                if (dependencyIds.Contains(featureInfo.Id))
+                yield return featureInfo;
+            }
+        }
+    }
+
+    private static List<IFeatureInfo> GetDependentFeaturesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
+    {
+        var list = new List<IFeatureInfo>();
+        foreach (var f in features)
+        {
+            foreach (var dependencyId in f.Dependencies)
+            {
+                if (dependencyId == currentFeature.Id)
                 {
-                    yield return featureInfo;
+                    list.Add(f);
+                    break;
                 }
             }
         }
 
-        private static List<IFeatureInfo> GetDependentFeaturesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
+        return list;
+    }
+
+    private static List<IFeatureInfo> GetFeatureDependenciesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
+    {
+        var list = new List<IFeatureInfo>();
+        foreach (var f in features)
         {
-            var list = new List<IFeatureInfo>();
-            foreach (var f in features)
+            foreach (var dependencyId in currentFeature.Dependencies)
             {
-                foreach (var dependencyId in f.Dependencies)
+                if (dependencyId == f.Id)
                 {
-                    if (dependencyId == currentFeature.Id)
-                    {
-                        list.Add(f);
-                        break;
-                    }
+                    list.Add(f);
+                    break;
                 }
             }
-
-            return list;
         }
 
-        private static List<IFeatureInfo> GetFeatureDependenciesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
+        return list;
+    }
+
+    private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
+    {
+        return featuresToOrder
+            .OrderBy(x => x.Id)
+            .OrderByDependenciesAndPriorities(
+                (f1, f2) => HasDependency(f1, f2, extensionDependencyStrategies),
+                feature => GetPriority(feature, extensionPriorityStrategies))
+            .ToArray();
+    }
+
+    private static bool HasDependency(IFeatureInfo f1, IFeatureInfo f2, IExtensionDependencyStrategy[] extensionDependencyStrategies)
+    {
+        foreach (var s in extensionDependencyStrategies)
         {
-            var list = new List<IFeatureInfo>();
-            foreach (var f in features)
+            if (s.HasDependency(f1, f2))
             {
-                foreach (var dependencyId in currentFeature.Dependencies)
-                {
-                    if (dependencyId == f.Id)
-                    {
-                        list.Add(f);
-                        break;
-                    }
-                }
+                return true;
             }
-
-            return list;
         }
 
-        private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
+        return false;
+    }
+
+    private static int GetPriority(IFeatureInfo feature, IExtensionPriorityStrategy[] extensionPriorityStrategies)
+    {
+        var sum = 0;
+        foreach (var strategy in extensionPriorityStrategies)
         {
-            return featuresToOrder
-                .OrderBy(x => x.Id)
-                .OrderByDependenciesAndPriorities(
-                    (f1, f2) => HasDependency(f1, f2, extensionDependencyStrategies),
-                    feature => GetPriority(feature, extensionPriorityStrategies))
-                .ToArray();
+            sum += strategy.GetPriority(feature);
         }
 
-        private static bool HasDependency(IFeatureInfo f1, IFeatureInfo f2, IExtensionDependencyStrategy[] extensionDependencyStrategies)
-        {
-            foreach (var s in extensionDependencyStrategies)
-            {
-                if (s.HasDependency(f1, f2))
-                {
-                    return true;
-                }
-            }
+        return sum;
+    }
 
-            return false;
-        }
+    private static string GetSourceFeatureNameForType(Type type, string extensionId)
+    {
+        var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-        private static int GetPriority(IFeatureInfo feature, IExtensionPriorityStrategy[] extensionPriorityStrategies)
-        {
-            var sum = 0;
-            foreach (var strategy in extensionPriorityStrategies)
-            {
-                sum += strategy.GetPriority(feature);
-            }
+        return attribute?.FeatureName ?? extensionId;
+    }
 
-            return sum;
-        }
+    private static bool IsComponentType(Type type)
+    {
+        return type.IsClass && !type.IsAbstract && type.IsPublic;
+    }
 
-        private static string GetSourceFeatureNameForType(Type type, string extensionId)
-        {
-            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-
-            return attribute?.FeatureName ?? extensionId;
-        }
-
-        private static bool IsComponentType(Type type)
-        {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
-        }
-
-        private static bool SkipExtensionFeatureRegistration(Type type)
-        {
-            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
-        }
+    private static bool SkipExtensionFeatureRegistration(Type type)
+    {
+        return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
     }
 }
