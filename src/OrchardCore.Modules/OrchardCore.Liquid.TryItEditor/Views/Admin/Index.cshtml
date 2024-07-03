@@ -1,0 +1,85 @@
+@model OrchardCore.Liquid.TryItEditor.ViewModels.LiquidViewModel
+@using OrchardCore.Liquid.TryItEditor
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<h1>Liquid TryIt Editor</h1>
+<div class="row">
+    <div class="col-12">
+        <div class="form-group">
+            <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
+            <span class="hint">
+                @T["Liquid code."]
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+            </span>
+        </div>
+    </div>
+</div>
+<div class="row mt-2 mb-2">
+    <div class="col-12">
+        <button id="run" type="button" class="btn btn-sm btn-success">
+            @T["Run"]
+        </button>
+    </div>
+</div>
+<div class="row">
+     <div class="col-12 embed-responsive">
+        <iframe id="outputframe" class="p-0 w-100">
+        </iframe>
+    </div>
+</div>
+<script at="Foot" depends-on="jquery">
+    $(function () {
+        var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
+
+        if (textArea == null) {
+            return;
+        }
+
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+        editor.setSize(null, 400);
+
+        editor.on('change', function(cmEditor){
+            cmEditor.save();
+            $(document).trigger('contentpreview:render');
+        });
+
+        $("#run").click(function () {
+            var url = "@Url.Action("Index", "Admin", new { area = @TryItEditorConstants.Features.TryItEditor })";
+            var iframeBody = $("#outputframe").contents().find("body");
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                    liquid: textArea.value
+                },
+                success: function (response) {
+                    //console.log(response);
+                    iframeBody.html(response);
+                },
+                failure: function (response) {
+                    //console.log(response);
+                    iframeBody.html(response);
+                },
+                error: function (response) {
+                    //console.log(response);
+                    iframeBody.html(response);
+                }
+            });
+        });
+    });
+</script>

@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -179,6 +179,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Lucene.Abstractions", "src\OrchardCore\OrchardCore.Search.Lucene.Abstractions\OrchardCore.Search.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Liquid", "src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj", "{F8973BF9-4F56-4A59-9153-72BEDB6AB269}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Liquid.TryItEditor", "src\OrchardCore.Modules\OrchardCore.Liquid.TryItEditor\OrchardCore.Liquid.TryItEditor.csproj", "{29B4970F-2ADC-4291-A2CC-B226AC86ACE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Lucene.Core", "src\OrchardCore\OrchardCore.Search.Lucene.Core\OrchardCore.Search.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
 EndProject
@@ -1383,6 +1385,10 @@ Global
 		{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29B4970F-2ADC-4291-A2CC-B226AC86ACE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29B4970F-2ADC-4291-A2CC-B226AC86ACE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29B4970F-2ADC-4291-A2CC-B226AC86ACE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29B4970F-2ADC-4291-A2CC-B226AC86ACE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

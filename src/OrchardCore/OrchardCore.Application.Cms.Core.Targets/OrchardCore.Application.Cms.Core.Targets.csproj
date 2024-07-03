@@ -77,6 +77,7 @@
     <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Layers\OrchardCore.Layers.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Liquid.TryItEditor\OrchardCore.Liquid.TryItEditor.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Lists\OrchardCore.Lists.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Localization\OrchardCore.Localization.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Markdown\OrchardCore.Markdown.csproj" PrivateAssets="none" />
