@@ -29,7 +29,7 @@ namespace OrchardCore.Environment.Extensions
 
         private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
-        private Dictionary<string, IFeatureInfo> _features;
+        private FrozenDictionary<string, IFeatureInfo> _features;
         private IFeatureInfo[] _featureInfos;
 
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
@@ -105,7 +105,8 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            return Task.FromResult<IEnumerable<IFeatureInfo>>(_features.Values);
+            // Must return the features ordered by dependencies.
+            return Task.FromResult<IEnumerable<IFeatureInfo>>(_featureInfos);
         }
 
         public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
@@ -114,10 +115,11 @@ namespace OrchardCore.Environment.Extensions
 
             var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
 
-            var loadedFeatures = _features.Values
+            // Must return the features ordered by dependencies.
+            var loadedFeatures = _featureInfos
                 .Where(f => features.Contains(f.Id));
 
-            return Task.FromResult<IEnumerable<IFeatureInfo>>(loadedFeatures);
+            return Task.FromResult(loadedFeatures);
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -298,58 +300,38 @@ namespace OrchardCore.Environment.Extensions
                     loadedExtensions.TryAdd(module.Name, entry);
                 });
 
-                var loadedFeatures = new Dictionary<string, IFeatureInfo>();
-
                 // Get all types from all extension and add them to the type feature provider.
-                var allTypesByExtension = loadedExtensions
-                    .SelectMany(extension =>
-                        extension
-                            .Value
-                            .ExportedTypes
-                            .Where(IsComponentType)
-                            .Select(type => new
-                            {
-                                Extension = extension.Value,
-                                Type = type
-                            }));
-
-                var typesByFeature = allTypesByExtension
-                    .GroupBy(typeByExtension => GetSourceFeatureNameForType(
-                        typeByExtension.Type,
-                        typeByExtension.Extension.ExtensionInfo.Id))
-                    .ToDictionary(
-                        group => group.Key,
-                        group => group.Select(typesByExtension => typesByExtension.Type));
-
                 foreach (var loadedExtension in loadedExtensions)
                 {
                     var extension = loadedExtension.Value;
 
-                    foreach (var feature in extension.ExtensionInfo.Features)
+                    foreach (var exportedType in extension.ExportedTypes.Where(IsComponentType))
                     {
-                        // Features can have no types.
-                        if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
+                        if (!SkipExtensionFeatureRegistration(exportedType))
                         {
-                            // This is adding the types to the main feature for backward compatibility.
-                            // In the future we could stop doing it as we don't expect this to be necessary, and remove the FeatureTypeDiscovery attribute.
-                            foreach (var type in featureTypes)
+                            var sourceFeature = GetSourceFeatureNameForType(exportedType, extension.ExtensionInfo.Id);
+
+                            var feature = extension.ExtensionInfo.Features.FirstOrDefault(f => f.Id == sourceFeature);
+
+                            if (feature == null)
                             {
-                                // If the attribute is present then we explicitly ignore the backward compatibility and skip the registration
-                                // in the main feature.
-                                if (!SkipExtensionFeatureRegistration(type))
+                                // Type has no specific feature, add it to all features
+                                foreach (var curFeature in extension.ExtensionInfo.Features)
                                 {
-                                    _typeFeatureProvider.TryAdd(type, feature);
+                                    _typeFeatureProvider.TryAdd(exportedType, curFeature);
                                 }
                             }
+                            else
+                            {
+                                _typeFeatureProvider.TryAdd(exportedType, feature);
+                            }
                         }
-
-                        loadedFeatures.Add(feature.Id, feature);
                     }
                 }
 
                 // Feature infos and entries are ordered by priority and dependencies.
-                _featureInfos = Order(loadedFeatures.Values);
-                _features = _featureInfos.ToDictionary(f => f.Id, f => loadedFeatures[f.Id]);
+                _featureInfos = Order(loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features));
+                _features = _featureInfos.ToFrozenDictionary(f => f.Id, f => f);
 
                 // Extensions are also ordered according to the weight of their first features.
                 _extensionsInfos = _featureInfos
