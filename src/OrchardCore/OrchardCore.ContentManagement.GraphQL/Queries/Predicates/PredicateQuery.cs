@@ -135,7 +135,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.alias
-                    return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(values[0])}";
+                    return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(values.Last())}";
                 }
             }
 

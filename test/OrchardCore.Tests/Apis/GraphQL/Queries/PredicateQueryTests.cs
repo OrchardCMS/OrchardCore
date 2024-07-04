@@ -71,7 +71,7 @@ public class PredicateQueryTests
         var columnName = predicateQuery.GetColumnName("ListItemIndexPath.Value");
 
         // Assert
-        Assert.Equal("[ListItemIndexAlias].[ListItemIndexPath]", columnName);
+        Assert.Equal("[ListItemIndexAlias].[Value]", columnName);
     }
 
     public class ListItemIndex : MapIndex
