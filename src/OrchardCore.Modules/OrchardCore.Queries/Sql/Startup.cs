@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -25,11 +24,6 @@ namespace OrchardCore.Queries.Sql
             services.AddKeyedScoped<IQuerySource>(SqlQuerySource.SourceName, (sp, key) => sp.GetService<SqlQuerySource>());
 
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            // Allows to serialize 'SqlQuery' from its base type.
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.AddJsonDerivedTypeInfo<SqlQuery, Query>();
-#pragma warning restore CS0618 // Type or member is obsolete
             services.AddDataMigration<SqlQueryMigrations>();
         }
     }

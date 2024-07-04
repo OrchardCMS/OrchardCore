@@ -15,22 +15,21 @@ public class QueryMigrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<QueryIndex>(table => table
                .Column<string>("Source", column => column.WithLength(MaxQuerySourceLength))
                .Column<string>("Name", column => column.WithLength(MaxQueryNameLength))
-               );
+            );
 
         await SchemaBuilder.AlterIndexTableAsync<QueryIndex>(table => table
             .CreateIndex("IDX_QueryIndex_DocumentId_Source",
                 "DocumentId",
                 "Source",
-                "Name"
-                )
-        );
+                "Name")
+            );
 
         await SchemaBuilder.AlterIndexTableAsync<QueryIndex>(table => table
             .CreateIndex("IDX_QueryIndex_DocumentId_Name",
                 "DocumentId",
                 "Name"
                 )
-        );
+            );
 
         return 1;
     }

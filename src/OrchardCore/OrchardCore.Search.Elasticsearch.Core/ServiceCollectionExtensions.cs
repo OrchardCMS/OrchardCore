@@ -1,11 +1,9 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Handlers;
-using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -34,11 +32,6 @@ public static class ServiceCollectionExtensions
         services.AddRecipeExecutionStep<ElasticSettingsStep>();
         services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
         services.AddRecipeExecutionStep<ElasticIndexResetStep>();
-
-        // Allows to serialize 'ElasticQuery' from its base type.
-#pragma warning disable CS0618 // Type or member is obsolete
-        var serviceCollection = services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
-#pragma warning restore CS0618 // Type or member is obsolete
 
         return services;
     }

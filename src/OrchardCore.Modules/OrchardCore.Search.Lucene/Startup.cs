@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,11 +61,6 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
             services.AddDataMigration<LuceneQueryMigrations>();
-
-            // Allows to serialize 'LuceneQuery' from its base type.
-#pragma warning disable CS0618 // Type or member is obsolete
-            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
-#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 
