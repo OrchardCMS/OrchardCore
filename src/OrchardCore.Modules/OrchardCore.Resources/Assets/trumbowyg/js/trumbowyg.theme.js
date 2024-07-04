@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
-    function setTheme() {
-        var isDark = getPreferredTheme() == darkThemeName;
+    const setTheme = () => {
+        var isDark = false;
+
+        if (typeof getPreferredTheme === 'function') {
+            isDark = getPreferredTheme() == (darkThemeName || 'dark');
+        } else {
+            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
 
         document
             .querySelectorAll('.trumbowyg')
