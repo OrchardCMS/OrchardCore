@@ -1,11 +1,11 @@
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Queries.Sql.Models;
+using OrchardCore.Queries.Core;
 using YesSql;
 using YesSql.Sql;
 
@@ -50,30 +50,25 @@ public class SqlQueryMigrations : DataMigration
                 return;
             }
 
+            var querySource = scope.ServiceProvider.GetRequiredKeyedService<IQuerySource>(SqlQuerySource.SourceName);
+
+            var queries = new List<Query>();
+
             foreach (var queryObject in queriesObject)
             {
-                if (queryObject.Value["Source"].GetValue<string>() != SqlQuerySource.SourceName)
+                if (queryObject.Value["Source"].GetValue<string>() != querySource.Name)
                 {
                     continue;
                 }
 
-                var query = new Query
-                {
-                    Source = SqlQuerySource.SourceName,
-                    Name = queryObject.Key,
-                    Schema = queryObject.Value["Schema"].GetValue<string>(),
-                    ReturnContentItems = queryObject.Value["ReturnDocuments"].GetValue<bool>()
-                };
+                var query = querySource.Create(queryObject.Value);
 
-                query.Put(new SqlQueryMetadata
-                {
-                    Template = queryObject.Value["Template"].GetValue<string>(),
-                });
-
-                await session.SaveAsync(query);
+                queries.Add(query);
             }
 
-            await session.SaveChangesAsync();
+            var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
+
+            await queryManager.SaveQueryAsync(queries.ToArray());
         });
 
         return 1;

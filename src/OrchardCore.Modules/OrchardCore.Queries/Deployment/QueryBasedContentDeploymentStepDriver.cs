@@ -8,23 +8,22 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Queries.Indexes;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
-        private readonly ISession _session;
+        private readonly IQueryManager _queryManager;
 
         protected readonly IStringLocalizer S;
 
         public QueryBasedContentDeploymentStepDriver(
-            ISession session,
+            IQueryManager queryManager,
             IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
         {
-            _session = session;
+            _queryManager = queryManager;
             S = stringLocalizer;
         }
 
@@ -44,7 +43,7 @@ namespace OrchardCore.Queries.Deployment
                 model.QueryName = step.QueryName;
                 model.QueryParameters = step.QueryParameters;
                 model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-                model.Queries = await _session.Query<Query, QueryIndex>().OrderBy(q => q.Name).ListAsync();
+                model.Queries = await _queryManager.ListAllAsync(true);
             }).Location("Content");
         }
 
@@ -52,7 +51,7 @@ namespace OrchardCore.Queries.Deployment
         {
             var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
             await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe);
-            var query = await _session.Query<Query, QueryIndex>(q => q.Name == queryBasedContentViewModel.QueryName).FirstOrDefaultAsync();
+            var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
             if (!query.ResultsOfType<ContentItem>())
             {

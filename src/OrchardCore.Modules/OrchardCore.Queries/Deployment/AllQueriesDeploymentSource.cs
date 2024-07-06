@@ -4,22 +4,21 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Json;
-using OrchardCore.Queries.Indexes;
-using YesSql;
+using OrchardCore.Queries.Core;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class AllQueriesDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly IQueryManager _queryManager;
 
         public AllQueriesDeploymentSource(
-            ISession session,
+            IQueryManager queryManager,
             IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
-            _session = session;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+            _queryManager = queryManager;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -31,7 +30,7 @@ namespace OrchardCore.Queries.Deployment
                 return;
             }
 
-            var queries = await _session.Query<Query, QueryIndex>().ListAsync();
+            var queries = await _queryManager.ListAllAsync();
 
             result.Steps.Add(new JsonObject
             {

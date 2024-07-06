@@ -3,25 +3,21 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
-using OrchardCore.Queries.Indexes;
-using YesSql;
+using OrchardCore.Queries.Core;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class QueryBasedContentDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IQueryManager _queryManager;
 
         public QueryBasedContentDeploymentSource(
-            ISession session,
+            IQueryManager queryManager,
             IServiceProvider serviceProvider)
         {
-            _session = session;
-            _serviceProvider = serviceProvider;
+            _queryManager = queryManager;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -35,7 +31,7 @@ namespace OrchardCore.Queries.Deployment
 
             var data = new JsonArray();
 
-            var query = await _session.Query<Query, QueryIndex>(q => q.Name == queryDeploymentStep.QueryName).FirstOrDefaultAsync();
+            var query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
 
             if (query == null)
             {
@@ -52,9 +48,7 @@ namespace OrchardCore.Queries.Deployment
                 return;
             }
 
-            var querySource = _serviceProvider.GetRequiredKeyedService<IQuerySource>(query.Source);
-
-            var results = await querySource.ExecuteQueryAsync(query, parameters);
+            var results = await _queryManager.ExecuteQueryAsync(query, parameters);
 
             foreach (var contentItem in results.Items)
             {

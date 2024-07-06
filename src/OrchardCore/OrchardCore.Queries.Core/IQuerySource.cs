@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Queries
@@ -16,7 +17,7 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Creates a query instance.
         /// </summary>
-        Query Create();
+        Query Create(JsonNode data = null);
 
         /// <summary>
         /// Executes a query with a given parameters.

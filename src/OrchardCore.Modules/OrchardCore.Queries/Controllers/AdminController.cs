@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Indexes;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
@@ -33,6 +34,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly INotifier _notifier;
         private readonly IServiceProvider _serviceProvider;
         private readonly ISession _session;
+        private readonly IQueryManager _queryManager;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
@@ -42,6 +44,7 @@ namespace OrchardCore.Queries.Controllers
 
         public AdminController(
             ISession session,
+            IQueryManager queryManager,
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
@@ -53,6 +56,7 @@ namespace OrchardCore.Queries.Controllers
             IUpdateModelAccessor updateModelAccessor)
         {
             _session = session;
+            _queryManager = queryManager;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
@@ -147,7 +151,8 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Create))]
+        [HttpPost]
+        [ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(QueriesCreateViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
@@ -166,9 +171,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await DeleteQueryInternalAsync(query.Name, false);
-                await _session.SaveAsync(query);
-                await _session.SaveChangesAsync();
+                await _queryManager.SaveQueryAsync(query);
 
                 await _notifier.SuccessAsync(H["Query created successfully."]);
 
@@ -188,7 +191,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = await _session.Query<Query, QueryIndex>(x => x.Name == id).FirstOrDefaultAsync();
+            var query = await _queryManager.GetQueryAsync(id);
 
             if (query == null)
             {
@@ -214,7 +217,12 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = await _session.Query<Query, QueryIndex>(x => x.Name == model.Name).FirstOrDefaultAsync();
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return BadRequest();
+            }
+
+            var query = await _queryManager.GetQueryAsync(model.Name);
 
             if (query == null)
             {
@@ -225,8 +233,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await _session.SaveAsync(query);
-                await _session.SaveChangesAsync();
+                await _queryManager.SaveQueryAsync(query);
                 await _notifier.SuccessAsync(H["Query updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
@@ -246,7 +253,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            if (!await DeleteQueryInternalAsync(id, true))
+            if (!await _queryManager.DeleteQueryAsync(id))
             {
                 return NotFound();
             }
@@ -272,14 +279,7 @@ namespace OrchardCore.Queries.Controllers
                     case ContentsBulkAction.None:
                         break;
                     case ContentsBulkAction.Remove:
-                        var checkedContentItems = await _session.Query<Query, QueryIndex>(x => x.Name != null && x.Name.IsIn(itemIds)).ListAsync();
-
-                        foreach (var item in checkedContentItems)
-                        {
-                            _session.Delete(item);
-                        }
-
-                        await _session.SaveChangesAsync();
+                        await _queryManager.DeleteQueryAsync(itemIds.ToArray());
                         await _notifier.SuccessAsync(H["Queries successfully removed."]);
                         break;
                     default:
@@ -288,25 +288,6 @@ namespace OrchardCore.Queries.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<bool> DeleteQueryInternalAsync(string name, bool commit)
-        {
-            var queries = await _session.Query<Query, QueryIndex>(x => x.Name == name).ListAsync();
-
-            var hasQueries = queries.Any();
-
-            foreach (var query in queries)
-            {
-                _session.Delete(query);
-            }
-
-            if (commit && hasQueries)
-            {
-                await _session.SaveChangesAsync();
-            }
-
-            return hasQueries;
         }
     }
 }

@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Indexes;
-using YesSql;
+using OrchardCore.Queries.Core;
 
 #pragma warning disable CA1050 // Declare types in namespaces
 public static class QueryOrchardRazorHelperExtensions
@@ -18,9 +17,9 @@ public static class QueryOrchardRazorHelperExtensions
 
     public static async Task<IEnumerable> QueryAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
     {
-        var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
+        var queryManager = orchardHelper.HttpContext.RequestServices.GetService<IQueryManager>();
 
-        var query = await session.Query<Query, QueryIndex>(q => q.Name == queryName).FirstOrDefaultAsync();
+        var query = await queryManager.GetQueryAsync(queryName);
 
         if (query == null)
         {
@@ -36,9 +35,9 @@ public static class QueryOrchardRazorHelperExtensions
 
     public static async Task<IQueryResults> QueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
     {
-        var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
+        var queryManager = orchardHelper.HttpContext.RequestServices.GetService<IQueryManager>();
 
-        var query = await session.Query<Query, QueryIndex>(q => q.Name == queryName).FirstOrDefaultAsync();
+        var query = await queryManager.GetQueryAsync(queryName);
 
         if (query == null)
         {

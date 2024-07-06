@@ -14,10 +14,9 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Entities;
-using OrchardCore.Queries.Indexes;
+using OrchardCore.Queries.Core;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Search.Lucene.Model;
-using YesSql;
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
@@ -33,13 +32,17 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         }
 
         public Task<string> GetIdentifierAsync()
-            => Task.FromResult(string.Empty);
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+
+            return queryManager.GetIdentifierAsync();
+        }
 
         public async Task BuildAsync(ISchema schema)
         {
-            var session = _httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var queries = await session.Query<Query, QueryIndex>(q => q.Source == LuceneQuerySource.SourceName).ListAsync();
+            var queries = await queryManager.ListBySourceAsync(LuceneQuerySource.SourceName);
 
             foreach (var query in queries)
             {
@@ -159,10 +162,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var session = context.RequestServices.GetRequiredService<YesSql.ISession>();
-                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
 
-                var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
@@ -170,7 +172,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
-                var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }
@@ -202,10 +204,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var session = context.RequestServices.GetRequiredService<YesSql.ISession>();
-                var querySource = context.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
 
-                var iQuery = await session.Query<Query, QueryIndex>(q => q.Name == query.Name).FirstOrDefaultAsync();
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
@@ -213,7 +214,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
-                var result = await querySource.ExecuteQueryAsync(iQuery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }

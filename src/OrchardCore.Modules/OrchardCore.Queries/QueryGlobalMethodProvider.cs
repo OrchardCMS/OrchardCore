@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Queries.Indexes;
+using OrchardCore.Queries.Core;
 using OrchardCore.Scripting;
-using YesSql;
 
 namespace OrchardCore.Queries
 {
@@ -22,8 +21,8 @@ namespace OrchardCore.Queries
                 Name = "executeQuery",
                 Method = serviceProvider => (Func<string, object, object>)((name, parameters) =>
                 {
-                    var session = serviceProvider.GetRequiredService<ISession>();
-                    var query = session.Query<Query, QueryIndex>(q => q.Name == name).FirstOrDefaultAsync().GetAwaiter().GetResult();
+                    var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
+                    var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
 
                     if (query == null)
                     {

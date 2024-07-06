@@ -8,6 +8,8 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
 using OrchardCore.Queries.Indexes;
@@ -17,7 +19,6 @@ using OrchardCore.Queries.Recipes;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
-using YesSql;
 
 namespace OrchardCore.Queries
 {
@@ -41,9 +42,9 @@ namespace OrchardCore.Queries
                 o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
-                    var session = liquidTemplateContext.Services.GetRequiredService<ISession>();
+                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
 
-                    var query = await session.Query<Query, QueryIndex>(q => q.Name == name).FirstOrDefaultAsync();
+                    var query = await queryManager.GetQueryAsync(name);
 
                     return FluidValue.Create(query, context.Options);
                 });
@@ -52,6 +53,9 @@ namespace OrchardCore.Queries
 
             services.AddDataMigration<QueryMigrations>();
             services.AddIndexProvider<QueryIndexProvider>();
+
+            services.AddSingleton<QueryManagerSession>();
+            services.AddScoped<IQueryManager, QueryManager>();
         }
     }
 

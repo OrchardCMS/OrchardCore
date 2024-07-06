@@ -5,24 +5,23 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Queries.Indexes;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Migrations;
 using OrchardCore.Queries.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Queries.Drivers
 {
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
-        private readonly ISession _session;
+        private readonly IQueryManager _queryManager;
 
         protected readonly IStringLocalizer S;
 
         public QueryDisplayDriver(
-            ISession session,
+            IQueryManager queryManager,
             IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
-            _session = session;
+            _queryManager = queryManager;
             S = stringLocalizer;
         }
 
@@ -90,7 +89,7 @@ namespace OrchardCore.Queries.Drivers
             }
             else
             {
-                var existing = await _session.Query<Query, QueryIndex>(q => q.Name == safeName).FirstOrDefaultAsync();
+                var existing = await _queryManager.GetQueryAsync(safeName);
 
                 if (existing != null && existing != model)
                 {

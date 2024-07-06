@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core.Services;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using YesSql;
@@ -51,14 +52,36 @@ namespace OrchardCore.Search.Lucene
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => SourceName;
+        public string Name
+            => SourceName;
 
-        public Query Create()
-            => new()
+        public Query Create(JsonNode data = null)
+        {
+            var query = QuerySourceHelper.CreateQuery(SourceName, true, data);
+
+            if (data != null)
             {
-                Source = SourceName,
-                CanReturnContentItems = true,
-            };
+                var metadata = new LuceneQueryMetadata();
+
+                var template = data[nameof(LuceneQueryMetadata.Template)];
+
+                if (template != null)
+                {
+                    metadata.Template = template.GetValue<string>();
+                }
+
+                var index = data[nameof(LuceneQueryMetadata.Index)];
+
+                if (index != null)
+                {
+                    metadata.Index = index.GetValue<string>();
+                }
+
+                query.Put(metadata);
+            }
+
+            return query;
+        }
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
@@ -81,7 +104,7 @@ namespace OrchardCore.Search.Lucene
                     // We always return an empty collection if the bottom lines queries have no results.
                     luceneQueryResults.Items = [];
 
-                    // Load corresponding content item versions
+                    // Load corresponding content item versions.
                     var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 

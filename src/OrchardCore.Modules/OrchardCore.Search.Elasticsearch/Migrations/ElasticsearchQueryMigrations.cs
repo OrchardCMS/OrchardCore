@@ -1,12 +1,12 @@
+using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Queries.Core;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Sql;
 
@@ -51,31 +51,25 @@ public class ElasticsearchQueryMigrations : DataMigration
                 return;
             }
 
+            var querySource = scope.ServiceProvider.GetRequiredKeyedService<IQuerySource>(ElasticQuerySource.SourceName);
+
+            var queries = new List<Query>();
+
             foreach (var queryObject in queriesObject)
             {
-                if (queryObject.Value["Source"].GetValue<string>() != ElasticQuerySource.SourceName)
+                if (queryObject.Value["Source"].GetValue<string>() != querySource.Name)
                 {
                     continue;
                 }
 
-                var query = new Query
-                {
-                    Source = ElasticQuerySource.SourceName,
-                    Name = queryObject.Key,
-                    Schema = queryObject.Value["Schema"].GetValue<string>(),
-                    ReturnContentItems = queryObject.Value["ReturnContentItems"].GetValue<bool>()
-                };
+                var query = querySource.Create(queryObject.Value);
 
-                query.Put(new ElasticsearchQueryMetadata
-                {
-                    Template = queryObject.Value["Template"].GetValue<string>(),
-                    Index = queryObject.Value["Index"].GetValue<string>(),
-                });
-
-                await session.SaveAsync(query);
+                queries.Add(query);
             }
 
-            await session.SaveChangesAsync();
+            var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
+
+            await queryManager.SaveQueryAsync(queries.ToArray());
         });
 
         return 1;

@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
@@ -41,22 +42,44 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => SourceName;
+        public string Name
+            => SourceName;
 
-        public Query Create()
-            => new()
+        public Query Create(JsonNode data = null)
+        {
+            var query = QuerySourceHelper.CreateQuery(SourceName, true, data);
+
+            if (data != null)
             {
-                Source = SourceName,
-                CanReturnContentItems = true,
-            };
+                var metadata = new ElasticsearchQueryMetadata();
+
+                var template = data[nameof(ElasticsearchQueryMetadata.Template)];
+
+                if (template != null)
+                {
+                    metadata.Template = template.GetValue<string>();
+                }
+
+                var index = data[nameof(ElasticsearchQueryMetadata.Index)];
+
+                if (index != null)
+                {
+                    metadata.Index = index.GetValue<string>();
+                }
+
+                query.Put(metadata);
+            }
+
+            return query;
+        }
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var queryMetadata = query.As<ElasticsearchQueryMetadata>();
             var elasticQueryResults = new ElasticQueryResults();
 
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(queryMetadata.Index, tokenizedContent);
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var docs = await _queryService.SearchAsync(queryMetadata?.Index, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
             if (query.ReturnContentItems)
