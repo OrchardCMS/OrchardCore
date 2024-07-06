@@ -43,7 +43,7 @@ namespace OrchardCore.Queries.Deployment
                 model.QueryName = step.QueryName;
                 model.QueryParameters = step.QueryParameters;
                 model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-                model.Queries = await _queryManager.ListAllAsync(true);
+                model.Queries = await _queryManager.ListQueriesAsync(true);
             }).Location("Content");
         }
 

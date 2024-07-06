@@ -38,7 +38,7 @@ public interface IQueryManager
     /// </summary>
     Task<string> GetIdentifierAsync();
 
-    Task<IEnumerable<Query>> ListAllAsync(bool sorted = false);
+    Task<IEnumerable<Query>> ListQueriesAsync(bool sorted = false);
 
-    Task<IEnumerable<Query>> ListBySourceAsync(string sourceName, bool sorted = false);
+    Task<IEnumerable<Query>> ListQueriesBySourceAsync(string sourceName, bool sorted = false);
 }

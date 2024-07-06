@@ -10,6 +10,7 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Entities;
@@ -19,10 +20,10 @@ using OrchardCore.Queries.Sql.Models;
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
-    /// This implementation of <see cref="Apis.GraphQL.ISchemaBuilder"/> registers
+    /// This implementation of <see cref="ISchemaBuilder"/> registers
     /// all SQL Queries as GraphQL queries.
     /// </summary>
-    public class SqlQueryFieldTypeProvider : Apis.GraphQL.ISchemaBuilder
+    public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
@@ -46,7 +47,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var queries = await queryManager.ListBySourceAsync(SqlQuerySource.SourceName);
+            var queries = await queryManager.ListQueriesBySourceAsync(SqlQuerySource.SourceName);
 
             foreach (var query in queries)
             {
@@ -170,8 +171,8 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
@@ -195,7 +196,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
-
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typeType.ResolvedType,
@@ -211,8 +211,8 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);

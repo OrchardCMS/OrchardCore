@@ -30,7 +30,7 @@ namespace OrchardCore.Queries.Deployment
                 return;
             }
 
-            var queries = await _queryManager.ListAllAsync();
+            var queries = await _queryManager.ListQueriesAsync();
 
             result.Steps.Add(new JsonObject
             {

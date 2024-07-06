@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var queries = await queryManager.ListBySourceAsync(ElasticQuerySource.SourceName);
+            var queries = await queryManager.ListQueriesBySourceAsync(ElasticQuerySource.SourceName);
 
             foreach (var query in queries)
             {
@@ -163,8 +163,8 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
@@ -204,8 +204,8 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                     : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);

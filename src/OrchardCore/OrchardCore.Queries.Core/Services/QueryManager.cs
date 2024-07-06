@@ -67,7 +67,7 @@ public sealed class QueryManager : IQueryManager
         return _session.Query<Query, QueryIndex>(q => q.Name == name).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<Query>> ListAllAsync(bool sorted = false)
+    public async Task<IEnumerable<Query>> ListQueriesAsync(bool sorted = false)
     {
         var query = _session.Query<Query, QueryIndex>();
 
@@ -79,7 +79,7 @@ public sealed class QueryManager : IQueryManager
         return await query.ListAsync();
     }
 
-    public async Task<IEnumerable<Query>> ListBySourceAsync(string source, bool sorted = false)
+    public async Task<IEnumerable<Query>> ListQueriesBySourceAsync(string source, bool sorted = false)
     {
         ArgumentException.ThrowIfNullOrEmpty(source);
 
