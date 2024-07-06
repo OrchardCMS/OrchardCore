@@ -262,14 +262,17 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings New() =>
-            _options != null ? new(_options) : new()
-            {
-                Name = Name,
-                Type = Type,
-                Location = Location,
-                Position = Position
-            };
+        public RequireSettings New()
+        {
+            var settings = _options != null ? new RequireSettings(_options) : new RequireSettings();
+
+            settings.Name = Name;
+            settings.Type = Type;
+            settings.Location = Location;
+            settings.Position = Position;
+
+            return settings;
+        }
 
         public RequireSettings NewAndCombine(RequireSettings other) =>
             New().Combine(other);
