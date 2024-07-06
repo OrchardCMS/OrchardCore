@@ -102,12 +102,12 @@ namespace OrchardCore.Queries.Controllers
                 QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList()
             };
 
-            foreach (var qry in queries)
+            foreach (var iQuery in queries)
             {
                 model.Queries.Add(new QueryEntry
                 {
-                    Query = qry,
-                    Shape = await _displayManager.BuildDisplayAsync(qry, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+                    Query = iQuery,
+                    Shape = await _displayManager.BuildDisplayAsync(iQuery, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
                 });
             }
 
@@ -209,7 +209,8 @@ namespace OrchardCore.Queries.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Edit))]
+        [HttpPost]
+        [ActionName(nameof(Edit))]
         public async Task<IActionResult> EditPost(QueriesEditViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
@@ -263,7 +264,8 @@ namespace OrchardCore.Queries.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName(nameof(Index))]
+        [HttpPost]
+        [ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
