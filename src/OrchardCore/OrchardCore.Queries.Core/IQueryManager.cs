@@ -38,7 +38,18 @@ public interface IQueryManager
     /// </summary>
     Task<string> GetIdentifierAsync();
 
-    Task<IEnumerable<Query>> ListQueriesAsync(bool sorted = false);
+    /// <summary>
+    /// Gets a list of stored <see cref="Query"/> that match the given context.
+    /// <param name="context">The context provides a way to filter the returned dataset.</param>
+    /// </summary>
+    Task<IEnumerable<Query>> ListQueriesAsync(QueryContext context = null);
 
-    Task<IEnumerable<Query>> ListQueriesBySourceAsync(string sourceName, bool sorted = false);
+    /// <summary>
+    /// Gets a paged list of stored <see cref="Query"/> that match the given context.
+    /// </summary>
+    /// <param name="page">The page number to return.</param>
+    /// <param name="pageSize">The page size to return.</param>
+    /// <param name="context">The context provides a way to filter the returned dataset.</param>
+    /// <returns></returns>
+    Task<QueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null);
 }

@@ -16,10 +16,8 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.Core;
-using OrchardCore.Queries.Indexes;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
-using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Queries.Controllers
@@ -33,7 +31,6 @@ namespace OrchardCore.Queries.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ISession _session;
         private readonly IQueryManager _queryManager;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -43,7 +40,6 @@ namespace OrchardCore.Queries.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            ISession session,
             IQueryManager queryManager,
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
@@ -55,7 +51,6 @@ namespace OrchardCore.Queries.Controllers
             IServiceProvider serviceProvider,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _session = session;
             _queryManager = queryManager;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
@@ -77,37 +72,33 @@ namespace OrchardCore.Queries.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var query = _session.Query<Query, QueryIndex>();
-
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
 
             if (!string.IsNullOrEmpty(options.Search))
             {
                 routeData.Values.TryAdd(_optionsSearch, options.Search);
-
-                query = query.Where(x => x.Name != null && x.Name.Contains(options.Search));
             }
 
-            var skip = (pager.Page - 1) * pager.PageSize;
-
-            var count = await query.CountAsync();
-            var queries = await query.Skip(skip).Take(pager.PageSize).ListAsync();
+            var result = await _queryManager.PageQueriesAsync(pager.Page, pager.PageSize, new QueryContext()
+            {
+                Name = options.Search,
+            });
 
             var model = new QueriesIndexViewModel
             {
                 Queries = [],
                 Options = options,
-                Pager = await _shapeFactory.PagerAsync(pager, count, routeData),
+                Pager = await _shapeFactory.PagerAsync(pager, result.Count, routeData),
                 QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList()
             };
 
-            foreach (var iQuery in queries)
+            foreach (var query in result.Records)
             {
                 model.Queries.Add(new QueryEntry
                 {
-                    Query = iQuery,
-                    Shape = await _displayManager.BuildDisplayAsync(iQuery, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+                    Query = query,
+                    Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
                 });
             }
 

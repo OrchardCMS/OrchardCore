@@ -12,5 +12,5 @@
    asp-controller="Admin"
    asp-area="OrchardCore.Search.Elasticsearch"
    asp-route-query="@base64Query"
-   asp-route-indexName="@Model.Query.Index"
+   asp-route-indexName="@metadata.Index"
    class="btn btn-success btn-sm">@T["Run"]</a>
