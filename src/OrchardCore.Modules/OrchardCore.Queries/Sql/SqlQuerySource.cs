@@ -19,7 +19,7 @@ using YesSql;
 
 namespace OrchardCore.Queries.Sql
 {
-    public class SqlQuerySource : IQuerySource
+    public sealed class SqlQuerySource : IQuerySource
     {
         public const string SourceName = "Sql";
 

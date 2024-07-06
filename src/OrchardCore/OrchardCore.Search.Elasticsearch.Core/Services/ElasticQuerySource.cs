@@ -18,7 +18,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
-    public class ElasticQuerySource : IQuerySource
+    public sealed class ElasticQuerySource : IQuerySource
     {
         public const string SourceName = "Elasticsearch";
 

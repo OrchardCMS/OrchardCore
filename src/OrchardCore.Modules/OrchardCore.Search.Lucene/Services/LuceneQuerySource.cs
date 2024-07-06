@@ -19,7 +19,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class LuceneQuerySource : IQuerySource
+    public sealed class LuceneQuerySource : IQuerySource
     {
         public const string SourceName = "Lucene";
 
