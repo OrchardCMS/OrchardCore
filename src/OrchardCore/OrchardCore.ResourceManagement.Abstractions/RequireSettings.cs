@@ -264,7 +264,7 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings New()
         {
-            var settings = _options != null ? new RequireSettings(_options) : new RequireSettings();
+            RequireSettings settings = _options != null ? new(_options) : new();
 
             settings.Name = Name;
             settings.Type = Type;
