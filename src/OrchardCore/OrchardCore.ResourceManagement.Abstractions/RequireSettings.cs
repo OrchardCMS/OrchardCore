@@ -7,6 +7,8 @@ namespace OrchardCore.ResourceManagement
 {
     public class RequireSettings
     {
+        private readonly ResourceManagementOptions _options;
+
         private Dictionary<string, string> _attributes;
 
         public string BasePath { get; set; }
@@ -36,6 +38,8 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings(ResourceManagementOptions options)
         {
+            _options = options;
+
             CdnMode = options.UseCdn;
             DebugMode = options.DebugMode;
             Culture = options.Culture;
@@ -258,8 +262,8 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings New(ResourceManagementOptions options) =>
-            new(options)
+        public RequireSettings New() =>
+            _options != null ? new(_options) : new()
             {
                 Name = Name,
                 Type = Type,
@@ -267,8 +271,8 @@ namespace OrchardCore.ResourceManagement
                 Position = Position
             };
 
-        public RequireSettings NewAndCombine(ResourceManagementOptions options, RequireSettings other) =>
-            New(options).Combine(other);
+        public RequireSettings NewAndCombine(RequireSettings other) =>
+            New().Combine(other);
 
         public RequireSettings Combine(RequireSettings other)
         {
