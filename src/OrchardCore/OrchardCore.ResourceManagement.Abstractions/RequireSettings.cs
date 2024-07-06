@@ -258,8 +258,8 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings New() =>
-            new()
+        public RequireSettings New(ResourceManagementOptions options) =>
+            new(options)
             {
                 Name = Name,
                 Type = Type,
@@ -267,8 +267,8 @@ namespace OrchardCore.ResourceManagement
                 Position = Position
             };
 
-        public RequireSettings NewAndCombine(RequireSettings other) =>
-            New().Combine(other);
+        public RequireSettings NewAndCombine(ResourceManagementOptions options, RequireSettings other) =>
+            New(options).Combine(other);
 
         public RequireSettings Combine(RequireSettings other)
         {
