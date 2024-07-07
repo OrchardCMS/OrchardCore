@@ -61,21 +61,11 @@ namespace OrchardCore.Search.Lucene
 
             if (data != null)
             {
-                var metadata = new LuceneQueryMetadata();
-
-                var template = data[nameof(LuceneQueryMetadata.Template)];
-
-                if (template != null)
+                var metadata = new LuceneQueryMetadata
                 {
-                    metadata.Template = template.GetValue<string>();
-                }
-
-                var index = data[nameof(LuceneQueryMetadata.Index)];
-
-                if (index != null)
-                {
-                    metadata.Index = index.GetValue<string>();
-                }
+                    Template = data[nameof(LuceneQueryMetadata.Template)]?.GetValue<string>(),
+                    Index = data[nameof(LuceneQueryMetadata.Index)]?.GetValue<string>()
+                };
 
                 query.Put(metadata);
             }

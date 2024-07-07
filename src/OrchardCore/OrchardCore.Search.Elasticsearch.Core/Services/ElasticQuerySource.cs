@@ -51,21 +51,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             if (data != null)
             {
-                var metadata = new ElasticsearchQueryMetadata();
-
-                var template = data[nameof(ElasticsearchQueryMetadata.Template)];
-
-                if (template != null)
+                var metadata = new ElasticsearchQueryMetadata
                 {
-                    metadata.Template = template.GetValue<string>();
-                }
-
-                var index = data[nameof(ElasticsearchQueryMetadata.Index)];
-
-                if (index != null)
-                {
-                    metadata.Index = index.GetValue<string>();
-                }
+                    Template = data[nameof(ElasticsearchQueryMetadata.Template)]?.GetValue<string>(),
+                    Index = data[nameof(ElasticsearchQueryMetadata.Index)]?.GetValue<string>()
+                };
 
                 query.Put(metadata);
             }

@@ -52,14 +52,10 @@ namespace OrchardCore.Queries.Sql
 
             if (data != null)
             {
-                var metadata = new SqlQueryMetadata();
-
-                var template = data[nameof(SqlQueryMetadata.Template)];
-
-                if (template != null)
+                var metadata = new SqlQueryMetadata
                 {
-                    metadata.Template = template.GetValue<string>();
-                }
+                    Template = data[nameof(SqlQueryMetadata.Template)]?.GetValue<string>()
+                };
 
                 query.Put(metadata);
             }

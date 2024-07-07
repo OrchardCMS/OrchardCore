@@ -21,18 +21,8 @@ public static class QuerySourceHelper
 
         if (data != null)
         {
-            var name = data[nameof(Query.Name)];
-
-            if (name != null)
-            {
-                query.Name = name.GetValue<string>();
-            }
-            var schema = data[nameof(Query.Schema)];
-
-            if (schema != null)
-            {
-                query.Schema = schema.GetValue<string>();
-            }
+            query.Name = data[nameof(Query.Name)]?.GetValue<string>();
+            query.Schema = data[nameof(Query.Schema)]?.GetValue<string>();
 
             // For backward compatibility, we use the key 'ReturnDocuments'.
             var returnDocuments = data["ReturnDocuments"];
