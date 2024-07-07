@@ -64,7 +64,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                    var queryMetadata = query.As<ElasticsearchQueryMetadata>();
+                    var metadata = query.As<ElasticsearchQueryMetadata>();
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {

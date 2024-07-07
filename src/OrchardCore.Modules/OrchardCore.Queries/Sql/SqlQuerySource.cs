@@ -65,11 +65,11 @@ namespace OrchardCore.Queries.Sql
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var sqlQueryMetadata = query.As<SqlQueryMetadata>();
+            var metadata = query.As<SqlQueryMetadata>();
 
             var sqlQueryResults = new SQLQueryResults();
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQueryMetadata.Template, NullEncoder.Default,
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             var dialect = _session.Store.Configuration.SqlDialect;
@@ -104,8 +104,7 @@ namespace OrchardCore.Queries.Sql
                         }
                         else
                         {
-                            column = rowDictionary
-                                .FirstOrDefault(kv => kv.Value is long).Key
+                            column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
                                 ?? rowDictionary.First().Key;
                         }
                     }
@@ -121,10 +120,8 @@ namespace OrchardCore.Queries.Sql
             }
             else
             {
-                IEnumerable<dynamic> queryResults;
-
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
-                queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+                var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
                 var results = new List<JsonObject>();
                 foreach (var document in queryResults)
@@ -133,6 +130,7 @@ namespace OrchardCore.Queries.Sql
                 }
 
                 sqlQueryResults.Items = results;
+
                 return sqlQueryResults;
             }
         }

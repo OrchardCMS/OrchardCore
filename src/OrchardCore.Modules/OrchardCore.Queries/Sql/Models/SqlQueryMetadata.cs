@@ -1,6 +1,6 @@
 namespace OrchardCore.Queries.Sql.Models;
 
-public class SqlQueryMetadata
+public sealed class SqlQueryMetadata
 {
     public string Template { get; set; }
 }

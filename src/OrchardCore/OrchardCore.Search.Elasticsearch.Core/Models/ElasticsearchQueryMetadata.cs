@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.Elasticsearch.Models;
 
-public class ElasticsearchQueryMetadata
+public sealed class ElasticsearchQueryMetadata
 {
     public string Index { get; set; }
 

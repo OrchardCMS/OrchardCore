@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Queries.Core;
 
-public class QueryResult
+public sealed class QueryResult
 {
     public IEnumerable<Query> Records { get; set; }
 

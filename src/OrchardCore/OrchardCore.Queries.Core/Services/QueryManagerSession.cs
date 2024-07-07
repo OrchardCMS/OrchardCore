@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Queries.Core.Services;
 
-public class QueryManagerSession
+public sealed class QueryManagerSession
 {
     private readonly string _sessionKey;
 

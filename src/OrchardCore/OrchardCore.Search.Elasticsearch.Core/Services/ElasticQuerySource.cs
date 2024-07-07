@@ -65,11 +65,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var queryMetadata = query.As<ElasticsearchQueryMetadata>();
+            var metadata = query.As<ElasticsearchQueryMetadata>();
             var elasticQueryResults = new ElasticQueryResults();
 
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(queryMetadata?.Index, tokenizedContent);
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var docs = await _queryService.SearchAsync(metadata?.Index, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
             if (query.ReturnContentItems)
@@ -77,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 // We always return an empty collection if the bottom lines queries have no results.
                 elasticQueryResults.Items = [];
 
-                // Load corresponding content item versions
+                // Load corresponding content item versions.
                 var topDocs = docs.TopDocs.Where(x => x != null).ToList();
 
                 if (topDocs.Count > 0)
@@ -85,7 +85,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                    // Reorder the result to preserve the one from the Elasticsearch query
+                    // Reorder the result to preserve the one from the Elasticsearch query.
                     if (dbContentItems.Any())
                     {
                         var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);

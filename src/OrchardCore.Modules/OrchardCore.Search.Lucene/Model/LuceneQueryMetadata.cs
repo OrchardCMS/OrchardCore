@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.Lucene.Model;
 
-public class LuceneQueryMetadata
+public sealed class LuceneQueryMetadata
 {
     public string Index { get; set; }
 

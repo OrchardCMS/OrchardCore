@@ -17,8 +17,8 @@ namespace OrchardCore.Queries.Deployment
             IQueryManager queryManager,
             IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         {
-            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _queryManager = queryManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

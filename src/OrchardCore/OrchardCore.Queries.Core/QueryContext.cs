@@ -1,6 +1,6 @@
-﻿namespace OrchardCore.Queries.Core;
+namespace OrchardCore.Queries.Core;
 
-public class QueryContext
+public sealed class QueryContext
 {
     public string Source { get; set; }
 

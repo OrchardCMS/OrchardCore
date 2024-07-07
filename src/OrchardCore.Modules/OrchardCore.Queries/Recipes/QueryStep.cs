@@ -51,7 +51,7 @@ namespace OrchardCore.Queries.Recipes
 
                 if (string.IsNullOrEmpty(name))
                 {
-                    _logger.LogError("Could not find query name value. The query will not be imported.");
+                    _logger.LogError("Query name is missing or empty. The query will not be imported.");
 
                     continue;
                 }

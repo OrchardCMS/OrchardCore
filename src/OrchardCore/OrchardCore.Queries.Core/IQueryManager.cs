@@ -36,11 +36,13 @@ public interface IQueryManager
     /// <summary>
     /// Returns an unique identifier that is updated when queries have changed.
     /// </summary>
+    /// <returns>A unique string identifier represent all the queries.</returns>
     Task<string> GetIdentifierAsync();
 
     /// <summary>
     /// Gets a list of stored <see cref="Query"/> that match the given context.
     /// <param name="context">The context provides a way to filter the returned dataset.</param>
+    /// <returns>IEnumerable of <see cref="Query"/> type.</returns>
     /// </summary>
     Task<IEnumerable<Query>> ListQueriesAsync(QueryContext context = null);
 
@@ -50,6 +52,6 @@ public interface IQueryManager
     /// <param name="page">The page number to return.</param>
     /// <param name="pageSize">The page size to return.</param>
     /// <param name="context">The context provides a way to filter the returned dataset.</param>
-    /// <returns></returns>
+    /// <returns>An instance of <see cref="QueryResult"/>.</returns>
     Task<QueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null);
 }

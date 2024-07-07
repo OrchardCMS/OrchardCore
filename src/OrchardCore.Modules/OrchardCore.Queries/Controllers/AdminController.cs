@@ -40,7 +40,7 @@ namespace OrchardCore.Queries.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IQueryManager queryManager,
+
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
@@ -48,13 +48,14 @@ namespace OrchardCore.Queries.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
+            IQueryManager queryManager,
             IServiceProvider serviceProvider,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _queryManager = queryManager;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
+            _queryManager = queryManager;
             _serviceProvider = serviceProvider;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;

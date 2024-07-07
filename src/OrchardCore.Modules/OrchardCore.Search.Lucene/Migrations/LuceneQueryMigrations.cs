@@ -4,7 +4,7 @@ using OrchardCore.Search.Lucene;
 
 namespace OrchardCore.Queries.Sql.Migrations;
 
-public class LuceneQueryMigrations : DataMigration
+public sealed class LuceneQueryMigrations : DataMigration
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
     public int Create()

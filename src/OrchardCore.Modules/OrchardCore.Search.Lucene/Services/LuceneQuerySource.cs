@@ -76,15 +76,15 @@ namespace OrchardCore.Search.Lucene
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var luceneQueryResults = new LuceneQueryResults();
-            var queryMetadata = query.As<LuceneQueryMetadata>();
+            var metadata = query.As<LuceneQueryMetadata>();
 
-            await _luceneIndexManager.SearchAsync(queryMetadata.Index, async searcher =>
+            await _luceneIndexManager.SearchAsync(metadata.Index, async searcher =>
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(queryMetadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
                 var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
 
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(queryMetadata.Index));
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(metadata.Index));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
                 luceneQueryResults.Count = docs.Count;
@@ -109,6 +109,7 @@ namespace OrchardCore.Search.Lucene
                 else
                 {
                     var results = new List<JsonObject>();
+
                     foreach (var document in docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
                     {
                         results.Add(new JsonObject(document.Select(x =>

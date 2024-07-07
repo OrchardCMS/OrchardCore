@@ -52,6 +52,8 @@ public sealed class QueryManager : IQueryManager
 
     public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
+        ArgumentNullException.ThrowIfNull(query);
+
         var source = _serviceProvider.GetRequiredKeyedService<IQuerySource>(query.Source);
 
         return source.ExecuteQueryAsync(query, parameters);
@@ -91,9 +93,7 @@ public sealed class QueryManager : IQueryManager
 
     public async Task SaveQueryAsync(params Query[] queries)
     {
-        ArgumentNullException.ThrowIfNull(queries);
-
-        if (queries.Length == 0)
+        if (queries?.Length == 0)
         {
             return;
         }

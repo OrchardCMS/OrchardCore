@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                    var queryMetadata = query.As<LuceneQueryMetadata>();
+                    var metadata = query.As<LuceneQueryMetadata>();
 
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))

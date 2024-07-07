@@ -7,8 +7,7 @@
     <Description>
       $(OCCMSDescription)
 
-      Creates Elasticsearch Search indexes to support search scenarios, introduces a preconfigured container-enabled content type.
-    </Description>
+      Creates Elasticsearch Search indexes to support search scenarios, introduces a preconfigured container-enabled content type.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
