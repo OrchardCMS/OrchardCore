@@ -266,6 +266,7 @@ namespace OrchardCore.ResourceManagement
             RequireSettings settings = _options != null
                 ? new(_options)
                 : new();
+
             settings.Name = Name;
             settings.Type = Type;
             settings.Location = Location;
