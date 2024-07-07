@@ -5,7 +5,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Migrations;
 using OrchardCore.Queries.ViewModels;
 

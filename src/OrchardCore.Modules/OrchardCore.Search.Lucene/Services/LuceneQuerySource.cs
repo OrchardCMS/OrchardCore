@@ -11,7 +11,7 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Core.Services;
+using OrchardCore.Queries.Core;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using YesSql;

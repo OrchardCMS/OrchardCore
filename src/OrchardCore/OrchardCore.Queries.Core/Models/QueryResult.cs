@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.Queries.Core;
+namespace OrchardCore.Queries;
 
 public sealed class QueryResult
 {

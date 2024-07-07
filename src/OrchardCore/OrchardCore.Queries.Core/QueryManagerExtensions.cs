@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Queries.Core;
+namespace OrchardCore.Queries;
 
 public static class QueryManagerExtensions
 {

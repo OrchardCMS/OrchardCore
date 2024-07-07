@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Queries.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries;

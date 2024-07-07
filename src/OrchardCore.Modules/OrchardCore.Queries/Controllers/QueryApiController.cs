@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Queries.Core;
 
 namespace OrchardCore.Queries.Controllers
 {
     [Route("api/queries")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [Authorize(AuthenticationSchemes = "Api")]
+    [IgnoreAntiforgeryToken]
+    [AllowAnonymous]
     public class QueryApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;

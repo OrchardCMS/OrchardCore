@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Json;
-using OrchardCore.Queries.Core;
 
 namespace OrchardCore.Queries.Deployment
 {
     public class AllQueriesDeploymentSource : IDeploymentSource
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IQueryManager _queryManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public AllQueriesDeploymentSource(
             IQueryManager queryManager,

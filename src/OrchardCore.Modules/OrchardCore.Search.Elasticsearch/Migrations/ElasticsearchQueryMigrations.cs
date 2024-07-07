@@ -1,5 +1,5 @@
 using OrchardCore.Data.Migration;
-using OrchardCore.Queries.Core.Services;
+using OrchardCore.Queries.Core;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Queries.Sql.Migrations;

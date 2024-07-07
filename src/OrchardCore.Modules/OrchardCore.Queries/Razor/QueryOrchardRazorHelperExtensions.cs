@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Core;
 
 #pragma warning disable CA1050 // Declare types in namespaces
 public static class QueryOrchardRazorHelperExtensions

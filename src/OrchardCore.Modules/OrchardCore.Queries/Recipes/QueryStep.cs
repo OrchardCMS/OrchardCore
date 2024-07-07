@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
-using OrchardCore.Queries.Core;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 

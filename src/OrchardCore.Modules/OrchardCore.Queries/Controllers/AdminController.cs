@@ -15,7 +15,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
-using OrchardCore.Queries.Core;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
 using YesSql.Services;

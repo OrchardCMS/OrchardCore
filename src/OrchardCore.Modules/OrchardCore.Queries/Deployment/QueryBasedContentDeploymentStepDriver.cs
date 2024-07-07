@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Queries.Core;
 using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Deployment

@@ -4,7 +4,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
-using OrchardCore.Queries.Core;
 
 namespace OrchardCore.Queries.Deployment
 {

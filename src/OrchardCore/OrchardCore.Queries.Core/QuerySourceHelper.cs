@@ -7,7 +7,7 @@ using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 using YesSql.Sql;
 
-namespace OrchardCore.Queries.Core.Services;
+namespace OrchardCore.Queries.Core;
 
 public static class QuerySourceHelper
 {

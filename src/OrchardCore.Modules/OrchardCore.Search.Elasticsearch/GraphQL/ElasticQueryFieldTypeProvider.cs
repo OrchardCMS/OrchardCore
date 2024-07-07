@@ -15,7 +15,6 @@ using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Core;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 

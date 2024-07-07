@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Core;
+namespace OrchardCore.Queries;
 
 public sealed class QueryContext
 {

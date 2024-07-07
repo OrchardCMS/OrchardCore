@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;

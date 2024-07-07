@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Queries.Core;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Queries

@@ -13,7 +13,7 @@ using OrchardCore.Data;
 using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
-using OrchardCore.Queries.Core.Services;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Models;
 using YesSql;
 
