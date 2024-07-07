@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -13,9 +12,7 @@ namespace OrchardCore.Queries.Deployment
     {
         private readonly IQueryManager _queryManager;
 
-        public QueryBasedContentDeploymentSource(
-            IQueryManager queryManager,
-            IServiceProvider serviceProvider)
+        public QueryBasedContentDeploymentSource(IQueryManager queryManager)
         {
             _queryManager = queryManager;
         }
