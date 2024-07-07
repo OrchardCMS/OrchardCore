@@ -47,15 +47,15 @@ namespace OrchardCore.Search.Lucene.Drivers
 
             return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
             {
-                var queryMetadata = query.As<LuceneQueryMetadata>();
+                var metadata = query.As<LuceneQueryMetadata>();
 
-                model.Query = queryMetadata.Template;
-                model.Index = queryMetadata.Index;
+                model.Query = metadata.Template;
+                model.Index = metadata.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
-                // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(queryMetadata.Template))
+                // Extract query from the query string if we come from the main query editor.
+                if (string.IsNullOrEmpty(metadata.Template))
                 {
                     await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }

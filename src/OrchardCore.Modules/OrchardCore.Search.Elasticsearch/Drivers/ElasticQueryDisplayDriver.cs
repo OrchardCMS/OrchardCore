@@ -16,6 +16,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     public class ElasticQueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+
         protected readonly IStringLocalizer S;
 
         public ElasticQueryDisplayDriver(
@@ -48,15 +49,15 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
             return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
             {
-                var queryMetadata = query.As<ElasticsearchQueryMetadata>();
+                var metadata = query.As<ElasticsearchQueryMetadata>();
 
-                model.Query = queryMetadata.Template;
-                model.Index = queryMetadata.Index;
+                model.Query = metadata.Template;
+                model.Index = metadata.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
-                // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(queryMetadata.Template))
+                // Extract query from the query string if we come from the main query editor.
+                if (string.IsNullOrEmpty(metadata.Template))
                 {
                     await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }

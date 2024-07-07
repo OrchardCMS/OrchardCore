@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var type = querySchema["type"].ToString();
                     FieldType fieldType;
 
-                    var sqlQueryMetadata = query.As<SqlQueryMetadata>();
+                    var metadata = query.As<SqlQueryMetadata>();
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
