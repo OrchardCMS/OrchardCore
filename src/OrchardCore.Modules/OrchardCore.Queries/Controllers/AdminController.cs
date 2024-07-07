@@ -39,7 +39,6 @@ namespace OrchardCore.Queries.Controllers
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
-
             IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,

@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.ViewModels;
@@ -74,12 +75,12 @@ namespace OrchardCore.Search.Lucene.Drivers
 
             if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(nameof(viewModel.Query), S["The query field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Index))
             {
-                updater.ModelState.AddModelError(nameof(viewModel.Index), S["The index field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Index), S["The index field is required"]);
             }
 
             query.ReturnContentItems = viewModel.ReturnContentItems;

@@ -5,7 +5,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Queries.Migrations;
 
-public class QueryMigrations : DataMigration
+public sealed class QueryMigrations : DataMigration
 {
     public const int MaxQuerySourceLength = 100;
     public const int MaxQueryNameLength = 200;

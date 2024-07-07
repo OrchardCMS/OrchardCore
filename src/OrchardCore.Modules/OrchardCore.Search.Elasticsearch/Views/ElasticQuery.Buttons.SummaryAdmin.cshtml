@@ -2,7 +2,6 @@
 @using OrchardCore.Search.Elasticsearch.Models
 @using OrchardCore.Entities
 @{
-
     var query = Model.Query as Query;
     var metadata = query.As<ElasticsearchQueryMetadata>();
     var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template ?? string.Empty));
