@@ -39,7 +39,6 @@ namespace OrchardCore.ResourceManagement
         public RequireSettings(ResourceManagementOptions options)
         {
             _options = options;
-
             CdnMode = options.UseCdn;
             DebugMode = options.DebugMode;
             Culture = options.Culture;
@@ -264,8 +263,9 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings New()
         {
-            RequireSettings settings = _options != null ? new(_options) : new();
-
+            RequireSettings settings = _options != null
+                ? new(_options)
+                : new();
             settings.Name = Name;
             settings.Type = Type;
             settings.Location = Location;
