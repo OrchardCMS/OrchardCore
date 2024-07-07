@@ -74,7 +74,7 @@ namespace OrchardCore.Queries.Drivers
             }
             else if (model.Name.Length > QueryMigrations.MaxQueryNameLength)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name must be less than or equals {0} characters in length.", QueryMigrations.MaxQueryNameLength]);
+                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name must be less than or equal to {0} characters in length.", QueryMigrations.MaxQueryNameLength]);
             }
 
             if (!string.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
