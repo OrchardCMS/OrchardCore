@@ -23,7 +23,8 @@ namespace OrchardCore.Tests.Apis.Context
                     "OrchardCore.Tenants"
                 )
                 .AddTenantFeatures(
-                    "OrchardCore.Apis.GraphQL"
+                    "OrchardCore.Apis.GraphQL",
+                    "OrchardCore.Demo"
                 )
                 .ConfigureServices(collection =>
                 {

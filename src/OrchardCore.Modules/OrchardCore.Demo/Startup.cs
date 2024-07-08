@@ -82,7 +82,6 @@ namespace OrchardCore.Demo
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<TestLocalizationService>();
             services.AddScoped<ITestDependency, ClassFoo>();
             services.AddScoped<ICommandHandler, DemoCommands>();
             services.AddSingleton<IBackgroundTask, TestBackgroundTask>();

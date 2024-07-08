@@ -1,4 +1,4 @@
 
-msgctxt "OrchardCore.Demo.Services"
-msgid "This is an internationalisation rule test."
-msgstr "这是一项国际化规则测试。"
+msgctxt "OrchardCore.Demo.ContentApiController"
+msgid "Hello!"
+msgstr "你好！"
