@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Indexes;
 using YesSql;
@@ -14,24 +16,28 @@ namespace OrchardCore.Queries.Core.Services;
 
 public sealed class DefaultQueryManager : IQueryManager
 {
+    private readonly string _sessionKey;
     private readonly ISession _session;
-    private readonly DefaultQueryManagerSession _queryManagerSession;
     private readonly IEnumerable<IQueryHandler> _queryHandlers;
     private readonly ILogger<DefaultQueryManager> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDistributedCache _distributedCache;
 
     public DefaultQueryManager(
         ISession session,
         DefaultQueryManagerSession queryManagerSession,
         IEnumerable<IQueryHandler> queryHandlers,
         ILogger<DefaultQueryManager> logger,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IDistributedCache distributedCache,
+        ShellSettings shellSettings)
     {
         _session = session;
-        _queryManagerSession = queryManagerSession;
         _queryHandlers = queryHandlers;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _distributedCache = distributedCache;
+        _sessionKey = $"{shellSettings.Name}__{nameof(DefaultQueryManager)}";
     }
 
     public async Task<bool> DeleteQueryAsync(params string[] names)
@@ -51,7 +57,7 @@ public sealed class DefaultQueryManager : IQueryManager
         if (queries.Any())
         {
             await _session.SaveChangesAsync();
-            await _queryManagerSession.GenerateKeyAsync();
+            await GenerateNewCacheKeyAsync();
 
             foreach (var query in queries)
             {
@@ -74,8 +80,12 @@ public sealed class DefaultQueryManager : IQueryManager
         return source.ExecuteQueryAsync(query, parameters);
     }
 
-    public Task<string> GetIdentifierAsync()
-        => _queryManagerSession.GetKeyAsync();
+    public async Task<string> GetIdentifierAsync()
+    {
+        var value = await _distributedCache.GetStringAsync(_sessionKey);
+
+        return value ?? await GenerateNewCacheKeyAsync();
+    }
 
     public async Task<Query> GetQueryAsync(string name)
     {
@@ -189,7 +199,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
         await _session.SaveAsync(query);
         await _session.SaveChangesAsync();
-        await _queryManagerSession.GenerateKeyAsync();
+        await GenerateNewCacheKeyAsync();
 
         var updatedContext = new UpdatedQueryContext(query);
         await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updatedContext, _logger);
@@ -208,7 +218,7 @@ public sealed class DefaultQueryManager : IQueryManager
         }
 
         await _session.SaveChangesAsync();
-        await _queryManagerSession.GenerateKeyAsync();
+        await GenerateNewCacheKeyAsync();
     }
 
     private IQuery<Query, QueryIndex> GetQuery(QueryContext context)
@@ -263,5 +273,14 @@ public sealed class DefaultQueryManager : IQueryManager
         {
             query.ReturnContentItems = returnContentItems.GetValue<bool>();
         }
+    }
+
+    private async Task<string> GenerateNewCacheKeyAsync()
+    {
+        var value = IdGenerator.GenerateId();
+
+        await _distributedCache.SetStringAsync(_sessionKey, value);
+
+        return value;
     }
 }
