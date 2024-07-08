@@ -14,7 +14,8 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Indexing",
-        "OrchardCore.ContentTypes"
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Queries.Core"
     ],
     Category = "Search"
 )]

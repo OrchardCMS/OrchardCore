@@ -125,7 +125,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = _serviceProvider.GetKeyedService<IQuerySource>(id)?.Create();
+            var query = await _queryManager.NewAsync(id);
 
             if (query == null)
             {
@@ -150,7 +150,7 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            var query = _serviceProvider.GetKeyedService<IQuerySource>(model.SourceName)?.Create();
+            var query = await _queryManager.NewAsync(model.SourceName);
 
             if (query == null)
             {
@@ -161,7 +161,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveAsync(query);
 
                 await _notifier.SuccessAsync(H["Query created successfully."]);
 
@@ -224,7 +224,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
-                await _queryManager.SaveQueryAsync(query);
+                await _queryManager.UpdateAsync(query);
                 await _notifier.SuccessAsync(H["Query updated successfully."]);
 
                 return RedirectToAction(nameof(Index));

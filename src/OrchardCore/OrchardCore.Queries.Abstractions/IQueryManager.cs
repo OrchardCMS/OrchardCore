@@ -1,15 +1,14 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Queries;
 
 public interface IQueryManager
 {
-    /// <summary>
-    /// Saves the specific <see cref="Query"/>.
-    /// </summary>
-    /// <param name="queries">The <see cref="Query"/> instance to save.</param>
-    Task SaveQueryAsync(params Query[] queries);
+    Task<Query> NewAsync(string source, JsonNode data = null);
+
+    Task UpdateAsync(Query query, JsonNode data = null);
 
     /// <summary>
     /// Deletes the specified <see cref="Query"/>.
@@ -52,6 +51,7 @@ public interface IQueryManager
     /// <param name="page">The page number to return.</param>
     /// <param name="pageSize">The page size to return.</param>
     /// <param name="context">The context provides a way to filter the returned dataset.</param>
-    /// <returns>An instance of <see cref="QueryResult"/>.</returns>
-    Task<QueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null);
+    /// <returns>An instance of <see cref="ListQueryResult"/>.</returns>
+    Task<ListQueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null);
+    Task SaveAsync(params Query[] queries);
 }

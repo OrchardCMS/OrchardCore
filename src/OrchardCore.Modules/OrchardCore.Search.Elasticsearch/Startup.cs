@@ -16,6 +16,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
@@ -97,6 +98,7 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
             services.AddDataMigration<ElasticsearchQueryMigrations>();
+            services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
         }
     }
 

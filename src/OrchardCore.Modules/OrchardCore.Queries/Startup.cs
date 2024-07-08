@@ -30,8 +30,16 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
-            services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
+        }
+    }
+
+    [Feature("OrchardCore.Queries.Core")]
+    public sealed class CoreStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRecipeExecutionStep<QueryStep>();
             services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
@@ -53,8 +61,8 @@ namespace OrchardCore.Queries
             services.AddDataMigration<QueryMigrations>();
             services.AddIndexProvider<QueryIndexProvider>();
 
-            services.AddSingleton<QueryManagerSession>();
-            services.AddScoped<IQueryManager, QueryManager>();
+            services.AddSingleton<DefaultQueryManagerSession>();
+            services.AddScoped<IQueryManager, DefaultQueryManager>();
         }
     }
 

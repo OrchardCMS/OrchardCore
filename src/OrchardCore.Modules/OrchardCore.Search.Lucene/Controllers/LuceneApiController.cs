@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
@@ -12,21 +11,20 @@ namespace OrchardCore.Search.Lucene.Controllers
 {
     [Route("api/lucene")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [Authorize(AuthenticationSchemes = "Api")]
+    [IgnoreAntiforgeryToken]
+    [AllowAnonymous]
     public class LuceneApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IQuerySource _querySource;
-        private readonly LuceneQuerySource _luceneQuerySource;
+        private readonly IQueryManager _queryManager;
 
         public LuceneApiController(
             IAuthorizationService authorizationService,
-            [FromKeyedServices(LuceneQuerySource.SourceName)] IQuerySource querySource,
-            LuceneQuerySource luceneQuerySource)
+            IQueryManager queryManager)
         {
             _authorizationService = authorizationService;
-            _querySource = querySource;
-            _luceneQuerySource = luceneQuerySource;
+            _queryManager = queryManager;
         }
 
         [HttpGet]
@@ -85,9 +83,9 @@ namespace OrchardCore.Search.Lucene.Controllers
             return new ObjectResult(result);
         }
 
-        private Task<IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
+        private async Task<IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
         {
-            var luceneQuery = _querySource.Create();
+            var luceneQuery = await _queryManager.NewAsync(LuceneQuerySource.SourceName);
             luceneQuery.ReturnContentItems = returnContentItems;
 
             luceneQuery.Put(new LuceneQueryMetadata()
@@ -96,11 +94,11 @@ namespace OrchardCore.Search.Lucene.Controllers
                 Template = queryModel.Query,
             });
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            var queryParameters = queryModel.Parameters != null
+                ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
-            return _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            return await _queryManager.ExecuteQueryAsync(luceneQuery, queryParameters);
         }
     }
 }

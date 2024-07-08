@@ -3,6 +3,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Drivers;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Security.Permissions;
@@ -25,6 +26,7 @@ namespace OrchardCore.Queries.Sql
 
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddDataMigration<SqlQueryMigrations>();
+            services.AddScoped<IQueryHandler, SqlQueryHandler>();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
@@ -19,20 +19,21 @@ namespace OrchardCore.Queries.Recipes
     public class QueryStep : IRecipeStepHandler
     {
         private readonly IQueryManager _queryManager;
-        private readonly IServiceProvider _serviceProvider;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
+        protected readonly IStringLocalizer S;
+
         public QueryStep(
             IQueryManager queryManager,
-            IServiceProvider serviceProvider,
             IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-            ILogger<QueryStep> logger)
+            ILogger<QueryStep> logger,
+            IStringLocalizer<QueryStep> stringLocalizer)
         {
             _queryManager = queryManager;
-            _serviceProvider = serviceProvider;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _logger = logger;
+            S = stringLocalizer;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -43,14 +44,16 @@ namespace OrchardCore.Queries.Recipes
             }
 
             var model = context.Step.ToObject<QueryStepModel>(_jsonSerializerOptions);
+
             var queries = new List<Query>();
+
             foreach (var token in model.Queries.Cast<JsonObject>())
             {
                 var name = token[nameof(Query.Name)].ToString();
 
                 if (string.IsNullOrEmpty(name))
                 {
-                    _logger.LogError("Query name is missing or empty. The query will not be imported.");
+                    context.Errors.Add(S["Query name is missing or empty. The query will not be imported."]);
 
                     continue;
                 }
@@ -59,26 +62,33 @@ namespace OrchardCore.Queries.Recipes
 
                 if (string.IsNullOrEmpty(sourceName))
                 {
-                    _logger.LogError("Could not find query source value. The query '{QueryName}' will not be imported.", token[nameof(Query.Name)].ToString());
+                    context.Errors.Add(S["Could not find query source value. The query '{0}' will not be imported.", name]);
 
                     continue;
                 }
 
-                var querySource = _serviceProvider.GetKeyedService<IQuerySource>(sourceName);
+                var query = await _queryManager.GetQueryAsync(name);
 
-                if (querySource == null)
+                if (query == null)
                 {
-                    _logger.LogError("Could not find query source: '{QuerySource}'. The query '{QueryName}' will not be imported.", sourceName, token[nameof(Query.Name)].ToString());
+                    query = await _queryManager.NewAsync(sourceName, token);
 
-                    continue;
+                    if (query == null)
+                    {
+                        context.Errors.Add(S["Could not find query source: '{0}'. The query '{1}' will not be imported.", sourceName, name]);
+
+                        continue;
+                    }
+
+                    queries.Add(query);
                 }
-
-                var query = querySource.Create(token);
-
-                queries.Add(query);
+                else
+                {
+                    await _queryManager.UpdateAsync(query, token);
+                }
             }
 
-            await _queryManager.SaveQueryAsync(queries.ToArray());
+            await _queryManager.SaveAsync(queries.ToArray());
         }
     }
 

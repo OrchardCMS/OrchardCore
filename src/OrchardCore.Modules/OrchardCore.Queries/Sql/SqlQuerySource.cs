@@ -13,7 +13,6 @@ using OrchardCore.Data;
 using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
-using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Models;
 using YesSql;
 
@@ -45,23 +44,6 @@ namespace OrchardCore.Queries.Sql
 
         public string Name
             => SourceName;
-
-        public Query Create(JsonNode data = null)
-        {
-            var query = QuerySourceHelper.CreateQuery(SourceName, true, data);
-
-            if (data != null)
-            {
-                var metadata = new SqlQueryMetadata
-                {
-                    Template = data[nameof(SqlQueryMetadata.Template)]?.GetValue<string>()
-                };
-
-                query.Put(metadata);
-            }
-
-            return query;
-        }
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {

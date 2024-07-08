@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Core;
 using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
@@ -44,24 +43,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string Name
             => SourceName;
-
-        public Query Create(JsonNode data = null)
-        {
-            var query = QuerySourceHelper.CreateQuery(SourceName, true, data);
-
-            if (data != null)
-            {
-                var metadata = new ElasticsearchQueryMetadata
-                {
-                    Template = data[nameof(ElasticsearchQueryMetadata.Template)]?.GetValue<string>(),
-                    Index = data[nameof(ElasticsearchQueryMetadata.Index)]?.GetValue<string>()
-                };
-
-                query.Put(metadata);
-            }
-
-            return query;
-        }
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {

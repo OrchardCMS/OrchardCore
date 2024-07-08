@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -18,17 +17,14 @@ namespace OrchardCore.Search.Elasticsearch
     public class ElasticsearchApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IQuerySource _querySource;
-        private readonly ElasticQuerySource _elasticQuerySource;
+        private readonly IQueryManager _queryManager;
 
         public ElasticsearchApiController(
             IAuthorizationService authorizationService,
-            [FromKeyedServices(ElasticQuerySource.SourceName)] IQuerySource querySource,
-            ElasticQuerySource elasticQuerySource)
+            IQueryManager queryManager)
         {
             _authorizationService = authorizationService;
-            _querySource = querySource;
-            _elasticQuerySource = elasticQuerySource;
+            _queryManager = queryManager;
         }
 
         [HttpGet]
@@ -87,9 +83,9 @@ namespace OrchardCore.Search.Elasticsearch
             return new ObjectResult(result);
         }
 
-        private Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
+        private async Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
         {
-            var elasticQuery = _querySource.Create();
+            var elasticQuery = await _queryManager.NewAsync(ElasticQuerySource.SourceName);
             elasticQuery.ReturnContentItems = returnContentItems;
 
             elasticQuery.Put(new ElasticsearchQueryMetadata
@@ -98,11 +94,11 @@ namespace OrchardCore.Search.Elasticsearch
                 Template = queryModel.Query,
             });
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            var queryParameters = queryModel.Parameters != null
+                ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
-            var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
+            var result = await _queryManager.ExecuteQueryAsync(elasticQuery, queryParameters);
 
             return result;
         }

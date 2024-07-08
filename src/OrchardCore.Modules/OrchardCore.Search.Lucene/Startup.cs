@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
@@ -61,6 +62,7 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
             services.AddDataMigration<LuceneQueryMigrations>();
+            services.AddScoped<IQueryHandler, LuceneQueryHandler>();
         }
     }
 

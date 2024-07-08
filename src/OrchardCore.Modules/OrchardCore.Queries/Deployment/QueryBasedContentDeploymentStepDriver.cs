@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -52,7 +51,7 @@ namespace OrchardCore.Queries.Deployment
             await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe);
             var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
-            if (!query.ResultsOfType<ContentItem>())
+            if (!query.CanReturnContentItems || !query.ReturnContentItems)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
             }

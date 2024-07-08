@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Queries;
@@ -13,11 +12,6 @@ public interface IQuerySource
     /// Gets the name of query source.
     /// </summary>
     string Name { get; }
-
-    /// <summary>
-    /// Creates a query instance.
-    /// </summary>
-    Query Create(JsonNode data = null);
 
     /// <summary>
     /// Executes a query with a given parameters.

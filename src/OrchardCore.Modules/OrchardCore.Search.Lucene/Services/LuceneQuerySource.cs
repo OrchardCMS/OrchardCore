@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Queries.Core;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using YesSql;
@@ -54,24 +53,6 @@ namespace OrchardCore.Search.Lucene
 
         public string Name
             => SourceName;
-
-        public Query Create(JsonNode data = null)
-        {
-            var query = QuerySourceHelper.CreateQuery(SourceName, true, data);
-
-            if (data != null)
-            {
-                var metadata = new LuceneQueryMetadata
-                {
-                    Template = data[nameof(LuceneQueryMetadata.Template)]?.GetValue<string>(),
-                    Index = data[nameof(LuceneQueryMetadata.Index)]?.GetValue<string>()
-                };
-
-                query.Put(metadata);
-            }
-
-            return query;
-        }
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {

@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Queries;
@@ -29,9 +28,4 @@ public class Query : Entity
     public bool CanReturnContentItems { get; set; }
 
     public bool ReturnContentItems { get; set; }
-
-    public virtual bool ResultsOfType<T>()
-        => CanReturnContentItems && ReturnContentItems
-        ? typeof(T) == typeof(ContentItem)
-        : typeof(T) == typeof(object);
 }

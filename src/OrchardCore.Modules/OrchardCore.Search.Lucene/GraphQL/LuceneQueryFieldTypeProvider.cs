@@ -52,14 +52,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     continue;
                 }
 
-                var name = query.Name;
-
                 try
                 {
                     var querySchema = JObject.Parse(query.Schema);
                     if (!querySchema.ContainsKey("type"))
                     {
-                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", query.Name);
 
                         continue;
                     }
@@ -88,7 +86,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", query.Name);
                 }
             }
         }
