@@ -59,6 +59,7 @@ namespace OrchardCore.Menu.Drivers
             {
                 model.Name = part.ContentItem.DisplayText;
                 model.Url = part.Url;
+                model.Target = part.Target;
                 model.MenuItemPart = part;
             });
         }
@@ -70,6 +71,7 @@ namespace OrchardCore.Menu.Drivers
             await updater.TryUpdateModelAsync(model, Prefix);
 
             part.Url = model.Url;
+            part.Target = model.Target;
             part.ContentItem.DisplayText = model.Name;
 
             var urlToValidate = part.Url;

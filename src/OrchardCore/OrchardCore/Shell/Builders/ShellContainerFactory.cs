@@ -152,42 +152,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
         private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
         {
-            // Get all types from all extension and add them to the type feature provider.
-            var extensions = _extensionManager.GetExtensions();
-
-            var allTypesByExtension = extensions
-                .SelectMany(extension =>
-                    _extensionManager.GetExportedExtensionTypes(extension)
-                        .Where(IsComponentType)
-                        .Select(type => new
-                        {
-                            Extension = extension,
-                            Type = type
-                        }));
-
-            var typesByFeature = allTypesByExtension
-                .GroupBy(typeByExtension => GetSourceFeatureNameForType(
-                    typeByExtension.Type,
-                    typeByExtension.Extension.Id))
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.Select(typesByExtension => typesByExtension.Type));
-
-            foreach (var extension in extensions)
-            {
-                foreach (var feature in extension.Features)
-                {
-                    // Features can have no types.
-                    if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
-                    {
-                        foreach (var type in featureTypes)
-                        {
-                            typeFeatureProvider.TryAdd(type, feature);
-                        }
-                    }
-                }
-            }
-
             // Register all DIed types in ITypeFeatureProvider.
             foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
@@ -215,18 +179,6 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
             }
-        }
-
-        private static string GetSourceFeatureNameForType(Type type, string extensionId)
-        {
-            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-
-            return attribute?.FeatureName ?? extensionId;
-        }
-
-        private static bool IsComponentType(Type type)
-        {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace OrchardCore.Demo.Controllers
     [Route("api/demo")]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     [ApiController]
-    public class ContentApiController : Controller
+    public class ContentApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;

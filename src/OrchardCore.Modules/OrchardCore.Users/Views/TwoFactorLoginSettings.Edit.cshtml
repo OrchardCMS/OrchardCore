@@ -27,4 +27,14 @@
         <input type="number" class="form-control" min="1" asp-for="NumberOfRecoveryCodesToGenerate" />
         <span class="hint dashed">@T["The number of recovery codes to generate. Default is 5."]</span>
     </div>
+
+    <div class="mb-3" asp-validation-class-for="UseSiteTheme">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
+            <span asp-validation-for="UseSiteTheme"></span>
+            <label class="form-check-label" asp-for="UseSiteTheme">@T["Use site theme for two-factor authentication pages"]</label>
+            <span class="hint dashed">@T["Requires an active site theme."]</span>
+        </div>
+    </div>
+
 </fieldset>

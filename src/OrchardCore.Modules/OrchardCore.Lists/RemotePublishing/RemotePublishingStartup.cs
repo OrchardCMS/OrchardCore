@@ -11,7 +11,7 @@ using OrchardCore.XmlRpc;
 namespace OrchardCore.Lists.RemotePublishing
 {
     [RequireFeatures("OrchardCore.RemotePublishing")]
-    public class RemotePublishingStartup : StartupBase
+    public sealed class RemotePublishingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

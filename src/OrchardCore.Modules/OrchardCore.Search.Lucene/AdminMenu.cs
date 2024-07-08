@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Search.Lucene;
 
-public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvider
+public sealed class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvider
 {
-    protected readonly IStringLocalizer S = localizer;
+    internal readonly IStringLocalizer S = localizer;
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {

@@ -15,7 +15,7 @@ using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

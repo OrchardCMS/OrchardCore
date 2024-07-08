@@ -1,7 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="Dependencies.props" />
-
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
     <VersionPrefix>2.0.0</VersionPrefix>

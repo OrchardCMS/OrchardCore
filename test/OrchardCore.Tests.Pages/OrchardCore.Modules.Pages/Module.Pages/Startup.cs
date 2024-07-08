@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace Module.Pages
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
