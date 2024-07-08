@@ -28,9 +28,7 @@ namespace OrchardCore.Queries
                         return null;
                     }
 
-                    var querySource = serviceProvider.GetRequiredKeyedService<IQuerySource>(query.Source);
-
-                    var result = querySource.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
+                    var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
 
                     return result.Items;
                 }),

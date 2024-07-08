@@ -25,9 +25,7 @@ public static class QueryOrchardRazorHelperExtensions
             return null;
         }
 
-        var querySource = orchardHelper.HttpContext.RequestServices.GetRequiredKeyedService<IQuerySource>(query.Source);
-
-        var result = await querySource.ExecuteQueryAsync(query, parameters);
+        var result = await queryManager.ExecuteQueryAsync(query, parameters);
 
         return result.Items;
     }

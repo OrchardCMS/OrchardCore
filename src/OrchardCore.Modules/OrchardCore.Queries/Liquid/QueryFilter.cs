@@ -33,7 +33,7 @@ namespace OrchardCore.Queries.Liquid
                 parameters.Add(name, arguments[name].ToObjectValue());
             }
 
-            var querySource = _serviceProvider.GetRequiredKeyedService<IQuerySource>(query.Source);
+            var querySource = _serviceProvider.GetRequiredService<IQueryManager>();
 
             var result = await querySource.ExecuteQueryAsync(query, parameters);
 
