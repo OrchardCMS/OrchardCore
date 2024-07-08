@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Queries.Core",
     Name = "Queries Core Services",
-    Description = "Provides querying capabilities services.",
+    Description = "Provides querying capability services.",
     Dependencies =
     [
         "OrchardCore.Liquid",
@@ -25,7 +25,6 @@ using OrchardCore.Modules.Manifest;
     Description = "Provides querying capabilities.",
     Dependencies =
     [
-        "OrchardCore.Liquid",
         "OrchardCore.Queries.Core",
     ],
     Category = "Content Management"

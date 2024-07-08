@@ -6,7 +6,7 @@ using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Services;
 
-public class LuceneQueryHandler : QueryHandlerBase
+public sealed class LuceneQueryHandler : QueryHandlerBase
 {
     public override Task InitializingAsync(InitializingQueryContext context)
         => UpdateQueryAsync(context);

@@ -6,7 +6,7 @@ using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticsearchQueryHandler : QueryHandlerBase
+public sealed class ElasticsearchQueryHandler : QueryHandlerBase
 {
     public override Task InitializingAsync(InitializingQueryContext context)
         => UpdateQueryAsync(context);

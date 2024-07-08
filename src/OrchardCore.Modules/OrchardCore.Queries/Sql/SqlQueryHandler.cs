@@ -5,7 +5,7 @@ using OrchardCore.Queries.Sql.Models;
 
 namespace OrchardCore.Queries.Sql;
 
-public class SqlQueryHandler : QueryHandlerBase
+public sealed class SqlQueryHandler : QueryHandlerBase
 {
     public override Task InitializingAsync(InitializingQueryContext context)
         => UpdateQueryAsync(context);

@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Queries;
 
-public class DataQueryContextBase : QueryContextBase
+public abstract class DataQueryContextBase : QueryContextBase
 {
     public JsonNode Data { get; }
 
