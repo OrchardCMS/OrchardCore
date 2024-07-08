@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using OrchardCore.Apis.GraphQL.Queries.Types;
 using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentFields.GraphQL.Types;
+using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -12,7 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new()
+        private static readonly FrozenDictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>()
         {
             {
                 nameof(BooleanField),
@@ -22,6 +24,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(BooleanGraphType),
                     UnderlyingType = typeof(BooleanField),
                     FieldAccessor = field => ((BooleanField)field).Value,
+                    IndexType = typeof(BooleanFieldIndex),
+                    Index = nameof(BooleanFieldIndex.Boolean)
                 }
             },
             {
@@ -32,6 +36,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(DateGraphType),
                     UnderlyingType = typeof(DateField),
                     FieldAccessor = field => ((DateField)field).Value,
+                    IndexType = typeof(DateFieldIndex),
+                    Index = nameof(DateFieldIndex.Date)
                 }
             },
             {
@@ -42,6 +48,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(DateTimeGraphType),
                     UnderlyingType = typeof(DateTimeField),
                     FieldAccessor = field => ((DateTimeField)field).Value,
+                    IndexType = typeof(DateTimeFieldIndex),
+                    Index = nameof(DateTimeFieldIndex.DateTime)
                 }
             },
             {
@@ -52,6 +60,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(DecimalGraphType),
                     UnderlyingType = typeof(NumericField),
                     FieldAccessor = field => ((NumericField)field).Value,
+                    IndexType = typeof(NumericFieldIndex),
+                    Index = nameof(NumericFieldIndex.Numeric)
                 }
             },
             {
@@ -62,6 +72,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
                     FieldAccessor = field => ((TextField)field).Text,
+                    IndexType = typeof(TextFieldIndex),
+                    Index = nameof(TextFieldIndex.Text)
                 }
             },
             {
@@ -72,6 +84,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(TimeSpanGraphType),
                     UnderlyingType = typeof(TimeField),
                     FieldAccessor = field => ((TimeField)field).Value,
+                    IndexType = typeof(TimeFieldIndex),
+                    Index = nameof(TimeFieldIndex.Time)
                 }
             },
             {
@@ -84,16 +98,15 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldAccessor = field => ((MultiTextField)field).Values,
                 }
             }
-        };
+        }.ToFrozenDictionary();
 
-        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
+        public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
+            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldDescriptor))
             {
                 return null;
             }
 
-            var fieldDescriptor = value;
             return new FieldType
             {
                 Name = customFieldName ?? field.Name,
@@ -116,7 +129,28 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        public bool HasField(ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+        public bool HasField(ISchema schema, ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+
+        public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
+        {
+            if (!HasFieldIndex(field))
+            {
+                return null;
+            }
+
+            var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
+
+            return new FieldTypeIndexDescriptor
+            {
+                Index = fieldDescriptor.Index,
+                IndexType = fieldDescriptor.IndexType
+            };
+        }
+
+        public bool HasFieldIndex(ContentPartFieldDefinition field) =>
+            _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
+            fieldTypeDescriptor.IndexType != null &&
+            !string.IsNullOrWhiteSpace(fieldTypeDescriptor.Index);
 
         private sealed class FieldTypeDescriptor
         {
@@ -124,6 +158,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             public Type FieldType { get; set; }
             public Type UnderlyingType { get; set; }
             public Func<ContentElement, object> FieldAccessor { get; set; }
+            public string Index { get; set; }
+            public Type IndexType { get; set; }
         }
     }
 }

@@ -1,0 +1,36 @@
+# Labels PRs without updates for 60 days as stale, then closes them 15 days later.
+# Labels issues that are labeled with "needs author feedback" without updates for 15 days as stale, then closes them 7 days later.
+name: Close Stale PRs and Issues
+
+on:
+  schedule:
+    # Every four hours at :39 UTC. A random time to avoid GitHub Actions being overloaded by scheduled workflows. Need
+    # to run this relatively frequently to avoid "No more operations left! Exiting..." warnings. Increasing the operations
+    # (see https://github.com/actions/stale#operations-per-run) is risky.
+    - cron: '39 */4 * * *'
+
+jobs:
+  close-stale-prs-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-pr-message: >
+            It seems that this pull request didn't really move for quite a while. Is this something you'd like to 
+            revisit any time soon or should we close? Please comment if you'd like to pick it up.
+          stale-pr-label: stale
+          # Close the PR 15 days after marking it as stale.
+          days-before-pr-close: 15
+          close-pr-message: >
+            Closing this pull request because it has been stale for very long. If you think this is still relevant, 
+            feel free to reopen it.
+          stale-issue-message: >
+            It seems that this issue didn't really move for quite a while despite us asking the author for further 
+            feedback. Is this something you'd like to revisit any time soon or should we close? Please reply.
+          stale-issue-label: stale
+          days-before-issue-stale: 15
+          days-before-issue-close: 7
+          only-issue-labels: needs author feedback
+          close-issue-message: >
+            Closing this issue because it didn't receive further feedback from the author for very long. If you think 
+            this is still relevant, feel free to reopen it with the requested details.

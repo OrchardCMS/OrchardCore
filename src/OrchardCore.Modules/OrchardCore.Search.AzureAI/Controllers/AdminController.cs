@@ -106,7 +106,8 @@ public class AdminController : Controller
 
         indexes = indexes
             .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+            .Take(pager.PageSize)
+            .ToList();
 
         // Maintain previous route data when generating page links.
         var routeData = new RouteData();
@@ -246,7 +247,7 @@ public class AdminController : Controller
                     settings.QueryAnalyzerName = settings.AnalyzerName;
                 }
 
-                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
 
                 if (await _indexManager.CreateAsync(settings))
                 {
@@ -351,6 +352,11 @@ public class AdminController : Controller
                 settings.IndexedContentTypes = model.IndexedContentTypes;
                 settings.Culture = model.Culture ?? string.Empty;
 
+                if (string.IsNullOrEmpty(settings.IndexFullName))
+                {
+                    settings.IndexFullName = _indexManager.GetFullIndexName(settings.IndexName);
+                }
+
                 if (string.IsNullOrEmpty(settings.AnalyzerName))
                 {
                     settings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
@@ -361,7 +367,7 @@ public class AdminController : Controller
                     settings.QueryAnalyzerName = settings.AnalyzerName;
                 }
 
-                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
 
                 if (!await _indexManager.CreateAsync(settings))
                 {
@@ -447,12 +453,8 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _indexManager.ExistsAsync(indexName))
-        {
-            return NotFound();
-        }
-
-        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+        settings.SetLastTaskId(0);
+        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexManager.RebuildAsync(settings);
         await AsyncContentItemsAsync(settings.IndexName);
@@ -483,11 +485,13 @@ public class AdminController : Controller
 
         if (!await _indexManager.ExistsAsync(indexName))
         {
-            return NotFound();
+            await _notifier.ErrorAsync(H["Unable to reset the <em>{0}</em> index. Try rebuilding it instead.", indexName]);
+
+            return RedirectToAction(nameof(Index));
         }
 
         settings.SetLastTaskId(0);
-        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await AsyncContentItemsAsync(settings.IndexName);
         await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", indexName]);

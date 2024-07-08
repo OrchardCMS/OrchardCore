@@ -8,7 +8,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Email
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -16,7 +16,7 @@ namespace OrchardCore.Email
             { "groupId", EmailSettings.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

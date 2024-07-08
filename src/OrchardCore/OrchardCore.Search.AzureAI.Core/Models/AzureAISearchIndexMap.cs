@@ -12,6 +12,22 @@ public class AzureAISearchIndexMap
 
     public Types Type { get; set; }
 
+    public bool IsKey { get; set; }
+
+    public bool IsCollection { get; set; }
+
+    public bool IsSuggester { get; set; }
+
+    public bool IsFilterable { get; set; }
+
+    public bool IsSortable { get; set; }
+
+    public bool IsHidden { get; set; }
+
+    public bool IsFacetable { get; set; }
+
+    public bool IsSearchable { get; set; }
+
     public DocumentIndexOptions Options { get; set; }
 
     public AzureAISearchIndexMap()

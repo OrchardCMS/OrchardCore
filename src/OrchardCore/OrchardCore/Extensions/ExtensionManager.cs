@@ -29,7 +29,7 @@ namespace OrchardCore.Environment.Extensions
 
         private FrozenDictionary<string, ExtensionEntry> _extensions;
         private List<IExtensionInfo> _extensionsInfos;
-        private Dictionary<string, FeatureEntry> _features;
+        private FrozenDictionary<string, IFeatureInfo> _features;
         private IFeatureInfo[] _featureInfos;
 
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
@@ -101,22 +101,25 @@ namespace OrchardCore.Environment.Extensions
             return Task.FromResult(extension);
         }
 
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
         {
             EnsureInitialized();
-            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
+
+            // Must return the features ordered by dependencies.
+            return Task.FromResult<IEnumerable<IFeatureInfo>>(_featureInfos);
         }
 
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             EnsureInitialized();
 
             var features = new HashSet<string>(GetFeatures(featureIdsToLoad).Select(f => f.Id));
 
-            var loadedFeatures = _features.Values
-                .Where(f => features.Contains(f.FeatureInfo.Id));
+            // Must return the features ordered by dependencies.
+            var loadedFeatures = _featureInfos
+                .Where(f => features.Contains(f.Id));
 
-            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+            return Task.FromResult(loadedFeatures);
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -130,9 +133,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetFeatureDependencies(feature, _featureInfos);
+                return GetFeatureDependencies(entry, _featureInfos);
             })).Value;
         }
 
@@ -147,9 +148,7 @@ namespace OrchardCore.Environment.Extensions
                     return [];
                 }
 
-                var feature = entry.FeatureInfo;
-
-                return GetDependentFeatures(feature, _featureInfos);
+                return GetDependentFeatures(entry, _featureInfos);
             })).Value;
         }
 
@@ -260,13 +259,6 @@ namespace OrchardCore.Environment.Extensions
             return list;
         }
 
-        private static string GetSourceFeatureNameForType(Type type, string extensionId)
-        {
-            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
-
-            return attribute?.FeatureName ?? extensionId;
-        }
-
         private void EnsureInitialized()
         {
             if (_isInitialized)
@@ -308,51 +300,38 @@ namespace OrchardCore.Environment.Extensions
                     loadedExtensions.TryAdd(module.Name, entry);
                 });
 
-                var loadedFeatures = new Dictionary<string, FeatureEntry>();
-
-                // Get all valid types from any extension
-                var allTypesByExtension = loadedExtensions.SelectMany(extension =>
-                    extension.Value.ExportedTypes.Where(IsComponentType)
-                    .Select(type => new
-                    {
-                        ExtensionEntry = extension.Value,
-                        Type = type
-                    })).ToArray();
-
-                var typesByFeature = allTypesByExtension
-                    .GroupBy(typeByExtension => GetSourceFeatureNameForType(
-                        typeByExtension.Type,
-                        typeByExtension.ExtensionEntry.ExtensionInfo.Id))
-                    .ToDictionary(
-                        group => group.Key,
-                        group => group.Select(typesByExtension => typesByExtension.Type).ToArray());
-
+                // Get all types from all extension and add them to the type feature provider.
                 foreach (var loadedExtension in loadedExtensions)
                 {
                     var extension = loadedExtension.Value;
 
-                    foreach (var feature in extension.ExtensionInfo.Features)
+                    foreach (var exportedType in extension.ExportedTypes.Where(IsComponentType))
                     {
-                        // Features can have no types
-                        if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
+                        if (!SkipExtensionFeatureRegistration(exportedType))
                         {
-                            foreach (var type in featureTypes)
+                            var sourceFeature = GetSourceFeatureNameForType(exportedType, extension.ExtensionInfo.Id);
+
+                            var feature = extension.ExtensionInfo.Features.FirstOrDefault(f => f.Id == sourceFeature);
+
+                            if (feature == null)
                             {
-                                _typeFeatureProvider.TryAdd(type, feature);
+                                // Type has no specific feature, add it to all features
+                                foreach (var curFeature in extension.ExtensionInfo.Features)
+                                {
+                                    _typeFeatureProvider.TryAdd(exportedType, curFeature);
+                                }
+                            }
+                            else
+                            {
+                                _typeFeatureProvider.TryAdd(exportedType, feature);
                             }
                         }
-                        else
-                        {
-                            featureTypes = [];
-                        }
-
-                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
                 }
 
                 // Feature infos and entries are ordered by priority and dependencies.
-                _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));
-                _features = _featureInfos.ToDictionary(f => f.Id, f => loadedFeatures[f.Id]);
+                _featureInfos = Order(loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features));
+                _features = _featureInfos.ToFrozenDictionary(f => f.Id, f => f);
 
                 // Extensions are also ordered according to the weight of their first features.
                 _extensionsInfos = _featureInfos
@@ -364,11 +343,6 @@ namespace OrchardCore.Environment.Extensions
 
                 _isInitialized = true;
             }
-        }
-
-        private static bool IsComponentType(Type type)
-        {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
         }
 
         private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
@@ -401,6 +375,23 @@ namespace OrchardCore.Environment.Extensions
             }
 
             return sum;
+        }
+
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
+        {
+            var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+
+            return attribute?.FeatureName ?? extensionId;
+        }
+
+        private static bool IsComponentType(Type type)
+        {
+            return type.IsClass && !type.IsAbstract && type.IsPublic;
+        }
+
+        private static bool SkipExtensionFeatureRegistration(Type type)
+        {
+            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
         }
     }
 }

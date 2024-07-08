@@ -5,7 +5,7 @@ using OrchardCore.Scripting;
 namespace OrchardCore.Contents.Scripting
 {
     [RequireFeatures("OrchardCore.Scripting")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

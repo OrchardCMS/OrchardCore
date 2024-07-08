@@ -5,7 +5,7 @@ using OrchardCore.Data.Migration;
 
 namespace OrchardCore.ReCaptcha.Forms
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

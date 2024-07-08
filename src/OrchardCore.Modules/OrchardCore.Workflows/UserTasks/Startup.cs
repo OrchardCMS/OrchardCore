@@ -8,7 +8,7 @@ using OrchardCore.Workflows.UserTasks.Drivers;
 namespace OrchardCore.Workflows.UserTasks
 {
     [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Contents", "OrchardCore.Roles")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

@@ -12,7 +12,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Azure;
 
-public class Startup
+public sealed class Startup
 {
     private readonly IShellConfiguration _shellConfiguration;
 

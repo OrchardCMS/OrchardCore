@@ -369,6 +369,12 @@ namespace OrchardCore.ContentTypes.Services
                     fieldBuilder.WithDisplayMode(fieldViewModel.DisplayMode);
                 });
             });
+
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartFieldUpdated(context), new ContentPartFieldUpdatedContext
+            {
+                ContentPartName = partViewModel.Name,
+                ContentFieldName = fieldViewModel.Name
+            }, _logger);
         }
 
         public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
@@ -385,10 +391,17 @@ namespace OrchardCore.ContentTypes.Services
                     part.WithDisplayMode(typePartViewModel.DisplayMode);
                 });
             });
+
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypePartUpdated(context), new ContentTypePartUpdatedContext
+            {
+                ContentTypeName = typeDefinition.Name,
+                ContentPartName = typePartViewModel.Name
+            }, _logger);
         }
 
-        public Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
-            => _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
+        public async Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
+        {
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
             {
                 if (partNames is null)
                 {
@@ -411,8 +424,15 @@ namespace OrchardCore.ContentTypes.Services
                 }
             });
 
-        public Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
-            => _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeUpdated(context), new ContentTypeUpdatedContext
+            {
+                ContentTypeDefinition = typeDefinition
+            }, _logger);
+        }
+
+        public async Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
+        {
+            await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
             {
                 if (fieldNames is null)
                 {
@@ -428,6 +448,12 @@ namespace OrchardCore.ContentTypes.Services
                     });
                 }
             });
+
+            _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartUpdated(context), new ContentPartUpdatedContext
+            {
+                ContentPartDefinition = partDefinition
+            }, _logger);
+        }
 
         public async Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName)
         {

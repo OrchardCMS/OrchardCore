@@ -16,17 +16,15 @@ using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Security;
-using SystemEnvironment = System.Environment;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using SystemEnvironment = System.Environment;
 
 namespace OrchardCore.OpenId.Configuration
 {
-    [Feature(OpenIdConstants.Features.Validation)]
-    public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
+    public sealed class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
         IConfigureOptions<OpenIddictValidationOptions>,
         IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
         IConfigureNamedOptions<ApiAuthorizationOptions>

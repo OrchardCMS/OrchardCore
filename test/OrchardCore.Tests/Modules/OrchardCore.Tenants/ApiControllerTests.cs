@@ -107,7 +107,7 @@ public class ApiControllerTests
         Assert.NotEqual(token1, token2);
     }
 
-    private ApiController CreateController()
+    private TenantApiController CreateController()
     {
         var defaultShellSettings = new ShellSettings()
             .AsDefaultShell()
@@ -159,7 +159,7 @@ public class ApiControllerTests
             Mock.Of<IDbConnectionValidator>(),
             stringLocalizerMock.Object);
 
-        return new ApiController(
+        return new TenantApiController(
             shellHostMock.Object,
             defaultShellSettings,
             Mock.Of<IShellRemovalManager>(),
@@ -173,8 +173,8 @@ public class ApiControllerTests
             Options.Create(new TenantsOptions()),
             [],
             tenantValidator,
-            Mock.Of<IStringLocalizer<ApiController>>(),
-            Mock.Of<ILogger<ApiController>>())
+            Mock.Of<IStringLocalizer<TenantApiController>>(),
+            Mock.Of<ILogger<TenantApiController>>())
         {
             ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() }
         };

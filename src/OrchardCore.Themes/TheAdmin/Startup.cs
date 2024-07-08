@@ -7,7 +7,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheAdmin
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _configuration;
 

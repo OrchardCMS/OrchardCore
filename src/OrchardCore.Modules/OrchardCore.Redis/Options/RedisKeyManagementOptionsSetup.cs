@@ -5,7 +5,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Redis.Options
 {
-    public class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManagementOptions>
+    public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManagementOptions>
     {
         private readonly IRedisService _redis;
         private readonly string _tenant;

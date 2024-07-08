@@ -56,7 +56,7 @@ namespace OrchardCore.Data.Documents
             if (loaded != null)
             {
                 // Return the already loaded document but indicating that it should not be cached.
-                return (false, loaded as T);
+                return (false, loaded);
             }
 
             return (true, await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
