@@ -13,6 +13,8 @@ public static class QuerySourceHelper
 {
     public static void MigrateQueries(string source)
     {
+        // This migration could be called in the same session as the creation of the QueryIndex.
+        // To avoid a potential deadlock, we defer this task to ensure thread safety.
         ShellScope.AddDeferredTask(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();

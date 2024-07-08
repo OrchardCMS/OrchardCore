@@ -25,7 +25,6 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public DefaultQueryManager(
         ISession session,
-        DefaultQueryManagerSession queryManagerSession,
         IEnumerable<IQueryHandler> queryHandlers,
         ILogger<DefaultQueryManager> logger,
         IServiceProvider serviceProvider,

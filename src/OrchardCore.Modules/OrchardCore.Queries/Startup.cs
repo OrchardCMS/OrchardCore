@@ -60,8 +60,6 @@ namespace OrchardCore.Queries
 
             services.AddDataMigration<QueryMigrations>();
             services.AddIndexProvider<QueryIndexProvider>();
-
-            services.AddSingleton<DefaultQueryManagerSession>();
             services.AddScoped<IQueryManager, DefaultQueryManager>();
         }
     }
