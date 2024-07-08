@@ -41,9 +41,13 @@ namespace OrchardCore.Tests.Localization
                  var demoFeature = availableFeatures.FirstOrDefault(feature => feature.Id == "OrchardCore.Demo");
 
                  await shellFeaturesManager.EnableFeaturesAsync([demoFeature], true);
+
+                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+                 await shellHost.ReloadShellContextAsync(shellSettings);
              });
 
-            var response = await context.Client.GetAsync("api/demo/SayHello");
+            var response = await context.Client.GetAsync("api/demo/sayhello");
 
             response.EnsureSuccessStatusCode();
         }
