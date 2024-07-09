@@ -33,9 +33,9 @@ namespace OrchardCore.Queries.Liquid
                 parameters.Add(name, arguments[name].ToObjectValue());
             }
 
-            var querySource = _serviceProvider.GetRequiredService<IQueryManager>();
+            var queryManager = _serviceProvider.GetRequiredService<IQueryManager>();
 
-            var result = await querySource.ExecuteQueryAsync(query, parameters);
+            var result = await queryManager.ExecuteQueryAsync(query, parameters);
 
             return FluidValue.Create(result.Items, ctx.Options);
         }
