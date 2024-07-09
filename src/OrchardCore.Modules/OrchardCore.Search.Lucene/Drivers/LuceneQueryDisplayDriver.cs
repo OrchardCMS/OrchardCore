@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene.Drivers
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LuceneQueryDisplayDriver(
             IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,

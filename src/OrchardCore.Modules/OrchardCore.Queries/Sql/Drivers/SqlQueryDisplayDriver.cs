@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Sql.Drivers
 {
     public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
         {

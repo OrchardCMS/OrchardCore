@@ -22,7 +22,7 @@ namespace OrchardCore.Queries.Recipes
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public QueryStep(
             IQueryManager queryManager,

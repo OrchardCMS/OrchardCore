@@ -35,8 +35,8 @@ namespace OrchardCore.Queries.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
 
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
+        internal readonly IHtmlLocalizer H;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
