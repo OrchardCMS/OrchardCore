@@ -8,8 +8,8 @@ public interface IQueryManager
 {
     /// <summary>
     /// Gets a new instance of <see cref="Query"/> for the given source if a valid source is given.
-    /// <returns>A new instance of <see cref="Query"/>.</returns>
     /// </summary>
+    /// <returns>A new instance of <see cref="Query"/>.</returns>
     Task<Query> NewAsync(string source, JsonNode data = null);
 
     /// <summary>
@@ -27,7 +27,7 @@ public interface IQueryManager
     /// <summary>
     /// Gets the <see cref="Query"/> instance with the specified name in read-only.
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="name">The name of the query.</param>
     /// <returns>The found query if any, otherwise null.</returns>
     Task<Query> GetQueryAsync(string name);
 
@@ -47,9 +47,9 @@ public interface IQueryManager
 
     /// <summary>
     /// Gets a list of stored <see cref="Query"/> that match the given context.
+    /// </summary>
     /// <param name="context">The context provides a way to filter the returned dataset.</param>
     /// <returns>IEnumerable of <see cref="Query"/> type.</returns>
-    /// </summary>
     Task<IEnumerable<Query>> ListQueriesAsync(QueryContext context = null);
 
     /// <summary>
@@ -65,6 +65,5 @@ public interface IQueryManager
     /// Saves the given queries to the store.
     /// </summary>
     /// <param name="queries">One or more instances of <see cref="Query"/> to save.</param>
-    /// <returns></returns>
     Task SaveAsync(params Query[] queries);
 }

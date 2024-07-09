@@ -57,6 +57,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 {
                     updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
+                
             }).Location("Content:5");
         }
 

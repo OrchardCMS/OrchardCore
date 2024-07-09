@@ -1,6 +1,6 @@
 namespace OrchardCore.Queries;
 
-public class QueryContextBase
+public abstract class QueryContextBase
 {
     public Query Query { get; }
 

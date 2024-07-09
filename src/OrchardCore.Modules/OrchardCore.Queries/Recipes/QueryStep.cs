@@ -49,7 +49,7 @@ namespace OrchardCore.Queries.Recipes
 
             foreach (var token in model.Queries.Cast<JsonObject>())
             {
-                var name = token[nameof(Query.Name)].ToString();
+                var name = token[nameof(Query.Name)]?.GetValue<string>();
 
                 if (string.IsNullOrEmpty(name))
                 {
@@ -58,7 +58,7 @@ namespace OrchardCore.Queries.Recipes
                     continue;
                 }
 
-                var sourceName = token[nameof(Query.Source)].ToString();
+                var sourceName = token[nameof(Query.Source)]?.GetValue<string>();
 
                 if (string.IsNullOrEmpty(sourceName))
                 {

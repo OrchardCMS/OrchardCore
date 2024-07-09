@@ -117,6 +117,8 @@ public sealed class DefaultQueryManager : IQueryManager
 
         if (querySource == null)
         {
+            _logger.LogWarning("Unable to find a query-source that can handle the source '{Source}'.", source);
+
             return null;
         }
 
