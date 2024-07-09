@@ -11,7 +11,7 @@ public interface IQueryHandler
     Task InitializingAsync(InitializingQueryContext context);
 
     /// <summary>
-    /// This method in invoked after query was initialized.
+    /// This method in invoked after the query was initialized.
     /// </summary>
     /// <param name="context">An instance of <see cref="InitializedQueryContext"/>.</param>
     Task InitializedAsync(InitializedQueryContext context);
