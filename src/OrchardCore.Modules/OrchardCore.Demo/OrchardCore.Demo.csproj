@@ -11,7 +11,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Localization\en\OrchardCore.Demo.po" />
+    <EmbeddedResource Remove="Localization\zh-CN\OrchardCore.Demo.po" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Localization\**" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -28,8 +39,5 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Localization\zh-CN\" />
-  </ItemGroup>
 
 </Project>

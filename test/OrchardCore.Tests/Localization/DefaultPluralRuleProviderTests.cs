@@ -1,6 +1,9 @@
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Features.Services;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Models;
+using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Localization
@@ -42,14 +45,52 @@ namespace OrchardCore.Tests.Localization
 
                  await shellFeaturesManager.EnableFeaturesAsync([demoFeature], true);
 
+
+                 var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+                 var siteSettings = await siteService.LoadSiteSettingsAsync();
+                 siteSettings.Alter<LocalizationSettings>("LocalizationSettings", localizationSettings =>
+                 {
+                     localizationSettings.DefaultCulture = "en";
+                     localizationSettings.SupportedCultures = ["en", "zh-CN"];
+                 });
+                 await siteService.UpdateSiteSettingsAsync(siteSettings);
+
                  var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                  var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
-                 await shellHost.ReloadShellContextAsync(shellSettings);
+                 await shellHost.ReleaseShellContextAsync(shellSettings);
              });
 
-            var response = await context.Client.GetAsync("api/demo/sayhello");
+
+            var requestEn = new HttpRequestMessage(HttpMethod.Get, "api/demo/SayHello");
+            // 设置请求头
+            requestEn.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            // 设置内容头
+            var content2 = new StringContent("");
+            content2.Headers.ContentLanguage.Add("en");
+            requestEn.Content = content2;
+            var response2 = await context.Client.SendAsync(requestEn);
+
+            response2.EnsureSuccessStatusCode();
+
+            var result2 = await response2.Content.ReadAsStringAsync();
+            Assert.Equal("Hello en!", result2);
+
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/demo/SayHello");
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var content = new StringContent("");
+            content.Headers.ContentLanguage.Add("zh-CN");
+            request.Content = content;
+            var response = await context.Client.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Equal("你好！", result);
+
+
+
+           
         }
     }
 }
