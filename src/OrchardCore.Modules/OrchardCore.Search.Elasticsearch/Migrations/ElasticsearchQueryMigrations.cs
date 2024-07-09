@@ -1,15 +1,31 @@
+using System.Threading.Tasks;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Queries.Core;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using YesSql;
 
 namespace OrchardCore.Queries.Sql.Migrations;
 
 public sealed class ElasticsearchQueryMigrations : DataMigration
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public int Create()
+    private readonly IQueryManager _queryManager;
+    private readonly IStore _store;
+    private readonly IDbConnectionAccessor _dbConnectionAccessor;
+
+    public ElasticsearchQueryMigrations(
+        IQueryManager queryManager,
+        IStore store,
+        IDbConnectionAccessor dbConnectionAccessor)
     {
-        QuerySourceHelper.MigrateQueries(ElasticQuerySource.SourceName);
+        _queryManager = queryManager;
+        _store = store;
+        _dbConnectionAccessor = dbConnectionAccessor;
+    }
+
+    public async Task<int> CreateAsync()
+    {
+        await QueriesDocumentMigrationHelper.MigrateAsync(ElasticQuerySource.SourceName, _queryManager, _store, _dbConnectionAccessor);
 
         return 1;
     }
