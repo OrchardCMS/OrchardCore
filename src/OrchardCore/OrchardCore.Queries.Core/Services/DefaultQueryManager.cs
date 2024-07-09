@@ -3,40 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Documents;
 using OrchardCore.Modules;
-using OrchardCore.Queries.Indexes;
-using YesSql;
-using YesSql.Services;
+using OrchardCore.Queries.Core.Models;
 
 namespace OrchardCore.Queries.Core.Services;
 
 public sealed class DefaultQueryManager : IQueryManager
 {
-    private readonly string _sessionKey;
-    private readonly ISession _session;
+    private readonly IDocumentManager<QueriesDocument> _documentManager;
     private readonly IEnumerable<IQueryHandler> _queryHandlers;
     private readonly ILogger<DefaultQueryManager> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IDistributedCache _distributedCache;
 
     public DefaultQueryManager(
-        ISession session,
+        IDocumentManager<QueriesDocument> documentManager,
         IEnumerable<IQueryHandler> queryHandlers,
         ILogger<DefaultQueryManager> logger,
-        IServiceProvider serviceProvider,
-        IDistributedCache distributedCache,
-        ShellSettings shellSettings)
+        IServiceProvider serviceProvider)
     {
-        _session = session;
+        _documentManager = documentManager;
         _queryHandlers = queryHandlers;
         _logger = logger;
         _serviceProvider = serviceProvider;
-        _distributedCache = distributedCache;
-        _sessionKey = $"{shellSettings.Name}__{nameof(DefaultQueryManager)}";
     }
 
     public async Task<bool> DeleteQueryAsync(params string[] names)
@@ -46,17 +37,27 @@ public sealed class DefaultQueryManager : IQueryManager
             return false;
         }
 
-        var queries = await _session.Query<Query, QueryIndex>(x => x.Name.IsIn(names)).ListAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync();
 
-        foreach (var query in queries)
+        var queries = new List<Query>();
+
+        foreach (var name in names)
         {
-            _session.Delete(query);
+            if (!document.Queries.TryGetValue(name, out var query))
+            {
+                continue;
+            }
+
+            var deletingContext = new DeletingQueryContext(query);
+            await _queryHandlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), deletingContext, _logger);
+
+            queries.Add(query);
+            document.Queries.Remove(name);
         }
 
-        if (queries.Any())
+        if (queries.Count > 0)
         {
-            await _session.SaveChangesAsync();
-            await GenerateNewCacheKeyAsync();
+            await _documentManager.UpdateAsync(document);
 
             foreach (var query in queries)
             {
@@ -80,19 +81,15 @@ public sealed class DefaultQueryManager : IQueryManager
     }
 
     public async Task<string> GetIdentifierAsync()
-    {
-        var value = await _distributedCache.GetStringAsync(_sessionKey);
-
-        return value ?? await GenerateNewCacheKeyAsync();
-    }
+        => (await _documentManager.GetOrCreateImmutableAsync()).Identifier;
 
     public async Task<Query> GetQueryAsync(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
-        var query = await _session.Query<Query, QueryIndex>(q => q.Name == name).FirstOrDefaultAsync();
+        var document = await _documentManager.GetOrCreateImmutableAsync();
 
-        if (query != null)
+        if (document.Queries.TryGetValue(name, out var query))
         {
             await LoadAsync(query);
         }
@@ -102,7 +99,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task<IEnumerable<Query>> ListQueriesAsync(QueryContext context = null)
     {
-        var records = await GetQuery(context).ListAsync();
+        var records = await LocateQueriesAsync(context);
 
         foreach (var record in records)
         {
@@ -152,14 +149,14 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task<ListQueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null)
     {
-        var query = GetQuery(context);
+        var records = await LocateQueriesAsync(context);
 
         var skip = (page - 1) * pageSize;
 
         var result = new ListQueryResult
         {
-            Count = await query.CountAsync(),
-            Records = await query.Skip(skip).Take(pageSize).ListAsync()
+            Count = records.Count(),
+            Records = records.Skip(skip).Take(pageSize).ToArray()
         };
 
         foreach (var record in result.Records)
@@ -196,9 +193,9 @@ public sealed class DefaultQueryManager : IQueryManager
         var updatingContext = new UpdatingQueryContext(query, data);
         await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updatingContext, _logger);
 
-        await _session.SaveAsync(query);
-        await _session.SaveChangesAsync();
-        await GenerateNewCacheKeyAsync();
+        var document = await _documentManager.GetOrCreateMutableAsync();
+        document.Queries[query.Name] = query;
+        await _documentManager.UpdateAsync(document);
 
         var updatedContext = new UpdatedQueryContext(query);
         await _queryHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), updatedContext, _logger);
@@ -211,40 +208,43 @@ public sealed class DefaultQueryManager : IQueryManager
             return;
         }
 
+        var document = await _documentManager.GetOrCreateMutableAsync();
+
         foreach (var query in queries)
         {
-            await _session.SaveAsync(query);
+            document.Queries[query.Name] = query;
         }
 
-        await _session.SaveChangesAsync();
-        await GenerateNewCacheKeyAsync();
+        await _documentManager.UpdateAsync(document);
     }
 
-    private IQuery<Query, QueryIndex> GetQuery(QueryContext context)
+    private async Task<IEnumerable<Query>> LocateQueriesAsync(QueryContext context)
     {
-        var query = _session.Query<Query, QueryIndex>();
+        var document = await _documentManager.GetOrCreateImmutableAsync();
 
         if (context == null)
         {
-            return query;
+            return document.Queries.Values;
         }
+
+        var queries = document.Queries.Values.AsEnumerable();
 
         if (!string.IsNullOrEmpty(context.Source))
         {
-            query = query.Where(x => x.Source == context.Source);
+            queries = queries.Where(x => x.Source.Equals(context.Source, StringComparison.OrdinalIgnoreCase));
         }
 
         if (!string.IsNullOrEmpty(context.Name))
         {
-            query = query.Where(x => x.Name.Contains(context.Name));
+            queries = queries.Where(x => x.Name.Contains(context.Name, StringComparison.OrdinalIgnoreCase));
         }
 
         if (context.Sorted)
         {
-            query = query.OrderBy(x => x.Name);
+            queries = queries.OrderBy(x => x.Name);
         }
 
-        return query;
+        return queries;
     }
 
     private Task LoadAsync(Query query)
@@ -272,14 +272,5 @@ public sealed class DefaultQueryManager : IQueryManager
         {
             query.ReturnContentItems = returnContentItems.GetValue<bool>();
         }
-    }
-
-    private async Task<string> GenerateNewCacheKeyAsync()
-    {
-        var value = IdGenerator.GenerateId();
-
-        await _distributedCache.SetStringAsync(_sessionKey, value);
-
-        return value;
     }
 }

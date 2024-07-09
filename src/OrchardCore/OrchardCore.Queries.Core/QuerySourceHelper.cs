@@ -17,17 +17,18 @@ public static class QuerySourceHelper
         // To avoid a potential deadlock, we defer this task to ensure thread safety.
         ShellScope.AddDeferredTask(async scope =>
         {
-            var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
+            var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
 
-            var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
-            var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
-            var dialect = session.Store.Configuration.SqlDialect;
-            var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+            var documentTableName = store.Configuration.TableNameConvention.GetDocumentTable();
+            var table = $"{store.Configuration.TablePrefix}{documentTableName}";
+            var dialect = store.Configuration.SqlDialect;
+            var quotedTableName = dialect.QuoteForTableName(table, store.Configuration.Schema);
             var quotedContentColumnName = dialect.QuoteForColumnName("Content");
             var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-            var sqlBuilder = new SqlBuilder(session.Store.Configuration.TablePrefix, session.Store.Configuration.SqlDialect);
+            var sqlBuilder = new SqlBuilder(store.Configuration.TablePrefix, store.Configuration.SqlDialect);
             sqlBuilder.AddSelector(quotedContentColumnName);
             sqlBuilder.From(quotedTableName);
             sqlBuilder.WhereAnd($" {quotedTypeColumnName} = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries' ");
@@ -50,8 +51,6 @@ public static class QuerySourceHelper
             }
 
             var queries = new List<Query>();
-
-            var queryManager = scope.ServiceProvider.GetRequiredService<IQueryManager>();
 
             foreach (var queryObject in queriesObject)
             {

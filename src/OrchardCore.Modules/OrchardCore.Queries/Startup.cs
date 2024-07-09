@@ -1,8 +1,6 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Data;
-using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
@@ -11,9 +9,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
-using OrchardCore.Queries.Indexes;
 using OrchardCore.Queries.Liquid;
-using OrchardCore.Queries.Migrations;
 using OrchardCore.Queries.Recipes;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
@@ -58,8 +54,6 @@ namespace OrchardCore.Queries
             })
             .AddLiquidFilter<QueryFilter>("query");
 
-            services.AddDataMigration<QueryMigrations>();
-            services.AddIndexProvider<QueryIndexProvider>();
             services.AddScoped<IQueryManager, DefaultQueryManager>();
         }
     }
