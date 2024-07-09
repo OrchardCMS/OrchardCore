@@ -174,7 +174,7 @@ public sealed class DefaultQueryManager : IQueryManager
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        // Update he base properties first before calling handler, to ensure we update query source when applicable.
+        // Update the base properties first before calling the handler, to ensure we update the query source when applicable.
         if (data != null)
         {
             UpdateBaseProperties(data, query);
