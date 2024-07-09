@@ -60,11 +60,9 @@ namespace OrchardCore.Tests.Localization
                  await shellHost.ReleaseShellContextAsync(shellSettings);
              });
 
-
+            // en/OrchardCore.Demo.po
             var requestEn = new HttpRequestMessage(HttpMethod.Get, "api/demo/SayHello");
-            // 设置请求头
             requestEn.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            // 设置内容头
             var content2 = new StringContent("");
             content2.Headers.ContentLanguage.Add("en");
             requestEn.Content = content2;
@@ -75,7 +73,7 @@ namespace OrchardCore.Tests.Localization
             var result2 = await response2.Content.ReadAsStringAsync();
             Assert.Equal("Hello en!", result2);
 
-
+            // zh-CN/OrchardCore.Demo.po
             var request = new HttpRequestMessage(HttpMethod.Get, "api/demo/SayHello");
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var content = new StringContent("");
