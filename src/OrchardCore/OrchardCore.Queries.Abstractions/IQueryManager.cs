@@ -6,8 +6,15 @@ namespace OrchardCore.Queries;
 
 public interface IQueryManager
 {
+    /// <summary>
+    /// Gets a new instance of <see cref="Query"/> for the given source if a valid source is given.
+    /// <returns>A new instance of <see cref="Query"/>.</returns>
+    /// </summary>
     Task<Query> NewAsync(string source, JsonNode data = null);
 
+    /// <summary>
+    /// Updated the Query using the given data and saves it into the store.
+    /// </summary>
     Task UpdateAsync(Query query, JsonNode data = null);
 
     /// <summary>
