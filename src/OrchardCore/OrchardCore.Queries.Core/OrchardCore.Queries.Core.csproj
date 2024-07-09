@@ -3,11 +3,9 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore Queries Core</Title>
-    <Description>
-      $(OCCMSDescription)
+    <Description>$(OCCMSDescription)
 
-      Core implementation for Queries.
-    </Description>
+      Core implementation for Queries.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Queries</PackageTags>
   </PropertyGroup>
 
