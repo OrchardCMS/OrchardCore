@@ -41,10 +41,10 @@ namespace OrchardCore.Tests.Localization
              {
                  var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                  var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
-                 var demoFeature = availableFeatures.FirstOrDefault(feature => feature.Id == "OrchardCore.Demo");
+                 var featureIds = new string[] { "OrchardCore.Localization.ContentLanguageHeader", "OrchardCore.Localization", "OrchardCore.Demo" };
+                 var features = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
 
-                 await shellFeaturesManager.EnableFeaturesAsync([demoFeature], true);
-
+                 await shellFeaturesManager.EnableFeaturesAsync(features, true);
 
                  var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
                  var siteSettings = await siteService.LoadSiteSettingsAsync();
@@ -90,7 +90,7 @@ namespace OrchardCore.Tests.Localization
 
 
 
-           
+
         }
     }
 }
