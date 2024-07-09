@@ -10,7 +10,7 @@ using OrchardCore.Queries.Sql.ViewModels;
 
 namespace OrchardCore.Queries.Sql.Drivers
 {
-    public class SqlQueryDisplayDriver : DisplayDriver<Query>
+    public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
     {
         protected readonly IStringLocalizer S;
 
@@ -57,7 +57,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 {
                     updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
-                
+
             }).Location("Content:5");
         }
 

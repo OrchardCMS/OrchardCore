@@ -22,7 +22,7 @@ using YesSql.Services;
 namespace OrchardCore.Queries.Controllers
 {
     [Admin("Queries/{action}/{id?}", "Queries{action}")]
-    public class AdminController : Controller
+    public sealed class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";
 
@@ -89,7 +89,7 @@ namespace OrchardCore.Queries.Controllers
                 Queries = [],
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, result.Count, routeData),
-                QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList()
+                QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList(),
             };
 
             foreach (var query in result.Records)

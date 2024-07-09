@@ -36,7 +36,7 @@ using OrchardCore.Modules.Manifest;
     Description = "Introduces a way to create custom Queries in pure SQL.",
     Dependencies =
     [
-        "OrchardCore.Queries"
+        "OrchardCore.Queries",
     ],
     Category = "Content Management"
 )]

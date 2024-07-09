@@ -16,7 +16,7 @@ namespace OrchardCore.Queries.Recipes
     /// <summary>
     /// This recipe step creates a set of queries.
     /// </summary>
-    public class QueryStep : IRecipeStepHandler
+    public sealed class QueryStep : IRecipeStepHandler
     {
         private readonly IQueryManager _queryManager;
         private readonly JsonSerializerOptions _jsonSerializerOptions;

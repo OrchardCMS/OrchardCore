@@ -12,7 +12,7 @@ using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Drivers
 {
-    public class LuceneQueryDisplayDriver : DisplayDriver<Query>
+    public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 

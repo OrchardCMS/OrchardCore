@@ -9,7 +9,7 @@ using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Drivers
 {
-    public class QueryDisplayDriver : DisplayDriver<Query>
+    public sealed class QueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly IQueryManager _queryManager;
 

@@ -13,7 +13,7 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
-    public class ElasticQueryDisplayDriver : DisplayDriver<Query>
+    public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 

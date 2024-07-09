@@ -14,7 +14,7 @@ namespace OrchardCore.Queries.Controllers
     [Authorize(AuthenticationSchemes = "Api")]
     [IgnoreAntiforgeryToken]
     [AllowAnonymous]
-    public class QueryApiController : ControllerBase
+    public sealed class QueryApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IQueryManager _queryManager;
