@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 
@@ -14,22 +13,12 @@ namespace OrchardCore.Demo.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
-        private readonly IStringLocalizer S;
 
-        public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager, IStringLocalizer<ContentApiController> stringLocalizer)
+        public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
-            S = stringLocalizer;
         }
-
-        [HttpGet]
-        [Route("api/demo/sayhello")]
-        public IActionResult SayHello()
-        {
-            return Content(S["Hello!"]);
-        }
-
 
         public async Task<IActionResult> GetById(string id)
         {
