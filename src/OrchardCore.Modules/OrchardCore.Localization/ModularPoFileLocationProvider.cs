@@ -76,7 +76,7 @@ namespace OrchardCore.Localization
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
 
                 // \Localization\[CultureName]\[ModuleId].po
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension));
+                yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension)));
             }
 
             // Load all .po files from a culture specific folder

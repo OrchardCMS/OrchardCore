@@ -1,6 +1,5 @@
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Features.Services;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
@@ -70,7 +69,7 @@ namespace OrchardCore.Tests.Localization
 
             response2.EnsureSuccessStatusCode();
 
-            var result2 = await response2.Content.ReadAsStringAsync();
+            var result2 = await response2.Content.ReadAsStringAsync();  
             Assert.Equal("Hello en!", result2);
 
             // zh-CN/OrchardCore.Demo.po
