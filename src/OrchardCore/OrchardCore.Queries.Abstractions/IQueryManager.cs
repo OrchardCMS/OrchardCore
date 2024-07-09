@@ -60,5 +60,11 @@ public interface IQueryManager
     /// <param name="context">The context provides a way to filter the returned dataset.</param>
     /// <returns>An instance of <see cref="ListQueryResult"/>.</returns>
     Task<ListQueryResult> PageQueriesAsync(int page, int pageSize, QueryContext context = null);
+
+    /// <summary>
+    /// Saves the given queries to the store.
+    /// </summary>
+    /// <param name="queries">One or more instances of <see cref="Query"/> to save.</param>
+    /// <returns></returns>
     Task SaveAsync(params Query[] queries);
 }
