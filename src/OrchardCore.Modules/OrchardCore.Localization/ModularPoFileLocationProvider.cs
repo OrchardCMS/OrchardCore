@@ -73,7 +73,7 @@ namespace OrchardCore.Localization
                 yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id, poFileName));
 
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web-fr-CA.po
-                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));                
+                yield return _fileProvider.GetFileInfo(PathExtensions.Combine(_resourcesContainer, extension.Id + CultureDelimiter + poFileName));
 
                 // \Localization\[CultureName]\[ModuleId].po
                 yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_resourcesContainer, cultureName, extension.Id + PoFileExtension)));
