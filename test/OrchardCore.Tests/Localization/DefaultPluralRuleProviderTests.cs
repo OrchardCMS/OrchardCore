@@ -63,7 +63,7 @@ namespace OrchardCore.Tests.Localization
             var requestEn = new HttpRequestMessage(HttpMethod.Get, "api/demo/SayHello");
             var content2 = new StringContent("");
             content2.Headers.ContentLanguage.Add("en");
-            requestEn.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue("zh-CN"));
+            requestEn.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue("en"));
             requestEn.Content = content2;
             var response2 = await context.Client.SendAsync(requestEn);
 
