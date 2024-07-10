@@ -13,12 +13,19 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DefaultDocumentSerializer : IDocumentSerializer
     {
-        public static readonly DefaultDocumentSerializer Instance = new();
+        private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
+
+        private readonly JsonSerializerOptions _serializerOptions;
+
+        public DefaultDocumentSerializer(JsonSerializerOptions serializerOptions)
+        {
+            _serializerOptions = serializerOptions;
+        }
 
         public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue)
             where TDocument : class, IDocument, new()
         {
-            var data = JsonSerializer.SerializeToUtf8Bytes(document, JOptions.Default);
+            var data = JsonSerializer.SerializeToUtf8Bytes(document, _serializerOptions);
             if (data.Length >= compressThreshold)
             {
                 data = Compress(data);
@@ -37,12 +44,10 @@ namespace OrchardCore.Documents
 
             using var ms = new MemoryStream(data);
 
-            var document = JsonSerializer.Deserialize<TDocument>(ms, JOptions.Default);
+            var document = JsonSerializer.Deserialize<TDocument>(ms, _serializerOptions);
 
             return Task.FromResult(document);
         }
-
-        private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
 
         internal static bool IsCompressed(byte[] data)
         {
