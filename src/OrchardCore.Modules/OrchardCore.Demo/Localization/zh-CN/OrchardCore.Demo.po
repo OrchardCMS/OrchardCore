@@ -1,4 +1,4 @@
 
-msgctxt "OrchardCore.Demo.ContentApiController"
+msgctxt "OrchardCore.Demo.Controllers.ContentApiController"
 msgid "Hello!"
 msgstr "你好！"
