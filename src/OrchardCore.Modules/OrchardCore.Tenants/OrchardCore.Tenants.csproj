@@ -8,7 +8,7 @@
 
     Provides features to manage tenants from the Admin UI</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
-    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+    <OpenApiGenerateDocumentsOnBuild>false</OpenApiGenerateDocumentsOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
