@@ -5,29 +5,30 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nest;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticQueryService : IElasticQueryService
     {
-        private readonly string _indexPrefix;
         private readonly IElasticClient _elasticClient;
+        private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ILogger _logger;
 
         public ElasticQueryService(
             IElasticClient elasticClient,
-            ShellSettings shellSettings,
+            ElasticIndexManager elasticIndexManager,
             ILogger<ElasticQueryService> logger
             )
         {
-            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticClient = elasticClient;
+            _elasticIndexManager = elasticIndexManager;
             _logger = logger;
         }
 
         public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
         {
+            ArgumentException.ThrowIfNullOrEmpty(indexName);
+
             var elasticTopDocs = new ElasticTopDocs();
 
             if (_elasticClient == null)
@@ -42,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
                 var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
 
-                var searchRequest = new SearchRequest(_indexPrefix + indexName)
+                var searchRequest = new SearchRequest(_elasticIndexManager.GetFullIndexName(indexName))
                 {
                     Query = deserializedSearchRequest.Query,
                     From = deserializedSearchRequest.From,
