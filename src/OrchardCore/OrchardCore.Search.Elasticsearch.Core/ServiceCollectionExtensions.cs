@@ -19,11 +19,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddElasticServices(this IServiceCollection services)
     {
         services.AddSingleton<ElasticIndexSettingsService>();
-        services.AddSingleton<ElasticIndexManager>();
+        services.AddSingleton<IElasticIndexManager, ElasticIndexManager>();
+
         services.AddScoped<ElasticIndexingService>();
         services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
-        services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
-        services.AddScoped<IElasticQueryService, ElasticQueryService>();
         services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
 
         // ElasticQuerySource is registered for both the Queries module and local usage.

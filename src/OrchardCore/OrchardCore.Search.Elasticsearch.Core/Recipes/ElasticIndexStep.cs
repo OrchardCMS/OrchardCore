@@ -16,11 +16,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     public class ElasticIndexStep : IRecipeStepHandler
     {
         private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly IElasticIndexManager _elasticIndexManager;
 
         public ElasticIndexStep(
             ElasticIndexingService elasticIndexingService,
-            ElasticIndexManager elasticIndexManager
+            IElasticIndexManager elasticIndexManager
             )
         {
             _elasticIndexManager = elasticIndexManager;

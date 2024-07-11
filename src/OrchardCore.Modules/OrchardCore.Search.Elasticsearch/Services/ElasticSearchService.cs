@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -16,15 +15,15 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Services;
 
+using ElasticSearchDescriptor = SearchDescriptor<Dictionary<string, object>>;
+
 public class ElasticsearchService : ISearchService
 {
     public const string Key = "Elasticsearch";
 
     private readonly ISiteService _siteService;
-    private readonly ElasticIndexManager _elasticIndexManager;
+    private readonly IElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly IElasticSearchQueryService _elasticsearchQueryService;
-    private readonly IElasticClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -32,10 +31,8 @@ public class ElasticsearchService : ISearchService
 
     public ElasticsearchService(
         ISiteService siteService,
-        ElasticIndexManager elasticIndexManager,
+        IElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
-        IElasticSearchQueryService elasticsearchQueryService,
-        IElasticClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
@@ -45,8 +42,6 @@ public class ElasticsearchService : ISearchService
         _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
-        _elasticsearchQueryService = elasticsearchQueryService;
-        _elasticClient = elasticClient;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _liquidTemplateManager = liquidTemplateManager;
@@ -87,54 +82,55 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
-        try
+        var searchType = searchSettings.GetSearchType();
+        Func<ElasticSearchDescriptor, ElasticSearchDescriptor> formatSearch = null;
+        if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
         {
-            var searchType = searchSettings.GetSearchType();
-            QueryContainer query = null;
-
-            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
-            {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
-                    new Dictionary<string, FluidValue>()
-                    {
-                        ["term"] = new StringValue(term)
-                    });
-
-                try
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
+                new Dictionary<string, FluidValue>()
                 {
-                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
+                    ["term"] = new StringValue(term)
+                });
 
-                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
-
-                    query = searchRequest.Query;
-                }
-                catch { }
-            }
-            else if (searchType == ElasticSettings.QueryStringSearchType)
+            try
             {
-                query = new QueryStringQuery
-                {
-                    Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                    Query = term
-                };
+                var searchDescriptor = await _elasticIndexManager.DeserializeSearchDescriptor(tokenizedContent);
+                formatSearch = _ => searchDescriptor;
             }
-
-            query ??= new MultiMatchQuery
+            catch (Exception e)
             {
-                Fields = searchSettings.DefaultSearchFields,
-                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                Query = term
-            };
-
-            result.ContentItemIds = await _elasticsearchQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
-            result.Success = true;
+                _logger.LogError(e, "Incorrect Elasticsearch search query syntax provided in search.");
+            }
         }
-        catch (Exception e)
+        else if (searchType == ElasticSettings.QueryStringSearchType)
         {
-            _logger.LogError(e, "Incorrect Elasticsearch search query syntax provided in search.");
+            var analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index);
+            formatSearch = descriptor =>
+                descriptor.Query(q => q.QueryString(qs => qs
+                   .Fields(searchSettings.DefaultSearchFields)
+                   .Analyzer(analyzer)
+                   .Query(term)
+                ));
         }
 
+        if (formatSearch == null)
+        {
+            var analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index);
+            formatSearch = descriptor =>
+               descriptor.Query(q => q.MultiMatch(qs => qs
+                  .Fields(searchSettings.DefaultSearchFields)
+                  .Analyzer(analyzer)
+                  .Query(term)
+               ));
+        }
+
+        var elasticTopDocs = await _elasticIndexManager.SearchAsync(index, descriptor =>
+            formatSearch(descriptor)
+            .Size(pageSize)
+            .From(start));
+
+        result.ContentItemIds = elasticTopDocs.TopDocs.Select(item => item.GetValueOrDefault("ContentItemId").ToString()).ToList();
+        result.Success = true;
         return result;
     }
 }

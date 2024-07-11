@@ -69,7 +69,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
             var services = scope.ServiceProvider;
             var contentManager = services.GetRequiredService<IContentManager>();
             var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
-            var elasticIndexManager = services.GetRequiredService<ElasticIndexManager>();
+            var elasticIndexManager = services.GetRequiredService<IElasticIndexManager>();
             var elasticIndexSettingsService = services.GetRequiredService<ElasticIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<ElasticIndexingContentHandler>>();
 

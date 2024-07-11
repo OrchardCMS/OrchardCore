@@ -18,20 +18,20 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticQuerySource : IQuerySource
     {
-        private readonly IElasticQueryService _queryService;
+        private readonly IElasticIndexManager _elasticQueryManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly TemplateOptions _templateOptions;
 
         public ElasticQuerySource(
-            IElasticQueryService queryService,
+            IElasticIndexManager elasticQueryManager,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
             JavaScriptEncoder javaScriptEncoder,
             IOptions<TemplateOptions> templateOptions)
         {
-            _queryService = queryService;
+            _elasticQueryManager = elasticQueryManager;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
             _javaScriptEncoder = javaScriptEncoder;
@@ -40,10 +40,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string Name => "Elasticsearch";
 
-        public Query Create()
-        {
-            return new ElasticQuery();
-        }
+        public Query Create() => new ElasticQuery();
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
@@ -51,7 +48,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var elasticQueryResults = new ElasticQueryResults();
 
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(elasticQuery.Index, tokenizedContent);
+            var searchDescriptor = await _elasticQueryManager.DeserializeSearchDescriptor(tokenizedContent);
+            var docs = await _elasticQueryManager.SearchAsync(elasticQuery.Index, _ => searchDescriptor);
             elasticQueryResults.Count = docs.Count;
 
             if (elasticQuery.ReturnContentItems)

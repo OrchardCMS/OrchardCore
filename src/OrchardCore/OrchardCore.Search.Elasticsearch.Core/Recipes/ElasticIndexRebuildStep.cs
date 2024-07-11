@@ -31,7 +31,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                 {
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
-                    var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+                    var elasticIndexManager = scope.ServiceProvider.GetRequiredService<IElasticIndexManager>();
 
                     var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
 

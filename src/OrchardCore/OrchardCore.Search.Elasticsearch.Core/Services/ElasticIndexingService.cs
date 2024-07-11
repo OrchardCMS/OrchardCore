@@ -29,7 +29,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly ElasticIndexManager _indexManager;
+        private readonly IElasticIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ElasticConnectionOptions _elasticConnectionOptions;
         private readonly ISiteService _siteService;
@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             IShellHost shellHost,
             ShellSettings shellSettings,
             ElasticIndexSettingsService elasticIndexSettingsService,
-            ElasticIndexManager indexManager,
+            IElasticIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             ISiteService siteService,
@@ -231,11 +231,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Creates a new index.
         /// </summary>
-        public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
+        public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            await _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
-            await RebuildIndexAsync(elasticIndexSettings);
+            var indexCreated = await RebuildIndexAsync(elasticIndexSettings);
+            if (indexCreated)
+            {
+                await _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
+            }
+            return indexCreated;
         }
+
 
         /// <summary>
         /// Update an existing index.
@@ -264,22 +269,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Restarts the indexing process from the beginning in order to update
         /// current content items. It doesn't delete existing entries from the index.
         /// </summary>
-        public async Task ResetIndexAsync(string indexName)
+        public Task<bool> ResetIndexAsync(string indexName)
         {
-            await _indexManager.SetLastTaskId(indexName, 0);
+            return _indexManager.SetLastTaskId(indexName, 0);
         }
 
         /// <summary>
         /// Deletes and recreates the full index content.
         /// </summary>
-        public async Task RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
+        public async Task<bool> RebuildIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            await _indexManager.DeleteIndex(elasticIndexSettings.IndexName);
-            await _indexManager.CreateIndexAsync(elasticIndexSettings);
-            await ResetIndexAsync(elasticIndexSettings.IndexName);
+            return
+                await _indexManager.DeleteIndex(elasticIndexSettings.IndexName) &&
+                await _indexManager.CreateIndexAsync(elasticIndexSettings.IndexName, elasticIndexSettings.AnalyzerName, elasticIndexSettings.StoreSourceData);
         }
 
-        public async Task<ElasticSettings> GetElasticSettingsAsync()        
+        public async Task<ElasticSettings> GetElasticSettingsAsync()
             => await _siteService.GetSettingsAsync<ElasticSettings>() ?? new ElasticSettings();
 
         /// <summary>

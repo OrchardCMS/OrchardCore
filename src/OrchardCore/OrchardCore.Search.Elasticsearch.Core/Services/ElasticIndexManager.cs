@@ -1,9 +1,9 @@
-
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -16,14 +16,13 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Mappings;
-using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     /// <summary>
     /// Provides methods to manage Elasticsearch indices.
     /// </summary>
-    public sealed class ElasticIndexManager
+    public sealed class ElasticIndexManager : IElasticIndexManager
     {
         private const string _separator = "_";
 
@@ -32,7 +31,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private readonly ElasticsearchOptions _elasticsearchOptions;
-        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
         private readonly string _lastTaskId = "last_task_id";
         private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -89,10 +87,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </para>
         /// </summary>
         /// <returns><see cref="bool"/>.</returns>
-        public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
+        public async Task<bool> CreateIndexAsync(string indexName, string analyzerName, bool storeSourceData)
         {
             // Get Index name scoped by ShellName
-            if (await ExistsAsync(elasticIndexSettings.IndexName))
+            if (await ExistsAsync(indexName))
             {
                 return true;
             }
@@ -102,7 +100,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var indexSettingsDescriptor = new IndexSettingsDescriptor();
 
             // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
-            var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer" ? null : elasticIndexSettings.AnalyzerName) ?? "standard";
+            analyzerName = (analyzerName == "standardanalyzer" ? null : analyzerName) ?? "standard";
 
             if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
             {
@@ -117,12 +115,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var IndexingState = new FluentDictionary<string, object>() {
                     { _lastTaskId, 0 }
                 };
-            var fullIndexName = GetFullIndexName(elasticIndexSettings.IndexName);
+            var fullIndexName = GetFullIndexName(indexName);
             var createIndexDescriptor = new CreateIndexDescriptor(fullIndexName)
                 .Settings(s => indexSettingsDescriptor)
                 .Map(m => m
                     .SourceField(s => s
-                        .Enabled(elasticIndexSettings.StoreSourceData)
+                        .Enabled(storeSourceData)
                         .Excludes([IndexingConstants.DisplayTextAnalyzedKey]))
                     .Meta(me => IndexingState));
 
@@ -197,7 +195,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     )
                 );
 
-            return response.Acknowledged;
+            if (!response.IsValid)
+            {
+                _logger.LogError("Error while creating index {indexName}: {error}", fullIndexName, response.ServerError);
+            }
+            return response.IsValid;
         }
 
         private IAnalyzer CreateAnalyzer(JsonObject analyzerProperties)
@@ -285,18 +287,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>.
         /// </summary>
-        public async Task SetLastTaskId(string indexName, long lastTaskId)
+        public async Task<bool> SetLastTaskId(string indexName, long lastTaskId)
         {
             var IndexingState = new FluentDictionary<string, object>() {
                 { _lastTaskId, lastTaskId }
             };
 
-            var putMappingRequest = new PutMappingRequest(GetFullIndexName(indexName))
+            var fullIndexName = GetFullIndexName(indexName);
+            var putMappingRequest = new PutMappingRequest(fullIndexName)
             {
                 Meta = IndexingState
             };
 
-            await _elasticClient.Indices.PutMappingAsync(putMappingRequest);
+            var result = await _elasticClient.Indices.PutMappingAsync(putMappingRequest);
+            if (!result.IsValid)
+            {
+                _logger.LogError("Error while setting last TaskId for index {indexName}: {error}", fullIndexName, result.ServerError);
+            }
+            return result.IsValid;
         }
 
         /// <summary>
@@ -403,32 +411,18 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            var documents = new List<Dictionary<string, object>>();
+            var result = await _elasticClient.BulkAsync(descriptor =>
+                descriptor
+                .Index(GetFullIndexName(indexName))
+                .IndexMany(
+                    indexDocuments.Select(CreateElasticDocument),
+                    (indexDescriptor, item) => indexDescriptor.Id(item.GetValueOrDefault("ContentItemId").ToString())
+                    )
+            );
 
-            foreach (var indexDocument in indexDocuments)
+            if (result.Errors)
             {
-                documents.Add(CreateElasticDocument(indexDocument));
-            }
-
-            if (documents.Count > 0)
-            {
-                var descriptor = new BulkDescriptor();
-
-                foreach (var document in documents)
-                {
-                    descriptor.Index<Dictionary<string, object>>(op => op
-                        .Id(document.GetValueOrDefault("ContentItemId").ToString())
-                        .Document(document)
-                        .Index(GetFullIndexName(indexName))
-                    );
-                }
-
-                var result = await _elasticClient.BulkAsync(d => descriptor);
-
-                if (result.Errors)
-                {
-                    _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
-                }
+                _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
             }
         }
 
@@ -436,80 +430,53 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Returns results from a search made with a NEST QueryContainer query.
         /// </summary>
         /// <param name="indexName"></param>
-        /// <param name="query"></param>
-        /// <param name="sort"></param>
-        /// <param name="from"></param>
-        /// <param name="size"></param>
+        /// <param name="selector"></param>
         /// <returns><see cref="ElasticTopDocs"/>.</returns>
-        public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
+        public async Task<ElasticTopDocs> SearchAsync(string indexName, Func<SearchDescriptor<Dictionary<string, object>>, SearchDescriptor<Dictionary<string, object>>> selector)
         {
             var elasticTopDocs = new ElasticTopDocs();
 
-            if (await ExistsAsync(indexName))
+            var fullIndexName = GetFullIndexName(indexName);
+            try
             {
-                var fullIndexName = GetFullIndexName(indexName);
-
-                var searchRequest = new SearchRequest(fullIndexName)
-                {
-                    Query = query,
-                    From = from,
-                    Size = size,
-                    Sort = sort
-                };
-
-                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
+                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(descriptior => selector(descriptior)
+                    .Index(fullIndexName)
+                );
 
                 if (searchResponse.IsValid)
                 {
-                    elasticTopDocs.Count = searchResponse.Hits.Count;
-
-                    var topDocs = new List<Dictionary<string, object>>();
-
-                    var documents = searchResponse.Documents.GetEnumerator();
-                    var hits = searchResponse.Hits.GetEnumerator();
-
-                    while (documents.MoveNext() && hits.MoveNext())
-                    {
-                        var document = documents.Current;
-
-                        if (document != null)
-                        {
-                            topDocs.Add(document);
-
-                            continue;
-                        }
-
-                        var hit = hits.Current;
-
-                        var topDoc = new Dictionary<string, object>
+                    elasticTopDocs.Count = searchResponse.Total;
+                    elasticTopDocs.TopDocs = searchResponse.Hits.Select(hit =>
+                        hit.Source ?? new Dictionary<string, object>
                         {
                             { "ContentItemId", hit.Id }
-                        };
-
-                        topDocs.Add(topDoc);
-                    }
-
-                    elasticTopDocs.TopDocs = topDocs;
+                        }
+                    ).ToList();
+                    elasticTopDocs.Fields =searchResponse.Hits
+                        .Where(hit => hit.Fields != null)
+                        .Select(hit => hit.Fields.ToDictionary(item => item.Key, item => (object)item.Value.As<string[]>()))
+                        .ToList();
                 }
-
-                _timestamps[fullIndexName] = _clock.UtcNow;
+                else
+                {
+                    _logger.LogError("Received failure response from Elasticsearch: {ServerError}", searchResponse.ServerError);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
             }
 
+            elasticTopDocs.TopDocs ??= new List<Dictionary<string, object>>();
             return elasticTopDocs;
         }
 
-        /// <summary>
-        /// Returns results from a search made with NEST Fluent DSL query.
-        /// </summary>
-        public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
+        public async Task<SearchDescriptor<Dictionary<string, object>>> DeserializeSearchDescriptor(string request)
         {
-            if (await ExistsAsync(indexName))
-            {
-                await elasticClient(_elasticClient);
-
-                _timestamps[GetFullIndexName(indexName)] = _clock.UtcNow;
-            }
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(request));
+            return await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchDescriptor<Dictionary<string, object>>>(stream);
         }
+
 
         private static Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
         {
@@ -575,7 +542,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return entries;
         }
 
-        public string GetFullIndexName(string indexName)
+        private string GetFullIndexName(string indexName)
         {
             ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
 

@@ -19,14 +19,14 @@ namespace OrchardCore.Search.Elasticsearch
     public class ElasticIndexInitializerService : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
-        private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly IElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ElasticIndexInitializerService(
             ShellSettings shellSettings,
-            ElasticIndexManager elasticIndexManager,
+            IElasticIndexManager elasticIndexManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
             IStringLocalizer<ElasticIndexInitializerService> localizer,
             ILogger<ElasticIndexInitializerService> logger)
@@ -49,7 +49,7 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticIndexSettingsService>();
                 var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
-                var indexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+                var indexManager = scope.ServiceProvider.GetRequiredService<IElasticIndexManager>();
 
                 var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync();
                 var createdIndexes = new List<string>();
@@ -58,8 +58,10 @@ namespace OrchardCore.Search.Elasticsearch
                 {
                     if (!await indexManager.ExistsAsync(settings.IndexName))
                     {
-                        await elasticIndexingService.CreateIndexAsync(settings);
-                        createdIndexes.Add(settings.IndexName);
+                        if (await elasticIndexingService.CreateIndexAsync(settings))
+                        {
+                            createdIndexes.Add(settings.IndexName);
+                        }
                     }
                 }
 
