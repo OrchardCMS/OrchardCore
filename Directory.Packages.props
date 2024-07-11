@@ -1,15 +1,12 @@
 <Project>
-
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
     <DotNetXunitVersion>2.3.0</DotNetXunitVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.1.2" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.310.2" />
@@ -44,7 +41,6 @@
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.4" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.6.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="2.20.0" />
-
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
       match the IdentityModel version transitively referenced by OpenIddict to ensure we don't
@@ -52,7 +48,6 @@
 
       See https://github.com/OrchardCMS/OrchardCore/pull/16057 for more information.
     -->
-
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
@@ -79,6 +74,7 @@
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.1.2" />
     <PackageVersion Include="StackExchange.Redis" Version="2.8.0" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="xunit" Version="2.8.1" />
@@ -91,21 +87,18 @@
     <PackageVersion Include="YesSql.Filters.Query" Version="5.0.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
-
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
     <AspNetCorePackagesVersion>8.0.7</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>8.0.7</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
-
   <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
   below. -->
   <!--<PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
     <AspNetCorePackagesVersion>7.0.14</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>7.0.14</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>-->
-
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
@@ -118,11 +111,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
   </ItemGroup>
-
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
     <!-- Microsoft.Extensions.Http.Resilience is not here because it diverged from the common Microsoft.Extensions versioning. -->
   </ItemGroup>
-
 </Project>

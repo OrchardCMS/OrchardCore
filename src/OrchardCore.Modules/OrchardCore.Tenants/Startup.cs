@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell;
@@ -74,6 +75,11 @@ namespace OrchardCore.Tenants
             {
                 return serviceProvider.GetRequiredService<ITenantFileProvider>();
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -92,6 +98,8 @@ namespace OrchardCore.Tenants
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
                 }
             });
+
+            app.UseSwagger();
         }
 
         private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>
