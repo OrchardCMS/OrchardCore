@@ -8,7 +8,6 @@
 
     Provides features to manage tenants from the Admin UI</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
-    <OpenApiGenerateDocumentsOnBuild>false</OpenApiGenerateDocumentsOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +32,6 @@
 
   <ItemGroup>
     <PackageReference Include="NJsonSchema" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
 </Project>
