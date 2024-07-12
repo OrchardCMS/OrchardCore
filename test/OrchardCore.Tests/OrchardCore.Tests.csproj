@@ -81,10 +81,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Localization\en\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Localization\en\OrchardCore.Tests.po">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
