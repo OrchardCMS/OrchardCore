@@ -78,7 +78,6 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);
         }
 
-
         [Theory]
         [InlineData("en", "Hello en !")]
         [InlineData("zh-CN", "你好！")]
