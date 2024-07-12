@@ -18,8 +18,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.Configure<RouteOptions>(options =>
                 {
-                    // The Cors module is designed to deal with CORS, so we skip checking for unhandled security metadata by default.
-                    // In addition to a small performance benefit to skip checking for security metadata on endpoint.
+                    // The Cors module is designed to handle CORS, thus we skip checking for unhandled security metadata by default.
+                    // Additionally, skipping security metadata checks on the endpoint provides a minor performance benefit.
                     options.SuppressCheckForUnhandledSecurityMetadata = true;
                 });
             },
