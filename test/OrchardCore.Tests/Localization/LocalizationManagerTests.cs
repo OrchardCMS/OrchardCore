@@ -4,6 +4,7 @@ using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Tests.Localization
 {
     public class LocalizationManagerTests
@@ -86,6 +87,7 @@ namespace OrchardCore.Tests.Localization
         {
             var context = new SiteContext();
             await context.InitializeAsync();
+           
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
@@ -108,8 +110,8 @@ namespace OrchardCore.Tests.Localization
 
             await context.UsingTenantScopeAsync(scope =>
             {
+                using var cultureScope = CultureScope.Create(culture, culture);
                 var S = scope.ServiceProvider.GetRequiredService<IStringLocalizer<LocalizationManagerTests>>();
-                
                 Assert.Equal(expected, S["hello!"]);
                 return Task.CompletedTask;
             });
