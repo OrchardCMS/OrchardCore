@@ -81,10 +81,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Localization\en\OrchardCore.Tests.po">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Localization\zh-CN\OrchardCore.Tests.po">
+    <None Update="Localization\*\OrchardCore.Tests.po">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
