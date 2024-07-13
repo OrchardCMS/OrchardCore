@@ -295,7 +295,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup(SetupApiViewModel model)
+        public async Task<ActionResult> Setup(SetupApiViewModel model, string recipe = null)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -393,17 +393,14 @@ namespace OrchardCore.Tenants.Controllers
 
             if (string.IsNullOrEmpty(recipeName))
             {
-                if (model.Recipe == null)
+                if (recipe == null)
                 {
                     return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
                 }
 
                 var tempFilename = Path.GetTempFileName();
 
-                using (var fs = System.IO.File.Create(tempFilename))
-                {
-                    await model.Recipe.CopyToAsync(fs);
-                }
+                await System.IO.File.WriteAllTextAsync(tempFilename, recipe);
 
                 var fileProvider = new PhysicalFileProvider(Path.GetDirectoryName(tempFilename));
 
