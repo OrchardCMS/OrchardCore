@@ -5,6 +5,7 @@ using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
+
 namespace OrchardCore.Tests.Localization
 {
     public class LocalizationManagerTests
@@ -93,28 +94,36 @@ namespace OrchardCore.Tests.Localization
                 var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
                 var featureIds = new string[] { "OrchardCore.Localization.ContentLanguageHeader", "OrchardCore.Localization" };
                 var features = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
+
                 await shellFeaturesManager.EnableFeaturesAsync(features, true);
+
                 var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
                 var siteSettings = await siteService.LoadSiteSettingsAsync();
+
                 siteSettings.Alter<LocalizationSettings>("LocalizationSettings", localizationSettings =>
                 {
                     localizationSettings.DefaultCulture = culture;
                     localizationSettings.SupportedCultures = [culture];
                 });
+
                 await siteService.UpdateSiteSettingsAsync(siteSettings);
+
                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+
                 await shellHost.ReleaseShellContextAsync(shellSettings);
             });
 
             await context.UsingTenantScopeAsync(scope =>
             {
                 using var cultureScope = CultureScope.Create(culture, culture);
-                var S = scope.ServiceProvider.GetRequiredService<IStringLocalizer<LocalizationManagerTests>>();
-                Assert.Equal(expected, S["hello!"]);
+                var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<LocalizationManagerTests>>();
+                
+                // Assert
+                Assert.Equal(expected, localizer["hello!"]);
+
                 return Task.CompletedTask;
             });
         }
-
     }
 }
