@@ -1,10 +1,9 @@
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Entities;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Tests.Localization
 {
