@@ -27,9 +27,11 @@ body > footer {
 html[data-bs-theme="light"] body > footer {
     background-color: #f5f5f5;
 }
+
 html[data-bs-theme="dark"] body > footer {
     background-color: #343a40;
 }
+
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
