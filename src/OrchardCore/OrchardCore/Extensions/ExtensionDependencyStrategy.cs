@@ -5,9 +5,7 @@ namespace OrchardCore.Environment.Extensions
 {
     public class ExtensionDependencyStrategy : IExtensionDependencyStrategy
     {
-        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
-        {
-            return observer.Dependencies.Contains(subject.Id);
-        }
+        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject) =>
+            observer.Dependencies.Contains(subject.Id);
     }
 }

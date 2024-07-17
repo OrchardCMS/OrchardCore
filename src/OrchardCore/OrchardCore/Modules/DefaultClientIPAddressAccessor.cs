@@ -8,10 +8,8 @@ public class DefaultClientIPAddressAccessor : IClientIPAddressAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public DefaultClientIPAddressAccessor(IHttpContextAccessor httpContextAccessor)
-    {
+    public DefaultClientIPAddressAccessor(IHttpContextAccessor httpContextAccessor) =>
         _httpContextAccessor = httpContextAccessor;
-    }
 
     public Task<IPAddress> GetIPAddressAsync()
     {

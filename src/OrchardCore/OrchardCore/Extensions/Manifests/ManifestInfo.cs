@@ -5,10 +5,7 @@ namespace OrchardCore.Environment.Extensions.Manifests
 {
     public class ManifestInfo : IManifestInfo
     {
-        public ManifestInfo(ModuleAttribute moduleInfo)
-        {
-            ModuleInfo = moduleInfo;
-        }
+        public ManifestInfo(ModuleAttribute moduleInfo) => ModuleInfo = moduleInfo;
 
         public bool Exists => ModuleInfo.Exists;
         public string Name => ModuleInfo.Name ?? ModuleInfo.Id;

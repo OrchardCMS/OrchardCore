@@ -11,10 +11,7 @@ namespace OrchardCore.Environment.Shell
     {
         private readonly IHostEnvironment _hostingEnvironment;
 
-        public ShellOptionsSetup(IHostEnvironment hostingEnvironment)
-        {
-            _hostingEnvironment = hostingEnvironment;
-        }
+        public ShellOptionsSetup(IHostEnvironment hostingEnvironment) => _hostingEnvironment = hostingEnvironment;
 
         public void Configure(ShellOptions options)
         {

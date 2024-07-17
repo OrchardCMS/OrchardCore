@@ -42,10 +42,8 @@ namespace OrchardCore.Environment.Extensions
             throw new InvalidOperationException($"Could not resolve features for type {dependency.Name}.");
         }
 
-        public IEnumerable<Type> GetTypesForFeature(IFeatureInfo feature)
-        {
-            return _features.Where(kv => kv.Value.Contains(feature)).Select(kv => kv.Key);
-        }
+        public IEnumerable<Type> GetTypesForFeature(IFeatureInfo feature) =>
+            _features.Where(kv => kv.Value.Contains(feature)).Select(kv => kv.Key);
 
         public void TryAdd(Type type, IFeatureInfo feature)
         {

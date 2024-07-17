@@ -12,10 +12,8 @@ namespace OrchardCore.Environment.Shell.Configuration
     {
         private readonly string _tenants;
 
-        public ShellsSettingsSources(IOptions<ShellOptions> shellOptions)
-        {
+        public ShellsSettingsSources(IOptions<ShellOptions> shellOptions) =>
             _tenants = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, OrchardCoreConstants.Shell.TenantsFileName);
-        }
 
         public Task AddSourcesAsync(IConfigurationBuilder builder)
         {

@@ -41,14 +41,12 @@ namespace OrchardCore.Environment.Shell
             _tenantsSettingsSources = tenantsSettingsSources;
         }
 
-        public ShellSettings CreateDefaultSettings()
-        {
-            return new ShellSettings
+        public ShellSettings CreateDefaultSettings() =>
+            new ShellSettings
             (
                 new ShellConfiguration(_configuration),
                 new ShellConfiguration(_configuration)
             );
-        }
 
         public async Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
         {

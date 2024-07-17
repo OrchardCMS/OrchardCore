@@ -172,9 +172,7 @@ namespace OrchardCore.Environment.Shell
                 .ToArray();
         }
 
-        private bool DefaultIsCatchAll()
-        {
-            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
-        }
+        private bool DefaultIsCatchAll() =>
+            _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
     }
 }

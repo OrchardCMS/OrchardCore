@@ -15,10 +15,8 @@ namespace OrchardCore.Environment.Extensions.Features
         /// Constructs a provider instance.
         /// </summary>
         /// <param name="featureBuilderEvents"></param>
-        public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
-        {
+        public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents) =>
             _featureBuilderEvents = featureBuilderEvents;
-        }
 
         public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
         {

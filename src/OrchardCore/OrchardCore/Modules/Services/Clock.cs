@@ -82,9 +82,7 @@ namespace OrchardCore.Modules
             return new TimeZone(dateTimeZone.Id, zoneInterval.StandardOffset, zoneInterval.WallOffset, dateTimeZone);
         }
 
-        private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
-        {
-            return provider.GetZoneOrNull(timeZoneId) != null;
-        }
+        private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId) =>
+            provider.GetZoneOrNull(timeZoneId) != null;
     }
 }

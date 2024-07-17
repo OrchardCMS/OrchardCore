@@ -15,10 +15,8 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
         private readonly IExtensionManager _extensionManager;
         private ShellDescriptor _shellDescriptor;
 
-        public AllFeaturesShellDescriptorManager(IExtensionManager extensionManager)
-        {
+        public AllFeaturesShellDescriptorManager(IExtensionManager extensionManager) =>
             _extensionManager = extensionManager;
-        }
 
         public Task<ShellDescriptor> GetShellDescriptorAsync()
         {
@@ -30,9 +28,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             return Task.FromResult(_shellDescriptor);
         }
 
-        public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
-        {
-            return Task.CompletedTask;
-        }
+        public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures) =>
+            Task.CompletedTask;
     }
 }

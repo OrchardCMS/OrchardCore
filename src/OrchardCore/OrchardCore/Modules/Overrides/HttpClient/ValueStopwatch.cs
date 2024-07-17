@@ -12,10 +12,7 @@ internal readonly struct ValueStopwatch
 
     public readonly bool IsActive => _startTimestamp != 0;
 
-    private ValueStopwatch(long startTimestamp)
-    {
-        _startTimestamp = startTimestamp;
-    }
+    private ValueStopwatch(long startTimestamp) => _startTimestamp = startTimestamp;
 
     public static ValueStopwatch StartNew() => new(Stopwatch.GetTimestamp());
 

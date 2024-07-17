@@ -16,10 +16,8 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = [];
         private ServiceCollection _currentFeatureServiceCollection;
 
-        public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection)
-        {
+        public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection) =>
             _innerServiceCollection = innerServiceCollection;
-        }
 
         /// <summary>
         /// A collection of services grouped by their feature information.
@@ -38,15 +36,9 @@ namespace OrchardCore.Environment.Shell.Builders
             }
         }
 
-        public IEnumerator<ServiceDescriptor> GetEnumerator()
-        {
-            return _innerServiceCollection.GetEnumerator();
-        }
+        public IEnumerator<ServiceDescriptor> GetEnumerator() => _innerServiceCollection.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item)
         {
@@ -60,29 +52,18 @@ namespace OrchardCore.Environment.Shell.Builders
             _featureServiceCollections.Clear();
         }
 
-        public bool Contains(ServiceDescriptor item)
-        {
-            return _innerServiceCollection.Contains(item);
-        }
+        public bool Contains(ServiceDescriptor item) => _innerServiceCollection.Contains(item);
 
-        public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
-        {
+        public void CopyTo(ServiceDescriptor[] array, int arrayIndex) =>
             _innerServiceCollection.CopyTo(array, arrayIndex);
-        }
 
-        public bool Remove(ServiceDescriptor item)
-        {
-            return _innerServiceCollection.Remove(item);
-        }
+        public bool Remove(ServiceDescriptor item) => _innerServiceCollection.Remove(item);
 
         public int Count => _innerServiceCollection.Count;
 
         public bool IsReadOnly => _innerServiceCollection.IsReadOnly;
 
-        public int IndexOf(ServiceDescriptor item)
-        {
-            return _innerServiceCollection.IndexOf(item);
-        }
+        public int IndexOf(ServiceDescriptor item) => _innerServiceCollection.IndexOf(item);
 
         public void Insert(int index, ServiceDescriptor item)
         {
@@ -90,10 +71,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _currentFeatureServiceCollection?.Add(item);
         }
 
-        public void RemoveAt(int index)
-        {
-            _innerServiceCollection.RemoveAt(index);
-        }
+        public void RemoveAt(int index) => _innerServiceCollection.RemoveAt(index);
 
         public ServiceDescriptor this[int index]
         {

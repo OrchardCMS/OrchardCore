@@ -17,10 +17,7 @@ namespace OrchardCore.Locking
 
         private readonly Dictionary<string, Semaphore> _semaphores = [];
 
-        public LocalLock(ILogger<LocalLock> logger)
-        {
-            _logger = logger;
-        }
+        public LocalLock(ILogger<LocalLock> logger) => _logger = logger;
 
         /// <summary>
         /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.

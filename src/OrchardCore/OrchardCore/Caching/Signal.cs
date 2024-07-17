@@ -13,14 +13,10 @@ namespace OrchardCore.Environment.Cache
     {
         private readonly ConcurrentDictionary<string, ChangeTokenInfo> _changeTokens;
 
-        public Signal()
-        {
-            _changeTokens = new ConcurrentDictionary<string, ChangeTokenInfo>();
-        }
+        public Signal() => _changeTokens = new ConcurrentDictionary<string, ChangeTokenInfo>();
 
-        public IChangeToken GetToken(string key)
-        {
-            return _changeTokens.GetOrAdd(
+        public IChangeToken GetToken(string key) =>
+            _changeTokens.GetOrAdd(
                 key,
                 _ =>
                 {
@@ -29,7 +25,6 @@ namespace OrchardCore.Environment.Cache
                     return new ChangeTokenInfo(changeToken, cancellationTokenSource);
                 })
                 .ChangeToken;
-        }
 
         public void SignalToken(string key)
         {

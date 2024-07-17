@@ -20,9 +20,6 @@ namespace OrchardCore.Modules
             DateTimeZone = dateTimeZone;
         }
 
-        public override string ToString()
-        {
-            return $"(GMT{StandardOffset}) {TimeZoneId} ({WallOffset:+HH:mm})";
-        }
+        public override string ToString() => $"(GMT{StandardOffset}) {TimeZoneId} ({WallOffset:+HH:mm})";
     }
 }

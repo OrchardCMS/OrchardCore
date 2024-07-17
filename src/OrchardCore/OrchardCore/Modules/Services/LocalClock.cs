@@ -20,18 +20,10 @@ namespace OrchardCore.Modules
             _calendarManager = calendarManager;
         }
 
-        public Task<DateTimeOffset> LocalNowAsync
-        {
-            get
-            {
-                return GetLocalNowAsync();
-            }
-        }
+        public Task<DateTimeOffset> LocalNowAsync => GetLocalNowAsync();
 
-        private async Task<DateTimeOffset> GetLocalNowAsync()
-        {
-            return _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
-        }
+        private async Task<DateTimeOffset> GetLocalNowAsync() =>
+            _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
 
         // Caching the result per request.
         public async Task<ITimeZone> GetLocalTimeZoneAsync() => _timeZone ??= await LoadLocalTimeZoneAsync();

@@ -107,15 +107,12 @@ namespace OrchardCore.Environment.Shell.Builders
         /// core components necessary for the desired scenario.
         /// </summary>
         /// <returns></returns>
-        private ShellDescriptor MinimumShellDescriptor()
-        {
+        private ShellDescriptor MinimumShellDescriptor() =>
             // Load default features from the list of registered ShellFeature instances in the DI
-
-            return new ShellDescriptor
+            new ShellDescriptor
             {
                 SerialNumber = -1,
                 Features = new List<ShellFeature>(_shellFeatures)
             };
-        }
     }
 }

@@ -345,13 +345,11 @@ namespace OrchardCore.Environment.Extensions
             }
         }
 
-        private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
-        {
-            return featuresToOrder
+        private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder) =>
+            featuresToOrder
                 .OrderBy(x => x.Id)
                 .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
                 .ToArray();
-        }
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
@@ -384,14 +382,9 @@ namespace OrchardCore.Environment.Extensions
             return attribute?.FeatureName ?? extensionId;
         }
 
-        private static bool IsComponentType(Type type)
-        {
-            return type.IsClass && !type.IsAbstract && type.IsPublic;
-        }
+        private static bool IsComponentType(Type type) => type.IsClass && !type.IsAbstract && type.IsPublic;
 
-        private static bool SkipExtensionFeatureRegistration(Type type)
-        {
-            return FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
-        }
+        private static bool SkipExtensionFeatureRegistration(Type type) =>
+            FeatureTypeDiscoveryAttribute.GetFeatureTypeDiscoveryForType(type)?.SkipExtension ?? false;
     }
 }

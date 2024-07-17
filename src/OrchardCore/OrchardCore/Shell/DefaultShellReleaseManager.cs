@@ -8,10 +8,7 @@ public class DefaultShellReleaseManager : IShellReleaseManager
     private bool _release;
     private bool _deferredTaskAdded;
 
-    public void SuspendReleaseRequest()
-    {
-        _release = false;
-    }
+    public void SuspendReleaseRequest() => _release = false;
 
     public void RequestRelease()
     {

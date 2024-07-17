@@ -17,10 +17,8 @@ namespace OrchardCore.Localization
         /// Creates a new instance of <see cref="DefaultCalendarManager"/>.
         /// </summary>
         /// <param name="calendarSelectors">A list of <see cref="ICalendarSelector"/>.</param>
-        public DefaultCalendarManager(IEnumerable<ICalendarSelector> calendarSelectors)
-        {
+        public DefaultCalendarManager(IEnumerable<ICalendarSelector> calendarSelectors) =>
             _calendarSelectors = calendarSelectors;
-        }
 
         /// <inheritdocs />
         public async Task<CalendarName> GetCurrentCalendar()

@@ -8,10 +8,8 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private readonly IShellConfiguration _shellConfiguration;
 
-        public ShellContextOptionsSetup(IShellConfiguration shellConfiguration)
-        {
+        public ShellContextOptionsSetup(IShellConfiguration shellConfiguration) =>
             _shellConfiguration = shellConfiguration;
-        }
 
         public void Configure(ShellContextOptions options)
         {
