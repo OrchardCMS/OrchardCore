@@ -10,10 +10,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
         private string ContentType { get; set; }
 
-        public ContentTypeCreateResourceBuilder(string contentType)
-        {
-            ContentType = contentType;
-        }
+        public ContentTypeCreateResourceBuilder(string contentType) => ContentType = contentType;
 
         public ContentPartBuilder WithContentPart(string contentPartName)
         {

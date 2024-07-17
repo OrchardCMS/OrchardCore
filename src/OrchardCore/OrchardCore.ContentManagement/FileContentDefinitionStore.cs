@@ -9,10 +9,8 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IDocumentManager<IFileDocumentStore, ContentDefinitionRecord> _documentManager;
 
-        public FileContentDefinitionStore(IDocumentManager<IFileDocumentStore, ContentDefinitionRecord> documentManager)
-        {
+        public FileContentDefinitionStore(IDocumentManager<IFileDocumentStore, ContentDefinitionRecord> documentManager) =>
             _documentManager = documentManager;
-        }
 
         /// <inheritdoc />
         public Task<ContentDefinitionRecord> LoadContentDefinitionAsync() => _documentManager.GetOrCreateMutableAsync();

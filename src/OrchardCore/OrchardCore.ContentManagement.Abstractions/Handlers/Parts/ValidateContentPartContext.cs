@@ -15,10 +15,8 @@ public class ValidateContentPartContext : ValidateContentContext
 
 public static class ValidateContentPartContextExtensions
 {
-    public static void Fail(this ValidateContentPartContext context, ValidationResult error)
-    {
+    public static void Fail(this ValidateContentPartContext context, ValidationResult error) =>
         context.ContentValidateResult.Fail(error);
-    }
 
     public static void Fail(this ValidateContentPartContext context, string errorMessage, string propertyName)
     {

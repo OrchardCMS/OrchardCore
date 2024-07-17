@@ -8,8 +8,5 @@ public class ImportContentFieldContext : ContentFieldContextBase
     public ContentItem OriginalContentItem { get; set; }
 
     public ImportContentFieldContext(ContentItem contentItem, ContentItem originalContentItem = null)
-        : base(contentItem)
-    {
-        OriginalContentItem = originalContentItem;
-    }
+        : base(contentItem) => OriginalContentItem = originalContentItem;
 }

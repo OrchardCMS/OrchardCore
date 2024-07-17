@@ -5,9 +5,6 @@ namespace OrchardCore.ContentManagement.Handlers
         public ContentItem CloneContentItem { get; set; }
 
         public CloneContentContext(ContentItem contentItem, ContentItem cloneContentItem)
-            : base(contentItem)
-        {
-            CloneContentItem = cloneContentItem;
-        }
+            : base(contentItem) => CloneContentItem = cloneContentItem;
     }
 }

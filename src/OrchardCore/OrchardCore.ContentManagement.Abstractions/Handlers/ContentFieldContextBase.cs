@@ -4,10 +4,7 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public class ContentFieldContextBase
     {
-        protected ContentFieldContextBase(ContentItem contentItem)
-        {
-            ContentItem = contentItem;
-        }
+        protected ContentFieldContextBase(ContentItem contentItem) => ContentItem = contentItem;
 
         public ContentItem ContentItem { get; private set; }
 

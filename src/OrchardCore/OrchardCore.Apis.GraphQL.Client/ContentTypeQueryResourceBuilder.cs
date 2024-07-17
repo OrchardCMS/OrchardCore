@@ -12,10 +12,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         private readonly Dictionary<string, object> _queries = [];
         private readonly List<ContentTypeQueryResourceBuilder> _nested = [];
 
-        public ContentTypeQueryResourceBuilder(string contentType)
-        {
-            _contentType = contentType.ToGraphQLStringFormat();
-        }
+        public ContentTypeQueryResourceBuilder(string contentType) => _contentType = contentType.ToGraphQLStringFormat();
 
         public ContentTypeQueryResourceBuilder WithField(string name)
         {
@@ -45,10 +42,8 @@ namespace OrchardCore.Apis.GraphQL.Client
             return this;
         }
 
-        public ContentTypeQueryResourceBuilder WithQueryStringArgument(string argument, string value)
-        {
-            return WithQueryArgument(argument, $"\"{value}\"");
-        }
+        public ContentTypeQueryResourceBuilder WithQueryStringArgument(string argument, string value) =>
+            WithQueryArgument(argument, $"\"{value}\"");
 
         public ContentTypeQueryResourceBuilder WithQueryArgument(string argument, string fieldName, string fieldValue)
         {
@@ -74,10 +69,8 @@ namespace OrchardCore.Apis.GraphQL.Client
             return this;
         }
 
-        public ContentTypeQueryResourceBuilder WithQueryStringArgument(string argument, string fieldName, string fieldValue)
-        {
-            return WithQueryArgument(argument, fieldName, $"\"{fieldValue}\"");
-        }
+        public ContentTypeQueryResourceBuilder WithQueryStringArgument(string argument, string fieldName, string fieldValue) =>
+            WithQueryArgument(argument, fieldName, $"\"{fieldValue}\"");
 
         public ContentTypeQueryResourceBuilder WithNestedQueryArgument(string argument, string fieldName, string fieldValue)
         {

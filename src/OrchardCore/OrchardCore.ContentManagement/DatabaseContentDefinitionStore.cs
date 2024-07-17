@@ -8,10 +8,8 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IDocumentManager<ContentDefinitionRecord> _documentManager;
 
-        public DatabaseContentDefinitionStore(IDocumentManager<ContentDefinitionRecord> documentManager)
-        {
+        public DatabaseContentDefinitionStore(IDocumentManager<ContentDefinitionRecord> documentManager) =>
             _documentManager = documentManager;
-        }
 
         /// <inheritdoc />
         public Task<ContentDefinitionRecord> LoadContentDefinitionAsync() => _documentManager.GetOrCreateMutableAsync();

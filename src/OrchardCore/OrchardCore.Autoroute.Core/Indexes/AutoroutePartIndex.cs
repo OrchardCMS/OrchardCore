@@ -60,10 +60,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
         private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
-        public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        public AutoroutePartIndexProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
         public override Task RemovedAsync(RemoveContentContext context)
         {

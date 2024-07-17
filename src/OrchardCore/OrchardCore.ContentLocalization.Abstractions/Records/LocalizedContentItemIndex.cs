@@ -29,10 +29,7 @@ namespace OrchardCore.ContentLocalization.Records
         private readonly HashSet<string> _partRemoved = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+        public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
         public override Task RemovedAsync(RemoveContentContext context)
         {

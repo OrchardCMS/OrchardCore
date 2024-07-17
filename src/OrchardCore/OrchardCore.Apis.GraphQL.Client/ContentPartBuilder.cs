@@ -10,10 +10,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         private readonly Dictionary<string, string> _keysWithValues = [];
         private readonly List<string> _keys = [];
 
-        public ContentPartBuilder(string contentPartName)
-        {
-            _contentPartName = contentPartName;
-        }
+        public ContentPartBuilder(string contentPartName) => _contentPartName = contentPartName;
 
         public ContentPartBuilder AddField(string name, string value)
         {

@@ -135,19 +135,15 @@ namespace OrchardCore.ContentManagement.Handlers
                 (handler, context, field) => handler.LoadedAsync(fieldContext, field));
         }
 
-        public override Task ValidatingAsync(ValidateContentContext context)
-        {
-            return InvokeHandlers(context,
+        public override Task ValidatingAsync(ValidateContentContext context) =>
+            InvokeHandlers(context,
                 (handler, context, part) => handler.ValidatingAsync(context, part),
                 (handler, context, field) => handler.ValidatingAsync(context, field));
-        }
 
-        public override Task ValidatedAsync(ValidateContentContext context)
-        {
-            return InvokeHandlers(context,
+        public override Task ValidatedAsync(ValidateContentContext context) =>
+            InvokeHandlers(context,
                 (handler, context, part) => handler.ValidatedAsync(context, part),
                 (handler, context, field) => handler.ValidatedAsync(new ValidateContentFieldContext(context.ContentItem), field));
-        }
 
         public override Task DraftSavingAsync(SaveDraftContentContext context)
         {

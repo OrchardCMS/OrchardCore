@@ -11,10 +11,8 @@ namespace OrchardCore.ContentManagement.Cache
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentDefinitionCacheContextProvider(IContentDefinitionManager contentDefinitionManager)
-        {
+        public ContentDefinitionCacheContextProvider(IContentDefinitionManager contentDefinitionManager) =>
             _contentDefinitionManager = contentDefinitionManager;
-        }
 
         public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {

@@ -10,10 +10,7 @@ namespace OrchardCore.Apis.GraphQL.Client
     {
         private readonly HttpClient _client;
 
-        public ContentResource(HttpClient client)
-        {
-            _client = client;
-        }
+        public ContentResource(HttpClient client) => _client = client;
 
         public async Task<JsonObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
         {

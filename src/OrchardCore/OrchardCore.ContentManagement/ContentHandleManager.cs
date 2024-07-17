@@ -8,10 +8,8 @@ namespace OrchardCore.ContentManagement
     {
         private readonly IEnumerable<IContentHandleProvider> _contentHandleProviders;
 
-        public ContentHandleManager(IEnumerable<IContentHandleProvider> contentHandleProviders)
-        {
+        public ContentHandleManager(IEnumerable<IContentHandleProvider> contentHandleProviders) =>
             _contentHandleProviders = contentHandleProviders.OrderBy(x => x.Order);
-        }
 
         public async Task<string> GetContentItemIdAsync(string handle)
         {

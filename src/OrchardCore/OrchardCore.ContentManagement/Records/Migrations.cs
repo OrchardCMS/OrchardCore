@@ -12,10 +12,8 @@ namespace OrchardCore.ContentManagement.Records
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
-        {
+        public Migrations(IContentDefinitionManager contentDefinitionManager) =>
             _contentDefinitionManager = contentDefinitionManager;
-        }
 
         public async Task<int> CreateAsync()
         {

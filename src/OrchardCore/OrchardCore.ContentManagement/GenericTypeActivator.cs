@@ -8,9 +8,6 @@ namespace OrchardCore.ContentManagement
         public Type Type => typeof(T);
 
         /// <inheritdoc />
-        public TInstance CreateInstance()
-        {
-            return new T();
-        }
+        public TInstance CreateInstance() => new T();
     }
 }
