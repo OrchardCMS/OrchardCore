@@ -49,14 +49,11 @@ namespace OrchardCore.Search.Lucene
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
-
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
-            services.AddLuceneQueries();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage.
-            services.AddScoped<LuceneQuerySource>();
-            services.AddScoped<IQuerySource>(sp => sp.GetService<LuceneQuerySource>());
-            services.AddKeyedScoped<IQuerySource>(LuceneQuerySource.SourceName, (sp, key) => sp.GetService<LuceneQuerySource>());
+            services.AddLuceneQueries()
+                .AddQuerySource<LuceneQuerySource>(LuceneQuerySource.SourceName);
+
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();

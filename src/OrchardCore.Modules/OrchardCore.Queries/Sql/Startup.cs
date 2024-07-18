@@ -20,9 +20,7 @@ namespace OrchardCore.Queries.Sql
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
-            services.AddScoped<SqlQuerySource>();
-            services.AddScoped<IQuerySource>(sp => sp.GetService<SqlQuerySource>());
-            services.AddKeyedScoped<IQuerySource>(SqlQuerySource.SourceName, (sp, key) => sp.GetService<SqlQuerySource>());
+            services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
 
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddDataMigration<SqlQueryMigrations>();
