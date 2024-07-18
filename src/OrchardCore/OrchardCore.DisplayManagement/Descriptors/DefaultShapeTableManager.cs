@@ -29,12 +29,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private static readonly object _syncLock = new();
 
-        // Singleton cache to hold a tenant's theme ShapeTable 
+        // Singleton cache to hold a tenant's theme ShapeTable.
         private readonly IDictionary<string, ShapeTable> _shapeTableCache;
 
         private readonly IServiceProvider _serviceProvider;
-        private readonly SemaphoreSlim _semaphore;
         private readonly ILogger _logger;
+
+        private SemaphoreSlim _semaphore;
 
         public DefaultShapeTableManager(
             [FromKeyedServices(nameof(DefaultShapeTableManager))] IDictionary<string, ShapeTable> shapeTableCache,
@@ -43,7 +44,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             _shapeTableCache = shapeTableCache;
             _serviceProvider = serviceProvider;
-            _semaphore = new SemaphoreSlim(1, 1);
             _logger = logger;
         }
 
@@ -51,11 +51,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             // This method is intentionally not awaited since most calls
             // are from cache.
-
             if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
             {
                 return shapeTable;
             }
+
+            _semaphore ??= new SemaphoreSlim(1, 1);
 
             await _semaphore.WaitAsync();
             try
