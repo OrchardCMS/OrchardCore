@@ -36,7 +36,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
         [HttpPost]
         [Admin("ContentLocalization", "ContentLocalization.Localize")]
-        public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
+        public async Task<IActionResult> Localize(string contentItemId, string targetCulture, string returnUrl = null)
         {
             // Invariant culture name is empty so a null value is bound.
             targetCulture ??= string.Empty;
@@ -75,19 +75,19 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (alreadyLocalizedContent != null)
             {
                 await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
-                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId });
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId, returnUrl });
             }
 
             try
             {
                 var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
                 await _notifier.InformationAsync(H["Localized version of the content created successfully."]);
-                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId });
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId, returnUrl });
             }
             catch (InvalidOperationException)
             {
                 await _notifier.WarningAsync(H["Could not create localized version of the content item."]);
-                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId, returnUrl });
             }
         }
     }
