@@ -34,8 +34,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
-
-        private SemaphoreSlim _semaphore;
+        private readonly SemaphoreSlim _semaphore;
 
         public DefaultShapeTableManager(
             [FromKeyedServices(nameof(DefaultShapeTableManager))] IDictionary<string, ShapeTable> shapeTableCache,
@@ -44,6 +43,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             _shapeTableCache = shapeTableCache;
             _serviceProvider = serviceProvider;
+            _semaphore = new SemaphoreSlim(1, 1);
             _logger = logger;
         }
 
@@ -55,8 +55,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 return shapeTable;
             }
-
-            _semaphore ??= new SemaphoreSlim(1, 1);
 
             await _semaphore.WaitAsync();
             try
