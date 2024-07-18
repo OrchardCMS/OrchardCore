@@ -3155,6 +3155,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
         var self = this;
         if (self.canAddMedia) {
           $('#allowedExtensions').val(this.allowedExtensions);
+          $('#fileupload').attr('accept', this.allowedExtensions);
           $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
           $("#mediaApp").show();
 
