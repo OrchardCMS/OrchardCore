@@ -92,10 +92,7 @@ namespace OrchardCore.Resources.Liquid
                         definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    if (!string.IsNullOrEmpty(dependsOn))
-                    {
-                        definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
-                    }
+                    definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
 
                     if (appendVersion.HasValue)
                     {
@@ -154,6 +151,14 @@ namespace OrchardCore.Resources.Liquid
                 // {% script name:"bootstrap" %}
 
                 var setting = resourceManager.RegisterResource("script", name);
+
+                if (customAttributes != null)
+                {
+                    foreach (var attribute in customAttributes)
+                    {
+                        setting.SetAttribute(attribute.Key, attribute.Value);
+                    }
+                }
 
                 if (at != ResourceLocation.Unspecified)
                 {

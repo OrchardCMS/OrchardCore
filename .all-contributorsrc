@@ -3168,6 +3168,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "maksim-markin",
+      "name": "maksim-markin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/172181395?v=4",
+      "profile": "https://github.com/maksim-markin",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

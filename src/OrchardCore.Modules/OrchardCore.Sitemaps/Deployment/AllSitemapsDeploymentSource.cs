@@ -1,17 +1,23 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Deployment
 {
-    public class AllSitemapsDeploymentSource : IDeploymentSource
+    public sealed class AllSitemapsDeploymentSource : IDeploymentSource
     {
         private readonly ISitemapManager _sitemapManager;
+        private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
 
-        public AllSitemapsDeploymentSource(ISitemapManager sitemapManager)
+        public AllSitemapsDeploymentSource(
+            ISitemapManager sitemapManager,
+            IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
         {
             _sitemapManager = sitemapManager;
+            _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -23,7 +29,7 @@ namespace OrchardCore.Sitemaps.Deployment
 
             var sitemaps = await _sitemapManager.GetSitemapsAsync();
 
-            var jArray = JArray.FromObject(sitemaps);
+            var jArray = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions);
 
             result.Steps.Add(new JsonObject
             {
