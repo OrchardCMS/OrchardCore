@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private readonly IDictionary<string, ShapeTable> _shapeTableCache;
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly SemaphoreSlim _semaphore;
         private readonly ILogger _logger;
 
         public DefaultShapeTableManager(
@@ -41,27 +43,33 @@ namespace OrchardCore.DisplayManagement.Descriptors
         {
             _shapeTableCache = shapeTableCache;
             _serviceProvider = serviceProvider;
+            _semaphore = new SemaphoreSlim(1, 1);
             _logger = logger;
         }
 
-        public Task<ShapeTable> GetShapeTableAsync(string themeId)
+        public async Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
             // This method is intentionally not awaited since most calls
             // are from cache.
 
             if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
             {
-                return Task.FromResult(shapeTable);
+                return shapeTable;
             }
 
-            lock (_shapeTableCache)
+            await _semaphore.WaitAsync();
+            try
             {
                 if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
                 {
-                    return Task.FromResult(shapeTable);
+                    return shapeTable;
                 }
 
-                return BuildShapeTableAsync(themeId);
+                return await BuildShapeTableAsync(themeId);
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
