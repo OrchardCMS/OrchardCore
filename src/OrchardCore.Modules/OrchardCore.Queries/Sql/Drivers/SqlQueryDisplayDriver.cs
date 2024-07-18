@@ -45,7 +45,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 return null;
             }
 
-            return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
+            return Initialize<SqlQueryViewModel>("SqlQuery_Edit", async model =>
             {
                 model.ReturnDocuments = query.ReturnContentItems;
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 // Extract query from the query string if we come from the main query editor.
                 if (string.IsNullOrEmpty(metadata.Template))
                 {
-                    updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                    await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
 
             }).Location("Content:5");

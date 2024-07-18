@@ -21,13 +21,29 @@ public sealed class LuceneQueryHandler : QueryHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = new LuceneQueryMetadata
-        {
-            Template = context.Data[nameof(LuceneQueryMetadata.Template)]?.GetValue<string>(),
-            Index = context.Data[nameof(LuceneQueryMetadata.Index)]?.GetValue<string>()
-        };
+        var template = context.Data[nameof(LuceneQueryMetadata.Template)]?.GetValue<string>();
+        var index = context.Data[nameof(LuceneQueryMetadata.Index)]?.GetValue<string>();
 
-        context.Query.Put(metadata);
+        var hasTemplate = !string.IsNullOrEmpty(template);
+        var hasIndex = !string.IsNullOrEmpty(index);
+
+        if (hasTemplate || hasIndex)
+        {
+            var metadata = context.Query.As<LuceneQueryMetadata>();
+
+            if (hasTemplate)
+            {
+                metadata.Template = template;
+            }
+
+            if (hasIndex)
+            {
+                metadata.Index = index;
+            }
+
+            context.Query.Put(metadata);
+        }
+
         context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;

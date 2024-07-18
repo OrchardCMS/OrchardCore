@@ -89,7 +89,7 @@ namespace OrchardCore.Queries.Controllers
                 Queries = [],
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, result.Count, routeData),
-                QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToList(),
+                QuerySourceNames = _serviceProvider.GetServices<IQuerySource>().Select(x => x.Name).ToArray(),
             };
 
             foreach (var query in result.Records)
@@ -134,7 +134,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
+                Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, true),
                 SourceName = id
             };
 
@@ -157,7 +157,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+            var editor = await _displayManager.UpdateEditorAsync(query, _updateModelAccessor.ModelUpdater, true);
 
             if (ModelState.IsValid)
             {
@@ -190,10 +190,8 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesEditViewModel
             {
-                SourceName = query.Source,
                 Name = query.Name,
-                Schema = query.Schema,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, false)
             };
 
             return View(model);
@@ -220,7 +218,7 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+            var editor = await _displayManager.UpdateEditorAsync(query, _updateModelAccessor.ModelUpdater, false);
 
             if (ModelState.IsValid)
             {

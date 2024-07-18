@@ -20,12 +20,16 @@ public sealed class SqlQueryHandler : QueryHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = new SqlQueryMetadata
+        var template = context.Data[nameof(SqlQueryMetadata.Template)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(template))
         {
-            Template = context.Data[nameof(SqlQueryMetadata.Template)]?.GetValue<string>()
+            var metadata = context.Query.As<SqlQueryMetadata>();
+
+            metadata.Template = template;
+            context.Query.Put(metadata);
         };
 
-        context.Query.Put(metadata);
         context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;

@@ -21,13 +21,29 @@ public sealed class ElasticsearchQueryHandler : QueryHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = new ElasticsearchQueryMetadata
-        {
-            Template = context.Data[nameof(ElasticsearchQueryMetadata.Template)]?.GetValue<string>(),
-            Index = context.Data[nameof(ElasticsearchQueryMetadata.Index)]?.GetValue<string>()
-        };
+        var template = context.Data[nameof(ElasticsearchQueryMetadata.Template)]?.GetValue<string>();
+        var index = context.Data[nameof(ElasticsearchQueryMetadata.Index)]?.GetValue<string>();
 
-        context.Query.Put(metadata);
+        var hasTemplate = !string.IsNullOrEmpty(template);
+        var hasIndex = !string.IsNullOrEmpty(index);
+
+        if (hasTemplate || hasIndex)
+        {
+            var metadata = context.Query.As<ElasticsearchQueryMetadata>();
+
+            if (hasTemplate)
+            {
+                metadata.Template = template;
+            }
+
+            if (hasIndex)
+            {
+                metadata.Index = index;
+            }
+
+            context.Query.Put(metadata);
+        }
+
         context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;
