@@ -11,7 +11,7 @@ namespace OrchardCore.Queries.Core;
 
 public static class QueriesDocumentMigrationHelper
 {
-    public static void MigrateAsync(string source)
+    public static void Migrate(string source)
     {
         // To avoid concurrency issue when running this method from multiple features,
         // we must run this into a deferred task so each time it's called it runs in a new scope.

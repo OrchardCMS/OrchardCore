@@ -9,7 +9,7 @@ public sealed class LuceneQueryMigrations : DataMigration
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
     public int Create()
     {
-        QueriesDocumentMigrationHelper.MigrateAsync(LuceneQuerySource.SourceName);
+        QueriesDocumentMigrationHelper.Migrate(LuceneQuerySource.SourceName);
 
         return 1;
     }
