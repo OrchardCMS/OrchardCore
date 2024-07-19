@@ -59,6 +59,11 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, UpdateEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
@@ -66,31 +71,28 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            if (context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            var model = new ReverseProxySettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.ForwardedHeaders = ForwardedHeaders.None;
+
+            if (model.EnableXForwardedFor)
             {
-                var model = new ReverseProxySettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.ForwardedHeaders = ForwardedHeaders.None;
-
-                if (model.EnableXForwardedFor)
-                {
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
-                }
-
-                if (model.EnableXForwardedHost)
-                {
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
-                }
-
-                if (model.EnableXForwardedProto)
-                {
-                    settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
-                }
-
-                _shellReleaseManager.RequestRelease();
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
             }
+
+            if (model.EnableXForwardedHost)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+            }
+
+            if (model.EnableXForwardedProto)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+            }
+
+            _shellReleaseManager.RequestRelease();
 
             return await EditAsync(settings, context);
         }
