@@ -39,7 +39,7 @@ namespace OrchardCore.Google.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
+            container.Alter<GoogleAuthenticationSettings>(aspect =>
             {
                 aspect.ClientID = settings.ClientID;
                 aspect.ClientSecret = settings.ClientSecret;
