@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -15,6 +14,7 @@ namespace OrchardCore.Queries.Deployment
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
         private readonly IQueryManager _queryManager;
+
         protected readonly IStringLocalizer S;
 
         public QueryBasedContentDeploymentStepDriver(
@@ -36,11 +36,12 @@ namespace OrchardCore.Queries.Deployment
 
         public override IDisplayResult Edit(QueryBasedContentDeploymentStep step)
         {
-            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", model =>
+            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
             {
                 model.QueryName = step.QueryName;
                 model.QueryParameters = step.QueryParameters;
                 model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+                model.Queries = await _queryManager.ListQueriesAsync(true);
             }).Location("Content");
         }
 
@@ -48,9 +49,9 @@ namespace OrchardCore.Queries.Deployment
         {
             var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
             await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe);
-            var query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
+            var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
-            if (!query.ResultsOfType<ContentItem>())
+            if (!query.CanReturnContentItems || !query.ReturnContentItems)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
             }

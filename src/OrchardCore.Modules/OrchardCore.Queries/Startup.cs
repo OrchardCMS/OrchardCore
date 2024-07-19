@@ -6,11 +6,11 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
 using OrchardCore.Queries.Liquid;
 using OrchardCore.Queries.Recipes;
-using OrchardCore.Queries.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
@@ -25,10 +25,17 @@ namespace OrchardCore.Queries
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IQueryManager, QueryManager>();
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
-            services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
+        }
+    }
+
+    [Feature("OrchardCore.Queries.Core")]
+    public sealed class CoreStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRecipeExecutionStep<QueryStep>();
             services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
@@ -40,10 +47,14 @@ namespace OrchardCore.Queries
                     var liquidTemplateContext = (LiquidTemplateContext)context;
                     var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
 
-                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                    var query = await queryManager.GetQueryAsync(name);
+
+                    return FluidValue.Create(query, context.Options);
                 });
             })
             .AddLiquidFilter<QueryFilter>("query");
+
+            services.AddScoped<IQueryManager, DefaultQueryManager>();
         }
     }
 
