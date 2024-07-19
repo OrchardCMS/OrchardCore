@@ -3,8 +3,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Entities;
+using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch
@@ -12,17 +14,17 @@ namespace OrchardCore.Search.Elasticsearch
     [Route("api/elasticsearch")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class ElasticsearchApiController : ControllerBase
+    public sealed class ElasticsearchApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ElasticQuerySource _elasticQuerySource;
+        private readonly IQueryManager _queryManager;
 
         public ElasticsearchApiController(
             IAuthorizationService authorizationService,
-            ElasticQuerySource elasticQuerySource)
+            IQueryManager queryManager)
         {
             _authorizationService = authorizationService;
-            _elasticQuerySource = elasticQuerySource;
+            _queryManager = queryManager;
         }
 
         [HttpGet]
@@ -81,20 +83,23 @@ namespace OrchardCore.Search.Elasticsearch
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
+        private async Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
         {
-            var elasticQuery = new ElasticQuery
+            var elasticQuery = await _queryManager.NewAsync(ElasticQuerySource.SourceName);
+            elasticQuery.ReturnContentItems = returnContentItems;
+
+            elasticQuery.Put(new ElasticsearchQueryMetadata
             {
                 Index = queryModel.IndexName,
                 Template = queryModel.Query,
-                ReturnContentItems = returnContentItems
-            };
+            });
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            var queryParameters = queryModel.Parameters != null
+                ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
-            var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
+            var result = await _queryManager.ExecuteQueryAsync(elasticQuery, queryParameters);
+
             return result;
         }
     }
