@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
@@ -14,24 +15,29 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
+
+    internal IStringLocalizer S;
+
     private readonly ILogger _logger;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
+        IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer,
         ILogger<AzureAISearchIndexSettingsStep> logger)
     {
         _indexManager = indexManager;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
+        S = stringLocalizer;
         _logger = logger;
     }
 
@@ -55,21 +61,21 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
             if (string.IsNullOrWhiteSpace(indexInfo.IndexName))
             {
-                _logger.LogError("No index name was provided in the '{Name}' recipe step.", Name);
+                context.Errors.Add(S["No index name was provided in the '{0}' recipe step.", Name]);
 
                 continue;
             }
 
             if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexInfo.IndexName, out var indexName))
             {
-                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {IndexName}.", indexInfo.IndexName);
+                context.Errors.Add(S["Invalid index name was provided in the recipe step. IndexName: {0}.", indexInfo.IndexName]);
 
                 continue;
             }
 
-            if (indexInfo.IndexedContentTypes?.Length == 0)
+            if (indexInfo.IndexedContentTypes == null || indexInfo.IndexedContentTypes.Length == 0)
             {
-                _logger.LogError("No {IndexedContentTypes} were provided in the recipe step. IndexName: {IndexName}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName);
+                context.Errors.Add(S["No {0} were provided in the recipe step. IndexName: {1}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName]);
 
                 continue;
             }
