@@ -16,7 +16,7 @@ namespace OrchardCore.Media.Recipes
     /// <summary>
     /// This recipe step creates a set of queries.
     /// </summary>
-    public class MediaStep : IRecipeStepHandler
+    public sealed class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;

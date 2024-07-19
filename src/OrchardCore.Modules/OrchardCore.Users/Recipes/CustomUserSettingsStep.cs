@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Recipes;
 /// <summary>
 /// This recipe step updates the custom user settings.
 /// </summary>
-public class CustomUserSettingsStep : IRecipeStepHandler
+public sealed class CustomUserSettingsStep : IRecipeStepHandler
 {
     private readonly ISession _session;
 

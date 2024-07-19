@@ -14,7 +14,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 

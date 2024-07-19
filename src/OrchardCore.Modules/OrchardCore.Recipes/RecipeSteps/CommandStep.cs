@@ -13,7 +13,7 @@ namespace OrchardCore.Recipes.RecipeSteps
     /// <summary>
     /// This recipe step executes a set of commands.
     /// </summary>
-    public class CommandStep : IRecipeStepHandler
+    public sealed class CommandStep : IRecipeStepHandler
     {
         private readonly ICommandManager _commandManager;
         private readonly ICommandParser _commandParser;
