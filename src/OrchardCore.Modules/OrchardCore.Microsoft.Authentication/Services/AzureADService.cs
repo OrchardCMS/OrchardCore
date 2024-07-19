@@ -36,7 +36,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<AzureADSettings>(nameof(AzureADSettings), aspect =>
+            container.Alter<AzureADSettings>(aspect =>
             {
                 aspect.AppId = settings.AppId;
                 aspect.CallbackPath = settings.CallbackPath;

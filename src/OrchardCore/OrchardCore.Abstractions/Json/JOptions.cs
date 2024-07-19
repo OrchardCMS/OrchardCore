@@ -10,6 +10,14 @@ namespace System.Text.Json;
 /// </summary>
 public static class JOptions
 {
+    public static readonly JsonConverter[] KnownConverters =
+    [
+        DynamicJsonConverter.Instance,
+        PathStringJsonConverter.Instance,
+        TimeSpanJsonConverter.Instance,
+        DateTimeJsonConverter.Instance,
+    ];
+
     public static readonly JsonSerializerOptions Base = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -34,10 +42,11 @@ public static class JOptions
     static JOptions()
     {
         Default = new JsonSerializerOptions(Base);
-        Default.Converters.Add(new DynamicJsonConverter());
-        Default.Converters.Add(new PathStringJsonConverter());
-        Default.Converters.Add(new TimeSpanJsonConverter());
-        Default.Converters.Add(new DateTimeJsonConverter());
+
+        foreach (var converter in KnownConverters)
+        {
+            Default.Converters.Add(converter);
+        }
 
         Indented = new JsonSerializerOptions(Default)
         {

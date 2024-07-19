@@ -61,7 +61,7 @@ public class AdminController : Controller
             Provider = _emailOptions.DefaultProviderName,
         };
 
-        PopulateModel(model);
+        await PopulateModelAsync(model);
 
         return View(model);
     }
@@ -107,7 +107,7 @@ public class AdminController : Controller
             }
         }
 
-        PopulateModel(model);
+        await PopulateModelAsync(model);
 
         return View(model);
     }
@@ -140,7 +140,7 @@ public class AdminController : Controller
         return message;
     }
 
-    private async void PopulateModel(EmailTestViewModel model)
+    private async Task PopulateModelAsync(EmailTestViewModel model)
     {
         var options = new List<SelectListItem>();
 
