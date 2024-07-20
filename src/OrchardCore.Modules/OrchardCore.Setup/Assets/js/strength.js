@@ -71,7 +71,7 @@
             target.append(el);
         }
 
-        this.bind('keyup keydown', function (event) {
+        this.bind('keyup keydown change', function (event) {
             checkStrength($(this).val());
         });
         this.bind('drop', function (event) {
