@@ -49,7 +49,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                     await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings.Value);
                 }
             }
-
         }
     }
 }
