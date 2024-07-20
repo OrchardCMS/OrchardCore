@@ -1763,6 +1763,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return null;
             }
             var urlValue = $('#uploadFiles').val();
+            var allowedExtensions = $('#allowedExtensions').val();
+            if (allowedExtensions && allowedExtensions !== "") {
+              urlValue = urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+            }
             return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
           },
           selectRoot: function selectRoot() {
@@ -1773,6 +1777,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             this.selectedMedias = [];
             var self = this;
             var mediaUrl = $('#getMediaItemsUrl').val();
+            var allowedExtensions = $('#allowedExtensions').val();
+            if (allowedExtensions && allowedExtensions !== "") {
+              mediaUrl = mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+            }
             console.log(folder.path);
             $.ajax({
               url: mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path),
@@ -1791,6 +1799,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 self.selectRoot();
               }
             });
+          },
+          refresh: function refresh() {
+            var self = this;
+            if (self.selectedFolder) {
+              self.loadFolder(self.selectedFolder);
+            }
           },
           selectAll: function selectAll() {
             this.selectedMedias = [];
@@ -2991,7 +3005,7 @@ Vue.component('mediaFieldThumbsContainer', {
     }
   }
 });
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, allowedExtensions) {
   //BagPart create a script section without other DOM elements
   if (el === null) return;
   var target = $(document.getElementById($(el).data('for')));
@@ -3016,6 +3030,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
       allowMediaText: allowMediaText,
       backupMediaText: '',
       allowAnchors: allowAnchors,
+      allowedExtensions: allowedExtensions,
       backupAnchor: null,
       mediaTextModal: null,
       anchoringModal: null
@@ -3139,8 +3154,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
       showModal: function showModal(event) {
         var self = this;
         if (self.canAddMedia) {
+          $('#allowedExtensions').val(this.allowedExtensions);
+          $('#fileupload').attr('accept', this.allowedExtensions);
           $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
           $("#mediaApp").show();
+
+          // Reload current folder in case the allowed extensions have changed.
+          mediaApp.refresh();
           var modal = new bootstrap.Modal(modalBodyElement);
           modal.show();
           $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {

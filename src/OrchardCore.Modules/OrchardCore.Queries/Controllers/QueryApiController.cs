@@ -11,8 +11,10 @@ namespace OrchardCore.Queries.Controllers
 {
     [Route("api/queries")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class QueryApiController : ControllerBase
+    [Authorize(AuthenticationSchemes = "Api")]
+    [IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    public sealed class QueryApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IQueryManager _queryManager;
@@ -57,6 +59,7 @@ namespace OrchardCore.Queries.Controllers
                 : [];
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
+
             return new ObjectResult(result);
         }
     }

@@ -7,7 +7,7 @@
 <form asp-controller="Account" asp-action="LinkExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Link your account."]</h4>
     <p class="text-info">
-        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account with this email address. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"]]
+        @T["You've successfully authenticated with <strong>{0}</strong>. You already have an account that can be linked with this external login. Enter your local account password and click the Register button to link the accounts and finish logging in.", ViewData["LoginProvider"]]
     </p>
     <hr />
     <div asp-validation-summary="ModelOnly"></div>
@@ -16,13 +16,6 @@
         <label for="UserName" class="col-md-3 form-label">@T["Username"]</label>
         <div class="col-md-9">
             <input id="UserName" value="@ViewData["UserName"]" class="form-control" disabled />
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label for="Email" class="col-md-3 form-label">@T["Email"]</label>
-        <div class="col-md-9">
-            <input id="Email" value="@ViewData["Email"]" class="form-control" disabled />
         </div>
     </div>
 

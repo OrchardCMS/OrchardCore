@@ -8,22 +8,33 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate task to be invoked before this shell scope will be disposed.
         /// </summary>
-        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback)
+        /// <param name="scope">The <see cref="ShellScope"/> instance on which to register the delegate.</param>
+        /// <param name="callback">The delegate task to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> parameter and returns a <see cref="Task"/>.</param>
+        /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
+        /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
+        /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
+        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)
         {
-            scope?.BeforeDispose(callback);
+            scope?.BeforeDispose(callback, last);
+
             return scope;
         }
 
         /// <summary>
         /// Registers a delegate action to be invoked before this shell scope will be disposed.
         /// </summary>
-        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback)
+        /// <param name="scope">The <see cref="ShellScope"/> instance on which to register the delegate.</param>
+        /// <param name="callback">The delegate action to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> parameter.</param>
+        /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
+        /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
+        /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
+        public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback, bool last = false)
         {
             scope?.BeforeDispose(scope =>
             {
                 callback(scope);
                 return Task.CompletedTask;
-            });
+            }, last);
 
             return scope;
         }

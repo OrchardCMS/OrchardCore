@@ -4,15 +4,19 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries;
+using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Drivers
 {
-    public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
+    public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public LuceneQueryDisplayDriver(
             IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,
@@ -22,51 +26,71 @@ namespace OrchardCore.Search.Lucene.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(LuceneQuery query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
+            if (query.Source != LuceneQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Combine(
                 Dynamic("LuceneQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
                 Dynamic("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
             );
         }
 
-        public override IDisplayResult Edit(LuceneQuery query, IUpdateModel updater)
+        public override IDisplayResult Edit(Query query, IUpdateModel updater)
         {
+            if (query.Source != LuceneQuerySource.SourceName)
+            {
+                return null;
+            }
+
             return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
             {
-                model.Query = query.Template;
-                model.Index = query.Index;
+                var metadata = query.As<LuceneQueryMetadata>();
+
+                model.Query = metadata.Template;
+                model.Index = metadata.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
-                // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(query.Template))
+                // Extract query from the query string if we come from the main query editor.
+                if (string.IsNullOrEmpty(metadata.Template))
                 {
-                    await updater.TryUpdateModelAsync(model, "", m => m.Query);
+                    await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
                 }
             }).Location("Content:5");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query query, IUpdateModel updater)
         {
+            if (query.Source != LuceneQuerySource.SourceName)
+            {
+                return null;
+            }
+
             var viewModel = new LuceneQueryViewModel();
             await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems);
 
-            model.Template = viewModel.Query;
-            model.Index = viewModel.Index;
-            model.ReturnContentItems = viewModel.ReturnContentItems;
-
-            if (string.IsNullOrWhiteSpace(model.Template))
+            if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.Index))
+            if (string.IsNullOrWhiteSpace(viewModel.Index))
             {
-                updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Index), S["The index field is required"]);
             }
 
-            return Edit(model, updater);
+            query.ReturnContentItems = viewModel.ReturnContentItems;
+            query.Put(new LuceneQueryMetadata()
+            {
+                Template = viewModel.Query,
+                Index = viewModel.Index,
+            });
+
+            return Edit(query, updater);
         }
     }
 }

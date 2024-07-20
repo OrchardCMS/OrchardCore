@@ -22,7 +22,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/images/favicon.ico">
 
     <!-- This script can't wait till the footer -->
-    <script asp-name="admin-head" version="1" at="Head"></script>
+    <script asp-name="theme-head" version="1" at="Head"></script>
 
     @if (Orchard.IsRightToLeft())
     {
@@ -36,6 +36,7 @@
     }
 
     <script asp-name="bootstrap" version="5" at="Foot"></script>
+    <script asp-name="theme-manager" at="Foot"></script>
 
     <style asp-name="font-awesome" version="6"></style>
     <resources type="Header" />
