@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -21,18 +21,19 @@ namespace OrchardCore.Media.Recipes
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger _logger;
+
+        internal readonly IStringLocalizer S;
 
         public MediaStep(
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
             IHttpClientFactory httpClientFactory,
-            ILogger<MediaStep> logger)
+            IStringLocalizer<MediaStep> stringLocalizer)
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _httpClientFactory = httpClientFactory;
-            _logger = logger;
+            S = stringLocalizer;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -48,7 +49,7 @@ namespace OrchardCore.Media.Recipes
             {
                 if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
                 {
-                    _logger.LogWarning("File extension not allowed: '{Path}'", file.TargetPath);
+                    context.Errors.Add(S["File extension not allowed: '{0}'", file.TargetPath]);
 
                     continue;
                 }

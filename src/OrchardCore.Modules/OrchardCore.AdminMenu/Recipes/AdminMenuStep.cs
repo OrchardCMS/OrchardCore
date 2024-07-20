@@ -45,7 +45,7 @@ namespace OrchardCore.AdminMenu.Recipes
                 // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
                 if (string.IsNullOrEmpty(adminMenu.Id))
                 {
-                    adminMenu.Id = Guid.NewGuid().ToString("n");
+                    adminMenu.Id = IdGenerator.GenerateId();
                 }
 
                 await _adminMenuService.SaveAsync(adminMenu);
