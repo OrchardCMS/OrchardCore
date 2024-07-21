@@ -8,6 +8,7 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
@@ -17,8 +18,10 @@ using YesSql.Services;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class LuceneQuerySource : IQuerySource
+    public sealed class LuceneQuerySource : IQuerySource
     {
+        public const string SourceName = "Lucene";
+
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
@@ -48,39 +51,35 @@ namespace OrchardCore.Search.Lucene
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Lucene";
-
-        public Query Create()
-        {
-            return new LuceneQuery();
-        }
+        public string Name
+            => SourceName;
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var luceneQuery = query as LuceneQuery;
             var luceneQueryResults = new LuceneQueryResults();
+            var metadata = query.As<LuceneQueryMetadata>();
 
-            await _luceneIndexManager.SearchAsync(luceneQuery.Index, async searcher =>
+            await _luceneIndexManager.SearchAsync(metadata.Index, async searcher =>
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(luceneQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
                 var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
 
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneQuery.Index));
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(metadata.Index));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
                 var docs = await _queryService.SearchAsync(context, parameterizedQuery);
                 luceneQueryResults.Count = docs.Count;
 
-                if (luceneQuery.ReturnContentItems)
+                if (query.ReturnContentItems)
                 {
                     // We always return an empty collection if the bottom lines queries have no results.
                     luceneQueryResults.Items = [];
 
-                    // Load corresponding content item versions
+                    // Load corresponding content item versions.
                     var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                    // Reorder the result to preserve the one from the lucene query
+                    // Reorder the result to preserve the one from the lucene query.
                     if (dbContentItems.Any())
                     {
                         var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
@@ -91,6 +90,7 @@ namespace OrchardCore.Search.Lucene
                 else
                 {
                     var results = new List<JsonObject>();
+
                     foreach (var document in docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
                     {
                         results.Add(new JsonObject(document.Select(x =>

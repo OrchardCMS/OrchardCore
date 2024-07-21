@@ -113,7 +113,7 @@ namespace OrchardCore.Media.Drivers
                 }
             }
 
-            field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? [];
+            field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray();
 
             var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 
