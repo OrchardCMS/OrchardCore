@@ -4,8 +4,10 @@ name: Close Stale PRs and Issues
 
 on:
   schedule:
-    # Every day at 1:39 AM UTC. A random time to avoid GitHub Actions being overloaded by scheduled workflows.
-    - cron: '39 1 * * *'
+    # Every four hours at :39 UTC. A random time to avoid GitHub Actions being overloaded by scheduled workflows. Need
+    # to run this relatively frequently to avoid "No more operations left! Exiting..." warnings. Increasing the operations
+    # (see https://github.com/actions/stale#operations-per-run) is risky.
+    - cron: '39 */4 * * *'
 
 jobs:
   close-stale-prs-issues:

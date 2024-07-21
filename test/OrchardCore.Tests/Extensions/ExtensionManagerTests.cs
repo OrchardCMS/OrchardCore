@@ -1,3 +1,5 @@
+using BaseThemeSample;
+using ModuleSample;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
@@ -24,6 +26,8 @@ namespace OrchardCore.Tests.Extensions
         private readonly ExtensionManager _moduleScopedExtensionManager;
         private readonly ExtensionManager _themeScopedExtensionManager;
         private readonly ExtensionManager _moduleThemeScopedExtensionManager;
+        
+        private readonly TypeFeatureProvider _moduleScopedTypeFeatureProvider = new TypeFeatureProvider();
 
         public ExtensionManagerTests()
         {
@@ -31,6 +35,7 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
+                _moduleScopedTypeFeatureProvider,
                 _moduleFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
@@ -39,6 +44,7 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new[] { new ExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
+                new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
@@ -47,6 +53,7 @@ namespace OrchardCore.Tests.Extensions
                 _applicationContext,
                 new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
                 new[] { new ExtensionPriorityStrategy() },
+                new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
                 );
@@ -164,7 +171,7 @@ namespace OrchardCore.Tests.Extensions
         /* Theme Base Theme Dependencies */
 
         [Fact]
-        public void GetFeaturesShouldReturnCorrectThemeHeirarchy()
+        public void GetFeaturesShouldReturnCorrectThemeHierarchy()
         {
             var features = _themeScopedExtensionManager.GetFeatures(["DerivedThemeSample"]);
 
@@ -218,6 +225,54 @@ namespace OrchardCore.Tests.Extensions
             var extension = _moduleThemeScopedExtensionManager.GetExtension("NotFound");
 
             Assert.False(extension.Exists);
+        }
+
+        /* The extension manager must populate the ITypeFeatureProvider correctly */
+
+        [Fact]
+        public void TypeFeatureProviderIsPopulatedWithComponentTypes()
+        {
+            var feature = _moduleScopedExtensionManager.GetFeatures(["Sample1"]).First();
+            var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
+
+            Assert.Equal(2, types.Count());
+            Assert.Contains(typeof(Sample1Startup), types);
+            Assert.Contains(typeof(FeatureIndependentStartup), types);
+        }
+
+        [Fact]
+        public void TypeFeatureProviderTypeMustBeMappedToAllFeatures()
+        {
+            // Types in modules that have no feature that matches the extension ID must be mapped to all features.
+            var features = _moduleScopedExtensionManager.GetFeatures(["Sample1", "Sample2", "Sample3", "Sample4"]);
+
+            foreach (var feature in features)
+            {
+                var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
+
+                Assert.Contains(typeof(FeatureIndependentStartup), types);
+            }
+        }
+
+        [Fact]
+        public void TypeFeatureProviderTypeMustBeMappedToExtensionFeature()
+        {
+            // Types in modules that have a feature that matches the extension ID must be mapped to that feature.
+            var feature = _moduleScopedExtensionManager.GetFeatures(["BaseThemeSample"]).First();
+            var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
+
+            Assert.Equal(2, types.Count());
+            Assert.Contains(typeof(BaseThemeSampleStartup), types);
+            Assert.Contains(typeof(BaseThemeFeatureIndependentStartup), types);
+        }
+
+        [Fact]
+        public void TypeFeatureProviderTypeMustBeSkipped()
+        {
+            var feature = _moduleScopedExtensionManager.GetFeatures(["Sample2"]).First();
+            var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
+
+            Assert.DoesNotContain(typeof(SkippedDependentType), types);
         }
     }
 }

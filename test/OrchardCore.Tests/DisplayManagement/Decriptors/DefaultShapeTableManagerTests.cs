@@ -276,11 +276,6 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors
             {
                 throw new NotImplementedException();
             }
-
-            public IEnumerable<Type> GetExportedExtensionTypes(IExtensionInfo extensionInfo)
-            {
-                throw new NotImplementedException();
-            }
         }
 
         public class TestShapeProvider : IShapeTableProvider

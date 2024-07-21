@@ -222,6 +222,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         }
 
                         var urlValue = $('#uploadFiles').val();
+                        var allowedExtensions = $('#allowedExtensions').val();
+                        if (allowedExtensions && allowedExtensions !== "") {
+                            urlValue = urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+                        }
 
                         return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
                     },
@@ -233,6 +237,10 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         this.selectedMedias = [];
                         var self = this;
                         var mediaUrl = $('#getMediaItemsUrl').val();
+                        var allowedExtensions = $('#allowedExtensions').val();
+                        if (allowedExtensions && allowedExtensions !== "") {
+                            mediaUrl = mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "extensions=" + encodeURIComponent(allowedExtensions);
+                        }
                         console.log(folder.path);
                         $.ajax({
                             url: mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path),
@@ -251,6 +259,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.selectRoot();
                             }
                         });
+                    },
+                    refresh: function () {
+                        var self = this;
+                        if (self.selectedFolder) {
+                            self.loadFolder(self.selectedFolder);
+                        }
                     },
                     selectAll: function () {
                         this.selectedMedias = [];

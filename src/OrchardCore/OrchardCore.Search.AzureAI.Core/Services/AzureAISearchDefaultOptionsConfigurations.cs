@@ -26,7 +26,7 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         _siteService = siteService;
     }
 
-    public async void Configure(AzureAISearchDefaultOptions options)
+    public void Configure(AzureAISearchDefaultOptions options)
     {
         var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
             .Get<AzureAISearchDefaultOptions>()
@@ -49,7 +49,9 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
         else
         {
             // At this point, we can allow the user to update the settings from UI.
-            var settings = await _siteService.GetSettingsAsync<AzureAISearchDefaultSettings>();
+            var settings = _siteService.GetSettingsAsync<AzureAISearchDefaultSettings>()
+                .GetAwaiter()
+                .GetResult();
 
             if (settings.UseCustomConfiguration)
             {

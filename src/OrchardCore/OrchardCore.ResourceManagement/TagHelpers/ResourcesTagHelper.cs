@@ -30,16 +30,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             try
             {
-                await using var sw = new ZStringWriter();
+                await using var writer = new ZStringWriter();
 
-                var processorContext = new ResourcesTagHelperProcessorContext(sw, Type);
+                var processorContext = new ResourcesTagHelperProcessorContext(Type, writer);
 
                 foreach (var processor in _processors)
                 {
                     await processor.ProcessAsync(processorContext);
                 }
 
-                output.Content.AppendHtml(sw.ToString());
+                output.Content.AppendHtml(writer.ToString());
             }
             catch (Exception ex)
             {
