@@ -30,6 +30,7 @@ namespace OrchardCore.Resources.Liquid
                         {
                             processorContext = processorContext with { Type = type };
                         }
+
                         break;
                 }
             }
