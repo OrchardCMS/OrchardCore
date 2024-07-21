@@ -39,7 +39,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     await processor.ProcessAsync(processorContext);
                 }
 
-                output.Content.AppendHtml(write.ToString());
+                output.Content.AppendHtml(writer.ToString());
             }
             catch (Exception ex)
             {
