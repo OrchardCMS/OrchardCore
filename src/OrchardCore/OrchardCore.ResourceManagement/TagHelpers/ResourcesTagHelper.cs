@@ -10,8 +10,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("resources", Attributes = nameof(Type))]
     public class ResourcesTagHelper : TagHelper
     {
-        public ResourceTagType Type { get; set; }
-
         private readonly IResourceManager _resourceManager;
         private readonly ILogger _logger;
         private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
@@ -25,6 +23,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _logger = logger;
             _processors = processors;
         }
+
+        public ResourceTagType Type { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
