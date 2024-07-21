@@ -18,7 +18,7 @@ namespace OrchardCore.Resources.Liquid
             var services = ((LiquidTemplateContext)context).Services;
             var processors = services.GetRequiredService<IEnumerable<IResourcesTagHelperProcessor>>();
 
-            var processorContext = new ResourcesTagHelperProcessorContext(writer, ResourceTagType.Footer);
+            var processorContext = new ResourcesTagHelperProcessorContext(ResourceTagType.Footer, writer);
 
             foreach (var argument in argumentsList)
             {
