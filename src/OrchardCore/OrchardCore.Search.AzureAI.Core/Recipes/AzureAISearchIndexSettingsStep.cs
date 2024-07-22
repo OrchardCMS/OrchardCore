@@ -22,7 +22,7 @@ public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
 
-    internal readonly IStringLocalizer S;
+    internal IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
@@ -68,7 +68,7 @@ public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
                 continue;
             }
 
-            if (indexInfo.IndexedContentTypes?.Length == 0)
+            if (indexInfo.IndexedContentTypes == null || indexInfo.IndexedContentTypes.Length == 0)
             {
                 context.Errors.Add(S["No {0} were provided in the recipe step. IndexName: {1}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName]);
 
