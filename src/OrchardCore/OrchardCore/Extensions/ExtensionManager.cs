@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly IServiceProvider _serviceProvider;
 
         private FrozenDictionary<string, ExtensionEntry> _extensions;
-        private List<IExtensionInfo> _extensionsInfos;
+        private IExtensionInfo[] _extensionsInfos;
         private FrozenDictionary<string, IFeatureInfo> _features;
         private IFeatureInfo[] _featureInfos;
 
@@ -180,9 +180,9 @@ namespace OrchardCore.Environment.Extensions
                     }
 
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
-                    var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
+                    var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (manifestInfo, extensionInfo) =>
                     {
-                        return featuresProvider.GetFeatures(ei, mi);
+                        return featuresProvider.GetFeatures(extensionInfo, manifestInfo);
                     });
 
                     var entry = new ExtensionEntry
@@ -229,21 +229,21 @@ namespace OrchardCore.Environment.Extensions
                     loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features),
                     extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray(),
                     extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray());
-                _features = _featureInfos.ToFrozenDictionary(f => f.Id, f => f);
+                _features = _featureInfos.ToFrozenDictionary(feature => feature.Id, feature => feature);
 
                 // Extensions are also ordered according to the weight of their first features.
                 _extensionsInfos = _featureInfos
-                    .Where(f => f.Id == f.Extension.Features.First().Id)
-                    .Select(f => f.Extension)
-                    .ToList();
+                    .Where(feature => feature.Id == feature.Extension.Features.First().Id)
+                    .Select(feature => feature.Extension)
+                    .ToArray();
 
-                _extensions = _extensionsInfos.ToFrozenDictionary(e => e.Id, e => loadedExtensions[e.Id]);
+                _extensions = _extensionsInfos.ToFrozenDictionary(extension => extension.Id, extension => loadedExtensions[extension.Id]);
 
                 if (L.IsEnabled(LogLevel.Trace))
                 {
-                    foreach (var feature in _featureInfos)
+                    foreach (var featureInfo in _featureInfos)
                     {
-                        L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", feature.Extension.Id, feature.Id, feature.Name);
+                        L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", featureInfo.Extension.Id, featureInfo.Id, featureInfo.Name);
                     }
                 }
 
@@ -253,12 +253,12 @@ namespace OrchardCore.Environment.Extensions
 
         private static IEnumerable<IFeatureInfo> GetFeatureDependencies(
             IFeatureInfo feature,
-            IFeatureInfo[] features)
+            IFeatureInfo[] featureInfos)
         {
             var dependencyIds = new HashSet<string> { feature.Id };
             var stack = new Stack<List<IFeatureInfo>>();
 
-            stack.Push(GetFeatureDependenciesFunc(feature, features));
+            stack.Push(GetFeatureDependenciesFunc(feature, featureInfos));
 
             while (stack.Count > 0)
             {
@@ -267,13 +267,13 @@ namespace OrchardCore.Environment.Extensions
                 {
                     if (dependencyIds.Add(dependency.Id))
                     {
-                        stack.Push(GetFeatureDependenciesFunc(dependency, features));
+                        stack.Push(GetFeatureDependenciesFunc(dependency, featureInfos));
                     }
                 }
             }
 
             // Preserve the underlying order of feature infos.
-            foreach (var featureInfo in features)
+            foreach (var featureInfo in featureInfos)
             {
                 if (dependencyIds.Contains(featureInfo.Id))
                 {
@@ -284,12 +284,12 @@ namespace OrchardCore.Environment.Extensions
 
         private static IEnumerable<IFeatureInfo> GetDependentFeatures(
             IFeatureInfo feature,
-            IFeatureInfo[] features)
+            IFeatureInfo[] featureInfos)
         {
             var dependencyIds = new HashSet<string> { feature.Id };
             var stack = new Stack<List<IFeatureInfo>>();
 
-            stack.Push(GetDependentFeaturesFunc(feature, features));
+            stack.Push(GetDependentFeaturesFunc(feature, featureInfos));
 
             while (stack.Count > 0)
             {
@@ -298,13 +298,13 @@ namespace OrchardCore.Environment.Extensions
                 {
                     if (dependencyIds.Add(dependency.Id))
                     {
-                        stack.Push(GetDependentFeaturesFunc(dependency, features));
+                        stack.Push(GetDependentFeaturesFunc(dependency, featureInfos));
                     }
                 }
             }
 
             // Preserve the underlying order of feature infos.
-            foreach (var featureInfo in features)
+            foreach (var featureInfo in featureInfos)
             {
                 if (dependencyIds.Contains(featureInfo.Id))
                 {
@@ -316,13 +316,13 @@ namespace OrchardCore.Environment.Extensions
         private static List<IFeatureInfo> GetDependentFeaturesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
         {
             var list = new List<IFeatureInfo>();
-            foreach (var f in features)
+            foreach (var feature in features)
             {
-                foreach (var dependencyId in f.Dependencies)
+                foreach (var dependencyId in feature.Dependencies)
                 {
                     if (dependencyId == currentFeature.Id)
                     {
-                        list.Add(f);
+                        list.Add(feature);
                         break;
                     }
                 }
@@ -334,13 +334,13 @@ namespace OrchardCore.Environment.Extensions
         private static List<IFeatureInfo> GetFeatureDependenciesFunc(IFeatureInfo currentFeature, IFeatureInfo[] features)
         {
             var list = new List<IFeatureInfo>();
-            foreach (var f in features)
+            foreach (var feature in features)
             {
                 foreach (var dependencyId in currentFeature.Dependencies)
                 {
-                    if (dependencyId == f.Id)
+                    if (dependencyId == feature.Id)
                     {
-                        list.Add(f);
+                        list.Add(feature);
                         break;
                     }
                 }
@@ -354,16 +354,16 @@ namespace OrchardCore.Environment.Extensions
             return featuresToOrder
                 .OrderBy(x => x.Id)
                 .OrderByDependenciesAndPriorities(
-                    (f1, f2) => HasDependency(f1, f2, extensionDependencyStrategies),
+                    (feature1, feature2) => HasDependency(feature1, feature2, extensionDependencyStrategies),
                     feature => GetPriority(feature, extensionPriorityStrategies))
                 .ToArray();
         }
 
-        private static bool HasDependency(IFeatureInfo f1, IFeatureInfo f2, IExtensionDependencyStrategy[] extensionDependencyStrategies)
+        private static bool HasDependency(IFeatureInfo observer, IFeatureInfo subject, IExtensionDependencyStrategy[] extensionDependencyStrategies)
         {
-            foreach (var s in extensionDependencyStrategies)
+            foreach (var extensionDependencyStrategy in extensionDependencyStrategies)
             {
-                if (s.HasDependency(f1, f2))
+                if (extensionDependencyStrategy.HasDependency(observer, subject))
                 {
                     return true;
                 }
@@ -375,9 +375,9 @@ namespace OrchardCore.Environment.Extensions
         private static int GetPriority(IFeatureInfo feature, IExtensionPriorityStrategy[] extensionPriorityStrategies)
         {
             var sum = 0;
-            foreach (var strategy in extensionPriorityStrategies)
+            foreach (var extensionPriorityStrategy in extensionPriorityStrategies)
             {
-                sum += strategy.GetPriority(feature);
+                sum += extensionPriorityStrategy.GetPriority(feature);
             }
 
             return sum;
