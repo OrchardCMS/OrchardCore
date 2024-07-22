@@ -12,18 +12,18 @@
 
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.1.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.310.2" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.310.7" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.3.4" />
     <PackageVersion Include="Azure.Identity" Version="1.12.0" />
-    <PackageVersion Include="Azure.Search.Documents" Version="11.5.1" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.20.0" />
+    <PackageVersion Include="Azure.Search.Documents" Version="11.6.0" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.21.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
     <PackageVersion Include="Castle.Core" Version="5.1.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.0.2" />
-    <PackageVersion Include="Fluid.Core" Version="2.10.0" />
+    <PackageVersion Include="Fluid.Core" Version="2.11.0" />
     <PackageVersion Include="GraphQL" Version="7.8.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="7.8.0" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="7.8.0" />
@@ -38,12 +38,12 @@
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
-    <PackageVersion Include="MailKit" Version="4.7.0" />
+    <PackageVersion Include="MailKit" Version="4.7.1.1" />
     <PackageVersion Include="Markdig" Version="0.37.0" />
     <PackageVersion Include="MessagePack" Version="2.2.60" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.4" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.7.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="2.20.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.0.0" />
 
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
@@ -53,7 +53,7 @@
       See https://github.com/OrchardCMS/OrchardCore/pull/16057 for more information.
     -->
 
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.2" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="MimeKit" Version="4.7.1" />
@@ -61,7 +61,7 @@
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
     <PackageVersion Include="NEST" Version="7.17.5" />
-    <PackageVersion Include="NJsonSchema" Version="11.0.1" />
+    <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.11" />
     <PackageVersion Include="NodaTime" Version="3.1.11" />
     <PackageVersion Include="OpenIddict.Core" Version="5.7.0" />
@@ -81,14 +81,14 @@
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageVersion Include="xunit" Version="2.8.1" />
-    <PackageVersion Include="xunit.analyzers" Version="1.14.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
-    <PackageVersion Include="YesSql" Version="5.0.0" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.0.0" />
-    <PackageVersion Include="YesSql.Core" Version="5.0.0" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.0.0" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.0.0" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.15.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="YesSql" Version="5.1.0" />
+    <PackageVersion Include="YesSql.Abstractions" Version="5.1.0" />
+    <PackageVersion Include="YesSql.Core" Version="5.1.0" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.0" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="5.1.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
 
