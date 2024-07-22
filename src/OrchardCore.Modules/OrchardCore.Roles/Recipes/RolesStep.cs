@@ -13,7 +13,7 @@ namespace OrchardCore.Roles.Recipes
     /// <summary>
     /// This recipe step creates a set of roles.
     /// </summary>
-    public class RolesStep : IRecipeStepHandler
+    public sealed class RolesStep : IRecipeStepHandler
     {
         private readonly RoleManager<IRole> _roleManager;
 
@@ -43,12 +43,19 @@ namespace OrchardCore.Roles.Recipes
 
                 if (isNewRole)
                 {
-                    role = new Role { RoleName = importedRole.Name };
+                    role = new Role
+                    {
+                        RoleName = importedRole.Name
+                    };
                 }
 
                 role.RoleDescription = importedRole.Description;
                 role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim
+                {
+                    ClaimType = Permission.ClaimType,
+                    ClaimValue = p,
+                }));
 
                 if (isNewRole)
                 {
@@ -60,14 +67,14 @@ namespace OrchardCore.Roles.Recipes
                 }
             }
         }
-
-        public class RolesStepModel
-        {
-            public RolesStepRoleModel[] Roles { get; set; }
-        }
     }
 
-    public class RolesStepRoleModel
+    public sealed class RolesStepModel
+    {
+        public RolesStepRoleModel[] Roles { get; set; }
+    }
+
+    public sealed class RolesStepRoleModel
     {
         public string Name { get; set; }
         public string Description { get; set; }

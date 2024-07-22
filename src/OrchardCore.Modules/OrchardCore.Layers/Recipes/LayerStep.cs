@@ -19,14 +19,14 @@ namespace OrchardCore.Layers.Recipes
     /// <summary>
     /// This recipe step creates or updates a layer.
     /// </summary>
-    public class LayerStep : IRecipeStepHandler
+    public sealed class LayerStep : IRecipeStepHandler
     {
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _factories;
         private readonly JsonSerializerOptions _serializationOptions;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LayerStep(
             ILayerService layerService,
