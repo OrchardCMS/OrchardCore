@@ -70,9 +70,26 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
     `/autosetup` - trigger installation of the Root tenant.
     `/mytenant/autosetup` - auto-install mytenant.
 
-### Environment Variables
+### User Secrets and Environment Variables
 
-Since JSON configuration contains admin-sensitive information, it is recommended to use environment variables instead.
+Since JSON configuration contains admin-sensitive information, it is recommended to use user secrets or environment variables instead.
+
+[User secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets#secret-manager) are available during local development, and they are stored as JSON files. This means you can move the whole configuration from appsettings.json as-is. Alternatively, you can set each option directly from the command line (this will flatten any existing structures in the secrets.json file):
+
+```shell
+cd src/OrchardCore.Cms.Web
+dotnet user-secrets init
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:ShellName" "Default"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteName" "AutoSetup Example"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteTimeZone" "Europe/Amsterdam"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminUsername" "admin"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminEmail" "info@orchardproject.net"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPassword" "OrchardCoreRules1!"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName" "SaaS"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
+```
+
+[Environment variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration#non-prefixed-environment-variables) are available on both server and local machine. But if you have multiple projects, you have to prefix them to avoid clashes.
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""
