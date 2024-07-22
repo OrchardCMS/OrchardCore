@@ -117,15 +117,16 @@
     </div>
 
     <div id="RedirectSection" class="mb-3 collapse">
-        <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
-            <input asp-for="RedirectUris" class="form-control" autofocus />
-            <span asp-validation-for="RedirectUris" class="text-danger"></span>
+        <div class="mb-3">
+            <div asp-validation-class-for="RedirectUris">
+                <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
+                <input asp-for="RedirectUris" class="form-control" autofocus />
+                <span asp-validation-for="RedirectUris" class="text-danger"></span>
+            </div>
+            <div class="hint">
+                @T["Space delimited list of redirect URIs."]
+            </div>
         </div>
-        <div class="hint">
-            @T["Space delimited list of redirect URIs."]
-        </div>
-
         <div class="mb-3 collapse" id="AllowLogoutEndpointFieldSet">
             <div class="mb-3">
                 <div class="form-check">

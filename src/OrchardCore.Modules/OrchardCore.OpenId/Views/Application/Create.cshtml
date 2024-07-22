@@ -105,13 +105,15 @@
     </div>
 
     <div id="RedirectSection" class="mb-3 collapse">
-        <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
-            <input asp-for="RedirectUris" class="form-select" autofocus />
-            <span asp-validation-for="RedirectUris" class="text-danger"></span>
-        </div>
-        <div class="hint">
-            @T["Space delimited list of redirect URIs."]
+        <div class="mb-3">
+            <div asp-validation-class-for="RedirectUris">
+                <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
+                <input asp-for="RedirectUris" class="form-select" autofocus />
+                <span asp-validation-for="RedirectUris" class="text-danger"></span>
+            </div>
+            <div class="hint">
+                @T["Space delimited list of redirect URIs."]
+            </div>
         </div>
         <div class="mb-3 collapse" id="AllowLogoutEndpointFieldSet">
             <div class="mb-3">
@@ -132,14 +134,12 @@
             </div>
         </div>
         <div class="mb-3">
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
-                    <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
-                </div>
-                <div class="hint">
-                    @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
-                </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
+                <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+            </div>
+            <div class="hint">
+                @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
             </div>
         </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
@@ -330,6 +330,24 @@
                 }
             }
         }
+
+        $("#Type").change(function () {
+            refreshClientSecret();
+        });
+        function refreshClientSecret(defaultType) {
+            var type = $("#Type");
+            $("#ClientSecret").parent().collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
+
+            var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
+            if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
+                allowClientCredentialsFlow.removeAttr("disabled");
+            }
+            else {
+                allowClientCredentialsFlow.attr('disabled', true);
+                allowClientCredentialsFlow.prop("checked", false);
+            }
+
+            var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
             if (defaultType === $("#Type").val())
                 return;
