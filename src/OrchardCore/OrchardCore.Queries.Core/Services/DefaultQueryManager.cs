@@ -205,7 +205,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task SaveAsync(params Query[] queries)
     {
-        if (queries?.Length == 0)
+        if (queries == null || queries.Length == 0)
         {
             return;
         }
