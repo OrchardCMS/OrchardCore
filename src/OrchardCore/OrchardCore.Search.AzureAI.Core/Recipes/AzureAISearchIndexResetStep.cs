@@ -11,7 +11,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexResetStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexResetStep : IRecipeStepHandler
 {
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {

@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,7 +12,7 @@ namespace OrchardCore.Search.Lucene.Recipes
     /// <summary>
     /// This recipe step rebuilds a Lucene index.
     /// </summary>
-    public class LuceneIndexRebuildStep : IRecipeStepHandler
+    public sealed class LuceneIndexRebuildStep : IRecipeStepHandler
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
@@ -32,7 +30,9 @@ namespace OrchardCore.Search.Lucene.Recipes
                     var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                     var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
 
-                    var indices = model.IncludeAll ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+                    var indices = model.IncludeAll
+                    ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
+                    : model.Indices;
 
                     foreach (var indexName in indices)
                     {
