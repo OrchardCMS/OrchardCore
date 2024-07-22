@@ -816,7 +816,7 @@ namespace OrchardCore.Users.Controllers
                 .ToList();
 
             var claimsChanged = false;
-            if (context.ClaimsToRemove != null && context.ClaimsToRemove.Count > 0)
+            if (context.ClaimsToRemove?.Count > 0)
             {
                 var claimsToRemove = context.ClaimsToRemove.ToHashSet();
                 foreach (var item in claimsToRemove)
@@ -830,7 +830,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            if (context.ClaimsToUpdate != null && context.ClaimsToUpdate.Count > 0)
+            if (context.ClaimsToUpdate?.Count > 0)
             {
                 foreach (var item in context.ClaimsToUpdate)
                 {
