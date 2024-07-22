@@ -12,7 +12,7 @@ namespace OrchardCore.Media.Recipes
     /// <summary>
     /// This recipe step creates or updates a media profile.
     /// </summary>
-    public class MediaProfileStep : IRecipeStepHandler
+    public sealed class MediaProfileStep : IRecipeStepHandler
     {
         private readonly MediaProfilesManager _mediaProfilesManager;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Recipes
         }
     }
 
-    public class MediaProfileStepModel
+    public sealed class MediaProfileStepModel
     {
         public Dictionary<string, MediaProfile> MediaProfiles { get; set; }
     }
