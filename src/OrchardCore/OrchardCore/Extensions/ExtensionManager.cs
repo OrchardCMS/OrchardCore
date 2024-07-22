@@ -171,7 +171,7 @@ namespace OrchardCore.Environment.Extensions
                 var modules = applicationContext.Application.Modules;
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
-                // Load all extensions in parallel
+                // Load all extensions in parallel.
                 Parallel.ForEach(modules, (module, cancellationToken) =>
                 {
                     if (!module.ModuleInfo.Exists)
