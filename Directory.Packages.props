@@ -42,7 +42,7 @@
     <PackageVersion Include="Markdig" Version="0.37.0" />
     <PackageVersion Include="MessagePack" Version="2.2.60" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.4" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.6.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.7.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="2.20.0" />
 
     <!--
