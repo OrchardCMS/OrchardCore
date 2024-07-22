@@ -450,6 +450,11 @@ namespace OrchardCore.Resources
                 .SetVersion("2.28.0");
 
             manifest
+                .DefineScript("uuid-generator")
+                .SetUrl("~/OrchardCore.Resources/Scripts/uuid-generator.min.js", "~/OrchardCore.Resources/Scripts/uuid-generator.js")
+                .SetVersion("1.0.0");
+
+            manifest
                 .DefineScript("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue.min.js", "~/OrchardCore.Resources/Scripts/vue.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js")

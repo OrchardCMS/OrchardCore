@@ -21,6 +21,12 @@
   },
   {
     "inputs": [
+      "Assets/js/uuid-generator.js"
+    ],
+    "output": "wwwroot/Scripts/uuid-generator.js"
+  },
+  {
+    "inputs": [
       "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
     ],
     "output": "wwwroot/Scripts/bootstrap.bundle.js"
