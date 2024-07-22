@@ -165,7 +165,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             var operators = OneOf(Literals.Text(">="), Literals.Text(">"), Literals.Text("<="), Literals.Text("<"));
 
-            var arithmetic = Terms.Integer(NumberOptions.AllowLeadingSign);
+            var arithmetic = Terms.Integer(NumberOptions.AllowSign);
             var range = Literals.Text("..");
 
             var todayParser = Terms.Text("@today").And(ZeroOrOne(arithmetic))
