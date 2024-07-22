@@ -22,23 +22,22 @@ public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
+    private readonly ILogger _logger;
 
     internal IStringLocalizer S;
-
-    private readonly ILogger _logger;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
-        IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer,
-        ILogger<AzureAISearchIndexSettingsStep> logger)
+        ILogger<AzureAISearchIndexSettingsStep> logger,
+        IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
     {
         _indexManager = indexManager;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
-        S = stringLocalizer;
         _logger = logger;
+        S = stringLocalizer;
     }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)

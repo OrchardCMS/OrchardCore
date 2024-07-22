@@ -92,7 +92,7 @@ namespace OrchardCore.Queries.Recipes
         }
     }
 
-    public class QueryStepModel
+    public sealed class QueryStepModel
     {
         public JsonArray Queries { get; set; }
     }

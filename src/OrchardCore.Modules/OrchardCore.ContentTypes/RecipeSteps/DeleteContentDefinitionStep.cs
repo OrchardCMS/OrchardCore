@@ -10,7 +10,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     /// <summary>
     /// This recipe step deletes content definition records.
     /// </summary>
-    public class DeleteContentDefinitionStep : IRecipeStepHandler
+    public sealed class DeleteContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

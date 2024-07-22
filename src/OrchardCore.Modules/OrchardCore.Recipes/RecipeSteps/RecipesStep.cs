@@ -12,11 +12,11 @@ namespace OrchardCore.Recipes.RecipeSteps
     /// <summary>
     /// This recipe step executes a set of external recipes.
     /// </summary>
-    public class RecipesStep : IRecipeStepHandler
+    public sealed class RecipesStep : IRecipeStepHandler
     {
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public RecipesStep(
             IEnumerable<IRecipeHarvester> recipeHarvesters,
