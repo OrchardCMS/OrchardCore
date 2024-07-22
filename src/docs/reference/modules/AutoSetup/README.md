@@ -72,9 +72,9 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 
 ### User Secrets and Environment Variables
 
-Since JSON configuration contains admin-sensitive information, it is recommended to use user secrets or environment variables instead.
+If your JSON configuration contains sensitive information, or you don't want to commit it to the repository (because e.g. Auto Setup is not utilized by the whole development team), it is recommended to use user secrets or environment variables instead.
 
-[User secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets#secret-manager) are available during local development, and they are stored as JSON files. This means you can move the whole configuration from appsettings.json as-is. Alternatively, you can set each option directly from the command line (this will flatten any existing structures in the secrets.json file):
+[User secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets#secret-manager) are available during local development, and they are stored as JSON files. This means you can move the whole configuration from `appsettings.json` as-is. Alternatively, you can set each option directly from the command line (this will flatten any existing structures in the `secrets.json` file):
 
 ```shell
 cd src/OrchardCore.Cms.Web
@@ -88,6 +88,8 @@ dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPasswo
 dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName" "SaaS"
 dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
 ```
+
+If you use a setup like the above when working with the full source code of Orchard Core, then all copies of the source will use it, due to `OrchardCore.Cms.Web` having `UserSecretsId` pre-configured. This is really useful when contributing to Orchard Core. However, if you want to remove this functionality, just remove the `UserSecretsId` element from the given copy's `OrchardCore.Cms.Web.csproj`.
 
 [Environment variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration#non-prefixed-environment-variables) are available on both server and local machine. But if you have multiple projects, you have to prefix them to avoid clashes.
 
