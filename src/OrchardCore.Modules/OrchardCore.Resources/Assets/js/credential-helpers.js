@@ -28,28 +28,45 @@ const copyToClipboard = (str) => {
     return navigator.clipboard.writeText(str);
 };
 
-const generateStrongPassword = () => {
-    // Create a Uint8Array with 32 bytes (256 bits)
+const generateStrongPassword = (options = {}) => {
+
+    // Default options.
+    const defaultOptions = {
+        generateBase64: false
+    };
+
+    // Extend the default options with the provided options.
+    const config = { ...defaultOptions, ...options };
+
+    // Create a Uint8Array with 32 bytes (256 bits).
     const array = new Uint8Array(32);
 
     if (window.crypto && window.crypto.getRandomValues) {
-        // Fill the array with cryptographically secure random values
+        // Fill the array with cryptographically secure random values.
         window.crypto.getRandomValues(array);
     } else {
-        // Fallback for non-secure contexts
+        // Fallback for non-secure contexts.
         for (let i = 0; i < array.length; i++) {
             array[i] = Math.floor(Math.random() * 256);
         }
     }
 
-    // Convert the array to a binary string
-    let binaryString = '';
+    if (config.generateBase64) {
+        // Convert the array to a binary string.
+        let binaryString = '';
+        array.forEach(byte => {
+            binaryString += String.fromCharCode(byte);
+        });
+
+        // Convert the binary string to a Base64 string.
+        return btoa(binaryString);
+    }
+
+    // Convert the array to a hexadecimal string.
+    let hexString = '';
     array.forEach(byte => {
-        binaryString += String.fromCharCode(byte);
+        hexString += byte.toString(16).padStart(2, '0');
     });
 
-    // Convert the binary string to a Base64 string
-    const base64String = btoa(binaryString);
-
-    return base64String;
+    return hexString;
 }

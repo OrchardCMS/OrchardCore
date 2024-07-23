@@ -3,6 +3,11 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var randomUUID = function randomUUID() {
   if ((typeof crypto === "undefined" ? "undefined" : _typeof(crypto)) === 'object' && typeof crypto.randomUUID === 'function') {
@@ -32,25 +37,41 @@ var copyToClipboard = function copyToClipboard(str) {
   return navigator.clipboard.writeText(str);
 };
 var generateStrongPassword = function generateStrongPassword() {
-  // Create a Uint8Array with 32 bytes (256 bits)
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  // Default options.
+  var defaultOptions = {
+    generateBase64: false
+  };
+
+  // Extend the default options with the provided options.
+  var config = _objectSpread(_objectSpread({}, defaultOptions), options);
+
+  // Create a Uint8Array with 32 bytes (256 bits).
   var array = new Uint8Array(32);
   if (window.crypto && window.crypto.getRandomValues) {
-    // Fill the array with cryptographically secure random values
+    // Fill the array with cryptographically secure random values.
     window.crypto.getRandomValues(array);
   } else {
-    // Fallback for non-secure contexts
+    // Fallback for non-secure contexts.
     for (var i = 0; i < array.length; i++) {
       array[i] = Math.floor(Math.random() * 256);
     }
   }
+  if (config.generateBase64) {
+    // Convert the array to a binary string.
+    var binaryString = '';
+    array.forEach(function (_byte) {
+      binaryString += String.fromCharCode(_byte);
+    });
 
-  // Convert the array to a binary string
-  var binaryString = '';
-  array.forEach(function (_byte) {
-    binaryString += String.fromCharCode(_byte);
+    // Convert the binary string to a Base64 string.
+    return btoa(binaryString);
+  }
+
+  // Convert the array to a hexadecimal string.
+  var hexString = '';
+  array.forEach(function (_byte2) {
+    hexString += _byte2.toString(16).padStart(2, '0');
   });
-
-  // Convert the binary string to a Base64 string
-  var base64String = btoa(binaryString);
-  return base64String;
+  return hexString;
 };
