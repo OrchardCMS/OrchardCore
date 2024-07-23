@@ -208,17 +208,17 @@ namespace OrchardCore.Environment.Extensions
 
                             var feature = extension.ExtensionInfo.Features.FirstOrDefault(f => f.Id == sourceFeature);
 
-                            if (feature == null)
-                            {
-                                // Type has no specific feature, add it to all features
-                                foreach (var curFeature in extension.ExtensionInfo.Features)
-                                {
-                                    typeFeatureProvider.TryAdd(exportedType, curFeature);
-                                }
-                            }
-                            else
+                            if (feature != null)
                             {
                                 typeFeatureProvider.TryAdd(exportedType, feature);
+                            
+                                continue;
+                            }
+                            
+                            // Type has no specific feature, add it to all features.
+                            foreach (var curFeature in extension.ExtensionInfo.Features)
+                            {
+                                typeFeatureProvider.TryAdd(exportedType, curFeature);
                             }
                         }
                     }
