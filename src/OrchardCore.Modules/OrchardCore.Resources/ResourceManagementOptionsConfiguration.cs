@@ -451,7 +451,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("credential-helpers")
-                .SetUrl("~/OrchardCore.Resources/Scripts/credential-helpers.js", "~/OrchardCore.Resources/Scripts/credential-helpers.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/credential-helpers.min.js", "~/OrchardCore.Resources/Scripts/credential-helpers.js")
                 .SetVersion("1.0.0");
 
             manifest
