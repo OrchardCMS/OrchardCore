@@ -450,8 +450,8 @@ namespace OrchardCore.Resources
                 .SetVersion("2.28.0");
 
             manifest
-                .DefineScript("uuid-generator")
-                .SetUrl("~/OrchardCore.Resources/Scripts/uuid-generator.min.js", "~/OrchardCore.Resources/Scripts/uuid-generator.js")
+                .DefineScript("credential-helpers")
+                .SetUrl("~/OrchardCore.Resources/Scripts/credential-helpers.js", "~/OrchardCore.Resources/Scripts/credential-helpers.js")
                 .SetVersion("1.0.0");
 
             manifest

@@ -4,14 +4,14 @@
 */
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function randomUUID() {
+var randomUUID = function randomUUID() {
   if ((typeof crypto === "undefined" ? "undefined" : _typeof(crypto)) === 'object' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
     return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
   });
-}
+};
 var togglePasswordVisibility = function togglePasswordVisibility(passwordCtl, togglePasswordCtl) {
   // toggle the type attribute
   type = passwordCtl.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -30,4 +30,27 @@ var togglePasswordVisibility = function togglePasswordVisibility(passwordCtl, to
 };
 var copyToClipboard = function copyToClipboard(str) {
   return navigator.clipboard.writeText(str);
+};
+var generateStrongPassword = function generateStrongPassword() {
+  // Create a Uint8Array with 32 bytes (256 bits)
+  var array = new Uint8Array(32);
+  if (window.crypto && window.crypto.getRandomValues) {
+    // Fill the array with cryptographically secure random values
+    window.crypto.getRandomValues(array);
+  } else {
+    // Fallback for non-secure contexts
+    for (var i = 0; i < array.length; i++) {
+      array[i] = Math.floor(Math.random() * 256);
+    }
+  }
+
+  // Convert the array to a binary string
+  var binaryString = '';
+  array.forEach(function (_byte) {
+    binaryString += String.fromCharCode(_byte);
+  });
+
+  // Convert the binary string to a Base64 string
+  var base64String = btoa(binaryString);
+  return base64String;
 };

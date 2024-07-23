@@ -21,9 +21,9 @@
   },
   {
     "inputs": [
-      "Assets/js/uuid-generator.js"
+      "Assets/js/credential-helpers.js"
     ],
-    "output": "wwwroot/Scripts/uuid-generator.js"
+    "output": "wwwroot/Scripts/credential-helpers.js"
   },
   {
     "inputs": [

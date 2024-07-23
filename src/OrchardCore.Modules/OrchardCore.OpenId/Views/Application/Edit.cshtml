@@ -204,8 +204,8 @@
     </div>
 </form>
 
-<script at="Foot" asp-name="uuid-generator"></script>
-<script at="Foot" depends-on="uuid-generator">
+<script at="Foot" asp-name="credential-helpers"></script>
+<script at="Foot" depends-on="credential-helpers">
 
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -234,7 +234,7 @@
         });
 
         generateClientSecretElement.addEventListener('click', (e) => {
-            clientSecretElement.value = randomUUID().replaceAll('-', '');
+            clientSecretElement.value = generateStrongPassword();
         });
     });
 
