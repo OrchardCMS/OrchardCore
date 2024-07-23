@@ -3,19 +3,33 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var randomUUID = function randomUUID() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  // Default options.
+  var defaultOptions = {
+    includeHyphens: true
+  };
+
+  // Extend the default options with the provided options.
+  var config = _objectSpread(_objectSpread({}, defaultOptions), options);
+  var value;
   if ((typeof crypto === "undefined" ? "undefined" : _typeof(crypto)) === 'object' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
+    value = crypto.randomUUID();
+  } else {
+    value = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+      return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+    });
   }
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
-    return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
-  });
+  if (!config.includeHyphens) {
+    return value.replaceAll('-', '');
+  }
+  return value;
 };
 var togglePasswordVisibility = function togglePasswordVisibility(passwordCtl, togglePasswordCtl) {
   // toggle the type attribute
@@ -52,9 +66,14 @@ var generateStrongPassword = function generateStrongPassword() {
     // Fill the array with cryptographically secure random values.
     window.crypto.getRandomValues(array);
   } else {
-    // Fallback for non-secure contexts.
-    for (var i = 0; i < array.length; i++) {
-      array[i] = Math.floor(Math.random() * 256);
+    // Use the randomUUID method to generate random values.
+    for (var i = 0; i < array.length; i += 16) {
+      var uuid = randomUUID({
+        includeHyphens: false
+      });
+      for (var j = 0; j < 16 && i + j < array.length; j++) {
+        array[i + j] = parseInt(uuid.substr(j * 2, 2), 16);
+      }
     }
   }
   if (config.generateBase64) {

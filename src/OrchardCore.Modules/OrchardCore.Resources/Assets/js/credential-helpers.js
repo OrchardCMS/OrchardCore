@@ -1,11 +1,27 @@
-const randomUUID = () => {
+const randomUUID = (options = {}) => {
+    // Default options.
+    const defaultOptions = {
+        includeHyphens: true
+    };
+
+    // Extend the default options with the provided options.
+    const config = { ...defaultOptions, ...options };
+
+    let value;
     if (typeof crypto === 'object' && typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
+        value = crypto.randomUUID();
+    } else {
+
+        value = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
     }
 
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
+    if (!config.includeHyphens) {
+        return value.replaceAll('-', '');
+    }
+
+    return value;
 }
 
 const togglePasswordVisibility = (passwordCtl, togglePasswordCtl) => {
@@ -45,9 +61,12 @@ const generateStrongPassword = (options = {}) => {
         // Fill the array with cryptographically secure random values.
         window.crypto.getRandomValues(array);
     } else {
-        // Fallback for non-secure contexts.
-        for (let i = 0; i < array.length; i++) {
-            array[i] = Math.floor(Math.random() * 256);
+        // Use the randomUUID method to generate random values.
+        for (let i = 0; i < array.length; i += 16) {
+            const uuid = randomUUID({ includeHyphens: false });
+            for (let j = 0; j < 16 && i + j < array.length; j++) {
+                array[i + j] = parseInt(uuid.substr(j * 2, 2), 16);
+            }
         }
     }
 
