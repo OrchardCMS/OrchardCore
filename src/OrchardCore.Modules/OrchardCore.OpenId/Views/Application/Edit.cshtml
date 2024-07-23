@@ -230,7 +230,7 @@
         });
 
         generateClientIdElement.addEventListener('click', (e) => {
-            clientIdElement.value = randomUUID().replaceAll('-', '');
+            clientIdElement.value = randomUUID({ includeHyphens: false });
         });
 
         generateClientSecretElement.addEventListener('click', (e) => {
