@@ -13,10 +13,14 @@ namespace OrchardCore.Contents.Liquid
     {
         private static readonly FilterArgument _typeArgument = new("type", new LiteralExpression(StringValue.Create("contentitem")));
 
-        public static ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            argumentsList.Add(_typeArgument);
-            return ShapeTag.WriteToAsync(argumentsList, writer, encoder, context);
+            var list = new List<FilterArgument>(argumentsList)
+            {
+                _typeArgument
+            };
+
+            return ShapeTag.WriteToAsync(list, writer, encoder, context);
         }
     }
 }

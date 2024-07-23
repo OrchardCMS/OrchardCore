@@ -161,7 +161,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         if (name == "Keys")
                         {
-                            return new ArrayValue(forms.Keys.Select(x => new StringValue(x)));
+                            return new ArrayValue(forms.Keys.Select(x => new StringValue(x)).ToArray());
                         }
 
                         return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
