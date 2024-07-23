@@ -57,18 +57,7 @@ const generateStrongPassword = (options = {}) => {
     // Create a Uint8Array with 32 bytes (256 bits).
     const array = new Uint8Array(32);
 
-    if (window.crypto && window.crypto.getRandomValues) {
-        // Fill the array with cryptographically secure random values.
-        window.crypto.getRandomValues(array);
-    } else {
-        // Use the randomUUID method to generate random values.
-        for (let i = 0; i < array.length; i += 16) {
-            const uuid = randomUUID({ includeHyphens: false });
-            for (let j = 0; j < 16 && i + j < array.length; j++) {
-                array[i + j] = parseInt(uuid.substr(j * 2, 2), 16);
-            }
-        }
-    }
+    crypto.getRandomValues(array);
 
     if (config.generateBase64) {
         // Convert the array to a binary string.
