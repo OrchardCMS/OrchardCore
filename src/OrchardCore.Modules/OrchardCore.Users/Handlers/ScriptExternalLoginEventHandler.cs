@@ -39,50 +39,62 @@ namespace OrchardCore.Users.Handlers
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
+                var context = new
+                {
+                    userName = string.Empty,
+                    loginProvider = provider,
+                    externalClaims = claims
+                };
 
                 var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                if (evaluationResult?.userName != null)
+
+                if (evaluationResult is IDictionary<string, object> data && data.TryGetValue("userName", out var userNameObj))
                 {
-                    return evaluationResult.userName;
+                    return (string)userNameObj;
                 }
             }
+
             return string.Empty;
         }
 
         public async Task UpdateUserAsync(UpdateUserContext context)
         {
             var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
-            
+
             UpdateUserInternal(context, loginSettings);
         }
 
         public void UpdateUserInternal(UpdateUserContext context, LoginSettings loginSettings)
         {
-            if (loginSettings.UseScriptToSyncRoles)
+            if (!loginSettings.UseScriptToSyncRoles)
             {
-                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
-                dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
-                context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+                return;
+            }
 
-                if (evaluationResult.claimsToUpdate is not null)
+            var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
+            dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+            context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
+            context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+
+            if (evaluationResult is IDictionary<string, object> data)
+            {
+                if (data.TryGetValue("claimsToUpdate", out var claimsToUpdateObj))
                 {
-                    var claimsToUpdate = ((JsonArray)JArray.FromObject(evaluationResult.claimsToUpdate)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
+                    var claimsToUpdate = JArray.FromObject(claimsToUpdateObj).Deserialize<List<UserClaim>>(JOptions.CamelCase);
                     context.ClaimsToUpdate.AddRange(claimsToUpdate);
                 }
 
-                if (evaluationResult.claimsToRemove is not null)
+                if (data.TryGetValue("claimsToRemove", out var claimsToRemoveObj))
                 {
-                    var claimsToRemove = ((JsonArray)JArray.FromObject(evaluationResult.claimsToRemove)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
+                    var claimsToRemove = JArray.FromObject(claimsToRemoveObj).Deserialize<List<UserClaim>>(JOptions.CamelCase);
                     context.ClaimsToRemove.AddRange(claimsToRemove);
                 }
 
-                if (evaluationResult.propertiesToUpdate is not null)
+                if (data.TryGetValue("propertiesToUpdate", out var propertiesToUpdateObj))
                 {
-                    var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
+                    var result = JObject.FromObject(propertiesToUpdateObj);
                     if (context.PropertiesToUpdate is not null)
                     {
                         // Perhaps other provider will fill some values. we should keep exists value.

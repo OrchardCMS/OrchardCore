@@ -13,8 +13,10 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.Entities;
 using OrchardCore.Queries;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 {
@@ -32,6 +34,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         public Task<string> GetIdentifierAsync()
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+
             return queryManager.GetIdentifierAsync();
         }
 
@@ -39,9 +42,9 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var queries = await queryManager.ListQueriesAsync();
+            var queries = await queryManager.ListQueriesBySourceAsync(ElasticQuerySource.SourceName);
 
-            foreach (var query in queries.OfType<ElasticQuery>())
+            foreach (var query in queries)
             {
                 if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
@@ -60,7 +63,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-
+                    var metadata = query.As<ElasticsearchQueryMetadata>();
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
@@ -84,7 +87,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             }
         }
 
-        private static FieldType BuildSchemaBasedFieldType(ElasticQuery query, JsonNode querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"]?.AsObject();
             if (properties == null)
@@ -92,7 +95,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
+            var typeType = new ObjectGraphType<JsonObject>
             {
                 Name = fieldTypeName
             };
@@ -118,7 +121,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                         }),
                     };
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
                 else if (type == "integer")
                 {
@@ -135,7 +138,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     };
 
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
             }
 
@@ -144,26 +147,26 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
-
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = new ListGraphType(typetype),
+                ResolvedType = new ListGraphType(typeType),
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
                 Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
+
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }
@@ -171,11 +174,11 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             return fieldType;
         }
 
-        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
         {
-            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
-            if (typetype == null)
+            if (typeType == null)
             {
                 return null;
             }
@@ -183,28 +186,28 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                        new QueryArgument<StringGraphType> { Name = "parameters" }
-                    ),
-
+                    new QueryArgument<StringGraphType> { Name = "parameters" }
+                ),
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = typetype.ResolvedType,
+                ResolvedType = typeType.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-                Type = typetype.Type
+                Type = typeType.Type
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
+
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }

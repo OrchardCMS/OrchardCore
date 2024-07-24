@@ -6,6 +6,8 @@ namespace OrchardCore.Json.Serialization;
 
 public class TimeSpanJsonConverter : JsonConverter<TimeSpan>
 {
+    public static readonly TimeSpanJsonConverter Instance = new();
+
     public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.String)
@@ -14,7 +16,7 @@ public class TimeSpanJsonConverter : JsonConverter<TimeSpan>
         }
 
         var stringValue = reader.GetString();
-        
+
         if (TimeSpan.TryParse(stringValue, out var timeSpan))
         {
             return timeSpan;

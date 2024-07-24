@@ -15,7 +15,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -29,6 +28,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Services;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace OrchardCore.Users.Controllers
@@ -810,13 +810,13 @@ namespace OrchardCore.Users.Controllers
                 userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
             }
 
-            var currentClaims = user.UserClaims.
-            Where(x => !x.ClaimType.IsNullOrEmpty()).
-            DistinctBy(x => new { x.ClaimType, x.ClaimValue }).
-            ToList();
+            var currentClaims = user.UserClaims
+                .Where(x => !string.IsNullOrEmpty(x.ClaimType))
+                .DistinctBy(x => new { x.ClaimType, x.ClaimValue })
+                .ToList();
 
             var claimsChanged = false;
-            if (context.ClaimsToRemove != null)
+            if (context.ClaimsToRemove?.Count > 0)
             {
                 var claimsToRemove = context.ClaimsToRemove.ToHashSet();
                 foreach (var item in claimsToRemove)
@@ -830,7 +830,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            if (context.ClaimsToUpdate != null)
+            if (context.ClaimsToUpdate?.Count > 0)
             {
                 foreach (var item in context.ClaimsToUpdate)
                 {

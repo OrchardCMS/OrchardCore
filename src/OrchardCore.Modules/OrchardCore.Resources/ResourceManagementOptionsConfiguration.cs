@@ -384,23 +384,23 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.css")
-                .SetCdnIntegrity("sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI", "sha384-t4FZn72pwiL8YQp59tFGXyBckR289CkH1zKxQs5bMaAgEbJ9Do0PU4yeIsKbJ2Mj")
-                .SetVersion("6.5.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css")
+                .SetCdnIntegrity("sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT", "sha384-vMdawx0r3BjxHQwcfWi0YSemtW6u5mKxTKPPh1ogUICPLaEa/6e42yg2wRYzzJtx")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/all.js")
-                .SetCdnIntegrity("sha384-QvGJBgkqeVjFCXW39Q3psy0yEymI5WTMC5V+6LnvmNIeDfvGo1AI/j0AlTrID9lQ", "sha384-RDO2wWn8bGQEWqqTM/s6D+cc2+OfRSJp7/O23bWdBhukXW9gMARFwCIQZUyD3ZeJ")
-                .SetVersion("6.5.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js")
+                .SetCdnIntegrity("sha384-dgEl3vRKux81M373f/TdgoDTV5oZj+yjHrr/1qR5b4btG5q63kYS62t5kod+7Q6v", "sha384-v72QeVpDL6Ne4X2S+fwIXCOLhO57lwIR/qRV05SHAExDg1QoyJGWDxx6VQO3rzlC")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-tj5YmFIdBVO/XRERdNj8QOyAFv67yagv304wrKG+kWqr14aj14FTlN5L5ijoDM9a", "sha384-KcVtZ/zEAUfN59N3IofEWLLKCAF4G7kSnXSvNcn+r+idf5aNbwboO9st8MGLzLVl")
-                .SetVersion("6.5.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-M9y++reQwf5nddw5loUHChCbGE4kwaeHzeEM2yWidMfaRMQeHM6MSwwPuiSnSMHF", "sha384-WrIndr6nwB5l/sVUyZkWDlpNS9Vx/Y+zhmjZNP+j2UJOBmy36ufaIIqd7o2kL0BL")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("jquery-resizable")
@@ -434,7 +434,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("trumbowyg-theme")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.js")
-                .SetDependencies("trumbowyg", "theme-manager")
+                .SetDependencies("trumbowyg", "theme-head")
                 .SetVersion("1.0.0");
 
             manifest
@@ -448,6 +448,11 @@ namespace OrchardCore.Resources
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg-plugins.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg-plugins.js")
                 .SetVersion("2.28.0");
+
+            manifest
+                .DefineScript("credential-helpers")
+                .SetUrl("~/OrchardCore.Resources/Scripts/credential-helpers.min.js", "~/OrchardCore.Resources/Scripts/credential-helpers.js")
+                .SetVersion("1.0.0");
 
             manifest
                 .DefineScript("vuejs")

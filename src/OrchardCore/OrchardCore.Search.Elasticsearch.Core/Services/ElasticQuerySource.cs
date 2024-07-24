@@ -8,16 +8,19 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
-    public class ElasticQuerySource : IQuerySource
+    public sealed class ElasticQuerySource : IQuerySource
     {
+        public const string SourceName = "Elasticsearch";
+
         private readonly IElasticQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
@@ -38,28 +41,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Elasticsearch";
-
-        public Query Create()
-        {
-            return new ElasticQuery();
-        }
+        public string Name
+            => SourceName;
 
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var elasticQuery = query as ElasticQuery;
+            var metadata = query.As<ElasticsearchQueryMetadata>();
             var elasticQueryResults = new ElasticQueryResults();
 
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(elasticQuery.Index, tokenizedContent);
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var docs = await _queryService.SearchAsync(metadata?.Index, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
-            if (elasticQuery.ReturnContentItems)
+            if (query.ReturnContentItems)
             {
                 // We always return an empty collection if the bottom lines queries have no results.
                 elasticQueryResults.Items = [];
 
-                // Load corresponding content item versions
+                // Load corresponding content item versions.
                 var topDocs = docs.TopDocs.Where(x => x != null).ToList();
 
                 if (topDocs.Count > 0)
@@ -67,7 +66,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                    // Reorder the result to preserve the one from the Elasticsearch query
+                    // Reorder the result to preserve the one from the Elasticsearch query.
                     if (dbContentItems.Any())
                     {
                         var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
