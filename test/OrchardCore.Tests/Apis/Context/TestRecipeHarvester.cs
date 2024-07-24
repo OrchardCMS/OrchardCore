@@ -16,6 +16,7 @@ namespace OrchardCore.Tests.Apis.Context
             => HarvestRecipesAsync(
             [
                 "Apis/Lucene/Recipes/luceneQueryTest.json",
+                "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json",
                 "OrchardCore.Users/Recipes/UserSettingsTest.json"
             ]);
 

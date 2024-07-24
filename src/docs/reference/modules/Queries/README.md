@@ -153,7 +153,7 @@ Here is an example for creating a SQL query from a Queries recipe step:
     "Source": "Sql",
     "Name": "ContentItems",
     "Template": "select * from ContentItemIndex", // json encoded query template
-    "ReturnDocuments": false
+    "ReturnContentItems": false
 }
 ```
 

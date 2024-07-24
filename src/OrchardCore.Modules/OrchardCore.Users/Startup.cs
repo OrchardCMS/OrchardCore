@@ -304,7 +304,7 @@ namespace OrchardCore.Users
                         nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
                         nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
                         nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
+                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
                         nameof(User.Properties) => new ObjectValue(user.Properties),
                         _ => NilValue.Instance
                     };

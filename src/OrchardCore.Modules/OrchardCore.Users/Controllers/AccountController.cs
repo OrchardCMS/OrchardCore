@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -29,6 +28,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Services;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace OrchardCore.Users.Controllers
@@ -52,6 +52,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IdentityOptions _identityOptions;
 
         private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
@@ -78,7 +79,8 @@ namespace OrchardCore.Users.Controllers
             IShellFeaturesManager shellFeaturesManager,
             IDisplayManager<LoginForm> loginFormDisplayManager,
             IUpdateModelAccessor updateModelAccessor,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IOptions<IdentityOptions> identityOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -94,6 +96,7 @@ namespace OrchardCore.Users.Controllers
             _loginFormDisplayManager = loginFormDisplayManager;
             _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
+            _identityOptions = identityOptions.Value;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -296,7 +299,6 @@ namespace OrchardCore.Users.Controllers
         public IActionResult ChangePasswordConfirmation()
             => View();
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -316,7 +318,7 @@ namespace OrchardCore.Users.Controllers
             var userInfo = user as User;
 
             var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
-            { 
+            {
                 UserClaims = userInfo.UserClaims,
                 UserRoles = userRoles,
             };
@@ -402,9 +404,9 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
+                var email = info.GetEmail();
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrWhiteSpace(email))
                 {
                     iUser = await _userManager.FindByEmailAsync(email);
                 }
@@ -427,7 +429,6 @@ namespace OrchardCore.Users.Controllers
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    ViewData["Email"] = email;
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -449,7 +450,7 @@ namespace OrchardCore.Users.Controllers
 
                         // If registrationSettings.NoUsernameForExternalUsers is true, this username will not be used
                         UserName = await GenerateUsernameAsync(info),
-                        Email = email
+                        Email = info.GetEmail(),
                     };
 
                     // The user doesn't exist and no information required, we can create the account locally
@@ -648,9 +649,8 @@ namespace OrchardCore.Users.Controllers
 
                 return NotFound();
             }
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(info.GetEmail());
 
             if (user == null)
             {
@@ -810,13 +810,13 @@ namespace OrchardCore.Users.Controllers
                 userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
             }
 
-            var currentClaims = user.UserClaims.
-            Where(x => !x.ClaimType.IsNullOrEmpty()).
-            DistinctBy(x => new { x.ClaimType, x.ClaimValue }).
-            ToList();
+            var currentClaims = user.UserClaims
+                .Where(x => !string.IsNullOrEmpty(x.ClaimType))
+                .DistinctBy(x => new { x.ClaimType, x.ClaimValue })
+                .ToList();
 
             var claimsChanged = false;
-            if (context.ClaimsToRemove != null)
+            if (context.ClaimsToRemove?.Count > 0)
             {
                 var claimsToRemove = context.ClaimsToRemove.ToHashSet();
                 foreach (var item in claimsToRemove)
@@ -830,7 +830,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            if (context.ClaimsToUpdate != null)
+            if (context.ClaimsToUpdate?.Count > 0)
             {
                 foreach (var item in context.ClaimsToUpdate)
                 {

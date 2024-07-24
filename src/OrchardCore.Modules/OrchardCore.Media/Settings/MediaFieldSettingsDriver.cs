@@ -41,7 +41,7 @@ namespace OrchardCore.Media.Settings
                 model.Multiple = settings.Multiple;
                 model.AllowMediaText = settings.AllowMediaText;
                 model.AllowAnchors = settings.AllowAnchors;
-                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions?.Length == 0;
+                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
 
                 var items = new List<MediaTypeViewModel>();
                 foreach (var extension in _mediaOptions.AllowedFileExtensions)

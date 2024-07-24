@@ -59,6 +59,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'
         HIDE_TIME_TO_CLOSE: true
+        HIDE_ITEMS_CLOSED_COUNT: true
 
     - name: Concatenate Issue/PR and Discussion Metrics
       shell: pwsh

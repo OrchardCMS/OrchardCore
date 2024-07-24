@@ -1,9 +1,11 @@
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Drivers;
+using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql
@@ -18,11 +20,11 @@ namespace OrchardCore.Queries.Sql
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
-            services.AddScoped<IQuerySource, SqlQuerySource>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
 
-            // Allows to serialize 'SqlQuery' from its base type.
-            services.AddJsonDerivedTypeInfo<SqlQuery, Query>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddDataMigration<SqlQueryMigrations>();
+            services.AddScoped<IQueryHandler, SqlQueryHandler>();
         }
     }
 }
