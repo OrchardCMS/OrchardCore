@@ -31,31 +31,25 @@ namespace OrchardCore.Tests.Extensions
 
         public ExtensionManagerTests()
         {
-            _moduleScopedExtensionManager = new ExtensionManager(
-                _applicationContext,
-                new[] { new ExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+            _moduleScopedExtensionManager = CreateExtensionManager(
+                [new ExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 _moduleScopedTypeFeatureProvider,
-                _moduleFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                _moduleFeatureProvider
                 );
 
-            _themeScopedExtensionManager = new ExtensionManager(
-                _applicationContext,
-                new[] { new ExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+            _themeScopedExtensionManager = CreateExtensionManager(
+                [new ExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 new TypeFeatureProvider(),
-                _themeFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                _themeFeatureProvider
                 );
 
-            _moduleThemeScopedExtensionManager = new ExtensionManager(
-                _applicationContext,
-                new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
-                new[] { new ExtensionPriorityStrategy() },
+            _moduleThemeScopedExtensionManager = CreateExtensionManager(
+                [new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy()],
+                [new ExtensionPriorityStrategy()],
                 new TypeFeatureProvider(),
-                _themeFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                _themeFeatureProvider
                 );
         }
 
@@ -273,6 +267,33 @@ namespace OrchardCore.Tests.Extensions
             var types = _moduleScopedTypeFeatureProvider.GetTypesForFeature(feature);
 
             Assert.DoesNotContain(typeof(SkippedDependentType), types);
+        }
+
+        private static ExtensionManager CreateExtensionManager(
+            IExtensionDependencyStrategy[] extensionDependencyStrategies,
+            IExtensionPriorityStrategy[] extensionPriorityStrategies,
+            ITypeFeatureProvider typeFeatureProvider,
+            IFeaturesProvider featuresProvider)
+        {
+            var services = new ServiceCollection();
+            services
+                .AddSingleton(_applicationContext)
+                .AddSingleton(typeFeatureProvider)
+                .AddSingleton(featuresProvider);
+
+            foreach (var extensionDependencyStrategy in extensionDependencyStrategies)
+            {
+                services.AddSingleton(extensionDependencyStrategy);
+            }
+
+            foreach (var extensionPriorityStrategy in extensionPriorityStrategies)
+            {
+                services.AddSingleton(extensionPriorityStrategy);
+            }
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            return new ExtensionManager(serviceProvider, new NullLogger<ExtensionManager>());
         }
     }
 }

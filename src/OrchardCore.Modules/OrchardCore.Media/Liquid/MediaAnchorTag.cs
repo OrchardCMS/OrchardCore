@@ -17,7 +17,7 @@ namespace OrchardCore.Media.Liquid
     {
         public int Order => -20;
 
-        public bool Match(List<FilterArgument> argumentsList)
+        public bool Match(IReadOnlyList<FilterArgument> argumentsList)
         {
             foreach (var argument in argumentsList)
             {
@@ -30,7 +30,7 @@ namespace OrchardCore.Media.Liquid
             return false;
         }
 
-        public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+        public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
         {
             var services = context.Services;
             var mediaFileStore = services.GetRequiredService<IMediaFileStore>();

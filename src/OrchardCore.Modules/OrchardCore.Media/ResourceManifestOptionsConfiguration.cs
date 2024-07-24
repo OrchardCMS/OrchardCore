@@ -14,7 +14,7 @@ namespace OrchardCore.Media
             _manifest
                 .DefineScript("media")
                 .SetUrl("~/OrchardCore.Media/Scripts/media.min.js", "~/OrchardCore.Media/Scripts/media.js")
-                .SetDependencies("vuejs", "sortable", "vuedraggable", "jQuery-ui")
+                .SetDependencies("vuejs", "sortable", "vuedraggable", "jQuery-ui", "credential-helpers")
                 .SetVersion("1.0.0");
 
             _manifest

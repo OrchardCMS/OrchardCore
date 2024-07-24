@@ -124,8 +124,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var services = builder.ApplicationServices;
 
-            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
-            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+            services.AddTransient<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddTransient<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return builder;
         }
