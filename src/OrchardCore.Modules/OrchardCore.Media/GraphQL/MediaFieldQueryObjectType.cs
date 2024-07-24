@@ -99,7 +99,7 @@ namespace OrchardCore.Media.GraphQL
         }
     }
 
-    public class MediaFileItemType : ObjectGraphType<MediaFileItem>
+    public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
     {
         public MediaFileItemType()
         {
