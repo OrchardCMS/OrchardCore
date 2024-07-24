@@ -109,7 +109,7 @@ namespace OrchardCore.Media.GraphQL
         }
     }
 
-    public class MediaFileItem
+    public sealed class MediaFileItem
     {
         public string FileName { get; set; }
         public string Path { get; set; }
