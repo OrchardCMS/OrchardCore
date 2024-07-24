@@ -62,7 +62,7 @@ namespace OrchardCore.Media.GraphQL
                 {
                     if (x.Source?.Paths is null)
                     {
-                        return Array.Empty<MediaFileItem>();
+                        return [];
                     }
 
                     var paths = x.Page(x.Source.Paths).ToArray();
