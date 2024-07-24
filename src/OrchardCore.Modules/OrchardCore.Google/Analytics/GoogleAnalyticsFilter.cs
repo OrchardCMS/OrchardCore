@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Analytics
 {
-    public class GoogleAnalyticsFilter : IAsyncResultFilter
+    public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
     {
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;
@@ -33,7 +33,7 @@ namespace OrchardCore.Google.Analytics
 
                 if (_scriptsCache == null && canTrack)
                 {
-                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
+                    var settings = await _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
 
                     if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
                     {

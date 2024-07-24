@@ -37,7 +37,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -62,7 +62,7 @@ namespace OrchardCore.OpenId
     }
 
     [Feature(OpenIdConstants.Features.Client)]
-    public class ClientStartup : StartupBase
+    public sealed class ClientStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -89,7 +89,7 @@ namespace OrchardCore.OpenId
     }
 
     [Feature(OpenIdConstants.Features.Server)]
-    public class ServerStartup : StartupBase
+    public sealed class ServerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -196,7 +196,7 @@ namespace OrchardCore.OpenId
     }
 
     [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Server)]
-    public class ServerDeploymentStartup : StartupBase
+    public sealed class ServerDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -205,7 +205,7 @@ namespace OrchardCore.OpenId
     }
 
     [Feature(OpenIdConstants.Features.Validation)]
-    public class ValidationStartup : StartupBase
+    public sealed class ValidationStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -244,7 +244,7 @@ namespace OrchardCore.OpenId
     }
 
     [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Validation)]
-    public class ValidationDeploymentStartup : StartupBase
+    public sealed class ValidationDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

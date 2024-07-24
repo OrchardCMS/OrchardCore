@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +14,12 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
@@ -21,6 +28,7 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Services;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace OrchardCore.Users.Controllers
@@ -37,10 +45,21 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IdentityOptions _identityOptions;
+
+        private static readonly JsonMergeSettings _jsonMergeSettings = new()
+        {
+            MergeArrayHandling = MergeArrayHandling.Replace,
+            MergeNullValueHandling = MergeNullValueHandling.Merge
+        };
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -57,7 +76,11 @@ namespace OrchardCore.Users.Controllers
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
-            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            IShellFeaturesManager shellFeaturesManager,
+            IDisplayManager<LoginForm> loginFormDisplayManager,
+            IUpdateModelAccessor updateModelAccessor,
+            IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+            IOptions<IdentityOptions> identityOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -69,7 +92,11 @@ namespace OrchardCore.Users.Controllers
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellFeaturesManager = shellFeaturesManager;
+            _loginFormDisplayManager = loginFormDisplayManager;
+            _updateModelAccessor = updateModelAccessor;
             _externalLoginHandlers = externalLoginHandlers;
+            _identityOptions = identityOptions.Value;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -87,7 +114,7 @@ namespace OrchardCore.Users.Controllers
             // Clear the existing external cookie to ensure a clean login process.
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
             {
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -105,17 +132,20 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
+            var formShape = await _loginFormDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false);
+
             CopyTempDataErrorsToModelState();
+
             ViewData["ReturnUrl"] = returnUrl;
 
-            return View();
+            return View(formShape);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
         {
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
             {
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
@@ -149,77 +179,79 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        [ActionName(nameof(Login))]
+        public async Task<IActionResult> LoginPOST(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            ArgumentNullException.ThrowIfNull(model);
+            var model = new LoginForm();
 
-            if (TryValidateModel(model) && ModelState.IsValid)
+            var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+            var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
+
+            if (disableLocalLogin)
             {
-                var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
-                if (disableLocalLogin)
+                ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
+            }
+            else
+            {
+                await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
+
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
-                }
-                else
-                {
-                    await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
-                    if (ModelState.IsValid)
+                    var user = await _userService.GetUserAsync(model.UserName);
+                    if (user != null)
                     {
-                        var user = await _userService.GetUserAsync(model.UserName);
-                        if (user != null)
+                        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                        if (result.Succeeded)
                         {
-                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
-                            if (result.Succeeded)
+                            if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user))
                             {
-                                if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user))
+                                result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                                if (result.Succeeded)
                                 {
-                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                                    _logger.LogInformation(1, "User logged in.");
+                                    await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                                    if (result.Succeeded)
-                                    {
-                                        _logger.LogInformation(1, "User logged in.");
-                                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                                        return await LoggedInActionResultAsync(user, returnUrl);
-                                    }
+                                    return await LoggedInActionResultAsync(user, returnUrl);
                                 }
                             }
-
-                            if (result.RequiresTwoFactor)
-                            {
-                                return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
-                                    typeof(TwoFactorAuthenticationController).ControllerName(),
-                                    new
-                                    {
-                                        returnUrl,
-                                        model.RememberMe
-                                    });
-                            }
-
-                            if (result.IsLockedOut)
-                            {
-                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
-
-                                return View();
-                            }
-
-                            // Login failed with a known user.
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                         }
 
-                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                        if (result.RequiresTwoFactor)
+                        {
+                            return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                                typeof(TwoFactorAuthenticationController).ControllerName(),
+                                new
+                                {
+                                    returnUrl,
+                                    model.RememberMe
+                                });
+                        }
+
+                        if (result.IsLockedOut)
+                        {
+                            ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                            await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+
+                            return View();
+                        }
+
+                        // Login failed with a known user.
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                     }
 
-                    // Login failed unknown user.
-                    await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                 }
+
+                // Login failed unknown user.
+                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
             }
 
             // If we got this far, something failed, redisplay form.
-            return View(model);
+            return View(formShape);
         }
 
         [HttpPost]
@@ -267,7 +299,6 @@ namespace OrchardCore.Users.Controllers
         public IActionResult ChangePasswordConfirmation()
             => View();
 
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -282,24 +313,31 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<SignInResult> ExternalLoginSignInAsync(IUser user, ExternalLoginInfo info)
         {
-            var claims = info.Principal.GetSerializableClaims();
+            var externalClaims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
-            var context = new UpdateRolesContext(user, info.LoginProvider, claims, userRoles);
+            var userInfo = user as User;
 
+            var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
+            {
+                UserClaims = userInfo.UserClaims,
+                UserRoles = userRoles,
+            };
             foreach (var item in _externalLoginHandlers)
             {
                 try
                 {
-                    await item.UpdateRoles(context);
+                    await item.UpdateUserAsync(context);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.UpdateRoles threw an exception", item.GetType());
+                    _logger.LogError(ex, "{ExternalLoginHandler}.UpdateUserAsync threw an exception", item.GetType());
                 }
             }
 
-            await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
-            await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+            if (await UpdateUserPropertiesAsync(_userManager, userInfo, context))
+            {
+                await _userManager.UpdateAsync(user);
+            }
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
@@ -342,7 +380,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToLogin(returnUrl);
             }
 
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
             CopyTempDataErrorsToModelState();
@@ -366,9 +404,9 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
+                var email = info.GetEmail();
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrWhiteSpace(email))
                 {
                     iUser = await _userManager.FindByEmailAsync(email);
                 }
@@ -380,18 +418,17 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
                     {
-                        return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                             new
                             {
-                                Area = "OrchardCore.Users",
-                                Controller = typeof(RegistrationController).ControllerName(),
+                                Area = UserConstants.Features.Users,
+                                Controller = typeof(EmailConfirmationController).ControllerName(),
                                 ReturnUrl = returnUrl,
                             });
                     }
 
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
-                    ViewData["Email"] = email;
 
                     return View(nameof(LinkExternalLogin));
                 }
@@ -413,7 +450,7 @@ namespace OrchardCore.Users.Controllers
 
                         // If registrationSettings.NoUsernameForExternalUsers is true, this username will not be used
                         UserName = await GenerateUsernameAsync(info),
-                        Email = email
+                        Email = info.GetEmail(),
                     };
 
                     // The user doesn't exist and no information required, we can create the account locally
@@ -424,12 +461,11 @@ namespace OrchardCore.Users.Controllers
 
                     if (noInformationRequired)
                     {
-                        iUser = await this.RegisterUser(new RegisterViewModel()
+                        iUser = await this.RegisterUser(new RegisterUserForm()
                         {
                             UserName = externalLoginViewModel.UserName,
                             Email = externalLoginViewModel.Email,
                             Password = null,
-                            ConfirmPassword = null
                         }, S["Confirm your account"], _logger);
 
                         // If the registration was successful we can link the external provider and redirect the user.
@@ -445,11 +481,11 @@ namespace OrchardCore.Users.Controllers
                                 {
                                     if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
                                     {
-                                        return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                                        return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                             new
                                             {
-                                                Area = "OrchardCore.Users",
-                                                Controller = typeof(RegistrationController).ControllerName(),
+                                                Area = UserConstants.Features.Users,
+                                                Controller = typeof(EmailConfirmationController).ControllerName(),
                                                 ReturnUrl = returnUrl,
                                             });
                                     }
@@ -459,7 +495,7 @@ namespace OrchardCore.Users.Controllers
                                         return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                             new
                                             {
-                                                Area = "OrchardCore.Users",
+                                                Area = UserConstants.Features.Users,
                                                 Controller = typeof(RegistrationController).ControllerName(),
                                                 ReturnUrl = returnUrl,
                                             });
@@ -504,7 +540,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
             if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
             {
@@ -541,12 +577,11 @@ namespace OrchardCore.Users.Controllers
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var iUser = await this.RegisterUser(
-                    new RegisterViewModel()
+                    new RegisterUserForm()
                     {
                         UserName = model.UserName,
                         Email = model.Email,
                         Password = model.Password,
-                        ConfirmPassword = model.ConfirmPassword
                     }, S["Confirm your account"], _logger);
 
                 if (iUser is null)
@@ -565,11 +600,11 @@ namespace OrchardCore.Users.Controllers
                         {
                             if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                             {
-                                return RedirectToAction(nameof(RegistrationController.ConfirmEmailSent),
+                                return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                     new
                                     {
-                                        Area = "OrchardCore.Users",
-                                        Controller = typeof(RegistrationController).ControllerName(),
+                                        Area = UserConstants.Features.Users,
+                                        Controller = typeof(EmailConfirmationController).ControllerName(),
                                         ReturnUrl = returnUrl,
                                     });
                             }
@@ -579,7 +614,7 @@ namespace OrchardCore.Users.Controllers
                                 return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                     new
                                     {
-                                        Area = "OrchardCore.Users",
+                                        Area = UserConstants.Features.Users,
                                         Controller = typeof(RegistrationController).ControllerName(),
                                         ReturnUrl = returnUrl,
                                     });
@@ -614,9 +649,8 @@ namespace OrchardCore.Users.Controllers
 
                 return NotFound();
             }
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(info.GetEmail());
 
             if (user == null)
             {
@@ -763,6 +797,61 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(ExternalLogins));
         }
 
+        public static async Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
+        {
+            await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+            await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+
+            var userNeedUpdate = false;
+            if (context.PropertiesToUpdate != null)
+            {
+                var currentProperties = user.Properties.DeepClone();
+                user.Properties.Merge(context.PropertiesToUpdate, _jsonMergeSettings);
+                userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
+            }
+
+            var currentClaims = user.UserClaims
+                .Where(x => !string.IsNullOrEmpty(x.ClaimType))
+                .DistinctBy(x => new { x.ClaimType, x.ClaimValue })
+                .ToList();
+
+            var claimsChanged = false;
+            if (context.ClaimsToRemove?.Count > 0)
+            {
+                var claimsToRemove = context.ClaimsToRemove.ToHashSet();
+                foreach (var item in claimsToRemove)
+                {
+                    var exists = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
+                    if (exists is not null)
+                    {
+                        currentClaims.Remove(exists);
+                        claimsChanged = true;
+                    }
+                }
+            }
+
+            if (context.ClaimsToUpdate?.Count > 0)
+            {
+                foreach (var item in context.ClaimsToUpdate)
+                {
+                    var existing = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
+                    if (existing is null)
+                    {
+                        currentClaims.Add(item);
+                        claimsChanged = true;
+                    }
+                }
+            }
+
+            if (claimsChanged)
+            {
+                user.UserClaims = currentClaims;
+                userNeedUpdate = true;
+            }
+
+            return userNeedUpdate;
+        }
+
         private async Task<string> GenerateUsernameAsync(ExternalLoginInfo info)
         {
             var ret = string.Concat("u", IdGenerator.GenerateId());
@@ -845,7 +934,15 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
         {
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+            var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+
+            if (!registrationFeatureIsAvailable)
+            {
+                return false;
+            }
+
+            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail)
             {
                 // Require that the users have a confirmed email before they can log on.

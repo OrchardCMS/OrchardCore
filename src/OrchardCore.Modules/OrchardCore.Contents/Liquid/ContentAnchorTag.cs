@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.Liquid
     {
         public int Order => -10;
 
-        public bool Match(List<FilterArgument> argumentsList)
+        public bool Match(IReadOnlyList<FilterArgument> argumentsList)
         {
             foreach (var argument in argumentsList)
             {
@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Liquid
             return false;
         }
 
-        public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+        public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
         {
             var services = context.Services;
             var viewContext = context.ViewContext;

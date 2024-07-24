@@ -12,7 +12,7 @@ public static class DeleteEndpoint
 {
     public static IEndpointRouteBuilder AddDeleteContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("api/content/{contentItemId}", ActionAsync)
+        builder.MapDelete("api/content/{contentItemId}", HandleAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -20,13 +20,13 @@ public static class DeleteEndpoint
     }
 
     [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> ActionAsync(
+    private static async Task<IResult> HandleAsync(
         string contentItemId,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
             return httpContext.ChallengeOrForbid("Api");
         }

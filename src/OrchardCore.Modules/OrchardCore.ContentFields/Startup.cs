@@ -1,6 +1,7 @@
 using System;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Handlers;
@@ -16,13 +17,17 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
+using OrchardCore.Users;
 
 namespace OrchardCore.ContentFields
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<BooleanField>();
@@ -144,7 +149,7 @@ namespace OrchardCore.ContentFields
     }
 
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class LocalizationSetContentPickerStartup : StartupBase
+    public sealed class LocalizationSetContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -158,7 +163,7 @@ namespace OrchardCore.ContentFields
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL")]
-    public class IndexingStartup : StartupBase
+    public sealed class IndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -176,8 +181,8 @@ namespace OrchardCore.ContentFields
         }
     }
 
-    [RequireFeatures("OrchardCore.Users")]
-    public class UserPickerStartup : StartupBase
+    [RequireFeatures(UserConstants.Features.Users)]
+    public sealed class UserPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -200,7 +205,7 @@ namespace OrchardCore.ContentFields
     }
 
     [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
-    public class UserPickerSqlIndexingStartup : StartupBase
+    public sealed class UserPickerSqlIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

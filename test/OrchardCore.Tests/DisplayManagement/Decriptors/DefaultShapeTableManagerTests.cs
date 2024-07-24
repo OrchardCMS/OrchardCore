@@ -9,13 +9,13 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Tests.DisplayManagement.Decriptors
+namespace OrchardCore.Tests.DisplayManagement.Descriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private class TestModuleExtensionInfo : IExtensionInfo
+        private sealed class TestModuleExtensionInfo : IExtensionInfo
         {
             public TestModuleExtensionInfo(string name)
             {
@@ -49,7 +49,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public bool Exists => true;
         }
 
-        private class TestThemeExtensionInfo : IThemeExtensionInfo
+        private sealed class TestThemeExtensionInfo : IThemeExtensionInfo
         {
             public TestThemeExtensionInfo(string name)
             {
@@ -118,6 +118,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
+            serviceCollection.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
             serviceCollection.AddSingleton<IHostEnvironment>(new StubHostingEnvironment());
 
@@ -240,14 +241,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             }
 
 #pragma warning disable CA1822 // Mark members as static
-            public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
+            public Task<IFeatureInfo> LoadFeatureAsync(IFeatureInfo feature)
             {
-                return Task.FromResult(new FeatureEntry(feature));
+                return Task.FromResult(feature);
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
-                return Task.FromResult(features.Select(x => new FeatureEntry(x)));
+                return Task.FromResult(features);
             }
 #pragma warning restore CA1822 // Mark members as static
 
@@ -266,12 +267,12 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+            public Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad)
             {
                 throw new NotImplementedException();
             }
@@ -288,7 +289,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
                 => _featureShapes = featureShapes;
 
-            void IShapeTableProvider.Discover(ShapeTableBuilder builder)
+            ValueTask IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
             {
                 foreach (var pair in FeatureShapes)
                 {
@@ -299,6 +300,8 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 }
 
                 Discover(builder);
+
+                return ValueTask.CompletedTask;
             }
         }
 

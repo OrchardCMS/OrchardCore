@@ -16,26 +16,23 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
 {
     public class MicrosoftAccountSettingsDisplayDriver : SectionDisplayDriver<ISite, MicrosoftAccountSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public MicrosoftAccountSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -76,7 +73,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
@@ -89,17 +86,20 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 var model = new MicrosoftAccountSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.AppId = model.AppId;
+                settings.CallbackPath = model.CallbackPath;
+                settings.SaveTokens = model.SaveTokens;
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
 
-                    settings.AppId = model.AppId;
                     settings.AppSecret = protector.Protect(model.AppSecret);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
+
+                _shellReleaseManager.RequestRelease();
             }
+
             return await EditAsync(settings, context);
         }
     }

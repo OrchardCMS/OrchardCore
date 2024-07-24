@@ -10,12 +10,14 @@ using YesSql;
 
 namespace OrchardCore.Menu
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly ISession _session;
 
-        public Migrations(IRecipeMigrator recipeMigrator, ISession session)
+        public Migrations(
+            IRecipeMigrator recipeMigrator,
+            ISession session)
         {
             _recipeMigrator = recipeMigrator;
             _session = session;
@@ -70,23 +72,6 @@ namespace OrchardCore.Menu
         {
             foreach (var menuItem in menuItems)
             {
-                var linkMenuItemPart = menuItem.As<LinkMenuItemPart>();
-                if (linkMenuItemPart != null)
-                {
-                    // This code can be removed in a later release.
-#pragma warning disable 0618
-                    menuItem.DisplayText = linkMenuItemPart.Name;
-#pragma warning restore 0618
-                }
-
-                var contentMenuItemPart = menuItem.As<ContentMenuItemPart>();
-                if (contentMenuItemPart != null)
-                {
-#pragma warning disable 0618
-                    menuItem.DisplayText = contentMenuItemPart.Name;
-#pragma warning restore 0618
-                }
-
                 var menuItemsListPart = menuItem.As<MenuItemsListPart>();
                 if (menuItemsListPart != null)
                 {

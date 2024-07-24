@@ -25,7 +25,15 @@ namespace OrchardCore.Tenants.ViewModels
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        /// <summary>
+        /// The name of a recipe available in the app.
+        /// </summary>
         public string RecipeName { get; set; }
+
+        /// <summary>
+        /// A JSON string representing a custom recipe.
+        /// </summary>
+        public string Recipe { get; set; }
 
         public string SiteTimeZone { get; set; }
 

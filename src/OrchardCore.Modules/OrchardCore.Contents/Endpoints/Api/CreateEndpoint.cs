@@ -17,22 +17,22 @@ namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class CreateEndpoint
 {
+    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+    {
+        MergeArrayHandling = MergeArrayHandling.Replace,
+    };
+
     public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/content", ActionAsync)
+        builder.MapPost("api/content", HandleAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
 
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-    };
-
     [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> ActionAsync(
+    private static async Task<IResult> HandleAsync(
         ContentItem model,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
@@ -41,7 +41,7 @@ public static class CreateEndpoint
         HttpContext httpContext,
         bool draft = false)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
             return httpContext.ChallengeOrForbid("Api");
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Email
@@ -51,40 +50,6 @@ namespace OrchardCore.Email
         /// </summary>
         /// <remarks>This property is work in conjunction with <see cref="IsHtmlBody"/> to determine the body type..</remarks>
         public string Body { get; set; }
-
-        /// <summary>
-        /// Gets or sets the message content as plain text.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use Body instead.")]
-        public string BodyText
-        {
-            get => Body;
-            set
-            {
-                Body = value;
-                IsHtmlBody = false;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets whether the message body is an HTML.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use IsHtmlBody instead.")]
-        public bool IsBodyHtml
-        {
-            get => IsHtmlBody;
-            set => IsHtmlBody = value;
-        }
-
-        /// <summary>
-        /// Gets or sets whether the message body is plain text.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use IsHtmlBody instead.")]
-        public bool IsBodyText
-        {
-            get => !IsHtmlBody;
-            set => IsHtmlBody = !value;
-        }
 
         /// <summary>
         /// Gets or sets whether the message body is an HTML or not. Default is <c>false</c> which is plain text.

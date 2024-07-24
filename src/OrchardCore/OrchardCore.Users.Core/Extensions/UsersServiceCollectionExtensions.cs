@@ -1,17 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data;
+using OrchardCore.Json;
 using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users;
+using OrchardCore.Users.Core.Json;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.Core.Json;
-using System.Text.Json;
-using OrchardCore.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -58,9 +57,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
             services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
 
-            services.Configure<ContentSerializerJsonOptions>(options =>
+            services.Configure<DocumentJsonSerializerOptions>(options =>
             {
-                options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
+                options.SerializerOptions.Converters.Add(LoginInfoJsonConverter.Instance);
             });
 
             return services;

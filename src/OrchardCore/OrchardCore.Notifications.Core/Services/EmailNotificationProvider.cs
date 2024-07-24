@@ -18,7 +18,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
         S = stringLocalizer;
     }
 
-    public string Method => "Email";
+    public string Method { get; } = "Email";
 
     public LocalizedString Name => S["Email Notifications"];
 
@@ -31,24 +31,21 @@ public class EmailNotificationProvider : INotificationMethodProvider
             return false;
         }
 
-        var mailMessage = new MailMessage()
-        {
-            To = user.Email,
-            Subject = message.Summary,
-        };
-
+        string body;
+        bool isHtmlBody;
+        
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
-            mailMessage.Body = message.HtmlBody;
-            mailMessage.IsHtmlBody = true;
+            body = message.HtmlBody;
+            isHtmlBody = true;
         }
         else
         {
-            mailMessage.Body = message.TextBody;
-            mailMessage.IsHtmlBody = false;
+            body = message.TextBody;
+            isHtmlBody = false;
         }
 
-        var result = await _emailService.SendAsync(mailMessage);
+        var result = await _emailService.SendAsync(user.Email, message.Subject, body, isHtmlBody);
 
         return result.Succeeded;
     }

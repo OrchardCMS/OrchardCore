@@ -28,7 +28,7 @@ using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Admin
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _configuration;
@@ -45,11 +45,11 @@ namespace OrchardCore.Admin
 
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(AdminFilter));
-                options.Filters.Add(typeof(AdminMenuFilter));
+                options.Filters.Add<AdminFilter>();
+                options.Filters.Add<AdminMenuFilter>();
 
                 // Ordered to be called before any global filter.
-                options.Filters.Add(typeof(AdminZoneFilter), -1000);
+                options.Filters.Add<AdminZoneFilter>(-1000);
             });
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
@@ -76,9 +76,10 @@ namespace OrchardCore.Admin
         }
     }
 
-    public class AdminPagesStartup : StartupBase
+    public sealed class AdminPagesStartup : StartupBase
     {
-        public override int Order => 1000;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.AdminPages;
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -91,7 +92,7 @@ namespace OrchardCore.Admin
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -100,7 +101,7 @@ namespace OrchardCore.Admin
     }
 
     [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
+    public sealed class LiquidStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -120,15 +121,6 @@ namespace OrchardCore.Admin
 
                     return NilValue.Instance;
                 }));
-
-                o.MemberAccessStrategy.Register<Navbar, FluidValue>((navbar, name, context) =>
-                {
-                    return name switch
-                    {
-                        nameof(Navbar.Properties) => new ObjectValue(navbar.Properties),
-                        _ => NilValue.Instance
-                    };
-                });
             });
         }
     }

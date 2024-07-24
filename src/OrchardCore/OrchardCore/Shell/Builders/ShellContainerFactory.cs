@@ -67,8 +67,8 @@ namespace OrchardCore.Environment.Shell.Builders
                     continue;
                 }
 
-                // Ignore Startup class from main application
-                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeature) && startupFeature.FeatureInfo.Id == _applicationFeature.Id)
+                // Ignore Startup class from main application.
+                if (blueprint.Dependencies.TryGetValue(rawStartup, out var startupFeatures) && startupFeatures.Any(f => f.Id == _applicationFeature.Id))
                 {
                     continue;
                 }
@@ -115,10 +115,10 @@ namespace OrchardCore.Environment.Shell.Builders
             // OrderBy performs a stable sort so order is preserved among equal Order values.
             startups = startups.OrderBy(s => s.Order);
 
-            // Let any module add custom service descriptors to the tenant
+            // Let any module add custom service descriptors to the tenant.
             foreach (var startup in startups)
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FeatureInfo;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();
 
                 // If the startup is not coming from an extension, associate it to the application feature.
                 // For instance when Startup classes are registered with Configure<Startup>() from the application.
@@ -132,9 +132,27 @@ namespace OrchardCore.Environment.Shell.Builders
             // Rebuild the service provider from the updated collection.
             shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
-            // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+            PopulateTypeFeatureProvider(typeFeatureProvider, featureAwareServiceCollection);
 
+            return shellServiceProvider;
+        }
+
+        private void EnsureApplicationFeature()
+        {
+            if (_applicationFeature is null)
+            {
+                lock (this)
+                {
+                    _applicationFeature ??= _extensionManager.GetFeatures()
+                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
+                }
+            }
+        }
+
+        private void PopulateTypeFeatureProvider(ITypeFeatureProvider typeFeatureProvider, FeatureAwareServiceCollection featureAwareServiceCollection)
+        {
+            // Register all DIed types in ITypeFeatureProvider.
             foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
@@ -159,20 +177,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
                         typeFeatureProvider.TryAdd(type, feature);
                     }
-                }
-            }
-
-            return shellServiceProvider;
-        }
-
-        private void EnsureApplicationFeature()
-        {
-            if (_applicationFeature is null)
-            {
-                lock (this)
-                {
-                    _applicationFeature ??= _extensionManager.GetFeatures()
-                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
                 }
             }
         }

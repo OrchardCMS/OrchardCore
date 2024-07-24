@@ -15,19 +15,21 @@ using YesSql;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shellDescriptor = shellDescriptor;
         }
 
         // New installations don't need to be upgraded, but because there is no initial migration record,
-        // 'UpgradeAsync' is called in a new 'CreateAsync' but only if the feature was already installed.
+        // 'UpgradeAsync()' is called in a new 'CreateAsync()' but only if the feature was already installed.
         public async Task<int> CreateAsync()
         {
             if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Search.Lucene"))
@@ -190,10 +192,8 @@ namespace OrchardCore.Search.Lucene
 
                 try
                 {
-                    if (logger.IsEnabled(LogLevel.Debug))
-                    {
-                        logger.LogDebug("Updating Lucene indices settings and queries");
-                    }
+                    logger.LogDebug("Updating Lucene indices settings and queries");
+
                     var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
                     var quotedContentColumnName = dialect.QuoteForColumnName("Content");
                     var quotedTypeColumnName = dialect.QuoteForColumnName("Type");

@@ -13,7 +13,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.Users
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         public async Task<int> CreateAsync()
         {

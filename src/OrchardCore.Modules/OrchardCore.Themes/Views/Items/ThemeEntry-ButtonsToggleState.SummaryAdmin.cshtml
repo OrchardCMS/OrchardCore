@@ -1,0 +1,17 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+@if (Model.Value.Enabled)
+{
+    <form asp-route-action="Disable" asp-route-id="@Model.Value.Extension.Id" method="post" class="no-multisubmit">
+        <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
+    </form>
+
+    return;
+}
+
+<form asp-route-action="Enable" asp-route-id="@Model.Value.Extension.Id" method="post" class="no-multisubmit">
+    <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
+</form>

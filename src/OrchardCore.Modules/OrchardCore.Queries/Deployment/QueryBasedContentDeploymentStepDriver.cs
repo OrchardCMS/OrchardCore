@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -15,6 +14,7 @@ namespace OrchardCore.Queries.Deployment
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
         private readonly IQueryManager _queryManager;
+
         protected readonly IStringLocalizer S;
 
         public QueryBasedContentDeploymentStepDriver(
@@ -36,46 +36,45 @@ namespace OrchardCore.Queries.Deployment
 
         public override IDisplayResult Edit(QueryBasedContentDeploymentStep step)
         {
-            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", model =>
+            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
             {
                 model.QueryName = step.QueryName;
                 model.QueryParameters = step.QueryParameters;
                 model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+                model.Queries = await _queryManager.ListQueriesAsync(true);
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
         {
             var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
+            await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe);
+            var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
-            if (await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe))
+            if (!query.CanReturnContentItems || !query.ReturnContentItems)
             {
-                var query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
-                if (!query.ResultsOfType<ContentItem>())
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
-                }
-
-                if (queryBasedContentViewModel.QueryParameters != null)
-                {
-                    try
-                    {
-                        var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
-                        if (parameters == null)
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
-                        }
-                    }
-                    catch (JsonException)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
-                    }
-                }
-
-                step.QueryName = queryBasedContentViewModel.QueryName;
-                step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
-                step.QueryParameters = queryBasedContentViewModel.QueryParameters;
+                updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
             }
+
+            if (queryBasedContentViewModel.QueryParameters != null)
+            {
+                try
+                {
+                    var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
+                    if (parameters == null)
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
+                    }
+                }
+                catch (JsonException)
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
+                }
+            }
+
+            step.QueryName = queryBasedContentViewModel.QueryName;
+            step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
+            step.QueryParameters = queryBasedContentViewModel.QueryParameters;
 
             return Edit(step);
         }

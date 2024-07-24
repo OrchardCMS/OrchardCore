@@ -107,7 +107,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
             {
                 var analyzer = CreateAnalyzer(analyzerProperties);
-                analyzersDescriptor = new AnalyzersDescriptor();
                 analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
 
                 indexSettingsDescriptor = new IndexSettingsDescriptor();
@@ -124,7 +123,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 .Map(m => m
                     .SourceField(s => s
                         .Enabled(elasticIndexSettings.StoreSourceData)
-                        .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
+                        .Excludes([IndexingConstants.DisplayTextAnalyzedKey]))
                     .Meta(me => IndexingState));
 
             var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
@@ -578,7 +577,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string GetFullIndexName(string indexName)
         {
-            ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
+            ArgumentException.ThrowIfNullOrEmpty(indexName);
 
             return GetIndexPrefix() + _separator + indexName;
         }

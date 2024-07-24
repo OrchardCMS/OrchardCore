@@ -34,7 +34,7 @@ namespace OrchardCore.Queries.Deployment
                 return;
             }
 
-            if (!query.ResultsOfType<ContentItem>())
+            if (!query.CanReturnContentItems || !query.ReturnContentItems)
             {
                 return;
             }

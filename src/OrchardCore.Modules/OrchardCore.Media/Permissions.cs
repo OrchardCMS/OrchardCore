@@ -4,13 +4,13 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageMediaFolder = new("ManageMediaFolder", "Manage All Media Folders");
-    public static readonly Permission ManageOthersMedia = new("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
-    public static readonly Permission ManageOwnMedia = new("ManageOwnMediaContent", "Manage Own Media", new[] { ManageOthersMedia });
-    public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", new[] { ManageOwnMedia });
-    public static readonly Permission ManageAttachedMediaFieldsFolder = new("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder });
+    public static readonly Permission ManageOthersMedia = new("ManageOthersMediaContent", "Manage Media For Others", [ManageMediaFolder]);
+    public static readonly Permission ManageOwnMedia = new("ManageOwnMediaContent", "Manage Own Media", [ManageOthersMedia]);
+    public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", [ManageOwnMedia]);
+    public static readonly Permission ManageAttachedMediaFieldsFolder = new("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", [ManageMediaFolder]);
     public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
     public static readonly Permission ViewMediaOptions = new("ViewMediaOptions", "View Media Options");
 
@@ -37,7 +37,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
                 ManageMediaFolder,
@@ -47,7 +47,7 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Editor",
+            Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
                 ManageMedia,
@@ -56,12 +56,12 @@ public class Permissions : IPermissionProvider
         },
         new PermissionStereotype
         {
-            Name = "Author",
+            Name = OrchardCoreConstants.Roles.Author,
             Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
-            Name = "Contributor",
+            Name = OrchardCoreConstants.Roles.Contributor,
             Permissions = _generalPermissions,
         },
     ];

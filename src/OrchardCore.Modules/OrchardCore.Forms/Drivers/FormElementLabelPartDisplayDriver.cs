@@ -27,11 +27,10 @@ public class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormEl
     {
         var viewModel = new FormElementLabelPartViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            part.Label = viewModel.Label;
-            part.Option = viewModel.LabelOption;
-        }
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        part.Label = viewModel.Label;
+        part.Option = viewModel.LabelOption;
 
         return Edit(part);
     }

@@ -47,7 +47,7 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (supportedCultures.Any(t => t == targetCulture))
             {
-                var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
+                var settings = await _siteService.GetSettingsAsync<ContentCulturePickerSettings>();
                 if (settings.SetCookie)
                 {
                     _culturePickerService.SetContentCulturePickerCookie(targetCulture);

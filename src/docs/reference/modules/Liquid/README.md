@@ -398,7 +398,7 @@ The resulting object has access to the following properties:
 | `UserName` | `admin` | The name of the authenticated user. |
 | `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
 | `Email` | `admin@gmail.com` | The email of the authenticated user. |
-| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL.COM` | The normalized email of the authenticated user. |
 | `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
 | `IsEnabled` | `true` | True if the user is enabled |
 | `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
@@ -504,8 +504,24 @@ The following properties are available on the `Culture` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `Name` | `en-US` | The request's culture as an ISO language code. |
+| `Name` | `en-US` | The ISO language code of the current culture. |
 | `Dir` | `rtl` | The text writing direction. |
+| `DisplayName` | `English (United States)` | The display name of the current culture. |
+| `NativeName` | `English (United States)` | The native name of the current culture. |
+| `TwoLetterISOLanguageName` | `en` | The two-letter ISO language name of the current culture. |
+
+##### supported_cultures filter
+
+Returns the currently supported cultures. Here is an example of how to print the names of supported cultures using a list:
+
+```liquid
+{% assign cultures = Culture | supported_cultures %}
+<ul>
+{% for culture in cultures %}
+    <li>{{ culture.Name }}</li>
+{% endfor %}
+</ul>
+```
 
 ### Environment
 

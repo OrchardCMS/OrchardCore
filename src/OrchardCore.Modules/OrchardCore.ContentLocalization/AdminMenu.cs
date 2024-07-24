@@ -2,13 +2,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentLocalization
 {
-    [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _providersRouteValues = new()
         {
@@ -22,7 +20,7 @@ namespace OrchardCore.ContentLocalization
             { "groupId", ContentCulturePickerSettingsDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

@@ -55,16 +55,15 @@ namespace OrchardCore.Taxonomies.Settings
             }).Location("Content:2").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, UpdateEditorContext context)
         {
             if (context.GroupId == GroupId)
             {
                 var model = new TaxonomyContentsAdminListSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-                {
-                    settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
-                }
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
             }
 
             return await EditAsync(settings, context);

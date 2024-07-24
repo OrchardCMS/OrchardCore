@@ -10,7 +10,7 @@ namespace OrchardCore.Admin
     /// Intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user as the right to access it.
     /// </summary>
-    public class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
+    public sealed class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
     {
         private readonly IAuthorizationService _authorizationService;
 
@@ -25,7 +25,9 @@ namespace OrchardCore.Admin
 
             if (!await AuthorizeAsync(context.HttpContext))
             {
-                context.Result = context.HttpContext.User?.Identity?.IsAuthenticated ?? false ? (IActionResult)new ForbidResult() : new ChallengeResult();
+                context.Result = context.HttpContext.User?.Identity?.IsAuthenticated ?? false
+                    ? new ForbidResult()
+                    : new ChallengeResult();
                 return;
             }
 
@@ -55,7 +57,7 @@ namespace OrchardCore.Admin
         {
             if (AdminAttribute.IsApplied(context))
             {
-                return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
+                return _authorizationService.AuthorizeAsync(context.User, AdminPermissions.AccessAdminPanel);
             }
 
             return Task.FromResult(true);

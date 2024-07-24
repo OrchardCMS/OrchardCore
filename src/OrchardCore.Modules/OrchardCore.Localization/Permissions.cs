@@ -7,7 +7,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents the localization module permissions.
 /// </summary>
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     /// <summary>
     /// Gets a permission for managing the cultures.
@@ -26,7 +26,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
         },
     ];

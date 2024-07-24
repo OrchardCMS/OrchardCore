@@ -12,7 +12,7 @@ namespace OrchardCore.Contents.Recipes
     /// <summary>
     /// This recipe step creates a set of content items.
     /// </summary>
-    public class ContentStep : IRecipeStepHandler
+    public sealed class ContentStep : IRecipeStepHandler
     {
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.Recipes
         }
     }
 
-    public class ContentStepModel
+    public sealed class ContentStepModel
     {
         public JsonArray Data { get; set; }
     }

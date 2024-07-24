@@ -18,14 +18,12 @@
     "output": "wwwroot/Scripts/vue-multiselect-multitextfieldpicker.js"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/optionsEditor.scss"
     ],
     "output": "wwwroot/Styles/optionsEditor.css"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/fontawesome_iconpicker.scss"
     ],
@@ -39,13 +37,13 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg.media.tag.js"
+      "Assets/js/trumbowyg.media.tag.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.media.tag.js"
   },
   {
     "inputs": [
-      "Assets/trumbowyg.media.url.js"
+      "Assets/js/trumbowyg.media.url.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.media.url.js"
   }

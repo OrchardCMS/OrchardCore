@@ -67,7 +67,7 @@ namespace OrchardCore.Flows.Controllers
             }
 
             // Create a Card Shape
-            dynamic contentCard = await _shapeFactory.New.ContentCard(
+            var contentCard = await _shapeFactory.New.ContentCard(
                 // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
                 // Shape Specific
@@ -111,7 +111,7 @@ namespace OrchardCore.Flows.Controllers
         {
             var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(contentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
 
-            if (settings?.ContainedContentTypes?.Length == 0)
+            if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
             {
                 return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
             }

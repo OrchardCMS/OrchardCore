@@ -6,11 +6,11 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentTypes
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly string _adminControllerName = typeof(AdminController).ControllerName();
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

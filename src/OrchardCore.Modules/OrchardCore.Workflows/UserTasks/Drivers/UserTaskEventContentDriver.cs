@@ -39,7 +39,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
-            IOptions<ContentSerializerJsonOptions> jsonSerializerOptions,
+            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _workflowStore = workflowStore;
@@ -93,7 +93,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         { ContentEventConstants.UserActionInputKey, action },
                         { ContentEventConstants.ContentItemInputKey, model },
-                        { ContentEventConstants.ContentEventInputKey, contentEvent }
+                        { ContentEventConstants.ContentEventInputKey, contentEvent },
                     };
 
                     await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);

@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Resources
 {
-    public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private readonly ResourceOptions _resourceOptions;
         private readonly IHostEnvironment _env;
@@ -384,23 +384,23 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.css")
-                .SetCdnIntegrity("sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g", "sha384-nrXXWLUi1MQU4ppkxCt05kh8YtWDU5Nf6gJikuch3OWafB4DxebHYZyah2r0+pVZ")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css")
+                .SetCdnIntegrity("sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT", "sha384-vMdawx0r3BjxHQwcfWi0YSemtW6u5mKxTKPPh1ogUICPLaEa/6e42yg2wRYzzJtx")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("font-awesome")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/all.js")
-                .SetCdnIntegrity("sha384-3ve3u7etWcm2heCe4TswfZSAYSg2jR/EJxRHuKM5foOiKS8IJL/xRlvmjCaHELBz", "sha384-IkmLcEDxkvCioiswmdraONwAU9uwbPWUbvuHAGrejK3zNlL74FCwCjvnTGJcrdbQ")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js")
+                .SetCdnIntegrity("sha384-dgEl3vRKux81M373f/TdgoDTV5oZj+yjHrr/1qR5b4btG5q63kYS62t5kod+7Q6v", "sha384-v72QeVpDL6Ne4X2S+fwIXCOLhO57lwIR/qRV05SHAExDg1QoyJGWDxx6VQO3rzlC")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("font-awesome-v4-shims")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/js/v4-shims.js")
-                .SetCdnIntegrity("sha384-HJMj0TodsrM5KmHW8l+5NnGnq9DLtu9LlpFYFFXVne/+pnZYGxIWtFFGRQSbcPo9", "sha384-J7/Cp2KkX6wV+2gGoFn8nB3/z3uoSut1tZKtmf4gqqGUwM1L0YI3n6rJst683v9Z")
-                .SetVersion("6.5.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js")
+                .SetCdnIntegrity("sha384-M9y++reQwf5nddw5loUHChCbGE4kwaeHzeEM2yWidMfaRMQeHM6MSwwPuiSnSMHF", "sha384-WrIndr6nwB5l/sVUyZkWDlpNS9Vx/Y+zhmjZNP+j2UJOBmy36ufaIIqd7o2kL0BL")
+                .SetVersion("6.6.0");
 
             manifest
                 .DefineScript("jquery-resizable")
@@ -412,36 +412,47 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("trumbowyg")
-                .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/ui/trumbowyg.css")
-                .SetCdnIntegrity("sha384-BMSJyRuWWysKSQXUwY6xhPnRLhIEIKVrndBFiMT8osUv0Jy4u+kVojiTB4oIk9Cy", "sha384-+WI6uKHvRRdOtp4c41xrQHz3liE5QZxjkFUx8KwLRMiMgSPpkoMnUMOjO7k8WH1Q")
-                .SetVersion("2.27.3");
+                .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg/trumbowyg.css")
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/ui/trumbowyg.css")
+                .SetCdnIntegrity("sha384-XfI6P0jtm0X3QDEQxS1DotzhIXkJeuSV1wtBOntPaRxzpzTkMWkpZpkuzj8qVHzl", "sha384-GUyfWhYsIKKkAMejJuy50VTSfyfkrrJX2csg7fxJJt7vi+gXH8qxqH29C5GURaum")
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg")
                 .SetDependencies("jquery-resizable")
-                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.27.3/dist/trumbowyg.js")
-                .SetCdnIntegrity("sha384-OZd+lx/Xv8IR7nJZmRKR4NJhT0urUXigW5V7FOEtmrFRf1BKKVc0DWhdiCh8UX8+", "sha384-nWqhxDAuUls0N/CYl8px54jeiP9i8+J64k1UPiM6DMC/u/qRY+jfkprB5VndU7B4")
-                .SetVersion("2.27.3");
+                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.28.0/dist/trumbowyg.js")
+                .SetCdnIntegrity("sha384-O4OAGMDq5hnqt4/WQz+fW6yVgZ02jmw+Yf1j02zIgglnCYXf/7TmET8tFbrTN6u5", "sha384-dNxlebCuuiNWPhPBEd69nEAtkEWa7Z9IWkrL+OSmJ456dlu6TAASXgL72Bn4GGju")
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg-shortcodes")
                 .SetDependencies("trumbowyg")
-                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.shortcodes.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg.shortcodes.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.shortcodes.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.shortcodes.js")
+                .SetVersion("1.0.0");
+
+            manifest
+                .DefineScript("trumbowyg-theme")
+                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg.theme.js")
+                .SetDependencies("trumbowyg", "theme-head")
                 .SetVersion("1.0.0");
 
             manifest
                 .DefineStyle("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
-                .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css", "~/OrchardCore.Resources/Styles/trumbowyg-plugins.css")
-                .SetVersion("2.27.3");
+                .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg/trumbowyg-plugins.min.css", "~/OrchardCore.Resources/Styles/trumbowyg/trumbowyg-plugins.css")
+                .SetVersion("2.28.0");
 
             manifest
                 .DefineScript("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
-                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg-plugins.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg-plugins.js")
-                .SetVersion("2.27.3");
+                .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg-plugins.min.js", "~/OrchardCore.Resources/Scripts/trumbowyg/trumbowyg-plugins.js")
+                .SetVersion("2.28.0");
+
+            manifest
+                .DefineScript("credential-helpers")
+                .SetUrl("~/OrchardCore.Resources/Scripts/credential-helpers.min.js", "~/OrchardCore.Resources/Scripts/credential-helpers.js")
+                .SetVersion("1.0.0");
 
             manifest
                 .DefineScript("vuejs")

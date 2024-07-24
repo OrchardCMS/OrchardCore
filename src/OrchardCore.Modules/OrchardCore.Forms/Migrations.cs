@@ -6,7 +6,7 @@ using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Forms
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -259,7 +259,7 @@ namespace OrchardCore.Forms
             return 4;
         }
 
-        internal class TitlePartSettings
+        internal sealed class TitlePartSettings
         {
             public int Options { get; set; }
 

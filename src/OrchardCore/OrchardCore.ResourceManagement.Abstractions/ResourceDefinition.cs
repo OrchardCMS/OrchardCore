@@ -338,7 +338,7 @@ namespace OrchardCore.ResourceManagement
                 return Cultures[selectedIndex];
             }
             // Try parent culture if any.
-            var cultureInfo = new CultureInfo(culture);
+            var cultureInfo = CultureInfo.GetCultureInfo(culture);
             if (cultureInfo.Parent.Name != culture)
             {
                 var selectedCulture = FindNearestCulture(cultureInfo.Parent.Name);
@@ -358,9 +358,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name) &&
-                string.Equals(that.Type, Type) &&
-                string.Equals(that.Version, Version);
+            return string.Equals(that.Name, Name, StringComparison.Ordinal) &&
+                string.Equals(that.Type, Type, StringComparison.Ordinal) &&
+                string.Equals(that.Version, Version, StringComparison.Ordinal);
         }
 
         public override int GetHashCode()

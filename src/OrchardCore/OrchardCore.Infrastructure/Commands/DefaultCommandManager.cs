@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Commands
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
-            var matches = MatchCommands(parameters) ?? [];
+            var matches = MatchCommands(parameters);
 
             if (matches.Count == 1)
             {
@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Commands
             }
         }
 
-        private class Match
+        private sealed class Match
         {
             public CommandContext Context { get; set; }
             public ICommandHandler CommandHandler { get; set; }

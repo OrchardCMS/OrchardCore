@@ -1,12 +1,58 @@
 using System.Text.Json;
 using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Tests.Data
 {
     public class ContentItemTests
     {
+        /// <summary>
+        /// To validate <see cref="DateTimeJsonConverter"/>
+        /// and <seealso cref="TimeSpanJsonConverter"/>
+        /// </summary>
+        [Fact]
+        public void JsonNode_WhenParseCalled_ConvertShortTimeFormatToTimeField()
+        {
+            // Arrange
+            var jsonStr = """
+             {
+                "TimeFieldTest": {
+                    "Value": "13:05"
+                },
+                "DateTimeFieldTest": {
+                    "Value": "2024-5-31 13:05"
+                },
+                "TimezoneDateTimeFieldTest": {
+                    "Value": "2022-12-13T21:02:18.399-05:00"
+                },
+                "DateFieldTest": {
+                    "Value": "2024-5-31"
+                }
+            }
+            """;
+
+            // Act
+            var jobject = JsonNode.Parse(jsonStr);
+            var timeField = jobject.SelectNode("TimeFieldTest").ToObject<TimeField>();
+            var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
+            var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
+            var timezoneDateTimeFieldTest = jobject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
+
+            // Assert
+            Assert.Equal("13:05:00", timeField.Value.Value.ToString());
+            Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
+            Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
+            Assert.Equal("13:05:00", JObject.FromObject(timeField).SelectNode("Value").ToString());
+            Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
+            Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
+
+            var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
+            Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+
         [Fact]
         public void ShouldSerializeContent()
         {
@@ -36,19 +82,6 @@ namespace OrchardCore.Tests.Data
             var contentItem = new ContentItem();
             var myPart = new MyPart { Text = "test" };
             contentItem.Weld(myPart);
-
-            var json = JConvert.SerializeObject(contentItem);
-
-            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
-
-            Assert.NotNull(contentItem2.Content.MyPart);
-            Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
-        }
-
-        [Fact]
-        public void ShouldUpdateContent()
-        {
-            var contentItem = CreateContentItemWithMyPart();
 
             var json = JConvert.SerializeObject(contentItem);
 
@@ -143,7 +176,7 @@ namespace OrchardCore.Tests.Data
         }
 
         [Fact]
-        public void ShouldDeserializeListContentPart()
+        public void ShouldDeserializeContentField()
         {
             var contentItem = CreateContentItemWithMyPart();
             contentItem.Alter<MyPart>(x => x.Text = "test");
@@ -155,7 +188,108 @@ namespace OrchardCore.Tests.Data
 
             var json = JConvert.SerializeObject(contentItem);
 
-            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
+            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
+
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.NotNull(contentItem2.Content.MyPart.myField);
+            Assert.Equal(123, (int)contentItem2.Content.MyPart.myField.Value);
+        }
+
+        [Fact]
+        public void ContentShouldStoreDateTimeFields()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyDateTimeField>("myField");
+                x.Alter<MyDateTimeField>("myField", f => f.Value = new DateTime(2024, 1, 1, 10, 42, 0));
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":""2024-01-01T10:42:00Z""}}", json);
+        }
+
+        [Fact]
+        public void ShouldDeserializeDateTimeFields()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyDateTimeField>("myField");
+                x.Alter<MyDateTimeField>("myField", f => f.Value = new DateTime(2024, 1, 1, 10, 42, 0));
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
+
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.NotNull(contentItem2.Content.MyPart.myField);
+            Assert.Equal(new DateTime(2024, 1, 1, 10, 42, 0), (DateTime?)contentItem2.Content.MyPart.myField.Value);
+        }
+
+        [Fact]
+        public void ContentShouldStoreUtcDateTimeFields()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyDateTimeField>("myField");
+                x.Alter<MyDateTimeField>("myField", f => f.Value = new DateTime(2024, 1, 1, 10, 42, 0, DateTimeKind.Utc));
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":""2024-01-01T10:42:00Z""}}", json);
+        }
+
+        [Fact]
+        public void ShouldDeserializeUtcDateTimeFields()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyDateTimeField>("myField");
+                x.Alter<MyDateTimeField>("myField", f => f.Value = new DateTime(2024, 1, 1, 10, 42, 0, DateTimeKind.Utc));
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
+
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.NotNull(contentItem2.Content.MyPart.myField);
+            Assert.Equal(new DateTime(2024, 1, 1, 10, 42, 0, DateTimeKind.Utc), (DateTime?)contentItem2.Content.MyPart.myField.Value);
+        }
+
+        [Fact]
+        public void ShouldDeserializeTextFields()
+        {
+            var contentItem = new ContentItem();
+            contentItem.GetOrCreate<MyPart>();
+            contentItem.Alter<MyPart>(x => x.Text = "test");
+            contentItem.Alter<MyPart>(x =>
+            {
+                x.GetOrCreate<MyTextField>("myField");
+                x.Alter<MyTextField>("myField", f => f.Text = "This is a test field entry");
+            });
+
+            var json = JConvert.SerializeObject(contentItem);
+
+            var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
+
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.NotNull(contentItem2.Content.MyPart.myField);
+            Assert.Equal("This is a test field entry", (string)contentItem2.Content.MyPart.myField.Text);
         }
 
         private static ContentItem CreateContentItemWithMyPart(string text = "test")
@@ -175,18 +309,28 @@ namespace OrchardCore.Tests.Data
         }
     }
 
-    public class MyPart : ContentPart
+    public sealed class MyPart : ContentPart
     {
         public string Text { get; set; }
     }
 
-    public class MyField : ContentField
+    public sealed class MyField : ContentField
     {
         public int Value { get; set; }
     }
 
-    public class GetOnlyListPart : ContentPart
+    public sealed class MyDateTimeField : ContentField
     {
-        public IList<string> Texts { get; } = new List<string>();
+        public DateTime? Value { get; set; }
+    }
+
+    public sealed class MyTextField : ContentField
+    {
+        public string Text { get; set; }
+    }
+
+    public sealed class GetOnlyListPart : ContentPart
+    {
+        public IList<string> Texts { get; } = [];
     }
 }

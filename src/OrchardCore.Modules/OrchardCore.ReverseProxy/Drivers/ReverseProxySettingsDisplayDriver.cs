@@ -18,19 +18,16 @@ namespace OrchardCore.ReverseProxy.Drivers
     {
         public const string GroupId = "ReverseProxy";
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
+            IShellReleaseManager shellReleaseManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            _shellReleaseManager = shellReleaseManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -60,8 +57,13 @@ namespace OrchardCore.ReverseProxy.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings settings, UpdateEditorContext context)
         {
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
@@ -69,31 +71,30 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            if (context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
+            var model = new ReverseProxySettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.ForwardedHeaders = ForwardedHeaders.None;
+
+            if (model.EnableXForwardedFor)
             {
-                var model = new ReverseProxySettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                section.ForwardedHeaders = ForwardedHeaders.None;
-
-                if (model.EnableXForwardedFor)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
-
-                if (model.EnableXForwardedHost)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
-
-                if (model.EnableXForwardedProto)
-                    section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
-
-                // If the settings are valid, release the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedFor;
             }
 
-            return await EditAsync(section, context);
+            if (model.EnableXForwardedHost)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedHost;
+            }
+
+            if (model.EnableXForwardedProto)
+            {
+                settings.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(settings, context);
         }
     }
 }
