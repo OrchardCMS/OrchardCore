@@ -12,7 +12,7 @@ namespace OrchardCore.Search.Lucene.Recipes
     /// <summary>
     /// This recipe step resets a lucene index.
     /// </summary>
-    public class LuceneIndexResetStep : IRecipeStepHandler
+    public sealed class LuceneIndexResetStep : IRecipeStepHandler
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
@@ -31,7 +31,9 @@ namespace OrchardCore.Search.Lucene.Recipes
                     var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
                     var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
 
-                    var indices = model.IncludeAll ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+                    var indices = model.IncludeAll
+                    ? (await luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
+                    : model.Indices;
 
                     foreach (var indexName in indices)
                     {

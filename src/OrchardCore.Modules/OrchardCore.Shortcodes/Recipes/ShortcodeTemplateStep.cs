@@ -11,7 +11,7 @@ namespace OrchardCore.Shortcodes.Recipes
     /// <summary>
     /// This recipe step creates a set of shortcodes.
     /// </summary>
-    public class ShortcodeTemplateStep : IRecipeStepHandler
+    public sealed class ShortcodeTemplateStep : IRecipeStepHandler
     {
         private readonly ShortcodeTemplatesManager _templatesManager;
 

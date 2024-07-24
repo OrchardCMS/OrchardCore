@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
@@ -17,7 +19,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             _value = value;
         }
 
-        public override FluidValues Type => FluidValues.String;
+        public override FluidValues Type
+            => FluidValues.String;
 
         public override bool Equals(FluidValue other)
         {
@@ -54,9 +57,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             return _value.ToString();
         }
 
-        public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+        public override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         {
             _value.WriteTo(writer, (HtmlEncoder)encoder);
+
+            return ValueTask.CompletedTask;
         }
 
         public override object ToObjectValue()
@@ -88,6 +93,12 @@ namespace OrchardCore.DisplayManagement.Liquid
         public override int GetHashCode()
         {
             return _value.GetHashCode();
+        }
+
+        [Obsolete("WriteTo is obsolete, prefer the WriteToAsync method.")]
+        public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+        {
+            _value.WriteTo(writer, (HtmlEncoder)encoder);
         }
     }
 }

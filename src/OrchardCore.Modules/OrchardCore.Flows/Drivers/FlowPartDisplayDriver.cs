@@ -132,7 +132,7 @@ namespace OrchardCore.Flows.Drivers
         {
             var settings = typePartDefinition.GetSettings<FlowPartSettings>();
 
-            if (settings?.ContainedContentTypes?.Length == 0)
+            if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
             {
                 return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(t => t.StereotypeEquals("Widget"));
