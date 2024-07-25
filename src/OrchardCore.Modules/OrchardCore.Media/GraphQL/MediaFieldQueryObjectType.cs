@@ -106,7 +106,7 @@ namespace OrchardCore.Media.GraphQL
             Field<StringGraphType>("fileName").Description("the file name of the media file item").Resolve(x => x.Source.FileName);
             Field<StringGraphType>("path").Description("the path of the media file item").Resolve(x => x.Source.Path);
             Field<StringGraphType>("url").Description("the url name of the media file item").Resolve(x => x.Source.Url);
-            Field<StringGraphType>("mediaText").Description("the media text of the file item").Resolve(x => x.Source.MediaText );
+            Field<StringGraphType>("mediaText").Description("the media text of the file item").Resolve(x => x.Source.MediaText);
         }
     }
 
