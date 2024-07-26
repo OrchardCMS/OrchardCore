@@ -37,6 +37,12 @@ namespace OrchardCore.Tests.Apis.Context
             foreach (var fileInfo in fileInfos)
             {
                 var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+
+                if (descriptor == null)
+                {
+                    continue;
+                }
+
                 recipeDescriptors.Add(descriptor);
             }
 

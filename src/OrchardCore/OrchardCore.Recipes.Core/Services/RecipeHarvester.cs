@@ -32,7 +32,7 @@ namespace OrchardCore.Recipes.Services
 
         /// <inheritdoc/>
         public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
+            => _extensionManager.GetExtensions().InvokeAsync(GetRecipesAsync, _logger);
 
         /// <summary>
         /// Returns a list of recipes for a content path.
@@ -50,13 +50,18 @@ namespace OrchardCore.Recipes.Services
             {
                 var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
 
+                if (recipeDescriptor == null)
+                {
+                    continue;
+                }
+
                 recipeDescriptors.Add(recipeDescriptor);
             }
 
             return recipeDescriptors;
         }
 
-        private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
+        private Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IExtensionInfo extension)
         {
             var folderSubPath = PathExtensions.Combine(extension.SubPath, RecipesConstants.RecipesFolderName);
 
