@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media;
 
-public sealed class Permissions
+public static class Permissions
 {
     public static readonly Permission ManageMediaFolder = new("ManageMediaFolder", "Manage All Media Folders");
 
