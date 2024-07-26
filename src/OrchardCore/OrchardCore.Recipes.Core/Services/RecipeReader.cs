@@ -32,9 +32,9 @@ namespace OrchardCore.Recipes.Services
                 recipeDescriptor.RecipeFileInfo = recipeFileInfo;
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, "Unable to deserialize the recipe file: '{FileName}'.", recipeFileInfo.Name);
+                _logger.LogError(ex, "Unable to deserialize the recipe file: '{FileName}'.", recipeFileInfo.Name);
             }
 
             return recipeDescriptor;
