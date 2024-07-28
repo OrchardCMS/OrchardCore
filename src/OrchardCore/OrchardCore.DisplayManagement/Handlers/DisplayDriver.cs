@@ -15,14 +15,22 @@ namespace OrchardCore.DisplayManagement.Handlers
         protected static readonly string ModelName = typeof(TModel).Name;
 
         /// <summary>
-        /// Returns <c>true</c> if the model can be handle by the current driver.
+        /// Returns <see langword="true"/> if the model can be handled by the current driver.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// Override <see cref="CanHandleModelAsync(TModel)"/> instead if your code is asynchronous.
+        /// </remarks>
         public virtual bool CanHandleModel(TModel model)
         {
             return true;
         }
 
+        /// <summary>
+        /// Returns <see langword="true"/> if the model can be handled by the current driver.
+        /// </summary>
+        /// <remarks>
+        /// Override <see cref="CanHandleModel(TModel)"/> instead if your code is synchronous.
+        /// </remarks>
         public virtual Task<bool> CanHandleModelAsync(TModel model)
             => Task.FromResult(CanHandleModel(model));
 
