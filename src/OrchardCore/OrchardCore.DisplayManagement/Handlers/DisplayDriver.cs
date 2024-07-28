@@ -97,6 +97,11 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Edit(model);
         }
 
+        public virtual IDisplayResult Edit(TModel model, TEditorContext context)
+        {
+            return Edit(model, context.Updater);
+        }
+
         public virtual IDisplayResult Edit(TModel model)
         {
             return NullShapeResult();
