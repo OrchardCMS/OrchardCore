@@ -26,7 +26,7 @@ namespace OrchardCore.Search.Lucene.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(Query query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, BuildDisplayContext context)
         {
             if (query.Source != LuceneQuerySource.SourceName)
             {

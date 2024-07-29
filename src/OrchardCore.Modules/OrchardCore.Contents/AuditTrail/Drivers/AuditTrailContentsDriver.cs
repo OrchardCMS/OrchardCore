@@ -4,7 +4,7 @@ using OrchardCore.AuditTrail;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             return Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem)
                 .Location("SummaryAdmin", "ActionsMenu:10")

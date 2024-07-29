@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -43,7 +42,7 @@ namespace OrchardCore.Taxonomies.Drivers
             S = stringLocalizer;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
         {
             var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
 
@@ -115,13 +114,13 @@ namespace OrchardCore.Taxonomies.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
         {
             var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
-                await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+                await context.Updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
 
                 if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                 {
@@ -129,7 +128,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 }
             }
 
-            return await EditAsync(model, updater);
+            return await EditAsync(model, context);
         }
 
         private static void PopulateTermEntries(List<FilterTermEntry> termEntries, IEnumerable<ContentItem> contentItems, int level)

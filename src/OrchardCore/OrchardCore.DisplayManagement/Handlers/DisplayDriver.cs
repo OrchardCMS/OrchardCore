@@ -75,17 +75,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Task.FromResult(Display(model, context));
         }
 
-        public virtual Task<IDisplayResult> DisplayAsync(TModel model, IUpdateModel updater)
-        {
-            return Task.FromResult(Display(model, updater));
-        }
-
         public virtual IDisplayResult Display(TModel model, TDisplayContext context)
-        {
-            return Display(model, context.Updater);
-        }
-
-        public virtual IDisplayResult Display(TModel model, IUpdateModel updater)
         {
             return Display(model);
         }
@@ -100,19 +90,14 @@ namespace OrchardCore.DisplayManagement.Handlers
             return Task.FromResult(Edit(model, context));
         }
 
-        public virtual Task<IDisplayResult> EditAsync(TModel model, IUpdateModel updater)
+        public virtual IDisplayResult Edit(TModel model, TEditorContext context)
         {
-            return Task.FromResult(Edit(model, updater));
+            return Edit(model, context.Updater);
         }
 
         public virtual IDisplayResult Edit(TModel model, IUpdateModel updater)
         {
             return Edit(model);
-        }
-
-        public virtual IDisplayResult Edit(TModel model, TEditorContext context)
-        {
-            return Edit(model, context.Updater);
         }
 
         public virtual IDisplayResult Edit(TModel model)
@@ -132,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
         {
-            return EditAsync(model, updater);
+            return Task.FromResult(Edit(model, updater));
         }
 
         protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)

@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Drivers
             return Combine(results);
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
@@ -98,16 +98,16 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var context = _httpContextAccessor.HttpContext;
+            var user = _httpContextAccessor.HttpContext.User;
 
             return Combine(
                 Dynamic("Content_PublishButton").Location("Actions:10")
-                    .RenderWhen(() => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem)),
+                    .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
                 Dynamic("Content_SaveDraftButton").Location("Actions:20")
                     .RenderWhen(async () =>
                     {
                         return contentTypeDefinition.IsDraftable()
-                        && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
+                        && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
                     })
                 );
         }

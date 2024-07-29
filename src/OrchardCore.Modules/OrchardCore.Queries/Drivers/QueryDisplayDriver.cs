@@ -23,7 +23,7 @@ namespace OrchardCore.Queries.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(Query query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, BuildDisplayContext context)
         {
             return Combine(
                 Dynamic("Query_Fields_SummaryAdmin", model =>

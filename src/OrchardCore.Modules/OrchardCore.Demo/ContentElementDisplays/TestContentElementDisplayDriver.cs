@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -13,7 +14,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 

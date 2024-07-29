@@ -27,7 +27,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(Query query, IUpdateModel updater)
+        public override IDisplayResult Display(Query query, BuildDisplayContext context)
         {
             if (query.Source != ElasticQuerySource.SourceName)
             {

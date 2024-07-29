@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
@@ -28,7 +27,7 @@ namespace OrchardCore.Contents.Sitemaps
             );
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, BuildEditorContext context)
         {
             var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 

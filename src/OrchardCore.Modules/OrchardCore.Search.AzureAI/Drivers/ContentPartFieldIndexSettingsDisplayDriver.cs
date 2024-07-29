@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.AzureAI.Models;
 
@@ -15,7 +15,7 @@ public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService au
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IAuthorizationService _authorizationService = authorizationService;
 
-    public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater)
+    public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext context)
     {
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
@@ -41,6 +41,6 @@ public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService au
 
         context.Builder.WithSettings(settings);
 
-        return await EditAsync(contentPartFieldDefinition, context.Updater);
+        return await EditAsync(contentPartFieldDefinition, context);
     }
 }
