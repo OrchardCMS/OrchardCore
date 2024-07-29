@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Esprima;
+using Acornima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -49,7 +49,7 @@ namespace OrchardCore.Html.Settings
                         throw new Exception();
                     }
 
-                    var parser = new JavaScriptParser();
+                    var parser = new Parser();
 
                     var optionsScript = parser.ParseScript("var config = " + options);
 

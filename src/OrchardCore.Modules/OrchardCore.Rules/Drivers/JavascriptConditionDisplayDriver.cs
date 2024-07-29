@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Esprima;
+using Acornima;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -76,7 +76,7 @@ namespace OrchardCore.Rules.Drivers
                 });
                 condition.Script = model.Script;
             }
-            catch (ParserException ex) // Invalid syntax
+            catch (ParseErrorException ex) // Invalid syntax
             {
                 updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
                 await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]);
