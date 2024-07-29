@@ -176,10 +176,7 @@ namespace OrchardCore.Recipes.Services
                 // Substitutes the script elements by their actual values.
                 EvaluateJsonTree(scriptingManager, recipeStep, recipeStep.Step);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
-                }
+                _logger.LogInformation("Executing recipe step '{RecipeName}'.", recipeStep.Name);
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
@@ -190,10 +187,7 @@ namespace OrchardCore.Recipes.Services
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
-                }
+                _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
             });
         }
 

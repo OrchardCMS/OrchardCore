@@ -36,7 +36,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
+            container.Alter<MicrosoftAccountSettings>(aspect =>
             {
                 aspect.AppId = settings.AppId;
                 aspect.AppSecret = settings.AppSecret;

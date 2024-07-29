@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     public class ZoneTag
     {
         public static async ValueTask<Completion> WriteToAsync(
-            List<FilterArgument> argumentsList,
+            IReadOnlyList<FilterArgument> argumentsList,
             IReadOnlyList<Statement> statements,
             TextWriter writer,
             TextEncoder encoder,

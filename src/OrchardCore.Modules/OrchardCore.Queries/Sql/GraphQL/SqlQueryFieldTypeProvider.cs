@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.Entities;
+using OrchardCore.Queries.Sql.Models;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
@@ -25,14 +27,18 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
+        public SqlQueryFieldTypeProvider(
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<SqlQueryFieldTypeProvider> logger)
         {
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
+
         public Task<string> GetIdentifierAsync()
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+
             return queryManager.GetIdentifierAsync();
         }
 
@@ -40,12 +46,14 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var queries = await queryManager.ListQueriesAsync();
+            var queries = await queryManager.ListQueriesBySourceAsync(SqlQuerySource.SourceName);
 
-            foreach (var query in queries.OfType<SqlQuery>())
+            foreach (var query in queries)
             {
                 if (string.IsNullOrWhiteSpace(query.Schema))
+                {
                     continue;
+                }
 
                 var name = query.Name;
 
@@ -60,9 +68,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var type = querySchema["type"].ToString();
                     FieldType fieldType;
 
+                    var metadata = query.As<SqlQueryMetadata>();
+
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (query.ReturnDocuments && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
@@ -84,7 +94,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JsonNode querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"]?.AsObject();
             if (properties == null)
@@ -92,7 +102,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
+            var typeType = new ObjectGraphType<JsonObject>
             {
                 Name = fieldTypeName
             };
@@ -118,7 +128,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         }),
                     };
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
                 else if (type == "integer")
                 {
@@ -133,9 +143,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
                         }),
                     };
-              
+
                     field.Metadata.Add("Name", name);
-                    typetype.AddField(field);
+                    typeType.AddField(field);
                 }
             }
 
@@ -147,23 +157,24 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = new ListGraphType(typetype),
+                ResolvedType = new ListGraphType(typeType),
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
                 Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
+
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
 
                 return result.Items;
             }
@@ -171,10 +182,10 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
         {
-            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
-            if (typetype == null)
+            var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            if (typeType == null)
             {
                 return null;
             }
@@ -184,26 +195,27 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
-
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
-                ResolvedType = typetype.ResolvedType,
+                ResolvedType = typeType.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-                Type = typetype.Type
+                Type = typeType.Type
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
             {
-                var queryManager = context.RequestServices.GetService<IQueryManager>();
-                var iquery = await queryManager.GetQueryAsync(query.Name);
+                var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
+
+                var iQuery = await queryManager.GetQueryAsync(query.Name);
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null
+                    ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
-                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                var result = await queryManager.ExecuteQueryAsync(iQuery, queryParameters);
+
                 return result.Items;
             }
 

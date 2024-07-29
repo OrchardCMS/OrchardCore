@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.OpenId.Recipes
 {
-    public class OpenIdApplicationStep : IRecipeStepHandler
+    public sealed class OpenIdApplicationStep : IRecipeStepHandler
     {
         private readonly IOpenIdApplicationManager _applicationManager;
 
