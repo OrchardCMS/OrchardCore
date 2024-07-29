@@ -72,12 +72,17 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, TDisplayContext context)
         {
-            return DisplayAsync(model, context.Updater);
+            return Task.FromResult(Display(model, context));
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, IUpdateModel updater)
         {
             return Task.FromResult(Display(model, updater));
+        }
+
+        public virtual IDisplayResult Display(TModel model, TDisplayContext context)
+        {
+            return Display(model, context.Updater);
         }
 
         public virtual IDisplayResult Display(TModel model, IUpdateModel updater)
@@ -92,7 +97,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public virtual Task<IDisplayResult> EditAsync(TModel model, TEditorContext context)
         {
-            return EditAsync(model, context.Updater);
+            return Task.FromResult(Edit(model, context));
         }
 
         public virtual Task<IDisplayResult> EditAsync(TModel model, IUpdateModel updater)
@@ -168,46 +173,46 @@ namespace OrchardCore.DisplayManagement.Handlers
             return true;
         }
 
-        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
+        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete == null || !await CanHandleModelAsync(concrete))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(concrete, context.HtmlFieldPrefix);
 
-            return DisplayAsync(concrete, context);
+            return await DisplayAsync(concrete, context);
         }
 
-        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
+        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete == null || !await CanHandleModelAsync(concrete))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(concrete, context.HtmlFieldPrefix);
 
-            return EditAsync(concrete, context);
+            return await EditAsync(concrete, context);
         }
 
-        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
+        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
             var concrete = model as TConcrete;
 
-            if (concrete == null || !CanHandleModel(concrete))
+            if (concrete == null || !await CanHandleModelAsync(concrete))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             BuildPrefix(concrete, context.HtmlFieldPrefix);
 
-            return UpdateAsync(concrete, context);
+            return await UpdateAsync(concrete, context);
         }
     }
 

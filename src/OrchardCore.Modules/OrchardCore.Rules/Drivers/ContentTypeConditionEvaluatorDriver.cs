@@ -26,7 +26,7 @@ namespace OrchardCore.Rules.Drivers
             _operatorResolver = operatorResolver;
         }
 
-        public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             // Do not include Widgets or any display type other than Detail.
             if (context.DisplayType == "Detail" && (!context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype) || stereotype != "Widget"))
@@ -34,7 +34,7 @@ namespace OrchardCore.Rules.Drivers
                 _contentTypes.Add(contentItem.ContentType);
             }
 
-            return Task.FromResult<IDisplayResult>(null);
+            return null;
         }
 
         public ValueTask<bool> EvaluateAsync(Condition condition)
