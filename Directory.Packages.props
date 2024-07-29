@@ -30,7 +30,7 @@
     <PackageVersion Include="GraphQL.SystemTextJson" Version="7.8.0" />
     <PackageVersion Include="Jint" Version="4.0.0" />
     <PackageVersion Include="JsonPath.Net" Version="1.1.2" />
-    <PackageVersion Include="HtmlSanitizer" Version="8.1.870" />
+    <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
     <PackageVersion Include="Irony" Version="1.5.1" />
     <PackageVersion Include="libphonenumber-csharp" Version="8.13.42" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
