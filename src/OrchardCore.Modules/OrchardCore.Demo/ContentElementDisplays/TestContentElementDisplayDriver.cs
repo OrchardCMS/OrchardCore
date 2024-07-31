@@ -20,7 +20,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
 
             if (testContentPart == null)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             return CombineAsync(
