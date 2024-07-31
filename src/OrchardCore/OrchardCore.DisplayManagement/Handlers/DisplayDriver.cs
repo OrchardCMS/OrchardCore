@@ -18,57 +18,45 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Returns <see langword="true"/> if the model can be handled by the current driver.
         /// </summary>
-        /// <remarks>
-        /// Override <see cref="CanHandleModelAsync(TModel)"/> instead if your code is asynchronous.
-        /// </remarks>
         public virtual bool CanHandleModel(TModel model)
         {
             return true;
         }
 
-        /// <summary>
-        /// Returns <see langword="true"/> if the model can be handled by the current driver.
-        /// </summary>
-        /// <remarks>
-        /// Override <see cref="CanHandleModel(TModel)"/> instead if your code is synchronous.
-        /// </remarks>
-        public virtual ValueTask<bool> CanHandleModelAsync(TModel model)
-            => ValueTask.FromResult(CanHandleModel(model));
-
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await DisplayAsync(model, context);
+            return DisplayAsync(model, context);
         }
 
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await EditAsync(model, context);
+            return EditAsync(model, context);
         }
 
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await UpdateAsync(model, context);
+            return UpdateAsync(model, context);
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, TDisplayContext context)

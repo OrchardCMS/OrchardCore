@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 {
     public class DisplayDriverBase
     {
-        protected string Prefix { get; set; } = "";
+        protected string Prefix { get; set; } = string.Empty;
 
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
