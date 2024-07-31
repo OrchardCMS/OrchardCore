@@ -66,19 +66,19 @@ namespace OrchardCore.DisplayManagement.Handlers
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use DisplayAsync(TModel model, TDisplayContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TDisplayContext context) method.")]
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, IUpdateModel updater)
         {
             return Task.FromResult(Display(model, updater));
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use DisplayAsync(TModel model, TDisplayContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TDisplayContext context) method.")]
         public virtual IDisplayResult Display(TModel model, IUpdateModel updater)
         {
             return Display(model);
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use DisplayAsync(TModel model, TDisplayContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TDisplayContext context) method.")]
         public virtual IDisplayResult Display(TModel model)
         {
             return NullShapeResult();
@@ -91,19 +91,19 @@ namespace OrchardCore.DisplayManagement.Handlers
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use EditAsync(TModel model, TEditorContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TEditorContext context) method.")]
         public virtual Task<IDisplayResult> EditAsync(TModel model, IUpdateModel updater)
         {
             return Task.FromResult(Edit(model, updater));
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use EditAsync(TModel model, TEditorContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TEditorContext context) method.")]
         public virtual IDisplayResult Edit(TModel model, IUpdateModel updater)
         {
             return Edit(model);
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use EditAsync(TModel model, TEditorContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TEditorContext context) method.")]
         public virtual IDisplayResult Edit(TModel model)
         {
             return NullShapeResult();
@@ -121,7 +121,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        [Obsolete("This method is obsolete and will be removed in version 3. Instead use UpdateAsync(TModel model, TUpdateContext context) method.")]
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TModel model, TUpdateContext context) method.")]
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
         {
             return EditAsync(model, updater);
