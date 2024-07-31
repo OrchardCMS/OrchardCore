@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
         {
             if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             return Task.FromResult<IDisplayResult>(

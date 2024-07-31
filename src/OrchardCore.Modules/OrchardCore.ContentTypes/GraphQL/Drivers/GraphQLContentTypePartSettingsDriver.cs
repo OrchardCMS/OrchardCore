@@ -23,7 +23,7 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
         {
             if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             return Task.FromResult<IDisplayResult>(
