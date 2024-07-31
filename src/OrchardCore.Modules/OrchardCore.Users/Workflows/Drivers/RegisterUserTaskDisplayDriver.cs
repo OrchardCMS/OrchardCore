@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Users.Workflows.Activities;
@@ -27,10 +27,10 @@ namespace OrchardCore.Users.Workflows.Drivers
             model.RequireModeration = activity.RequireModeration;
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, UpdateEditorContext context)
         {
             var viewModel = new RegisterUserTaskViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             model.SendConfirmationEmail = viewModel.SendConfirmationEmail;
             model.RequireModeration = viewModel.RequireModeration;
@@ -41,16 +41,16 @@ namespace OrchardCore.Users.Workflows.Drivers
             {
                 if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailSubject))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
                 }
 
                 if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailTemplate))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
                 }
             }
 
-            return Edit(model);
+            return await EditAsync(model, context);
         }
     }
 }

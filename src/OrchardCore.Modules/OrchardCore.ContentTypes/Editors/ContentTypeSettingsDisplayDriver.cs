@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentTypes.Editors
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
-        private readonly IStereotypeService  _stereotypeService;
+        private readonly IStereotypeService _stereotypeService;
         private readonly ContentTypeDefinitionOptions _options;
 
         protected readonly IStringLocalizer S;
@@ -28,19 +29,23 @@ namespace OrchardCore.ContentTypes.Editors
             _stereotypeService = stereotypeService;
         }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
-            => Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
-            {
-                var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-                model.Creatable = settings.Creatable;
-                model.Listable = settings.Listable;
-                model.Draftable = settings.Draftable;
-                model.Versionable = settings.Versionable;
-                model.Securable = settings.Securable;
-                model.Stereotype = settings.Stereotype;
-                model.Description = settings.Description;
-                model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
-            }).Location("Content:5");
+        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
+        {
+            return Task.FromResult<IDisplayResult>(
+                Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
+                {
+                    var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+                    model.Creatable = settings.Creatable;
+                    model.Listable = settings.Listable;
+                    model.Draftable = settings.Draftable;
+                    model.Versionable = settings.Versionable;
+                    model.Securable = settings.Securable;
+                    model.Stereotype = settings.Stereotype;
+                    model.Description = settings.Description;
+                    model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
+                }).Location("Content:5")
+            );
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
         {
@@ -61,7 +66,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             Apply(context, model, options);
 
-            return Edit(contentTypeDefinition);
+            return await EditAsync(contentTypeDefinition, context);
         }
 
         private static void Apply(UpdateTypeEditorContext context, ContentTypeSettingsViewModel model, ContentTypeDefinitionDriverOptions options)

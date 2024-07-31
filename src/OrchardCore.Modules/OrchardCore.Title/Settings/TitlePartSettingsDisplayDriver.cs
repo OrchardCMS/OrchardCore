@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Title.Models;
@@ -21,17 +21,19 @@ namespace OrchardCore.Title.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
+                {
+                    var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-                model.Options = settings.Options;
-                model.Pattern = settings.Pattern;
-                model.RenderTitle = settings.RenderTitle;
-                model.TitlePartSettings = settings;
-            }).Location("Content");
+                    model.Options = settings.Options;
+                    model.Pattern = settings.Pattern;
+                    model.RenderTitle = settings.RenderTitle;
+                    model.TitlePartSettings = settings;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -52,7 +54,7 @@ namespace OrchardCore.Title.Settings
                 context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

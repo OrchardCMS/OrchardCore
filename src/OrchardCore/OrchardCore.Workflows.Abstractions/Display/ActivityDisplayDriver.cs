@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.ViewModels;
@@ -17,12 +16,12 @@ namespace OrchardCore.Workflows.Display
         private static readonly string _thumbnailShapeType = $"{ActivityName}_Fields_Thumbnail";
         private static readonly string _designShapeType = $"{ActivityName}_Fields_Design";
 
-        public override IDisplayResult Display(TActivity model)
+        public override Task<IDisplayResult> DisplayAsync(TActivity model, BuildDisplayContext context)
         {
-            return Combine(
+            return Task.FromResult<IDisplayResult>(Combine(
                 Shape(_thumbnailShapeType, new ActivityViewModel<TActivity>(model)).Location("Thumbnail", "Content"),
                 Shape(_designShapeType, new ActivityViewModel<TActivity>(model)).Location("Design", "Content")
-            );
+            ));
         }
     }
 
@@ -33,21 +32,21 @@ namespace OrchardCore.Workflows.Display
     {
         private static readonly string _editShapeType = $"{ActivityName}_Fields_Edit";
 
-        public override IDisplayResult Edit(TActivity model)
+        public override Task<IDisplayResult> EditAsync(TActivity model, BuildEditorContext context)
         {
-            return Initialize(_editShapeType, (System.Func<TEditViewModel, ValueTask>)(viewModel =>
+            return Task.FromResult<IDisplayResult>(Initialize<TEditViewModel>(_editShapeType, viewModel =>
             {
                 return EditActivityAsync(model, viewModel);
-            })).Location("Content");
+            }).Location("Content"));
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TActivity model, UpdateEditorContext context)
         {
             var viewModel = new TEditViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
             await UpdateActivityAsync(viewModel, model);
 
-            return Edit(model);
+            return await EditAsync(model, context);
         }
 
         /// <summary>

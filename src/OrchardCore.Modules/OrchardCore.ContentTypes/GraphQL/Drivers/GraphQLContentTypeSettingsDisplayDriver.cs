@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers;
@@ -18,14 +19,16 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         _contentOptions = optionsAccessor.Value;
     }
 
-    public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+    public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
     {
-        return Initialize<GraphQLContentTypeSettingsViewModel>("GraphQLContentTypeSettings_Edit", model =>
-        {
-            model.Definition = contentTypeDefinition;
-            model.Settings = contentTypeDefinition.GetSettings<GraphQLContentTypeSettings>();
-            model.Options = _contentOptions;
-        }).Location("Content:5");
+        return Task.FromResult<IDisplayResult>(
+            Initialize<GraphQLContentTypeSettingsViewModel>("GraphQLContentTypeSettings_Edit", model =>
+            {
+                model.Definition = contentTypeDefinition;
+                model.Settings = contentTypeDefinition.GetSettings<GraphQLContentTypeSettings>();
+                model.Options = _contentOptions;
+            }).Location("Content:5")
+        );
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -36,6 +39,6 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
         context.Builder.WithSettings(model.Settings);
 
-        return Edit(contentTypeDefinition);
+        return await EditAsync(contentTypeDefinition, context);
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,18 +7,20 @@ namespace OrchardCore.Media.Deployment
 {
     public class AllMediaProfilesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllMediaProfilesDeploymentStep>
     {
-        public override IDisplayResult Display(AllMediaProfilesDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AllMediaProfilesDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllMediaProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("AllMediaProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AllMediaProfilesDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(AllMediaProfilesDeploymentStep step, BuildEditorContext context)
         {
-            return View("AllMediaProfilesDeploymentStep_Edit", step).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                View("AllMediaProfilesDeploymentStep_Edit", step).Location("Content")
+            );
         }
     }
 }

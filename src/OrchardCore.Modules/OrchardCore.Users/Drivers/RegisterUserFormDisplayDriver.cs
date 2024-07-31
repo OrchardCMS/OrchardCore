@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Users.Models;
@@ -16,7 +15,7 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
 
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public RegisterUserFormDisplayDriver(
         UserManager<IUser> userManager,
@@ -29,34 +28,36 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(RegisterUserForm model)
+    public override Task<IDisplayResult> EditAsync(RegisterUserForm model, BuildEditorContext context)
     {
-        return Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
-        {
-            vm.UserName = model.UserName;
-            vm.Email = model.Email;
-        }).Location("Content");
+        return Task.FromResult<IDisplayResult>(
+            Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
+            {
+                vm.UserName = model.UserName;
+                vm.Email = model.Email;
+            }).Location("Content")
+        );
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RegisterUserForm model, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(RegisterUserForm model, UpdateEditorContext context)
     {
         var vm = new RegisterViewModel();
 
-        await updater.TryUpdateModelAsync(vm, Prefix);
+        await context.Updater.TryUpdateModelAsync(vm, Prefix);
 
         if (await _userManager.FindByNameAsync(vm.UserName) != null)
         {
-            updater.ModelState.AddModelError(Prefix, nameof(vm.UserName), S["A user with the same username already exists."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(vm.UserName), S["A user with the same username already exists."]);
         }
         else if (_identityOptions.User.RequireUniqueEmail && await _userManager.FindByEmailAsync(vm.Email) != null)
         {
-            updater.ModelState.AddModelError(Prefix, nameof(vm.Email), S["A user with the same email address already exists."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(vm.Email), S["A user with the same email address already exists."]);
         }
 
         model.UserName = vm.UserName;
         model.Email = vm.Email;
         model.Password = vm.Password;
 
-        return Edit(model);
+        return await EditAsync(model, context);
     }
 }

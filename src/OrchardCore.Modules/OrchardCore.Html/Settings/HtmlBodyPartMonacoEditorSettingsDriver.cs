@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
@@ -22,18 +22,20 @@ namespace OrchardCore.Html.Settings
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
+            return Task.FromResult<IDisplayResult>(
+                Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
                 {
-                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                }
-                model.Options = settings.Options;
-            })
-            .Location("Editor");
+                    var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
+                    if (string.IsNullOrWhiteSpace(settings.Options))
+                    {
+                        settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                    }
+                    model.Options = settings.Options;
+                })
+                .Location("Editor")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -60,7 +62,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

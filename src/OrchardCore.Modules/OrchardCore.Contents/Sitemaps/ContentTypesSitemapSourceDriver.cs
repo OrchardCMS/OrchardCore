@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
@@ -13,22 +12,20 @@ namespace OrchardCore.Contents.Sitemaps
     {
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
-        public ContentTypesSitemapSourceDriver(
-            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
-            )
+        public ContentTypesSitemapSourceDriver(IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
         {
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
-        public override IDisplayResult Display(ContentTypesSitemapSource sitemapSource)
+        public override Task<IDisplayResult> DisplayAsync(ContentTypesSitemapSource sitemapSource, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 View("ContentTypesSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
                 View("ContentTypesSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
             );
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, BuildEditorContext context)
         {
             var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
@@ -121,7 +118,7 @@ namespace OrchardCore.Contents.Sitemaps
                 sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
             }
 
-            return Edit(sitemap, context.Updater);
+            return await EditAsync(sitemap, context);
         }
     }
 }

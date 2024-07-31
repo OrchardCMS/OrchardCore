@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 
@@ -18,27 +19,29 @@ namespace OrchardCore.ContentFields.Settings
             _roleService = roleService;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
-            {
-                var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Multiple = settings.Multiple;
-                var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
-                    .Select(roleName => new RoleEntry
-                    {
-                        Role = roleName,
-                        IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
-                    })
-                    .ToArray();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
+                {
+                    var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
+                    model.Hint = settings.Hint;
+                    model.Required = settings.Required;
+                    model.Multiple = settings.Multiple;
+                    var roles = (await _roleService.GetRoleNamesAsync())
+                        .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
+                        .Select(roleName => new RoleEntry
+                        {
+                            Role = roleName,
+                            IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
+                        })
+                        .ToArray();
 
-                model.Roles = roles;
-                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+                    model.Roles = roles;
+                    model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
 
-            }).Location("Content");
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -70,7 +73,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(settings);
 
-            return Edit(partFieldDefinition, context.Updater);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

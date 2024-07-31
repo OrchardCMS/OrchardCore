@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Lucene.ViewModels;
 
@@ -17,37 +16,39 @@ namespace OrchardCore.Search.Lucene.Deployment
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public override IDisplayResult Display(LuceneIndexResetDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(LuceneIndexResetDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("LuceneIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(LuceneIndexResetDeploymentStep step, BuildEditorContext context)
         {
-            return Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
-                model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
+                {
+                    model.IncludeAll = step.IncludeAll;
+                    model.IndexNames = step.IndexNames;
+                    model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                }).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)
         {
             resetIndexStep.IndexNames = [];
 
-            await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
+            await context.Updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
 
             if (resetIndexStep.IncludeAll)
             {
                 resetIndexStep.IndexNames = [];
             }
 
-            return Edit(resetIndexStep);
+            return await EditAsync(resetIndexStep, context);
         }
     }
 }

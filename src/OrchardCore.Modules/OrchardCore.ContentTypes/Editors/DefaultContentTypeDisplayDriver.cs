@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
@@ -15,13 +16,15 @@ namespace OrchardCore.ContentTypes.Editors
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
-            {
-                model.DisplayName = contentTypeDefinition.DisplayName;
-                model.Name = contentTypeDefinition.Name;
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
+                {
+                    model.DisplayName = contentTypeDefinition.DisplayName;
+                    model.Name = contentTypeDefinition.Name;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -37,7 +40,7 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Updater.ModelState.AddModelError("DisplayName", S["The Content Type name can't be empty."]);
             }
 
-            return Edit(contentTypeDefinition);
+            return await EditAsync(contentTypeDefinition, context);
         }
     }
 }

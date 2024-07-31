@@ -3,22 +3,25 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<TextFieldSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<TextFieldSettings>("TextFieldSettings_Edit", model =>
+                {
+                    var settings = partFieldDefinition.Settings.ToObject<TextFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.DefaultValue = settings.DefaultValue;
-            }).Location("Content");
+                    model.Hint = settings.Hint;
+                    model.Required = settings.Required;
+                    model.DefaultValue = settings.DefaultValue;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -29,7 +32,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

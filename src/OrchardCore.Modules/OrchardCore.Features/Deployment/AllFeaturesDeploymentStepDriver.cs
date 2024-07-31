@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Features.ViewModels;
 
@@ -9,28 +8,30 @@ namespace OrchardCore.Features.Deployment
 {
     public class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeaturesDeploymentStep>
     {
-        public override IDisplayResult Display(AllFeaturesDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AllFeaturesDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllFeaturesDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("AllFeaturesDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AllFeaturesDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(AllFeaturesDeploymentStep step, BuildEditorContext context)
         {
-            return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
-            {
-                model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
+                {
+                    model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
+                }).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeatures);
+            await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeatures);
 
-            return Edit(step);
+            return await EditAsync(step, context);
         }
     }
 }

@@ -6,6 +6,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -20,16 +21,17 @@ namespace OrchardCore.ContentFields.Settings
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
+                {
+                    var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
 
-                model.Options = settings.Options;
-                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+                    model.Options = settings.Options;
+                    model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+                }).Location("Editor")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -67,7 +69,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
             }
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

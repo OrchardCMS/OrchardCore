@@ -3,22 +3,24 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class DateTimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<DateTimeField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model =>
+                {
+                    var settings = partFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-            })
-                .Location("Content");
+                    model.Hint = settings.Hint;
+                    model.Required = settings.Required;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -29,7 +31,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

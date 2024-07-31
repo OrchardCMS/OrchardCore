@@ -5,7 +5,6 @@ using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -34,36 +33,39 @@ namespace OrchardCore.Rules.Drivers
             _notifier = notifier;
         }
 
-        public override IDisplayResult Display(JavascriptCondition condition)
+        public override Task<IDisplayResult> DisplayAsync(JavascriptCondition condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("JavascriptCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("JavascriptCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(JavascriptCondition condition)
+        public override Task<IDisplayResult> EditAsync(JavascriptCondition condition, BuildEditorContext context)
         {
-            return Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
-            {
-                m.Script = condition.Script;
-                m.Condition = condition;
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
+                {
+                    m.Script = condition.Script;
+                    m.Condition = condition;
+                }).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, UpdateEditorContext context)
         {
             var model = new JavascriptConditionViewModel();
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             // CodeMirror hides the textarea which displays the error when updater.ModelState.AddModelError() is used,
             // that's why a notifier is used to show validation errors.
             if (string.IsNullOrWhiteSpace(model.Script))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
                 await _notifier.ErrorAsync(H["Please provide a script."]);
-                return Edit(condition);
+
+                return await EditAsync(condition, context);
             }
 
             try
@@ -78,21 +80,21 @@ namespace OrchardCore.Rules.Drivers
             }
             catch (ParseErrorException ex) // Invalid syntax
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script couldn't be parsed. Details: {0}", ex.Message]);
                 await _notifier.ErrorAsync(H["The script couldn't be parsed. Details: {0}", ex.Message]);
             }
             catch (JavaScriptException ex) // Evaluation threw an Error
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
                 await _notifier.ErrorAsync(H["JavaScript evaluation resulted in an exception. Details: {0}", ex.Message]);
             }
             catch (Exception ex) when (ex is InvalidCastException or FormatException) // Evaluation completes successfully, but the result cannot be converted to Boolean
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script evaluation failed. Details: {0}", ex.Message]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["The script evaluation failed. Details: {0}", ex.Message]);
                 await _notifier.ErrorAsync(H["The script evaluation failed. Details: {0}", ex.Message]);
             }
 
-            return Edit(condition);
+            return await EditAsync(condition, context);
         }
     }
 }

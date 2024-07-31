@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -7,10 +8,12 @@ namespace OrchardCore.Users.Drivers;
 
 public class TwoFactorMethodLoginEmailDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override IDisplayResult Edit(TwoFactorMethod model)
+    public override Task<IDisplayResult> EditAsync(TwoFactorMethod model, BuildEditorContext context)
     {
-        return View("EmailAuthenticatorValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultEmailProvider);
+        return Task.FromResult<IDisplayResult>(
+            View("EmailAuthenticatorValidation", model)
+            .Location("Content")
+            .OnGroup(TokenOptions.DefaultEmailProvider)
+        );
     }
 }

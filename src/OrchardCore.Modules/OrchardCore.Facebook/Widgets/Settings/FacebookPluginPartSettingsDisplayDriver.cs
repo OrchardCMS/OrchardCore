@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Liquid;
@@ -20,13 +20,15 @@ namespace OrchardCore.Facebook.Widgets.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
-            {
-                model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
-                model.Liquid = model.FacebookPluginPartSettings.Liquid;
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
+                {
+                    model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
+                    model.Liquid = model.FacebookPluginPartSettings.Liquid;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -45,7 +47,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
                 context.Builder.WithSettings(new FacebookPluginPartSettings { Liquid = model.Liquid });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

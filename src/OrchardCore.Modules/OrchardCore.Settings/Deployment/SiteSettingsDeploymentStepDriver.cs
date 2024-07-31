@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
 
@@ -9,31 +8,33 @@ namespace OrchardCore.Settings.Deployment
 {
     public class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
     {
-        public override IDisplayResult Display(SiteSettingsDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(SiteSettingsDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("SiteSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(SiteSettingsDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(SiteSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
-            {
-                model.Settings = step.Settings;
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+                {
+                    model.Settings = step.Settings;
+                }).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, UpdateEditorContext context)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
             step.Settings = [];
 
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
+            await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
 
-            return Edit(step);
+            return await EditAsync(step, context);
         }
     }
 }

@@ -7,14 +7,16 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserButtonsDisplayDriver : DisplayDriver<User>
     {
-        public override IDisplayResult Edit(User user)
+        public override Task<IDisplayResult> EditAsync(User model, BuildEditorContext context)
         {
-            return Dynamic("UserSaveButtons_Edit").Location("Actions");
+            return Task.FromResult<IDisplayResult>(
+                Dynamic("UserSaveButtons_Edit").Location("Actions")
+            );
         }
 
         public override Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            return Task.FromResult(Edit(user));
+            return EditAsync(user, context);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,18 +7,20 @@ namespace OrchardCore.Queries.Deployment
 {
     public class AllQueriesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllQueriesDeploymentStep>
     {
-        public override IDisplayResult Display(AllQueriesDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AllQueriesDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllQueriesDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AllQueriesDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(AllQueriesDeploymentStep step, BuildEditorContext context)
         {
-            return View("AllQueriesDeploymentStep_Edit", step).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                View("AllQueriesDeploymentStep_Edit", step).Location("Content")
+            );
         }
     }
 }

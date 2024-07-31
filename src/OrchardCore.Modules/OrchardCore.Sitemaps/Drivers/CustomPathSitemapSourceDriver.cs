@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
@@ -20,23 +19,25 @@ namespace OrchardCore.Sitemaps.Drivers
             S = localizer;
         }
 
-        public override IDisplayResult Display(CustomPathSitemapSource sitemapSource)
+        public override Task<IDisplayResult> DisplayAsync(CustomPathSitemapSource sitemapSource, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 View("CustomPathSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
                 View("CustomPathSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
             );
         }
 
-        public override IDisplayResult Edit(CustomPathSitemapSource sitemapSource, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(CustomPathSitemapSource sitemapSource, BuildEditorContext context)
         {
-            return Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
-            {
-                model.Path = sitemapSource.Path;
-                model.Priority = sitemapSource.Priority;
-                model.ChangeFrequency = sitemapSource.ChangeFrequency;
+            return Task.FromResult<IDisplayResult>(
+                Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
+                {
+                    model.Path = sitemapSource.Path;
+                    model.Priority = sitemapSource.Priority;
+                    model.ChangeFrequency = sitemapSource.ChangeFrequency;
 
-            }).Location("Content");
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomPathSitemapSource sitemap, UpdateEditorContext context)
@@ -66,7 +67,7 @@ namespace OrchardCore.Sitemaps.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
             }
 
-            return Edit(sitemap, context.Updater);
+            return await EditAsync(sitemap, context);
         }
     }
 }

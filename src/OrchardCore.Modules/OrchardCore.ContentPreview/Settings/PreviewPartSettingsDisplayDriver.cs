@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.ContentPreview.ViewModels;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
@@ -13,23 +13,28 @@ namespace OrchardCore.ContentPreview.Settings
     public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
-        public PreviewPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
+        public PreviewPartSettingsDisplayDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
+                {
+                    var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
 
-                model.Pattern = settings.Pattern;
-                model.PreviewPartSettings = settings;
-            }).Location("Content");
+                    model.Pattern = settings.Pattern;
+                    model.PreviewPartSettings = settings;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -52,7 +57,7 @@ namespace OrchardCore.ContentPreview.Settings
                 });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

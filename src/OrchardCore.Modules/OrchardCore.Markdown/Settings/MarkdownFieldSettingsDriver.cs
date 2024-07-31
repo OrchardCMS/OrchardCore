@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.ViewModels;
@@ -9,16 +10,18 @@ namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
-            {
+            return Task.FromResult<IDisplayResult>(
+                Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
+                {
 
-                var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
+                    var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
-                model.SanitizeHtml = settings.SanitizeHtml;
-                model.Hint = settings.Hint;
-            }).Location("Content:20");
+                    model.SanitizeHtml = settings.SanitizeHtml;
+                    model.Hint = settings.Hint;
+                }).Location("Content:20")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -33,7 +36,7 @@ namespace OrchardCore.Markdown.Settings
 
             context.Builder.WithSettings(settings);
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -32,22 +33,24 @@ public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         _session = session;
     }
 
-    public override IDisplayResult Display(Navbar model)
+    public override Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
-        {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
-                .OrderByDescending(x => x.CreatedAtUtc)
-                .Take(_notificationOptions.TotalUnreadNotifications + 1)
-                .ListAsync()).ToList();
+        return Task.FromResult<IDisplayResult>(
+            Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
+            {
+                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
+                    .OrderByDescending(x => x.CreatedAtUtc)
+                    .Take(_notificationOptions.TotalUnreadNotifications + 1)
+                    .ListAsync()).ToList();
 
-            model.Notifications = notifications;
-            model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
-            model.TotalUnread = notifications.Count;
+                model.Notifications = notifications;
+                model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
+                model.TotalUnread = notifications.Count;
 
-        }).Location("Detail", "Content:9")
-        .Location("DetailAdmin", "Content:9")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications));
+            }).Location("Detail", "Content:9")
+            .Location("DetailAdmin", "Content:9")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        );
     }
 }

@@ -1,14 +1,17 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition model, BuildEditorContext context)
         {
-            return Shape("ContentTypePartSettings_Edit", new ShapeViewModel<ContentTypePartDefinition>(model)).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Shape("ContentTypePartSettings_Edit", new ShapeViewModel<ContentTypePartDefinition>(model)).Location("Content")
+            );
         }
     }
 }

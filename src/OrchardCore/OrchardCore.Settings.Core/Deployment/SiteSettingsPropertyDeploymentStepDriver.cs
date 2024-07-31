@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -16,9 +17,9 @@ namespace OrchardCore.Settings.Deployment
             _description = description;
         }
 
-        public override IDisplayResult Display(SiteSettingsPropertyDeploymentStep<TModel> step)
+        public override Task<IDisplayResult> DisplayAsync(SiteSettingsPropertyDeploymentStep<TModel> step, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                     Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", m => BuildViewModel(m))
                         .Location("Summary", "Content"),
                     Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", m => BuildViewModel(m))
@@ -26,10 +27,11 @@ namespace OrchardCore.Settings.Deployment
                 );
         }
 
-        public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step)
+        public override Task<IDisplayResult> EditAsync(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
         {
-            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", m => BuildViewModel(m))
-                .Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", m => BuildViewModel(m))
+                .Location("Content"));
         }
 
         private void BuildViewModel(SiteSettingsPropertyDeploymentStepViewModel model)

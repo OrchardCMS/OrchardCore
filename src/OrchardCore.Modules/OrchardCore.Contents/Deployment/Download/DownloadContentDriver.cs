@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment.Download
@@ -20,22 +22,15 @@ namespace OrchardCore.Contents.Deployment.Download
             _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Display(ContentItem contentItem)
+        public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            var context = _httpContextAccessor.HttpContext;
+            var user = _httpContextAccessor.HttpContext.User;
 
-            return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:20")
-                    .RenderWhen(async () =>
-                    {
-                        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
-
-                        if (hasEditPermission)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    });
+            return Task.FromResult<IDisplayResult>(
+                Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem))
+                .Location("SummaryAdmin", "ActionsMenu:20")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.Export, contentItem))
+            );
         }
     }
 }

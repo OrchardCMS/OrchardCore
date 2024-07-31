@@ -5,6 +5,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
@@ -20,19 +21,20 @@ namespace OrchardCore.ContentFields.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
+            return Task.FromResult<IDisplayResult>(
+                Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
                 {
-                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                }
+                    var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
+                    if (string.IsNullOrWhiteSpace(settings.Options))
+                    {
+                        settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                    }
 
-                model.Options = settings.Options;
-            })
-            .Location("Editor");
+                    model.Options = settings.Options;
+                }).Location("Editor")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -57,7 +59,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

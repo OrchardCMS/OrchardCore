@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.DisplayManagement.Handlers;
@@ -21,7 +22,7 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public override IDisplayResult Display(UserMenu model)
+    public override Task<IDisplayResult> DisplayAsync(UserMenu model, BuildDisplayContext context)
     {
         var results = new List<IDisplayResult>
         {
@@ -58,6 +59,6 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
                 .Differentiator("Dashboard"));
         }
 
-        return Combine(results);
+        return CombineAsync(results);
     }
 }

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.ModelBinding;
@@ -19,14 +18,14 @@ namespace OrchardCore.Queries.Sql.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(Query query, IUpdateModel updater)
+        public override Task<IDisplayResult> DisplayAsync(Query query, BuildDisplayContext context)
         {
             if (query.Source != SqlQuerySource.SourceName)
             {
                 return null;
             }
 
-            return Combine(
+            return CombineAsync(
                 Dynamic("SqlQuery_SummaryAdmin", model =>
                 {
                     model.Query = query;
@@ -38,30 +37,32 @@ namespace OrchardCore.Queries.Sql.Drivers
             );
         }
 
-        public override IDisplayResult Edit(Query query, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
         {
             if (query.Source != SqlQuerySource.SourceName)
             {
                 return null;
             }
 
-            return Initialize<SqlQueryViewModel>("SqlQuery_Edit", async model =>
-            {
-                model.ReturnDocuments = query.ReturnContentItems;
-
-                var metadata = query.As<SqlQueryMetadata>();
-                model.Query = metadata.Template;
-
-                // Extract query from the query string if we come from the main query editor.
-                if (string.IsNullOrEmpty(metadata.Template))
+            return Task.FromResult<IDisplayResult>(
+                Initialize<SqlQueryViewModel>("SqlQuery_Edit", async model =>
                 {
-                    await updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                }
+                    model.ReturnDocuments = query.ReturnContentItems;
 
-            }).Location("Content:5");
+                    var metadata = query.As<SqlQueryMetadata>();
+                    model.Query = metadata.Template;
+
+                    // Extract query from the query string if we come from the main query editor.
+                    if (string.IsNullOrEmpty(metadata.Template))
+                    {
+                        await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                    }
+
+                }).Location("Content:5")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(Query query, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query query, UpdateEditorContext context)
         {
             if (query.Source != SqlQuerySource.SourceName)
             {
@@ -69,11 +70,13 @@ namespace OrchardCore.Queries.Sql.Drivers
             }
 
             var viewModel = new SqlQueryViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix,
+                m => m.Query,
+                m => m.ReturnDocuments);
 
             if (string.IsNullOrWhiteSpace(viewModel.Query))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
             }
 
             query.ReturnContentItems = viewModel.ReturnDocuments;
@@ -82,7 +85,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 Template = viewModel.Query,
             });
 
-            return Edit(query, updater);
+            return await EditAsync(query, context);
         }
     }
 }

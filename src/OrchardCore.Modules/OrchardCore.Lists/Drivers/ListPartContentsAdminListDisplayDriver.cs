@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.ViewModels;
@@ -15,15 +14,17 @@ namespace OrchardCore.Lists.Drivers
             Prefix = "ListPart";
         }
 
-        public override IDisplayResult Edit(ContentOptionsViewModel model, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
         {
-            return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
+            return Task.FromResult<IDisplayResult>(
+                Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
         {
             var viewModel = new ListPartContentsAdminFilterViewModel();
-            await updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+            await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
             if (viewModel.ShowListContentTypes)
             {
@@ -35,7 +36,7 @@ namespace OrchardCore.Lists.Drivers
                 model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
             }
 
-            return Edit(model, updater);
+            return await EditAsync(model, context);
         }
     }
 }

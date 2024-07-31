@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers
@@ -19,24 +19,26 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
             _contentOptions = optionsAccessor.Value;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
             {
                 return null;
             }
 
-            return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", async model =>
-            {
-                model.Definition = contentTypePartDefinition;
-                model.Options = _contentOptions;
-                model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
-
-                if (!updater.ModelState.IsValid)
+            return Task.FromResult<IDisplayResult>(
+                Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", async model =>
                 {
-                    await updater.TryUpdateModelAsync(model, Prefix, x => x.Settings);
-                }
-            }).Location("Content");
+                    model.Definition = contentTypePartDefinition;
+                    model.Options = _contentOptions;
+                    model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
+
+                    if (!context.Updater.ModelState.IsValid)
+                    {
+                        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.Settings);
+                    }
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -52,7 +54,7 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
 
             context.Builder.WithSettings(model.Settings);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

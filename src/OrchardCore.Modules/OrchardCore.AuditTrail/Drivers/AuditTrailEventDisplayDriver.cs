@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -16,11 +17,11 @@ namespace OrchardCore.AuditTrail.Drivers
             _auditTrailManager = auditTrailManager;
         }
 
-        public override IDisplayResult Display(AuditTrailEvent auditTrailEvent)
+        public override Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, BuildDisplayContext context)
         {
             var descriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
 
-            return Combine(
+            return CombineAsync(
                 Initialize<AuditTrailEventViewModel>("AuditTrailEventTags_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
                     .Location("SummaryAdmin", "EventTags:10"),
                 Initialize<AuditTrailEventViewModel>("AuditTrailEventMeta_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))

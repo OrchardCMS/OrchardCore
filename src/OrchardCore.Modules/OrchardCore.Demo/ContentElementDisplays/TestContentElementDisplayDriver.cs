@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -13,7 +14,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
+        public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -22,7 +23,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            return Combine(
+            return CombineAsync(
                 // A new shape is created and the properties of the object are bound to it when rendered
                 Copy("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location
@@ -48,7 +49,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 );
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -57,10 +58,12 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Copy("TestContentPartA_Edit", testContentPart).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -69,11 +72,11 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            await updater.TryUpdateModelAsync(testContentPart, "");
+            await context.Updater.TryUpdateModelAsync(testContentPart, "");
 
             if (testContentPart.Line.EndsWith(' '))
             {
-                updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
+                context.Updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
             }
             else
             {

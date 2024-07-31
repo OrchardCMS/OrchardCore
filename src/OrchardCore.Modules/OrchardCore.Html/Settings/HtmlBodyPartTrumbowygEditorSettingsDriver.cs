@@ -4,6 +4,7 @@ using Acornima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
@@ -20,16 +21,18 @@ namespace OrchardCore.Html.Settings
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
+                {
+                    var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
 
-                model.Options = settings.Options;
-                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+                    model.Options = settings.Options;
+                    model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+                })
+                .Location("Editor")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -67,7 +70,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return Edit(contentTypePartDefinition);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

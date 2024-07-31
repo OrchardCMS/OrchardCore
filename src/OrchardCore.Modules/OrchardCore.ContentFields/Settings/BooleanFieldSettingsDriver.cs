@@ -3,23 +3,25 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override Task<IDisplayResult> DisplayAsync(ContentPartFieldDefinition partFieldDefinition, BuildDisplayContext context)
         {
-            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
+                {
+                    var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.Label = settings.Label;
-                model.DefaultValue = settings.DefaultValue;
-            })
-                .Location("Content");
+                    model.Hint = settings.Hint;
+                    model.Label = settings.Label;
+                    model.DefaultValue = settings.DefaultValue;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -30,7 +32,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
     }
 }

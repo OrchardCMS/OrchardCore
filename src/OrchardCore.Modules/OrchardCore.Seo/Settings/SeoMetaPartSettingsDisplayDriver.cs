@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.ViewModels;
@@ -10,18 +10,20 @@ namespace OrchardCore.SeoMeta.Settings
 {
     public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<SeoMetaPartSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
+                {
+                    var settings = contentTypePartDefinition.GetSettings<SeoMetaPartSettings>();
 
-                model.DisplayKeywords = settings.DisplayKeywords;
-                model.DisplayCustomMetaTags = settings.DisplayCustomMetaTags;
-                model.DisplayOpenGraph = settings.DisplayOpenGraph;
-                model.DisplayTwitter = settings.DisplayTwitter;
-                model.DisplayGoogleSchema = settings.DisplayGoogleSchema;
-            }).Location("Content");
+                    model.DisplayKeywords = settings.DisplayKeywords;
+                    model.DisplayCustomMetaTags = settings.DisplayCustomMetaTags;
+                    model.DisplayOpenGraph = settings.DisplayOpenGraph;
+                    model.DisplayTwitter = settings.DisplayTwitter;
+                    model.DisplayGoogleSchema = settings.DisplayGoogleSchema;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -44,7 +46,7 @@ namespace OrchardCore.SeoMeta.Settings
                 DisplayGoogleSchema = model.DisplayGoogleSchema
             });
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context);
         }
     }
 }

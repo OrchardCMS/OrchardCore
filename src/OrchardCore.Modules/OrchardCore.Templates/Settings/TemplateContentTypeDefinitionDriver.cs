@@ -1,6 +1,8 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
 
@@ -15,29 +17,31 @@ namespace OrchardCore.Templates.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
-            {
-                if (!contentTypeDefinition.TryGetStereotype(out var stereotype))
+            return Task.FromResult<IDisplayResult>(
+                Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
                 {
-                    stereotype = "Content";
-                }
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                    if (!contentTypeDefinition.TryGetStereotype(out var stereotype))
                     {
-                        Key = $"{stereotype}__{contentTypeDefinition.Name}",
-                        Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName]
-                    });
+                        stereotype = "Content";
+                    }
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
-                        Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
-                    });
-            }).Location("Shortcuts");
+                    model.ContentSettingsEntries.Add(
+                        new ContentSettingsEntry
+                        {
+                            Key = $"{stereotype}__{contentTypeDefinition.Name}",
+                            Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName]
+                        });
+
+                    model.ContentSettingsEntries.Add(
+                        new ContentSettingsEntry
+                        {
+                            Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
+                            Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
+                        });
+                }).Location("Shortcuts")
+            );
         }
     }
 }

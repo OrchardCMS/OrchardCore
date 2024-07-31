@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,18 +7,20 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 {
     public class AzureADDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureADDeploymentStep>
     {
-        public override IDisplayResult Display(AzureADDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AzureADDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AzureADDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("AzureADDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AzureADDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(AzureADDeploymentStep step, BuildEditorContext context)
         {
-            return View("AzureADDeploymentStep_Edit", step).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                View("AzureADDeploymentStep_Edit", step).Location("Content")
+            );
         }
     }
 }

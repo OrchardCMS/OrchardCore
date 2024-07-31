@@ -2,24 +2,27 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
         {
-            return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
-            {
-                var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
+                {
+                    var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
 
-                model.Attachable = settings.Attachable;
-                model.Reusable = settings.Reusable;
-                model.Description = settings.Description;
-                model.DisplayName = settings.DisplayName;
-                model.ContentPartDefinition = contentPartDefinition;
-            }).Location("Content");
+                    model.Attachable = settings.Attachable;
+                    model.Reusable = settings.Reusable;
+                    model.Description = settings.Description;
+                    model.DisplayName = settings.DisplayName;
+                    model.ContentPartDefinition = contentPartDefinition;
+                }).Location("Content")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)
@@ -33,7 +36,7 @@ namespace OrchardCore.ContentTypes.Editors
             context.Builder.WithDescription(model.Description);
             context.Builder.WithDisplayName(model.DisplayName);
 
-            return Edit(contentPartDefinition);
+            return await EditAsync(contentPartDefinition, context);
         }
     }
 }

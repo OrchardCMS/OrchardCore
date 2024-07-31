@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
@@ -12,6 +13,7 @@ namespace OrchardCore.Contents.Settings
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
@@ -22,17 +24,19 @@ namespace OrchardCore.Contents.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
-            {
-                var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
+            return Task.FromResult<IDisplayResult>(
+                Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
+                {
+                    var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
-                model.IncludeFullTextTemplate = settings.IncludeFullTextTemplate;
-                model.FullTextTemplate = settings.FullTextTemplate;
-                model.IncludeDisplayText = settings.IncludeDisplayText;
-                model.IncludeBodyAspect = settings.IncludeBodyAspect;
-            }).Location("Content:6");
+                    model.IncludeFullTextTemplate = settings.IncludeFullTextTemplate;
+                    model.FullTextTemplate = settings.FullTextTemplate;
+                    model.IncludeDisplayText = settings.IncludeDisplayText;
+                    model.IncludeBodyAspect = settings.IncludeBodyAspect;
+                }).Location("Content:6")
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -63,7 +67,7 @@ namespace OrchardCore.Contents.Settings
                 });
             }
 
-            return Edit(contentTypeDefinition);
+            return await EditAsync(contentTypeDefinition, context);
         }
     }
 }

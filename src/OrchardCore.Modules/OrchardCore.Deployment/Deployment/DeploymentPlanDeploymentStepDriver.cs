@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Deployment
@@ -16,30 +15,32 @@ namespace OrchardCore.Deployment.Deployment
             _deploymentPlanService = deploymentPlanService;
         }
 
-        public override IDisplayResult Display(DeploymentPlanDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(DeploymentPlanDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("DeploymentPlanDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("DeploymentPlanDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(DeploymentPlanDeploymentStep step)
+        public override Task<IDisplayResult> EditAsync(DeploymentPlanDeploymentStep step, BuildEditorContext context)
         {
-            return Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.DeploymentPlanNames = step.DeploymentPlanNames;
-                model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
-            }).Location("Content");
+            return Task.FromResult<IDisplayResult>(
+                Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
+                {
+                    model.IncludeAll = step.IncludeAll;
+                    model.DeploymentPlanNames = step.DeploymentPlanNames;
+                    model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
+                }).Location("Content")
+            );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)
         {
             step.DeploymentPlanNames = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.DeploymentPlanNames,
                                               x => x.IncludeAll);
@@ -50,7 +51,7 @@ namespace OrchardCore.Deployment.Deployment
                 step.DeploymentPlanNames = [];
             }
 
-            return Edit(step);
+            return await EditAsync(step, context);
         }
     }
 }
