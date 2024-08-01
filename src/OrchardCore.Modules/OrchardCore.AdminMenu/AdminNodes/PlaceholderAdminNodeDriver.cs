@@ -25,32 +25,30 @@ namespace OrchardCore.AdminMenu.AdminNodes
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(PlaceholderAdminNode treeNode, BuildEditorContext context)
+        public override IDisplayResult Edit(PlaceholderAdminNode treeNode, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", async model =>
-                {
-                    model.LinkText = treeNode.LinkText;
-                    model.IconClass = treeNode.IconClass;
+            return Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", async model =>
+            {
+                model.LinkText = treeNode.LinkText;
+                model.IconClass = treeNode.IconClass;
 
-                    var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
 
-                    var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
+                var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
 
-                    model.SelectedItems = selectedPermissions
-                        .Select(p => new PermissionViewModel
-                        {
-                            Name = p.Name,
-                            DisplayText = p.Description
-                        }).ToList();
-                    model.AllItems = permissions
-                        .Select(p => new PermissionViewModel
-                        {
-                            Name = p.Name,
-                            DisplayText = p.Description
-                        }).ToList();
-                }).Location("Content")
-            );
+                model.SelectedItems = selectedPermissions
+                    .Select(p => new PermissionViewModel
+                    {
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
+                model.AllItems = permissions
+                    .Select(p => new PermissionViewModel
+                    {
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, UpdateEditorContext context)
@@ -70,7 +68,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 .Where(p => selectedPermissions.Contains(p.Name))
                 .Select(p => p.Name).ToArray();
 
-            return await EditAsync(treeNode, context);
+            return Edit(treeNode, context);
         }
     }
 }

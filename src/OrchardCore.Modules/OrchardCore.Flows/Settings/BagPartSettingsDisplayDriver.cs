@@ -68,7 +68,7 @@ namespace OrchardCore.Flows.Settings
                     break;
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
 
         private void SetStereoTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)

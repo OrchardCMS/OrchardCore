@@ -30,14 +30,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentItemDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentItemDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ContentItemId = step.ContentItemId;
-                }).Location("Content")
-            );
+            return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
+            {
+                model.ContentItemId = step.ContentItemId;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItemDeploymentStep step, UpdateEditorContext context)
@@ -56,7 +54,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 step.ContentItemId = model.ContentItemId;
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

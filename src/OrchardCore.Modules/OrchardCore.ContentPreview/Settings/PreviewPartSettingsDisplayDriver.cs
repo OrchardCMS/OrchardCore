@@ -27,12 +27,12 @@ namespace OrchardCore.ContentPreview.Settings
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
+            {
+                var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
 
-                    model.Pattern = settings.Pattern;
-                    model.PreviewPartSettings = settings;
-                }).Location("Content");
+                model.Pattern = settings.Pattern;
+                model.PreviewPartSettings = settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -40,8 +40,7 @@ namespace OrchardCore.ContentPreview.Settings
             var model = new PreviewPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Pattern
-                );
+                m => m.Pattern);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -55,7 +54,7 @@ namespace OrchardCore.ContentPreview.Settings
                 });
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

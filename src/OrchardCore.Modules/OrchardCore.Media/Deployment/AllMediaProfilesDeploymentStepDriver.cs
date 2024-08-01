@@ -16,11 +16,9 @@ namespace OrchardCore.Media.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllMediaProfilesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllMediaProfilesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllMediaProfilesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllMediaProfilesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

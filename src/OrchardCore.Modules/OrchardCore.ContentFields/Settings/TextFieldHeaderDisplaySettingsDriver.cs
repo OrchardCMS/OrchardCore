@@ -10,16 +10,14 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class TextFieldHeaderDisplaySettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<HeaderSettingsViewModel>("TextFieldHeaderDisplaySettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.GetSettings<TextFieldHeaderDisplaySettings>();
+            return Initialize<HeaderSettingsViewModel>("TextFieldHeaderDisplaySettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<TextFieldHeaderDisplaySettings>();
 
-                    model.Level = settings.Level;
-                }).Location("DisplayMode")
-            );
+                model.Level = settings.Level;
+            }).Location("DisplayMode");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -36,7 +34,7 @@ namespace OrchardCore.ContentFields.Settings
                 context.Builder.WithSettings(settings);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

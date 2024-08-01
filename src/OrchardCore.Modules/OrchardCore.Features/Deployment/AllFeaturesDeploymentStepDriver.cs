@@ -17,21 +17,19 @@ namespace OrchardCore.Features.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllFeaturesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllFeaturesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
-                {
-                    model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
-                }).Location("Content")
-            );
+            return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
+            {
+                model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, UpdateEditorContext context)
         {
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeatures);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

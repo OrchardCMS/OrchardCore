@@ -16,11 +16,9 @@ namespace OrchardCore.Queries.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllQueriesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllQueriesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllQueriesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllQueriesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

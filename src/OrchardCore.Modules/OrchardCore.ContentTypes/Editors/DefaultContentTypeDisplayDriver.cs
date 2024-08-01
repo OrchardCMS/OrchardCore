@@ -38,7 +38,7 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Updater.ModelState.AddModelError("DisplayName", S["The Content Type name can't be empty."]);
             }
 
-            return await EditAsync(contentTypeDefinition, context);
+            return Edit(contentTypeDefinition, context);
         }
     }
 }

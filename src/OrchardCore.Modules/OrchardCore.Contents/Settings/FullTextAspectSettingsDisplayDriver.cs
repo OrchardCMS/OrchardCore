@@ -27,14 +27,14 @@ namespace OrchardCore.Contents.Settings
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
             return Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
-                {
-                    var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
+            {
+                var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
-                    model.IncludeFullTextTemplate = settings.IncludeFullTextTemplate;
-                    model.FullTextTemplate = settings.FullTextTemplate;
-                    model.IncludeDisplayText = settings.IncludeDisplayText;
-                    model.IncludeBodyAspect = settings.IncludeBodyAspect;
-                }).Location("Content:6");
+                model.IncludeFullTextTemplate = settings.IncludeFullTextTemplate;
+                model.FullTextTemplate = settings.FullTextTemplate;
+                model.IncludeDisplayText = settings.IncludeDisplayText;
+                model.IncludeBodyAspect = settings.IncludeBodyAspect;
+            }).Location("Content:6");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -65,7 +65,7 @@ namespace OrchardCore.Contents.Settings
                 });
             }
 
-            return await EditAsync(contentTypeDefinition, context);
+            return Edit(contentTypeDefinition, context);
         }
     }
 }

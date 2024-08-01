@@ -21,18 +21,15 @@ namespace OrchardCore.Html.Settings
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
+            return Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
 
-                    model.Options = settings.Options;
-                    model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-                })
-                .Location("Editor")
-            );
+                model.Options = settings.Options;
+                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -70,7 +67,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

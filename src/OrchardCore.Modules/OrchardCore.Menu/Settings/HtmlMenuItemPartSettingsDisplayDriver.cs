@@ -31,7 +31,7 @@ namespace OrchardCore.Menu.Settings
 
             context.Builder.WithSettings(settings);
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

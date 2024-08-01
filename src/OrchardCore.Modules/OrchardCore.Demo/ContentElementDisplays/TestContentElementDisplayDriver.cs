@@ -49,18 +49,16 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return Task.FromResult<IDisplayResult>(
-                Copy("TestContentPartA_Edit", testContentPart).Location("Content")
-            );
+            return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)

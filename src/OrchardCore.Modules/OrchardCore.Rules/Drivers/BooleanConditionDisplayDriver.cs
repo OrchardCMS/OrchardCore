@@ -20,10 +20,10 @@ namespace OrchardCore.Rules.Drivers
         public override IDisplayResult Edit(BooleanCondition condition, BuildEditorContext context)
         {
             return Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", m =>
-                {
-                    m.Value = condition.Value;
-                    m.Condition = condition;
-                }).Location("Content");
+            {
+                m.Value = condition.Value;
+                m.Condition = condition;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BooleanCondition condition, UpdateEditorContext context)

@@ -20,10 +20,10 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             }
 
             return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
-                {
-                    var settings = model.GetSettings<AuditTrailPartSettings>();
-                    viewModel.ShowCommentInput = settings.ShowCommentInput;
-                }).Location("Content");
+            {
+                var settings = model.GetSettings<AuditTrailPartSettings>();
+                viewModel.ShowCommentInput = settings.ShowCommentInput;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                 ShowCommentInput = viewModel.ShowCommentInput
             });
 
-            return await EditAsync(model, context);
+            return Edit(model, context);
         }
     }
 }

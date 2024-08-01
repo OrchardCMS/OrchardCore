@@ -16,22 +16,20 @@ namespace OrchardCore.Deployment.Steps
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(CustomFileDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(CustomFileDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
-                {
-                    model.FileContent = step.FileContent;
-                    model.FileName = step.FileName;
-                }).Location("Content")
-            );
+            return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
+            {
+                model.FileContent = step.FileContent;
+                model.FileName = step.FileName;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)
         {
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.FileName, x => x.FileContent);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

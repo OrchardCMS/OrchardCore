@@ -10,17 +10,15 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class DateTimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<DateTimeField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
+            return Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
 
-                    model.Hint = settings.Hint;
-                    model.Required = settings.Required;
-                }).Location("Content")
-            );
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -31,7 +29,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

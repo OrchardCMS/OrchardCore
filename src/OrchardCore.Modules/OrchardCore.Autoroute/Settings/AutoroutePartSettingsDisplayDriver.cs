@@ -27,19 +27,19 @@ namespace OrchardCore.Autoroute.Settings
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
+            {
+                var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
 
-                    model.AllowCustomPath = settings.AllowCustomPath;
-                    model.AllowUpdatePath = settings.AllowUpdatePath;
-                    model.Pattern = settings.Pattern;
-                    model.ShowHomepageOption = settings.ShowHomepageOption;
-                    model.AllowDisabled = settings.AllowDisabled;
-                    model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
-                    model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
-                    model.AllowAbsolutePath = settings.AllowAbsolutePath;
-                    model.AutoroutePartSettings = settings;
-                }).Location("Content");
+                model.AllowCustomPath = settings.AllowCustomPath;
+                model.AllowUpdatePath = settings.AllowUpdatePath;
+                model.Pattern = settings.Pattern;
+                model.ShowHomepageOption = settings.ShowHomepageOption;
+                model.AllowDisabled = settings.AllowDisabled;
+                model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
+                model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
+                model.AllowAbsolutePath = settings.AllowAbsolutePath;
+                model.AutoroutePartSettings = settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -75,7 +75,7 @@ namespace OrchardCore.Autoroute.Settings
                 });
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

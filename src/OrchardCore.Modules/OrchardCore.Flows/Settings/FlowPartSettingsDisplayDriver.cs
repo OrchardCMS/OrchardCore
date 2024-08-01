@@ -46,7 +46,7 @@ namespace OrchardCore.Flows.Settings
                 ContainedContentTypes = model.ContainedContentTypes
             });
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

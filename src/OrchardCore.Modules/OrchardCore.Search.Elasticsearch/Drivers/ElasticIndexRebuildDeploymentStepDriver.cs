@@ -26,16 +26,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ElasticIndexRebuildDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ElasticIndexRebuildDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ElasticIndexRebuildDeploymentStepViewModel>("ElasticIndexRebuildDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.IndexNames = step.Indices;
-                    model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-                }).Location("Content")
-            );
+            return Initialize<ElasticIndexRebuildDeploymentStepViewModel>("ElasticIndexRebuildDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.IndexNames = step.Indices;
+                model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticIndexRebuildDeploymentStep rebuildIndexStep, UpdateEditorContext context)
@@ -49,7 +47,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 rebuildIndexStep.Indices = [];
             }
 
-            return await EditAsync(rebuildIndexStep, context);
+            return Edit(rebuildIndexStep, context);
         }
     }
 }

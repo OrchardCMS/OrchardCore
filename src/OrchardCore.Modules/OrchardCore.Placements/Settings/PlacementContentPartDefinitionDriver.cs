@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -18,45 +17,43 @@ namespace OrchardCore.Placements.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
         {
             var displayName = contentPartDefinition.DisplayName();
 
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
-                {
-                    model.ContentSettingsEntries.Add(
-                        new ContentSettingsEntry
-                        {
-                            ShapeType = contentPartDefinition.Name,
-                            Description = S["Placement for a {0} part", displayName]
-                        });
+            return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
+            {
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = contentPartDefinition.Name,
+                        Description = S["Placement for a {0} part", displayName]
+                    });
 
-                    model.ContentSettingsEntries.Add(
-                        new ContentSettingsEntry
-                        {
-                            ShapeType = contentPartDefinition.Name,
-                            DisplayType = "Detail",
-                            Description = S["Placement for a {0} part in detail views", displayName]
-                        });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = contentPartDefinition.Name,
+                        DisplayType = "Detail",
+                        Description = S["Placement for a {0} part in detail views", displayName]
+                    });
 
-                    model.ContentSettingsEntries.Add(
-                        new ContentSettingsEntry
-                        {
-                            ShapeType = contentPartDefinition.Name,
-                            DisplayType = "Summary",
-                            Description = S["Placement for a {0} part in summary views", displayName]
-                        });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = contentPartDefinition.Name,
+                        DisplayType = "Summary",
+                        Description = S["Placement for a {0} part in summary views", displayName]
+                    });
 
-                    model.ContentSettingsEntries.Add(
-                        new ContentSettingsEntry
-                        {
-                            ShapeType = $"{contentPartDefinition.Name}_Edit",
-                            Description = S["Placement in admin editor for a {0} part", displayName]
-                        });
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = $"{contentPartDefinition.Name}_Edit",
+                        Description = S["Placement in admin editor for a {0} part", displayName]
+                    });
 
-                }).Location("Shortcuts")
-            );
+            }).Location("Shortcuts");
         }
     }
 }

@@ -21,20 +21,18 @@ namespace OrchardCore.ContentFields.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
+            return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
+                if (string.IsNullOrWhiteSpace(settings.Options))
                 {
-                    var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                    if (string.IsNullOrWhiteSpace(settings.Options))
-                    {
-                        settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                    }
+                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                }
 
-                    model.Options = settings.Options;
-                }).Location("Editor")
-            );
+                model.Options = settings.Options;
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -59,7 +57,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

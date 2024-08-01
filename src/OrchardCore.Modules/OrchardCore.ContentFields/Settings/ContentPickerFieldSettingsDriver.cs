@@ -26,21 +26,19 @@ namespace OrchardCore.ContentFields.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-                    model.Hint = settings.Hint;
-                    model.Required = settings.Required;
-                    model.Multiple = settings.Multiple;
-                    model.Source = GetSource(settings);
-                    model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                    model.TitlePattern = settings.TitlePattern;
-                    model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
-                }).Location("Content")
-            );
+            return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.Source = GetSource(settings);
+                model.DisplayedContentTypes = settings.DisplayedContentTypes;
+                model.TitlePattern = settings.TitlePattern;
+                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -75,7 +73,7 @@ namespace OrchardCore.ContentFields.Settings
                 context.Builder.WithSettings(settings);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
 
         private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
@@ -83,6 +81,7 @@ namespace OrchardCore.ContentFields.Settings
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {
                 context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+
                 return false;
             }
 

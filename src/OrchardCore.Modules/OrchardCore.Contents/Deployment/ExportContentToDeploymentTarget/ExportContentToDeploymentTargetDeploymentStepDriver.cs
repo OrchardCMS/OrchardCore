@@ -16,11 +16,9 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ExportContentToDeploymentTargetDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ExportContentToDeploymentTargetDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("ExportContentToDeploymentTargetDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

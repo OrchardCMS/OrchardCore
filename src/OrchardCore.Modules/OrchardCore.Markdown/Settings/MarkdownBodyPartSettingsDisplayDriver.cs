@@ -31,7 +31,7 @@ namespace OrchardCore.Markdown.Settings
 
             context.Builder.WithSettings(settings);
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

@@ -15,24 +15,21 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public ContentPickerFieldElasticEditorSettingsDriver(
-            ElasticIndexSettingsService elasticIndexSettingsService)
+        public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+            return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
 
-                    model.Index = settings.Index;
+                model.Index = settings.Index;
 
-                    model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-                }).Location("Editor")
-            );
+                model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -46,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 context.Builder.WithSettings(model);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

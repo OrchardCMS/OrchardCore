@@ -16,22 +16,20 @@ namespace OrchardCore.Deployment.Steps
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(RecipeFileDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(RecipeFileDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
-                {
-                    model.RecipeName = step.RecipeName;
-                    model.DisplayName = step.DisplayName;
-                    model.Description = step.Description;
-                    model.Author = step.Author;
-                    model.WebSite = step.WebSite;
-                    model.Version = step.Version;
-                    model.IsSetupRecipe = step.IsSetupRecipe;
-                    model.Categories = step.Categories;
-                    model.Tags = step.Tags;
-                }).Location("Content")
-            );
+            return Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
+            {
+                model.RecipeName = step.RecipeName;
+                model.DisplayName = step.DisplayName;
+                model.Description = step.Description;
+                model.Author = step.Author;
+                model.WebSite = step.WebSite;
+                model.Version = step.Version;
+                model.IsSetupRecipe = step.IsSetupRecipe;
+                model.Categories = step.Categories;
+                model.Tags = step.Tags;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, UpdateEditorContext context)
@@ -47,7 +45,7 @@ namespace OrchardCore.Deployment.Steps
                 x => x.Categories,
                 x => x.Tags);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

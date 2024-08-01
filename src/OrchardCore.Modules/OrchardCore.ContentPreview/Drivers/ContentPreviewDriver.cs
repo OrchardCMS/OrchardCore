@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -9,11 +8,10 @@ namespace OrchardCore.ContentPreview.Drivers
 {
     public class ContentPreviewDriver : ContentDisplayDriver
     {
-        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Shape("ContentPreview_Button", new ContentItemViewModel(contentItem)).Location("Actions:after")
-            );
+            return Shape("ContentPreview_Button", new ContentItemViewModel(contentItem))
+                .Location("Actions:after");
         }
     }
 }

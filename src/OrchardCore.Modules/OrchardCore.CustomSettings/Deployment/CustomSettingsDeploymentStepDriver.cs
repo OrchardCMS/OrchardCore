@@ -26,16 +26,14 @@ namespace OrchardCore.CustomSettings.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(CustomSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(CustomSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.SettingsTypeNames = step.SettingsTypeNames;
-                    model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-                }).Location("Content")
-            );
+            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.SettingsTypeNames = step.SettingsTypeNames;
+                model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, UpdateEditorContext context)
@@ -47,13 +45,13 @@ namespace OrchardCore.CustomSettings.Deployment
                                               x => x.SettingsTypeNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.SettingsTypeNames = [];
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

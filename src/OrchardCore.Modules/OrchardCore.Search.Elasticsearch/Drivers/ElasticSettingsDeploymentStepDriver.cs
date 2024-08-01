@@ -17,11 +17,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ElasticSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ElasticSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("ElasticSettingsDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("ElasticSettingsDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

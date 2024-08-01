@@ -26,13 +26,13 @@ namespace OrchardCore.Alias.Settings
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
+            {
+                var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 
-                    model.Pattern = settings.Pattern;
-                    model.Options = settings.Options;
-                    model.AliasPartSettings = settings;
-                }).Location("Content");
+                model.Pattern = settings.Pattern;
+                model.Options = settings.Options;
+                model.AliasPartSettings = settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -56,7 +56,7 @@ namespace OrchardCore.Alias.Settings
                 });
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

@@ -16,11 +16,9 @@ namespace OrchardCore.Facebook.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(FacebookLoginDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(FacebookLoginDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("FacebookLoginDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("FacebookLoginDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

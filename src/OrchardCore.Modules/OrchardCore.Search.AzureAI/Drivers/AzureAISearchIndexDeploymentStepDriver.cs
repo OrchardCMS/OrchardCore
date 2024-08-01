@@ -24,15 +24,13 @@ public class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
         );
 
 
-    public override Task<IDisplayResult> EditAsync(AzureAISearchIndexDeploymentStep step, BuildEditorContext context)
-        => Task.FromResult<IDisplayResult>(
-            Initialize<AzureAISearchIndexDeploymentStepViewModel>("AzureAISearchIndexDeploymentStep_Fields_Edit", async model =>
+    public override IDisplayResult Edit(AzureAISearchIndexDeploymentStep step, BuildEditorContext context)
+        => Initialize<AzureAISearchIndexDeploymentStepViewModel>("AzureAISearchIndexDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
                 model.IndexNames = step.IndexNames;
                 model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content")
-        );
+            }).Location("Content");
 
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexDeploymentStep step, UpdateEditorContext context)
@@ -40,15 +38,15 @@ public class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
         step.IndexNames = [];
 
         await context.Updater.TryUpdateModelAsync(step, Prefix,
-            p => p.IncludeAll, p =>
-            p.IndexNames);
+            p => p.IncludeAll,
+            p => p.IndexNames);
 
         if (step.IncludeAll)
         {
-            // clear index names if the user select include all.
+            // Clear index names if the user select include all.
             step.IndexNames = [];
         }
 
-        return await EditAsync(step, context);
+        return Edit(step, context);
     }
 }

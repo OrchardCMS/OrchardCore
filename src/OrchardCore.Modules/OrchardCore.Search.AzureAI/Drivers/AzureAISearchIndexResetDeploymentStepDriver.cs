@@ -20,15 +20,13 @@ public class AzureAISearchIndexResetDeploymentStepDriver(AzureAISearchIndexSetti
             View("AzureAISearchIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 
-    public override Task<IDisplayResult> EditAsync(AzureAISearchIndexResetDeploymentStep step, BuildEditorContext context)
-        => Task.FromResult<IDisplayResult>(
-            Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.Indices;
-                model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content")
-        );
+    public override IDisplayResult Edit(AzureAISearchIndexResetDeploymentStep step, BuildEditorContext context)
+        => Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
+        {
+            model.IncludeAll = step.IncludeAll;
+            model.IndexNames = step.Indices;
+            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+        }).Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexResetDeploymentStep step, UpdateEditorContext context)
     {
@@ -44,6 +42,6 @@ public class AzureAISearchIndexResetDeploymentStepDriver(AzureAISearchIndexSetti
             step.Indices = [];
         }
 
-        return await EditAsync(step, context);
+        return Edit(step, context);
     }
 }

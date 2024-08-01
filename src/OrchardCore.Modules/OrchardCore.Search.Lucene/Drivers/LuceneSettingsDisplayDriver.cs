@@ -34,13 +34,13 @@ namespace OrchardCore.Search.Lucene.Drivers
             }
 
             return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
-                {
-                    model.SearchIndex = settings.SearchIndex;
-                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
-                    model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
-                    model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
-                }).Location("Content:2#Lucene;15")
-                .OnGroup(SearchConstants.SearchSettingsGroupId);
+            {
+                model.SearchIndex = settings.SearchIndex;
+                model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
+                model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
+                model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
+            }).Location("Content:2#Lucene;15")
+            .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, UpdateEditorContext context)

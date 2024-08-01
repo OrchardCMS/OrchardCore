@@ -18,16 +18,14 @@ namespace OrchardCore.ContentTypes.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentDefinitionDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentDefinitionDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentDefinitionStepViewModel>("ContentDefinitionDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ContentParts = step.ContentParts;
-                    model.ContentTypes = step.ContentTypes;
-                    model.IncludeAll = step.IncludeAll;
-                }).Location("Content")
-            );
+            return Initialize<ContentDefinitionStepViewModel>("ContentDefinitionDeploymentStep_Fields_Edit", model =>
+            {
+                model.ContentParts = step.ContentParts;
+                model.ContentTypes = step.ContentTypes;
+                model.IncludeAll = step.IncludeAll;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentDefinitionDeploymentStep step, UpdateEditorContext context)
@@ -54,7 +52,7 @@ namespace OrchardCore.ContentTypes.Deployment
                 step.ContentParts = step.ContentParts.Distinct().ToArray();
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

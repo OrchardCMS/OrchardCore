@@ -37,8 +37,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
-        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
-        )
+        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;

@@ -118,6 +118,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             }
         }
 
-        return await EditAsync(section, context);
+        return Edit(section);
     }
 }

@@ -16,11 +16,9 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AzureADDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AzureADDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AzureADDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AzureADDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

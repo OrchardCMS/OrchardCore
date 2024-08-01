@@ -10,24 +10,22 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+            return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
 
-                    model.Hint = settings.Hint;
-                    model.HintLinkText = settings.HintLinkText;
-                    model.Required = settings.Required;
-                    model.LinkTextMode = settings.LinkTextMode;
-                    model.UrlPlaceholder = settings.UrlPlaceholder;
-                    model.TextPlaceholder = settings.TextPlaceholder;
-                    model.DefaultUrl = settings.DefaultUrl;
-                    model.DefaultText = settings.DefaultText;
-                    model.DefaultTarget = settings.DefaultTarget;
-                }).Location("Content")
-            );
+                model.Hint = settings.Hint;
+                model.HintLinkText = settings.HintLinkText;
+                model.Required = settings.Required;
+                model.LinkTextMode = settings.LinkTextMode;
+                model.UrlPlaceholder = settings.UrlPlaceholder;
+                model.TextPlaceholder = settings.TextPlaceholder;
+                model.DefaultUrl = settings.DefaultUrl;
+                model.DefaultText = settings.DefaultText;
+                model.DefaultTarget = settings.DefaultTarget;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

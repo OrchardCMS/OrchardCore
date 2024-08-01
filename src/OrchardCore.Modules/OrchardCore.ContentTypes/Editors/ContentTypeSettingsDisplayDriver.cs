@@ -32,17 +32,17 @@ namespace OrchardCore.ContentTypes.Editors
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
             return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
-                {
-                    var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-                    model.Creatable = settings.Creatable;
-                    model.Listable = settings.Listable;
-                    model.Draftable = settings.Draftable;
-                    model.Versionable = settings.Versionable;
-                    model.Securable = settings.Securable;
-                    model.Stereotype = settings.Stereotype;
-                    model.Description = settings.Description;
-                    model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
-                }).Location("Content:5");
+            {
+                var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+                model.Creatable = settings.Creatable;
+                model.Listable = settings.Listable;
+                model.Draftable = settings.Draftable;
+                model.Versionable = settings.Versionable;
+                model.Securable = settings.Securable;
+                model.Stereotype = settings.Stereotype;
+                model.Description = settings.Description;
+                model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
+            }).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -64,7 +64,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             Apply(context, model, options);
 
-            return await EditAsync(contentTypeDefinition, context);
+            return Edit(contentTypeDefinition, context);
         }
 
         private static void Apply(UpdateTypeEditorContext context, ContentTypeSettingsViewModel model, ContentTypeDefinitionDriverOptions options)

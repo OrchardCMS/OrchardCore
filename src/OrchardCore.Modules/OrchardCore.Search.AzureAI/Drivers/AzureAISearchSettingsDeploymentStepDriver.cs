@@ -14,8 +14,6 @@ public class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<Deploymen
             View("AzureAISearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 
-    public override Task<IDisplayResult> EditAsync(AzureAISearchSettingsDeploymentStep step, BuildEditorContext context)
-        => Task.FromResult<IDisplayResult>(
-            View("AzureAISearchSettingsDeploymentStep_Fields_Edit", step).Location("Content")
-        );
+    public override IDisplayResult Edit(AzureAISearchSettingsDeploymentStep step, BuildEditorContext context)
+        => View("AzureAISearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
 }

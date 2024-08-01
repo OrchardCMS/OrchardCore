@@ -10,17 +10,15 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<HtmlSettingsViewModel>("HtmlFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.GetSettings<HtmlFieldSettings>();
+            return Initialize<HtmlSettingsViewModel>("HtmlFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-                    model.SanitizeHtml = settings.SanitizeHtml;
-                    model.Hint = settings.Hint;
-                }).Location("Content:20")
-            );
+                model.SanitizeHtml = settings.SanitizeHtml;
+                model.Hint = settings.Hint;
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -35,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(settings);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

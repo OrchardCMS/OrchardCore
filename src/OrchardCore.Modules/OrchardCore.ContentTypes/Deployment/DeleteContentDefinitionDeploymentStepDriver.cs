@@ -20,15 +20,13 @@ namespace OrchardCore.ContentTypes.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(DeleteContentDefinitionDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
+            return Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
                 {
                     model.ContentParts = string.Join(", ", step.ContentParts);
                     model.ContentTypes = string.Join(", ", step.ContentTypes);
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(DeleteContentDefinitionDeploymentStep step, UpdateEditorContext context)
@@ -40,7 +38,7 @@ namespace OrchardCore.ContentTypes.Deployment
             step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
             step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

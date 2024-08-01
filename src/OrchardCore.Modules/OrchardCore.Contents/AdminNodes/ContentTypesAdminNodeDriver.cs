@@ -37,10 +37,9 @@ namespace OrchardCore.Contents.AdminNodes
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypesAdminNode treeNode, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypesAdminNode treeNode, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
+            return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
                 {
                     var listable = await GetListableContentTypeDefinitionsAsync();
 
@@ -52,8 +51,7 @@ namespace OrchardCore.Contents.AdminNodes
                         IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
                         IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty
                     }).ToArray();
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, UpdateEditorContext context)
@@ -77,7 +75,7 @@ namespace OrchardCore.Contents.AdminNodes
                 })
                 .ToArray();
 
-            return await EditAsync(treeNode, context);
+            return Edit(treeNode, context);
         }
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()

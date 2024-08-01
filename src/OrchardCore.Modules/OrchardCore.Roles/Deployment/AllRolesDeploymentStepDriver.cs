@@ -16,11 +16,9 @@ namespace OrchardCore.Roles.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllRolesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllRolesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllRolesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllRolesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

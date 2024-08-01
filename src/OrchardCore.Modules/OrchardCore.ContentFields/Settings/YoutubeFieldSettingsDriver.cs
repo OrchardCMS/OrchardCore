@@ -10,17 +10,15 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+            return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
 
-                    model.Height = model.Height != default ? model.Height : 315;
-                    model.Width = model.Width != default ? model.Width : 560;
-                }).Location("Content")
-            );
+                model.Height = model.Height != default ? model.Height : 315;
+                model.Width = model.Width != default ? model.Width : 560;
+            }).Location("Content");
         }
 
         public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -30,7 +28,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

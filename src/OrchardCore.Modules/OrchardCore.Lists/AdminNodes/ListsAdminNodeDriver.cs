@@ -28,18 +28,16 @@ namespace OrchardCore.Lists.AdminNodes
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(ListsAdminNode treeNode, BuildEditorContext context)
+        public override IDisplayResult Edit(ListsAdminNode treeNode, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
-                {
-                    model.ContentType = treeNode.ContentType;
-                    model.ContentTypes = await GetContentTypesSelectListAsync();
-                    model.IconForContentItems = treeNode.IconForContentItems;
-                    model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
-                    model.IconForParentLink = treeNode.IconForParentLink;
-                }).Location("Content")
-            );
+            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
+            {
+                model.ContentType = treeNode.ContentType;
+                model.ContentTypes = await GetContentTypesSelectListAsync();
+                model.IconForContentItems = treeNode.IconForContentItems;
+                model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
+                model.IconForParentLink = treeNode.IconForParentLink;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ListsAdminNode treeNode, UpdateEditorContext context)
@@ -47,16 +45,16 @@ namespace OrchardCore.Lists.AdminNodes
             var model = new ListsAdminNodeViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
-                x => x.ContentType, x => x.IconForContentItems,
-                x => x.AddContentTypeAsParent,
-                x => x.IconForParentLink);
+                m => m.ContentType, x => x.IconForContentItems,
+                m => m.AddContentTypeAsParent,
+                m => m.IconForParentLink);
 
             treeNode.ContentType = model.ContentType;
             treeNode.IconForContentItems = model.IconForContentItems;
             treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
             treeNode.IconForParentLink = model.IconForParentLink;
 
-            return await EditAsync(treeNode, context);
+            return Edit(treeNode, context);
         }
 
         private async Task<List<SelectListItem>> GetContentTypesSelectListAsync()

@@ -16,11 +16,9 @@ namespace OrchardCore.OpenId.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(OpenIdServerDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(OpenIdServerDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("OpenIdServerDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("OpenIdServerDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

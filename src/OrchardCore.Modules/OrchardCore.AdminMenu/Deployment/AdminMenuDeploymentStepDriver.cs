@@ -16,11 +16,9 @@ namespace OrchardCore.AdminMenu.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AdminMenuDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AdminMenuDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AdminMenuDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("AdminMenuDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

@@ -13,12 +13,11 @@ namespace OrchardCore.Html.Settings
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+            {
+                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-                    model.SanitizeHtml = settings.SanitizeHtml;
-                })
-                .Location("Content:20");
+                model.SanitizeHtml = settings.SanitizeHtml;
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -32,7 +31,7 @@ namespace OrchardCore.Html.Settings
 
             context.Builder.WithSettings(settings);
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

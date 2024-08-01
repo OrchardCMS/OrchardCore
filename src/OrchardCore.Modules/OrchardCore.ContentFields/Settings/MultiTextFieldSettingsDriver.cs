@@ -19,18 +19,16 @@ namespace OrchardCore.ContentFields.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
+            return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
-                    model.Required = settings.Required;
-                    model.Hint = settings.Hint;
-                    model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
-                }).Location("Content")
-            );
+                model.Required = settings.Required;
+                model.Hint = settings.Hint;
+                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -54,7 +52,7 @@ namespace OrchardCore.ContentFields.Settings
                 context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

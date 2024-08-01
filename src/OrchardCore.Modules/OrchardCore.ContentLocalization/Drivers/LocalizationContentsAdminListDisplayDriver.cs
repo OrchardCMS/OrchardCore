@@ -31,9 +31,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         }
 
         public override IDisplayResult Display(ContentOptionsViewModel model, BuildDisplayContext context)
-        {
-            return View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1");
-        }
+            => View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1");
 
         public override IDisplayResult Edit(ContentOptionsViewModel model, BuildEditorContext context)
         {
@@ -73,7 +71,7 @@ namespace OrchardCore.ContentLocalization.Drivers
 
             model.FilterResult.MapFrom(viewModel);
 
-            return await EditAsync(model, context);
+            return Edit(model, context);
         }
     }
 }

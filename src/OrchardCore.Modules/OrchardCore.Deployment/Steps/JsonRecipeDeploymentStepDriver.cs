@@ -46,15 +46,13 @@ namespace OrchardCore.Deployment.Steps
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(JsonRecipeDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(JsonRecipeDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
+            return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
                 {
                     model.Json = step.Json;
                     model.Schema = Schema;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)
@@ -81,7 +79,7 @@ namespace OrchardCore.Deployment.Steps
 
             step.Json = model.Json;
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

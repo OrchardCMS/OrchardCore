@@ -27,17 +27,15 @@ namespace OrchardCore.Sitemaps.Drivers
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(CustomPathSitemapSource sitemapSource, BuildEditorContext context)
+        public override IDisplayResult Edit(CustomPathSitemapSource sitemapSource, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
-                {
-                    model.Path = sitemapSource.Path;
-                    model.Priority = sitemapSource.Priority;
-                    model.ChangeFrequency = sitemapSource.ChangeFrequency;
+            return Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
+            {
+                model.Path = sitemapSource.Path;
+                model.Priority = sitemapSource.Priority;
+                model.ChangeFrequency = sitemapSource.ChangeFrequency;
 
-                }).Location("Content")
-            );
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomPathSitemapSource sitemap, UpdateEditorContext context)
@@ -67,7 +65,7 @@ namespace OrchardCore.Sitemaps.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
             }
 
-            return await EditAsync(sitemap, context);
+            return Edit(sitemap, context);
         }
     }
 }

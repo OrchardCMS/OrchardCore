@@ -82,7 +82,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 Template = viewModel.Query,
             });
 
-            return await EditAsync(query, context);
+            return Edit(query, context);
         }
     }
 }

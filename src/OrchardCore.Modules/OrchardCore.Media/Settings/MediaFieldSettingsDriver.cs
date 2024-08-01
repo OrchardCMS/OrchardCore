@@ -19,6 +19,7 @@ namespace OrchardCore.Media.Settings
     {
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly MediaOptions _mediaOptions;
+
         protected readonly IStringLocalizer S;
 
         public MediaFieldSettingsDriver(
@@ -31,48 +32,45 @@ namespace OrchardCore.Media.Settings
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
+            return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.AllowMediaText = settings.AllowMediaText;
+                model.AllowAnchors = settings.AllowAnchors;
+                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
+
+                var items = new List<MediaTypeViewModel>();
+                foreach (var extension in _mediaOptions.AllowedFileExtensions)
                 {
-                    var settings = partFieldDefinition.GetSettings<MediaFieldSettings>();
-
-                    model.Hint = settings.Hint;
-                    model.Required = settings.Required;
-                    model.Multiple = settings.Multiple;
-                    model.AllowMediaText = settings.AllowMediaText;
-                    model.AllowAnchors = settings.AllowAnchors;
-                    model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
-
-                    var items = new List<MediaTypeViewModel>();
-                    foreach (var extension in _mediaOptions.AllowedFileExtensions)
+                    if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
                     {
-                        if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
+                        var item = new MediaTypeViewModel()
                         {
-                            var item = new MediaTypeViewModel()
-                            {
-                                Extension = extension,
-                                ContentType = contentType,
-                                IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
-                            };
+                            Extension = extension,
+                            ContentType = contentType,
+                            IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
+                        };
 
-                            var index = contentType.IndexOf('/');
+                        var index = contentType.IndexOf('/');
 
-                            if (index > -1)
-                            {
-                                item.Type = contentType[..index];
-                            }
-
-                            items.Add(item);
+                        if (index > -1)
+                        {
+                            item.Type = contentType[..index];
                         }
-                    }
-                    model.MediaTypes = items
-                    .OrderBy(vm => vm.ContentType)
-                    .ToArray();
 
-                }).Location("Content")
-            );
+                        items.Add(item);
+                    }
+                }
+                model.MediaTypes = items
+                .OrderBy(vm => vm.ContentType)
+                .ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -107,7 +105,7 @@ namespace OrchardCore.Media.Settings
                 context.Builder.WithSettings(settings);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

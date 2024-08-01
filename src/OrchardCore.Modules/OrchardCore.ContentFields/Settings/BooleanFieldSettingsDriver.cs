@@ -10,18 +10,16 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
     {
-        public override Task<IDisplayResult> DisplayAsync(ContentPartFieldDefinition partFieldDefinition, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentPartFieldDefinition partFieldDefinition, BuildDisplayContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
 
-                    model.Hint = settings.Hint;
-                    model.Label = settings.Label;
-                    model.DefaultValue = settings.DefaultValue;
-                }).Location("Content")
-            );
+                model.Hint = settings.Hint;
+                model.Label = settings.Label;
+                model.DefaultValue = settings.DefaultValue;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

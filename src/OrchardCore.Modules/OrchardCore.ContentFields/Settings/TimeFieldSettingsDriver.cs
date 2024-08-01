@@ -10,18 +10,16 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class TimeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TimeField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<TimeFieldSettings>("TimeFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<TimeFieldSettings>();
+            return Initialize<TimeFieldSettings>("TimeFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<TimeFieldSettings>();
 
-                    model.Hint = settings.Hint;
-                    model.Required = settings.Required;
-                    model.Step = settings.Step;
-                }).Location("Content")
-            );
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Step = settings.Step;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Lucene.Drivers
                 Index = viewModel.Index,
             });
 
-            return await EditAsync(query, context);
+            return Edit(query, context);
         }
     }
 }

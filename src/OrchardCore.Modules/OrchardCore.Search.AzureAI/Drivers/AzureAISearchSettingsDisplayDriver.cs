@@ -34,8 +34,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
-        )
+        IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer)
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;

@@ -16,11 +16,9 @@ namespace OrchardCore.Layers.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllLayersDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllLayersDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllLayersDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllLayersDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

@@ -11,7 +11,8 @@ namespace OrchardCore.Facebook.Widgets.Settings
 {
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
-        protected readonly ILiquidTemplateManager _templateManager;
+        private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
@@ -20,15 +21,13 @@ namespace OrchardCore.Facebook.Widgets.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
-                {
-                    model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
-                    model.Liquid = model.FacebookPluginPartSettings.Liquid;
-                }).Location("Content")
-            );
+            return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
+            {
+                model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
+                model.Liquid = model.FacebookPluginPartSettings.Liquid;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -47,7 +46,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
                 context.Builder.WithSettings(new FacebookPluginPartSettings { Liquid = model.Liquid });
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

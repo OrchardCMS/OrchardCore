@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,17 +26,15 @@ namespace OrchardCore.Media.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(MediaDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(MediaDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.FilePaths = step.FilePaths;
-                    model.DirectoryPaths = step.DirectoryPaths;
-                    model.Entries = await GetMediaStoreEntries();
-                }).Location("Content")
-            );
+            return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.FilePaths = step.FilePaths;
+                model.DirectoryPaths = step.DirectoryPaths;
+                model.Entries = await GetMediaStoreEntries();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, UpdateEditorContext context)
@@ -58,7 +55,7 @@ namespace OrchardCore.Media.Deployment
                 step.DirectoryPaths = [];
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)

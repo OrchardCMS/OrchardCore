@@ -17,15 +17,13 @@ namespace OrchardCore.Contents.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ContentTypes = step.ContentTypes;
-                    model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-                }).Location("Content")
-            );
+            return Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStep_Fields_Edit", model =>
+            {
+                model.ContentTypes = step.ContentTypes;
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentDeploymentStep step, UpdateEditorContext context)
@@ -35,7 +33,7 @@ namespace OrchardCore.Contents.Deployment
 
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

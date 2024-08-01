@@ -33,17 +33,15 @@ namespace OrchardCore.Queries.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(QueryBasedContentDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.QueryName = step.QueryName;
-                    model.QueryParameters = step.QueryParameters;
-                    model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-                    model.Queries = await _queryManager.ListQueriesAsync(true);
-                }).Location("Content")
-            );
+            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
+            {
+                model.QueryName = step.QueryName;
+                model.QueryParameters = step.QueryParameters;
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+                model.Queries = await _queryManager.ListQueriesAsync(true);
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, UpdateEditorContext context)
@@ -81,7 +79,7 @@ namespace OrchardCore.Queries.Deployment
             step.ExportAsSetupRecipe = queryBasedContentViewModel.ExportAsSetupRecipe;
             step.QueryParameters = queryBasedContentViewModel.QueryParameters;
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

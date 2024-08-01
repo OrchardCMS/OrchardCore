@@ -19,18 +19,16 @@ namespace OrchardCore.ContentFields.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+            return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
-                    model.DefaultValue = settings.DefaultValue;
-                    model.Editor = settings.Editor;
-                    model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
-                }).Location("Editor")
-            );
+                model.DefaultValue = settings.DefaultValue;
+                model.Editor = settings.Editor;
+                model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -58,7 +56,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

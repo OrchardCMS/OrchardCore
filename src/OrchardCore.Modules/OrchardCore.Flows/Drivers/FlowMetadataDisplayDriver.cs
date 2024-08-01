@@ -9,22 +9,20 @@ namespace OrchardCore.Flows.Drivers
 {
     public class FlowMetadataDisplayDriver : ContentDisplayDriver
     {
-        public override Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentItem model, BuildEditorContext context)
         {
             var flowMetadata = model.As<FlowMetadata>();
 
             if (flowMetadata == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return Task.FromResult<IDisplayResult>(
-                Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
-                {
-                    m.Alignment = flowMetadata.Alignment;
-                    m.Size = flowMetadata.Size;
-                }).Location("Footer")
-            );
+            return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
+            {
+                m.Alignment = flowMetadata.Alignment;
+                m.Size = flowMetadata.Size;
+            }).Location("Footer");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
@@ -38,7 +36,7 @@ namespace OrchardCore.Flows.Drivers
 
             await contentItem.AlterAsync<FlowMetadata>(model => context.Updater.TryUpdateModelAsync(model, Prefix));
 
-            return await EditAsync(contentItem, context);
+            return Edit(contentItem, context);
         }
     }
 }

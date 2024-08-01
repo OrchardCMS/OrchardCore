@@ -93,7 +93,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 Index = viewModel.Index,
             });
 
-            return await EditAsync(query, context);
+            return Edit(query, context);
         }
     }
 }

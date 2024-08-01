@@ -12,19 +12,17 @@ namespace OrchardCore.ContentFields.Settings
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LocalizationSetContentPickerField>
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<LocalizationSetContentPickerFieldSettings>("LocalizationSetContentPickerFieldSettings_Edit", model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
+            return Initialize<LocalizationSetContentPickerFieldSettings>("LocalizationSetContentPickerFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
 
-                    model.Hint = settings.Hint;
-                    model.Required = settings.Required;
-                    model.Multiple = settings.Multiple;
-                    model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                }).Location("Content")
-            );
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.DisplayedContentTypes = settings.DisplayedContentTypes;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -35,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

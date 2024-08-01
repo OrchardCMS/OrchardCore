@@ -37,6 +37,6 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
         context.Builder.WithSettings(model.Settings);
 
-        return await EditAsync(contentTypeDefinition, context);
+        return Edit(contentTypeDefinition, context);
     }
 }

@@ -22,20 +22,17 @@ namespace OrchardCore.Html.Settings
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
+            return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
+                if (string.IsNullOrWhiteSpace(settings.Options))
                 {
-                    var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
-                    if (string.IsNullOrWhiteSpace(settings.Options))
-                    {
-                        settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                    }
-                    model.Options = settings.Options;
-                })
-                .Location("Editor")
-            );
+                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                }
+                model.Options = settings.Options;
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -62,7 +59,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

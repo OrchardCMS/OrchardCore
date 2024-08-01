@@ -24,16 +24,14 @@ namespace OrchardCore.Deployment.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(DeploymentPlanDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.DeploymentPlanNames = step.DeploymentPlanNames;
-                    model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
-                }).Location("Content")
-            );
+            return Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.DeploymentPlanNames = step.DeploymentPlanNames;
+                model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)
@@ -45,13 +43,13 @@ namespace OrchardCore.Deployment.Deployment
                                               x => x.DeploymentPlanNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.DeploymentPlanNames = [];
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

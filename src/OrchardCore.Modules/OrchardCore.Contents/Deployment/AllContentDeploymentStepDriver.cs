@@ -17,21 +17,19 @@ namespace OrchardCore.Contents.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllContentDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllContentDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-                }).Location("Content")
-            );
+            return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
+            {
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, UpdateEditorContext context)
         {
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }
