@@ -16,15 +16,13 @@ namespace OrchardCore.ContentTypes.Editors
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
-                {
-                    model.DisplayName = contentTypeDefinition.DisplayName;
-                    model.Name = contentTypeDefinition.Name;
-                }).Location("Content")
-            );
+            return Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
+            {
+                model.DisplayName = contentTypeDefinition.DisplayName;
+                model.Name = contentTypeDefinition.Name;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

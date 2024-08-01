@@ -24,17 +24,15 @@ namespace OrchardCore.ContentPreview.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
+            return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
                 {
                     var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
 
                     model.Pattern = settings.Pattern;
                     model.PreviewPartSettings = settings;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

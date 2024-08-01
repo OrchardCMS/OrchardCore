@@ -15,7 +15,9 @@ namespace OrchardCore.Search.Lucene.Settings
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+        public ContentTypePartIndexSettingsDisplayDriver(
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;

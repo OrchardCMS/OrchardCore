@@ -28,15 +28,13 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
         S = stringLocalizer;
     }
 
-    public override Task<IDisplayResult> EditAsync(RegisterUserForm model, BuildEditorContext context)
+    public override IDisplayResult Edit(RegisterUserForm model, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
+        return Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
             {
                 vm.UserName = model.UserName;
                 vm.Email = model.Email;
-            }).Location("Content")
-        );
+            }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RegisterUserForm model, UpdateEditorContext context)

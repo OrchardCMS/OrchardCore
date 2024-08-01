@@ -19,28 +19,27 @@ namespace OrchardCore.Flows.Settings
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", async model =>
-                {
-                    model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
-                    model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
-                    model.ContentTypes = [];
+            return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", async model =>
+            {
+                model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
+                model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
+                model.ContentTypes = [];
 
-                    foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))
-                    {
-                        model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                    }
-                }).Location("Content")
-            );
+                foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))
+                {
+                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+                }
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             var model = new FlowPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.ContainedContentTypes);
 
             context.Builder.WithSettings(new FlowPartSettings
             {

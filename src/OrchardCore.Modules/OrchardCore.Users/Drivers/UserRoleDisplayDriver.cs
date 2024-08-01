@@ -25,6 +25,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+
         protected readonly IHtmlLocalizer H;
 
         public UserRoleDisplayDriver(
@@ -56,11 +57,10 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override IDisplayResult Edit(User user, BuildEditorContext context)
         {
             // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
-            return Task.FromResult<IDisplayResult>(
-                Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
+            return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
                 {
                     // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
                     if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
@@ -90,8 +90,7 @@ namespace OrchardCore.Users.Drivers
                     model.Roles = roleEntries.ToArray();
                 })
                 .Location("Content:1.10")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user))
-            );
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -106,7 +105,6 @@ namespace OrchardCore.Users.Drivers
             var model = new EditUserRoleViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
-
 
             var roles = await GetRoleAsync();
             // Authorize each role in the model to prevent html injection.

@@ -16,10 +16,11 @@ namespace OrchardCore.Rules.Drivers
 {
     public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly JavascriptConditionEvaluator _evaluator;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public JavascriptConditionDisplayDriver(
             IHtmlLocalizer<JavascriptConditionDisplayDriver> htmlLocalizer,
@@ -42,15 +43,13 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(JavascriptCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(JavascriptCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
-                {
-                    m.Script = condition.Script;
-                    m.Condition = condition;
-                }).Location("Content")
-            );
+            return Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
+            {
+                m.Script = condition.Script;
+                m.Condition = condition;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, UpdateEditorContext context)
@@ -65,7 +64,7 @@ namespace OrchardCore.Rules.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Script), S["Please provide a script."]);
                 await _notifier.ErrorAsync(H["Please provide a script."]);
 
-                return await EditAsync(condition, context);
+                return Edit(condition, context);
             }
 
             try
@@ -94,7 +93,7 @@ namespace OrchardCore.Rules.Drivers
                 await _notifier.ErrorAsync(H["The script evaluation failed. Details: {0}", ex.Message]);
             }
 
-            return await EditAsync(condition, context);
+            return Edit(condition, context);
         }
     }
 }

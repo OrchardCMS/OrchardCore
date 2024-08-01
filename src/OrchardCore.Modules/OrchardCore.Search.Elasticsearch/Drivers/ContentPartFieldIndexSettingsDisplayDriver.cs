@@ -15,7 +15,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+        public ContentPartFieldIndexSettingsDisplayDriver(
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;

@@ -10,16 +10,14 @@ namespace OrchardCore.Lists.Settings
 {
     public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<CommonPart>
     {
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
+            return Initialize<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
                 {
                     var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
                     model.DisplayDateEditor = settings.DisplayDateEditor;
                     model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

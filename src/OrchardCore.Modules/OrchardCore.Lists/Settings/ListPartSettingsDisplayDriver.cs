@@ -15,6 +15,7 @@ namespace OrchardCore.Lists.Settings
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
+
         protected readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
@@ -27,24 +28,22 @@ namespace OrchardCore.Lists.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", async model =>
-                {
-                    model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
-                    model.PageSize = model.ListPartSettings.PageSize;
-                    model.EnableOrdering = model.ListPartSettings.EnableOrdering;
-                    model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
-                    model.ShowHeader = model.ListPartSettings.ShowHeader;
-                    model.ContentTypes = [];
+            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", async model =>
+            {
+                model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
+                model.PageSize = model.ListPartSettings.PageSize;
+                model.EnableOrdering = model.ListPartSettings.EnableOrdering;
+                model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
+                model.ShowHeader = model.ListPartSettings.ShowHeader;
+                model.ContentTypes = [];
 
-                    foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    {
-                        model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                    }
-                }).Location("Content")
-            );
+                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                {
+                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+                }
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

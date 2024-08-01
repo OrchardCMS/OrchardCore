@@ -25,43 +25,41 @@ namespace OrchardCore.Search.Lucene.Drivers
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> DisplayAsync(Query query, BuildDisplayContext context)
+        public override IDisplayResult Display(Query query, BuildDisplayContext context)
         {
             if (query.Source != LuceneQuerySource.SourceName)
             {
                 return null;
             }
 
-            return CombineAsync(
+            return Combine(
                 Dynamic("LuceneQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
                 Dynamic("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
+        public override IDisplayResult Edit(Query query, BuildEditorContext context)
         {
             if (query.Source != LuceneQuerySource.SourceName)
             {
                 return null;
             }
 
-            return Task.FromResult<IDisplayResult>(
-                Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
+            return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
+            {
+                var metadata = query.As<LuceneQueryMetadata>();
+
+                model.Query = metadata.Template;
+                model.Index = metadata.Index;
+                model.ReturnContentItems = query.ReturnContentItems;
+                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+
+                // Extract query from the query string if we come from the main query editor.
+                if (string.IsNullOrEmpty(metadata.Template))
                 {
-                    var metadata = query.As<LuceneQueryMetadata>();
-
-                    model.Query = metadata.Template;
-                    model.Index = metadata.Index;
-                    model.ReturnContentItems = query.ReturnContentItems;
-                    model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-
-                    // Extract query from the query string if we come from the main query editor.
-                    if (string.IsNullOrEmpty(metadata.Template))
-                    {
-                        await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                    }
-                }).Location("Content:5")
-            );
+                    await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                }
+            }).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(Query query, UpdateEditorContext context)

@@ -25,19 +25,17 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(UrlCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(UrlCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", m =>
+            return Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", m =>
+            {
+                if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
-                    if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
-                    {
-                        m.SelectedOperation = option.Factory.Name;
-                    }
-                    m.Value = condition.Value;
-                    m.Condition = condition;
-                }).Location("Content")
-            );
+                    m.SelectedOperation = option.Factory.Name;
+                }
+                m.Value = condition.Value;
+                m.Condition = condition;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, UpdateEditorContext context)
@@ -51,7 +49,7 @@ namespace OrchardCore.Rules.Drivers
                 condition.Operation = factory.Create();
             }
 
-            return await EditAsync(condition, context);
+            return Edit(condition, context);
         }
     }
 }

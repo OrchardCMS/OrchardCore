@@ -34,11 +34,10 @@ namespace OrchardCore.Workflows.Display
     {
         private static readonly string _editShapeType = $"{ActivityName}_Fields_Edit";
 
-        public override Task<IDisplayResult> EditAsync(TActivity activity, BuildEditorContext context)
+        public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content")
-            );
+            return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel))
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)

@@ -8,15 +8,13 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
-    public override Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
+    public override IDisplayResult Edit(LoginForm model, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            Initialize<LoginViewModel>("LoginFormCredentials", vm =>
+        return Initialize<LoginViewModel>("LoginFormCredentials", vm =>
             {
                 vm.UserName = model.UserName;
                 vm.RememberMe = model.RememberMe;
-            }).Location("Content")
-        );
+            }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LoginForm model, UpdateEditorContext context)

@@ -16,11 +16,9 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(IsAnonymousCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(IsAnonymousCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("IsAnonymousCondition_Fields_Edit", condition).Location("Content")
-            );
+            return View("IsAnonymousCondition_Fields_Edit", condition).Location("Content");
         }
     }
 }

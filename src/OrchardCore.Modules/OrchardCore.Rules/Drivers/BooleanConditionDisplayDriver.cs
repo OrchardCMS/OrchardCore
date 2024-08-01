@@ -17,22 +17,20 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(BooleanCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(BooleanCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", m =>
+            return Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", m =>
                 {
                     m.Value = condition.Value;
                     m.Condition = condition;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BooleanCondition condition, UpdateEditorContext context)
         {
             await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
 
-            return await EditAsync(condition, context);
+            return Edit(condition, context);
         }
     }
 }

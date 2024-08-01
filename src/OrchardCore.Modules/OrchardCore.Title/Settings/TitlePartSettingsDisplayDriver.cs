@@ -13,6 +13,7 @@ namespace OrchardCore.Title.Settings
     public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
         public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
@@ -21,19 +22,17 @@ namespace OrchardCore.Title.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
+            return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-                    model.Options = settings.Options;
-                    model.Pattern = settings.Pattern;
-                    model.RenderTitle = settings.RenderTitle;
-                    model.TitlePartSettings = settings;
-                }).Location("Content")
-            );
+                model.Options = settings.Options;
+                model.Pattern = settings.Pattern;
+                model.RenderTitle = settings.RenderTitle;
+                model.TitlePartSettings = settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -17,10 +16,9 @@ namespace OrchardCore.Placements.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
+            return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
                 {
                     var shapeType = contentPartFieldDefinition.FieldDefinition.Name;
                     var partName = contentPartFieldDefinition.PartDefinition.Name;
@@ -61,8 +59,7 @@ namespace OrchardCore.Placements.Settings
                             Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName]
                         });
 
-                }).Location("Shortcuts")
-            );
+                }).Location("Shortcuts");
         }
     }
 }

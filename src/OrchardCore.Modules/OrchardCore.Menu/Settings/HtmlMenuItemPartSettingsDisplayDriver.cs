@@ -10,17 +10,14 @@ namespace OrchardCore.Menu.Settings
 {
     public class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlMenuItemPart>
     {
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<HtmlMenuItemPartSettingsViewModel>("HtmlMenuItemPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
+            return Initialize<HtmlMenuItemPartSettingsViewModel>("HtmlMenuItemPartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
 
-                    model.SanitizeHtml = settings.SanitizeHtml;
-                })
-                .Location("Content:20")
-            );
+                model.SanitizeHtml = settings.SanitizeHtml;
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

@@ -30,34 +30,35 @@ namespace OrchardCore.ContentLocalization.Drivers
             Prefix = "Localization";
         }
 
-        public override Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentOptionsViewModel model, BuildDisplayContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1")
-            );
+            return View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1");
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentOptionsViewModel model, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                    Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>
+            return Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>
+            {
+                model.FilterResult.MapTo(m);
+                var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+                var cultures = new List<SelectListItem>
+                {
+                    new()
                     {
-                        model.FilterResult.MapTo(m);
-                        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-                        var cultures = new List<SelectListItem>
-                        {
-                            new()
-                            {
-                                Text = S["All cultures"],
-                                Value = string.Empty,
-                                Selected = string.IsNullOrEmpty(m.SelectedCulture)
-                            }
-                        };
-                        cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture, Selected = culture == m.SelectedCulture }));
+                        Text = S["All cultures"],
+                        Value = string.Empty,
+                        Selected = string.IsNullOrEmpty(m.SelectedCulture)
+                    }
+                };
+                cultures.AddRange(supportedCultures.Select(culture => new SelectListItem()
+                {
+                    Text = culture,
+                    Value = culture,
+                    Selected = culture == m.SelectedCulture,
+                }));
 
-                        m.Cultures = cultures;
-                    }).Location("Actions:20")
-                );
+                m.Cultures = cultures;
+            }).Location("Actions:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)

@@ -24,10 +24,9 @@ namespace OrchardCore.Autoroute.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
+            return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
                 {
                     var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
 
@@ -40,8 +39,7 @@ namespace OrchardCore.Autoroute.Settings
                     model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
                     model.AllowAbsolutePath = settings.AllowAbsolutePath;
                     model.AutoroutePartSettings = settings;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

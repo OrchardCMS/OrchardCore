@@ -24,10 +24,9 @@ namespace OrchardCore.Contents.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
+            return Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
                 {
                     var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
@@ -35,8 +34,7 @@ namespace OrchardCore.Contents.Settings
                     model.FullTextTemplate = settings.FullTextTemplate;
                     model.IncludeDisplayText = settings.IncludeDisplayText;
                     model.IncludeBodyAspect = settings.IncludeBodyAspect;
-                }).Location("Content:6")
-            );
+                }).Location("Content:6");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

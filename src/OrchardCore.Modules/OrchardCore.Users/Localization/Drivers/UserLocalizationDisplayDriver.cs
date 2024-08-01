@@ -17,6 +17,7 @@ namespace OrchardCore.Users.Localization.Drivers;
 public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLocalizationSettings>
 {
     private readonly ILocalizationService _localizationService;
+
     protected readonly IStringLocalizer S;
 
     public UserLocalizationDisplayDriver(
@@ -27,9 +28,9 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         S = localizer;
     }
 
-    public override Task<IDisplayResult> EditAsync(UserLocalizationSettings section, BuildEditorContext context)
+    public override IDisplayResult Edit(UserLocalizationSettings section, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(Initialize<UserLocalizationViewModel>("UserCulture_Edit", async model =>
+        return Initialize<UserLocalizationViewModel>("UserCulture_Edit", async model =>
         {
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
@@ -51,7 +52,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
 
             model.SelectedCulture = section.Culture;
             model.CultureList = cultureList;
-        }).Location("Content:2"));
+        }).Location("Content:2");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(User model, UserLocalizationSettings section, IUpdateModel updater, UpdateEditorContext context)

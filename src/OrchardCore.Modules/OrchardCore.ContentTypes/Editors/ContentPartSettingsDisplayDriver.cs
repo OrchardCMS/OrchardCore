@@ -9,10 +9,9 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
-        public override Task<IDisplayResult> EditAsync(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
+            return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
                 {
                     var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
 
@@ -21,8 +20,7 @@ namespace OrchardCore.ContentTypes.Editors
                     model.Description = settings.Description;
                     model.DisplayName = settings.DisplayName;
                     model.ContentPartDefinition = contentPartDefinition;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)

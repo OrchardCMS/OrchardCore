@@ -14,11 +14,9 @@ namespace OrchardCore.Lists.Drivers
             Prefix = "ListPart";
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentOptionsViewModel model, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20")
-            );
+            return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)

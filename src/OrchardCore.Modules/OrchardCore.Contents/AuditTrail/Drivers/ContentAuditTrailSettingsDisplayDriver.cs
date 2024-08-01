@@ -17,7 +17,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentAuditTrailSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+        public ContentAuditTrailSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;

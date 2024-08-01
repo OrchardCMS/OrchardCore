@@ -29,10 +29,9 @@ namespace OrchardCore.ContentTypes.Editors
             _stereotypeService = stereotypeService;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
+            return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
                 {
                     var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
                     model.Creatable = settings.Creatable;
@@ -43,8 +42,7 @@ namespace OrchardCore.ContentTypes.Editors
                     model.Stereotype = settings.Stereotype;
                     model.Description = settings.Description;
                     model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
-                }).Location("Content:5")
-            );
+                }).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

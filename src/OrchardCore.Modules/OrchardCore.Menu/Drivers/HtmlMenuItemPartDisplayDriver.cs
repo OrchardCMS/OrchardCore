@@ -21,6 +21,7 @@ namespace OrchardCore.Menu.Drivers
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
+
         protected readonly IStringLocalizer S;
 
         public HtmlMenuItemPartDisplayDriver(

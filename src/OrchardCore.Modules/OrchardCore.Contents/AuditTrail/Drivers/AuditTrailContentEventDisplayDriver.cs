@@ -43,7 +43,6 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                 _latestVersionId[contentItemId] = latestVersionId;
             }
 
-
             var descriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
 
             return Combine(

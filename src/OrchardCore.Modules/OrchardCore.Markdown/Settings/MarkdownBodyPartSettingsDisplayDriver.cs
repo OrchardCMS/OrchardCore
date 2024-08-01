@@ -10,17 +10,14 @@ namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<MarkdownBodyPart>
     {
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+            return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                    model.SanitizeHtml = settings.SanitizeHtml;
-                })
-                .Location("Content:20")
-            );
+                model.SanitizeHtml = settings.SanitizeHtml;
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

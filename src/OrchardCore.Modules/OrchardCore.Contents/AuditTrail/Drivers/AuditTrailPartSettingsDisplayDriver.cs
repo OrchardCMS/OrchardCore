@@ -12,20 +12,18 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 {
     public class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition model, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
         {
             if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
+            return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
                 {
                     var settings = model.GetSettings<AuditTrailPartSettings>();
                     viewModel.ShowCommentInput = settings.ShowCommentInput;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)

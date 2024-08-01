@@ -16,11 +16,9 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(IsAuthenticatedCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(IsAuthenticatedCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("IsAuthenticatedCondition_Fields_Edit", condition).Location("Content")
-            );
+            return View("IsAuthenticatedCondition_Fields_Edit", condition).Location("Content");
         }
     }
 }

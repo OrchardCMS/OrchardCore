@@ -14,6 +14,7 @@ namespace OrchardCore.Layers.Drivers
     public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {
         public const string GroupId = "zones";
+
         private static readonly char[] _separator = [' ', ','];
 
         private readonly IHttpContextAccessor _httpContextAccessor;

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -8,12 +7,10 @@ namespace OrchardCore.Users.Drivers;
 
 public class TwoFactorMethodLoginAuthenticationAppDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override Task<IDisplayResult> EditAsync(TwoFactorMethod model, BuildEditorContext context)
+    public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            View("AuthenticatorAppValidation", model)
+        return View("AuthenticatorAppValidation", model)
             .Location("Content")
-            .OnGroup(TokenOptions.DefaultAuthenticatorProvider)
-        );
+            .OnGroup(TokenOptions.DefaultAuthenticatorProvider);
     }
 }

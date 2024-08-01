@@ -23,25 +23,25 @@ namespace OrchardCore.Alias.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
+            return Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
                 {
                     var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 
                     model.Pattern = settings.Pattern;
                     model.Options = settings.Options;
                     model.AliasPartSettings = settings;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             var model = new AliasPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.Pattern,
+                m => m.Options);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {

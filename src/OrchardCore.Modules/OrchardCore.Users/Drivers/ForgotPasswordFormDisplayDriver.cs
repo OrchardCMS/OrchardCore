@@ -8,14 +8,12 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
-    public override Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
+    public override IDisplayResult Edit(ForgotPasswordForm model, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier", vm =>
+        return Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier", vm =>
             {
                 vm.UsernameOrEmail = model.UsernameOrEmail;
-            }).Location("Content")
-        );
+            }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ForgotPasswordForm model, UpdateEditorContext context)

@@ -12,17 +12,15 @@ namespace OrchardCore.Widgets.Settings
     {
         private static readonly char[] _separator = [',', ' '];
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
+            return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-                    model.Zones = string.Join(", ", settings.Zones);
-                    model.WidgetsListPartSettings = settings;
-                }).Location("Content")
-            );
+                model.Zones = string.Join(", ", settings.Zones);
+                model.WidgetsListPartSettings = settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

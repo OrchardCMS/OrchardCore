@@ -10,20 +10,18 @@ namespace OrchardCore.SeoMeta.Settings
 {
     public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<SeoMetaPartSettings>();
+            return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<SeoMetaPartSettings>();
 
-                    model.DisplayKeywords = settings.DisplayKeywords;
-                    model.DisplayCustomMetaTags = settings.DisplayCustomMetaTags;
-                    model.DisplayOpenGraph = settings.DisplayOpenGraph;
-                    model.DisplayTwitter = settings.DisplayTwitter;
-                    model.DisplayGoogleSchema = settings.DisplayGoogleSchema;
-                }).Location("Content")
-            );
+                model.DisplayKeywords = settings.DisplayKeywords;
+                model.DisplayCustomMetaTags = settings.DisplayCustomMetaTags;
+                model.DisplayOpenGraph = settings.DisplayOpenGraph;
+                model.DisplayTwitter = settings.DisplayTwitter;
+                model.DisplayGoogleSchema = settings.DisplayGoogleSchema;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

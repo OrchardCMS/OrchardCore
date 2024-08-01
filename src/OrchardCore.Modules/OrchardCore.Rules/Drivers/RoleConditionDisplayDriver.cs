@@ -25,10 +25,9 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(RoleCondition condition, BuildEditorContext context)
+        public override IDisplayResult Edit(RoleCondition condition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<RoleConditionViewModel>("RoleCondition_Fields_Edit", m =>
+            return Initialize<RoleConditionViewModel>("RoleCondition_Fields_Edit", m =>
                 {
                     if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                     {
@@ -36,8 +35,7 @@ namespace OrchardCore.Rules.Drivers
                     }
                     m.Value = condition.Value;
                     m.Condition = condition;
-                }).Location("Content")
-            );
+                }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(RoleCondition condition, UpdateEditorContext context)
@@ -51,7 +49,7 @@ namespace OrchardCore.Rules.Drivers
                 condition.Operation = factory.Create();
             }
 
-            return await EditAsync(condition, context);
+            return Edit(condition, context);
         }
     }
 }

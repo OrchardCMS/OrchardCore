@@ -44,8 +44,8 @@ public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, S
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
+        if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase) ||
+            !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
             return null;
         }

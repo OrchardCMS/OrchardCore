@@ -26,25 +26,23 @@ namespace OrchardCore.Flows.Settings
             S = localizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
+            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
 
-                    model.BagPartSettings = settings;
-                    model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
-                    model.DisplayType = model.BagPartSettings.DisplayType;
-                    model.ContentTypes = [];
-                    model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
-                    model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
-                    foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    {
-                        model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                    }
-                }).Location("Content")
-            );
+                model.BagPartSettings = settings;
+                model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
+                model.DisplayType = model.BagPartSettings.DisplayType;
+                model.ContentTypes = [];
+                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
+                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
+                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                {
+                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+                }
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
