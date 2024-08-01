@@ -7,9 +7,9 @@ using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class FormContentDisplayDriver : ContentDisplayDriver
+    public class FormContentDisplayDriver : ContentSyncDisplayDriver
     {
-        public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem model, BuildDisplayContext context)
         {
             var formItemShape = context.Shape;
             // If the content item contains FormPart add Form Wrapper only in Display type Detail
@@ -21,7 +21,7 @@ namespace OrchardCore.Forms.Drivers
             }
 
             // We don't need to return a shape result
-            return Task.FromResult<IDisplayResult>(null);
+            return null;
         }
     }
 }

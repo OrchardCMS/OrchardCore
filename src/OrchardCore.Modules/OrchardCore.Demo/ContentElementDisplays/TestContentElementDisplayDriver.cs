@@ -4,26 +4,25 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Demo.ContentElementDisplays
 {
-    public class TestContentElementDisplayDriver : ContentDisplayDriver
+    public class TestContentElementDisplayDriver : ContentSyncDisplayDriver
     {
         private static int _creating;
         private static int _processing;
 
-        public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return CombineAsync(
+            return Combine(
                 // A new shape is created and the properties of the object are bound to it when rendered
                 Copy("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location
@@ -49,18 +48,16 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return Task.FromResult<IDisplayResult>(
-                Copy("TestContentPartA_Edit", testContentPart).Location("Content")
-            );
+            return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
