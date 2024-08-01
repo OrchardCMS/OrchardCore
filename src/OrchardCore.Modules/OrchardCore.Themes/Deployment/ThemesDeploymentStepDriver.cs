@@ -15,11 +15,9 @@ namespace OrchardCore.Themes.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(ThemesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(ThemesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("ThemesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("ThemesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

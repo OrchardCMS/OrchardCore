@@ -16,11 +16,9 @@ namespace OrchardCore.Shortcodes.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllShortcodeTemplatesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllShortcodeTemplatesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllShortcodeTemplatesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllShortcodeTemplatesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

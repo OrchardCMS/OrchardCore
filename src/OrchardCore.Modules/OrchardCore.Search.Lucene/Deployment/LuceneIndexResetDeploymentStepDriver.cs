@@ -25,16 +25,14 @@ namespace OrchardCore.Search.Lucene.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(LuceneIndexResetDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.IndexNames = step.IndexNames;
-                    model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-                }).Location("Content")
-            );
+            return Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.IndexNames = step.IndexNames;
+                model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)
@@ -48,7 +46,7 @@ namespace OrchardCore.Search.Lucene.Deployment
                 resetIndexStep.IndexNames = [];
             }
 
-            return await EditAsync(resetIndexStep, context);
+            return Edit(resetIndexStep, context);
         }
     }
 }

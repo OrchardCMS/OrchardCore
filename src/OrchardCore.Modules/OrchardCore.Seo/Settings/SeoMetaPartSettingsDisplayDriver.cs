@@ -44,7 +44,7 @@ namespace OrchardCore.SeoMeta.Settings
                 DisplayGoogleSchema = model.DisplayGoogleSchema
             });
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

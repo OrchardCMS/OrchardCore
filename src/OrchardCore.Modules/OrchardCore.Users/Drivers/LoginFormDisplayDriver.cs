@@ -11,10 +11,10 @@ public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
     public override IDisplayResult Edit(LoginForm model, BuildEditorContext context)
     {
         return Initialize<LoginViewModel>("LoginFormCredentials", vm =>
-            {
-                vm.UserName = model.UserName;
-                vm.RememberMe = model.RememberMe;
-            }).Location("Content");
+        {
+            vm.UserName = model.UserName;
+            vm.RememberMe = model.RememberMe;
+        }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LoginForm model, UpdateEditorContext context)
@@ -27,6 +27,6 @@ public sealed class LoginFormDisplayDriver : DisplayDriver<LoginForm>
         model.Password = viewModel.Password;
         model.RememberMe = viewModel.RememberMe;
 
-        return await EditAsync(model, context);
+        return Edit(model, context);
     }
 }

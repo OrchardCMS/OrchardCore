@@ -53,7 +53,7 @@ namespace OrchardCore.Title.Settings
                 context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

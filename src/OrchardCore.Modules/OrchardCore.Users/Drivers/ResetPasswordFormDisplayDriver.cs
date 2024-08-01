@@ -11,11 +11,11 @@ public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPassword
     public override IDisplayResult Edit(ResetPasswordForm model, BuildEditorContext context)
     {
         return Initialize<ResetPasswordViewModel>("ResetPasswordFormIdentifier", vm =>
-            {
-                vm.UsernameOrEmail = model.UsernameOrEmail;
-                vm.NewPassword = model.NewPassword;
-                vm.ResetToken = model.ResetToken;
-            }).Location("Content");
+        {
+            vm.UsernameOrEmail = model.UsernameOrEmail;
+            vm.NewPassword = model.NewPassword;
+            vm.ResetToken = model.ResetToken;
+        }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ResetPasswordForm model, UpdateEditorContext context)
@@ -28,7 +28,7 @@ public sealed class ResetPasswordFormDisplayDriver : DisplayDriver<ResetPassword
         model.NewPassword = vm.NewPassword;
         model.ResetToken = vm.ResetToken;
 
-        return await EditAsync(model, context);
+        return Edit(model, context);
     }
 }
 

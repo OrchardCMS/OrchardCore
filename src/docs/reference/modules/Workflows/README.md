@@ -411,11 +411,9 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
         );
     }
 
-    public override Task<IDisplayResult> EditAsync(TActivity activity, BuildEditorContext context)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content")
-        );
+        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
     public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
@@ -426,7 +424,7 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
             await UpdateActivityAsync(viewModel, activity);
         }
 
-        return await EditAsync(activity, context);
+        return Edit(activity, context);
     }
 }
 ```

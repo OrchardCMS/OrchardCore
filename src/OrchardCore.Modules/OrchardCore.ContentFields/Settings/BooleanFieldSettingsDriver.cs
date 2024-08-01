@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
     {
-        public override IDisplayResult Display(ContentPartFieldDefinition partFieldDefinition, BuildDisplayContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
             {
@@ -30,7 +30,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

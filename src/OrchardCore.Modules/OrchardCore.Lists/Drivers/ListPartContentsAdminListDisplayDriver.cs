@@ -34,7 +34,7 @@ namespace OrchardCore.Lists.Drivers
                 model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
             }
 
-            return await EditAsync(model, context);
+            return Edit(model, context);
         }
     }
 }

@@ -50,7 +50,7 @@ namespace OrchardCore.Users.Workflows.Drivers
                 }
             }
 
-            return await EditAsync(model, context);
+            return Edit(model, context);
         }
     }
 }

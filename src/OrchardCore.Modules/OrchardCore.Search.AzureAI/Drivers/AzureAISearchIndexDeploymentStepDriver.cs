@@ -26,11 +26,11 @@ public class AzureAISearchIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
 
     public override IDisplayResult Edit(AzureAISearchIndexDeploymentStep step, BuildEditorContext context)
         => Initialize<AzureAISearchIndexDeploymentStepViewModel>("AzureAISearchIndexDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
-                model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
+        {
+            model.IncludeAll = step.IncludeAll;
+            model.IndexNames = step.IndexNames;
+            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+        }).Location("Content");
 
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexDeploymentStep step, UpdateEditorContext context)

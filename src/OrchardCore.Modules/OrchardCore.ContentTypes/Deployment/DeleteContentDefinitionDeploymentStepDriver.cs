@@ -23,10 +23,10 @@ namespace OrchardCore.ContentTypes.Deployment
         public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ContentParts = string.Join(", ", step.ContentParts);
-                    model.ContentTypes = string.Join(", ", step.ContentTypes);
-                }).Location("Content");
+            {
+                model.ContentParts = string.Join(", ", step.ContentParts);
+                model.ContentTypes = string.Join(", ", step.ContentTypes);
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(DeleteContentDefinitionDeploymentStep step, UpdateEditorContext context)

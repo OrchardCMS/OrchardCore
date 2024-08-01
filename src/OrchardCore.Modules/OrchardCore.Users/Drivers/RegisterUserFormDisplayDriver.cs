@@ -31,10 +31,10 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
     public override IDisplayResult Edit(RegisterUserForm model, BuildEditorContext context)
     {
         return Initialize<RegisterViewModel>("RegisterUserFormIdentifier", vm =>
-            {
-                vm.UserName = model.UserName;
-                vm.Email = model.Email;
-            }).Location("Content");
+        {
+            vm.UserName = model.UserName;
+            vm.Email = model.Email;
+        }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RegisterUserForm model, UpdateEditorContext context)
@@ -56,6 +56,6 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
         model.Email = vm.Email;
         model.Password = vm.Password;
 
-        return await EditAsync(model, context);
+        return Edit(model, context);
     }
 }

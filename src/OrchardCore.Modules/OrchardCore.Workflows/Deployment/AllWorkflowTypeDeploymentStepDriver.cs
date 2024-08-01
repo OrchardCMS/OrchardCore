@@ -16,11 +16,9 @@ namespace OrchardCore.Workflows.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllWorkflowTypeDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllWorkflowTypeDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllWorkflowTypeDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("AllWorkflowTypeDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

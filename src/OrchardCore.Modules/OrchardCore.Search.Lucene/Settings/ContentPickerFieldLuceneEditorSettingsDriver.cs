@@ -18,17 +18,15 @@ namespace OrchardCore.Search.Lucene.Settings
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public override Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
-                {
-                    var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
+            return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
 
-                    model.Index = settings.Index;
-                    model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-                }).Location("Editor")
-            );
+                model.Index = settings.Index;
+                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -42,7 +40,7 @@ namespace OrchardCore.Search.Lucene.Settings
                 context.Builder.WithSettings(model);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

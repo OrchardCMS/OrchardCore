@@ -16,11 +16,9 @@ namespace OrchardCore.Tenants.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllFeatureProfilesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllFeatureProfilesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllFeatureProfilesDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllFeatureProfilesDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

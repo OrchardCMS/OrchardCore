@@ -16,11 +16,9 @@ namespace OrchardCore.Placements.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(PlacementsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(PlacementsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("PlacementsDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("PlacementsDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

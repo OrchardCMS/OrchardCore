@@ -49,10 +49,10 @@ namespace OrchardCore.Deployment.Steps
         public override IDisplayResult Edit(JsonRecipeDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
-                {
-                    model.Json = step.Json;
-                    model.Schema = Schema;
-                }).Location("Content");
+            {
+                model.Json = step.Json;
+                model.Schema = Schema;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)

@@ -11,9 +11,9 @@ public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswo
     public override IDisplayResult Edit(ForgotPasswordForm model, BuildEditorContext context)
     {
         return Initialize<ForgotPasswordViewModel>("ForgotPasswordFormIdentifier", vm =>
-            {
-                vm.UsernameOrEmail = model.UsernameOrEmail;
-            }).Location("Content");
+        {
+            vm.UsernameOrEmail = model.UsernameOrEmail;
+        }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ForgotPasswordForm model, UpdateEditorContext context)
@@ -24,7 +24,7 @@ public sealed class ForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswo
 
         model.UsernameOrEmail = viewModel.UsernameOrEmail;
 
-        return await EditAsync(model, context);
+        return Edit(model, context);
     }
 }
 

@@ -24,17 +24,14 @@ namespace OrchardCore.Users.Deployment
                     View("CustomUserSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content"));
         }
 
-        public override Task<IDisplayResult> EditAsync(CustomUserSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", async model =>
-                {
-                    model.IncludeAll = step.IncludeAll;
-                    model.SettingsTypeNames = step.SettingsTypeNames;
-                    model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-                })
-                .Location("Content")
-            );
+            return Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", async model =>
+            {
+                model.IncludeAll = step.IncludeAll;
+                model.SettingsTypeNames = step.SettingsTypeNames;
+                model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, UpdateEditorContext context)
@@ -47,7 +44,7 @@ namespace OrchardCore.Users.Deployment
                 step.SettingsTypeNames = [];
             }
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

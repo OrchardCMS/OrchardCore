@@ -14,16 +14,16 @@ namespace OrchardCore.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            return CombineAsync(
+            return Combine(
                 // A new shape is created and the properties of the object are bound to it when rendered
                 Copy("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location

@@ -40,7 +40,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         S = stringLocalizer;
     }
 
-    public override Task<IDisplayResult> EditAsync(TActivity activity, BuildEditorContext context)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
         var results = new List<IDisplayResult>();
 
@@ -61,7 +61,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             model.IsHtmlPreferred = activity.IsHtmlPreferred;
         }).Location("Content"));
 
-        return CombineAsync(results);
+        return Combine(results);
     }
 
     public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
@@ -102,7 +102,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
         await UpdateActivityAsync(modelOfT, activity);
 
-        return await EditAsync(activity, context);
+        return Edit(activity, context);
     }
 
     /// <summary>

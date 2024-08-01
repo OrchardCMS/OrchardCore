@@ -68,14 +68,14 @@ namespace OrchardCore.Lists.Settings
                     ShowHeader = model.ShowHeader,
                 });
 
-                // Update order of existing content if enable ordering has been turned on
+                // Update order of existing content if enable ordering has been turned on.
                 if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {
                     await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
                 }
             }
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

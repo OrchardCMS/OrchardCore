@@ -16,11 +16,9 @@ namespace OrchardCore.Search.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(SearchSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(SearchSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("SearchSettingsDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("SearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

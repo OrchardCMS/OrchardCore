@@ -27,11 +27,10 @@ namespace OrchardCore.Settings.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
+        public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", m => BuildViewModel(m))
-                .Location("Content"));
+            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", BuildViewModel)
+                .Location("Content");
         }
 
         private void BuildViewModel(SiteSettingsPropertyDeploymentStepViewModel model)

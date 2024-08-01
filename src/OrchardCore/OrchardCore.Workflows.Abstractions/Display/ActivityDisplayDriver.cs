@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Display
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
             await UpdateActivityAsync(viewModel, activity);
 
-            return await EditAsync(activity, context);
+            return Edit(activity, context);
         }
 
         /// <summary>

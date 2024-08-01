@@ -31,7 +31,7 @@ namespace OrchardCore.Widgets.Settings
 
             context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries) });
 
-            return await EditAsync(contentTypePartDefinition, context);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

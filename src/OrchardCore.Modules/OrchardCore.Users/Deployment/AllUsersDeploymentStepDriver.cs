@@ -14,10 +14,8 @@ public class AllUsersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllUse
                 View("AllUsersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content"));
     }
 
-    public override Task<IDisplayResult> EditAsync(AllUsersDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AllUsersDeploymentStep step, BuildEditorContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            View("AllUsersDeploymentStep_Edit", step).Location("Content")
-        );
+        return View("AllUsersDeploymentStep_Edit", step).Location("Content");
     }
 }

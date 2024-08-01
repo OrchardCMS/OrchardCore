@@ -89,12 +89,10 @@ As an illustration, we inject the Visit Site link into `DetailAdmin` display typ
 ```csharp
 public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 {
-    public override Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            View("VisitSiteNavbarItem", model)
-            .Location("DetailAdmin", "Content:20")
-        );
+        returnView("VisitSiteNavbarItem", model)
+            .Location("DetailAdmin", "Content:20");
     }
 }
 ```

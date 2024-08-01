@@ -17,20 +17,18 @@ namespace OrchardCore.Templates.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllAdminTemplatesDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllAdminTemplatesDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model =>
-                {
-                    model.ExportAsFiles = step.ExportAsFiles;
-                }).Location("Content")
-            );
+            return Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model =>
+            {
+                model.ExportAsFiles = step.ExportAsFiles;
+            }).Location("Content");
         }
         public override async Task<IDisplayResult> UpdateAsync(AllAdminTemplatesDeploymentStep step, UpdateEditorContext context)
         {
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

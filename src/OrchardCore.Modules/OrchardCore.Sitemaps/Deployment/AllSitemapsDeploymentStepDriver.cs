@@ -16,11 +16,9 @@ namespace OrchardCore.Sitemaps.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(AllSitemapsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(AllSitemapsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("AllSitemapsDeploymentStep_Edit", step).Location("Content")
-            );
+            return View("AllSitemapsDeploymentStep_Edit", step).Location("Content");
         }
     }
 }

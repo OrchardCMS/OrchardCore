@@ -16,11 +16,9 @@ namespace OrchardCore.Search.Lucene.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(LuceneSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(LuceneSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                View("LuceneSettingsDeploymentStep_Fields_Edit", step).Location("Content")
-            );
+            return View("LuceneSettingsDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }

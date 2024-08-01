@@ -17,14 +17,12 @@ namespace OrchardCore.Settings.Deployment
                 );
         }
 
-        public override Task<IDisplayResult> EditAsync(SiteSettingsDeploymentStep step, BuildEditorContext context)
+        public override IDisplayResult Edit(SiteSettingsDeploymentStep step, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(
-                Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
-                {
-                    model.Settings = step.Settings;
-                }).Location("Content")
-            );
+            return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+            {
+                model.Settings = step.Settings;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, UpdateEditorContext context)
@@ -34,7 +32,7 @@ namespace OrchardCore.Settings.Deployment
 
             await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.Settings);
 
-            return await EditAsync(step, context);
+            return Edit(step, context);
         }
     }
 }

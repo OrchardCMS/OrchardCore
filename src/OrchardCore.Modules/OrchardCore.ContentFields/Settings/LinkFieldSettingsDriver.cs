@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition, context);
         }
     }
 }
