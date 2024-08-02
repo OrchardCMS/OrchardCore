@@ -91,7 +91,7 @@ public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
-        returnView("VisitSiteNavbarItem", model)
+        return View("VisitSiteNavbarItem", model)
             .Location("DetailAdmin", "Content:20");
     }
 }
