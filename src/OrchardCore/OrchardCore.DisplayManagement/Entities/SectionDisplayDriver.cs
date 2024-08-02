@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Entities
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        protected TSection GetSection(TModel model)
+        private TSection GetSection(TModel model)
             => model.Properties.TryGetPropertyValue(SectionName, out var section)
             ? section.ToObject<TSection>()
             : new TSection();
