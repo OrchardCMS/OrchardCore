@@ -84,7 +84,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         public virtual IDisplayResult Edit(TModel model)
             => NullShapeResult();
 
-        private static IDisplayResult NullShapeResult()
+        protected static IDisplayResult NullShapeResult()
             => null;
 
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, TUpdateContext context)

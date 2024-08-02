@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -18,7 +17,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchSettings>
+public class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
@@ -28,6 +27,9 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
     private readonly IShellReleaseManager _shellReleaseManager;
 
     protected readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SearchConstants.SearchSettingsGroupId;
 
     public AzureAISearchSettingsDisplayDriver(
         AzureAISearchIndexSettingsService indexSettingsService,
@@ -43,7 +45,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureAISearchSettings settings)
+    public override IDisplayResult Edit(ISite site, AzureAISearchSettings settings, BuildEditorContext context)
         => Initialize<AzureAISearchSettingsViewModel>("AzureAISearchSettings_Edit", async model =>
         {
             model.SearchIndex = settings.SearchIndex;
@@ -53,15 +55,10 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             .ToList();
         }).Location("Content:2#Azure AI Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+        .OnGroup(SettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchSettings settings, UpdateEditorContext context)
     {
-        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
@@ -96,7 +93,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             _shellReleaseManager.RequestRelease();
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 
     private static bool AreTheSame(string[] a, string[] b)

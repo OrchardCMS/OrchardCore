@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +6,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -15,14 +13,17 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
 {
-    public class SecuritySettingsDisplayDriver : SectionDisplayDriver<ISite, SecuritySettings>
+    public class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
     {
-        internal const string SettingsGroupId = "SecurityHeaders";
+        internal const string GroupId = "SecurityHeaders";
 
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly SecuritySettings _securitySettings;
+
+        protected override string SettingsGroupId
+            => GroupId;
 
         public SecuritySettingsDisplayDriver(
             IShellReleaseManager shellReleaseManager,
@@ -36,13 +37,8 @@ namespace OrchardCore.Security.Drivers
             _securitySettings = securitySettings.Value;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SecuritySettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, SecuritySettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, SecurityPermissions.ManageSecurityHeadersSettings))
@@ -71,10 +67,11 @@ namespace OrchardCore.Security.Drivers
 
                 model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
                     currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            }).Location("Content:2")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SecuritySettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, SecuritySettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -83,23 +80,20 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            if (context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
-            {
-                var model = new SecuritySettingsViewModel();
+            var model = new SecuritySettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                PrepareContentSecurityPolicyValues(model);
+            PrepareContentSecurityPolicyValues(model);
 
-                settings.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
-                settings.ContentSecurityPolicy = model.ContentSecurityPolicy;
-                settings.PermissionsPolicy = model.PermissionsPolicy;
-                settings.ReferrerPolicy = model.ReferrerPolicy;
+            settings.ContentTypeOptions = SecurityHeaderDefaults.ContentTypeOptions;
+            settings.ContentSecurityPolicy = model.ContentSecurityPolicy;
+            settings.PermissionsPolicy = model.PermissionsPolicy;
+            settings.ReferrerPolicy = model.ReferrerPolicy;
 
-                _shellReleaseManager.RequestRelease();
-            }
+            _shellReleaseManager.RequestRelease();
 
-            return await EditAsync(settings, context);
+            return await EditAsync(site, settings, context);
         }
 
         private static void PrepareContentSecurityPolicyValues(SecuritySettingsViewModel model)

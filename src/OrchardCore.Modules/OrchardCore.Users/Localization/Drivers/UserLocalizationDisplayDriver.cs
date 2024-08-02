@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization;
 using OrchardCore.Users.Localization.Models;
@@ -28,7 +27,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         S = localizer;
     }
 
-    public override IDisplayResult Edit(UserLocalizationSettings section, BuildEditorContext context)
+    public override IDisplayResult Edit(User user, UserLocalizationSettings section, BuildEditorContext context)
     {
         return Initialize<UserLocalizationViewModel>("UserCulture_Edit", async model =>
         {
@@ -41,10 +40,14 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
                     Value = culture
                 }).ToList();
 
-            cultureList.Insert(0, new SelectListItem() { Text = S["Use site's culture"], Value = "none" });
+            cultureList.Insert(0, new SelectListItem()
+            {
+                Text = S["Use site's culture"],
+                Value = "none",
+            });
 
             // If Invariant Culture is installed as a supported culture we bind it to a different culture code than String.Empty.
-            var emptyCulture = cultureList.FirstOrDefault(c => c.Value == "");
+            var emptyCulture = cultureList.FirstOrDefault(c => c.Value == string.Empty);
             if (emptyCulture != null)
             {
                 emptyCulture.Value = UserLocalizationConstants.Invariant;
@@ -55,7 +58,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         }).Location("Content:2");
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(User model, UserLocalizationSettings section, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(User user, UserLocalizationSettings section, UpdateEditorContext context)
     {
         var viewModel = new UserLocalizationViewModel();
 
@@ -63,6 +66,6 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
 
         section.Culture = viewModel.SelectedCulture;
 
-        return await EditAsync(section, context);
+        return await EditAsync(user, section, context);
     }
 }
