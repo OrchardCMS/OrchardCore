@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Entities;
 
-public abstract class SiteDisplayDriver<TSection> : SectionDisplayDriver<ISite, TSection>
+public abstract class SiteDisplayDriver<TSection> : SectionDisplayDriverBase<ISite, TSection>
     where TSection : new()
 {
     protected abstract string SettingsGroupId { get; }
