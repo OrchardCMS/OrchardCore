@@ -19,17 +19,15 @@ namespace OrchardCore.DisplayManagement.Entities
         where TSection : new()
         where TModel : class, IEntity
     {
-        [Obsolete("Instead use SectionName")]
-        protected virtual string PropertyName => typeof(TSection).Name;
-
         /// <summary>
-        /// Gets the section name that the <typeparamref name="TSection"/> is stored on the <typeparamref name="TModel"/>.
+        /// Gets the property name that the <typeparamref name="TSection"/> is stored in the <typeparamref name="TModel"/>.
         /// </summary>
         /// <remarks>
         /// Overriding this property allows changing the name of the property that the section is stored in from the
         /// default, which is <c>typeof(TSection).Name</c>.
         /// </remarks>
-        protected virtual string SectionName => typeof(TSection).Name;
+        protected virtual string PropertyName
+            => typeof(TSection).Name;
 
         public override Task<IDisplayResult> DisplayAsync(TModel model, BuildDisplayContext context)
         {
@@ -104,7 +102,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
             if (context.Updater.ModelState.IsValid)
             {
-                model.Properties[SectionName] = JObject.FromObject(section);
+                model.Properties[PropertyName] = JObject.FromObject(section);
             }
 
             return result;
@@ -130,7 +128,7 @@ namespace OrchardCore.DisplayManagement.Entities
         }
 
         private TSection GetSection(TModel model)
-            => model.Properties.TryGetPropertyValue(SectionName, out var section)
+            => model.Properties.TryGetPropertyValue(PropertyName, out var section)
             ? section.ToObject<TSection>()
             : new TSection();
 
@@ -138,11 +136,11 @@ namespace OrchardCore.DisplayManagement.Entities
         {
             if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
-                Prefix = $"{htmlFieldPrefix}.{ModelName}.{SectionName}";
+                Prefix = $"{htmlFieldPrefix}.{ModelName}.{PropertyName}";
             }
             else
             {
-                Prefix = $"{ModelName}.{SectionName}";
+                Prefix = $"{ModelName}.{PropertyName}";
             }
         }
     }

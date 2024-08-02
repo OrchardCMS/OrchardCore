@@ -13,6 +13,6 @@ namespace OrchardCore.AuditTrail.Drivers
         where TSection : new()
     {
         public override bool CanHandleModel(AuditTrailEvent auditTrailEvent)
-            => auditTrailEvent.Properties.ContainsKey(SectionName);
+            => auditTrailEvent.Properties.ContainsKey(PropertyName);
     }
 }
