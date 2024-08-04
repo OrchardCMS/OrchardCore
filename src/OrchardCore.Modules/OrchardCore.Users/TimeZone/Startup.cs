@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Drivers;
+using OrchardCore.Users.TimeZone.Handlers;
 using OrchardCore.Users.TimeZone.Services;
 
 namespace OrchardCore.Users.TimeZone
@@ -15,6 +17,7 @@ namespace OrchardCore.Users.TimeZone
             services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
             services.AddSingleton<UserTimeZoneService>();
             services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
+            services.AddScoped<IUserEventHandler, TimeZoneUserEventHandler>();
         }
     }
 }
