@@ -69,10 +69,10 @@ namespace OrchardCore.Seo.Drivers
             if (settings.DisplayGoogleSchema)
             {
                 results.Add(Initialize<SeoMetaPartGoogleSchemaViewModel>("SeoMetaPartGoogleSchema_Edit", model =>
-                    {
-                        model.GoogleSchema = part.GoogleSchema;
-                        model.SeoMetaPart = part;
-                    }).Location("Parts#SEO;50%Google Schema;40"));
+                {
+                    model.GoogleSchema = part.GoogleSchema;
+                    model.SeoMetaPart = part;
+                }).Location("Parts#SEO;50%Google Schema;40"));
             }
 
             return Combine(results);

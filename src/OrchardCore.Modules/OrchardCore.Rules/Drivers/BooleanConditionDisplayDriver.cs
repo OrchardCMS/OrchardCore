@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
@@ -9,16 +8,16 @@ namespace OrchardCore.Rules.Drivers
 {
     public class BooleanConditionDisplayDriver : DisplayDriver<Condition, BooleanCondition>
     {
-        public override IDisplayResult Display(BooleanCondition condition)
+        public override Task<IDisplayResult> DisplayAsync(BooleanCondition condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("BooleanCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("BooleanCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(BooleanCondition condition)
+        public override IDisplayResult Edit(BooleanCondition condition, BuildEditorContext context)
         {
             return Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", m =>
             {
@@ -27,11 +26,11 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BooleanCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(BooleanCondition condition, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
+            await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
@@ -36,33 +36,33 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
         model.Body = activity.Body.Expression;
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(SmsTask activity, IUpdateModel updater)
+    public async override Task<IDisplayResult> UpdateAsync(SmsTask activity, UpdateEditorContext context)
     {
         var viewModel = new SmsTaskViewModel();
 
-        await updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
         }
         else if (!_phoneFormatValidator.IsValid(viewModel.PhoneNumber))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
         }
 
         if (string.IsNullOrWhiteSpace(viewModel.Body))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
         }
         else if (!_liquidTemplateManager.Validate(viewModel.Body, out var bodyErrors))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), string.Join(' ', bodyErrors));
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), string.Join(' ', bodyErrors));
         }
 
         activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);
         activity.Body = new WorkflowExpression<string>(viewModel.Body);
 
-        return Edit(activity);
+        return await EditAsync(activity, context);
     }
 }

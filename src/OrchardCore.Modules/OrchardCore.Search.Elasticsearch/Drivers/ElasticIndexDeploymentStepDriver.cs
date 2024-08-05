@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.ViewModels;
@@ -18,16 +17,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
 
-        public override IDisplayResult Display(ElasticIndexDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(ElasticIndexDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("ElasticIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("ElasticIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(ElasticIndexDeploymentStep step)
+        public override IDisplayResult Edit(ElasticIndexDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<ElasticIndexDeploymentStepViewModel>("ElasticIndexDeploymentStep_Fields_Edit", async model =>
             {
@@ -37,22 +36,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ElasticIndexDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ElasticIndexDeploymentStep step, UpdateEditorContext context)
         {
             step.IndexNames = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.IndexNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.IndexNames = [];
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

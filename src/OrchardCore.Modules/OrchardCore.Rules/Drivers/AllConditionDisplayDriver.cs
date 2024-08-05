@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
@@ -10,10 +9,10 @@ namespace OrchardCore.Rules.Drivers
 {
     public class AllConditionDisplayDriver : DisplayDriver<Condition, AllConditionGroup>
     {
-        public override IDisplayResult Display(AllConditionGroup condition)
+        public override Task<IDisplayResult> DisplayAsync(AllConditionGroup condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("AllCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
                     Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
@@ -24,7 +23,7 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override IDisplayResult Edit(AllConditionGroup condition)
+        public override IDisplayResult Edit(AllConditionGroup condition, BuildEditorContext context)
         {
             return Initialize<AllConditionViewModel>("AllCondition_Fields_Edit", m =>
             {
@@ -33,11 +32,11 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AllConditionGroup condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AllConditionGroup condition, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
+            await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

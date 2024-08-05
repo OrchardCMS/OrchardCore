@@ -6,7 +6,7 @@ namespace OrchardCore.Admin.Drivers;
 
 public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 {
-    public override IDisplayResult Display(Navbar model)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("VisitSiteNavbarItem", model)
             .Location("DetailAdmin", "Content:20");

@@ -25,11 +25,11 @@ namespace OrchardCore.Settings.Drivers
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site, BuildEditorContext context)
         {
             if (!IsGeneralGroup(context))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
@@ -46,7 +46,7 @@ namespace OrchardCore.Settings.Drivers
                     .OnGroup(GroupId)
             );
 
-            return Task.FromResult<IDisplayResult>(result);
+            return result;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)

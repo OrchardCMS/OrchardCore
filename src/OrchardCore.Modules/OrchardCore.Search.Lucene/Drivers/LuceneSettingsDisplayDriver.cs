@@ -13,18 +13,28 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Drivers
 {
-    public class LuceneSettingsDisplayDriver(
-        LuceneIndexSettingsService luceneIndexSettingsService,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService
-            ) : SectionDisplayDriver<ISite, LuceneSettings>
+    public class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettings>
     {
-        private readonly LuceneIndexSettingsService _luceneIndexSettingsService = luceneIndexSettingsService;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService = authorizationService;
         private static readonly char[] _separator = [',', ' '];
 
-        public override async Task<IDisplayResult> EditAsync(LuceneSettings settings, BuildEditorContext context)
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
+
+        public LuceneSettingsDisplayDriver(
+            LuceneIndexSettingsService luceneIndexSettingsService,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
+        {
+            _luceneIndexSettingsService = luceneIndexSettingsService;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+        }
+
+        protected override string SettingsGroupId
+            => SearchConstants.SearchSettingsGroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, LuceneSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -34,22 +44,17 @@ namespace OrchardCore.Search.Lucene.Drivers
             }
 
             return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
-                {
-                    model.SearchIndex = settings.SearchIndex;
-                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
-                    model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
-                    model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
-                }).Location("Content:2#Lucene;15")
-                .OnGroup(SearchConstants.SearchSettingsGroupId);
+            {
+                model.SearchIndex = settings.SearchIndex;
+                model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
+                model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
+                model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
+            }).Location("Content:2#Lucene;15")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, LuceneSettings section, UpdateEditorContext context)
         {
-            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
@@ -65,7 +70,7 @@ namespace OrchardCore.Search.Lucene.Drivers
             section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
             section.AllowLuceneQueriesInSearch = model.AllowLuceneQueriesInSearch;
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

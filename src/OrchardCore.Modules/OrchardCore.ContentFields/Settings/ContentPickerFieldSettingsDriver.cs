@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -14,15 +15,18 @@ namespace OrchardCore.ContentFields.Settings
     public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
         private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
-        public ContentPickerFieldSettingsDriver(ILiquidTemplateManager templateManager, IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
+        public ContentPickerFieldSettingsDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
             {
@@ -69,7 +73,7 @@ namespace OrchardCore.ContentFields.Settings
                 context.Builder.WithSettings(settings);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
 
         private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
@@ -77,6 +81,7 @@ namespace OrchardCore.ContentFields.Settings
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {
                 context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+
                 return false;
             }
 

@@ -27,12 +27,12 @@ namespace OrchardCore.Taxonomies.Drivers
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Count > 0;
+
             return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
             {
                 m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
-            })
-            .Location("Detail", "Content");
+            }).Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)

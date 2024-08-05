@@ -18,7 +18,6 @@ namespace OrchardCore.AdminDashboard.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
 
-
         public DashboardContentDisplayDriver(IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IContentManager contentManager)
@@ -26,7 +25,6 @@ namespace OrchardCore.AdminDashboard.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _contentManager = contentManager;
-
         }
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)

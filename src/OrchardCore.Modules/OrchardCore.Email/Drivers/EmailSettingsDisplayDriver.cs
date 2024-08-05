@@ -18,7 +18,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
 
-public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSettings>
+public class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -28,6 +28,9 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly EmailProviderOptions _emailProviders;
 
     protected readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => EmailSettings.GroupId;
 
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -46,13 +49,8 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
-    public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -65,16 +63,11 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.DefaultProviderName;
             model.Providers = await GetProviderOptionsAsync();
         }).Location("Content:1#Providers")
-        .OnGroup(EmailSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -91,7 +84,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 
     private async Task<SelectListItem[]> GetProviderOptionsAsync()

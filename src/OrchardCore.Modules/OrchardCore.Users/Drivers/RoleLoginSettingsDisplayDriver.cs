@@ -16,13 +16,16 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLoginSettings>
+public class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
 
     protected readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
 
     public RoleLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -36,7 +39,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(RoleLoginSettings settings)
+    public override IDisplayResult Edit(ISite site, RoleLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
@@ -50,13 +53,12 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
             .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RoleLoginSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, RoleLoginSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }
@@ -88,6 +90,6 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
             settings.RequireTwoFactorAuthenticationForSpecificRoles = false;
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

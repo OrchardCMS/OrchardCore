@@ -27,6 +27,7 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
+
         protected readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,

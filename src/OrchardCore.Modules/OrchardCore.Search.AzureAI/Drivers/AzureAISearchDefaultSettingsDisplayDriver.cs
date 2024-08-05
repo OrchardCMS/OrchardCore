@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -19,7 +18,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchDefaultSettings>
+public class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchDefaultSettings>
 {
     public const string GroupId = "azureAISearch";
 
@@ -31,14 +30,16 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
     protected readonly IStringLocalizer S;
 
+    protected override string SettingsGroupId
+        => GroupId;
+
     public AzureAISearchDefaultSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
         IDataProtectionProvider dataProtectionProvider,
-        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
-        )
+        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
@@ -48,7 +49,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureAISearchDefaultSettings settings)
+    public override IDisplayResult Edit(ISite site, AzureAISearchDefaultSettings settings, BuildEditorContext context)
     {
         if (_searchOptions.DisableUIConfiguration)
         {
@@ -72,12 +73,12 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchDefaultSettings settings, UpdateEditorContext context)
     {
-        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || _searchOptions.DisableUIConfiguration)
+        if (_searchOptions.DisableUIConfiguration)
         {
             return null;
         }
@@ -142,6 +143,6 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             _shellReleaseManager.RequestRelease();
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

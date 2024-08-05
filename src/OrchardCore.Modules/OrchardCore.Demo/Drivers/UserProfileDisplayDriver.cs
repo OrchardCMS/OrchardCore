@@ -22,7 +22,7 @@ namespace OrchardCore.Demo.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Edit(UserProfile profile, BuildEditorContext context)
+        public override IDisplayResult Edit(User user, UserProfile profile, BuildEditorContext context)
         {
             return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
             {
@@ -34,11 +34,11 @@ namespace OrchardCore.Demo.Drivers
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(User user, UserProfile profile, UpdateEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile))
             {
-                return Edit(profile, context);
+                return Edit(user, profile, context);
             }
 
             var model = new EditUserProfileViewModel();
@@ -50,7 +50,7 @@ namespace OrchardCore.Demo.Drivers
             profile.LastName = model.LastName;
             profile.UpdatedAt = DateTime.UtcNow;
 
-            return Edit(profile, context);
+            return Edit(user, profile, context);
         }
     }
 }

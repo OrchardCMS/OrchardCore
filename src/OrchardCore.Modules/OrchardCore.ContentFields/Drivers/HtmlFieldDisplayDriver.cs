@@ -25,9 +25,11 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
+
         protected readonly IStringLocalizer S;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+        public HtmlFieldDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
             IShortcodeService shortcodeService,

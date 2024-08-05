@@ -2,23 +2,22 @@ using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment
 {
     public class AllContentDeploymentStepDriver : DisplayDriver<DeploymentStep, AllContentDeploymentStep>
     {
-        public override IDisplayResult Display(AllContentDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AllContentDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("AllContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AllContentDeploymentStep step)
+        public override IDisplayResult Edit(AllContentDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
             {
@@ -26,11 +25,11 @@ namespace OrchardCore.Contents.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
+            await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

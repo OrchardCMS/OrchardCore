@@ -11,12 +11,15 @@ namespace OrchardCore.Liquid.Drivers
 {
     public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
+
         protected readonly IStringLocalizer S;
 
-        public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
+        public LiquidPartDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
+            IStringLocalizer<LiquidPartDisplayDriver> localizer)
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
+            _liquidTemplateManager = liquidTemplateManager;
             S = localizer;
         }
 
@@ -41,7 +44,7 @@ namespace OrchardCore.Liquid.Drivers
 
             await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
 
-            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Liquid;
@@ -11,7 +11,8 @@ namespace OrchardCore.Facebook.Widgets.Settings
 {
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
-        protected readonly ILiquidTemplateManager _templateManager;
+        private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
@@ -20,7 +21,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
             {
@@ -45,7 +46,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
                 context.Builder.WithSettings(new FacebookPluginPartSettings { Liquid = model.Liquid });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }
