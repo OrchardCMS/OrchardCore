@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
@@ -10,15 +10,14 @@ namespace OrchardCore.Menu.Settings
 {
     public class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlMenuItemPart>
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<HtmlMenuItemPartSettingsViewModel>("HtmlMenuItemPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
 
                 model.SanitizeHtml = settings.SanitizeHtml;
-            })
-            .Location("Content:20");
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -32,7 +31,7 @@ namespace OrchardCore.Menu.Settings
 
             context.Builder.WithSettings(settings);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

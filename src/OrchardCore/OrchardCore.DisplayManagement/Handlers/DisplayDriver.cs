@@ -1,5 +1,5 @@
+using System;
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement.Handlers
@@ -17,118 +17,78 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Returns <see langword="true"/> if the model can be handled by the current driver.
         /// </summary>
-        /// <remarks>
-        /// Override <see cref="CanHandleModelAsync(TModel)"/> instead if your code is asynchronous.
-        /// </remarks>
         public virtual bool CanHandleModel(TModel model)
-        {
-            return true;
-        }
+            => true;
 
-        /// <summary>
-        /// Returns <see langword="true"/> if the model can be handled by the current driver.
-        /// </summary>
-        /// <remarks>
-        /// Override <see cref="CanHandleModel(TModel)"/> instead if your code is synchronous.
-        /// </remarks>
-        public virtual Task<bool> CanHandleModelAsync(TModel model)
-            => Task.FromResult(CanHandleModel(model));
-
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await DisplayAsync(model, context);
+            return DisplayAsync(model, context);
         }
 
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await EditAsync(model, context);
+            return EditAsync(model, context);
         }
 
-        async Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
-            if (!await CanHandleModelAsync(model))
+            if (!CanHandleModel(model))
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             BuildPrefix(model, context.HtmlFieldPrefix);
 
-            return await UpdateAsync(model, context);
+            return UpdateAsync(model, context);
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, TDisplayContext context)
-        {
-            return DisplayAsync(model, context.Updater);
-        }
+            => Task.FromResult(Display(model, context));
 
-        public virtual Task<IDisplayResult> DisplayAsync(TModel model, IUpdateModel updater)
+        public virtual IDisplayResult Display(TModel model, TDisplayContext context)
         {
-            return Task.FromResult(Display(model, updater));
-        }
-
-        public virtual IDisplayResult Display(TModel model, IUpdateModel updater)
-        {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Display(model);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TDisplayContext context) or Display(TModel model, TDisplayContext context) method.")]
         public virtual IDisplayResult Display(TModel model)
-        {
-            return NullShapeResult();
-        }
+            => NullShapeResult();
 
         public virtual Task<IDisplayResult> EditAsync(TModel model, TEditorContext context)
-        {
-            return EditAsync(model, context.Updater);
-        }
-
-        public virtual Task<IDisplayResult> EditAsync(TModel model, IUpdateModel updater)
-        {
-            return Task.FromResult(Edit(model, updater));
-        }
-
-        public virtual IDisplayResult Edit(TModel model, IUpdateModel updater)
-        {
-            return Edit(model);
-        }
+            => Task.FromResult(Edit(model, context));
 
         public virtual IDisplayResult Edit(TModel model, TEditorContext context)
         {
-            return Edit(model, context.Updater);
+#pragma warning disable CS0618 // Type or member is obsolete
+            return Edit(model);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TEditorContext context) or Edit(TModel model, TEditorContext context) method.")]
         public virtual IDisplayResult Edit(TModel model)
-        {
-            return NullShapeResult();
-        }
+            => NullShapeResult();
 
-        private static IDisplayResult NullShapeResult()
-        {
-            return null;
-        }
+        protected static IDisplayResult NullShapeResult()
+            => null;
 
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, TUpdateContext context)
-        {
-            return UpdateAsync(model, context.Updater);
-        }
-
-        public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
-        {
-            return EditAsync(model, updater);
-        }
+            => EditAsync(model, context as TEditorContext);
 
         protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)
         {

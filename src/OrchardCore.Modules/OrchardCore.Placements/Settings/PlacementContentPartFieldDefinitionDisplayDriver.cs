@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Placements.ViewModels;
 
@@ -15,7 +16,7 @@ namespace OrchardCore.Placements.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition contentPartFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext context)
         {
             return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
             {

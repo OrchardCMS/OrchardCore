@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,16 +7,16 @@ namespace OrchardCore.OpenId.Deployment
 {
     public class OpenIdServerDeploymentStepDriver : DisplayDriver<DeploymentStep, OpenIdServerDeploymentStep>
     {
-        public override IDisplayResult Display(OpenIdServerDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(OpenIdServerDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("OpenIdServerDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("OpenIdServerDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(OpenIdServerDeploymentStep step)
+        public override IDisplayResult Edit(OpenIdServerDeploymentStep step, BuildEditorContext context)
         {
             return View("OpenIdServerDeploymentStep_Edit", step).Location("Content");
         }

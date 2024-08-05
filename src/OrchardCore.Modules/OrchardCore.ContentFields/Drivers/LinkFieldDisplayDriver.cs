@@ -21,9 +21,10 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
-        protected readonly IStringLocalizer S;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
+
+        protected readonly IStringLocalizer S;
 
         public LinkFieldDisplayDriver(
             IUrlHelperFactory urlHelperFactory,

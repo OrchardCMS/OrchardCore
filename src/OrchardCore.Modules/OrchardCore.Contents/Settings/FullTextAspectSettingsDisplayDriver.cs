@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
@@ -12,6 +13,7 @@ namespace OrchardCore.Contents.Settings
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+
         protected readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
@@ -22,7 +24,7 @@ namespace OrchardCore.Contents.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+        public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
         {
             return Initialize<FullTextAspectSettingsViewModel>("FullTextAspectSettings_Edit", model =>
             {
@@ -63,7 +65,7 @@ namespace OrchardCore.Contents.Settings
                 });
             }
 
-            return Edit(contentTypeDefinition);
+            return Edit(contentTypeDefinition, context);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -14,13 +15,12 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public ContentPickerFieldElasticEditorSettingsDriver(
-            ElasticIndexSettingsService elasticIndexSettingsService)
+        public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
             {
@@ -29,8 +29,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 model.Index = settings.Index;
 
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            })
-                .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -44,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 context.Builder.WithSettings(model);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

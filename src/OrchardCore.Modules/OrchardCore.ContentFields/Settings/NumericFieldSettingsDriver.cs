@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class NumericFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<NumericField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<NumericFieldSettings>("NumericFieldSettings_Edit", model =>
             {
@@ -22,8 +23,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Maximum = settings.Maximum;
                 model.Placeholder = settings.Placeholder;
                 model.DefaultValue = settings.DefaultValue;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(model);
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

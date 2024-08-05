@@ -10,8 +10,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Analytics.Drivers
 {
-    public class GoogleAnalyticsSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAnalyticsSettings>
+    public class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<GoogleAnalyticsSettings>
     {
+        protected override string SettingsGroupId
+            => GoogleConstants.Features.GoogleAnalytics;
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -23,7 +26,7 @@ namespace OrchardCore.Google.Analytics.Drivers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAnalyticsSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
@@ -34,29 +37,27 @@ namespace OrchardCore.Google.Analytics.Drivers
             return Initialize<GoogleAnalyticsSettingsViewModel>("GoogleAnalyticsSettings_Edit", model =>
             {
                 model.TrackingID = settings.TrackingID;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAnalytics);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAnalyticsSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAnalyticsSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == GoogleConstants.Features.GoogleAnalytics)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
-                {
-                    return null;
-                }
-
-                var model = new GoogleAnalyticsSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.TrackingID = model.TrackingID;
-                }
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new GoogleAnalyticsSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                settings.TrackingID = model.TrackingID;
+            }
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

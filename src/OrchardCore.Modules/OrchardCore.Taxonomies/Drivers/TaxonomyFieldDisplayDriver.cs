@@ -18,6 +18,7 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
@@ -35,8 +36,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
+            }).Location("Detail", "Content")
             .Location("Summary", "Content");
         }
 

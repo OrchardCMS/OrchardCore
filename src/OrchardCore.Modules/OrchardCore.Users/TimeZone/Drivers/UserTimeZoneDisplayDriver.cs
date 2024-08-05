@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
@@ -19,24 +18,15 @@ namespace OrchardCore.Users.TimeZone.Drivers
             _userTimeZoneService = userTimeZoneService;
         }
 
-        public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
+        public override IDisplayResult Edit(User user, UserTimeZone userTimeZone, BuildEditorContext context)
         {
-            return Initialize<UserTimeZoneViewModel>(
-                    "UserTimeZone_Edit",
-                    model =>
-                    {
-                        model.TimeZoneId = userTimeZone.TimeZoneId;
-                    }
-                )
-                .Location("Content:2");
+            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
+            {
+                model.TimeZoneId = userTimeZone.TimeZoneId;
+            }).Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(
-            User user,
-            UserTimeZone userTimeZone,
-            IUpdateModel updater,
-            UpdateEditorContext context
-        )
+        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, UpdateEditorContext context)
         {
             var model = new UserTimeZoneViewModel();
 
@@ -46,7 +36,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
             // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
             await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
 
-            return await EditAsync(userTimeZone, context);
+            return await EditAsync(user, userTimeZone, context);
         }
     }
 }

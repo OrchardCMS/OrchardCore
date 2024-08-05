@@ -10,9 +10,10 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class ContentCulturePickerSettingsDriver : SectionDisplayDriver<ISite, ContentCulturePickerSettings>
+    public class ContentCulturePickerSettingsDriver : SiteDisplayDriver<ContentCulturePickerSettings>
     {
         public const string GroupId = "ContentCulturePicker";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -24,7 +25,10 @@ namespace OrchardCore.ContentLocalization.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentCulturePickerSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ContentCulturePickerSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -37,10 +41,11 @@ namespace OrchardCore.ContentLocalization.Drivers
             {
                 model.SetCookie = settings.SetCookie;
                 model.RedirectToHomepage = settings.RedirectToHomepage;
-            }).Location("Content:5").OnGroup(GroupId);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentCulturePickerSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentCulturePickerSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -49,12 +54,9 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

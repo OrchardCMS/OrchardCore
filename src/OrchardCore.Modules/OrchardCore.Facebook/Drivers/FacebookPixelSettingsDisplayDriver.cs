@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers;
 
-public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookPixelSettings>
+public class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<FacebookPixelSettings>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -24,7 +23,10 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public override async Task<IDisplayResult> EditAsync(FacebookPixelSettings settings, BuildEditorContext context)
+    protected override string SettingsGroupId
+        => FacebookConstants.PixelSettingsGroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, FacebookPixelSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
@@ -36,13 +38,12 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
         {
             model.PixelId = settings.PixelId;
         }).Location("Content:0")
-        .OnGroup(FacebookConstants.PixelSettingsGroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(FacebookPixelSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookPixelSettings settings, UpdateEditorContext context)
     {
-        if (!string.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
         {
             return null;
         }
@@ -51,6 +52,6 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
 
         settings.PixelId = settings.PixelId?.Trim();
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

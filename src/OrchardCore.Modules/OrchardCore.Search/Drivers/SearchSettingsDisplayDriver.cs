@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
@@ -16,7 +15,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Drivers
 {
-    public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
+    public class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettings>
     {
         [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
         public const string GroupId = SearchConstants.SearchSettingsGroupId;
@@ -36,7 +35,10 @@ namespace OrchardCore.Search.Drivers
             _serviceProvider = serviceProvider;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SearchSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => SearchConstants.SearchSettingsGroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, SearchSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -54,16 +56,11 @@ namespace OrchardCore.Search.Drivers
                 model.PageTitle = settings.PageTitle;
                 model.ProviderName = settings.ProviderName;
             }).Location("Content:2")
-            .OnGroup(SearchConstants.SearchSettingsGroupId);
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, SearchSettings section, UpdateEditorContext context)
         {
-            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
@@ -79,7 +76,7 @@ namespace OrchardCore.Search.Drivers
             section.Placeholder = model.Placeholder;
             section.PageTitle = model.PageTitle;
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

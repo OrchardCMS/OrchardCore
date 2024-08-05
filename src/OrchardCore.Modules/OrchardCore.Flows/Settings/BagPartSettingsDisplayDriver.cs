@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -15,6 +15,7 @@ namespace OrchardCore.Flows.Settings
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
         protected readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
@@ -25,7 +26,7 @@ namespace OrchardCore.Flows.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
             {
@@ -48,7 +49,11 @@ namespace OrchardCore.Flows.Settings
         {
             var model = new BagPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType, m => m.Source, m => m.Stereotypes);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.ContainedContentTypes,
+                m => m.DisplayType,
+                m => m.Source,
+                m => m.Stereotypes);
 
             switch (model.Source)
             {
@@ -63,7 +68,7 @@ namespace OrchardCore.Flows.Settings
                     break;
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
 
         private void SetStereoTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)

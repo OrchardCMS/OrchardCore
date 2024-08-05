@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.ViewModels;
 
@@ -19,16 +17,16 @@ namespace OrchardCore.Media.Deployment
             _mediaFileStore = mediaFileStore;
         }
 
-        public override IDisplayResult Display(MediaDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(MediaDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("MediaDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(MediaDeploymentStep step)
+        public override IDisplayResult Edit(MediaDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
             {
@@ -39,25 +37,25 @@ namespace OrchardCore.Media.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, UpdateEditorContext context)
         {
             step.FilePaths = [];
             step.DirectoryPaths = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.FilePaths,
                                               x => x.DirectoryPaths,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.FilePaths = [];
                 step.DirectoryPaths = [];
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
@@ -74,7 +72,7 @@ namespace OrchardCore.Media.Deployment
 
                     mediaStoreEntry.Entries = e.IsDirectory
                         ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
-                        : Array.Empty<MediaStoreEntryViewModel>();
+                        : [];
 
                     return mediaStoreEntry;
                 }).ToListAsync();

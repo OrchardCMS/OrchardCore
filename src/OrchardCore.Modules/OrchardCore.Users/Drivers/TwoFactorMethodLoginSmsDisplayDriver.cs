@@ -7,10 +7,10 @@ namespace OrchardCore.Users.Drivers;
 
 public class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override IDisplayResult Edit(TwoFactorMethod model)
+    public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
     {
         return View("SmsAuthenticatorValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultPhoneProvider);
+            .Location("Content")
+            .OnGroup(TokenOptions.DefaultPhoneProvider);
     }
 }

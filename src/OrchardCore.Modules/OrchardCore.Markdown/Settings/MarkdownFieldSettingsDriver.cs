@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.ViewModels;
@@ -9,11 +10,10 @@ namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
             {
-
                 var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
                 model.SanitizeHtml = settings.SanitizeHtml;
@@ -33,7 +33,7 @@ namespace OrchardCore.Markdown.Settings
 
             context.Builder.WithSettings(settings);
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

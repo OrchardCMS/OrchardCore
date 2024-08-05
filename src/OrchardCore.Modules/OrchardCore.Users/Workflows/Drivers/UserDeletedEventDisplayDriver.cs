@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
@@ -8,20 +10,16 @@ namespace OrchardCore.Users.Workflows.Drivers
 {
     public class UserDeletedEventDisplayDriver : ActivityDisplayDriver<UserDeletedEvent, UserDeletedEventViewModel>
     {
+        protected IUserService UserService { get; }
+
         public UserDeletedEventDisplayDriver(IUserService userService)
         {
             UserService = userService;
         }
 
-        protected IUserService UserService { get; }
-
-        protected override void EditActivity(UserDeletedEvent source, UserDeletedEventViewModel target)
+        public override Task<IDisplayResult> DisplayAsync(UserDeletedEvent activity, BuildDisplayContext context)
         {
-        }
-
-        public override IDisplayResult Display(UserDeletedEvent activity)
-        {
-            return Combine(
+            return CombineAsync(
                 Shape("UserDeletedEvent_Fields_Thumbnail", new UserDeletedEventViewModel(activity)).Location("Thumbnail", "Content"),
                 Factory("UserDeletedEvent_Fields_Design", ctx =>
                 {

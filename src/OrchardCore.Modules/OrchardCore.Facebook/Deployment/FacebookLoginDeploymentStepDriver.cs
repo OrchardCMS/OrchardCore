@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,16 +7,16 @@ namespace OrchardCore.Facebook.Deployment
 {
     public class FacebookLoginDeploymentStepDriver : DisplayDriver<DeploymentStep, FacebookLoginDeploymentStep>
     {
-        public override IDisplayResult Display(FacebookLoginDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(FacebookLoginDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("FacebookLoginDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("FacebookLoginDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(FacebookLoginDeploymentStep step)
+        public override IDisplayResult Edit(FacebookLoginDeploymentStep step, BuildEditorContext context)
         {
             return View("FacebookLoginDeploymentStep_Edit", step).Location("Content");
         }
