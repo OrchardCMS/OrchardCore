@@ -10,7 +10,7 @@ namespace OrchardCore.Forms.Drivers
 {
     public class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
     {
-        public override IDisplayResult Display(LabelPart part)
+        public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
         {
             return View("LabelPart", part).Location("Detail", "Content");
         }
@@ -23,11 +23,11 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, UpdatePartEditorContext context)
         {
             var viewModel = new LabelPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.For = viewModel.For?.Trim();
 

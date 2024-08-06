@@ -20,9 +20,13 @@ namespace OrchardCore.AdminDashboard.Drivers
             return Initialize<DashboardPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, dashboardPart));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Position, t => t.Width, t => t.Height);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                t => t.Position,
+                t => t.Width,
+                t => t.Height);
+
             return Edit(model, context);
         }
 

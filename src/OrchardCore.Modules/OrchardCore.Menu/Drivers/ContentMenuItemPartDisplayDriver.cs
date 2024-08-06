@@ -26,7 +26,7 @@ namespace OrchardCore.Menu.Drivers
             );
         }
 
-        public override IDisplayResult Edit(ContentMenuItemPart part)
+        public override IDisplayResult Edit(ContentMenuItemPart part, BuildPartEditorContext context)
         {
             return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
             {
@@ -35,15 +35,15 @@ namespace OrchardCore.Menu.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, UpdatePartEditorContext context)
         {
             var model = new ContentMenuItemPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             part.ContentItem.DisplayText = model.Name;
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

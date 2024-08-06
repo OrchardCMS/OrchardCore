@@ -81,12 +81,12 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HtmlField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HtmlField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditHtmlFieldViewModel();
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-            await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
             if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
             {

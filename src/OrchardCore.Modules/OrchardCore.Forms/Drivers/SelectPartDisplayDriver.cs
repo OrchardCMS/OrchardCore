@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -18,12 +19,12 @@ namespace OrchardCore.Forms.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(SelectPart part)
+        public override IDisplayResult Display(SelectPart part, BuildPartDisplayContext context)
         {
             return View("SelectPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(SelectPart part)
+        public override IDisplayResult Edit(SelectPart part, BuildPartEditorContext context)
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
@@ -33,10 +34,10 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(SelectPart part, UpdatePartEditorContext context)
         {
             var viewModel = new SelectPartEditViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
             part.DefaultValue = viewModel.DefaultValue;
 
             try
@@ -48,10 +49,10 @@ namespace OrchardCore.Forms.Drivers
             }
             catch
             {
-                updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
+                context.Updater.ModelState.AddModelError(Prefix + '.' + nameof(SelectPartEditViewModel.Options), S["The options are written in an incorrect format."]);
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

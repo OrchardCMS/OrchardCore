@@ -18,7 +18,7 @@ namespace OrchardCore.Lists.Feeds
             .Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(ListPart part)
+        public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
         {
             return Initialize<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
@@ -29,20 +29,20 @@ namespace OrchardCore.Lists.Feeds
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ListPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ListPart part, UpdatePartEditorContext context)
         {
             var model = new ListFeedEditViewModel
             {
                 ContentItem = part.ContentItem,
             };
 
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 
             part.ContentItem.Content.ListPart.DisableRssFeed = model.DisableRssFeed;
             part.ContentItem.Content.ListPart.FeedProxyUrl = model.FeedProxyUrl;
             part.ContentItem.Content.ListPart.FeedItemsCount = model.FeedItemsCount;
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

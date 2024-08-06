@@ -51,16 +51,16 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(DateTimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(DateTimeField field, UpdateFieldEditorContext context)
         {
             var model = new EditDateTimeFieldViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.LocalDateTime);
             var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
 
             if (settings.Required && model.LocalDateTime == null)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
             else
             {

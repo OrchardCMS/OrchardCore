@@ -98,11 +98,11 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentPickerField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditContentPickerFieldViewModel();
 
-            var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds);
+            var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.ContentItemIds);
 
             if (!modelUpdated)
             {
@@ -110,18 +110,19 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.ContentItemIds = viewModel.ContentItemIds == null
-                ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? []
+                : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
             if (settings.Required && field.ContentItemIds.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.ContentItemIds.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

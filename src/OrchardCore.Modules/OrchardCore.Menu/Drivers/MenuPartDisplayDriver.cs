@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -38,7 +39,7 @@ namespace OrchardCore.Menu.Drivers
             H = htmlLocalizer;
         }
 
-        public override IDisplayResult Edit(MenuPart part)
+        public override IDisplayResult Edit(MenuPart part, BuildPartEditorContext context)
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
@@ -68,10 +69,10 @@ namespace OrchardCore.Menu.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(MenuPart part, UpdatePartEditorContext context)
         {
             var model = new MenuPartEditViewModel();
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy);
 
             if (!string.IsNullOrWhiteSpace(model.Hierarchy))
             {
@@ -95,7 +96,7 @@ namespace OrchardCore.Menu.Drivers
                 };
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
 
         /// <summary>

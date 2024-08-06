@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -9,7 +10,7 @@ namespace OrchardCore.Forms.Drivers
 {
     public class FormElementPartDisplayDriver : ContentPartDisplayDriver<FormElementPart>
     {
-        public override IDisplayResult Edit(FormElementPart part)
+        public override IDisplayResult Edit(FormElementPart part, BuildPartEditorContext context)
         {
             return Initialize<FormElementPartEditViewModel>("FormElementPart_Fields_Edit", m =>
             {
@@ -17,15 +18,15 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(FormElementPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(FormElementPart part, UpdatePartEditorContext context)
         {
             var viewModel = new FormElementPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.Id = viewModel.Id?.Trim();
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
@@ -9,17 +10,17 @@ namespace OrchardCore.Sitemaps.Drivers
 {
     public class SitemapPartDisplayDriver : ContentPartDisplayDriver<SitemapPart>
     {
-        public override IDisplayResult Edit(SitemapPart part)
+        public override IDisplayResult Edit(SitemapPart part, BuildPartEditorContext context)
         {
             return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part))
                 .Location("Parts#SEO:5");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, UpdatePartEditorContext context)
         {
             var viewModel = new SitemapPartViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel,
+            await context.Updater.TryUpdateModelAsync(viewModel,
                 Prefix,
                 t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
@@ -31,7 +32,7 @@ namespace OrchardCore.Sitemaps.Drivers
             model.Exclude = viewModel.Exclude;
             model.Priority = viewModel.Priority;
 
-            return Edit(model);
+            return Edit(model, context);
         }
 
 

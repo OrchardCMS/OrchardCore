@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -9,12 +9,12 @@ namespace OrchardCore.Forms.Drivers
 {
     public class ValidationPartDisplayDriver : ContentPartDisplayDriver<ValidationPart>
     {
-        public override IDisplayResult Display(ValidationPart part)
+        public override IDisplayResult Display(ValidationPart part, BuildPartDisplayContext context)
         {
             return View("ValidationPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(ValidationPart part)
+        public override IDisplayResult Edit(ValidationPart part, BuildPartEditorContext context)
         {
             return Initialize<ValidationPartEditViewModel>("ValidationPart_Fields_Edit", m =>
             {
@@ -22,15 +22,15 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(ValidationPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(ValidationPart part, UpdatePartEditorContext context)
         {
             var viewModel = new ValidationPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.For = viewModel.For?.Trim();
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

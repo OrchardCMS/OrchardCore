@@ -35,14 +35,14 @@ namespace OrchardCore.Contents.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (settings.DisplayDateEditor)
             {
                 var model = new DateEditorViewModel();
-                await updater.TryUpdateModelAsync(model, Prefix);
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (model.LocalDateTime == null)
                 {

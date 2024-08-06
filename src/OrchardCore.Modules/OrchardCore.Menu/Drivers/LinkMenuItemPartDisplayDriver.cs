@@ -54,7 +54,7 @@ namespace OrchardCore.Menu.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LinkMenuItemPart part)
+        public override IDisplayResult Edit(LinkMenuItemPart part, BuildPartEditorContext context)
         {
             return Initialize<LinkMenuItemPartEditViewModel>("LinkMenuItemPart_Edit", model =>
             {
@@ -65,11 +65,11 @@ namespace OrchardCore.Menu.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LinkMenuItemPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LinkMenuItemPart part, UpdatePartEditorContext context)
         {
             var model = new LinkMenuItemPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             part.Url = model.Url;
             part.Target = model.Target;
@@ -91,7 +91,7 @@ namespace OrchardCore.Menu.Drivers
 
                 if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                    context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                 }
                 else
                 {
@@ -99,12 +99,12 @@ namespace OrchardCore.Menu.Drivers
 
                     if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
-                        updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                        context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                     }
                 }
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }
