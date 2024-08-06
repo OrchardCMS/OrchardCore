@@ -190,6 +190,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesEditViewModel
             {
+                QueryId = id,
                 Name = query.Name,
                 Editor = await _displayManager.BuildEditorAsync(query, _updateModelAccessor.ModelUpdater, false)
             };
@@ -206,12 +207,12 @@ namespace OrchardCore.Queries.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(model.Name))
+            if (string.IsNullOrEmpty(model.QueryId))
             {
                 return BadRequest();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = await _queryManager.GetQueryAsync(model.QueryId);
 
             if (query == null)
             {
@@ -222,6 +223,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (ModelState.IsValid)
             {
+                await _queryManager.DeleteQueryAsync(model.QueryId);
                 await _queryManager.UpdateAsync(query);
                 await _notifier.SuccessAsync(H["Query updated successfully."]);
 
