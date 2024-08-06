@@ -13,7 +13,6 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
