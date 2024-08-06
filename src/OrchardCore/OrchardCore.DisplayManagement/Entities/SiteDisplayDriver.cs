@@ -47,6 +47,18 @@ public abstract class SiteDisplayDriver<TSettings> : SectionDisplayDriverBase<IS
     public sealed override IDisplayResult Edit(ISite site, BuildEditorContext context)
         => base.Edit(site, context);
 
+    public sealed override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        => base.Factory(shapeType, shapeBuilder, initializeAsync);
+
+    public sealed override bool CanHandleModel(ISite model)
+        => base.CanHandleModel(model);
+
+    protected sealed override void BuildPrefix(ISite model, string htmlFieldPrefix)
+        => base.BuildPrefix(model, htmlFieldPrefix);
+
+    protected sealed override string PropertyName
+        => base.PropertyName;
+
 #pragma warning disable CS0672 // Member overrides obsolete member
 #pragma warning disable CS0618 // Type or member is obsolete
     public sealed override IDisplayResult Display(ISite site)
