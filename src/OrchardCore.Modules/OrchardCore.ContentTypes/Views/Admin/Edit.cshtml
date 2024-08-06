@@ -156,8 +156,8 @@
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
-
-<script at="Foot">
+<script asp-name="Sortable"></script>
+<script at="Foot" depends-on="Sortable">
     document.addEventListener('DOMContentLoaded', function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));

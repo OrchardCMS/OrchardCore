@@ -68,7 +68,8 @@
     </div>
 </form>
 
-<script at="Foot">
+<script asp-name="Sortable"></script>
+<script at="Foot" depends-on="Sortable">
     $(function () {
         Sortable.create(document.getElementById("fields"));
     })
