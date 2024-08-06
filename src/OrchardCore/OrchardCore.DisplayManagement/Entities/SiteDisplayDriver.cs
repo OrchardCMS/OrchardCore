@@ -1,13 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Entities;
 
-public abstract class SiteDisplayDriver<TSection> : SectionDisplayDriverBase<ISite, TSection>
-    where TSection : new()
+public abstract class SiteDisplayDriver<TSettings> : SectionDisplayDriverBase<ISite, TSettings>
+    where TSettings : new()
 {
     protected abstract string SettingsGroupId { get; }
 
@@ -40,4 +41,36 @@ public abstract class SiteDisplayDriver<TSection> : SectionDisplayDriverBase<ISi
 
         return base.UpdateAsync(site, context);
     }
+
+    public sealed override IDisplayResult Display(ISite site, BuildDisplayContext context)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Edit(ISite site, BuildEditorContext context)
+        => throw new NotImplementedException();
+
+#pragma warning disable CS0672 // Member overrides obsolete member
+    public sealed override IDisplayResult Display(ISite site)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Display(TSettings settings)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Display(TSettings settings, BuildDisplayContext context)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Edit(TSettings settings, BuildEditorContext context)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Edit(ISite model)
+        => throw new NotImplementedException();
+
+    public sealed override IDisplayResult Edit(TSettings settings)
+        => throw new NotImplementedException();
+
+    public sealed override Task<IDisplayResult> UpdateAsync(TSettings settings, UpdateEditorContext context)
+        => throw new NotImplementedException();
+
+    public sealed override Task<IDisplayResult> UpdateAsync(TSettings settings, IUpdateModel updater, string groupId)
+        => throw new NotImplementedException();
+#pragma warning restore CS0672 // Member overrides obsolete member
 }
