@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
@@ -43,34 +42,18 @@ public abstract class SiteDisplayDriver<TSettings> : SectionDisplayDriverBase<IS
     }
 
     public sealed override IDisplayResult Display(ISite site, BuildDisplayContext context)
-        => throw new NotImplementedException();
+        => base.Display(site, context);
 
     public sealed override IDisplayResult Edit(ISite site, BuildEditorContext context)
-        => throw new NotImplementedException();
+        => base.Edit(site, context);
 
 #pragma warning disable CS0672 // Member overrides obsolete member
+#pragma warning disable CS0618 // Type or member is obsolete
     public sealed override IDisplayResult Display(ISite site)
-        => throw new NotImplementedException();
+        => base.Display(site);
 
-    public sealed override IDisplayResult Display(TSettings settings)
-        => throw new NotImplementedException();
-
-    public sealed override IDisplayResult Display(TSettings settings, BuildDisplayContext context)
-        => throw new NotImplementedException();
-
-    public sealed override IDisplayResult Edit(TSettings settings, BuildEditorContext context)
-        => throw new NotImplementedException();
-
-    public sealed override IDisplayResult Edit(ISite model)
-        => throw new NotImplementedException();
-
-    public sealed override IDisplayResult Edit(TSettings settings)
-        => throw new NotImplementedException();
-
-    public sealed override Task<IDisplayResult> UpdateAsync(TSettings settings, UpdateEditorContext context)
-        => throw new NotImplementedException();
-
-    public sealed override Task<IDisplayResult> UpdateAsync(TSettings settings, IUpdateModel updater, string groupId)
-        => throw new NotImplementedException();
+    public sealed override IDisplayResult Edit(ISite site)
+        => base.Edit(site);
 #pragma warning restore CS0672 // Member overrides obsolete member
+#pragma warning restore CS0618 // Type or member is obsolete
 }

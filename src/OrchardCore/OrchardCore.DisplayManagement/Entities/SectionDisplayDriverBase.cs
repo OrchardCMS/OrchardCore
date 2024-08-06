@@ -1,8 +1,6 @@
-using System;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 
@@ -35,23 +33,7 @@ public abstract class SectionDisplayDriverBase<TModel, TSection> : DisplayDriver
     }
 
     public virtual IDisplayResult Display(TModel model, TSection section, BuildDisplayContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Display(section, context);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TSection section, BuildDisplayContext context) ")]
-    public virtual IDisplayResult Display(TSection section, BuildDisplayContext context)
-    {
-        return Display(section);
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TSection section, BuildDisplayContext context) ")]
-    public virtual IDisplayResult Display(TSection section)
-    {
-        return null;
-    }
+        => NullShapeResult();
 
     public override Task<IDisplayResult> EditAsync(TModel model, BuildEditorContext context)
     {
@@ -66,20 +48,6 @@ public abstract class SectionDisplayDriverBase<TModel, TSection> : DisplayDriver
     }
 
     public virtual IDisplayResult Edit(TModel model, TSection section, BuildEditorContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Edit(section, context);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TSection section, BuildEditorContext context) or Edit(TModel model, TSection section, BuildEditorContext context)")]
-    public virtual IDisplayResult Edit(TSection section, BuildEditorContext context)
-    {
-        return Edit(section);
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TSection section, BuildEditorContext context) or Edit(TModel model, TSection section, BuildEditorContext context)")]
-    public virtual IDisplayResult Edit(TSection section)
         => NullShapeResult();
 
     public override async Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
@@ -102,23 +70,7 @@ public abstract class SectionDisplayDriverBase<TModel, TSection> : DisplayDriver
     }
 
     public virtual Task<IDisplayResult> UpdateAsync(TModel model, TSection section, UpdateEditorContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return UpdateAsync(section, context);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TModel model, TSection section, UpdateEditorContext context)")]
-    public virtual Task<IDisplayResult> UpdateAsync(TSection section, UpdateEditorContext context)
-    {
-        return UpdateAsync(section, context.Updater, context.GroupId);
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TModel model, TSection section, UpdateEditorContext context)")]
-    public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, string groupId)
-    {
-        return Task.FromResult<IDisplayResult>(null);
-    }
+        => EditAsync(model, section, context);
 
     private TSection GetSection(TModel model)
         => model.Properties.TryGetPropertyValue(PropertyName, out var section)
