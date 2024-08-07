@@ -1,7 +1,6 @@
-namespace OrchardCore.Placements.ViewModels
+namespace OrchardCore.Placements.ViewModels;
+
+public class ShapePlacementViewModel
 {
-    public class ShapePlacementViewModel
-    {
-        public string ShapeType { get; set; }
-    }
+    public string ShapeType { get; set; }
 }

@@ -1,10 +1,9 @@
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
+
+public class ExportContentToDeploymentTargetSettings
 {
-    public class ExportContentToDeploymentTargetSettings
-    {
-        /// <summary>
-        /// The id of the export content to deployment target deployment plan.
-        /// </summary>
-        public long ExportContentToDeploymentTargetPlanId { get; set; }
-    }
+    /// <summary>
+    /// The id of the export content to deployment target deployment plan.
+    /// </summary>
+    public long ExportContentToDeploymentTargetPlanId { get; set; }
 }
