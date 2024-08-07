@@ -55,7 +55,7 @@ public class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
             return null;
         }
 
-        context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
         {
