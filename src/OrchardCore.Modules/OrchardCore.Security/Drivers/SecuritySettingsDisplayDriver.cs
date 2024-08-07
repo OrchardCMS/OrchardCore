@@ -46,7 +46,7 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {
