@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,8 +7,9 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Users;
 
-public class UserRolePermissions : IPermissionProvider
+public sealed class UserRolePermissions : IPermissionProvider
 {
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Users.CommonPermissions.AssignRoleToUsers'.")]
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
     private readonly IRoleService _roleService;
@@ -21,7 +23,7 @@ public class UserRolePermissions : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            AssignRoleToUsers,
+            CommonPermissions.AssignRoleToUsers,
         };
 
         var roleNames = (await _roleService.GetRoleNamesAsync())
@@ -47,7 +49,7 @@ public class UserRolePermissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                AssignRoleToUsers,
+                CommonPermissions.AssignRoleToUsers,
             ],
         },
     ];

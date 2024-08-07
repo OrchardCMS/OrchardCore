@@ -56,7 +56,7 @@ In the web host `Startup.cs` it is enabled via an extension method on the Orchar
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -100,7 +100,7 @@ In the web host `Startup.cs` it is enabled via an extension method on the Orchar
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -133,7 +133,7 @@ To disable a provider in Development, or different environments, inject the `IHo
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         private readonly IHostEnvironment _env;
 

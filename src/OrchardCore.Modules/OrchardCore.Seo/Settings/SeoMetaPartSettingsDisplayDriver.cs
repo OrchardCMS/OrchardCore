@@ -1,16 +1,16 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.ViewModels;
 
 namespace OrchardCore.SeoMeta.Settings
 {
-    public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
+    public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
             {
@@ -44,7 +44,7 @@ namespace OrchardCore.SeoMeta.Settings
                 DisplayGoogleSchema = model.DisplayGoogleSchema
             });
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

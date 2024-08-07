@@ -6,16 +6,6 @@
 */
 
 {
-  "Content_PublishButton": [
-    {
-      "place": "Actions:5" // Same as in the driver
-    }
-  ],
-  "Content_SaveButton": [
-    {
-      "place": "Actions:6" // Move the save button after the publish
-    }
-  ],
   "Parts_Contents_Publish": [
     {
       "displayType": "Detail",

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email;
 using OrchardCore.Email.Azure;
@@ -22,42 +21,37 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Azure.Email.Drivers;
 
-public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureEmailSettings>
+public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEmailSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IEmailAddressValidator _emailValidator;
 
-    protected IStringLocalizer S;
+    internal IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IEmailAddressValidator emailValidator,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _emailValidator = emailValidator;
         S = stringLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(AzureEmailSettings settings, BuildEditorContext context)
-    {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
+    protected override string SettingsGroupId
+        => EmailSettings.GroupId;
 
+    public override async Task<IDisplayResult> EditAsync(ISite site, AzureEmailSettings settings, BuildEditorContext context)
+    {
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -69,16 +63,11 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             model.DefaultSender = settings.DefaultSender;
             model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
         }).Location("Content:5#Azure")
-        .OnGroup(EmailSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -86,7 +75,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         var model = new AzureEmailSettingsViewModel();
 
-        await updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         var emailSettings = site.As<EmailSettings>();
 
@@ -150,11 +139,10 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             if (hasChanges)
             {
-                // Release the tenant to apply the settings when something changed.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                _shellReleaseManager.RequestRelease();
             }
         }
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

@@ -19,15 +19,17 @@ using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
+    public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
-        protected readonly IStringLocalizer S;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+        internal readonly IStringLocalizer S;
+
+        public HtmlFieldDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
             IShortcodeService shortcodeService,
@@ -79,12 +81,12 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HtmlField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HtmlField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditHtmlFieldViewModel();
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-            await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
             if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
             {

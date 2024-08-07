@@ -418,19 +418,14 @@ namespace OrchardCore.Users.Controllers
 
             await _notifier.SuccessAsync(H["User updated successfully."]);
 
-            if (editingOwnUser)
-            {
-                if (!string.IsNullOrEmpty(returnUrl))
-                {
-                    return this.LocalRedirect(returnUrl, true);
-                }
-
-                return RedirectToAction(nameof(Edit));
-            }
-
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
+            }
+
+            if (editingOwnUser)
+            {
+                return RedirectToAction(nameof(Edit));
             }
 
             return RedirectToAction(nameof(Index));

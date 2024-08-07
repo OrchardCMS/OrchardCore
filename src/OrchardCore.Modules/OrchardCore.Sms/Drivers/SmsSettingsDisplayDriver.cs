@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -17,53 +16,52 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
+public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
 
-    protected IStringLocalizer S;
+    internal IStringLocalizer S;
 
     private readonly SmsProviderOptions _smsProviderOptions;
 
+    protected override string SettingsGroupId
+        => SmsSettings.GroupId;
+
     public SmsSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
         IOptions<SmsProviderOptions> smsProviders,
-        ShellSettings shellSettings,
         IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
         _smsProviderOptions = smsProviders.Value;
-        _shellSettings = shellSettings;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(SmsSettings settings)
+    public override IDisplayResult Edit(ISite site, SmsSettings settings, BuildEditorContext context)
         => Initialize<SmsSettingsViewModel>("SmsSettings_Edit", model =>
         {
             model.DefaultProvider = settings.DefaultProviderName;
             model.Providers = _smsProviderOptions.Providers
-                .Where(entry => entry.Value.IsEnabled)
-                .Select(entry => new SelectListItem(entry.Key, entry.Key))
-                .OrderBy(item => item.Text)
-                .ToArray();
+            .Where(entry => entry.Value.IsEnabled)
+            .Select(entry => new SelectListItem(entry.Key, entry.Key))
+            .OrderBy(item => item.Text)
+            .ToArray();
 
         }).Location("Content:1#Providers")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+        .OnGroup(SettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }
@@ -82,10 +80,10 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             {
                 settings.DefaultProviderName = model.DefaultProvider;
 
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                _shellReleaseManager.RequestRelease();
             }
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

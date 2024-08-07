@@ -7,47 +7,45 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Drivers;
 
-public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
+public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 {
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
 
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => EmailSettings.GroupId;
 
     public SmtpSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
         _authorizationService = authorizationService;
@@ -55,13 +53,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         S = stringLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, SmtpSettings settings, BuildEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -87,16 +80,11 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             model.Password = settings.Password;
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }).Location("Content:5#SMTP")
-        .OnGroup(EmailSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -135,12 +123,12 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             if (model.DeliveryMethod == SmtpDeliveryMethod.Network
                 && string.IsNullOrWhiteSpace(model.Host))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
             }
             else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
                 && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
             }
 
             hasChanges |= model.DefaultSender != settings.DefaultSender;
@@ -200,11 +188,10 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (hasChanges)
             {
-                // Release the tenant to apply the settings when something changed.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                _shellReleaseManager.RequestRelease();
             }
         }
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

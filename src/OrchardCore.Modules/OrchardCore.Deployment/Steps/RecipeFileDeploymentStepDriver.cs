@@ -1,23 +1,22 @@
 using System.Threading.Tasks;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
+    public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
     {
-        public override IDisplayResult Display(RecipeFileDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(RecipeFileDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("RecipeFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("RecipeFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(RecipeFileDeploymentStep step)
+        public override IDisplayResult Edit(RecipeFileDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
             {
@@ -33,11 +32,20 @@ namespace OrchardCore.Deployment.Steps
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.RecipeName, x => x.DisplayName, x => x.Description, x => x.Author, x => x.WebSite, x => x.Version, x => x.IsSetupRecipe, x => x.Categories, x => x.Tags);
+            await context.Updater.TryUpdateModelAsync(step,
+                Prefix, x => x.RecipeName,
+                x => x.DisplayName,
+                x => x.Description,
+                x => x.Author,
+                x => x.WebSite,
+                x => x.Version,
+                x => x.IsSetupRecipe,
+                x => x.Categories,
+                x => x.Tags);
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

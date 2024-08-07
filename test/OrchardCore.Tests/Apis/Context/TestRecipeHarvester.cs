@@ -16,6 +16,7 @@ namespace OrchardCore.Tests.Apis.Context
             => HarvestRecipesAsync(
             [
                 "Apis/Lucene/Recipes/luceneQueryTest.json",
+                "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json",
                 "OrchardCore.Users/Recipes/UserSettingsTest.json"
             ]);
 
@@ -36,6 +37,12 @@ namespace OrchardCore.Tests.Apis.Context
             foreach (var fileInfo in fileInfos)
             {
                 var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+
+                if (descriptor == null)
+                {
+                    continue;
+                }
+
                 recipeDescriptors.Add(descriptor);
             }
 

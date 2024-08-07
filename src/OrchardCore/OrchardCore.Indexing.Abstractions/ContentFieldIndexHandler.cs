@@ -12,8 +12,20 @@ namespace OrchardCore.Indexing
     /// </summary>
     public abstract class ContentFieldIndexHandler<TField> : IContentFieldIndexHandler where TField : ContentField
     {
-        Task IContentFieldIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildIndexContext context, IContentIndexSettings settings)
+        Task IContentFieldIndexHandler.BuildIndexAsync(
+            ContentPart contentPart,
+            ContentTypePartDefinition typePartDefinition,
+            ContentPartFieldDefinition partFieldDefinition,
+            BuildIndexContext context,
+            IContentIndexSettings settings)
         {
+            if (contentPart == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            ArgumentNullException.ThrowIfNull(partFieldDefinition);
+
             if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal) &&
                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {

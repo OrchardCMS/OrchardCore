@@ -14,7 +14,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
@@ -22,24 +21,25 @@ namespace OrchardCore.Localization.Drivers
     /// <summary>
     /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
     /// </summary>
-    public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
+    public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<LocalizationSettings>
     {
         public const string GroupId = "localization";
 
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly INotifier _notifier;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly CultureOptions _cultureOptions;
 
-        protected readonly IHtmlLocalizer H;
-        protected readonly IStringLocalizer S;
+        internal readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
+
+        protected override string SettingsGroupId
+            => GroupId;
 
         public LocalizationSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             INotifier notifier,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptions<CultureOptions> cultureOptions,
@@ -47,9 +47,8 @@ namespace OrchardCore.Localization.Drivers
             IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
         )
         {
+            _shellReleaseManager = shellReleaseManager;
             _notifier = notifier;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _cultureOptions = cultureOptions.Value;
@@ -58,13 +57,8 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, LocalizationSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
@@ -72,7 +66,7 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
@@ -91,11 +85,12 @@ namespace OrchardCore.Localization.Drivers
                 {
                     model.Cultures[0].IsDefault = true;
                 }
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2")
+            .OnGroup(SettingsGroupId);
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, LocalizationSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -104,41 +99,38 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            var model = new LocalizationSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var supportedCulture = JConvert.DeserializeObject<string[]>(model.SupportedCultures);
+            if (supportedCulture.Length == 0)
             {
-                var model = new LocalizationSettingsViewModel();
+                context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+            }
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            if (context.Updater.ModelState.IsValid)
+            {
+                // Invariant culture name is empty so a null value is bound.
+                settings.DefaultCulture = model.DefaultCulture ?? string.Empty;
+                settings.SupportedCultures = supportedCulture;
 
-                var supportedCulture = JConvert.DeserializeObject<string[]>(model.SupportedCultures);
-                if (supportedCulture.Length == 0)
+                if (!settings.SupportedCultures.Contains(settings.DefaultCulture))
                 {
-                    context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
+                    settings.DefaultCulture = settings.SupportedCultures[0];
                 }
 
-                if (context.Updater.ModelState.IsValid)
+                // We always release the tenant for the default culture and also supported cultures to take effect.
+                _shellReleaseManager.RequestRelease();
+
+                // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
+                using (CultureScope.Create(settings.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
                 {
-                    // Invariant culture name is empty so a null value is bound.
-                    section.DefaultCulture = model.DefaultCulture ?? "";
-                    section.SupportedCultures = supportedCulture;
-
-                    if (!section.SupportedCultures.Contains(section.DefaultCulture))
-                    {
-                        section.DefaultCulture = section.SupportedCultures[0];
-                    }
-
-                    // We always release the tenant for the default culture and also supported cultures to take effect.
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-
-                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
-                    using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
-                    {
-                        await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
-                    }
+                    await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                 }
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

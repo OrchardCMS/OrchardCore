@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-338-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-343-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -12,6 +12,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 !!! tip
     You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
 
+<!-- This is for the auto-generated All Contributors badge to point somewhere. -->
+<a id="contributors-"></a>
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -299,7 +301,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Malaprade"><img src="https://avatars0.githubusercontent.com/u/18284078?v=4?s=100" width="100px;" alt="Jarno Malaprade"/><br /><sub><b>Jarno Malaprade</b></sub></a><br /><a href="#translation-Malaprade" title="Translation">🌍</a></td>
-      <td align="center" valign="top" width="16.66%"><a href="http://www.mdameer.com"><img src="https://avatars3.githubusercontent.com/u/2022320?v=4?s=100" width="100px;" alt="Mohammad Dameer"/><br /><sub><b>Mohammad Dameer</b></sub></a><br /><a href="#translation-mdameer" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="http://www.mdameer.com"><img src="https://avatars3.githubusercontent.com/u/2022320?v=4?s=100" width="100px;" alt="Mohammad Dameer"/><br /><sub><b>Mohammad Dameer</b></sub></a><br /><a href="#translation-mdameer" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mdameer" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://www.axuno.net"><img src="https://avatars2.githubusercontent.com/u/10255664?v=4?s=100" width="100px;" alt="axunonb"/><br /><sub><b>axunonb</b></sub></a><br /><a href="#translation-axunonb" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="16.66%"><a href="http://www.coming.com.cn"><img src="https://avatars2.githubusercontent.com/u/3014302?v=4?s=100" width="100px;" alt="Pim Hwang"/><br /><sub><b>Pim Hwang</b></sub></a><br /><a href="#translation-PimHwang" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="16.66%"><a href="http://www.omidnasri.ir"><img src="https://avatars3.githubusercontent.com/u/11842391?v=4?s=100" width="100px;" alt="Omid Nasri"/><br /><sub><b>Omid Nasri</b></sub></a><br /><a href="#translation-omidnasri" title="Translation">🌍</a></td>
@@ -468,6 +470,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/kartheekp-ms"><img src="https://avatars.githubusercontent.com/u/52756182?v=4?s=100" width="100px;" alt="Kartheek Penagamuri"/><br /><sub><b>Kartheek Penagamuri</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kartheekp-ms" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/sobotama"><img src="https://avatars.githubusercontent.com/u/77323555?v=4?s=100" width="100px;" alt="sobotama"/><br /><sub><b>sobotama</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sobotama" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/rpedu"><img src="https://avatars.githubusercontent.com/u/131344988?v=4?s=100" width="100px;" alt="rpedu"/><br /><sub><b>rpedu</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=rpedu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/TonyWoo"><img src="https://avatars.githubusercontent.com/u/689710?v=4?s=100" width="100px;" alt="tonywoo"/><br /><sub><b>tonywoo</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=TonyWoo" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/vsezima"><img src="https://avatars.githubusercontent.com/u/15254338?v=4?s=100" width="100px;" alt="Václav Sezima"/><br /><sub><b>Václav Sezima</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vsezima" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/tmat"><img src="https://avatars.githubusercontent.com/u/41759?v=4?s=100" width="100px;" alt="Tomáš Matoušek"/><br /><sub><b>Tomáš Matoušek</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tmat" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/maksim-markin"><img src="https://avatars.githubusercontent.com/u/172181395?v=4?s=100" width="100px;" alt="maksim-markin"/><br /><sub><b>maksim-markin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=maksim-markin" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

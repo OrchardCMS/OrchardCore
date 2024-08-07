@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
@@ -21,42 +19,42 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
+public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SmsSettings.GroupId;
 
     public TwilioSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         INotifier notifier,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(TwilioSettings settings)
+    public override IDisplayResult Edit(ISite site, TwilioSettings settings, BuildEditorContext c)
     {
         return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
         {
@@ -66,15 +64,14 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }
@@ -140,11 +137,11 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             }
         }
 
-        if (context.Updater.ModelState.IsValid && hasChanges)
+        if (hasChanges)
         {
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            _shellReleaseManager.RequestRelease();
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

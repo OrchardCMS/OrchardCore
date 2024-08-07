@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.HelloWorld
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IConfiguration _configuration;
 

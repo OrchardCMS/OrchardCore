@@ -106,7 +106,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ManageMediaFolder", "non-existent-folder")]
     [InlineData("ManageMediaFolder", "non-existent-folder/filename.png")]
-   public async Task GrantsAllFoldersViewPermission(string permission, string resource)
+    public async Task GrantsAllFoldersViewPermission(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -320,13 +320,13 @@ public class ViewMediaFolderAuthorizationHandlerTests
         mockUserAssetFolderNameProvider.Setup(afp => afp.GetUserAssetFolderName(It.Is<ClaimsPrincipal>(ci => ci.Identity.AuthenticationType == "Test"))).Returns("user-folder");
 
         var mockContentManager = new Mock<IContentManager>();
-        mockContentManager.Setup(cm => cm.GetAsync(It.IsAny<string>())).ReturnsAsync(Mock.Of<ContentItem>()); // Pretends an existing content item.
+        mockContentManager.Setup(cm => cm.GetAsync(It.IsAny<string>(), It.IsAny<VersionOptions>())).ReturnsAsync(Mock.Of<ContentItem>()); // Pretends an existing content item.
 
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,
             httpContextAccessor,
             mockUserAssetFolderNameProvider.Object,
-            NullLogger< AttachedMediaFieldFileService>.Instance);
+            NullLogger<AttachedMediaFieldFileService>.Instance);
 
         // Create an IAuthorizationService mock that mimics how OC is granting permissions. 
         var mockAuthorizationService = new Mock<IAuthorizationService>();

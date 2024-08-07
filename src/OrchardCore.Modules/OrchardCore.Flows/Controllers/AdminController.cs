@@ -111,7 +111,7 @@ namespace OrchardCore.Flows.Controllers
         {
             var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(contentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
 
-            if (settings?.ContainedContentTypes?.Length == 0)
+            if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
             {
                 return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
             }

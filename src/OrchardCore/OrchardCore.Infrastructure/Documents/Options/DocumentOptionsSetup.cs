@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Json;
 
 namespace OrchardCore.Documents.Options
 {
@@ -11,13 +12,20 @@ namespace OrchardCore.Documents.Options
         public static readonly TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
 
         private readonly IShellConfiguration _shellConfiguration;
+        private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
 
-        public DocumentOptionsSetup(IShellConfiguration shellConfiguration)
+        private DefaultDocumentSerializer _defaultDocumentSerializer;
+
+        public DocumentOptionsSetup(
+            IShellConfiguration shellConfiguration,
+            IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
         {
             _shellConfiguration = shellConfiguration;
+            _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
         }
 
-        public void Configure(DocumentOptions options) => Configure(string.Empty, options);
+        public void Configure(DocumentOptions options)
+            => Configure(string.Empty, options);
 
         public void Configure(string name, DocumentOptions options)
         {
@@ -46,7 +54,7 @@ namespace OrchardCore.Documents.Options
                 ?? sharedConfig.SynchronizationLatency
                 ?? TimeSpan.FromSeconds(1);
 
-            options.Serializer = DefaultDocumentSerializer.Instance;
+            options.Serializer = _defaultDocumentSerializer ??= new DefaultDocumentSerializer(_documentJsonSerializerOptions.SerializerOptions);
 
             options.CompressThreshold = namedConfig.CompressThreshold;
             if (options.CompressThreshold == 0)

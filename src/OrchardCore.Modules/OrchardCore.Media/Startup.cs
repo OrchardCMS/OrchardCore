@@ -53,9 +53,10 @@ using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
-        public override int Order => MediaConstants.StartupOrder;
+        public override int Order
+            => OrchardCoreConstants.ConfigureOrder.Media;
 
         private const string ImageSharpCacheFolder = "is-cache";
 
@@ -136,7 +137,7 @@ namespace OrchardCore.Media
                 return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
             });
 
-            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IPermissionProvider, PermissionProvider>();
             services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
@@ -232,7 +233,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Cache")]
-    public class MediaCacheStartup : StartupBase
+    public sealed class MediaCacheStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -242,7 +243,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Slugify")]
-    public class MediaSlugifyStartup : StartupBase
+    public sealed class MediaSlugifyStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -252,7 +253,7 @@ namespace OrchardCore.Media
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -262,7 +263,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Indexing")]
-    public class MediaIndexingStartup : StartupBase
+    public sealed class MediaIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -271,7 +272,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Indexing.Text")]
-    public class TextIndexingStartup : StartupBase
+    public sealed class TextIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -281,7 +282,7 @@ namespace OrchardCore.Media
     }
 
     [RequireFeatures("OrchardCore.Shortcodes")]
-    public class ShortcodesStartup : StartupBase
+    public sealed class ShortcodesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -323,7 +324,7 @@ namespace OrchardCore.Media
     }
 
     [Feature("OrchardCore.Media.Security")]
-    public class SecureMediaStartup : StartupBase
+    public sealed class SecureMediaStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

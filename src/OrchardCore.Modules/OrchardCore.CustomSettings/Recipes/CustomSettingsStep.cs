@@ -9,7 +9,7 @@ namespace OrchardCore.CustomSettings.Recipes
     /// <summary>
     /// This recipe step updates the site settings.
     /// </summary>
-    public class CustomSettingsStep : IRecipeStepHandler
+    public sealed class CustomSettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
 

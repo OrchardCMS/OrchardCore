@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -10,12 +11,18 @@ namespace OrchardCore.Workflows.Activities
     public class CorrelateTask : TaskActivity<CorrelateTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+
         protected readonly IStringLocalizer S;
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
+        public CorrelateTask(
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<CorrelateTask> stringLocalizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            S = localizer;
+            _expressionEvaluator = expressionEvaluator;
+            S = stringLocalizer;
         }
 
         public override LocalizedString DisplayText => S["Correlate Task"];
@@ -28,6 +35,12 @@ namespace OrchardCore.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowScriptSyntax Syntax
+        {
+            get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"]);
@@ -35,8 +48,13 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
-            workflowContext.CorrelationId = value;
+            var value = Syntax switch {
+                WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null),
+                WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext, null),
+                _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for CorrelateTask.")
+            };
+
+            workflowContext.CorrelationId = value?.Trim();
 
             return Outcomes("Done");
         }

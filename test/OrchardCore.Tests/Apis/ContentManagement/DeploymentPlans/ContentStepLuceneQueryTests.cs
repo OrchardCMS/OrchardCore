@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 jItem[nameof(ContentItem.DisplayText)] = "new version";
             });
 
-            // Create a second content item in the recipe data so we can confirm the behaviour
+            // Create a second content item in the recipe data so we can confirm the behavior
             // of the LuceneIndexingContentHandler.
             var data = recipe["steps"][0]["Data"].AsArray();
             var secondContentItem = JObject.FromObject(context.OriginalBlogPost);

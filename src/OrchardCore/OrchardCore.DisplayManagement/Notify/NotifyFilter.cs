@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Text.Encodings.Web;
@@ -15,7 +14,7 @@ using OrchardCore.DisplayManagement.Layout;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
+    public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
     {
         public const string CookiePrefix = "orch_notify";
 

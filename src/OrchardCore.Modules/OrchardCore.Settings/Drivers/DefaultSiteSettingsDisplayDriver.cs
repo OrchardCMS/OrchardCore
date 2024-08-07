@@ -9,33 +9,30 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
 
-        protected readonly IStringLocalizer S;
+        private readonly IShellReleaseManager _shellReleaseManager;
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        internal readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
+            IShellReleaseManager shellReleaseManager,
             IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            _shellReleaseManager = shellReleaseManager;
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site, BuildEditorContext context)
         {
             if (!IsGeneralGroup(context))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
@@ -49,7 +46,7 @@ namespace OrchardCore.Settings.Drivers
                     .OnGroup(GroupId)
             );
 
-            return Task.FromResult<IDisplayResult>(result);
+            return result;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -89,10 +86,7 @@ namespace OrchardCore.Settings.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
             }
 
-            if (context.Updater.ModelState.IsValid)
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            _shellReleaseManager.RequestRelease();
 
             return await EditAsync(site, context);
         }

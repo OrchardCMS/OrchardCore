@@ -9,7 +9,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a localization menu in the admin site.
     /// </summary>
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -17,7 +17,7 @@ namespace OrchardCore.Localization
             { "groupId", LocalizationSettingsDisplayDriver.GroupId },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         /// <summary>
         /// Creates a new instance of the <see cref="AdminMenu"/>.

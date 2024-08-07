@@ -7,7 +7,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
@@ -24,8 +24,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         {
             if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+
                 if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                 {
                     return Combine(

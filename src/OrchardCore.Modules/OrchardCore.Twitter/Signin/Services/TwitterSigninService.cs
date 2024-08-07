@@ -16,11 +16,8 @@ namespace OrchardCore.Twitter.Signin.Services
             _siteService = siteService;
         }
 
-        public async Task<TwitterSigninSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<TwitterSigninSettings>();
-        }
+        public Task<TwitterSigninSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<TwitterSigninSettings>();
 
         public async Task<TwitterSigninSettings> LoadSettingsAsync()
         {
@@ -33,7 +30,7 @@ namespace OrchardCore.Twitter.Signin.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
+            container.Alter<TwitterSigninSettings>(aspect =>
             {
                 aspect.CallbackPath = settings.CallbackPath;
             });

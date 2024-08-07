@@ -8,7 +8,7 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
+    public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
     {
         public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
         {
@@ -26,7 +26,7 @@ namespace OrchardCore.Menu.Drivers
             );
         }
 
-        public override IDisplayResult Edit(ContentMenuItemPart part)
+        public override IDisplayResult Edit(ContentMenuItemPart part, BuildPartEditorContext context)
         {
             return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
             {
@@ -35,19 +35,15 @@ namespace OrchardCore.Menu.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, UpdatePartEditorContext context)
         {
             var model = new ContentMenuItemPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             part.ContentItem.DisplayText = model.Name;
-            // This code can be removed in a later release.
-#pragma warning disable 0618
-            part.Name = model.Name;
-#pragma warning restore 0618
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

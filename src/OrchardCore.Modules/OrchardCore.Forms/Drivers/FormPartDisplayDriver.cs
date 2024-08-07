@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class FormPartDisplayDriver : ContentPartDisplayDriver<FormPart>
+    public sealed class FormPartDisplayDriver : ContentPartDisplayDriver<FormPart>
     {
-        public override IDisplayResult Edit(FormPart part)
+        public override IDisplayResult Edit(FormPart part, BuildPartEditorContext context)
         {
             return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
             {
@@ -22,11 +22,11 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(FormPart part, UpdatePartEditorContext context)
         {
             var viewModel = new FormPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.Action = viewModel.Action?.Trim();
             part.Method = viewModel.Method;
@@ -35,7 +35,7 @@ namespace OrchardCore.Forms.Drivers
             part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
             part.SaveFormLocation = viewModel.SaveFormLocation;
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

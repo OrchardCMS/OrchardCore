@@ -11,32 +11,33 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers
 {
-    public class AzureADSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureADSettings>
+    public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public AzureADSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AzureADSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => MicrosoftAuthenticationConstants.Features.AAD;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, AzureADSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
                 return null;
             }
+
             return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
@@ -47,31 +48,31 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 {
                     model.CallbackPath = settings.CallbackPath.Value;
                 }
-            }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
+            }).Location("Content:0")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AzureADSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
-                {
-                    return null;
-                }
-                var model = new AzureADSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.DisplayName = model.DisplayName;
-                    settings.AppId = model.AppId;
-                    settings.TenantId = model.TenantId;
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                return null;
             }
-            return await EditAsync(settings, context);
+
+            var model = new AzureADSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.DisplayName = model.DisplayName;
+            settings.AppId = model.AppId;
+            settings.TenantId = model.TenantId;
+            settings.CallbackPath = model.CallbackPath;
+            settings.SaveTokens = model.SaveTokens;
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

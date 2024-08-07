@@ -47,7 +47,6 @@ namespace OrchardCore.Seo.Drivers
             {
                 // This handlers provides defaults, either from the Seo Meta Settings, or ensures values by default. (title etc)
                 _contentManager ??= _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var metaSettings = siteSettings.As<ContentItem>("SocialMetaSettings");
 
@@ -106,7 +105,7 @@ namespace OrchardCore.Seo.Drivers
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                 {
-                    aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text.ToString();
+                    aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text?.ToString();
                     if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                     {
                         aspect.OpenGraphSiteName = siteSettings.SiteName;
@@ -115,7 +114,7 @@ namespace OrchardCore.Seo.Drivers
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphAppId))
                 {
-                    aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text.ToString();
+                    aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text?.ToString();
                 }
 
                 if (string.IsNullOrEmpty(aspect.OpenGraphImage))

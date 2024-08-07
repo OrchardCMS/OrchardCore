@@ -1992,7 +1992,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/2022320?v=4",
       "profile": "http://www.mdameer.com",
       "contributions": [
-        "translation"
+        "translation",
+        "code"
       ]
     },
     {
@@ -3128,6 +3129,51 @@
       "name": "sobotama",
       "avatar_url": "https://avatars.githubusercontent.com/u/77323555?v=4",
       "profile": "https://github.com/sobotama",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rpedu",
+      "name": "rpedu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/131344988?v=4",
+      "profile": "https://github.com/rpedu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "TonyWoo",
+      "name": "tonywoo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/689710?v=4",
+      "profile": "https://github.com/TonyWoo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vsezima",
+      "name": "Václav Sezima",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15254338?v=4",
+      "profile": "https://github.com/vsezima",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tmat",
+      "name": "Tomáš Matoušek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41759?v=4",
+      "profile": "https://github.com/tmat",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "maksim-markin",
+      "name": "maksim-markin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/172181395?v=4",
+      "profile": "https://github.com/maksim-markin",
       "contributions": [
         "code"
       ]

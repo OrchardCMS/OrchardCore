@@ -6,6 +6,7 @@
 
 @{
     Layout = string.Empty;
+    var totalMinutes = Convert.ToInt32(TokenOptions.Value.TokenLifespan.TotalMinutes);
 }
 
 <p>
@@ -14,6 +15,6 @@
 
 <p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Model.ConfirmEmailUrl]</p>
 
-<p>@T.Plural(TokenOptions.Value.TokenLifespan.Minutes, "Please be aware that this link will expire in {0} minute.", "Please be aware that this link will expire in {0} minutes.", TokenOptions.Value.TokenLifespan.Minutes)</p>
+<p>@T.Plural(totalMinutes, "Please be aware that this link will expire in {0} minute.", "Please be aware that this link will expire in {0} minutes.", totalMinutes)</p>
 
 <p>@T["Thank you"]</p>
