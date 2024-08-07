@@ -156,7 +156,8 @@
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
-<script at="Foot" depends-on="Sortable">
+<script asp-name="Sortable" at="Foot"></script>
+<script at="Foot" depends-on="jquery-resizable">
     document.addEventListener('DOMContentLoaded', function () {
         const fields = document.getElementById("fields");
 
