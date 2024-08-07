@@ -10,7 +10,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
+    public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
     {
         private readonly IRoleService _roleService;
 

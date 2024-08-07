@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class WorkflowFaultEventDisplayDriver : ActivityDisplayDriver<WorkflowFaultEvent, WorkflowFaultViewModel>
+    public sealed class WorkflowFaultEventDisplayDriver : ActivityDisplayDriver<WorkflowFaultEvent, WorkflowFaultViewModel>
     {
         protected override void EditActivity(WorkflowFaultEvent activity, WorkflowFaultViewModel model)
         {

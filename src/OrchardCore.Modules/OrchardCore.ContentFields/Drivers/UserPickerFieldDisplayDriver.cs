@@ -18,10 +18,11 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
+    public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
         private readonly ISession _session;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public UserPickerFieldDisplayDriver(
             ISession session,

@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
+    public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(RecipeFileDeploymentStep step, BuildDisplayContext context)
         {

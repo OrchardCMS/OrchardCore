@@ -16,13 +16,13 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
+public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    protected IStringLocalizer S;
+    internal IStringLocalizer S;
 
     private readonly SmsProviderOptions _smsProviderOptions;
 

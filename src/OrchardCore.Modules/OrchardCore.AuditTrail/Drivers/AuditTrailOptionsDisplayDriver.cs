@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
-    public class AuditTrailOptionsDisplayDriver : DisplayDriver<AuditTrailIndexOptions>
+    public sealed class AuditTrailOptionsDisplayDriver : DisplayDriver<AuditTrailIndexOptions>
     {
         // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(AuditTrailIndexOptions options, string htmlFieldPrefix)

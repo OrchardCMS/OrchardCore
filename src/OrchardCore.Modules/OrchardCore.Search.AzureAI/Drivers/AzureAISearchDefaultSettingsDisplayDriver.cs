@@ -18,7 +18,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchDefaultSettings>
+public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchDefaultSettings>
 {
     public const string GroupId = "azureAISearch";
 
@@ -28,7 +28,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDriver<Azure
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellReleaseManager _shellReleaseManager;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => GroupId;

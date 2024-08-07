@@ -19,7 +19,7 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
+public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,8 +28,8 @@ public class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SmsSettings.GroupId;

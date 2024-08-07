@@ -19,14 +19,14 @@ using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
+    public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(
             ILiquidTemplateManager liquidTemplateManager,

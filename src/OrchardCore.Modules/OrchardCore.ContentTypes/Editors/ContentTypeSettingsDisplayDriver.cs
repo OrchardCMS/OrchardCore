@@ -11,13 +11,13 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
+    public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
         private readonly IStereotypeService _stereotypeService;
         private readonly ContentTypeDefinitionOptions _options;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(
             IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,

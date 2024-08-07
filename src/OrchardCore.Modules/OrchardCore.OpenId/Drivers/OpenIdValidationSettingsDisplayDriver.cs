@@ -12,7 +12,7 @@ using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
+    public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
     {
         private readonly IShellHost _shellHost;
 

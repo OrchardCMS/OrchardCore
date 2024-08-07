@@ -11,7 +11,7 @@ using OrchardCore.Twitter.Signin.ViewModels;
 
 namespace OrchardCore.Twitter.Signin.Drivers
 {
-    public class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<TwitterSigninSettings>
+    public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<TwitterSigninSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

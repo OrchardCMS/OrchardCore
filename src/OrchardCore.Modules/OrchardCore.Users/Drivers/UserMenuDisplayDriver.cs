@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
+public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     private readonly SignInManager<IUser> _signInManager;
     private readonly IHttpContextAccessor _httpContextAccessor;

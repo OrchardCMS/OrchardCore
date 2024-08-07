@@ -19,13 +19,14 @@ using Shortcodes;
 
 namespace OrchardCore.Html.Drivers
 {
-    public class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IShortcodeService _shortcodeService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,

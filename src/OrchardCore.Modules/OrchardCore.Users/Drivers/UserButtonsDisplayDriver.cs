@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserButtonsDisplayDriver : DisplayDriver<User>
+    public sealed class UserButtonsDisplayDriver : DisplayDriver<User>
     {
         public override IDisplayResult Edit(User model, BuildEditorContext context)
         {

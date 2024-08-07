@@ -7,9 +7,9 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
+    public sealed class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public DefaultContentTypeDisplayDriver(IStringLocalizer<DefaultContentTypeDisplayDriver> localizer)
         {

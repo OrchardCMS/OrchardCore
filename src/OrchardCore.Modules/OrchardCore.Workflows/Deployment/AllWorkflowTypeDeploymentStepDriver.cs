@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Workflows.Deployment
 {
-    public class AllWorkflowTypeDeploymentStepDriver : DisplayDriver<DeploymentStep, AllWorkflowTypeDeploymentStep>
+    public sealed class AllWorkflowTypeDeploymentStepDriver : DisplayDriver<DeploymentStep, AllWorkflowTypeDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllWorkflowTypeDeploymentStep step, BuildDisplayContext context)
         {

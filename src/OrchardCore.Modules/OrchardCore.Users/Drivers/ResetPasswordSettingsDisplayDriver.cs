@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<ResetPasswordSettings>
+    public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<ResetPasswordSettings>
     {
         public const string GroupId = "userResetPassword";
 

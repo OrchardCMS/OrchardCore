@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
+    public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {

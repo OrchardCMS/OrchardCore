@@ -11,7 +11,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
-    public class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
+    public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 

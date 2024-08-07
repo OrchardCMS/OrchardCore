@@ -6,7 +6,7 @@ using OrchardCore.Notifications.ViewModels;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotificationDisplayDriver : DisplayDriver<Notification>
+public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
 {
     public override Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {

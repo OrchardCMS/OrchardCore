@@ -12,12 +12,12 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewModel>
+public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewModel>
 {
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public SmsTaskDisplayDriver(
         IPhoneFormatValidator phoneFormatValidator,

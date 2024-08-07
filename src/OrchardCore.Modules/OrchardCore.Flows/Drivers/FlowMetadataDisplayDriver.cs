@@ -7,7 +7,7 @@ using OrchardCore.Flows.Models;
 
 namespace OrchardCore.Flows.Drivers
 {
-    public class FlowMetadataDisplayDriver : ContentDisplayDriver
+    public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
     {
         public override IDisplayResult Edit(ContentItem model, BuildEditorContext context)
         {

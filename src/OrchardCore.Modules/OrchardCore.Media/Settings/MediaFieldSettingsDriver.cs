@@ -15,12 +15,12 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Media.Settings
 {
-    public class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
+    public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
     {
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly MediaOptions _mediaOptions;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MediaFieldSettingsDriver(
             IContentTypeProvider contentTypeProvider,

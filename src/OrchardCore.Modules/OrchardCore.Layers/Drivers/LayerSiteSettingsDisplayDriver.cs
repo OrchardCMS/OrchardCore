@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Drivers
 {
-    public class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSettings>
+    public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSettings>
     {
         public const string GroupId = "zones";
 

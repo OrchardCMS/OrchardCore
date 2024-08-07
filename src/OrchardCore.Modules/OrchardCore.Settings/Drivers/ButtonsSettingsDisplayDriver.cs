@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class ButtonsSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class ButtonsSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
 

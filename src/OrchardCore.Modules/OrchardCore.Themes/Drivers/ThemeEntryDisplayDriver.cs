@@ -6,7 +6,7 @@ using OrchardCore.Themes.Models;
 
 namespace OrchardCore.Themes.Drivers;
 
-public class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
+public sealed class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
 {
     public override Task<IDisplayResult> DisplayAsync(ThemeEntry model, BuildDisplayContext context)
     {

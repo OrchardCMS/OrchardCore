@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriver<AuthenticatorAppLoginSettings>
+public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriver<AuthenticatorAppLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;

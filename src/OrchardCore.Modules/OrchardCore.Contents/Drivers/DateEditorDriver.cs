@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
+    public sealed class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
         private readonly ILocalClock _localClock;
 

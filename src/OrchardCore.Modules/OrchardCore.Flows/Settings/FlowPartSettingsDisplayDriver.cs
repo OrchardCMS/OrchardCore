@@ -10,7 +10,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
+    public sealed class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

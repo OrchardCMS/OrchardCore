@@ -11,12 +11,12 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoFactorLoginSettings>
+public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoFactorLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;

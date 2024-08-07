@@ -7,7 +7,7 @@ using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.Feeds
 {
-    public class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPart>
+    public sealed class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {

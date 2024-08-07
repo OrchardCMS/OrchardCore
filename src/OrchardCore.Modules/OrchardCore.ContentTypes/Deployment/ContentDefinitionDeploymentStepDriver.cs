@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
-    public class ContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDefinitionDeploymentStep>
+    public sealed class ContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDefinitionDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(ContentDefinitionDeploymentStep step, BuildDisplayContext context)
         {

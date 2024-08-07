@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Drivers
 {
-    public class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptchaSettings>
+    public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptchaSettings>
     {
         public const string GroupId = "recaptcha";
 

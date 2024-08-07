@@ -14,7 +14,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Settings
 {
-    public class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplayDriver<TaxonomyContentsAdminListSettings>
+    public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplayDriver<TaxonomyContentsAdminListSettings>
     {
         public const string GroupId = "taxonomyContentsAdminList";
 

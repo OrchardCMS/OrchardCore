@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Deployment
 {
-    public class DeploymentPlanDeploymentStepDriver : DisplayDriver<DeploymentStep, DeploymentPlanDeploymentStep>
+    public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<DeploymentStep, DeploymentPlanDeploymentStep>
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
 

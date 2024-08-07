@@ -17,13 +17,13 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
+    public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
-        protected readonly IHtmlLocalizer H;
+        internal readonly IHtmlLocalizer H;
 
         public MenuPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
