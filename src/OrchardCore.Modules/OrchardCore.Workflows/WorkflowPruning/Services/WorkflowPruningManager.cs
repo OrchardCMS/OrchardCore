@@ -27,7 +27,7 @@ public class WorkflowPruningManager : IWorkflowPruningManager
     public async Task<int> PruneWorkflowInstancesAsync(TimeSpan retentionPeriod)
     {
         var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
-        var settings =  await _siteService.GetSiteSettingsAsync<WorkflowPruningSettings>();
+        var settings = await _siteService.GetSettingsAsync<WorkflowPruningSettings>();
 
         settings.Statuses ??=
         [

@@ -24,7 +24,7 @@ public class WorkflowPruningBackgroundTask : IBackgroundTask
     {
         var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-        var workflowPruningSettings = await siteService.GetSiteSettingsAsync<WorkflowPruningSettings>();
+        var workflowPruningSettings = await siteService.GetSettingsAsync<WorkflowPruningSettings>();
         if (workflowPruningSettings.Disabled)
         {
             return;
