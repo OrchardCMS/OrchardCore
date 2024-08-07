@@ -48,7 +48,7 @@ namespace OrchardCore.Https.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
             {
