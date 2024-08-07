@@ -19,7 +19,7 @@ namespace OrchardCore.OpenId.Drivers
 
         public override IDisplayResult Edit(OpenIdServerSettings settings, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {

@@ -41,7 +41,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
             {

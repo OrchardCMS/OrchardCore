@@ -21,7 +21,7 @@ namespace OrchardCore.OpenId.Drivers
 
         public override IDisplayResult Edit(OpenIdValidationSettings settings, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {

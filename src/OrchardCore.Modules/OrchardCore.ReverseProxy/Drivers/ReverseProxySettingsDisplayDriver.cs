@@ -42,7 +42,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {

@@ -66,7 +66,7 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
             {
