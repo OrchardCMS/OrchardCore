@@ -12,7 +12,6 @@ public sealed class AdminMenu : INavigationProvider
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
         { "groupId", WorkflowPruningDisplayDriver.GroupId },
     };
 
