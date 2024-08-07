@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ArchiveLater.Drivers;
 
-public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
+public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLaterPart>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;

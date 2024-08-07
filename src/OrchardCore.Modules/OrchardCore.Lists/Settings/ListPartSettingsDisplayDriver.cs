@@ -11,12 +11,12 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
+    public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

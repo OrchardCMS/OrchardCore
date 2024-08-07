@@ -17,7 +17,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserRoleDisplayDriver : DisplayDriver<User>
+    public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Drivers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
-        protected readonly IHtmlLocalizer H;
+        internal readonly IHtmlLocalizer H;
 
         public UserRoleDisplayDriver(
             UserManager<IUser> userManager,

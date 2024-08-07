@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Layers.Deployment
 {
-    public class AllLayersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllLayersDeploymentStep>
+    public sealed class AllLayersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllLayersDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllLayersDeploymentStep step, BuildDisplayContext context)
         {

@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Deployment
 {
-    public class SearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SearchSettingsDeploymentStep>
+    public sealed class SearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SearchSettingsDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(SearchSettingsDeploymentStep step, BuildDisplayContext context)
         {

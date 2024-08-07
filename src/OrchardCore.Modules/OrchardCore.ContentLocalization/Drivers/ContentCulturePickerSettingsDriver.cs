@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class ContentCulturePickerSettingsDriver : SiteDisplayDriver<ContentCulturePickerSettings>
+    public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<ContentCulturePickerSettings>
     {
         public const string GroupId = "ContentCulturePicker";
 

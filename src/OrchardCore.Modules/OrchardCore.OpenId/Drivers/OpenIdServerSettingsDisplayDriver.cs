@@ -10,7 +10,7 @@ using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
+    public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
     {
         private readonly IOpenIdServerService _serverService;
 

@@ -11,7 +11,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists.AdminNodes
 {
-    public class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNode>
+    public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNode>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

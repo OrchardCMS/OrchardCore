@@ -7,7 +7,7 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Drivers
 {
-    public class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
         {

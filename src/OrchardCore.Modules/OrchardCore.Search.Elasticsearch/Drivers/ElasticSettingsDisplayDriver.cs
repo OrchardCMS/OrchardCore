@@ -21,7 +21,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers;
 
-public class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSettings>
+public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
@@ -31,7 +31,7 @@ public class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSettings>
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly IElasticClient _elasticClient;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SearchConstants.SearchSettingsGroupId;

@@ -16,13 +16,13 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers;
 
-public class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLoginSettings>
+public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;

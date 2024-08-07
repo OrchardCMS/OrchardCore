@@ -12,11 +12,11 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
+    public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ContentPickerFieldSettingsDriver(
             ILiquidTemplateManager templateManager,

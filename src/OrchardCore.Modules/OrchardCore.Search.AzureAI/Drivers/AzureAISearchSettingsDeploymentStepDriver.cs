@@ -6,7 +6,7 @@ using OrchardCore.Search.AzureAI.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchSettingsDeploymentStep>
+public sealed class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchSettingsDeploymentStep>
 {
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchSettingsDeploymentStep step, BuildDisplayContext context)
         => CombineAsync(

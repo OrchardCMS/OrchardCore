@@ -6,7 +6,7 @@ using OrchardCore.Features.ViewModels;
 
 namespace OrchardCore.Features.Deployment
 {
-    public class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeaturesDeploymentStep>
+    public sealed class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeaturesDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllFeaturesDeploymentStep step, BuildDisplayContext context)
         {

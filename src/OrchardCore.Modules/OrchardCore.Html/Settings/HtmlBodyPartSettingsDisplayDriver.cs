@@ -8,7 +8,7 @@ using OrchardCore.Html.ViewModels;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {

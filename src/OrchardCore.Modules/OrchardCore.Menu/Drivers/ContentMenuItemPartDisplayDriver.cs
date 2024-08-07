@@ -8,7 +8,7 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
+    public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
     {
         public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
         {

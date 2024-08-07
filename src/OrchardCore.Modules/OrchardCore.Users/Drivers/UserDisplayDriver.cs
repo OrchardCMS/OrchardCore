@@ -19,7 +19,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserDisplayDriver : DisplayDriver<User>
+    public sealed class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,8 +28,8 @@ namespace OrchardCore.Users.Drivers
         private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
 
-        protected readonly IHtmlLocalizer H;
-        protected readonly IStringLocalizer S;
+        internal readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,

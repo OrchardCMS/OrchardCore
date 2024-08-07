@@ -8,7 +8,7 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Contents.Sitemaps
 {
-    public class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
+    public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
     {
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 

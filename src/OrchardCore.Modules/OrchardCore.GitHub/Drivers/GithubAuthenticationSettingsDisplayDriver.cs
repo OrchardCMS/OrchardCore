@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Drivers
 {
-    public class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GitHubAuthenticationSettings>
+    public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GitHubAuthenticationSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

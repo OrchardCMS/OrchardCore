@@ -9,11 +9,11 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Settings
 {
-    public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
+    public sealed class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {

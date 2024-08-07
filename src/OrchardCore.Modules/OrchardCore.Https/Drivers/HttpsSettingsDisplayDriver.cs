@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Https.Drivers
 {
-    public class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings>
+    public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings>
     {
         public const string GroupId = "Https";
 
@@ -22,7 +22,7 @@ namespace OrchardCore.Https.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
 
-        protected readonly IHtmlLocalizer H;
+        internal readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(
             IShellReleaseManager shellReleaseManager,

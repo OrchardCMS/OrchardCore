@@ -10,9 +10,9 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
         {

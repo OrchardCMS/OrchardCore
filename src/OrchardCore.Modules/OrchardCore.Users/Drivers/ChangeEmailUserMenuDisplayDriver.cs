@@ -5,7 +5,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
+public sealed class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     private readonly ISiteService _siteService;
 

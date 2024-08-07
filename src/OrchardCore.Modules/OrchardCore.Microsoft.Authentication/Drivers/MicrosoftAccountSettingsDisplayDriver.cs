@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers
 {
-    public class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<MicrosoftAccountSettings>
+    public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<MicrosoftAccountSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

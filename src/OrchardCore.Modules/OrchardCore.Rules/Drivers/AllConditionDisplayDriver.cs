@@ -7,7 +7,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class AllConditionDisplayDriver : DisplayDriver<Condition, AllConditionGroup>
+    public sealed class AllConditionDisplayDriver : DisplayDriver<Condition, AllConditionGroup>
     {
         public override Task<IDisplayResult> DisplayAsync(AllConditionGroup condition, BuildDisplayContext context)
         {

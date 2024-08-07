@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<UpdateContentTask, UpdateContentTaskViewModel>
+    public sealed class UpdateContentTaskDisplayDriver : ContentTaskDisplayDriver<UpdateContentTask, UpdateContentTaskViewModel>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

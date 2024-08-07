@@ -13,9 +13,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
+    public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {

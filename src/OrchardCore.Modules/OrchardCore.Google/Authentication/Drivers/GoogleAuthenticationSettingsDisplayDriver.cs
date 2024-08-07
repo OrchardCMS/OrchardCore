@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Drivers
 {
-    public class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GoogleAuthenticationSettings>
+    public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GoogleAuthenticationSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

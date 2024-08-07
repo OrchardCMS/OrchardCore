@@ -5,7 +5,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMethod>
+public sealed class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
     public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
     {

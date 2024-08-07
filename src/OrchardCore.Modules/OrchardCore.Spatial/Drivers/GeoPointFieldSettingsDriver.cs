@@ -9,7 +9,7 @@ using OrchardCore.Spatial.Settings;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
+    public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {

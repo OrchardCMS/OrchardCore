@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<CommonPart>
+    public sealed class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<CommonPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {

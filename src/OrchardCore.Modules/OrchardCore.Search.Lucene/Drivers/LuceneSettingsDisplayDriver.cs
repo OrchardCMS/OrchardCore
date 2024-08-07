@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Drivers
 {
-    public class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettings>
+    public sealed class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettings>
     {
         private static readonly char[] _separator = [',', ' '];
 

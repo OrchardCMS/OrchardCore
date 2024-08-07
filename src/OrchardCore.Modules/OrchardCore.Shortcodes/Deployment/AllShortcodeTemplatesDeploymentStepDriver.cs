@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Shortcodes.Deployment
 {
-    public class AllShortcodeTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllShortcodeTemplatesDeploymentStep>
+    public sealed class AllShortcodeTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllShortcodeTemplatesDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllShortcodeTemplatesDeploymentStep step, BuildDisplayContext context)
         {

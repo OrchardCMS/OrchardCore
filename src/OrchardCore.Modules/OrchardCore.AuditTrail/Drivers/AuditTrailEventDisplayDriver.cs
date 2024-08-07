@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
-    public class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent>
+    public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent>
     {
         private readonly IAuditTrailManager _auditTrailManager;
 

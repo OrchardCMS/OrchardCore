@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.TagManager.Drivers
 {
-    public class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<GoogleTagManagerSettings>
+    public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<GoogleTagManagerSettings>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;

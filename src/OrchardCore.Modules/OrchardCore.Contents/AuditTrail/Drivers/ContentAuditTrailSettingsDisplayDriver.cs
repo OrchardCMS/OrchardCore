@@ -12,7 +12,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
+    public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

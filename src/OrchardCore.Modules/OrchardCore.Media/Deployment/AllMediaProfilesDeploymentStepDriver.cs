@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Media.Deployment
 {
-    public class AllMediaProfilesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllMediaProfilesDeploymentStep>
+    public sealed class AllMediaProfilesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllMediaProfilesDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllMediaProfilesDeploymentStep step, BuildDisplayContext context)
         {

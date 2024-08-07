@@ -15,7 +15,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<NotifyUserTask, NotifyUserTaskViewModel>
+public sealed class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<NotifyUserTask, NotifyUserTaskViewModel>
 {
     public NotifyUserTaskDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,

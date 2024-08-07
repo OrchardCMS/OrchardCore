@@ -7,7 +7,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCondition>
+    public sealed class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCondition>
     {
         private readonly ConditionOperatorOptions _options;
 

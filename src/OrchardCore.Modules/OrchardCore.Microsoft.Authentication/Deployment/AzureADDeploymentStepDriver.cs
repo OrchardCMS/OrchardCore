@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment
 {
-    public class AzureADDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureADDeploymentStep>
+    public sealed class AzureADDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureADDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AzureADDeploymentStep step, BuildDisplayContext context)
         {

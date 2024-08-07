@@ -12,7 +12,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AdminDashboard.Drivers
 {
-    public class DashboardContentDisplayDriver : ContentDisplayDriver
+    public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

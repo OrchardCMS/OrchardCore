@@ -10,7 +10,7 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Drivers;
 
-public class SitemapsRobotsSettingsDisplayDriver : SiteDisplayDriver<SitemapsRobotsSettings>
+public sealed class SitemapsRobotsSettingsDisplayDriver : SiteDisplayDriver<SitemapsRobotsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
