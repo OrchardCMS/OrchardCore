@@ -30,7 +30,19 @@ public class WorkflowPruningManager
         var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
         var settings =  (await _siteService.GetSiteSettingsAsync()).As<WorkflowPruningSettings>();
 
-        if (settings.Statuses?.Length is not > 0)
+        settings.Statuses ??=
+            [
+                WorkflowStatus.Idle,
+                WorkflowStatus.Starting,
+                WorkflowStatus.Resuming,
+                WorkflowStatus.Executing,
+                WorkflowStatus.Halted,
+                WorkflowStatus.Finished,
+                WorkflowStatus.Faulted,
+                WorkflowStatus.Aborted
+            ];
+
+        if (settings.Statuses.Length <= 0)
         {
             return 0;
         }
