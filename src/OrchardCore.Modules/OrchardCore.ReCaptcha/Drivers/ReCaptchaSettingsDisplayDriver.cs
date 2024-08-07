@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Drivers
 {
-    public class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptchaSettings>
+    public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptchaSettings>
     {
         public const string GroupId = "recaptcha";
 
@@ -41,7 +41,7 @@ namespace OrchardCore.ReCaptcha.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
             {

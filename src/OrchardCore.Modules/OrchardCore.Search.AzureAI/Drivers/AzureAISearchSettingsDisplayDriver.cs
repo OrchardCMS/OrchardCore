@@ -17,7 +17,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchSettings>
+public sealed class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
@@ -26,7 +26,7 @@ public class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<AzureAISearc
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SearchConstants.SearchSettingsGroupId;

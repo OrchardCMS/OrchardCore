@@ -18,14 +18,15 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Drivers
 {
-    public class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
+    public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
-        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
+
+        internal readonly IHtmlLocalizer H;
 
         public FlowPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

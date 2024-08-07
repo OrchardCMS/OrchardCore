@@ -9,11 +9,11 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Liquid.Drivers
 {
-    public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
+    public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LiquidPartDisplayDriver(
             ILiquidTemplateManager liquidTemplateManager,

@@ -15,7 +15,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Drivers
 {
-    public class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettings>
+    public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettings>
     {
         [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
         public const string GroupId = SearchConstants.SearchSettingsGroupId;

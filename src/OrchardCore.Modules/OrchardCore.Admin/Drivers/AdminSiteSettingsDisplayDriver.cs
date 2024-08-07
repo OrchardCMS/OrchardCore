@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Drivers
 {
-    public class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSettings>
+    public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSettings>
     {
         public const string GroupId = "admin";
 

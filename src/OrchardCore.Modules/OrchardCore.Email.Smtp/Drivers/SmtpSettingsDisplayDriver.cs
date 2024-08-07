@@ -18,7 +18,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Drivers;
 
-public class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
+public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 {
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
@@ -30,7 +30,7 @@ public class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => EmailSettings.GroupId;

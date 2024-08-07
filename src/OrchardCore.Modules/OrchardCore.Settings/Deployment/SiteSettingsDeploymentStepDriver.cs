@@ -6,7 +6,7 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
+    public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(SiteSettingsDeploymentStep step, BuildDisplayContext context)
         {

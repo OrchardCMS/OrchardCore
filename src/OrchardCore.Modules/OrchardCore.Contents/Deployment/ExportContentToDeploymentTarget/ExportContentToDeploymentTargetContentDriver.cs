@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetContentDriver : ContentDisplayDriver
+    public sealed class ExportContentToDeploymentTargetContentDriver : ContentDisplayDriver
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;

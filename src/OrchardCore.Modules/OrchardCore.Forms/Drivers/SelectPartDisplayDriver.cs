@@ -10,9 +10,9 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
+    public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
         {

@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
+    public sealed class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {

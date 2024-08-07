@@ -7,7 +7,7 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
+    public sealed class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
     {
         public override IDisplayResult Display(ValidationSummaryPart part, BuildPartDisplayContext context)
         {

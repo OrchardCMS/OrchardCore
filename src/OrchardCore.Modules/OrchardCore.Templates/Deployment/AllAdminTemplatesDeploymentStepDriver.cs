@@ -6,7 +6,7 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Deployment
 {
-    public class AllAdminTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllAdminTemplatesDeploymentStep>
+    public sealed class AllAdminTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllAdminTemplatesDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AllAdminTemplatesDeploymentStep step, BuildDisplayContext context)
         {

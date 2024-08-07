@@ -9,9 +9,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
+    public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
         {

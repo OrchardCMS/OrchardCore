@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Lucene.Deployment
 {
-    public class LuceneSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneSettingsDeploymentStep>
+    public sealed class LuceneSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneSettingsDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(LuceneSettingsDeploymentStep step, BuildDisplayContext context)
         {

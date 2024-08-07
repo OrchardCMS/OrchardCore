@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
+    public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
     {
         public const string GroupId = "userLogin";
 

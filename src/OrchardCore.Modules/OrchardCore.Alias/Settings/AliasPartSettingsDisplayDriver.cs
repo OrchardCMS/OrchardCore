@@ -9,11 +9,11 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Alias.Settings
 {
-    public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
+    public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AliasPartSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,

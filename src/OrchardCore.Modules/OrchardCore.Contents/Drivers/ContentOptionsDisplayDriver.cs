@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class ContentOptionsDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class ContentOptionsDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)

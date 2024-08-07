@@ -10,11 +10,11 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Settings
 {
-    public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
+    public sealed class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,

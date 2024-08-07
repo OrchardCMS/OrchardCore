@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Lucene.Settings
 {
-    public class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
+    public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 

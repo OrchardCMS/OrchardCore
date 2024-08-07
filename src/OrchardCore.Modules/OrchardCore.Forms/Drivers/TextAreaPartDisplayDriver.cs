@@ -7,7 +7,7 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
+    public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
     {
         public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
         {

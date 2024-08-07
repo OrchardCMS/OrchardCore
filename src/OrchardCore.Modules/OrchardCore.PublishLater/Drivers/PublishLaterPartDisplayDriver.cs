@@ -12,7 +12,7 @@ using OrchardCore.PublishLater.ViewModels;
 
 namespace OrchardCore.PublishLater.Drivers
 {
-    public class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
+    public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

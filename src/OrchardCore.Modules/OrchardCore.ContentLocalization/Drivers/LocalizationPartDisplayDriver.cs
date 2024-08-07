@@ -13,7 +13,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
+    public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
     {
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly IIdGenerator _idGenerator;

@@ -10,7 +10,7 @@ using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
+    public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
     {
         private readonly IOpenIdServerService _serverService;
 
@@ -19,7 +19,7 @@ namespace OrchardCore.OpenId.Drivers
 
         public override IDisplayResult Edit(OpenIdServerSettings settings, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {

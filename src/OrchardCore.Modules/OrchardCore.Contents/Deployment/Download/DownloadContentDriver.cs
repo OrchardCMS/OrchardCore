@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment.Download
 {
-    public class DownloadContentDriver : ContentDisplayDriver
+    public sealed class DownloadContentDriver : ContentDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

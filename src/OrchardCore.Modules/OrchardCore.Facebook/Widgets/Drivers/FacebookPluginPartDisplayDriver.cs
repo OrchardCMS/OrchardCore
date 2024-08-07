@@ -13,12 +13,12 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
-    public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
+    public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

@@ -8,7 +8,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class ActivityMetadataDisplayDriver : SectionDisplayDriver<IActivity, ActivityMetadata>
+    public sealed class ActivityMetadataDisplayDriver : SectionDisplayDriver<IActivity, ActivityMetadata>
     {
         public override IDisplayResult Edit(IActivity activity, ActivityMetadata section, BuildEditorContext context)
         {

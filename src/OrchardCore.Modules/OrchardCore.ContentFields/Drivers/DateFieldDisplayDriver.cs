@@ -12,9 +12,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField>
+    public sealed class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public DateFieldDisplayDriver(IStringLocalizer<DateFieldDisplayDriver> localizer)
         {

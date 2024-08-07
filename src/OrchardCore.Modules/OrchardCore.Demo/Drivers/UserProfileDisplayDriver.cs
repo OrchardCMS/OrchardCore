@@ -11,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Demo.Drivers
 {
-    public class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
+    public sealed class UserProfileDisplayDriver : SectionDisplayDriver<User, UserProfile>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

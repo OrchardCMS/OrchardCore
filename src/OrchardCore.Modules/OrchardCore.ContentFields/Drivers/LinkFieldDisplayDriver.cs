@@ -17,14 +17,14 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
+    public sealed class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LinkFieldDisplayDriver(
             IUrlHelperFactory urlHelperFactory,

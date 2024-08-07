@@ -10,11 +10,11 @@ using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Deployment
 {
-    public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
+    public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
         private readonly IQueryManager _queryManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public QueryBasedContentDeploymentStepDriver(
             IQueryManager queryManager,

@@ -23,13 +23,14 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
+    public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
         private readonly IContentManager _contentManager;
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
+        internal readonly IStringLocalizer S;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,

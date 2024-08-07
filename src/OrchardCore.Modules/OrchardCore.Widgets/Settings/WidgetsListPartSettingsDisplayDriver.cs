@@ -8,7 +8,7 @@ using OrchardCore.Widgets.Models;
 
 namespace OrchardCore.Widgets.Settings
 {
-    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
+    public sealed class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
     {
         private static readonly char[] _separator = [',', ' '];
 

@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class RetrieveContentTaskDisplayDriver : ContentTaskDisplayDriver<RetrieveContentTask, RetrieveContentTaskViewModel>
+    public sealed class RetrieveContentTaskDisplayDriver : ContentTaskDisplayDriver<RetrieveContentTask, RetrieveContentTaskViewModel>
     {
         protected override void EditActivity(RetrieveContentTask activity, RetrieveContentTaskViewModel model)
         {

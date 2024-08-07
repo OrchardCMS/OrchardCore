@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
+public sealed class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
     public override IDisplayResult Display(TwoFactorMethod model, BuildDisplayContext context)
     {

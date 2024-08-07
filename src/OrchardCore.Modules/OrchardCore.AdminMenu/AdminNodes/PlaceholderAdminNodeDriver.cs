@@ -8,7 +8,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
-    public class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
+    public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
     {
         private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 

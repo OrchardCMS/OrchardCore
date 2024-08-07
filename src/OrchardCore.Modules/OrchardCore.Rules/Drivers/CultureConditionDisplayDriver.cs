@@ -7,7 +7,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class CultureConditionDisplayDriver : DisplayDriver<Condition, CultureCondition>
+    public sealed class CultureConditionDisplayDriver : DisplayDriver<Condition, CultureCondition>
     {
         private readonly ConditionOperatorOptions _options;
 

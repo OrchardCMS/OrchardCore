@@ -9,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeEmailSettings>
+    public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeEmailSettings>
     {
         public const string GroupId = "userChangeEmail";
 

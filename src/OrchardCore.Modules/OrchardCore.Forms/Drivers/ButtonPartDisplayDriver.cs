@@ -8,7 +8,7 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
+    public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
     {
         public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
         {

@@ -11,9 +11,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
+    public sealed class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TimeFieldDisplayDriver(IStringLocalizer<TimeFieldDisplayDriver> localizer)
         {

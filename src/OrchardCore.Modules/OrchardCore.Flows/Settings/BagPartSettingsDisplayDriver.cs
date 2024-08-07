@@ -12,11 +12,11 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
+    public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

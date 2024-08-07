@@ -16,7 +16,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class AuditTrailContentEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailContentEvent>
+    public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailContentEvent>
     {
         private readonly Dictionary<string, string> _latestVersionId = [];
         private readonly IAuditTrailManager _auditTrailManager;

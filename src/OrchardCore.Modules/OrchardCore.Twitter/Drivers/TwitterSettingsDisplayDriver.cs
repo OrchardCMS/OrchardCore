@@ -14,7 +14,7 @@ using OrchardCore.Twitter.ViewModels;
 
 namespace OrchardCore.Twitter.Drivers
 {
-    public class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSettings>
+    public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

@@ -8,7 +8,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Deployment
 {
-    public class CustomUserSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomUserSettingsDeploymentStep>
+    public sealed class CustomUserSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomUserSettingsDeploymentStep>
     {
         private readonly CustomUserSettingsService _customUserSettingsService;
 

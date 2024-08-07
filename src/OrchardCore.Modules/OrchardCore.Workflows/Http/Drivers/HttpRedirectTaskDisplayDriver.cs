@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
-    public class HttpRedirectTaskDisplayDriver : ActivityDisplayDriver<HttpRedirectTask, HttpRedirectTaskViewModel>
+    public sealed class HttpRedirectTaskDisplayDriver : ActivityDisplayDriver<HttpRedirectTask, HttpRedirectTaskViewModel>
     {
         protected override void EditActivity(HttpRedirectTask activity, HttpRedirectTaskViewModel model)
         {

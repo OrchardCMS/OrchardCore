@@ -10,7 +10,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class AuditTrailContentsDriver : ContentDisplayDriver
+    public sealed class AuditTrailContentsDriver : ContentDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

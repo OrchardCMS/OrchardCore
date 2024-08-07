@@ -14,10 +14,11 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
+    public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
     {
-        protected readonly IStringLocalizer S;
         private readonly ILocalClock _localClock;
+
+        internal readonly IStringLocalizer S;
 
         public DateTimeFieldDisplayDriver(
             ILocalClock localClock,

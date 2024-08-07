@@ -13,11 +13,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Localization.Drivers;
 
-public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLocalizationSettings>
+public sealed class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLocalizationSettings>
 {
     private readonly ILocalizationService _localizationService;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UserLocalizationDisplayDriver(
         ILocalizationService localizationService,

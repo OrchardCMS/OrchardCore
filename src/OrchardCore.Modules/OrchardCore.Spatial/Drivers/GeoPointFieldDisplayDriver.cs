@@ -15,9 +15,9 @@ using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
+    public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
         {

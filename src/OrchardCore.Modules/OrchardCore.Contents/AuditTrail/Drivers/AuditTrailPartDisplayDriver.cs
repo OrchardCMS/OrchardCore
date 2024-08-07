@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
+    public sealed class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
     {
         public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
         {

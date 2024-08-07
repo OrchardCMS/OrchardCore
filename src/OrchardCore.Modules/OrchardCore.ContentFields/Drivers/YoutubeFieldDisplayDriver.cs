@@ -14,9 +14,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
+    public sealed class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {

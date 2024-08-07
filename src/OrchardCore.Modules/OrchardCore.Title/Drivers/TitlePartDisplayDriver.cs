@@ -10,9 +10,9 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Drivers
 {
-    public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
+    public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
         {

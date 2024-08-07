@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
+public sealed class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
     {

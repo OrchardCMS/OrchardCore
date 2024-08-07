@@ -13,9 +13,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
+    public sealed class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {
