@@ -10,7 +10,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.ContentFields.Settings
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class LocalizationSetContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LocalizationSetContentPickerField>
+    public sealed class LocalizationSetContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LocalizationSetContentPickerField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {

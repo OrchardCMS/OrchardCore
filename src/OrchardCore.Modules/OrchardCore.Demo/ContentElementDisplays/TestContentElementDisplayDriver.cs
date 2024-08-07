@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Demo.ContentElementDisplays
 {
-    public class TestContentElementDisplayDriver : ContentDisplayDriver
+    public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
     {
         private static int _creating;
         private static int _processing;

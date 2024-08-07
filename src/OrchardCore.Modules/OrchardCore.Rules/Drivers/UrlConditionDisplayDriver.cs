@@ -7,7 +7,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
+    public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
     {
         private readonly ConditionOperatorOptions _options;
 

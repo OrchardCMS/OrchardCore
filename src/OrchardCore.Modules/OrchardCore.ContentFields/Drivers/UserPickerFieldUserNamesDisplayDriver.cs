@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
+    public sealed class UserPickerFieldUserNamesDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
         public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
         {

@@ -10,11 +10,11 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentPreview.Settings
 {
-    public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
+    public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public PreviewPartSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,

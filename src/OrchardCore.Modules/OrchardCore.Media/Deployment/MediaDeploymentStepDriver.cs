@@ -8,7 +8,7 @@ using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment
 {
-    public class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, MediaDeploymentStep>
+    public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, MediaDeploymentStep>
     {
         private readonly IMediaFileStore _mediaFileStore;
 

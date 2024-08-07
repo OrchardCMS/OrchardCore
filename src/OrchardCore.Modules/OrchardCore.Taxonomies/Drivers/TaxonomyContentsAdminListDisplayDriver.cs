@@ -20,7 +20,7 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private const string LevelPadding = "\xA0\xA0";
 
@@ -28,7 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,

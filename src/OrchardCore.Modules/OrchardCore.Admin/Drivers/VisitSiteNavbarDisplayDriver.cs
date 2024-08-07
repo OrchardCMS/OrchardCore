@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Admin.Drivers;
 
-public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {

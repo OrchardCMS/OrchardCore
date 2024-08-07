@@ -13,12 +13,13 @@ using OrchardCore.Users;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
+    public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public OwnerEditorDriver(IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,

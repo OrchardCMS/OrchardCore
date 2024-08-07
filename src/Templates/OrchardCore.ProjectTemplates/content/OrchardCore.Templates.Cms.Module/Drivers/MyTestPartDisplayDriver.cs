@@ -10,7 +10,7 @@ using OrchardCore.Templates.Cms.Module.ViewModels;
 
 namespace OrchardCore.Templates.Cms.Module.Drivers
 {
-    public class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
+    public sealed class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 

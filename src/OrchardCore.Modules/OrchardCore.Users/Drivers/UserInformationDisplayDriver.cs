@@ -13,14 +13,14 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserInformationDisplayDriver : DisplayDriver<User>
+    public sealed class UserInformationDisplayDriver : DisplayDriver<User>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IPhoneFormatValidator _phoneFormatValidator;
         private readonly ISiteService _siteService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public UserInformationDisplayDriver(
             IHttpContextAccessor httpContextAccessor,

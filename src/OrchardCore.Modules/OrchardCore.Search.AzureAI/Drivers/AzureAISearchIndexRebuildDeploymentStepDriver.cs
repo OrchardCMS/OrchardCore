@@ -9,7 +9,7 @@ using OrchardCore.Search.AzureAI.ViewModels;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
+public sealed class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
     : DisplayDriver<DeploymentStep, AzureAISearchIndexRebuildDeploymentStep>
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;

@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Shortcodes.Drivers
 {
-    public class ShortcodeDescriptorDisplayDriver : DisplayDriver<ShortcodeDescriptor>
+    public sealed class ShortcodeDescriptorDisplayDriver : DisplayDriver<ShortcodeDescriptor>
     {
         public override Task<IDisplayResult> DisplayAsync(ShortcodeDescriptor descriptor, BuildDisplayContext context)
         {

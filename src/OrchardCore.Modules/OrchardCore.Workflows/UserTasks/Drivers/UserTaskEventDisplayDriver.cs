@@ -6,7 +6,7 @@ using OrchardCore.Workflows.UserTasks.ViewModels;
 
 namespace OrchardCore.Workflows.UserTasks.Drivers
 {
-    public class UserTaskEventDisplayDriver : ActivityDisplayDriver<UserTaskEvent, UserTaskEventViewModel>
+    public sealed class UserTaskEventDisplayDriver : ActivityDisplayDriver<UserTaskEvent, UserTaskEventViewModel>
     {
         protected override void EditActivity(UserTaskEvent activity, UserTaskEventViewModel model)
         {

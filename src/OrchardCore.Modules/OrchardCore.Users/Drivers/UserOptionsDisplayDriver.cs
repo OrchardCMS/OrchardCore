@@ -5,7 +5,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserOptionsDisplayDriver : DisplayDriver<UserIndexOptions>
+    public sealed class UserOptionsDisplayDriver : DisplayDriver<UserIndexOptions>
     {
         // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(UserIndexOptions options, string htmlFieldPrefix)

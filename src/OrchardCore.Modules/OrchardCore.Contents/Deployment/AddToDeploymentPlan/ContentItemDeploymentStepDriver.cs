@@ -8,11 +8,11 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    public class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
+    public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
     {
         private readonly IContentManager _contentManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public ContentItemDeploymentStepDriver(IContentManager contentManager,
             IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)

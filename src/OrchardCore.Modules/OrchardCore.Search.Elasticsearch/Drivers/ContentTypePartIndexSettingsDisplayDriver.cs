@@ -10,7 +10,7 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
-    public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

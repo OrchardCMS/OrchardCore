@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;

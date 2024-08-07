@@ -18,7 +18,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TermPartContentDriver : ContentDisplayDriver
+    public sealed class TermPartContentDriver : ContentDisplayDriver
     {
         private readonly ISession _session;
         private readonly PagerOptions _pagerOptions;

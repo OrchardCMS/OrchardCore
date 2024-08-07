@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Analytics.Drivers
 {
-    public class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<GoogleAnalyticsSettings>
+    public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<GoogleAnalyticsSettings>
     {
         protected override string SettingsGroupId
             => GoogleConstants.Features.GoogleAnalytics;

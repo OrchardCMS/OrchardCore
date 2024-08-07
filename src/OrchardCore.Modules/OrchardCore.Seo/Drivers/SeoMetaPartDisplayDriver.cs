@@ -13,9 +13,9 @@ using OrchardCore.Seo.ViewModels;
 
 namespace OrchardCore.Seo.Drivers
 {
-    public class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
+    public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public SeoMetaPartDisplayDriver(IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer)
         {

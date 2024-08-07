@@ -13,7 +13,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class ContentsDriver : ContentDisplayDriver
+    public sealed class ContentsDriver : ContentDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;

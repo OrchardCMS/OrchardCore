@@ -8,7 +8,7 @@ using OrchardCore.Taxonomies.Fields;
 
 namespace OrchardCore.Taxonomies.Settings
 {
-    public class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
+    public sealed class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {

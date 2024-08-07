@@ -6,7 +6,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
+    public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
     {
         public override Task<IDisplayResult> DisplayAsync(HomepageCondition condition, BuildDisplayContext context)
         {

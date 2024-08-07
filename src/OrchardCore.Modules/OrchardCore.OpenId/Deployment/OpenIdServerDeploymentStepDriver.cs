@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.OpenId.Deployment
 {
-    public class OpenIdServerDeploymentStepDriver : DisplayDriver<DeploymentStep, OpenIdServerDeploymentStep>
+    public sealed class OpenIdServerDeploymentStepDriver : DisplayDriver<DeploymentStep, OpenIdServerDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(OpenIdServerDeploymentStep step, BuildDisplayContext context)
         {

@@ -9,7 +9,7 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Deployment.Steps
 {
-    public class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentStep, JsonRecipeDeploymentStep>
+    public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentStep, JsonRecipeDeploymentStep>
     {
         /// <summary>
         /// A limited schema for recipe steps. Does not include any step data.
@@ -30,7 +30,7 @@ namespace OrchardCore.Deployment.Steps
 }
 ";
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
         {

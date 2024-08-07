@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    public class AddToDeploymentPlanContentDriver : ContentDisplayDriver
+    public sealed class AddToDeploymentPlanContentDriver : ContentDisplayDriver
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
 

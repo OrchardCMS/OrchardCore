@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class DateFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<DateField>
+    public sealed class DateFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<DateField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {

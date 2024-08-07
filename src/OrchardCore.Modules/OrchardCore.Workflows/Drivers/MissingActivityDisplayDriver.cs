@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class MissingActivityDisplayDriver : ActivityDisplayDriver<MissingActivity>
+    public sealed class MissingActivityDisplayDriver : ActivityDisplayDriver<MissingActivity>
     {
         public override IDisplayResult Display(MissingActivity activity, BuildDisplayContext context)
         {

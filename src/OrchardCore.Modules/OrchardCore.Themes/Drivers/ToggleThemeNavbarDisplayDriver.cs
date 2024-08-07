@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Drivers;
 
-public class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly ISiteService _siteService;
 

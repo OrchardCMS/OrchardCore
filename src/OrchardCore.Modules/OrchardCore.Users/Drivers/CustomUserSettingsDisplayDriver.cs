@@ -16,7 +16,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class CustomUserSettingsDisplayDriver : DisplayDriver<User>
+    public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
     {
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;

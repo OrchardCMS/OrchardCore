@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
 {
-    public class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
+    public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
     {
         internal const string GroupId = "SecurityHeaders";
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
             {

@@ -8,7 +8,7 @@ using OrchardCore.Seo.ViewModels;
 
 namespace OrchardCore.SeoMeta.Settings
 {
-    public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
+    public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {

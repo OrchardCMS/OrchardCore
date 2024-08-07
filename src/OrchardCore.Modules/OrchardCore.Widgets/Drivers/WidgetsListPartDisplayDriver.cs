@@ -16,7 +16,7 @@ using OrchardCore.Widgets.ViewModels;
 
 namespace OrchardCore.Widgets.Drivers
 {
-    public class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
+    public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;

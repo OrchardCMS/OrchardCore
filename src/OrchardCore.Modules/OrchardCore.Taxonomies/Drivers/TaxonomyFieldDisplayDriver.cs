@@ -15,11 +15,11 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
+    public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,

@@ -6,7 +6,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class ForEachTaskDisplayDriver : ActivityDisplayDriver<ForEachTask, ForEachTaskViewModel>
+    public sealed class ForEachTaskDisplayDriver : ActivityDisplayDriver<ForEachTask, ForEachTaskViewModel>
     {
         protected override void EditActivity(ForEachTask activity, ForEachTaskViewModel model)
         {
