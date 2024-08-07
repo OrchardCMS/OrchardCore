@@ -6,9 +6,16 @@ using OrchardCore.Workflows.WorkflowPruning.Drivers;
 
 namespace OrchardCore.Workflows.WorkflowPruning;
 
-public class AdminMenu : INavigationProvider
+public sealed class AdminMenu : INavigationProvider
 {
-    private readonly IStringLocalizer S;
+    private static readonly RouteValueDictionary _routeValues = new()
+    {
+        { "area", "OrchardCore.Settings" },
+        // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
+        { "groupId", WorkflowPruningDisplayDriver.GroupId },
+    };
+
+    internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
@@ -17,35 +24,19 @@ public class AdminMenu : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
 
-        builder.Add(
-            S["Configuration"],
-            configuration =>
-                configuration.Add(
-                    S["Settings"],
-                    settings =>
-                        settings.Add(
-                            S["Workflow Pruning"],
-                            S["Workflow Pruning"],
-                            pruning =>
-                                pruning
-                                    .Action(
-                                        "Index",
-                                        "Admin",
-                                        new
-                                        {
-                                            area = "OrchardCore.Settings",
-                                            groupid = WorkflowPruningDisplayDriver.GroupId
-                                        }
-                                    )
-                                    .Permission(Permissions.ManageWorkflowSettings)
-                                    .LocalNav()
-                        )
+        builder.Add(S["Configuration"], configuration => configuration
+            .Add(S["Settings"], settings => settings
+                .Add(S["Workflow Pruning"], S["Workflow Pruning"], pruning => pruning
+                    .Action("Index","Admin", _routeValues)
+                    .Permission(Permissions.ManageWorkflowSettings)
+                    .LocalNav()
                 )
+            )
         );
 
         return Task.CompletedTask;

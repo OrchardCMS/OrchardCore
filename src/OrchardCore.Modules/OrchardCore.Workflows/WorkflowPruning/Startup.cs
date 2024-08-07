@@ -11,7 +11,7 @@ using OrchardCore.Workflows.WorkflowPruning.Services;
 namespace OrchardCore.Workflows.WorkflowPruning;
 
 [Feature("OrchardCore.Workflows")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

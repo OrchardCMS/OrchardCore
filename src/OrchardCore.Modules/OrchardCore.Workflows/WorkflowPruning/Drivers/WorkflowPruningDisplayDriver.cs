@@ -11,9 +11,10 @@ using OrchardCore.Workflows.WorkflowPruning.ViewModels;
 
 namespace OrchardCore.Workflows.WorkflowPruning.Drivers;
 
-public class WorkflowPruningDisplayDriver
- : SiteDisplayDriver< WorkflowPruningSettings>
+public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPruningSettings>
 {
+    public const string GroupId = "WorkflowPruningSettings";
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
@@ -26,64 +27,46 @@ public class WorkflowPruningDisplayDriver
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public const string GroupId = "WorkflowPruningSettings";
+    protected override string SettingsGroupId 
+        => GroupId;
 
-    protected override string SettingsGroupId => GroupId;
-
-    public override IDisplayResult Edit(ISite model, WorkflowPruningSettings section, BuildEditorContext context)
+    public override IDisplayResult Edit(ISite site, WorkflowPruningSettings settings, BuildEditorContext context)
     {
-        return Initialize<WorkflowPruningViewModel>(
-                "WorkflowPruning_Fields_Edit",
-                model =>
-                {
-                    model.RetentionDays = section.RetentionDays;
-                    model.LastRunUtc = section.LastRunUtc;
-                    model.Disabled = section.Disabled;
-                    model.Statuses =
-                        section.Statuses
-                        ?? new WorkflowStatus[]
-                        {
-                        WorkflowStatus.Idle,
-                        WorkflowStatus.Starting,
-                        WorkflowStatus.Resuming,
-                        WorkflowStatus.Executing,
-                        WorkflowStatus.Halted,
-                        WorkflowStatus.Finished,
-                        WorkflowStatus.Faulted,
-                        WorkflowStatus.Aborted
-                        };
-                }
-            )
-            .Location("Content:5")
-            .OnGroup(GroupId);
+        return Initialize<WorkflowPruningViewModel>("WorkflowPruning_Fields_Edit", model =>
+        {
+            model.RetentionDays = settings.RetentionDays;
+            model.LastRunUtc = settings.LastRunUtc;
+            model.Disabled = settings.Disabled;
+            model.Statuses =
+            settings.Statuses ?? new WorkflowStatus[]
+            {
+                WorkflowStatus.Idle,
+                WorkflowStatus.Starting,
+                WorkflowStatus.Resuming,
+                WorkflowStatus.Executing,
+                WorkflowStatus.Halted,
+                WorkflowStatus.Finished,
+                WorkflowStatus.Faulted,
+                WorkflowStatus.Aborted
+            };
+        }).Location("Content:5")
+        .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(
-        ISite model,
-        WorkflowPruningSettings section,
-        UpdateEditorContext context
-    )
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowPruningSettings settings, UpdateEditorContext context)
     {
-        if (
-            !await _authorizationService.AuthorizeAsync(
-                _httpContextAccessor.HttpContext?.User,
-                Permissions.ManageWorkflowSettings
-            )
-        )
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageWorkflowSettings))
         {
             return null;
         }
 
-        if (context.GroupId == GroupId)
-        {
-            var viewModel = new WorkflowPruningViewModel();
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        var viewModel = new WorkflowPruningViewModel();
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-            section.RetentionDays = viewModel.RetentionDays;
-            section.Disabled = viewModel.Disabled;
-            section.Statuses = viewModel.Statuses;
-        }
+        settings.RetentionDays = viewModel.RetentionDays;
+        settings.Disabled = viewModel.Disabled;
+        settings.Statuses = viewModel.Statuses;
 
-        return await EditAsync(model, section, context);
+        return await EditAsync(site, settings, context);
     }
 }

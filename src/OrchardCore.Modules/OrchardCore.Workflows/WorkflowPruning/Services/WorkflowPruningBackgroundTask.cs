@@ -24,7 +24,7 @@ public class WorkflowPruningBackgroundTask : IBackgroundTask
     {
         var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-        var workflowPruningSettings = (await siteService.GetSiteSettingsAsync()).As<WorkflowPruningSettings>();
+        var workflowPruningSettings = await siteService.GetSiteSettingsAsync<WorkflowPruningSettings>();
         if (workflowPruningSettings.Disabled)
         {
             return;
@@ -46,13 +46,10 @@ public class WorkflowPruningBackgroundTask : IBackgroundTask
             workflowPruningSettings.LastRunUtc = clock.UtcNow;
 
             var siteSettings = await siteService.LoadSiteSettingsAsync();
-            siteSettings.Alter<WorkflowPruningSettings>(
-                nameof(WorkflowPruningSettings),
-                settings =>
-                {
-                    settings.LastRunUtc = clock.UtcNow;
-                }
-            );
+            siteSettings.Alter<WorkflowPruningSettings>(settings =>
+            {
+                settings.LastRunUtc = clock.UtcNow;
+            });
 
             await siteService.UpdateSiteSettingsAsync(siteSettings);
         }
