@@ -5,18 +5,17 @@ using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using YesSql;
 
 namespace OrchardCore.Alias.Drivers
 {
-    public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
+    public sealed class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-
         private readonly ISession _session;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,
@@ -32,13 +31,13 @@ namespace OrchardCore.Alias.Drivers
             return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AliasPart model, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
 
             await foreach (var item in model.ValidateAsync(S, _session))
             {
-                updater.ModelState.BindValidationResult(Prefix, item);
+                context.Updater.ModelState.BindValidationResult(Prefix, item);
             }
 
             return Edit(model, context);
@@ -51,6 +50,5 @@ namespace OrchardCore.Alias.Drivers
             model.ContentItem = part.ContentItem;
             model.Settings = settings;
         }
-
     }
 }

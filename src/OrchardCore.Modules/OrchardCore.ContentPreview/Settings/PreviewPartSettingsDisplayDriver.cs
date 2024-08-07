@@ -4,24 +4,27 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.ContentPreview.ViewModels;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentPreview.Settings
 {
-    public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
+    public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
 
-        public PreviewPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public PreviewPartSettingsDisplayDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
             {
@@ -37,8 +40,7 @@ namespace OrchardCore.ContentPreview.Settings
             var model = new PreviewPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Pattern
-                );
+                m => m.Pattern);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -52,7 +54,7 @@ namespace OrchardCore.ContentPreview.Settings
                 });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

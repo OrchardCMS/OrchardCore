@@ -1,21 +1,22 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Search.Lucene.Deployment
 {
-    public class LuceneSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneSettingsDeploymentStep>
+    public sealed class LuceneSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneSettingsDeploymentStep>
     {
-        public override IDisplayResult Display(LuceneSettingsDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(LuceneSettingsDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("LuceneSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("LuceneSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(LuceneSettingsDeploymentStep step)
+        public override IDisplayResult Edit(LuceneSettingsDeploymentStep step, BuildEditorContext context)
         {
             return View("LuceneSettingsDeploymentStep_Fields_Edit", step).Location("Content");
         }

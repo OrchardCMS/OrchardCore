@@ -10,7 +10,7 @@ using OrchardCore.Localization.ViewModels;
 
 namespace OrchardCore.Localization.Drivers;
 
-public class AdminCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class AdminCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILocalizationService _localizationService;

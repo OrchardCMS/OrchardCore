@@ -2,15 +2,16 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Settings;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
+    public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model =>
             {
@@ -29,7 +30,7 @@ namespace OrchardCore.Spatial.Drivers
 
             context.Builder.WithSettings(model);
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

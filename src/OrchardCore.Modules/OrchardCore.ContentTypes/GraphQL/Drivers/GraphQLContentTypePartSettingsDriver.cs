@@ -5,12 +5,12 @@ using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers
 {
-    public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly GraphQLContentOptions _contentOptions;
 
@@ -19,7 +19,7 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
             _contentOptions = optionsAccessor.Value;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
             {
@@ -32,9 +32,10 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
                 model.Options = _contentOptions;
                 model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
 
-                if (!updater.ModelState.IsValid)
+                if (!context.Updater.ModelState.IsValid)
                 {
-                    await updater.TryUpdateModelAsync(model, Prefix, x => x.Settings);
+                    await context.Updater.TryUpdateModelAsync(model, Prefix,
+                        m => m.Settings);
                 }
             }).Location("Content");
         }
@@ -52,7 +53,7 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
 
             context.Builder.WithSettings(model.Settings);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

@@ -12,7 +12,7 @@ using OrchardCore.PublishLater.ViewModels;
 
 namespace OrchardCore.PublishLater.Drivers
 {
-    public class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
+    public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<PublishLaterPart>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -30,10 +30,9 @@ namespace OrchardCore.PublishLater.Drivers
 
         public override IDisplayResult Display(PublishLaterPart part, BuildPartDisplayContext context)
         {
-            return Initialize<PublishLaterPartViewModel>(
-                $"{nameof(PublishLaterPart)}_SummaryAdmin",
+            return Initialize<PublishLaterPartViewModel>($"{nameof(PublishLaterPart)}_SummaryAdmin",
                 model => PopulateViewModel(part, model))
-            .Location("SummaryAdmin", "Meta:25");
+                .Location("SummaryAdmin", "Meta:25");
         }
 
         public override IDisplayResult Edit(PublishLaterPart part, BuildPartEditorContext context)
@@ -43,7 +42,7 @@ namespace OrchardCore.PublishLater.Drivers
             .Location("Actions:10");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, UpdatePartEditorContext context)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -51,7 +50,7 @@ namespace OrchardCore.PublishLater.Drivers
             {
                 var viewModel = new PublishLaterPartViewModel();
 
-                await updater.TryUpdateModelAsync(viewModel, Prefix);
+                await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
                 if (viewModel.ScheduledPublishLocalDateTime == null || httpContext.Request.Form["submit.Save"] == "submit.CancelPublishLater")
                 {

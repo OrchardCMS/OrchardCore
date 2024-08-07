@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -21,9 +20,8 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
+    public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
     {
-        private const string SettingsGroupId = "OrchardCore.OpenId.Client";
         private static readonly char[] _separator = [' ', ','];
 
         private readonly IShellReleaseManager _shellReleaseManager;
@@ -32,7 +30,10 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOpenIdClientService _clientService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
+
+        protected override string SettingsGroupId
+            => "OrchardCore.OpenId.Client";
 
         public OpenIdClientSettingsDisplayDriver(
             IShellReleaseManager shellReleaseManager,
@@ -50,20 +51,15 @@ namespace OrchardCore.OpenId.Drivers
             S = stringLocalizer;
         }
 
-        public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, OpenIdClientSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
@@ -104,10 +100,11 @@ namespace OrchardCore.OpenId.Drivers
                 }
 
                 model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            }).Location("Content:2")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
@@ -115,98 +112,95 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
+            var previousClientSecret = settings.ClientSecret;
+            var model = new OpenIdClientSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            model.Scopes ??= string.Empty;
+
+            settings.DisplayName = model.DisplayName;
+            settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.CallbackPath = model.CallbackPath;
+            settings.ClientId = model.ClientId;
+            settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
+            settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
+            settings.ResponseMode = model.ResponseMode;
+            settings.StoreExternalTokens = model.StoreExternalTokens;
+
+            var useClientSecret = true;
+
+            if (model.UseCodeFlow)
             {
-                var previousClientSecret = settings.ClientSecret;
-                var model = new OpenIdClientSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                model.Scopes ??= string.Empty;
-
-                settings.DisplayName = model.DisplayName;
-                settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-                settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
-                settings.CallbackPath = model.CallbackPath;
-                settings.ClientId = model.ClientId;
-                settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
-                settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
-                settings.ResponseMode = model.ResponseMode;
-                settings.StoreExternalTokens = model.StoreExternalTokens;
-
-                var useClientSecret = true;
-
-                if (model.UseCodeFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.Code;
-                }
-                else if (model.UseCodeIdTokenFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.CodeIdToken;
-                }
-                else if (model.UseCodeIdTokenTokenFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
-                }
-                else if (model.UseCodeTokenFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.CodeToken;
-                }
-                else if (model.UseIdTokenFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.IdToken;
-                    useClientSecret = false;
-                }
-                else if (model.UseIdTokenTokenFlow)
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.IdTokenToken;
-                    useClientSecret = false;
-                }
-                else
-                {
-                    settings.ResponseType = OpenIdConnectResponseType.None;
-                    useClientSecret = false;
-                }
-
-                try
-                {
-                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? []
-                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
-                }
-                catch
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
-                }
-
-                if (!useClientSecret)
-                {
-                    model.ClientSecret = previousClientSecret = null;
-                }
-
-                // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-                if (string.IsNullOrEmpty(model.ClientSecret))
-                {
-                    settings.ClientSecret = previousClientSecret;
-                }
-                else
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
-                    settings.ClientSecret = protector.Protect(model.ClientSecret);
-                }
-
-                foreach (var result in await _clientService.ValidateSettingsAsync(settings))
-                {
-                    if (result != ValidationResult.Success)
-                    {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
-                    }
-                }
-
-                _shellReleaseManager.RequestRelease();
+                settings.ResponseType = OpenIdConnectResponseType.Code;
+            }
+            else if (model.UseCodeIdTokenFlow)
+            {
+                settings.ResponseType = OpenIdConnectResponseType.CodeIdToken;
+            }
+            else if (model.UseCodeIdTokenTokenFlow)
+            {
+                settings.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
+            }
+            else if (model.UseCodeTokenFlow)
+            {
+                settings.ResponseType = OpenIdConnectResponseType.CodeToken;
+            }
+            else if (model.UseIdTokenFlow)
+            {
+                settings.ResponseType = OpenIdConnectResponseType.IdToken;
+                useClientSecret = false;
+            }
+            else if (model.UseIdTokenTokenFlow)
+            {
+                settings.ResponseType = OpenIdConnectResponseType.IdTokenToken;
+                useClientSecret = false;
+            }
+            else
+            {
+                settings.ResponseType = OpenIdConnectResponseType.None;
+                useClientSecret = false;
             }
 
-            return await EditAsync(settings, context);
+            try
+            {
+                settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
+                    ? []
+                    : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+            }
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
+            }
+
+            if (!useClientSecret)
+            {
+                model.ClientSecret = previousClientSecret = null;
+            }
+
+            // Restore the client secret if the input is empty (i.e if it hasn't been reset).
+            if (string.IsNullOrEmpty(model.ClientSecret))
+            {
+                settings.ClientSecret = previousClientSecret;
+            }
+            else
+            {
+                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+                settings.ClientSecret = protector.Protect(model.ClientSecret);
+            }
+
+            foreach (var result in await _clientService.ValidateSettingsAsync(settings))
+            {
+                if (result != ValidationResult.Success)
+                {
+                    var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                    context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
+                }
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

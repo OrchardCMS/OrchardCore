@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
-    public class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
+    public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
     {
         private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 
@@ -18,15 +17,15 @@ namespace OrchardCore.AdminMenu.AdminNodes
             _adminMenuPermissionService = adminMenuPermissionService;
         }
 
-        public override IDisplayResult Display(LinkAdminNode treeNode)
+        public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 View("LinkAdminNode_Fields_TreeSummary", treeNode).Location("TreeSummary", "Content"),
                 View("LinkAdminNode_Fields_TreeThumbnail", treeNode).Location("TreeThumbnail", "Content")
             );
         }
 
-        public override IDisplayResult Edit(LinkAdminNode treeNode)
+        public override IDisplayResult Edit(LinkAdminNode treeNode, BuildEditorContext context)
         {
             return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
             {
@@ -54,24 +53,31 @@ namespace OrchardCore.AdminMenu.AdminNodes
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, UpdateEditorContext context)
         {
             var model = new LinkAdminNodeViewModel();
-            await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.Target, x => x.IconClass, x => x.SelectedPermissionNames);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                x => x.LinkUrl,
+                x => x.LinkText,
+                x => x.Target,
+                x => x.IconClass,
+                x => x.SelectedPermissionNames);
 
             treeNode.LinkText = model.LinkText;
             treeNode.LinkUrl = model.LinkUrl;
             treeNode.Target = model.Target;
             treeNode.IconClass = model.IconClass;
 
-            var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            var selectedPermissions = model.SelectedPermissionNames == null
+                ? []
+                : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
             treeNode.PermissionNames = permissions
                 .Where(p => selectedPermissions.Contains(p.Name))
                 .Select(p => p.Name).ToArray();
 
-            return Edit(treeNode);
+            return Edit(treeNode, context);
         }
     }
 }
