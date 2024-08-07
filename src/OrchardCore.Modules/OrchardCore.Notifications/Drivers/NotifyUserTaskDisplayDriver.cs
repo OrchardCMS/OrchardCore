@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -28,24 +28,24 @@ public class NotifyUserTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<N
 
     protected override string EditShapeType { get; } = $"{ActivityName}_Fields_Edit";
 
-    public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask activity, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(NotifyUserTask activity, UpdateEditorContext context)
     {
         var viewModel = new NotifyUserTaskViewModel();
-        await updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         var userNames = viewModel.UserNames?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             .Distinct(StringComparer.OrdinalIgnoreCase) ?? [];
 
         if (!userNames.Any())
         {
-            updater.ModelState.AddModelError(Prefix, nameof(viewModel.UserNames), S["Please provide at least one username to notify."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.UserNames), S["Please provide at least one username to notify."]);
         }
         else
         {
             activity.UserNames = new WorkflowExpression<string>(string.Join(", ", userNames));
         }
 
-        return await base.UpdateAsync(activity, updater);
+        return await base.UpdateAsync(activity, context);
     }
 
     protected override void EditActivity(NotifyUserTask activity, NotifyUserTaskViewModel model)

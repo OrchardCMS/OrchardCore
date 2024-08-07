@@ -122,7 +122,7 @@ namespace OrchardCore.Widgets.Drivers
 
                 if (!zonedContentItems.TryGetValue(zone, out var value))
                 {
-                    value = ([]);
+                    value = [];
                     zonedContentItems.Add(zone, value);
                 }
 

@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Deployment
@@ -16,16 +15,16 @@ namespace OrchardCore.Deployment.Deployment
             _deploymentPlanService = deploymentPlanService;
         }
 
-        public override IDisplayResult Display(DeploymentPlanDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(DeploymentPlanDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("DeploymentPlanDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("DeploymentPlanDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(DeploymentPlanDeploymentStep step)
+        public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
             {
@@ -35,22 +34,22 @@ namespace OrchardCore.Deployment.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)
         {
             step.DeploymentPlanNames = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.DeploymentPlanNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.DeploymentPlanNames = [];
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

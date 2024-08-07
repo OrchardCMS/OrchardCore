@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, AuthenticatorAppLoginSettings>
+public class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriver<AuthenticatorAppLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -22,7 +21,11 @@ public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<I
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
-    public override IDisplayResult Edit(AuthenticatorAppLoginSettings settings)
+
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
+
+    public override IDisplayResult Edit(ISite site, AuthenticatorAppLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<AuthenticatorAppLoginSettings>("AuthenticatorAppLoginSettings_Edit", model =>
         {
@@ -30,13 +33,12 @@ public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<I
             model.TokenLength = settings.TokenLength;
         }).Location("Content:12#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(AuthenticatorAppLoginSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AuthenticatorAppLoginSettings section, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }
@@ -53,6 +55,6 @@ public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<I
         }
         */
 
-        return Edit(section);
+        return Edit(site, section, context);
     }
 }

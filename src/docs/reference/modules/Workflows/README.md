@@ -403,31 +403,28 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
     private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
             Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 
-    public override IDisplayResult Edit(TActivity activity)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(EditShapeType, model =>
-        {
-            return EditActivityAsync(activity, model);
-        }).Location("Content");
+        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             await UpdateActivityAsync(viewModel, activity);
         }
 
-        return Edit(activity);
+        return Edit(activity, context);
     }
 }
 ```

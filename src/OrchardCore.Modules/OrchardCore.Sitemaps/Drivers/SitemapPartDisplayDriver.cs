@@ -24,8 +24,7 @@ namespace OrchardCore.Sitemaps.Drivers
                 t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
                 t => t.Exclude,
-                t => t.Priority
-                );
+                t => t.Priority);
 
             model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
             model.ChangeFrequency = viewModel.ChangeFrequency;

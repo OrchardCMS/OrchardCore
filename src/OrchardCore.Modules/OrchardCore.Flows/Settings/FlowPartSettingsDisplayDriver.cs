@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -19,7 +19,7 @@ namespace OrchardCore.Flows.Settings
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", async model =>
             {
@@ -38,14 +38,15 @@ namespace OrchardCore.Flows.Settings
         {
             var model = new FlowPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.ContainedContentTypes);
 
             context.Builder.WithSettings(new FlowPartSettings
             {
                 ContainedContentTypes = model.ContainedContentTypes
             });
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

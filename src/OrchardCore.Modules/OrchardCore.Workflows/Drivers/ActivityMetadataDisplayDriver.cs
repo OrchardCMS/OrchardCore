@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -11,7 +10,7 @@ namespace OrchardCore.Workflows.Drivers
 {
     public class ActivityMetadataDisplayDriver : SectionDisplayDriver<IActivity, ActivityMetadata>
     {
-        public override IDisplayResult Edit(ActivityMetadata section, BuildEditorContext context)
+        public override IDisplayResult Edit(IActivity activity, ActivityMetadata section, BuildEditorContext context)
         {
             return Initialize<ActivityMetadataEditViewModel>("ActivityMetadata_Edit", viewModel =>
             {
@@ -19,7 +18,7 @@ namespace OrchardCore.Workflows.Drivers
             }).Location("Content:before");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ActivityMetadata section, IUpdateModel updater, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(IActivity activity, ActivityMetadata section, UpdateEditorContext context)
         {
             var viewModel = new ActivityMetadataEditViewModel();
 
@@ -27,7 +26,7 @@ namespace OrchardCore.Workflows.Drivers
 
             section.Title = viewModel.Title?.Trim();
 
-            return await EditAsync(section, context);
+            return await EditAsync(activity, section, context);
         }
     }
 }

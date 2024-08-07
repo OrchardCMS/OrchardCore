@@ -39,8 +39,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
+            }).Location("Detail", "Content")
             .Location("Summary", "Content");
         }
 

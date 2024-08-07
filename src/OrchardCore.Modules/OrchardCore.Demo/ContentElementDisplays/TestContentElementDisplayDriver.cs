@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -13,7 +14,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -48,7 +49,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 );
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -60,7 +61,7 @@ namespace OrchardCore.Demo.ContentElementDisplays
             return Copy("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -69,11 +70,11 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 return null;
             }
 
-            await updater.TryUpdateModelAsync(testContentPart, "");
+            await context.Updater.TryUpdateModelAsync(testContentPart, "");
 
             if (testContentPart.Line.EndsWith(' '))
             {
-                updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
+                context.Updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
             }
             else
             {

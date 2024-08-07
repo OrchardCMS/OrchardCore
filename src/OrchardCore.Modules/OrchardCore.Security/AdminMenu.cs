@@ -11,7 +11,7 @@ namespace OrchardCore.Security
         private static readonly RouteValueDictionary _routeValues = new()
         {
             { "area", "OrchardCore.Settings" },
-            { "groupId", SecuritySettingsDisplayDriver.SettingsGroupId },
+            { "groupId", SecuritySettingsDisplayDriver.GroupId },
 
         };
 

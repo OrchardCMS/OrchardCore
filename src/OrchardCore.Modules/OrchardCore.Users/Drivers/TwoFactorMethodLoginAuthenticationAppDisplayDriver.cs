@@ -7,10 +7,10 @@ namespace OrchardCore.Users.Drivers;
 
 public class TwoFactorMethodLoginAuthenticationAppDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override IDisplayResult Edit(TwoFactorMethod model)
+    public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
     {
         return View("AuthenticatorAppValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultAuthenticatorProvider);
+            .Location("Content")
+            .OnGroup(TokenOptions.DefaultAuthenticatorProvider);
     }
 }

@@ -3,13 +3,14 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<HtmlSettingsViewModel>("HtmlFieldSettings_Edit", model =>
             {
@@ -17,8 +18,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.SanitizeHtml = settings.SanitizeHtml;
                 model.Hint = settings.Hint;
-            })
-            .Location("Content:20");
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
 
             context.Builder.WithSettings(settings);
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

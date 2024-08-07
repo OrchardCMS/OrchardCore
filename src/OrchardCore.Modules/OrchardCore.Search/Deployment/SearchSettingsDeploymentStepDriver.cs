@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,16 +7,16 @@ namespace OrchardCore.Search.Deployment
 {
     public class SearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SearchSettingsDeploymentStep>
     {
-        public override IDisplayResult Display(SearchSettingsDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(SearchSettingsDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("SearchSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("SearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(SearchSettingsDeploymentStep step)
+        public override IDisplayResult Edit(SearchSettingsDeploymentStep step, BuildEditorContext context)
         {
             return View("SearchSettingsDeploymentStep_Fields_Edit", step).Location("Content");
         }

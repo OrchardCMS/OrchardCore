@@ -7,10 +7,10 @@ namespace OrchardCore.Users.Drivers;
 
 public class TwoFactorMethodLoginEmailDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override IDisplayResult Edit(TwoFactorMethod model)
+    public override IDisplayResult Edit(TwoFactorMethod model, BuildEditorContext context)
     {
         return View("EmailAuthenticatorValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultEmailProvider);
+            .Location("Content")
+            .OnGroup(TokenOptions.DefaultEmailProvider);
     }
 }

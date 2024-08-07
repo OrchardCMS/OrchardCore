@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
@@ -23,9 +22,9 @@ namespace OrchardCore.Queries.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(Query query, IUpdateModel updater)
+        public override Task<IDisplayResult> DisplayAsync(Query query, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Dynamic("Query_Fields_SummaryAdmin", model =>
                 {
                     model.Name = query.Name;
@@ -43,9 +42,9 @@ namespace OrchardCore.Queries.Drivers
             );
         }
 
-        public override IDisplayResult Edit(Query query, IUpdateModel updater)
+        public override Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Initialize<EditQueryViewModel>("Query_Fields_Edit", model =>
                 {
                     model.Name = query.Name;
@@ -63,23 +62,26 @@ namespace OrchardCore.Queries.Drivers
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(Query model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(Query model, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.Name,
+                m => m.Source,
+                m => m.Schema);
 
             if (string.IsNullOrEmpty(model.Name))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name is required"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name is required"]);
             }
 
             if (!string.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Schema), S["Invalid schema JSON supplied."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Schema), S["Invalid schema JSON supplied."]);
             }
             var safeName = model.Name.ToSafeName();
             if (string.IsNullOrEmpty(safeName) || model.Name != safeName)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name contains illegal characters"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name contains illegal characters"]);
             }
             else
             {
@@ -87,11 +89,11 @@ namespace OrchardCore.Queries.Drivers
 
                 if (existing != null && existing != model)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["A query with the same name already exists"]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["A query with the same name already exists"]);
                 }
             }
 
-            return Edit(model, updater);
+            return await EditAsync(model, context);
         }
     }
 }

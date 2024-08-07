@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -38,16 +37,16 @@ namespace OrchardCore.Deployment.Steps
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(JsonRecipeDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(JsonRecipeDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("JsonRecipeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("JsonRecipeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(JsonRecipeDeploymentStep step)
+        public override IDisplayResult Edit(JsonRecipeDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
             {
@@ -56,11 +55,11 @@ namespace OrchardCore.Deployment.Steps
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)
         {
             var model = new JsonRecipeDeploymentStepViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             try
             {
@@ -68,19 +67,19 @@ namespace OrchardCore.Deployment.Steps
                 if (!jObject.ContainsKey("name"))
                 {
 
-                    updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
                 }
 
             }
             catch (Exception)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
 
             }
 
             step.Json = model.Json;
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

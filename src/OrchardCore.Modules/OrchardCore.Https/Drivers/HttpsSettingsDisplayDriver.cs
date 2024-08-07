@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,12 +9,11 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https.Drivers
 {
-    public class HttpsSettingsDisplayDriver : SectionDisplayDriver<ISite, HttpsSettings>
+    public class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings>
     {
         public const string GroupId = "Https";
 
@@ -39,14 +37,11 @@ namespace OrchardCore.Https.Drivers
             _notifier = notifier;
             H = htmlLocalizer;
         }
+        protected override string SettingsGroupId
+            => GroupId;
 
-        public override async Task<IDisplayResult> EditAsync(HttpsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, HttpsSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
-            {
-                return null;
-            }
-
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
             {
@@ -60,7 +55,9 @@ namespace OrchardCore.Https.Drivers
                 var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
 
                 if (!isHttpsRequest)
+                {
                     await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                }
 
                 model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
                 model.IsHttpsRequest = isHttpsRequest;
@@ -74,29 +71,26 @@ namespace OrchardCore.Https.Drivers
             .OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
-                {
-                    return null;
-                }
-
-                var model = new HttpsSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.EnableStrictTransportSecurity = model.EnableStrictTransportSecurity;
-                settings.RequireHttps = model.RequireHttps;
-                settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
-                settings.SslPort = model.SslPort;
-
-                _shellReleaseManager.RequestRelease();
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new HttpsSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.EnableStrictTransportSecurity = model.EnableStrictTransportSecurity;
+            settings.RequireHttps = model.RequireHttps;
+            settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
+            settings.SslPort = model.SslPort;
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

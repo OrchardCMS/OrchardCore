@@ -19,6 +19,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IPhoneFormatValidator _phoneFormatValidator;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public UserInformationDisplayDriver(
