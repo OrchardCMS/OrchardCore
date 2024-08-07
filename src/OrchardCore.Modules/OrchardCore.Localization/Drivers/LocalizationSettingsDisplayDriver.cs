@@ -21,7 +21,7 @@ namespace OrchardCore.Localization.Drivers
     /// <summary>
     /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
     /// </summary>
-    public class LocalizationSettingsDisplayDriver : SiteDisplayDriver<LocalizationSettings>
+    public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<LocalizationSettings>
     {
         public const string GroupId = "localization";
 
@@ -31,8 +31,8 @@ namespace OrchardCore.Localization.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly CultureOptions _cultureOptions;
 
-        protected readonly IHtmlLocalizer H;
-        protected readonly IStringLocalizer S;
+        internal readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
 
         protected override string SettingsGroupId
             => GroupId;

@@ -11,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPreferencesPart>
+public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver<User, UserNotificationPreferencesPart>
 {
     private readonly IEnumerable<INotificationMethodProvider> _notificationMethodProviders;
 

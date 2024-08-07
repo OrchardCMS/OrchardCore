@@ -12,7 +12,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReverseProxy.Drivers
 {
-    public class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<ReverseProxySettings>
+    public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<ReverseProxySettings>
     {
         public const string GroupId = "ReverseProxy";
 

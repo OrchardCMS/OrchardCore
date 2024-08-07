@@ -8,7 +8,7 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 {
-    public class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexRebuildDeploymentStep>
+    public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexRebuildDeploymentStep>
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 

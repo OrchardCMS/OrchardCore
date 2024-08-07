@@ -12,7 +12,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.AdminNodes
 {
-    public class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
+    public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;

@@ -8,7 +8,7 @@ using OrchardCore.Search.ViewModels;
 
 namespace OrchardCore.Search.Drivers;
 
-public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
+public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
 {
     public override IDisplayResult Display(SearchFormPart part, BuildPartDisplayContext context)
     {

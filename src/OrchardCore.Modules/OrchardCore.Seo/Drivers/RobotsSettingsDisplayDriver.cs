@@ -12,14 +12,14 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Drivers;
 
-public class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettings>
+public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     protected override string SettingsGroupId
         => SeoConstants.RobotsSettingsGroupId;

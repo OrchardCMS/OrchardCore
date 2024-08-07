@@ -7,9 +7,9 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Settings
 {
-    public class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
         {

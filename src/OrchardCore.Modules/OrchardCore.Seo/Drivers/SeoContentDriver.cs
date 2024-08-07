@@ -16,7 +16,7 @@ using Shortcodes;
 
 namespace OrchardCore.Seo.Drivers
 {
-    public class SeoContentDriver : ContentDisplayDriver
+    public sealed class SeoContentDriver : ContentDisplayDriver
     {
         private readonly IContentManager _contentManager;
         private readonly IPageTitleBuilder _pageTitleBuilder;

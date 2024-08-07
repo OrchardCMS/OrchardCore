@@ -17,7 +17,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
 
-public class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
+public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -26,7 +26,7 @@ public class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly EmailProviderOptions _emailProviders;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => EmailSettings.GroupId;

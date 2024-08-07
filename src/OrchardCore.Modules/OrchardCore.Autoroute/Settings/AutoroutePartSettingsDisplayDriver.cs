@@ -10,11 +10,11 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Settings
 {
-    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
+    public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AutoroutePartSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,

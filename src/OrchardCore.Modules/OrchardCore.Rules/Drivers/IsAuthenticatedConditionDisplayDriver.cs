@@ -5,7 +5,7 @@ using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class IsAuthenticatedConditionDisplayDriver : DisplayDriver<Condition, IsAuthenticatedCondition>
+    public sealed class IsAuthenticatedConditionDisplayDriver : DisplayDriver<Condition, IsAuthenticatedCondition>
     {
         public override Task<IDisplayResult> DisplayAsync(IsAuthenticatedCondition condition, BuildDisplayContext context)
         {

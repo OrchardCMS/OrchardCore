@@ -13,7 +13,7 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Drivers
 {
-    public class ContainedPartDisplayDriver : ContentDisplayDriver
+    public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;

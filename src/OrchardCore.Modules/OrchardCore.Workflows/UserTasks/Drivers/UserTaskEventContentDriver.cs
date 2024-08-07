@@ -22,7 +22,7 @@ using OrchardCore.Workflows.UserTasks.ViewModels;
 
 namespace OrchardCore.Workflows.UserTasks.Drivers
 {
-    public class UserTaskEventContentDriver : ContentDisplayDriver
+    public sealed class UserTaskEventContentDriver : ContentDisplayDriver
     {
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        protected readonly IHtmlLocalizer H;
+        internal readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,

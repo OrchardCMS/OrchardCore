@@ -21,7 +21,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Azure.Email.Drivers;
 
-public class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEmailSettings>
+public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEmailSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -29,7 +29,7 @@ public class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEmailSetti
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IEmailAddressValidator _emailValidator;
 
-    protected IStringLocalizer S;
+    internal IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,

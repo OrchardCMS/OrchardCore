@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    public class AddToDeploymentPlanContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class AddToDeploymentPlanContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
 

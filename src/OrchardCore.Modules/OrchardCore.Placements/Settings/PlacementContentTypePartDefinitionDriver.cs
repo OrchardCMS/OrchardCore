@@ -7,9 +7,9 @@ using OrchardCore.Placements.ViewModels;
 
 namespace OrchardCore.Placements.Settings
 {
-    public class PlacementContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class PlacementContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public PlacementContentTypePartDefinitionDriver(IStringLocalizer<PlacementContentTypePartDefinitionDriver> localizer)
         {

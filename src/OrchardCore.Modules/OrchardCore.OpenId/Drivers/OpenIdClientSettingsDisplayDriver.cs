@@ -20,7 +20,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
+    public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
     {
         private static readonly char[] _separator = [' ', ','];
 
@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOpenIdClientService _clientService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         protected override string SettingsGroupId
             => "OrchardCore.OpenId.Client";

@@ -8,7 +8,7 @@ using OrchardCore.Templates.Cms.Module.Models;
 
 namespace OrchardCore.Templates.Cms.Module.Settings
 {
-    public class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

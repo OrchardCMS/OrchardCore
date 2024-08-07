@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class ContentRequestCultureProviderSettingsDriver : SiteDisplayDriver<ContentRequestCultureProviderSettings>
+    public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDriver<ContentRequestCultureProviderSettings>
     {
         public const string GroupId = "ContentRequestCultureProvider";
 

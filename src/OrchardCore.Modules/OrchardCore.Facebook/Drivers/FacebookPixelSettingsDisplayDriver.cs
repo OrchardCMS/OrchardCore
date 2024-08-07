@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers;
 
-public class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<FacebookPixelSettings>
+public sealed class FacebookPixelSettingsDisplayDriver : SiteDisplayDriver<FacebookPixelSettings>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;

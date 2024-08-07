@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
-    public class HttpRequestTaskDisplayDriver : ActivityDisplayDriver<HttpRequestTask, HttpRequestTaskViewModel>
+    public sealed class HttpRequestTaskDisplayDriver : ActivityDisplayDriver<HttpRequestTask, HttpRequestTaskViewModel>
     {
         protected override void EditActivity(HttpRequestTask activity, HttpRequestTaskViewModel model)
         {

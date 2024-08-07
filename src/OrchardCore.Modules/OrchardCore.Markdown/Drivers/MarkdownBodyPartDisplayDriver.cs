@@ -20,7 +20,7 @@ using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
-    public class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<MarkdownBodyPart>
+    public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<MarkdownBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
@@ -28,7 +28,7 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,

@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AdminMenu.Deployment
 {
-    public class AdminMenuDeploymentStepDriver : DisplayDriver<DeploymentStep, AdminMenuDeploymentStep>
+    public sealed class AdminMenuDeploymentStepDriver : DisplayDriver<DeploymentStep, AdminMenuDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(AdminMenuDeploymentStep step, BuildDisplayContext context)
         {

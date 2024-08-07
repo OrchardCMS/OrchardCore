@@ -10,7 +10,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers;
 
-public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
+public sealed class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
 {
     private readonly GraphQLContentOptions _contentOptions;
 

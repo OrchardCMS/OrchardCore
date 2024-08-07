@@ -6,7 +6,7 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class BooleanConditionDisplayDriver : DisplayDriver<Condition, BooleanCondition>
+    public sealed class BooleanConditionDisplayDriver : DisplayDriver<Condition, BooleanCondition>
     {
         public override Task<IDisplayResult> DisplayAsync(BooleanCondition condition, BuildDisplayContext context)
         {

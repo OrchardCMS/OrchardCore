@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Forms
 {
-    public class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCaptchaPart>
+    public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCaptchaPart>
     {
         private readonly ISiteService _siteService;
 

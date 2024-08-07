@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Drivers
 {
-    public class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
+    public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySettings>
     {
         internal const string GroupId = "SecurityHeaders";
 

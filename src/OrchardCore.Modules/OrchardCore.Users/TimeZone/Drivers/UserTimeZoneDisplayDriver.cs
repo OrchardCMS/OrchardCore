@@ -9,7 +9,7 @@ using OrchardCore.Users.TimeZone.ViewModels;
 
 namespace OrchardCore.Users.TimeZone.Drivers
 {
-    public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
+    public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
         private readonly UserTimeZoneService _userTimeZoneService;
 

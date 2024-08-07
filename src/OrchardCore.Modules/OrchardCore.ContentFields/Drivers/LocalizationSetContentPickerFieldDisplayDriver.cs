@@ -17,12 +17,12 @@ using OrchardCore.Mvc.ModelBinding;
 namespace OrchardCore.ContentFields.Drivers
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
+    public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,

@@ -11,11 +11,11 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class LocalizationContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class LocalizationContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly ILocalizationService _localizationService;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public LocalizationContentsAdminListDisplayDriver(
             ILocalizationService localizationService,

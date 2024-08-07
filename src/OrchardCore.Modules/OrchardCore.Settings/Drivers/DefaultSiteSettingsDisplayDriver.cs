@@ -9,13 +9,13 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
 
         private readonly IShellReleaseManager _shellReleaseManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
             IShellReleaseManager shellReleaseManager,

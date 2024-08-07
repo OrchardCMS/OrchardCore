@@ -9,7 +9,7 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+public sealed class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
     : ContentPartFieldDefinitionDisplayDriver
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;

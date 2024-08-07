@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Login.Drivers
 {
-    public class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<FacebookLoginSettings>
+    public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<FacebookLoginSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;

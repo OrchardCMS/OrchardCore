@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AdminDashboard.Drivers
 {
-    public class DashboardPartDisplayDriver : ContentPartDisplayDriver<DashboardPart>
+    public sealed class DashboardPartDisplayDriver : ContentPartDisplayDriver<DashboardPart>
     {
         public override Task<IDisplayResult> DisplayAsync(DashboardPart part, BuildPartDisplayContext context)
         {

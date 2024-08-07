@@ -20,7 +20,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Autoroute.Drivers
 {
-    public class AutoroutePartDisplayDriver : ContentPartDisplayDriver<AutoroutePart>
+    public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<AutoroutePart>
     {
         private readonly AutorouteOptions _options;
         private readonly ISiteService _siteService;
@@ -28,7 +28,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AutoroutePartDisplayDriver(
             IOptions<AutorouteOptions> options,

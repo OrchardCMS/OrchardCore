@@ -14,13 +14,13 @@ using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
+    public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
         private readonly INotifier _notifier;
         private readonly JavascriptConditionEvaluator _evaluator;
 
-        protected readonly IHtmlLocalizer H;
-        protected readonly IStringLocalizer S;
+        internal readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
 
         public JavascriptConditionDisplayDriver(
             IHtmlLocalizer<JavascriptConditionDisplayDriver> htmlLocalizer,

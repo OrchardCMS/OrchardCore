@@ -6,7 +6,7 @@ using OrchardCore.Search.Elasticsearch.Core.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
-    public class ElasticSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticSettingsDeploymentStep>
+    public sealed class ElasticSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticSettingsDeploymentStep>
     {
         public override Task<IDisplayResult> DisplayAsync(ElasticSettingsDeploymentStep step, BuildDisplayContext context)
         {
