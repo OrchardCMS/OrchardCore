@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Title.Models;
@@ -10,10 +10,11 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Settings
 {
-    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
+    public sealed class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
         {
@@ -21,7 +22,7 @@ namespace OrchardCore.Title.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
             {
@@ -52,7 +53,7 @@ namespace OrchardCore.Title.Settings
                 context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
+    public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<RegistrationSettings>
     {
         public const string GroupId = "userRegistration";
 
@@ -24,7 +23,11 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(RegistrationSettings settings, BuildEditorContext context)
+
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, RegistrationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -44,10 +47,11 @@ namespace OrchardCore.Users.Drivers
                 model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
                 model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
                 model.GenerateUsernameScript = settings.GenerateUsernameScript;
-            }).Location("Content:5").OnGroup(GroupId);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, RegistrationSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -56,12 +60,9 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

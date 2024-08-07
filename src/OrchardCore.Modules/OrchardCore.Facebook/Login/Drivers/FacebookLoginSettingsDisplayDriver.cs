@@ -11,7 +11,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Login.Drivers
 {
-    public class FacebookLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookLoginSettings>
+    public sealed class FacebookLoginSettingsDisplayDriver : SiteDisplayDriver<FacebookLoginSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
@@ -26,8 +26,10 @@ namespace OrchardCore.Facebook.Login.Drivers
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
+        protected override string SettingsGroupId
+            => FacebookConstants.Features.Login;
 
-        public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ISite site, FacebookLoginSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
@@ -39,30 +41,28 @@ namespace OrchardCore.Facebook.Login.Drivers
             {
                 model.CallbackPath = settings.CallbackPath.Value;
                 model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookLoginSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == FacebookConstants.Features.Login)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
-                {
-                    return null;
-                }
-
-                var model = new FacebookLoginSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.CallbackPath = model.CallbackPath;
-                settings.SaveTokens = model.SaveTokens;
-
-                _shellReleaseManager.RequestRelease();
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new FacebookLoginSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.CallbackPath = model.CallbackPath;
+            settings.SaveTokens = model.SaveTokens;
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

@@ -1,24 +1,23 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
+    public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, HomepageCondition>
     {
-        public override IDisplayResult Display(HomepageCondition condition)
+        public override Task<IDisplayResult> DisplayAsync(HomepageCondition condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(HomepageCondition condition)
+        public override IDisplayResult Edit(HomepageCondition condition, BuildEditorContext context)
         {
             return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", m =>
             {
@@ -27,11 +26,11 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
+            await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.Value);
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

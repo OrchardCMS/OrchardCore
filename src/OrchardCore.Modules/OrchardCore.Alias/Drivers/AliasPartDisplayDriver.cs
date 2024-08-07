@@ -12,11 +12,11 @@ using YesSql;
 
 namespace OrchardCore.Alias.Drivers
 {
-    public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
+    public sealed class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-
         private readonly ISession _session;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,
@@ -51,6 +51,5 @@ namespace OrchardCore.Alias.Drivers
             model.ContentItem = part.ContentItem;
             model.Settings = settings;
         }
-
     }
 }

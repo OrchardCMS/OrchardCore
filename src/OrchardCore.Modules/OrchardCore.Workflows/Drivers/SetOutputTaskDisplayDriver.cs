@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class SetOutputTaskDisplayDriver : ActivityDisplayDriver<SetOutputTask, SetOutputTaskViewModel>
+    public sealed class SetOutputTaskDisplayDriver : ActivityDisplayDriver<SetOutputTask, SetOutputTaskViewModel>
     {
         protected override void EditActivity(SetOutputTask source, SetOutputTaskViewModel model)
         {

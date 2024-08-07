@@ -20,14 +20,15 @@ using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
-    public class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
+    public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,

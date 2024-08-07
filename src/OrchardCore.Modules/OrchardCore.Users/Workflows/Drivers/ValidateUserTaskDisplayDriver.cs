@@ -4,7 +4,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Users.Workflows.Drivers
 {
-    public class ValidateUserTaskDisplayDriver : ActivityDisplayDriver<ValidateUserTask, ValidateUserTaskViewModel>
+    public sealed class ValidateUserTaskDisplayDriver : ActivityDisplayDriver<ValidateUserTask, ValidateUserTaskViewModel>
     {
         protected override void EditActivity(ValidateUserTask activity, ValidateUserTaskViewModel model)
         {

@@ -15,9 +15,9 @@ using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
+    public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
         {
@@ -27,13 +27,12 @@ namespace OrchardCore.Spatial.Drivers
         public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
         {
             return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
-                {
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                })
-                .Location("Detail", "Content")
-                .Location("Summary", "Content");
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            }).Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)

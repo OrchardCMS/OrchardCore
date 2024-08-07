@@ -102,6 +102,10 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentTypeDefinitionBuilder RemovePart<TPart>()
+            where TPart : ContentPart
+            => RemovePart(typeof(TPart).Name);
+
         public ContentTypeDefinitionBuilder RemovePart(string partName)
         {
             var existingPart = _parts.SingleOrDefault(x => string.Equals(x.Name, partName, StringComparison.OrdinalIgnoreCase));

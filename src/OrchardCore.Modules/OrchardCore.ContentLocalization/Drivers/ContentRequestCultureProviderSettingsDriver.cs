@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,9 +9,10 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class ContentRequestCultureProviderSettingsDriver : SectionDisplayDriver<ISite, ContentRequestCultureProviderSettings>
+    public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDriver<ContentRequestCultureProviderSettings>
     {
         public const string GroupId = "ContentRequestCultureProvider";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -24,7 +24,10 @@ namespace OrchardCore.ContentLocalization.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentRequestCultureProviderSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ContentRequestCultureProviderSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -36,10 +39,11 @@ namespace OrchardCore.ContentLocalization.Drivers
             return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
             {
                 model.SetCookie = settings.SetCookie;
-            }).Location("Content:5").OnGroup(GroupId);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentRequestCultureProviderSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -48,12 +52,9 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

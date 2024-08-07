@@ -311,18 +311,18 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var content = (JsonObject)taxonomy.As<TaxonomyPart>().Content;
 
-            // Couldn't find targeted taxonomy item.
-            if (taxonomyItem == null)
+            RemoveTaxonomyItem(content, taxonomyItemId);
+
+            var updatedPart = content.ToObject<TaxonomyPart>();
+
+            if (updatedPart == null)
             {
                 return NotFound();
             }
 
-            taxonomy.Alter<TaxonomyPart>(part =>
-            {
-                part.Terms = part.Terms.Where(x => x.ContentItemId != taxonomyItemId).ToList();
-            });
+            taxonomy.Apply(updatedPart);
 
             await _session.SaveAsync(taxonomy);
 
@@ -356,6 +356,37 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             return null;
+        }
+
+        private static bool RemoveTaxonomyItem(JsonObject contentItem, string taxonomyItemToRemove)
+        {
+            if (contentItem == null)
+            {
+                return false;
+            }
+
+            if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemToRemove)
+            {
+                return true;
+            }
+
+            if (!contentItem.TryGetPropertyValue("Terms", out var terms) || terms is not JsonArray taxonomyItems)
+            {
+                return false;
+            }
+
+            for (var i = taxonomyItems.Count - 1; i >= 0; i--)
+            {
+                var taxonomyItem = taxonomyItems[i] as JsonObject;
+                if (RemoveTaxonomyItem(taxonomyItem, taxonomyItemToRemove))
+                {
+                    taxonomyItems.RemoveAt(i);
+
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }

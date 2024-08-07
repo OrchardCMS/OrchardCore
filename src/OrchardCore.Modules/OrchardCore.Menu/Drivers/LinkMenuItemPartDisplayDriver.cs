@@ -14,26 +14,27 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
+    public sealed class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly HtmlEncoder _htmlencoder;
-        protected readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
+
+        internal readonly IStringLocalizer S;
 
         public LinkMenuItemPartDisplayDriver(
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IStringLocalizer<LinkMenuItemPartDisplayDriver> localizer,
             IHtmlSanitizerService htmlSanitizerService,
-            HtmlEncoder htmlencoder
+            HtmlEncoder htmlEncoder
             )
         {
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccessor = actionContextAccessor;
             _htmlSanitizerService = htmlSanitizerService;
-            _htmlencoder = htmlencoder;
+            _htmlEncoder = htmlEncoder;
             S = localizer;
         }
 
@@ -94,7 +95,7 @@ namespace OrchardCore.Menu.Drivers
                 }
                 else
                 {
-                    var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
+                    var link = $"<a href=\"{_htmlEncoder.Encode(urlToValidate)}\"></a>";
 
                     if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {

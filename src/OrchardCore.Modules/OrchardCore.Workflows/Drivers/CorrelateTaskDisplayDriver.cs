@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class CorrelateTaskDisplayDriver : ActivityDisplayDriver<CorrelateTask, CorrelateTaskViewModel>
+    public sealed class CorrelateTaskDisplayDriver : ActivityDisplayDriver<CorrelateTask, CorrelateTaskViewModel>
     {
         protected override void EditActivity(CorrelateTask activity, CorrelateTaskViewModel model)
         {

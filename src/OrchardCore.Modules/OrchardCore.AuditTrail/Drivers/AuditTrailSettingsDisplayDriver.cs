@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
-    public class AuditTrailSettingsDisplayDriver : SectionDisplayDriver<ISite, AuditTrailSettings>
+    public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTrailSettings>
     {
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -32,7 +32,10 @@ namespace OrchardCore.AuditTrail.Drivers
             _serviceProvider = serviceProvider;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => AuditTrailSettingsGroup.Id;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
             {
@@ -75,10 +78,11 @@ namespace OrchardCore.AuditTrail.Drivers
 
                 model.Categories = categoriesViewModel;
                 model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-            }).Location("Content:1#Events").OnGroup(AuditTrailSettingsGroup.Id);
+            }).Location("Content:1#Events")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)
         {
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
             {
@@ -108,7 +112,7 @@ namespace OrchardCore.AuditTrail.Drivers
                 settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
             }
 
-            return await EditAsync(settings, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

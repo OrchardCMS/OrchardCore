@@ -6,7 +6,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class ForkTaskDisplayDriver : ActivityDisplayDriver<ForkTask, ForkTaskViewModel>
+    public sealed class ForkTaskDisplayDriver : ActivityDisplayDriver<ForkTask, ForkTaskViewModel>
     {
         protected override void EditActivity(ForkTask activity, ForkTaskViewModel model)
         {

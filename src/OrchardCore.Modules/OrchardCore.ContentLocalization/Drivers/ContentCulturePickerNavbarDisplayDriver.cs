@@ -11,7 +11,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Drivers;
 
-public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILocalizationService _localizationService;

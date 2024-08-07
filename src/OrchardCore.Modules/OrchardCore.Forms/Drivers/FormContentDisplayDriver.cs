@@ -7,7 +7,7 @@ using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class FormContentDisplayDriver : ContentDisplayDriver
+    public sealed class FormContentDisplayDriver : ContentDisplayDriver
     {
         public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
         {

@@ -19,11 +19,12 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Media.Drivers
 {
-    public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
+    public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
-        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
+
+        internal readonly IStringLocalizer S;
 
         public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
             IStringLocalizer<MediaFieldDisplayDriver> localizer,

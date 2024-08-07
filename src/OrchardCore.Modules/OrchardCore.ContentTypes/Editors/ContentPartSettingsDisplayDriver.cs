@@ -2,13 +2,14 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
+    public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
+        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
         {
             return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
             {
@@ -33,7 +34,7 @@ namespace OrchardCore.ContentTypes.Editors
             context.Builder.WithDescription(model.Description);
             context.Builder.WithDisplayName(model.DisplayName);
 
-            return Edit(contentPartDefinition);
+            return Edit(contentPartDefinition, context);
         }
     }
 }

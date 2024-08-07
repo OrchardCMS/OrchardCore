@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class ContentOptionsDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class ContentOptionsDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
@@ -14,10 +13,11 @@ namespace OrchardCore.Contents.Drivers
             Prefix = "Options";
         }
 
-        public override IDisplayResult Display(ContentOptionsViewModel model)
+        public override Task<IDisplayResult> DisplayAsync(ContentOptionsViewModel model, BuildDisplayContext context)
         {
-            return Combine(
-                Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+            return CombineAsync(
+                Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model))
+                .Location("BulkActions", "Content:10"),
                 View("ContentsAdminFilters_Thumbnail__DisplayText", model).Location("Thumbnail", "Content:10"),
                 View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:20"),
                 View("ContentsAdminFilters_Thumbnail__Stereotype", model).Location("Thumbnail", "Content:30"),
@@ -26,11 +26,12 @@ namespace OrchardCore.Contents.Drivers
             );
         }
 
-        public override IDisplayResult Edit(ContentOptionsViewModel model)
+        public override Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
         {
             // Map the filter result to a model so the ui can reflect current selections.
             model.FilterResult.MapTo(model);
-            return Combine(
+
+            return CombineAsync(
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSearch", m => BuildContentOptionsViewModel(m, model)).Location("Search:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListCreate", m => BuildContentOptionsViewModel(m, model)).Location("Create:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSummary", m => BuildContentOptionsViewModel(m, model)).Location("Summary:10"),
@@ -39,12 +40,12 @@ namespace OrchardCore.Contents.Drivers
             );
         }
 
-        public override Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
         {
             // Map the incoming values from a form post to the filter result.
             model.FilterResult.MapFrom(model);
 
-            return Task.FromResult(Edit(model));
+            return EditAsync(model, context);
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)

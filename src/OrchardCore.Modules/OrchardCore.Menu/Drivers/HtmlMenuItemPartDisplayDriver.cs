@@ -15,13 +15,14 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<HtmlMenuItemPart>
+    public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<HtmlMenuItemPart>
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public HtmlMenuItemPartDisplayDriver(
             IUrlHelperFactory urlHelperFactory,

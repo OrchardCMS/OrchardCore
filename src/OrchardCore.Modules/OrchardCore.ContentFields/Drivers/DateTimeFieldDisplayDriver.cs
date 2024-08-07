@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -15,13 +14,15 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
+    public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
     {
-        protected readonly IStringLocalizer S;
         private readonly ILocalClock _localClock;
 
-        public DateTimeFieldDisplayDriver(ILocalClock localClock,
-        IStringLocalizer<DateTimeFieldDisplayDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public DateTimeFieldDisplayDriver(
+            ILocalClock localClock,
+            IStringLocalizer<DateTimeFieldDisplayDriver> localizer)
         {
             _localClock = localClock;
             S = localizer;
@@ -31,7 +32,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<DisplayDateTimeFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -44,7 +45,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                model.LocalDateTime = field.Value == null ? null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

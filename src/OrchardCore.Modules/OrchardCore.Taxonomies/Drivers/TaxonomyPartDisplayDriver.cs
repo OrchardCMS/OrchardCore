@@ -15,9 +15,9 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
+    public sealed class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
         {
@@ -27,12 +27,12 @@ namespace OrchardCore.Taxonomies.Drivers
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Count > 0;
+
             return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
             {
                 m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
-            })
-            .Location("Detail", "Content");
+            }).Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)

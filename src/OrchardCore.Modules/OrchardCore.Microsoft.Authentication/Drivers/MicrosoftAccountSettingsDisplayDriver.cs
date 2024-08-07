@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers
 {
-    public class MicrosoftAccountSettingsDisplayDriver : SectionDisplayDriver<ISite, MicrosoftAccountSettings>
+    public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<MicrosoftAccountSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
@@ -36,7 +36,10 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             _logger = logger;
         }
 
-        public override async Task<IDisplayResult> EditAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => MicrosoftAuthenticationConstants.Features.MicrosoftAccount;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, MicrosoftAccountSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
@@ -70,37 +73,35 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     model.CallbackPath = settings.CallbackPath.Value;
                 }
                 model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
-                {
-                    return null;
-                }
-
-                var model = new MicrosoftAccountSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.AppId = model.AppId;
-                settings.CallbackPath = model.CallbackPath;
-                settings.SaveTokens = model.SaveTokens;
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-
-                    settings.AppSecret = protector.Protect(model.AppSecret);
-                }
-
-                _shellReleaseManager.RequestRelease();
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new MicrosoftAccountSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.AppId = model.AppId;
+            settings.CallbackPath = model.CallbackPath;
+            settings.SaveTokens = model.SaveTokens;
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+
+                settings.AppSecret = protector.Protect(model.AppSecret);
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

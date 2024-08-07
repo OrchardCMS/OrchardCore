@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class IfElseTaskDisplayDriver : ActivityDisplayDriver<IfElseTask, IfElseTaskViewModel>
+    public sealed class IfElseTaskDisplayDriver : ActivityDisplayDriver<IfElseTask, IfElseTaskViewModel>
     {
         protected override void EditActivity(IfElseTask activity, IfElseTaskViewModel model)
         {

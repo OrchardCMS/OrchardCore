@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.ViewModels;
@@ -14,11 +15,12 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Media.Settings
 {
-    public class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
+    public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
     {
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly MediaOptions _mediaOptions;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public MediaFieldSettingsDriver(
             IContentTypeProvider contentTypeProvider,
@@ -30,7 +32,7 @@ namespace OrchardCore.Media.Settings
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
             {
@@ -68,7 +70,6 @@ namespace OrchardCore.Media.Settings
                 model.MediaTypes = items
                 .OrderBy(vm => vm.ContentType)
                 .ToArray();
-
             }).Location("Content");
         }
 
@@ -104,7 +105,7 @@ namespace OrchardCore.Media.Settings
                 context.Builder.WithSettings(settings);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

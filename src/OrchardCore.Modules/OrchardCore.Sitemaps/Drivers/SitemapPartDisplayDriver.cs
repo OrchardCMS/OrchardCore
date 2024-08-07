@@ -7,7 +7,7 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Drivers
 {
-    public class SitemapPartDisplayDriver : ContentPartDisplayDriver<SitemapPart>
+    public sealed class SitemapPartDisplayDriver : ContentPartDisplayDriver<SitemapPart>
     {
         public override IDisplayResult Edit(SitemapPart part)
         {
@@ -24,8 +24,7 @@ namespace OrchardCore.Sitemaps.Drivers
                 t => t.OverrideSitemapConfig,
                 t => t.ChangeFrequency,
                 t => t.Exclude,
-                t => t.Priority
-                );
+                t => t.Priority);
 
             model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
             model.ChangeFrequency = viewModel.ChangeFrequency;
