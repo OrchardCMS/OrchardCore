@@ -11,8 +11,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Workflows.WorkflowPruning.Services;
 
-public class WorkflowPruningManager
-    : IWorkflowPruningManager
+public class WorkflowPruningManager : IWorkflowPruningManager
 {
     private readonly ISiteService _siteService;
     private readonly ISession _session;
