@@ -32,7 +32,7 @@ dotnet_sort_system_directives_first                        = true
 # Code-block preferences
 csharp_prefer_braces = true
 csharp_prefer_simple_using_statement                       = true
-csharp_style_namespace_declarations                        = file_scoped:warning
+csharp_style_namespace_declarations                        = file_scoped:error
 
 # Range operator
 csharp_style_prefer_range_operator                         = false:warning

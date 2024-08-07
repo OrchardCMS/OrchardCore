@@ -13,7 +13,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
     <OCCMSDescription>Orchard Core CMS is a Web Content Management System (CMS) built on top of the Orchard Core Framework.</OCCMSDescription>

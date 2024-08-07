@@ -31,6 +31,10 @@ jobs:
       # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
         dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Validate code format
+      run: dotnet format --verify-no-changes --verbosity diagnostic
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
