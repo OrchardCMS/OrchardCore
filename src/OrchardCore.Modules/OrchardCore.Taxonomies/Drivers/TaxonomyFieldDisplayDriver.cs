@@ -62,11 +62,11 @@ namespace OrchardCore.Taxonomies.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, UpdateFieldEditorContext context)
         {
             var model = new EditTaxonomyFieldViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
@@ -80,7 +80,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (settings.Required && field.TermContentItemIds.Length == 0)
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(EditTaxonomyFieldViewModel.TermEntries),
                     S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }

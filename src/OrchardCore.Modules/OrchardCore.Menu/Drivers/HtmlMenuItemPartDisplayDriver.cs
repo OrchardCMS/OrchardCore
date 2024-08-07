@@ -62,7 +62,7 @@ namespace OrchardCore.Menu.Drivers
             );
         }
 
-        public override IDisplayResult Edit(HtmlMenuItemPart part)
+        public override IDisplayResult Edit(HtmlMenuItemPart part, BuildPartEditorContext context)
         {
             return Initialize<HtmlMenuItemPartEditViewModel>("HtmlMenuItemPart_Edit", model =>
             {
@@ -74,11 +74,11 @@ namespace OrchardCore.Menu.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HtmlMenuItemPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HtmlMenuItemPart part, UpdatePartEditorContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
             var model = new HtmlMenuItemPartEditViewModel();
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             part.ContentItem.DisplayText = model.Name;
             part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
@@ -101,7 +101,7 @@ namespace OrchardCore.Menu.Drivers
 
                 if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                    context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace OrchardCore.Menu.Drivers
 
                     if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
-                        updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                        context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                     }
                 }
             }

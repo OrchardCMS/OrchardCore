@@ -94,16 +94,16 @@ namespace OrchardCore.Markdown.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MarkdownField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MarkdownField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditMarkdownFieldViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
 
             if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
             {
                 var fieldName = context.PartFieldDefinition.DisplayName();
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
             }
             else
             {

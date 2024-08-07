@@ -67,9 +67,9 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LinkField field, UpdateFieldEditorContext context)
         {
-            var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text, f => f.Target);
+            var modelUpdated = await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text, f => f.Target);
 
             if (modelUpdated)
             {
@@ -96,13 +96,13 @@ namespace OrchardCore.ContentFields.Drivers
                 // Validate Url
                 if (settings.Required && string.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Url))
                 {
                     if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                     }
                     else
                     {
@@ -110,7 +110,7 @@ namespace OrchardCore.ContentFields.Drivers
 
                         if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                         {
-                            updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                         }
                     }
                 }
@@ -118,11 +118,11 @@ namespace OrchardCore.ContentFields.Drivers
                 // Validate Text
                 if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 
