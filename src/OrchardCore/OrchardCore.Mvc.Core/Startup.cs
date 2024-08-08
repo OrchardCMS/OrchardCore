@@ -23,123 +23,122 @@ using OrchardCore.Mvc.RazorPages;
 using OrchardCore.Mvc.Routing;
 using OrchardCore.Routing;
 
-namespace OrchardCore.Mvc
+namespace OrchardCore.Mvc;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override int Order => -1000;
+    public override int ConfigureOrder => 1000;
+
+    private readonly IHostEnvironment _hostingEnvironment;
+    private readonly IServiceProvider _serviceProvider;
+
+    public Startup(IHostEnvironment hostingEnvironment, IServiceProvider serviceProvider)
     {
-        public override int Order => -1000;
-        public override int ConfigureOrder => 1000;
+        _hostingEnvironment = hostingEnvironment;
+        _serviceProvider = serviceProvider;
+    }
 
-        private readonly IHostEnvironment _hostingEnvironment;
-        private readonly IServiceProvider _serviceProvider;
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
+            .ActionDescriptors.Items
+            .OfType<ControllerActionDescriptor>()
+            .ToArray();
 
-        public Startup(IHostEnvironment hostingEnvironment, IServiceProvider serviceProvider)
+        var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
+
+        foreach (var descriptor in descriptors)
         {
-            _hostingEnvironment = hostingEnvironment;
-            _serviceProvider = serviceProvider;
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
-                .ActionDescriptors.Items
-                .OfType<ControllerActionDescriptor>()
-                .ToArray();
-
-            var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
-
-            foreach (var descriptor in descriptors)
+            if (!descriptor.RouteValues.ContainsKey("area"))
             {
-                if (!descriptor.RouteValues.ContainsKey("area"))
-                {
-                    continue;
-                }
-
-                foreach (var mapper in mappers)
-                {
-                    if (mapper.TryMapAreaControllerRoute(routes, descriptor))
-                    {
-                        break;
-                    }
-                }
+                continue;
             }
 
-            routes.MapRazorPages();
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Register an isolated tenant part manager.
-            services.AddSingleton(new ApplicationPartManager());
-
-            var builder = services.AddMvc(options =>
+            foreach (var mapper in mappers)
             {
-                // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
-                // Load this filter after the MediaSizeFilterLimitAttribute, but before the
-                // IgnoreAntiforgeryTokenAttribute. refer : https://github.com/aspnet/AspNetCore/issues/10384
-                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>(999);
-
-                // Custom model binder to testing purpose
-                options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
-
-                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
-            });
-
-            // Add a route endpoint selector policy.
-            services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
-
-            services.AddModularRazorPages();
-
-            AddModularFrameworkParts(_serviceProvider, builder.PartManager);
-
-            // Adding localization
-            builder.AddViewLocalization();
-            builder.AddDataAnnotationsLocalization();
-
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
-
-            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
-            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-            if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-            {
-                builder.AddRazorRuntimeCompilation();
+                if (mapper.TryMapAreaControllerRoute(routes, descriptor))
+                {
+                    break;
+                }
             }
-
-            // Share across tenants a static compiler even if there is no runtime compilation
-            // because the compiler still uses its internal cache to retrieve compiled items.
-            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
-
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
-
-            services.AddSingleton<RazorCompilationFileProviderAccessor>();
-
-            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
-
-            // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
-            services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
-
-            // Register a DefaultAreaControllerRouteMapper that will run last.
-            services.AddTransient<IAreaControllerRouteMapper, DefaultAreaControllerRouteMapper>();
-
-            AddMvcModuleCoreServices(services);
         }
 
-        internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
+        routes.MapRazorPages();
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Register an isolated tenant part manager.
+        services.AddSingleton(new ApplicationPartManager());
+
+        var builder = services.AddMvc(options =>
         {
-            manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart());
-            manager.FeatureProviders.Add(new ShellViewFeatureProvider(services));
-        }
+            // Forcing AntiForgery Token Validation on by default, it's only in Razor Pages by default
+            // Load this filter after the MediaSizeFilterLimitAttribute, but before the
+            // IgnoreAntiforgeryTokenAttribute. refer : https://github.com/aspnet/AspNetCore/issues/10384
+            options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>(999);
 
-        internal static void AddMvcModuleCoreServices(IServiceCollection services)
+            // Custom model binder to testing purpose
+            options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+            options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
+        });
+
+        // Add a route endpoint selector policy.
+        services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
+
+        services.AddModularRazorPages();
+
+        AddModularFrameworkParts(_serviceProvider, builder.PartManager);
+
+        // Adding localization
+        builder.AddViewLocalization();
+        builder.AddDataAnnotationsLocalization();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
+
+        // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
+        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
         {
-            services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
-
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+            builder.AddRazorRuntimeCompilation();
         }
+
+        // Share across tenants a static compiler even if there is no runtime compilation
+        // because the compiler still uses its internal cache to retrieve compiled items.
+        services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
+
+        services.AddSingleton<RazorCompilationFileProviderAccessor>();
+
+        services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+        // Use a custom 'IFileVersionProvider' that also lookup all tenant level 'IStaticFileProvider'.
+        services.Replace(ServiceDescriptor.Singleton<IFileVersionProvider, ShellFileVersionProvider>());
+
+        // Register a DefaultAreaControllerRouteMapper that will run last.
+        services.AddTransient<IAreaControllerRouteMapper, DefaultAreaControllerRouteMapper>();
+
+        AddMvcModuleCoreServices(services);
+    }
+
+    internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
+    {
+        manager.ApplicationParts.Insert(0, new ShellFeatureApplicationPart());
+        manager.FeatureProviders.Add(new ShellViewFeatureProvider(services));
+    }
+
+    internal static void AddMvcModuleCoreServices(IServiceCollection services)
+    {
+        services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
+        services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
     }
 }

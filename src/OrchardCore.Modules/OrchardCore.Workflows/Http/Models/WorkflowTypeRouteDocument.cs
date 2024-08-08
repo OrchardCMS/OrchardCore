@@ -1,6 +1,5 @@
-namespace OrchardCore.Workflows.Http.Models
+namespace OrchardCore.Workflows.Http.Models;
+
+public class WorkflowTypeRouteDocument : WorkflowRouteDocument
 {
-    public class WorkflowTypeRouteDocument : WorkflowRouteDocument
-    {
-    }
 }

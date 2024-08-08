@@ -6,34 +6,33 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Models;
 
-namespace OrchardCore.Lists.Liquid
+namespace OrchardCore.Lists.Liquid;
+
+public class ContainerFilter : ILiquidFilter
 {
-    public class ContainerFilter : ILiquidFilter
+    private readonly IContentManager _contentManager;
+
+    public ContainerFilter(IContentManager contentManager)
     {
-        private readonly IContentManager _contentManager;
+        _contentManager = contentManager;
+    }
 
-        public ContainerFilter(IContentManager contentManager)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        var contentItem = input.ToObjectValue() as ContentItem ?? throw new ArgumentException("A Content Item was expected");
+
+        var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
+
+        if (containerId != null)
         {
-            _contentManager = contentManager;
-        }
+            var container = await _contentManager.GetAsync(containerId);
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-        {
-            var contentItem = input.ToObjectValue() as ContentItem ?? throw new ArgumentException("A Content Item was expected");
-
-            var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
-
-            if (containerId != null)
+            if (container != null)
             {
-                var container = await _contentManager.GetAsync(containerId);
-
-                if (container != null)
-                {
-                    return new ObjectValue(container);
-                }
+                return new ObjectValue(container);
             }
-
-            return new ObjectValue(contentItem);
         }
+
+        return new ObjectValue(contentItem);
     }
 }

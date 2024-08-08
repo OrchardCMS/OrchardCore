@@ -2,14 +2,13 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.GraphQL
+namespace OrchardCore.Contents.GraphQL;
+
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddContentGraphQL();
-        }
+        services.AddContentGraphQL();
     }
 }

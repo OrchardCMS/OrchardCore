@@ -1,12 +1,11 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Shortcodes.Deployment
+namespace OrchardCore.Shortcodes.Deployment;
+
+public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
 {
-    public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
+    public AllShortcodeTemplatesDeploymentStep()
     {
-        public AllShortcodeTemplatesDeploymentStep()
-        {
-            Name = "AllShortcodeTemplates";
-        }
+        Name = "AllShortcodeTemplates";
     }
 }

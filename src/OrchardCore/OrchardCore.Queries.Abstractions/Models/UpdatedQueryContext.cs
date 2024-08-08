@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Queries;
+namespace OrchardCore.Queries;
 
 public sealed class UpdatedQueryContext : QueryContextBase
 {

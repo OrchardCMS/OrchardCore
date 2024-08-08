@@ -2,18 +2,17 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers
-{
-    public sealed class JoinTaskDisplayDriver : ActivityDisplayDriver<JoinTask, JoinTaskViewModel>
-    {
-        protected override void EditActivity(JoinTask activity, JoinTaskViewModel model)
-        {
-            model.Mode = activity.Mode;
-        }
+namespace OrchardCore.Workflows.Drivers;
 
-        protected override void UpdateActivity(JoinTaskViewModel model, JoinTask activity)
-        {
-            activity.Mode = model.Mode;
-        }
+public sealed class JoinTaskDisplayDriver : ActivityDisplayDriver<JoinTask, JoinTaskViewModel>
+{
+    protected override void EditActivity(JoinTask activity, JoinTaskViewModel model)
+    {
+        model.Mode = activity.Mode;
+    }
+
+    protected override void UpdateActivity(JoinTaskViewModel model, JoinTask activity)
+    {
+        activity.Mode = model.Mode;
     }
 }

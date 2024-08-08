@@ -11,6 +11,6 @@ public class WorkflowPruningSettings : Entity
     public DateTime? LastRunUtc { get; set; }
 
     public bool Disabled { get; set; }
-    
+
     public WorkflowStatus[] Statuses { get; set; }
 }

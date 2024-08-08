@@ -1,7 +1,6 @@
-namespace OrchardCore.Flows.Models
+namespace OrchardCore.Flows.Models;
+
+public class FlowPartSettings
 {
-    public class FlowPartSettings
-    {
-        public string[] ContainedContentTypes { get; set; } = [];
-    }
+    public string[] ContainedContentTypes { get; set; } = [];
 }

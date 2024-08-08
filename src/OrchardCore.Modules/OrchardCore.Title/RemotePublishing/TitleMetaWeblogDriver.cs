@@ -5,31 +5,30 @@ using OrchardCore.Title.Models;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 
-namespace OrchardCore.Title.RemotePublishing
+namespace OrchardCore.Title.RemotePublishing;
+
+public sealed class TitleMetaWeblogDriver : MetaWeblogDriver
 {
-    public sealed class TitleMetaWeblogDriver : MetaWeblogDriver
+    private readonly HtmlEncoder _encoder;
+
+    public TitleMetaWeblogDriver(HtmlEncoder encoder)
     {
-        private readonly HtmlEncoder _encoder;
+        _encoder = encoder;
+    }
 
-        public TitleMetaWeblogDriver(HtmlEncoder encoder)
+    public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
+    {
+        var titlePart = contentItem.As<TitlePart>();
+        if (titlePart == null)
         {
-            _encoder = encoder;
+            return;
         }
 
-        public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
-        {
-            var titlePart = contentItem.As<TitlePart>();
-            if (titlePart == null)
-            {
-                return;
-            }
+        rpcStruct.Set("title", _encoder.Encode(titlePart.Title));
+    }
 
-            rpcStruct.Set("title", _encoder.Encode(titlePart.Title));
-        }
-
-        public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
-        {
-            contentItem.DisplayText = rpcStruct.Optional<string>("title");
-        }
+    public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
+    {
+        contentItem.DisplayText = rpcStruct.Optional<string>("title");
     }
 }

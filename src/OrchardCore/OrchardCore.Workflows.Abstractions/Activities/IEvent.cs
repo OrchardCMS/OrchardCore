@@ -1,6 +1,5 @@
-namespace OrchardCore.Workflows.Activities
+namespace OrchardCore.Workflows.Activities;
+
+public interface IEvent : IActivity
 {
-    public interface IEvent : IActivity
-    {
-    }
 }

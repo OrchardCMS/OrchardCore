@@ -4,10 +4,9 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 
-namespace OrchardCore.Contents.Services
+namespace OrchardCore.Contents.Services;
+
+public interface IContentsAdminListQueryService
 {
-    public interface IContentsAdminListQueryService
-    {
-        Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater);
-    }
+    Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater);
 }

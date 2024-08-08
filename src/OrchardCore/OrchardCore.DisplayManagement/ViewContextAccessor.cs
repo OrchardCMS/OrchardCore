@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.DisplayManagement
+namespace OrchardCore.DisplayManagement;
+
+public class ViewContextAccessor
 {
-    public class ViewContextAccessor
-    {
-        public ViewContext ViewContext { get; set; }
-    }
+    public ViewContext ViewContext { get; set; }
 }

@@ -1,8 +1,7 @@
-namespace OrchardCore.Spatial.Settings
+namespace OrchardCore.Spatial.Settings;
+
+public class GeoPointFieldSettings
 {
-    public class GeoPointFieldSettings
-    {
-        public string Hint { get; set; }
-        public bool Required { get; set; }
-    }
+    public string Hint { get; set; }
+    public bool Required { get; set; }
 }

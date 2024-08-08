@@ -1,9 +1,8 @@
-namespace OrchardCore.Queries.Sql.ViewModels
-{
-    public class SqlQueryViewModel
-    {
-        public string Query { get; set; }
+namespace OrchardCore.Queries.Sql.ViewModels;
 
-        public bool ReturnDocuments { get; set; }
-    }
+public class SqlQueryViewModel
+{
+    public string Query { get; set; }
+
+    public bool ReturnDocuments { get; set; }
 }

@@ -1,13 +1,12 @@
-namespace OrchardCore.Users.Handlers
+namespace OrchardCore.Users.Handlers;
+
+/// <summary>
+/// Represents a context for a user.
+/// </summary>
+public class UserContext : UserContextBase
 {
-    /// <summary>
-    /// Represents a context for a user.
-    /// </summary>
-    public class UserContext : UserContextBase
+    /// <inheritdocs />
+    public UserContext(IUser user) : base(user)
     {
-        /// <inheritdocs />
-        public UserContext(IUser user) : base(user)
-        {
-        }
     }
 }

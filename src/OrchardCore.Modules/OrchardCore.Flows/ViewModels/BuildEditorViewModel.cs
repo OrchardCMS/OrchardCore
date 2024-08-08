@@ -1,7 +1,6 @@
-namespace OrchardCore.Flows.ViewModels
+namespace OrchardCore.Flows.ViewModels;
+
+public class BuildEditorViewModel
 {
-    public class BuildEditorViewModel
-    {
-        public dynamic EditorShape { get; set; }
-    }
+    public dynamic EditorShape { get; set; }
 }

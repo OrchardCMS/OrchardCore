@@ -1,12 +1,11 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Tenants.Deployment
+namespace OrchardCore.Tenants.Deployment;
+
+public class AllFeatureProfilesDeploymentStep : DeploymentStep
 {
-    public class AllFeatureProfilesDeploymentStep : DeploymentStep
+    public AllFeatureProfilesDeploymentStep()
     {
-        public AllFeatureProfilesDeploymentStep()
-        {
-            Name = "AllFeatureProfiles";
-        }
+        Name = "AllFeatureProfiles";
     }
 }

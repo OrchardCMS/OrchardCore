@@ -1,8 +1,7 @@
-namespace OrchardCore.Forms.ViewModels
+namespace OrchardCore.Forms.ViewModels;
+
+public class ValidationPartEditViewModel
 {
-    public class ValidationPartEditViewModel
-    {
-        public string For { get; set; }
-        public string ErrorMessage { get; set; }
-    }
+    public string For { get; set; }
+    public string ErrorMessage { get; set; }
 }

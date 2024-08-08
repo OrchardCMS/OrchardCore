@@ -1,11 +1,10 @@
-namespace OrchardCore.ContentManagement.GraphQL.Settings
+namespace OrchardCore.ContentManagement.GraphQL.Settings;
+
+public class GraphQLContentTypePartSettings
 {
-    public class GraphQLContentTypePartSettings
-    {
-        public bool Collapse { get; set; }
+    public bool Collapse { get; set; }
 
-        public bool Hidden { get; set; }
+    public bool Hidden { get; set; }
 
-        public bool PreventFieldNameCollision { get; set; }
-    }
+    public bool PreventFieldNameCollision { get; set; }
 }

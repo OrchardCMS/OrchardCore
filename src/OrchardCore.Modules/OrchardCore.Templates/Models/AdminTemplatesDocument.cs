@@ -1,6 +1,5 @@
-namespace OrchardCore.Templates.Models
+namespace OrchardCore.Templates.Models;
+
+public class AdminTemplatesDocument : TemplatesDocument
 {
-    public class AdminTemplatesDocument : TemplatesDocument
-    {
-    }
 }

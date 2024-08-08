@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Sitemaps.ViewModels
+namespace OrchardCore.Sitemaps.ViewModels;
+
+public class SitemapPartViewModel
 {
-    public class SitemapPartViewModel
-    {
-        public bool OverrideSitemapConfig { get; set; }
+    public bool OverrideSitemapConfig { get; set; }
 
-        public ChangeFrequency ChangeFrequency { get; set; }
+    public ChangeFrequency ChangeFrequency { get; set; }
 
-        public int Priority { get; set; }
+    public int Priority { get; set; }
 
-        public bool Exclude { get; set; }
+    public bool Exclude { get; set; }
 
-        [BindNever]
-        public SitemapPart SitemapPart { get; set; }
-    }
+    [BindNever]
+    public SitemapPart SitemapPart { get; set; }
 }

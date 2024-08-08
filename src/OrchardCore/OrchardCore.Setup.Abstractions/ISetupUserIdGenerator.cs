@@ -1,7 +1,6 @@
-namespace OrchardCore.Setup.Services
+namespace OrchardCore.Setup.Services;
+
+public interface ISetupUserIdGenerator
 {
-    public interface ISetupUserIdGenerator
-    {
-        string GenerateUniqueId();
-    }
+    string GenerateUniqueId();
 }

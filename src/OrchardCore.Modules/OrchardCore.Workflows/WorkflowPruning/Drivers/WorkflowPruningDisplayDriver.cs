@@ -27,7 +27,7 @@ public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPru
         _httpContextAccessor = httpContextAccessor;
     }
 
-    protected override string SettingsGroupId 
+    protected override string SettingsGroupId
         => GroupId;
 
     public override IDisplayResult Edit(ISite site, WorkflowPruningSettings settings, BuildEditorContext context)

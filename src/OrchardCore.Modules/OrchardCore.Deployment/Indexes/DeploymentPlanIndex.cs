@@ -1,26 +1,25 @@
 using YesSql.Indexes;
 
-namespace OrchardCore.Deployment.Indexes
+namespace OrchardCore.Deployment.Indexes;
+
+public class DeploymentPlanIndex : MapIndex
 {
-    public class DeploymentPlanIndex : MapIndex
-    {
-        public long DocumentId { get; set; }
+    public long DocumentId { get; set; }
 
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
+}
 
-    public class DeploymentPlanIndexProvider : IndexProvider<DeploymentPlan>
+public class DeploymentPlanIndexProvider : IndexProvider<DeploymentPlan>
+{
+    public override void Describe(DescribeContext<DeploymentPlan> context)
     {
-        public override void Describe(DescribeContext<DeploymentPlan> context)
-        {
-            context.For<DeploymentPlanIndex>()
-                .Map(deploymentPlan =>
+        context.For<DeploymentPlanIndex>()
+            .Map(deploymentPlan =>
+            {
+                return new DeploymentPlanIndex
                 {
-                    return new DeploymentPlanIndex
-                    {
-                        Name = deploymentPlan.Name
-                    };
-                });
-        }
+                    Name = deploymentPlan.Name
+                };
+            });
     }
 }

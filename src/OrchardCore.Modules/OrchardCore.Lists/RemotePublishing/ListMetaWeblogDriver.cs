@@ -4,17 +4,16 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Lists.RemotePublishing
+namespace OrchardCore.Lists.RemotePublishing;
+
+[RequireFeatures("OrchardCore.RemotePublishing")]
+public sealed class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
 {
-    [RequireFeatures("OrchardCore.RemotePublishing")]
-    public sealed class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
+    public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
     {
-        public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
+        return Dynamic("ListPart_RemotePublishing", shape =>
         {
-            return Dynamic("ListPart_RemotePublishing", shape =>
-            {
-                shape.ContentItem = listPart.ContentItem;
-            }).Location("Content");
-        }
+            shape.ContentItem = listPart.ContentItem;
+        }).Location("Content");
     }
 }

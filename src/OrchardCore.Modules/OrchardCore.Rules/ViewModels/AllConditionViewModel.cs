@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Rules.Models;
 
-namespace OrchardCore.Rules.ViewModels
-{
-    public class AllConditionViewModel
-    {
-        public string DisplayText { get; set; }
+namespace OrchardCore.Rules.ViewModels;
 
-        [BindNever]
-        public AllConditionGroup Condition { get; set; }
-    }
+public class AllConditionViewModel
+{
+    public string DisplayText { get; set; }
+
+    [BindNever]
+    public AllConditionGroup Condition { get; set; }
 }

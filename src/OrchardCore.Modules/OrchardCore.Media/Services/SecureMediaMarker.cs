@@ -1,4 +1,3 @@
-namespace OrchardCore.Media.Services
-{
-    internal sealed class SecureMediaMarker { }
-}
+namespace OrchardCore.Media.Services;
+
+internal sealed class SecureMediaMarker { }

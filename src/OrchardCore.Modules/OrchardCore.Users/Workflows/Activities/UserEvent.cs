@@ -4,22 +4,21 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Users.Workflows.Activities
+namespace OrchardCore.Users.Workflows.Activities;
+
+public abstract class UserEvent : UserActivity, IEvent
 {
-    public abstract class UserEvent : UserActivity, IEvent
+    public UserEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(userService, scriptEvaluator, localizer)
     {
-        public UserEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(userService, scriptEvaluator, localizer)
-        {
-        }
+    }
 
-        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Halt();
-        }
+    public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Halt();
+    }
 
-        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes("Done");
-        }
+    public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        return Outcomes("Done");
     }
 }

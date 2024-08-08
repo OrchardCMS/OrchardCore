@@ -1,9 +1,8 @@
-namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers;
+
+public class ActivatedContentContext : ContentContextBase
 {
-    public class ActivatedContentContext : ContentContextBase
+    public ActivatedContentContext(ContentItem contentItem) : base(contentItem)
     {
-        public ActivatedContentContext(ContentItem contentItem) : base(contentItem)
-        {
-        }
     }
 }

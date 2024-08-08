@@ -1,7 +1,6 @@
-namespace OrchardCore.AuditTrail.Settings
+namespace OrchardCore.AuditTrail.Settings;
+
+public class AuditTrailSettingsGroup
 {
-    public class AuditTrailSettingsGroup
-    {
-        public const string Id = "AuditTrail";
-    }
+    public const string Id = "AuditTrail";
 }

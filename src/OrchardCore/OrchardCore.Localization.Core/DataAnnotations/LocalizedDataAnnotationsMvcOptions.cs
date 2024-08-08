@@ -2,22 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Localization.DataAnnotations
+namespace OrchardCore.Localization.DataAnnotations;
+
+internal sealed class LocalizedDataAnnotationsMvcOptions : IConfigureOptions<MvcOptions>
 {
-    internal sealed class LocalizedDataAnnotationsMvcOptions : IConfigureOptions<MvcOptions>
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
+
+    public LocalizedDataAnnotationsMvcOptions(IStringLocalizerFactory stringLocalizerFactory)
     {
-        private readonly IStringLocalizerFactory _stringLocalizerFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
+    }
 
-        public LocalizedDataAnnotationsMvcOptions(IStringLocalizerFactory stringLocalizerFactory)
-        {
-            _stringLocalizerFactory = stringLocalizerFactory;
-        }
+    public void Configure(MvcOptions options)
+    {
+        var localizer = _stringLocalizerFactory.Create(typeof(LocalizedDataAnnotationsMvcOptions));
 
-        public void Configure(MvcOptions options)
-        {
-            var localizer = _stringLocalizerFactory.Create(typeof(LocalizedDataAnnotationsMvcOptions));
-
-            options.ModelMetadataDetailsProviders.Add(new LocalizedValidationMetadataProvider(localizer));
-        }
+        options.ModelMetadataDetailsProviders.Add(new LocalizedValidationMetadataProvider(localizer));
     }
 }

@@ -1,31 +1,30 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Liquid
+namespace OrchardCore.Liquid;
+
+public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    private static readonly ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
     {
-        private static readonly ResourceManifest _manifest;
+        _manifest = new ResourceManifest();
 
-        static ResourceManagementOptionsConfiguration()
-        {
-            _manifest = new ResourceManifest();
+        _manifest
+            .DefineScript("monaco-liquid-intellisense")
+            .SetUrl("~/OrchardCore.Liquid/monaco/liquid-intellisense.js")
+            .SetDependencies("monaco")
+            .SetVersion("1.0.0");
 
-            _manifest
-                .DefineScript("monaco-liquid-intellisense")
-                .SetUrl("~/OrchardCore.Liquid/monaco/liquid-intellisense.js")
-                .SetDependencies("monaco")
-                .SetVersion("1.0.0");
+        _manifest
+            .DefineScript("liquid-intellisense")
+            .SetDependencies("monaco-liquid-intellisense")
+            .SetUrl("~/OrchardCore.Liquid/Scripts/liquid-intellisense.js");
+    }
 
-            _manifest
-                .DefineScript("liquid-intellisense")
-                .SetDependencies("monaco-liquid-intellisense")
-                .SetUrl("~/OrchardCore.Liquid/Scripts/liquid-intellisense.js");
-        }
-
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(_manifest);
-        }
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
     }
 }

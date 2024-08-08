@@ -1,8 +1,7 @@
-namespace OrchardCore.AuditTrail.ViewModels
+namespace OrchardCore.AuditTrail.ViewModels;
+
+public class AuditTrailSettingsViewModel
 {
-    public class AuditTrailSettingsViewModel
-    {
-        public AuditTrailCategorySettingsViewModel[] Categories { get; set; } = [];
-        public bool ClientIpAddressAllowed { get; set; }
-    }
+    public AuditTrailCategorySettingsViewModel[] Categories { get; set; } = [];
+    public bool ClientIpAddressAllowed { get; set; }
 }

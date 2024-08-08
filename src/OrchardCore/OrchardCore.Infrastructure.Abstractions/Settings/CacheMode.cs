@@ -1,10 +1,9 @@
-namespace OrchardCore.Settings
+namespace OrchardCore.Settings;
+
+public enum CacheMode
 {
-    public enum CacheMode
-    {
-        FromConfiguration,
-        Enabled,
-        DebugEnabled,
-        Disabled
-    }
+    FromConfiguration,
+    Enabled,
+    DebugEnabled,
+    Disabled
 }

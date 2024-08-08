@@ -1,18 +1,17 @@
-namespace OrchardCore.Tests.Modules.OrchardCore.Roles
+namespace OrchardCore.Tests.Modules.OrchardCore.Roles;
+
+public static class RolesMockHelper
 {
-    public static class RolesMockHelper
+    public static Mock<RoleManager<TRole>> MockRoleManager<TRole>()
+        where TRole : class
     {
-        public static Mock<RoleManager<TRole>> MockRoleManager<TRole>()
-            where TRole : class
+        var store = new Mock<IRoleStore<TRole>>().Object;
+
+        var validators = new List<IRoleValidator<TRole>>
         {
-            var store = new Mock<IRoleStore<TRole>>().Object;
+            new RoleValidator<TRole>(),
+        };
 
-            var validators = new List<IRoleValidator<TRole>>
-            {
-                new RoleValidator<TRole>(),
-            };
-
-            return new Mock<RoleManager<TRole>>(store, validators, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);
-        }
+        return new Mock<RoleManager<TRole>>(store, validators, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);
     }
 }

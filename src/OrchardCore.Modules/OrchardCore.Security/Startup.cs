@@ -12,36 +12,35 @@ using OrchardCore.Security.Services;
 using OrchardCore.Security.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override int Order
+        => OrchardCoreConstants.ConfigureOrder.Security;
+
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override int Order
-            => OrchardCoreConstants.ConfigureOrder.Security;
+        services.AddScoped<IPermissionProvider, SecurityPermissions>();
+        services.AddScoped<IDisplayDriver<ISite>, SecuritySettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-        public override void ConfigureServices(IServiceCollection services)
+        services.AddSingleton<ISecurityService, SecurityService>();
+
+        services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
+
+        builder.UseSecurityHeaders(options =>
         {
-            services.AddScoped<IPermissionProvider, SecurityPermissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SecuritySettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddSingleton<ISecurityService, SecurityService>();
-
-            services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var securityOptions = serviceProvider.GetRequiredService<IOptions<SecuritySettings>>().Value;
-
-            builder.UseSecurityHeaders(options =>
-            {
-                options
-                    .AddContentSecurityPolicy(securityOptions.ContentSecurityPolicy)
-                    .AddContentTypeOptions()
-                    .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
-                    .AddReferrerPolicy(securityOptions.ReferrerPolicy);
-            });
-        }
+            options
+                .AddContentSecurityPolicy(securityOptions.ContentSecurityPolicy)
+                .AddContentTypeOptions()
+                .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
+                .AddReferrerPolicy(securityOptions.ReferrerPolicy);
+        });
     }
 }

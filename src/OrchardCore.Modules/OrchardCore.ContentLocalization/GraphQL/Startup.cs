@@ -6,17 +6,16 @@ using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentLocalization.GraphQL
+namespace OrchardCore.ContentLocalization.GraphQL;
+
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddInputObjectGraphType<LocalizationPart, LocalizationInputObjectType>();
-            services.AddObjectGraphType<LocalizationPart, LocalizationQueryObjectType>();
-            services.AddTransient<IIndexAliasProvider, LocalizationPartIndexAliasProvider>();
-            services.AddWhereInputIndexPropertyProvider<LocalizedContentItemIndex>();
-        }
+        services.AddInputObjectGraphType<LocalizationPart, LocalizationInputObjectType>();
+        services.AddObjectGraphType<LocalizationPart, LocalizationQueryObjectType>();
+        services.AddTransient<IIndexAliasProvider, LocalizationPartIndexAliasProvider>();
+        services.AddWhereInputIndexPropertyProvider<LocalizedContentItemIndex>();
     }
 }

@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class LinkExternalLoginViewModel
 {
-    public class LinkExternalLoginViewModel
-    {
-        [DataType(DataType.Password)]
-        [Required(ErrorMessage = "Password is required.")]
-        public string Password { get; set; }
-    }
+    [DataType(DataType.Password)]
+    [Required(ErrorMessage = "Password is required.")]
+    public string Password { get; set; }
 }

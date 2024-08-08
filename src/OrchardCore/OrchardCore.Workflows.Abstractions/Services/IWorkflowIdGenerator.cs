@@ -1,9 +1,8 @@
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.Services
+namespace OrchardCore.Workflows.Services;
+
+public interface IWorkflowIdGenerator
 {
-    public interface IWorkflowIdGenerator
-    {
-        string GenerateUniqueId(Workflow workflow);
-    }
+    string GenerateUniqueId(Workflow workflow);
 }

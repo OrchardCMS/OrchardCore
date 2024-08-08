@@ -1,7 +1,6 @@
-namespace OrchardCore.Html.ViewModels
+namespace OrchardCore.Html.ViewModels;
+
+public class MonacoSettingsViewModel
 {
-    public class MonacoSettingsViewModel
-    {
-        public string Options { get; set; }
-    }
+    public string Options { get; set; }
 }

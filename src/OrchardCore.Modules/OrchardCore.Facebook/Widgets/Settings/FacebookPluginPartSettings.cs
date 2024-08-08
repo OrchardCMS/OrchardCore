@@ -1,7 +1,6 @@
-namespace OrchardCore.Facebook.Widgets.Settings
+namespace OrchardCore.Facebook.Widgets.Settings;
+
+public class FacebookPluginPartSettings
 {
-    public class FacebookPluginPartSettings
-    {
-        public string Liquid { get; set; }
-    }
+    public string Liquid { get; set; }
 }

@@ -3,18 +3,17 @@ using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Http.Drivers
-{
-    public sealed class SignalEventDisplayDriver : ActivityDisplayDriver<SignalEvent, SignalEventViewModel>
-    {
-        protected override void EditActivity(SignalEvent activity, SignalEventViewModel model)
-        {
-            model.SignalNameExpression = activity.SignalName.Expression;
-        }
+namespace OrchardCore.Workflows.Http.Drivers;
 
-        protected override void UpdateActivity(SignalEventViewModel model, SignalEvent activity)
-        {
-            activity.SignalName = new WorkflowExpression<string>(model.SignalNameExpression);
-        }
+public sealed class SignalEventDisplayDriver : ActivityDisplayDriver<SignalEvent, SignalEventViewModel>
+{
+    protected override void EditActivity(SignalEvent activity, SignalEventViewModel model)
+    {
+        model.SignalNameExpression = activity.SignalName.Expression;
+    }
+
+    protected override void UpdateActivity(SignalEventViewModel model, SignalEvent activity)
+    {
+        activity.SignalName = new WorkflowExpression<string>(model.SignalNameExpression);
     }
 }
