@@ -33,7 +33,7 @@ namespace OrchardCore.Search.Lucene
                 File.WriteAllText(_indexSettingsFilename, new JsonObject().ToJsonString(JOptions.Indented));
             }
 
-            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename), JOptions.Node, JOptions.Document);
         }
 
         public long GetLastTaskId(string indexName)

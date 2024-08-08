@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace OrchardCore.Deployment.Steps
                 return Task.CompletedTask;
             }
 
-            result.Steps.Add(JObject.Parse(jsonRecipeStep.Json));
+            result.Steps.Add(JObject.Parse(jsonRecipeStep.Json, JOptions.Node, JOptions.Document));
 
             return Task.CompletedTask;
         }

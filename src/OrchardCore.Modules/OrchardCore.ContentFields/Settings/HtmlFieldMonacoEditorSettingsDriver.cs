@@ -54,7 +54,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
                 else
                 {
-                    var jsonSettings = JObject.Parse(model.Options);
+                    var jsonSettings = JObject.Parse(model.Options, JOptions.Node, JOptions.Document);
                     jsonSettings["language"] = "html";
                     var settings = new HtmlFieldMonacoEditorSettings
                     {

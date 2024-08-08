@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -63,7 +64,7 @@ namespace OrchardCore.Deployment.Steps
 
             try
             {
-                var jObject = JObject.Parse(model.Json);
+                var jObject = JObject.Parse(model.Json, JOptions.Node, JOptions.Document);
                 if (!jObject.ContainsKey("name"))
                 {
 
