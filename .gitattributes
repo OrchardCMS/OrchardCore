@@ -1,4 +1,7 @@
 * text=auto
+*.cs eol=crlf
+*.csproj eol=crlf
+*.sln eol=crlf
 
 **/wwwroot/Scripts/* linguist-vendored
 
