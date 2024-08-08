@@ -79,11 +79,16 @@ namespace OrchardCore.Autoroute.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, UpdatePartEditorContext context)
         {
             var viewModel = new AutoroutePartViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Path, t => t.UpdatePath, t => t.RouteContainedItems, t => t.Absolute, t => t.Disabled);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix,
+                t => t.Path,
+                t => t.UpdatePath,
+                t => t.RouteContainedItems,
+                t => t.Absolute,
+                t => t.Disabled);
 
             var settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
 
@@ -102,17 +107,17 @@ namespace OrchardCore.Autoroute.Drivers
                 if (settings.AllowUpdatePath && viewModel.UpdatePath)
                 {
                     // Make it empty to force a regeneration
-                    model.Path = "";
+                    model.Path = string.Empty;
                 }
 
                 var httpContext = _httpContextAccessor.HttpContext;
 
                 if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
                 {
-                    await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
+                    await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }
 
-                updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
+                context.Updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
 
                 // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
                 if (!string.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
@@ -123,7 +128,7 @@ namespace OrchardCore.Autoroute.Drivers
                     var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
                     if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
                     }
                 }
             }

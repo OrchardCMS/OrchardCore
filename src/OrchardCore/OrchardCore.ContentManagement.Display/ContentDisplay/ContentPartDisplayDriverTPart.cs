@@ -237,7 +237,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 _typePartDefinition = typePartDefinition;
 
-                var result = await UpdateAsync(part, context.Updater, updateEditorContext);
+                var result = await UpdateAsync(part, updateEditorContext);
 
                 part.ContentItem.Apply(typePartDefinition.Name, part);
 
@@ -254,9 +254,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public virtual IDisplayResult Display(TPart part, BuildPartDisplayContext context)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Display(part);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TPart part, BuildPartDisplayContext context) or Display(TPart part, BuildPartDisplayContext context) method.")]
         public virtual IDisplayResult Display(TPart part)
         {
             return null;
@@ -269,24 +272,25 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         public virtual IDisplayResult Edit(TPart part, BuildPartEditorContext context)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Edit(part);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TPart part, BuildPartEditorContext context) or Edit(TPart part, BuildPartEditorContext context) method.")]
         public virtual IDisplayResult Edit(TPart part)
         {
             return null;
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater, UpdatePartEditorContext context)
-        {
-            return UpdateAsync(part, context);
-        }
-
         public virtual Task<IDisplayResult> UpdateAsync(TPart part, UpdatePartEditorContext context)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return UpdateAsync(part, context.Updater);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TPart part, UpdatePartEditorContext context) method.")]
         public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater)
         {
             return Task.FromResult<IDisplayResult>(null);

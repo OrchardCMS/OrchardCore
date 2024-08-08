@@ -205,7 +205,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             _typePartDefinition = typePartDefinition;
             _partFieldDefinition = partFieldDefinition;
 
-            var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);
+            var result = await UpdateAsync(field, updateFieldEditorContext);
 
             _typePartDefinition = null;
             _partFieldDefinition = null;
@@ -225,19 +225,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return Task.FromResult(Display(field, fieldDisplayContext));
         }
 
-        public virtual Task<IDisplayResult> EditAsync(TField field, BuildFieldEditorContext context)
-        {
-            return Task.FromResult(Edit(field, context));
-        }
-
-        public virtual Task<IDisplayResult> UpdateAsync(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
-        {
-            return Task.FromResult(Update(field, updater, context));
-        }
-
         public virtual IDisplayResult Display(TField field, BuildFieldDisplayContext fieldDisplayContext)
         {
             return null;
+        }
+
+        public virtual Task<IDisplayResult> EditAsync(TField field, BuildFieldEditorContext context)
+        {
+            return Task.FromResult(Edit(field, context));
         }
 
         public virtual IDisplayResult Edit(TField field, BuildFieldEditorContext context)
@@ -245,6 +240,20 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return null;
         }
 
+        public virtual Task<IDisplayResult> UpdateAsync(TField field, UpdateFieldEditorContext context)
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            return UpdateAsync(field, context.Updater, context);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TField field, UpdateFieldEditorContext context) method.")]
+        public virtual Task<IDisplayResult> UpdateAsync(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        {
+            return Task.FromResult(Update(field, updater, context));
+        }
+
+        [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TField field, UpdateFieldEditorContext context) method.")]
         public virtual IDisplayResult Update(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             return null;

@@ -28,9 +28,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(part, Prefix);
+            await context.Updater.TryUpdateModelAsync(part, Prefix);
 
             return Edit(part, context);
         }

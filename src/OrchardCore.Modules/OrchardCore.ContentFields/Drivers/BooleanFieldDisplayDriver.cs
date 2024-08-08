@@ -36,9 +36,9 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BooleanField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(BooleanField field, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+            await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
 
             return Edit(field, context);
         }
