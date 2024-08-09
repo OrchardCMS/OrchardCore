@@ -14,46 +14,61 @@ namespace OrchardCore.Media.GraphQL
         {
             Name = nameof(MediaField);
 
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("paths")
-                .Description("the media paths")
+            if (MediaAppContextSwitches.EnableLegacyMediaFields)
+            {
+                Field<ListGraphType<StringGraphType>, IEnumerable<string>>("paths")
+                    .Description("the media paths")
+                    .PagingArguments()
+                    .Resolve(x =>
+                    {
+                        if (x.Source?.Paths is null)
+                        {
+                            return Array.Empty<string>();
+                        }
+
+                        return x.Page(x.Source.Paths);
+                    });
+
+                Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
+                    .Description("the media file names")
+                    .PagingArguments()
+                    .Resolve(x =>
+                    {
+                        var fileNames = x.Page(x.Source.GetAttachedFileNames());
+                        if (fileNames is null)
+                        {
+                            return Array.Empty<string>();
+                        }
+                        return fileNames;
+                    });
+
+                Field<ListGraphType<StringGraphType>, IEnumerable<string>>("urls")
+                    .Description("the absolute urls of the media items")
+                    .PagingArguments()
+                    .Resolve(x =>
+                    {
+                        if (x.Source?.Paths is null)
+                        {
+                            return Array.Empty<string>();
+                        }
+                        var paths = x.Page(x.Source.Paths);
+                        var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
+
+                        return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
+                    });
+
+                Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
+                .Description("the media texts")
                 .PagingArguments()
                 .Resolve(x =>
                 {
-                    if (x.Source?.Paths is null)
+                    if (x.Source?.MediaTexts is null)
                     {
                         return Array.Empty<string>();
                     }
-
-                    return x.Page(x.Source.Paths);
+                    return x.Page(x.Source.MediaTexts);
                 });
-
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
-                .Description("the media file names")
-                .PagingArguments()
-                .Resolve(x =>
-                {
-                    var fileNames = x.Page(x.Source.GetAttachedFileNames());
-                    if (fileNames is null)
-                    {
-                        return Array.Empty<string>();
-                    }
-                    return fileNames;
-                });
-
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("urls")
-                .Description("the absolute urls of the media items")
-                .PagingArguments()
-                .Resolve(x =>
-                {
-                    if (x.Source?.Paths is null)
-                    {
-                        return Array.Empty<string>();
-                    }
-                    var paths = x.Page(x.Source.Paths);
-                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
-
-                    return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
-                });
+            }
 
             Field<ListGraphType<MediaFileItemType>, IEnumerable<MediaFileItem>>("files")
                 .Description("the files of the media items")
@@ -83,18 +98,6 @@ namespace OrchardCore.Media.GraphQL
                     }
 
                     return items;
-                });
-
-            Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
-                .Description("the media texts")
-                .PagingArguments()
-                .Resolve(x =>
-                {
-                    if (x.Source?.MediaTexts is null)
-                    {
-                        return Array.Empty<string>();
-                    }
-                    return x.Page(x.Source.MediaTexts);
                 });
         }
     }
