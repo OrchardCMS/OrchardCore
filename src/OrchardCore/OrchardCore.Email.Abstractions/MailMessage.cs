@@ -48,13 +48,7 @@ namespace OrchardCore.Email
         /// <summary>
         /// Gets or sets the message content aka body.
         /// </summary>
-        /// <remarks>This property is work in conjunction with <see cref="IsHtmlBody"/> to determine the body type..</remarks>
-        public string Body { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the message body is an HTML or not. Default is <c>false</c> which is plain text.
-        /// </summary>
-        public bool IsHtmlBody { get; set; }
+        public MailMessageBody Body { get; set; }
 
         /// <summary>
         /// The collection of message attachments.

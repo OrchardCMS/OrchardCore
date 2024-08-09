@@ -27,7 +27,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
                 HtmlEncoder.Default)
             {
                 Subject = new WorkflowExpression<string>("Test"),
-                Body = new WorkflowExpression<string>("Test message!!")
+                HtmlBody = new WorkflowExpression<string>("Test message!!")
             };
 
             var executionContext = new WorkflowExecutionContext(
