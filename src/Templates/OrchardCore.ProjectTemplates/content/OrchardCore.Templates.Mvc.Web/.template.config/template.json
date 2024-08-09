@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Orchard Core Community and Contributors",
+  "classifications": [
+    "Web",
+    "Orchard Core",
+    "Mvc"
+  ],
+  "name": "Orchard Core Mvc Web App",
+  "identity": "OrchardCore.Templates.Mvc.Web",
+  "shortName": "ocmvc",
+  "sourceName": "OrchardCore.Templates.Mvc.Web",
+  "defaultName": "OrchardCore.Mvc.Web",
+  "preferNameDirectory": true,
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "description": "Target net8.0"
+        }
+      ],
+      "replaces": "$(TemplateTargetPackageFramework)",
+      "defaultValue": "net8.0"
+    },
+    "OrchardVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Specifies which version of Orchard Core packages to use.",
+      "replaces": "$(TemplateOrchardPackageVersion)",
+      "defaultValue": "2.0.0"
+    }
+  },
+  "sources": [],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  }
+}
