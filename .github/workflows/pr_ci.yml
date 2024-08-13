@@ -31,10 +31,6 @@ jobs:
       # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
         dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
-    # - name: Set Git line ending configuration
-    #   run: git config --global core.autocrlf true
-    # - name: Validate code format
-    #   run: dotnet format --verify-no-changes --verbosity diagnostic
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
