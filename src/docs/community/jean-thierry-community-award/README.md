@@ -11,8 +11,10 @@ After a public round of nominations, the community votes on the nominees secretl
 The award is foremost about recognition. However, the community provides some perks too:
 
 - Mention of each year's winner in the docs above.
-- Post about it under the [Orchard X account](https://twitter.com/OrchardCMS).
-- [Lombiq](https://lombiq.com) provides free custom domain usage on [DotNest](https://dotnest.com/) and publicizing the winner in Lombiq's media.
+- Post about it under the Orchard Core social media.
+- [Lombiq](https://lombiq.com/) provides free custom domain usage on [DotNest](https://dotnest.com/), publicizing the winner in Lombiq's media, and a year of sponsorship similar to [other open source contributors and projects](https://lombiq.com/open-source).
+
+If your company works with Orchard Core and would like to incentivize community members, please let us know about what else you can add!
 
 ## Winners of the Jean-Thierry Kéchichian Community Award
 
