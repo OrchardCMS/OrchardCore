@@ -1,4 +1,5 @@
 * text=auto
+*.cs text eol=crlf
 
 **/wwwroot/Scripts/* linguist-vendored
 
