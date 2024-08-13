@@ -33,6 +33,9 @@ dotnet_sort_system_directives_first                        = true
 csharp_prefer_braces = true
 csharp_prefer_simple_using_statement                       = true
 csharp_style_namespace_declarations                        = file_scoped:warning
+# Note that currently both IDE* rules and csharp_style_* rules are necessary, because only IDE rules will be enforced
+# during build, see: https://github.com/dotnet/roslyn/issues/44201.
+dotnet_diagnostic.IDE0161.severity                         = warning
 
 # Range operator
 csharp_style_prefer_range_operator                         = false:warning
