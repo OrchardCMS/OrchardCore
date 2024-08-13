@@ -96,8 +96,8 @@
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
-    <AspNetCorePackagesVersion>8.0.7</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>8.0.7</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>8.0.8</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>8.0.8</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
