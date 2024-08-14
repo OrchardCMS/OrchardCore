@@ -71,7 +71,7 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 
             var actionContext = _actionContextAccessor.ActionContext;
 
-                actionContext ??= await _httpContextAccessor.GetActionContextAsync();
+            actionContext ??= await _httpContextAccessor.GetActionContextAsync();
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
