@@ -13,7 +13,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
+    public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
     {
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly IIdGenerator _idGenerator;
@@ -43,20 +43,20 @@ namespace OrchardCore.ContentLocalization.Drivers
             return Initialize<LocalizationPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, localizationPart));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, UpdatePartEditorContext context)
         {
             var viewModel = new LocalizationPartViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Culture);
 
             // Invariant culture name is empty so a null value is bound.
-            model.Culture = viewModel.Culture ?? "";
+            model.Culture = viewModel.Culture ?? string.Empty;
 
             // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
             if (string.IsNullOrEmpty(model.LocalizationSet))
             {
                 model.LocalizationSet = _idGenerator.GenerateUniqueId();
             }
-            return Edit(model);
+            return Edit(model, context);
         }
 
         public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)

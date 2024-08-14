@@ -36,7 +36,7 @@ namespace OrchardCore.Twitter.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
+            container.Alter<TwitterSettings>(aspect =>
             {
                 aspect.ConsumerKey = settings.ConsumerKey;
                 aspect.ConsumerSecret = settings.ConsumerSecret;

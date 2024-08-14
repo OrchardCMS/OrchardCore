@@ -14,9 +14,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
+    public sealed class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
@@ -47,16 +47,16 @@ namespace OrchardCore.ContentFields.Drivers
            });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, UpdateFieldEditorContext context)
         {
             var model = new EditYoutubeFieldViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
             var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
             if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
             else
             {
@@ -74,7 +74,7 @@ namespace OrchardCore.ContentFields.Drivers
                         }
                         else
                         {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                         }
                     }
                     else

@@ -36,7 +36,7 @@ namespace OrchardCore.GitHub.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
+            container.Alter<GitHubAuthenticationSettings>(aspect =>
             {
                 aspect.ClientID = settings.ClientID;
                 aspect.ClientSecret = settings.ClientSecret;

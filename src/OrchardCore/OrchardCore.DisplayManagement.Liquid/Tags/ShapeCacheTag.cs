@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         private static readonly char[] _separators = [',', ' '];
 
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 

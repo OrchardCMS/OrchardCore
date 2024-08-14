@@ -19,7 +19,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserDisplayDriver : DisplayDriver<User>
+    public sealed class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -27,8 +27,9 @@ namespace OrchardCore.Users.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
-        protected readonly IHtmlLocalizer H;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IHtmlLocalizer H;
+        internal readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -50,9 +51,9 @@ namespace OrchardCore.Users.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(User user)
+        public override Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
                 Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location("DetailAdmin", "Content:5"),
                 Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")

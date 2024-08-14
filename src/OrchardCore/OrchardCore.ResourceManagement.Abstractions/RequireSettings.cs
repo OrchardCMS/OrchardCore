@@ -258,14 +258,18 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public RequireSettings New() =>
-            new()
-            {
-                Name = Name,
-                Type = Type,
-                Location = Location,
-                Position = Position
-            };
+        public RequireSettings New() => new()
+        {
+            CdnMode = CdnMode,
+            DebugMode = DebugMode,
+            Culture = Culture,
+            CdnBaseUrl = CdnBaseUrl,
+            AppendVersion = AppendVersion,
+            Name = Name,
+            Type = Type,
+            Location = Location,
+            Position = Position,
+        };
 
         public RequireSettings NewAndCombine(RequireSettings other) =>
             New().Combine(other);

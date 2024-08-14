@@ -4,20 +4,21 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
+    public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
             {
@@ -25,6 +26,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
+                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
             })
             .Location("Content");
         }
@@ -39,9 +41,18 @@ namespace OrchardCore.ContentFields.Settings
             settings.Required = model.Required;
             settings.Hint = model.Hint;
 
-            context.Builder.WithSettings(settings);
+            try
+            {
+                settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
 
-            return Edit(partFieldDefinition);
+                context.Builder.WithSettings(settings);
+            }
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+            }
+
+            return Edit(partFieldDefinition, context);
         }
     }
 }

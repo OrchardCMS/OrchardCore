@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class DeleteContentTaskDisplayDriver : ContentTaskDisplayDriver<DeleteContentTask, DeleteContentTaskViewModel>
+    public sealed class DeleteContentTaskDisplayDriver : ContentTaskDisplayDriver<DeleteContentTask, DeleteContentTaskViewModel>
     {
         protected override void EditActivity(DeleteContentTask activity, DeleteContentTaskViewModel model)
         {

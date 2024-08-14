@@ -2,21 +2,22 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Placements.ViewModels;
 
 namespace OrchardCore.Placements.Settings
 {
-    public class PlacementContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
+    public sealed class PlacementContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public PlacementContentPartDefinitionDriver(IStringLocalizer<PlacementContentPartDefinitionDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
+        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition, BuildEditorContext context)
         {
             var displayName = contentPartDefinition.DisplayName();
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,19 +72,24 @@ namespace OrchardCore.OpenId.Controllers
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = await _applicationManager.CountAsync();
 
-            var model = new OpenIdApplicationsIndexViewModel
-            {
-                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
-            };
+            var applications = new List<OpenIdApplicationEntry>();
 
             await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
-                model.Applications.Add(new OpenIdApplicationEntry
+                applications.Add(new OpenIdApplicationEntry
                 {
                     DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                     Id = await _applicationManager.GetPhysicalIdAsync(application)
                 });
             }
+
+            var model = new OpenIdApplicationsIndexViewModel
+            {
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
+                Applications = applications.OrderBy(x => x.DisplayName)
+                .ThenBy(x => x.Id)
+                .ToArray(),
+            };
 
             return View(model);
         }

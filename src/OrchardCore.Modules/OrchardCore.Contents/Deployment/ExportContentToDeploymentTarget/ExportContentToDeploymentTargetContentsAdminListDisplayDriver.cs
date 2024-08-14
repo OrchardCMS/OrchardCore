@@ -7,7 +7,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;

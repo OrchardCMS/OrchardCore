@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,8 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Deployment;
@@ -48,20 +49,17 @@ namespace OrchardCore.Search.Lucene
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
-
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
-            services.AddLuceneQueries();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage.
-            services.AddScoped<IQuerySource, LuceneQuerySource>();
-            services.AddScoped<LuceneQuerySource>();
+            services.AddLuceneQueries()
+                .AddQuerySource<LuceneQuerySource>(LuceneQuerySource.SourceName);
+
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
-
-            // Allows to serialize 'LuceneQuery' from its base type.
-            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
+            services.AddDataMigration<LuceneQueryMigrations>();
+            services.AddScoped<IQueryHandler, LuceneQueryHandler>();
         }
     }
 

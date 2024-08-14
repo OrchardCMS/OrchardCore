@@ -15,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
     {
         private static readonly char[] _separators = [',', ' '];
 
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -151,6 +151,14 @@ namespace OrchardCore.Resources.Liquid
                 // {% script name:"bootstrap" %}
 
                 var setting = resourceManager.RegisterResource("script", name);
+
+                if (customAttributes != null)
+                {
+                    foreach (var attribute in customAttributes)
+                    {
+                        setting.SetAttribute(attribute.Key, attribute.Value);
+                    }
+                }
 
                 if (at != ResourceLocation.Unspecified)
                 {

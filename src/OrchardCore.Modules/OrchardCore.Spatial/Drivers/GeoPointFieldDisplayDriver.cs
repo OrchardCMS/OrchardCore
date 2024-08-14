@@ -15,9 +15,9 @@ using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
 {
-    public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
+    public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
         {
@@ -27,13 +27,12 @@ namespace OrchardCore.Spatial.Drivers
         public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
         {
             return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
-                {
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                })
-                .Location("Detail", "Content")
-                .Location("Summary", "Content");
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            }).Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
@@ -48,11 +47,11 @@ namespace OrchardCore.Spatial.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditGeoPointFieldViewModel();
 
-            var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude);
+            var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Latitude, f => f.Longitude);
 
             if (modelUpdated)
             {
@@ -65,7 +64,7 @@ namespace OrchardCore.Spatial.Drivers
                 {
                     if (settings.Required)
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Latitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Latitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                     else
                     {
@@ -74,7 +73,7 @@ namespace OrchardCore.Spatial.Drivers
                 }
                 else if (!decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out latitude))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
@@ -85,7 +84,7 @@ namespace OrchardCore.Spatial.Drivers
                 {
                     if (settings.Required)
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Longitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Longitude), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                     else
                     {
@@ -94,7 +93,7 @@ namespace OrchardCore.Spatial.Drivers
                 }
                 else if (!decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out longitude))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {

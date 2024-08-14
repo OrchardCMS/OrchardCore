@@ -11,7 +11,7 @@ namespace OrchardCore.Templates.Recipes
     /// <summary>
     /// This recipe step creates a set of templates.
     /// </summary>
-    public class AdminTemplateStep : IRecipeStepHandler
+    public sealed class AdminTemplateStep : IRecipeStepHandler
     {
         private readonly AdminTemplatesManager _adminTemplatesManager;
 

@@ -249,7 +249,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var typePartNames = new HashSet<string>(typeViewModel.TypeDefinition.Parts.Select(p => p.PartDefinition.Name));
+            var typePartNames = new HashSet<string>(typeViewModel.TypeDefinition.Parts.Select(p => p.IsNamedPart() ? p.Name : p.PartDefinition.Name));
 
             var viewModel = new AddPartsViewModel
             {
