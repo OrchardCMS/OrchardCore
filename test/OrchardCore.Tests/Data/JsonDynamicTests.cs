@@ -799,7 +799,7 @@ public class JsonDynamicTests
         var contentItem = GetContentTestData();
         dynamic contentExpando = new ExpandoObject();
         contentExpando.content = contentItem.Content;
-        
+
         // Act
         var contentStr = JConvert.SerializeObject((ExpandoObject)contentExpando);
 
@@ -822,7 +822,7 @@ public class JsonDynamicTests
             };
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);
-            
+
             // Act
             var contentStr = (string)scriptingEngine.Evaluate(scriptingScope, "return JSON.stringify(getTestContent().Content)");
 

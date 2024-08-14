@@ -1,8 +1,7 @@
-namespace OrchardCore.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels;
+
+public class CustomFileDeploymentStepViewModel
 {
-    public class CustomFileDeploymentStepViewModel
-    {
-        public string FileName { get; set; }
-        public string FileContent { get; set; }
-    }
+    public string FileName { get; set; }
+    public string FileContent { get; set; }
 }

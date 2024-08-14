@@ -1,9 +1,8 @@
-namespace OrchardCore.ContentTypes.ViewModels
-{
-    public class DeleteContentDefinitionStepViewModel
-    {
-        public string ContentTypes { get; set; }
+namespace OrchardCore.ContentTypes.ViewModels;
 
-        public string ContentParts { get; set; }
-    }
+public class DeleteContentDefinitionStepViewModel
+{
+    public string ContentTypes { get; set; }
+
+    public string ContentParts { get; set; }
 }
