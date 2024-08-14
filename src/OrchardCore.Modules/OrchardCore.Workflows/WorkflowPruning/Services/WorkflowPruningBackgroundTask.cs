@@ -38,12 +38,10 @@ public class WorkflowPruningBackgroundTask : IBackgroundTask
             var workflowCleanUpManager = serviceProvider.GetRequiredService<IWorkflowPruningManager>();
 
             logger.LogDebug("Starting pruning Workflow instances.");
-            var prunedQty = await workflowCleanUpManager.PruneWorkflowInstancesAsync(
+            var prunedCount = await workflowCleanUpManager.PruneWorkflowInstancesAsync(
                 TimeSpan.FromDays(workflowPruningSettings.RetentionDays)
             );
-            logger.LogDebug("Pruned {PrunedCount} workflow instances.", prunedQty);
-
-            workflowPruningSettings.LastRunUtc = clock.UtcNow;
+            logger.LogDebug("Pruned {PrunedCount} workflow instances.", prunedCount);
 
             var siteSettings = await siteService.LoadSiteSettingsAsync();
             siteSettings.Alter<WorkflowPruningSettings>(settings =>

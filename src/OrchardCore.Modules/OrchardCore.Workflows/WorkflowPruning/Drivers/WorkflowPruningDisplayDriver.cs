@@ -38,8 +38,8 @@ public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPru
             model.LastRunUtc = settings.LastRunUtc;
             model.Disabled = settings.Disabled;
             model.Statuses =
-            settings.Statuses ?? new WorkflowStatus[]
-            {
+            settings.Statuses ??
+            [
                 WorkflowStatus.Idle,
                 WorkflowStatus.Starting,
                 WorkflowStatus.Resuming,
@@ -48,7 +48,7 @@ public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPru
                 WorkflowStatus.Finished,
                 WorkflowStatus.Faulted,
                 WorkflowStatus.Aborted
-            };
+            ];
         }).Location("Content:5")
         .OnGroup(GroupId);
     }
