@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.Extensions;
+
 public static class HttpContextExtensions
 {
     public static async Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
