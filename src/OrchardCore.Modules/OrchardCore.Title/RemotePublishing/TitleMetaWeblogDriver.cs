@@ -7,7 +7,7 @@ using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.Title.RemotePublishing
 {
-    public class TitleMetaWeblogDriver : MetaWeblogDriver
+    public sealed class TitleMetaWeblogDriver : MetaWeblogDriver
     {
         private readonly HtmlEncoder _encoder;
 

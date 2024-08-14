@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -21,7 +20,7 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private const string LevelPadding = "\xA0\xA0";
 
@@ -29,7 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,
@@ -43,7 +42,7 @@ namespace OrchardCore.Taxonomies.Drivers
             S = stringLocalizer;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentOptionsViewModel model, BuildEditorContext context)
         {
             var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
 
@@ -81,8 +80,16 @@ namespace OrchardCore.Taxonomies.Drivers
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new() { Text = S["Clear filter"], Value = ""  },
-                                new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new()
+                                {
+                                    Text = S["Clear filter"],
+                                    Value = string.Empty,
+                                },
+                                new()
+                                {
+                                    Text = S["Show all"],
+                                    Value = "Taxonomy:" + taxonomy.ContentItemId,
+                                }
                             };
 
                         foreach (var term in termEntries)
@@ -93,7 +100,11 @@ namespace OrchardCore.Taxonomies.Drivers
                                 sb.Append(LevelPadding);
                             }
                             sb.Append(term.DisplayText);
-                            var item = new SelectListItem { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
+                            var item = new SelectListItem
+                            {
+                                Text = sb.ToString(),
+                                Value = "Term:" + term.ContentItemId,
+                            };
                             terms.Add(item);
                         }
 
@@ -115,13 +126,13 @@ namespace OrchardCore.Taxonomies.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
         {
             var settings = await _siteService.GetSettingsAsync<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
-                await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
+                await context.Updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId);
 
                 if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                 {
@@ -129,7 +140,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 }
             }
 
-            return await EditAsync(model, updater);
+            return await EditAsync(model, context);
         }
 
         private static void PopulateTermEntries(List<FilterTermEntry> termEntries, IEnumerable<ContentItem> contentItems, int level)

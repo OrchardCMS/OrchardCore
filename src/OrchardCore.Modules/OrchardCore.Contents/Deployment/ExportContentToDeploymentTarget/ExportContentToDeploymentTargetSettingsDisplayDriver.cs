@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetSettingsDisplayDriver : SectionDisplayDriver<ISite, ExportContentToDeploymentTargetSettings>
+    public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteDisplayDriver<ExportContentToDeploymentTargetSettings>
     {
         public const string GroupId = "ExportContentToDeploymentTarget";
 
@@ -23,7 +23,10 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan))
@@ -34,21 +37,19 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
             {
                 model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ExportContentToDeploymentTargetSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == GroupId)
-            {
-                var model = new ExportContentToDeploymentTargetSettingsViewModel();
+            var model = new ExportContentToDeploymentTargetSettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ExportContentToDeploymentTargetPlanId);
 
-                settings.ExportContentToDeploymentTargetPlanId = model.ExportContentToDeploymentTargetPlanId;
-            }
+            settings.ExportContentToDeploymentTargetPlanId = model.ExportContentToDeploymentTargetPlanId;
 
-            return await EditAsync(settings, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

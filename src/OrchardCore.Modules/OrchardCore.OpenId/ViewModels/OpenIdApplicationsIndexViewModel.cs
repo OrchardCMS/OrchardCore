@@ -1,10 +1,14 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdApplicationsIndexViewModel
     {
-        public IList<OpenIdApplicationEntry> Applications { get; } = [];
+        [BindNever]
+        public IList<OpenIdApplicationEntry> Applications { get; set; }
+
+        [BindNever]
         public dynamic Pager { get; set; }
     }
 

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
@@ -15,20 +16,24 @@ namespace OrchardCore.Deployment.Recipes
     /// <summary>
     /// This recipe step creates a deployment plan.
     /// </summary>
-    public class DeploymentPlansRecipeStep : IRecipeStepHandler
+    public sealed class DeploymentPlansRecipeStep : IRecipeStepHandler
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IDeploymentPlanService _deploymentPlanService;
 
+        internal readonly IStringLocalizer S;
+
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
             IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-            IDeploymentPlanService deploymentPlanService)
+            IDeploymentPlanService deploymentPlanService,
+            IStringLocalizer<DeploymentPlansRecipeStep> stringLocalizer)
         {
             _serviceProvider = serviceProvider;
             _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
             _deploymentPlanService = deploymentPlanService;
+            S = stringLocalizer;
         }
 
         public Task ExecuteAsync(RecipeExecutionContext context)
@@ -71,10 +76,11 @@ namespace OrchardCore.Deployment.Recipes
 
             if (unknownTypes.Count != 0)
             {
-                var prefix = "No changes have been made. The following types of deployment plans cannot be added:";
-                var suffix = "Please ensure that the related features are enabled to add these types of deployment plans.";
+                context.Errors.Add(
+                    S["No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans.",
+                    string.Join(", ", unknownTypes)]);
 
-                throw new InvalidOperationException($"{prefix} {string.Join(", ", unknownTypes)}. {suffix}");
+                return Task.CompletedTask;
             }
 
             return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);

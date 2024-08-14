@@ -49,7 +49,7 @@ namespace OrchardCore.Navigation
         public NavigationItemBuilder Target(string target)
         {
             _item.Target = target;
-            
+
             return this;
         }
 

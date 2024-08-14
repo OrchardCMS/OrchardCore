@@ -10,18 +10,18 @@ using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
+    public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServerSettings>
     {
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdServerSettingsDisplayDriver(IOpenIdServerService serverService)
             => _serverService = serverService;
 
-        public override Task<IDisplayResult> EditAsync(OpenIdServerSettings settings, BuildEditorContext context)
+        public override IDisplayResult Edit(OpenIdServerSettings settings, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
-            return Task.FromResult<IDisplayResult>(Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
+            return Initialize<OpenIdServerSettingsViewModel>("OpenIdServerSettings_Edit", async model =>
             {
                 model.AccessTokenFormat = settings.AccessTokenFormat;
                 model.Authority = settings.Authority?.AbsoluteUri;
@@ -69,7 +69,7 @@ namespace OrchardCore.OpenId.Drivers
                         Archived = certificate.Archived
                     });
                 }
-            }).Location("Content:2"));
+            }).Location("Content:2");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdServerSettings settings, UpdateEditorContext context)

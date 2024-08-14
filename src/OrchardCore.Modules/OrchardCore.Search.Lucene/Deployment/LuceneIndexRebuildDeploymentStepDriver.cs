@@ -2,13 +2,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment
 {
-    public class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
+    public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
@@ -17,16 +16,16 @@ namespace OrchardCore.Search.Lucene.Deployment
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public override IDisplayResult Display(LuceneIndexRebuildDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(LuceneIndexRebuildDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("LuceneIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("LuceneIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step)
+        public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<LuceneIndexRebuildDeploymentStepViewModel>("LuceneIndexRebuildDeploymentStep_Fields_Edit", async model =>
             {
@@ -36,18 +35,18 @@ namespace OrchardCore.Search.Lucene.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep rebuildIndexStep, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep rebuildIndexStep, UpdateEditorContext context)
         {
             rebuildIndexStep.IndexNames = [];
 
-            await updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
+            await context.Updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.IndexNames, step => step.IncludeAll);
 
             if (rebuildIndexStep.IncludeAll)
             {
                 rebuildIndexStep.IndexNames = [];
             }
 
-            return Edit(rebuildIndexStep);
+            return Edit(rebuildIndexStep, context);
         }
     }
 }

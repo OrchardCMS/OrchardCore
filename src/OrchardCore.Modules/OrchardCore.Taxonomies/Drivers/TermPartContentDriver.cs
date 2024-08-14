@@ -18,7 +18,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TermPartContentDriver : ContentDisplayDriver
+    public sealed class TermPartContentDriver : ContentDisplayDriver
     {
         private readonly ISession _session;
         private readonly PagerOptions _pagerOptions;
@@ -34,23 +34,22 @@ namespace OrchardCore.Taxonomies.Drivers
             _contentManager = contentManager;
         }
 
-        public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem model, BuildDisplayContext context)
         {
             var part = model.As<TermPart>();
             if (part != null)
             {
-                return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
+                return Initialize<TermPartViewModel>("TermPart", async m =>
                 {
                     var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
-                })
-                .Location("Detail", "Content:5"));
+                }).Location("Detail", "Content:5");
             }
 
-            return Task.FromResult<IDisplayResult>(null);
+            return null;
         }
 
         private async Task<IEnumerable<ContentItem>> QueryTermItemsAsync(TermPart termPart, PagerSlim pager)

@@ -20,14 +20,15 @@ using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
-    public class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<MarkdownBodyPart>
+    public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<MarkdownBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
@@ -62,7 +63,7 @@ namespace OrchardCore.Markdown.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, UpdatePartEditorContext context)
         {
             var viewModel = new MarkdownBodyPartViewModel();
 
@@ -71,7 +72,7 @@ namespace OrchardCore.Markdown.Drivers
             if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
             {
                 var partName = context.TypePartDefinition.DisplayName();
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
             }
             else
             {

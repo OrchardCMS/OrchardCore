@@ -5,22 +5,23 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    public sealed class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TextFieldMonacoEditorSettingsDriver(IStringLocalizer<TextFieldMonacoEditorSettingsDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
             {
@@ -31,8 +32,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
 
                 model.Options = settings.Options;
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -57,7 +57,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

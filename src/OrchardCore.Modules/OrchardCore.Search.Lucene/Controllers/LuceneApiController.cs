@@ -3,24 +3,28 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Entities;
+using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Controllers
 {
     [Route("api/lucene")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-    public class LuceneApiController : ControllerBase
+    [Authorize(AuthenticationSchemes = "Api")]
+    [IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    public sealed class LuceneApiController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly LuceneQuerySource _luceneQuerySource;
+        private readonly IQueryManager _queryManager;
 
         public LuceneApiController(
             IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource)
+            IQueryManager queryManager)
         {
             _authorizationService = authorizationService;
-            _luceneQuerySource = luceneQuerySource;
+            _queryManager = queryManager;
         }
 
         [HttpGet]
@@ -79,20 +83,22 @@ namespace OrchardCore.Search.Lucene.Controllers
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
+        private async Task<IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
         {
-            var luceneQuery = new LuceneQuery
+            var luceneQuery = await _queryManager.NewAsync(LuceneQuerySource.SourceName);
+            luceneQuery.ReturnContentItems = returnContentItems;
+
+            luceneQuery.Put(new LuceneQueryMetadata()
             {
                 Index = queryModel.IndexName,
                 Template = queryModel.Query,
-                ReturnContentItems = returnContentItems
-            };
+            });
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            var queryParameters = queryModel.Parameters != null
+                ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : [];
 
-            return _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            return await _queryManager.ExecuteQueryAsync(luceneQuery, queryParameters);
         }
     }
 }

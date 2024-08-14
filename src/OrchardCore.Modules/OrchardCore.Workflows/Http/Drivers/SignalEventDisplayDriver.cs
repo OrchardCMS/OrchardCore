@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
-    public class SignalEventDisplayDriver : ActivityDisplayDriver<SignalEvent, SignalEventViewModel>
+    public sealed class SignalEventDisplayDriver : ActivityDisplayDriver<SignalEvent, SignalEventViewModel>
     {
         protected override void EditActivity(SignalEvent activity, SignalEventViewModel model)
         {

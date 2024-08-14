@@ -9,17 +9,15 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create a new application"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
+
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="mb-3" asp-validation-class-for="ClientId">
-        <label asp-for="ClientId" class="form-label">@T["Client Id"]</label>
-        <input asp-for="ClientId" class="form-control" autofocus />
-        <span asp-validation-for="ClientId" class="text-danger"></span>
-    </div>
+
     <div class="mb-3" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" autofocus />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
+
     <div class="mb-3" asp-validation-class-for="Type">
         <label asp-for="Type" class="form-label">@T["Type"]</label>
         <select asp-for="Type" class="form-select">
@@ -28,13 +26,30 @@
         </select>
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
+
+    <div class="mb-3" asp-validation-class-for="ClientId">
+        <label asp-for="ClientId" class="form-label">@T["Client Id"]</label>
+        <div class="input-group">
+            <input asp-for="ClientId" class="form-control" autofocus autocomplete="new-password" />
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientId" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientId" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
+        </div>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+
     <div class="mb-3" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
-        <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
+        <div class="input-group">
+            <input type="password" asp-for="ClientSecret" class="form-control" autocomplete="new-password" />
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="toggleClientSecret" title="@T["Click here toggle secret visibility"]"><i class="icon fa-solid fa-eye"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientSecret" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
+            <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientSecret" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
+        </div>
         <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
 
-    <h3>Flows</h3>
+    <h3>@T["Flows"]</h3>
+
     <div id="AllowAuthorizationCodeFlowFieldSet" class="mb-3 collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow" data-bs-toggle="collapse" data-bs-target="#AllowAuthorizationCodeFlowRecommendedHint" checked="@Model.AllowAuthorizationCodeFlow">
@@ -90,13 +105,15 @@
     </div>
 
     <div id="RedirectSection" class="mb-3 collapse">
-        <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
-            <input asp-for="RedirectUris" class="form-select" autofocus />
-            <span asp-validation-for="RedirectUris" class="text-danger"></span>
-        </div>
-        <div class="hint">
-            @T["Space delimited list of redirect URIs."]
+        <div class="mb-3">
+            <div asp-validation-class-for="RedirectUris">
+                <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
+                <input asp-for="RedirectUris" class="form-select" autofocus />
+                <span asp-validation-for="RedirectUris" class="text-danger"></span>
+            </div>
+            <div class="hint">
+                @T["Space delimited list of redirect URIs."]
+            </div>
         </div>
         <div class="mb-3 collapse" id="AllowLogoutEndpointFieldSet">
             <div class="mb-3">
@@ -116,16 +133,14 @@
                 </div>
             </div>
         </div>
-         <div class="mb-3" >
-             <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
-                    <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
-                </div>
-                 <div class="hint">
-                    @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
-                 </div>
-            </div>            
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange" checked="@Model.RequireProofKeyForCodeExchange">
+                <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+            </div>
+            <div class="hint">
+                @T["Ensure that the client application and OAuth or OIDC library being used supports PKCE before enabling this option."]
+            </div>
         </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType" class="form-label">@T["Consent type"]</label>
@@ -174,7 +189,40 @@
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
-<script at="Foot">
+<script at="Foot" asp-name="credential-helpers"></script>
+<script at="Foot" depends-on="credential-helpers">
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
+        const clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
+        const toggleClientSecretElement = document.getElementById('toggleClientSecret');
+        const copyClientSecretElement = document.getElementById('copyClientSecret');
+        const copyClientIdElement = document.getElementById('copyClientId');
+        const generateClientIdElement = document.getElementById('generateClientId');
+        const generateClientSecretElement = document.getElementById('generateClientSecret');
+
+        toggleClientSecretElement.addEventListener('click', (e) => {
+            togglePasswordVisibility(clientSecretElement, toggleClientSecretElement)
+        });
+
+        copyClientIdElement.addEventListener('click', (e) => {
+            copyToClipboard(clientIdElement.value);
+        });
+
+        copyClientSecretElement.addEventListener('click', (e) => {
+            copyToClipboard(clientSecretElement.value);
+        });
+
+        generateClientIdElement.addEventListener('click', (e) => {
+            clientIdElement.value = randomUUID({ includeHyphens: false });
+        });
+
+        generateClientSecretElement.addEventListener('click', (e) => {
+            clientSecretElement.value = generateStrongPassword();
+        });
+    });
+
     //<![CDATA[
     window.onload = function () {
         refreshForbiddenFlows();

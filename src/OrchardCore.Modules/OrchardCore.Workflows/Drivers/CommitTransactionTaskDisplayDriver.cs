@@ -4,7 +4,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class CommitTransactionTaskDisplayDriver : ActivityDisplayDriver<CommitTransactionTask, CommitTransactionTaskViewModel>
+    public sealed class CommitTransactionTaskDisplayDriver : ActivityDisplayDriver<CommitTransactionTask, CommitTransactionTaskViewModel>
     {
         protected override void EditActivity(CommitTransactionTask activity, CommitTransactionTaskViewModel model)
         {
