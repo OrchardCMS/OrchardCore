@@ -1,7 +1,6 @@
-namespace OrchardCore.DisplayManagement.Razor
+namespace OrchardCore.DisplayManagement.Razor;
+
+public interface IRazorViewExtensionProvider
 {
-    public interface IRazorViewExtensionProvider
-    {
-        string ViewExtension { get; }
-    }
+    string ViewExtension { get; }
 }

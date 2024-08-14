@@ -13,24 +13,23 @@ using OrchardCore.Html.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Html
+namespace OrchardCore.Html;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
+        services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
 
-            // Body Part
-            services.AddContentPart<HtmlBodyPart>()
-                .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
-                .AddHandler<HtmlBodyPartHandler>();
+        // Body Part
+        services.AddContentPart<HtmlBodyPart>()
+            .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
+            .AddHandler<HtmlBodyPartHandler>();
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
-        }
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
+        services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
     }
 }

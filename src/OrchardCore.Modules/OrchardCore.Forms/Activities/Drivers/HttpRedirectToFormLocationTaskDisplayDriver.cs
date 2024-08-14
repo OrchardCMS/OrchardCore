@@ -3,7 +3,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Forms.Activities.Drivers;
 
-public class HttpRedirectToFormLocationTaskDisplayDriver : ActivityDisplayDriver<HttpRedirectToFormLocationTask, HttpRedirectToFormLocationTaskViewModel>
+public sealed class HttpRedirectToFormLocationTaskDisplayDriver : ActivityDisplayDriver<HttpRedirectToFormLocationTask, HttpRedirectToFormLocationTaskViewModel>
 {
     protected override void EditActivity(HttpRedirectToFormLocationTask activity, HttpRedirectToFormLocationTaskViewModel model)
     {
