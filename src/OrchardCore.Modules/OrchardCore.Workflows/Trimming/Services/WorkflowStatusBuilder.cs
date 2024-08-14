@@ -4,7 +4,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Trimming.Services;
 
-internal sealed class WorkflowStatusBuilder
+public class WorkflowStatusBuilder
 {
     public bool IsSelected { get; set; }
 
