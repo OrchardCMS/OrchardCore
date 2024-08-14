@@ -21,8 +21,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     private readonly IIdGenerator _idGenerator;
     private readonly ILocalizationService _localizationService;
     private readonly INotifier _notifier;
-
-    protected readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public LocalizationPartDisplayDriver(
         IContentLocalizationManager contentLocalizationManager,
