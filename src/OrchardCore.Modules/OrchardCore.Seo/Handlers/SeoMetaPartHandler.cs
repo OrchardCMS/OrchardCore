@@ -180,4 +180,3 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
         });
     }
     }
-}
