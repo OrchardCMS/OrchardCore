@@ -92,7 +92,7 @@ public static class ConfigurationExtensions
     {
         if (jConfiguration is null)
         {
-            return Task.FromResult< IDictionary<string, string>>(new Dictionary<string, string>());
+            return Task.FromResult<IDictionary<string, string>>(new Dictionary<string, string>());
         }
 
         var configurationString = jConfiguration.ToJsonString(JOptions.Default);

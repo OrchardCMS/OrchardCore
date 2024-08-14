@@ -1,9 +1,8 @@
-namespace OrchardCore.OpenId.ViewModels
-{
-    public class ErrorViewModel
-    {
-        public string Error { get; set; }
+namespace OrchardCore.OpenId.ViewModels;
 
-        public string ErrorDescription { get; set; }
-    }
+public class ErrorViewModel
+{
+    public string Error { get; set; }
+
+    public string ErrorDescription { get; set; }
 }

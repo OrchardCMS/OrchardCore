@@ -1,7 +1,6 @@
-namespace OrchardCore.Tenants.Services
+namespace OrchardCore.Tenants.Services;
+
+public interface IFeatureProfilesSchemaService
 {
-    public interface IFeatureProfilesSchemaService
-    {
-        string GetJsonSchema();
-    }
+    string GetJsonSchema();
 }

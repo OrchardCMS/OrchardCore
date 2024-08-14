@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels;
+
+public class CreatePartViewModel
 {
-    public class CreatePartViewModel
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }
