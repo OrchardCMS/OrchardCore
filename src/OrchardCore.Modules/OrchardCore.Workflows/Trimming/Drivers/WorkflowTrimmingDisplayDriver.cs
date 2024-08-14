@@ -37,8 +37,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
             model.RetentionDays = settings.RetentionDays;
             model.LastRunUtc = settings.LastRunUtc;
             model.Disabled = settings.Disabled;
-            model.Statuses =
-            settings.Statuses ??
+            model.Statuses = settings.Statuses ??
             [
                 WorkflowStatus.Idle,
                 WorkflowStatus.Starting,
