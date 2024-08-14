@@ -49,6 +49,8 @@
     <PackageVersion Include="NJsonSchema" Version="11.1.0" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.4.0" />
     <PackageVersion Include="NodaTime" Version="3.2.1" />
+    <PackageVersion Include="OpenIddict.Client.AspNetCore" Version="6.2.0" />
+    <PackageVersion Include="OpenIddict.Client.SystemNetHttp" Version="6.2.0" />
     <PackageVersion Include="OpenIddict.Core" Version="6.2.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.2.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.2.0" />
