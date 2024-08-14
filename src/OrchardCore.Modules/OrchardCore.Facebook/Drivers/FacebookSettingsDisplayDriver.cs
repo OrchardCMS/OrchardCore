@@ -14,33 +14,33 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Drivers
 {
-    public class FacebookSettingsDisplayDriver : SectionDisplayDriver<ISite, FacebookSettings>
+    public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<FacebookSettingsDisplayDriver> logger
             )
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
-        public override async Task<IDisplayResult> EditAsync(FacebookSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => FacebookConstants.Features.Core;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, FacebookSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
@@ -70,39 +70,41 @@ namespace OrchardCore.Facebook.Drivers
                         model.HasDecryptionError = true;
                     }
                 }
-            }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
+            }).Location("Content:0")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == FacebookConstants.Features.Core)
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
-                {
-                    return null;
-                }
-
-                var model = new FacebookSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-                    settings.AppId = model.AppId;
-                    settings.AppSecret = protector.Protect(model.AppSecret);
-                    settings.FBInit = model.FBInit;
-                    settings.SdkJs = model.SdkJs;
-                    if (!string.IsNullOrWhiteSpace(model.FBInitParams))
-                        settings.FBInitParams = model.FBInitParams;
-                    settings.Version = model.Version;
-
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new FacebookSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.AppId = model.AppId;
+            settings.FBInit = model.FBInit;
+            settings.SdkJs = model.SdkJs;
+            settings.Version = model.Version;
+
+            if (!string.IsNullOrWhiteSpace(model.FBInitParams))
+            {
+                settings.FBInitParams = model.FBInitParams;
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+                settings.AppSecret = protector.Protect(model.AppSecret);
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

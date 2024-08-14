@@ -4,12 +4,11 @@ using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.CustomSettings.Deployment
 {
-    public class CustomSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomSettingsDeploymentStep>
+    public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomSettingsDeploymentStep>
     {
         private readonly CustomSettingsService _customSettingsService;
 
@@ -18,16 +17,16 @@ namespace OrchardCore.CustomSettings.Deployment
             _customSettingsService = customSettingsService;
         }
 
-        public override IDisplayResult Display(CustomSettingsDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(CustomSettingsDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
+        public override IDisplayResult Edit(CustomSettingsDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
             {
@@ -37,22 +36,22 @@ namespace OrchardCore.CustomSettings.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, UpdateEditorContext context)
         {
             step.SettingsTypeNames = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.SettingsTypeNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
+            // Don't have the selected option if include all.
             if (step.IncludeAll)
             {
                 step.SettingsTypeNames = [];
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

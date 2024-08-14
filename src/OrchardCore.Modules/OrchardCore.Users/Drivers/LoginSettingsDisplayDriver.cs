@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
+    public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
     {
         public const string GroupId = "userLogin";
 
@@ -25,7 +24,10 @@ namespace OrchardCore.Users.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Edit(LoginSettings settings)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override IDisplayResult Edit(ISite site, LoginSettings settings, BuildEditorContext context)
         {
             return Initialize<LoginSettings>("LoginSettings_Edit", model =>
             {
@@ -39,20 +41,19 @@ namespace OrchardCore.Users.Drivers
                 model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
             }).Location("Content:5#General")
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
         {
-            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
-                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }
 
             await context.Updater.TryUpdateModelAsync(section, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

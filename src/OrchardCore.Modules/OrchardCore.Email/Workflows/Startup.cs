@@ -7,7 +7,7 @@ using OrchardCore.Workflows.Helpers;
 namespace OrchardCore.Email.Workflows
 {
     [RequireFeatures("OrchardCore.Workflows")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

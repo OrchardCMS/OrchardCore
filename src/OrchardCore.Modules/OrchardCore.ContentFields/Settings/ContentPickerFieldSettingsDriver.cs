@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
@@ -11,18 +12,21 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
+    public sealed class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
 
-        public ContentPickerFieldSettingsDriver(ILiquidTemplateManager templateManager, IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public ContentPickerFieldSettingsDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
             {
@@ -41,36 +45,35 @@ namespace OrchardCore.ContentFields.Settings
         {
             var model = new ContentPickerFieldSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = new ContentPickerFieldSettings
             {
-                var settings = new ContentPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple,
-                    TitlePattern = model.TitlePattern,
-                };
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple,
+                TitlePattern = model.TitlePattern,
+            };
 
-                switch (model.Source)
-                {
-                    case ContentPickerSettingType.ContentTypes:
-                        SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
-                        break;
-                    case ContentPickerSettingType.Stereotypes:
-                        SetStereoTypes(context.Updater, model.Stereotypes, settings);
-                        break;
-                    default:
-                        settings.DisplayAllContentTypes = true;
-                        break;
-                }
-
-                if (IsValidTitlePattern(context, model))
-                {
-                    context.Builder.WithSettings(settings);
-                }
+            switch (model.Source)
+            {
+                case ContentPickerSettingType.ContentTypes:
+                    SetContentTypes(context.Updater, model.DisplayedContentTypes, settings);
+                    break;
+                case ContentPickerSettingType.Stereotypes:
+                    SetStereoTypes(context.Updater, model.Stereotypes, settings);
+                    break;
+                default:
+                    settings.DisplayAllContentTypes = true;
+                    break;
             }
 
-            return Edit(partFieldDefinition);
+            if (IsValidTitlePattern(context, model))
+            {
+                context.Builder.WithSettings(settings);
+            }
+
+            return Edit(partFieldDefinition, context);
         }
 
         private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
@@ -78,6 +81,7 @@ namespace OrchardCore.ContentFields.Settings
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {
                 context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+
                 return false;
             }
 

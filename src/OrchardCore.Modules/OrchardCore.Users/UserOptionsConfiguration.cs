@@ -3,7 +3,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Users
 {
-    public class UserOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+    public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
         private static readonly ResourceManifest _manifest;
 

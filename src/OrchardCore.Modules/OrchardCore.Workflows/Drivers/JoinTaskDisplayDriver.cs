@@ -4,7 +4,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class JoinTaskDisplayDriver : ActivityDisplayDriver<JoinTask, JoinTaskViewModel>
+    public sealed class JoinTaskDisplayDriver : ActivityDisplayDriver<JoinTask, JoinTaskViewModel>
     {
         protected override void EditActivity(JoinTask activity, JoinTaskViewModel model)
         {

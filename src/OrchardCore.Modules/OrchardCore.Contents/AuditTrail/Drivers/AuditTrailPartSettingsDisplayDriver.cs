@@ -5,14 +5,14 @@ using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
         {
             if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
             {
@@ -35,15 +35,14 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
             var viewModel = new AuditTrailPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput))
-            {
-                context.Builder.WithSettings(new AuditTrailPartSettings
-                {
-                    ShowCommentInput = viewModel.ShowCommentInput
-                });
-            }
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
 
-            return Edit(model, context.Updater);
+            context.Builder.WithSettings(new AuditTrailPartSettings
+            {
+                ShowCommentInput = viewModel.ShowCommentInput
+            });
+
+            return Edit(model, context);
         }
     }
 }

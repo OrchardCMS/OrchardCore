@@ -23,7 +23,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Flows.Drivers
 {
-    public class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
+    public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
@@ -31,8 +31,9 @@ namespace OrchardCore.Flows.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
-        protected readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
+
+        internal readonly IHtmlLocalizer H;
 
         public BagPartDisplayDriver(
             IContentManager contentManager,
@@ -79,6 +80,7 @@ namespace OrchardCore.Flows.Drivers
                 m.Updater = context.Updater;
                 m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
+                m.TypePartDefinition = context.TypePartDefinition;
             });
         }
 

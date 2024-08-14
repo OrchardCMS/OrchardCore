@@ -1,14 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class ContentTypeConditionDisplayDriver : DisplayDriver<Condition, ContentTypeCondition>
+    public sealed class ContentTypeConditionDisplayDriver : DisplayDriver<Condition, ContentTypeCondition>
     {
         private readonly ConditionOperatorOptions _options;
 
@@ -17,16 +16,16 @@ namespace OrchardCore.Rules.Drivers
             _options = options.Value;
         }
 
-        public override IDisplayResult Display(ContentTypeCondition condition)
+        public override Task<IDisplayResult> DisplayAsync(ContentTypeCondition condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("ContentTypeCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("ContentTypeCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(ContentTypeCondition condition)
+        public override IDisplayResult Edit(ContentTypeCondition condition, BuildEditorContext context)
         {
             return Initialize<ContentTypeConditionViewModel>("ContentTypeCondition_Fields_Edit", m =>
             {
@@ -39,19 +38,18 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypeCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypeCondition condition, UpdateEditorContext context)
         {
             var model = new ContentTypeConditionViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            condition.Value = model.Value;
+            if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
             {
-                condition.Value = model.Value;
-                if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
-                {
-                    condition.Operation = factory.Create();
-                }
+                condition.Operation = factory.Create();
             }
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

@@ -1,19 +1,19 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Settings
 {
-    public class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
+    public sealed class MarkdownFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MarkdownField>
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
             {
-
                 var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
                 model.SanitizeHtml = settings.SanitizeHtml;
@@ -26,15 +26,14 @@ namespace OrchardCore.Markdown.Settings
             var model = new MarkdownFieldSettingsViewModel();
             var settings = new MarkdownFieldSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                settings.SanitizeHtml = model.SanitizeHtml;
-                settings.Hint = model.Hint;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                context.Builder.WithSettings(settings);
-            }
+            settings.SanitizeHtml = model.SanitizeHtml;
+            settings.Hint = model.Hint;
 
-            return Edit(partFieldDefinition);
+            context.Builder.WithSettings(settings);
+
+            return Edit(partFieldDefinition, context);
         }
     }
 }

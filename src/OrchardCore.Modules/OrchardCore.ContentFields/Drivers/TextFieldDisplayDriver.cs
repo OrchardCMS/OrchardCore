@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Win32.SafeHandles;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
@@ -12,9 +13,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
+    public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
         {
@@ -45,15 +46,14 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TextField field, UpdateFieldEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Text))
+            await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+            var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+
+            if (settings.Required && string.IsNullOrWhiteSpace(field.Text))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                if (settings.Required && string.IsNullOrWhiteSpace(field.Text))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

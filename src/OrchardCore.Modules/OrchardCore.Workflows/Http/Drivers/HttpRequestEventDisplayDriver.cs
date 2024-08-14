@@ -4,7 +4,7 @@ using OrchardCore.Workflows.Http.ViewModels;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
-    public class HttpRequestEventDisplayDriver : ActivityDisplayDriver<HttpRequestEvent, HttpRequestEventViewModel>
+    public sealed class HttpRequestEventDisplayDriver : ActivityDisplayDriver<HttpRequestEvent, HttpRequestEventViewModel>
     {
         protected override void EditActivity(HttpRequestEvent activity, HttpRequestEventViewModel model)
         {

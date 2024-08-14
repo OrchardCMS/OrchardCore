@@ -11,9 +11,10 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Drivers
 {
-    public class AdminSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, AdminSettings>
+    public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSettings>
     {
         public const string GroupId = "admin";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -25,7 +26,10 @@ namespace OrchardCore.Admin.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AdminSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, AdminSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -40,10 +44,11 @@ namespace OrchardCore.Admin.Drivers
                 model.DisplayMenuFilter = settings.DisplayMenuFilter;
                 model.DisplayNewMenu = settings.DisplayNewMenu;
                 model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-            }).Location("Content:3").OnGroup(GroupId);
+            }).Location("Content:3")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, AdminSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -52,19 +57,16 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                var model = new AdminSettingsViewModel();
+            var model = new AdminSettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.DisplayThemeToggler = model.DisplayThemeToggler;
-                settings.DisplayMenuFilter = model.DisplayMenuFilter;
-                settings.DisplayNewMenu = model.DisplayNewMenu;
-                settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
-            }
+            settings.DisplayThemeToggler = model.DisplayThemeToggler;
+            settings.DisplayMenuFilter = model.DisplayMenuFilter;
+            settings.DisplayNewMenu = model.DisplayNewMenu;
+            settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
 
-            return await EditAsync(settings, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

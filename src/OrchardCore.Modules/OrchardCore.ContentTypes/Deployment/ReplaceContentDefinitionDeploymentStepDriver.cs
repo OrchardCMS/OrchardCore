@@ -3,23 +3,22 @@ using System.Threading.Tasks;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
-    public class ReplaceContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ReplaceContentDefinitionDeploymentStep>
+    public sealed class ReplaceContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ReplaceContentDefinitionDeploymentStep>
     {
-        public override IDisplayResult Display(ReplaceContentDefinitionDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(ReplaceContentDefinitionDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("ReplaceContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("ReplaceContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(ReplaceContentDefinitionDeploymentStep step)
+        public override IDisplayResult Edit(ReplaceContentDefinitionDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<ReplaceContentDefinitionStepViewModel>("ReplaceContentDefinitionDeploymentStep_Fields_Edit", model =>
             {
@@ -29,13 +28,13 @@ namespace OrchardCore.ContentTypes.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ReplaceContentDefinitionDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ReplaceContentDefinitionDeploymentStep step, UpdateEditorContext context)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
             step.ContentTypes = [];
             step.ContentParts = [];
 
-            await updater.TryUpdateModelAsync(
+            await context.Updater.TryUpdateModelAsync(
                 step,
                 Prefix,
                 x => x.ContentTypes,
@@ -53,7 +52,7 @@ namespace OrchardCore.ContentTypes.Deployment
                 step.ContentParts = step.ContentParts.Distinct().ToArray();
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

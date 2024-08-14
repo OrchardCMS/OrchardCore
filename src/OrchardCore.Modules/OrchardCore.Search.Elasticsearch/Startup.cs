@@ -8,6 +8,7 @@ using Nest;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,6 +16,8 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -28,7 +31,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -94,11 +97,13 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
+            services.AddDataMigration<ElasticsearchQueryMigrations>();
+            services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
         }
     }
 
     [RequireFeatures("OrchardCore.Search")]
-    public class SearchStartup : StartupBase
+    public sealed class SearchStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -109,7 +114,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -121,7 +126,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [Feature("OrchardCore.Search.Elasticsearch.Worker")]
-    public class ElasticWorkerStartup : StartupBase
+    public sealed class ElasticWorkerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -130,7 +135,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
-    public class ElasticContentPickerStartup : StartupBase
+    public sealed class ElasticContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -141,7 +146,7 @@ namespace OrchardCore.Search.Elasticsearch
     }
 
     [RequireFeatures("OrchardCore.ContentTypes")]
-    public class ContentTypesStartup : StartupBase
+    public sealed class ContentTypesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

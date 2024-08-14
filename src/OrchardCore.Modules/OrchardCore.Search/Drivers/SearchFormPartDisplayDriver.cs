@@ -8,11 +8,12 @@ using OrchardCore.Search.ViewModels;
 
 namespace OrchardCore.Search.Drivers;
 
-public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
+public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPart>
 {
     public override IDisplayResult Display(SearchFormPart part, BuildPartDisplayContext context)
     {
-        return View(GetDisplayShapeType(context), part).Location("Detail", "Content");
+        return View(GetDisplayShapeType(context), part)
+            .Location("Detail", "Content");
     }
 
     public override IDisplayResult Edit(SearchFormPart part, BuildPartEditorContext context)
@@ -24,16 +25,15 @@ public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPa
         }).Location("Content");
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SearchFormPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SearchFormPart part, UpdatePartEditorContext context)
     {
         var model = new SearchPartViewModel();
 
-        if (await updater.TryUpdateModelAsync(model, Prefix))
-        {
-            part.Placeholder = model.Placeholder;
-            part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
-        }
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        return Edit(part);
+        part.Placeholder = model.Placeholder;
+        part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
+
+        return Edit(part, context);
     }
 }

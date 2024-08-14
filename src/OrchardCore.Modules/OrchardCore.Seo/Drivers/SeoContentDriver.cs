@@ -16,7 +16,7 @@ using Shortcodes;
 
 namespace OrchardCore.Seo.Drivers
 {
-    public class SeoContentDriver : ContentDisplayDriver
+    public sealed class SeoContentDriver : ContentDisplayDriver
     {
         private readonly IContentManager _contentManager;
         private readonly IPageTitleBuilder _pageTitleBuilder;
@@ -112,7 +112,7 @@ namespace OrchardCore.Seo.Drivers
 
             foreach (var customMetaTag in aspect.CustomMetaTags)
             {
-                // Generate a new meta entry as the builder is preopulated.
+                // Generate a new meta entry as the builder is prepopulated.
                 _resourceManager.RegisterMeta(new MetaEntry(
                     _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Name, shortCodeContext)),
                     _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Property, shortCodeContext)),

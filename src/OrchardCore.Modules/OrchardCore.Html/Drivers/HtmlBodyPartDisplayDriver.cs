@@ -19,13 +19,14 @@ using Shortcodes;
 
 namespace OrchardCore.Html.Drivers
 {
-    public class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IShortcodeService _shortcodeService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
@@ -58,23 +59,22 @@ namespace OrchardCore.Html.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, UpdatePartEditorContext context)
         {
             var viewModel = new HtmlBodyPartViewModel();
 
             var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
+
+            if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
-                {
-                    var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
-                }
+                var partName = context.TypePartDefinition.DisplayName();
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
             }
 
             return Edit(model, context);

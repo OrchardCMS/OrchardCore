@@ -17,13 +17,13 @@ namespace OrchardCore.AuditTrail.Services
         Description = "Regularly purges old Audit Trail events.",
         LockTimeout = 3_000, LockExpiration = 30_000)]
 
-    public class AuditTrailBackgroundTask : IBackgroundTask
+    public sealed class AuditTrailBackgroundTask : IBackgroundTask
     {
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-            var settings = (await siteService.GetSiteSettingsAsync()).As<AuditTrailTrimmingSettings>();
+            var settings = await siteService.GetSettingsAsync<AuditTrailTrimmingSettings>();
             if (settings.Disabled)
             {
                 return;

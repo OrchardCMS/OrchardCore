@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.ViewModels;
@@ -14,11 +15,12 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Media.Settings
 {
-    public class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
+    public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MediaField>
     {
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly MediaOptions _mediaOptions;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public MediaFieldSettingsDriver(
             IContentTypeProvider contentTypeProvider,
@@ -30,7 +32,7 @@ namespace OrchardCore.Media.Settings
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MediaFieldSettingsViewModel>("MediaFieldSettings_Edit", model =>
             {
@@ -41,7 +43,7 @@ namespace OrchardCore.Media.Settings
                 model.Multiple = settings.Multiple;
                 model.AllowMediaText = settings.AllowMediaText;
                 model.AllowAnchors = settings.AllowAnchors;
-                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions?.Length == 0;
+                model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
 
                 var items = new List<MediaTypeViewModel>();
                 foreach (var extension in _mediaOptions.AllowedFileExtensions)
@@ -68,46 +70,42 @@ namespace OrchardCore.Media.Settings
                 model.MediaTypes = items
                 .OrderBy(vm => vm.ContentType)
                 .ToArray();
-
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             var model = new MediaFieldSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            var settings = new MediaFieldSettings()
             {
-                var settings = new MediaFieldSettings()
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple,
+                AllowMediaText = model.AllowMediaText,
+                AllowAnchors = model.AllowAnchors,
+            };
+
+            if (!model.AllowAllDefaultMediaTypes)
+            {
+                var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
+                    .Select(x => x.Extension)
+                    .ToArray();
+
+                if (selectedExtensions.Length == 0)
                 {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple,
-                    AllowMediaText = model.AllowMediaText,
-                    AllowAnchors = model.AllowAnchors,
-                };
-
-                if (!model.AllowAllDefaultMediaTypes)
-                {
-                    var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
-                        .Select(x => x.Extension)
-                        .ToArray();
-
-                    if (selectedExtensions.Length == 0)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
-                    }
-
-                    settings.AllowedExtensions = selectedExtensions;
+                    context.Updater.ModelState.AddModelError(Prefix, string.Empty, S["Please select at least one extension."]);
                 }
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    context.Builder.WithSettings(settings);
-                }
+                settings.AllowedExtensions = selectedExtensions;
             }
 
-            return Edit(partFieldDefinition);
+            if (context.Updater.ModelState.IsValid)
+            {
+                context.Builder.WithSettings(settings);
+            }
+
+            return Edit(partFieldDefinition, context);
         }
     }
 }

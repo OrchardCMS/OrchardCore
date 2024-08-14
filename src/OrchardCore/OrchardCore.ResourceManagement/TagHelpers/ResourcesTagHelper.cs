@@ -1,81 +1,45 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-    public enum ResourceType
-    {
-        Meta,
-        HeadLink,
-        Stylesheet,
-        HeadScript,
-        FootScript,
-        Header,
-        Footer
-    }
-
     [HtmlTargetElement("resources", Attributes = nameof(Type))]
     public class ResourcesTagHelper : TagHelper
     {
-        public ResourceType Type { get; set; }
-
         private readonly IResourceManager _resourceManager;
         private readonly ILogger _logger;
+        private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
 
         public ResourcesTagHelper(
             IResourceManager resourceManager,
-            ILogger<ResourcesTagHelper> logger)
+            ILogger<ResourcesTagHelper> logger,
+            IEnumerable<IResourcesTagHelperProcessor> processors)
         {
             _resourceManager = resourceManager;
             _logger = logger;
+            _processors = processors;
         }
 
-        public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
+        public ResourceTagType Type { get; set; }
+
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             try
             {
-                using var sw = new ZStringWriter();
+                await using var writer = new ZStringWriter();
 
-                switch (Type)
+                var processorContext = new ResourcesTagHelperProcessorContext(Type, writer);
+
+                foreach (var processor in _processors)
                 {
-                    case ResourceType.Meta:
-                        _resourceManager.RenderMeta(sw);
-                        break;
-
-                    case ResourceType.HeadLink:
-                        _resourceManager.RenderHeadLink(sw);
-                        break;
-
-                    case ResourceType.Stylesheet:
-                        _resourceManager.RenderStylesheet(sw);
-                        break;
-
-                    case ResourceType.HeadScript:
-                        _resourceManager.RenderHeadScript(sw);
-                        break;
-
-                    case ResourceType.FootScript:
-                        _resourceManager.RenderFootScript(sw);
-                        break;
-
-                    case ResourceType.Header:
-                        _resourceManager.RenderMeta(sw);
-                        _resourceManager.RenderHeadLink(sw);
-                        _resourceManager.RenderStylesheet(sw);
-                        _resourceManager.RenderHeadScript(sw);
-                        break;
-
-                    case ResourceType.Footer:
-                        _resourceManager.RenderFootScript(sw);
-                        break;
-
-                    default:
-                        break;
+                    await processor.ProcessAsync(processorContext);
                 }
 
-                output.Content.AppendHtml(sw.ToString());
+                output.Content.AppendHtml(writer.ToString());
             }
             catch (Exception ex)
             {

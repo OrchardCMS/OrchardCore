@@ -6,7 +6,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation
 {
-    public class AuditTrailAdminMenu : INavigationProvider
+    public sealed class AuditTrailAdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -14,7 +14,7 @@ namespace OrchardCore.AuditTrail.Navigation
             { "correlationId", string.Empty },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
         {

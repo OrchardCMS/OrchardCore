@@ -44,7 +44,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         private readonly IClock _clock;
         private readonly BlobContainerClient _blobContainer;
         private readonly IContentTypeProvider _contentTypeProvider;
-        private readonly string _basePrefix = null;
+        private readonly string _basePrefix;
 
         public BlobFileStore(BlobStorageOptions options, IClock clock, IContentTypeProvider contentTypeProvider)
         {

@@ -26,6 +26,7 @@ public static class QueryOrchardRazorHelperExtensions
         }
 
         var result = await queryManager.ExecuteQueryAsync(query, parameters);
+
         return result.Items;
     }
 
@@ -41,6 +42,7 @@ public static class QueryOrchardRazorHelperExtensions
         }
 
         var result = await queryManager.ExecuteQueryAsync(query, parameters);
+
         return result;
     }
 }

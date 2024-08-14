@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
-    public class AuditTrailTrimmingSettingsDisplayDriver : SectionDisplayDriver<ISite, AuditTrailTrimmingSettings>
+    public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<AuditTrailTrimmingSettings>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -21,7 +21,10 @@ namespace OrchardCore.AuditTrail.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => AuditTrailSettingsGroup.Id;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailTrimmingSettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
@@ -34,10 +37,11 @@ namespace OrchardCore.AuditTrail.Drivers
                 model.RetentionDays = section.RetentionDays;
                 model.LastRunUtc = section.LastRunUtc;
                 model.Disabled = section.Disabled;
-            }).Location("Content:10#Trimming;0").OnGroup(AuditTrailSettingsGroup.Id);
+            }).Location("Content:10#Trimming;0")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailTrimmingSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
@@ -45,15 +49,12 @@ namespace OrchardCore.AuditTrail.Drivers
                 return null;
             }
 
-            if (context.GroupId == AuditTrailSettingsGroup.Id)
-            {
-                var model = new AuditTrailTrimmingSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-                section.RetentionDays = model.RetentionDays;
-                section.Disabled = model.Disabled;
-            }
+            var model = new AuditTrailTrimmingSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            section.RetentionDays = model.RetentionDays;
+            section.Disabled = model.Disabled;
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

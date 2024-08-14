@@ -2,17 +2,17 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Widgets.Models;
 
 namespace OrchardCore.Widgets.Settings
 {
-    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
+    public sealed class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
     {
         private static readonly char[] _separator = [',', ' '];
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
             {
@@ -27,12 +27,11 @@ namespace OrchardCore.Widgets.Settings
         {
             var model = new WidgetsListPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones))
-            {
-                context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries) });
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries) });
+
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

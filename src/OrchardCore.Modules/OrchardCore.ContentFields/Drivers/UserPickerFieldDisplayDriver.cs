@@ -18,10 +18,11 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
+    public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
         private readonly ISession _session;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public UserPickerFieldDisplayDriver(
             ISession session,
@@ -72,30 +73,28 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UserPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(UserPickerField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditUserPickerFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds);
+            field.UserIds = viewModel.UserIds == null
+                ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
+
+            if (settings.Required && field.UserIds.Length == 0)
             {
-                field.UserIds = viewModel.UserIds == null
-                    ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-                var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
-
-                if (settings.Required && field.UserIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
-
-                if (!settings.Multiple && field.UserIds.Length > 1)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
-                }
-
-                var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
-                field.SetUserNames(users.Select(t => t.UserName).ToArray());
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
+
+            if (!settings.Multiple && field.UserIds.Length > 1)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+            }
+
+            var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+            field.SetUserNames(users.Select(t => t.UserName).ToArray());
 
             return Edit(field, context);
         }

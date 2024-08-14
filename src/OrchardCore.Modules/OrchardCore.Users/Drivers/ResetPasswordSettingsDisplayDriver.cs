@@ -1,20 +1,18 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    [Feature("OrchardCore.Users.ResetPassword")]
-    public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
+    public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<ResetPasswordSettings>
     {
         public const string GroupId = "userResetPassword";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -26,7 +24,10 @@ namespace OrchardCore.Users.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ResetPasswordSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ResetPasswordSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -39,10 +40,11 @@ namespace OrchardCore.Users.Drivers
             {
                 model.AllowResetPassword = settings.AllowResetPassword;
                 model.UseSiteTheme = settings.UseSiteTheme;
-            }).Location("Content:5").OnGroup(GroupId);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ResetPasswordSettings settings, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -51,12 +53,9 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

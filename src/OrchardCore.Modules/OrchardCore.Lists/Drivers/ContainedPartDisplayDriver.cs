@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
@@ -13,7 +13,7 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Drivers
 {
-    public class ContainedPartDisplayDriver : ContentDisplayDriver
+    public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
     {
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -30,7 +30,7 @@ namespace OrchardCore.Lists.Drivers
             _containerService = containerService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentItem model, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
         {
             // This method can get called when a new content item is created, at that point
             // the query string contains a ListPart.ContainerId value, or when an
@@ -44,10 +44,9 @@ namespace OrchardCore.Lists.Drivers
             }
 
             var viewModel = new EditContainedPartViewModel();
+            await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container.
                 // Render the container id as part of the form. The content type, and the enable ordering setting.
@@ -71,15 +70,14 @@ namespace OrchardCore.Lists.Drivers
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
         {
             var viewModel = new EditContainedPartViewModel();
+            await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 await model.AlterAsync<ContainedPart>(async part =>
                 {
@@ -94,7 +92,7 @@ namespace OrchardCore.Lists.Drivers
                 });
             }
 
-            return await EditAsync(model, updater);
+            return await EditAsync(model, context);
         }
 
         private async Task<IDisplayResult> BuildViewModelAsync(string containerId, string containerContentType, string contentType, bool enableOrdering = false)

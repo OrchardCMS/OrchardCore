@@ -35,11 +35,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithField("displayText");
                 });
 
-            var nodes = result["data"]["recentBlogPosts"];
+            var jsonArray = result["data"]?["recentBlogPosts"]?.AsArray();
 
-            Assert.Equal(2, nodes.AsArray().Count);
-            Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
-            Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
+            Assert.NotNull(jsonArray);
+            Assert.Equal(2, jsonArray.Count);
+
+            // The RecentBlogPosts query sorts the content items by CreatedUtc. If the
+            // test is executing too fast, both blog entries may have the same CreatedUtc
+            // value and ordering becomes random. Because of this, we do not assert the order
+            // of the result.
+            var displayTexts = jsonArray.Select(node => node["displayText"]?.ToString());
+
+            Assert.Contains("Some sorta blogpost in a Query!", displayTexts);
+            Assert.Contains("Man must explore, and this is exploration at its greatest", displayTexts);
         }
     }
 }

@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.RazorPages
 {
-    public class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
+    public sealed class ModularPageRazorPagesOptionsSetup : IConfigureOptions<RazorPagesOptions>
     {
         private readonly IApplicationContext _applicationContext;
         private readonly ShellSettings _shellSettings;

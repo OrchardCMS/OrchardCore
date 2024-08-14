@@ -15,10 +15,11 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
+    public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
@@ -35,8 +36,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
+            }).Location("Detail", "Content")
             .Location("Summary", "Content");
         }
 
@@ -62,28 +62,27 @@ namespace OrchardCore.Taxonomies.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, UpdateFieldEditorContext context)
         {
             var model = new EditTaxonomyFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+
+            field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+            field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+
+            if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
             {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                field.TermContentItemIds = [model.UniqueValue];
+            }
 
-                field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
-
-                if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
-                {
-                    field.TermContentItemIds = [model.UniqueValue];
-                }
-
-                if (settings.Required && field.TermContentItemIds.Length == 0)
-                {
-                    updater.ModelState.AddModelError(
-                        nameof(EditTaxonomyFieldViewModel.TermEntries),
-                        S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+            if (settings.Required && field.TermContentItemIds.Length == 0)
+            {
+                context.Updater.ModelState.AddModelError(
+                    nameof(EditTaxonomyFieldViewModel.TermEntries),
+                    S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

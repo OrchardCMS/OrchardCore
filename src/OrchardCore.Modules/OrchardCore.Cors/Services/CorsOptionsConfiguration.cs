@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Cors.Services
 {
-    public class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
+    public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
     {
         private readonly CorsService _corsService;
         private readonly ILogger _logger;
@@ -68,6 +68,11 @@ namespace OrchardCore.Cors.Services
                     else
                     {
                         configurePolicy.DisallowCredentials();
+                    }
+
+                    if (corsPolicy.ExposedHeaders?.Length > 0)
+                    {
+                        configurePolicy.WithExposedHeaders(corsPolicy.ExposedHeaders);
                     }
                 });
 

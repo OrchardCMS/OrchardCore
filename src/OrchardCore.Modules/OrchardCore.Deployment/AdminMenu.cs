@@ -4,9 +4,9 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Deployment
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -25,17 +25,17 @@ namespace OrchardCore.Deployment
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                         .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
                             .Action("Index", "DeploymentPlan", "OrchardCore.Deployment")
-                            .Permission(Permissions.Export)
+                            .Permission(CommonPermissions.Export)
                             .LocalNav()
                         )
                         .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
                             .Action("Index", "Import", "OrchardCore.Deployment")
-                            .Permission(Permissions.Import)
+                            .Permission(CommonPermissions.Import)
                             .LocalNav()
                         )
                         .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
                             .Action("Json", "Import", "OrchardCore.Deployment")
-                            .Permission(Permissions.Import)
+                            .Permission(CommonPermissions.Import)
                             .LocalNav()
                         )
                     )

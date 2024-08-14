@@ -13,9 +13,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
+    public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {
@@ -56,18 +56,17 @@ namespace OrchardCore.ContentFields.Fields
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditMultiTextFieldViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                field.Values = viewModel.Values;
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-                var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                if (settings.Required && viewModel.Values.Length == 0)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+            field.Values = viewModel.Values;
+
+            var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+            if (settings.Required && viewModel.Values.Length == 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

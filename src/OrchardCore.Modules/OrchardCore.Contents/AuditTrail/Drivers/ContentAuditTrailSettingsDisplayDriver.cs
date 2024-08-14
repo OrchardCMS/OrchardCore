@@ -12,18 +12,23 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers
 {
-    public class ContentAuditTrailSettingsDisplayDriver : SectionDisplayDriver<ISite, ContentAuditTrailSettings>
+    public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentAuditTrailSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
+        public ContentAuditTrailSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => AuditTrailSettingsGroup.Id;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ContentAuditTrailSettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
@@ -34,10 +39,11 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
             {
                 model.AllowedContentTypes = section.AllowedContentTypes;
-            }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+            }).Location("Content:10#Content;5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentAuditTrailSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
@@ -45,14 +51,11 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                 return null;
             }
 
-            if (context.GroupId == AuditTrailSettingsGroup.Id)
-            {
-                var model = new ContentAuditTrailSettings();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-                section.AllowedContentTypes = model.AllowedContentTypes;
-            }
+            var model = new ContentAuditTrailSettings();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            section.AllowedContentTypes = model.AllowedContentTypes;
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

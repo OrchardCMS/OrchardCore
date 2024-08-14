@@ -9,33 +9,30 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
 
-        protected readonly IStringLocalizer S;
+        private readonly IShellReleaseManager _shellReleaseManager;
 
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        internal readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
+            IShellReleaseManager shellReleaseManager,
             IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            _shellReleaseManager = shellReleaseManager;
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site, BuildEditorContext context)
         {
             if (!IsGeneralGroup(context))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
@@ -49,7 +46,7 @@ namespace OrchardCore.Settings.Drivers
                     .OnGroup(GroupId)
             );
 
-            return Task.FromResult<IDisplayResult>(result);
+            return result;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -61,28 +58,27 @@ namespace OrchardCore.Settings.Drivers
 
             var model = new SiteSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            site.SiteName = model.SiteName;
+            site.PageTitleFormat = model.PageTitleFormat;
+            site.BaseUrl = model.BaseUrl;
+            site.TimeZoneId = model.TimeZone;
+            site.PageSize = model.PageSize.Value;
+            site.UseCdn = model.UseCdn;
+            site.CdnBaseUrl = model.CdnBaseUrl;
+            site.ResourceDebugMode = model.ResourceDebugMode;
+            site.AppendVersion = model.AppendVersion;
+            site.CacheMode = model.CacheMode;
+
+            if (model.PageSize.Value < 1)
             {
-                site.SiteName = model.SiteName;
-                site.PageTitleFormat = model.PageTitleFormat;
-                site.BaseUrl = model.BaseUrl;
-                site.TimeZoneId = model.TimeZone;
-                site.PageSize = model.PageSize.Value;
-                site.UseCdn = model.UseCdn;
-                site.CdnBaseUrl = model.CdnBaseUrl;
-                site.ResourceDebugMode = model.ResourceDebugMode;
-                site.AppendVersion = model.AppendVersion;
-                site.CacheMode = model.CacheMode;
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
+            }
 
-                if (model.PageSize.Value < 1)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
-                }
-
-                if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
-                }
+            if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
             }
 
             if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
@@ -90,10 +86,7 @@ namespace OrchardCore.Settings.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
             }
 
-            if (context.Updater.ModelState.IsValid)
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            _shellReleaseManager.RequestRelease();
 
             return await EditAsync(site, context);
         }

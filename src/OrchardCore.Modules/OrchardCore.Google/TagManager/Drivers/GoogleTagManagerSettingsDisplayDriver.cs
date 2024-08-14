@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.TagManager.Drivers
 {
-    public class GoogleTagManagerSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleTagManagerSettings>
+    public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<GoogleTagManagerSettings>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -23,7 +23,10 @@ namespace OrchardCore.Google.TagManager.Drivers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GoogleConstants.Features.GoogleTagManager;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, GoogleTagManagerSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
@@ -34,29 +37,27 @@ namespace OrchardCore.Google.TagManager.Drivers
             return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
             {
                 model.ContainerID = settings.ContainerID;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleTagManager);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleTagManagerSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == GoogleConstants.Features.GoogleTagManager)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
-                {
-                    return null;
-                }
-
-                var model = new GoogleTagManagerSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    settings.ContainerID = model.ContainerID;
-                }
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new GoogleTagManagerSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                settings.ContainerID = model.ContainerID;
+            }
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

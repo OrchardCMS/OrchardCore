@@ -11,7 +11,7 @@ namespace OrchardCore.Twitter.Recipes
     /// <summary>
     /// This recipe step sets Microsoft Account settings.
     /// </summary>
-    public class TwitterSettingsStep : IRecipeStepHandler
+    public sealed class TwitterSettingsStep : IRecipeStepHandler
     {
         private readonly ITwitterSettingsService _twitterService;
 
@@ -39,7 +39,7 @@ namespace OrchardCore.Twitter.Recipes
         }
     }
 
-    public class TwitterSettingsStepModel
+    public sealed class TwitterSettingsStepModel
     {
         public string ConsumerKey { get; set; }
         public string ConsumerSecret { get; set; }

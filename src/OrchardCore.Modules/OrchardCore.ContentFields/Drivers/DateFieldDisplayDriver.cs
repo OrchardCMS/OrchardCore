@@ -12,9 +12,9 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField>
+    public sealed class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public DateFieldDisplayDriver(IStringLocalizer<DateFieldDisplayDriver> localizer)
         {
@@ -44,15 +44,14 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(DateField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(DateField field, UpdateFieldEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Value))
+            await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+            var settings = context.PartFieldDefinition.GetSettings<DateFieldSettings>();
+
+            if (settings.Required && field.Value == null)
             {
-                var settings = context.PartFieldDefinition.GetSettings<DateFieldSettings>();
-                if (settings.Required && field.Value == null)
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                }
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

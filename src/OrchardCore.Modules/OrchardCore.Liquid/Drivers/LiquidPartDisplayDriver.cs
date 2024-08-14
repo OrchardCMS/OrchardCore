@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
@@ -9,20 +9,23 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Liquid.Drivers
 {
-    public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
+    public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
     {
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        protected readonly IStringLocalizer S;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-        public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public LiquidPartDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
+            IStringLocalizer<LiquidPartDisplayDriver> localizer)
         {
-            _liquidTemplatemanager = liquidTemplatemanager;
+            _liquidTemplateManager = liquidTemplateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Display(LiquidPart liquidPart)
+        public override Task<IDisplayResult> DisplayAsync(LiquidPart liquidPart, BuildPartDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
                     .Location("Detail", "Content"),
                 Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
@@ -30,28 +33,27 @@ namespace OrchardCore.Liquid.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LiquidPart liquidPart)
+        public override IDisplayResult Edit(LiquidPart liquidPart, BuildPartEditorContext context)
         {
             return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, UpdatePartEditorContext context)
         {
             var viewModel = new LiquidPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Liquid = viewModel.Liquid;
             }
 
-            return Edit(model);
+            return Edit(model, context);
         }
 
         private static void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)

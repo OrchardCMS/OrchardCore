@@ -12,13 +12,17 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Drivers;
 
-public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSettings>
+public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
+
+    protected override string SettingsGroupId
+        => SeoConstants.RobotsSettingsGroupId;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -35,7 +39,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
         H = htmlLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(RobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, RobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -57,10 +61,10 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             model.DisallowAdmin = settings.DisallowAdmin;
             model.AdditionalRules = settings.AdditionalRules;
         }).Location("Content:5")
-        .OnGroup(SeoConstants.RobotsSettingsGroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, RobotsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -72,6 +76,6 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
 
         await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

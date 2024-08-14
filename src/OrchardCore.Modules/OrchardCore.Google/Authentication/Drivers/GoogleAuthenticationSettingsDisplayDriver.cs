@@ -14,32 +14,32 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Drivers
 {
-    public class GoogleAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAuthenticationSettings>
+    public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GoogleAuthenticationSettings>
     {
+        private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GoogleAuthenticationSettingsDisplayDriver(
+            IShellReleaseManager shellReleaseManager,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
             ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
         {
+            _shellReleaseManager = shellReleaseManager;
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GoogleConstants.Features.GoogleAuthentication;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
@@ -73,34 +73,35 @@ namespace OrchardCore.Google.Authentication.Drivers
                     model.CallbackPath = settings.CallbackPath.Value;
                 }
                 model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
-                {
-                    return null;
-                }
-
-                var model = new GoogleAuthenticationSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-
-                    settings.ClientID = model.ClientID;
-                    settings.ClientSecret = protector.Protect(model.ClientSecret);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                return null;
             }
-            return await EditAsync(settings, context);
+
+            var model = new GoogleAuthenticationSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.ClientID = model.ClientID;
+            settings.CallbackPath = model.CallbackPath;
+            settings.SaveTokens = model.SaveTokens;
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
+
+                settings.ClientSecret = protector.Protect(model.ClientSecret);
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

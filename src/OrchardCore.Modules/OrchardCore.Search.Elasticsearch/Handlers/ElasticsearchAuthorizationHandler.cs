@@ -62,8 +62,7 @@ public class ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider)
         }
 
         _siteService ??= _serviceProvider.GetRequiredService<ISiteService>();
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-        return siteSettings.As<ElasticSettings>().SearchIndex;
+        return (await _siteService.GetSettingsAsync<ElasticSettings>()).SearchIndex;
     }
 }

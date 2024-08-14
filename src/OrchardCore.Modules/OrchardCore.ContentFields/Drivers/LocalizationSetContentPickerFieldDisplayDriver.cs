@@ -17,11 +17,12 @@ using OrchardCore.Mvc.ModelBinding;
 namespace OrchardCore.ContentFields.Drivers
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
-    public class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
+    public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -76,11 +77,11 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LocalizationSetContentPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LocalizationSetContentPickerField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditLocalizationSetContentPickerFieldViewModel();
 
-            var modelUpdated = await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.LocalizationSets);
+            var modelUpdated = await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.LocalizationSets);
 
             if (!modelUpdated)
             {
@@ -94,12 +95,12 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (settings.Required && field.LocalizationSets.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.LocalizationSets.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

@@ -5,11 +5,12 @@ using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers
 {
-    public class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class GraphQLContentTypePartSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly GraphQLContentOptions _contentOptions;
 
@@ -18,18 +19,24 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
             _contentOptions = optionsAccessor.Value;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             if (contentTypePartDefinition.ContentTypeDefinition.Name == contentTypePartDefinition.PartDefinition.Name)
             {
                 return null;
             }
 
-            return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
+            return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", async model =>
             {
                 model.Definition = contentTypePartDefinition;
                 model.Options = _contentOptions;
                 model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
+
+                if (!context.Updater.ModelState.IsValid)
+                {
+                    await context.Updater.TryUpdateModelAsync(model, Prefix,
+                        m => m.Settings);
+                }
             }).Location("Content");
         }
 
@@ -42,11 +49,11 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
 
             var model = new GraphQLContentTypePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Settings);
 
             context.Builder.WithSettings(model.Settings);
 
-            return Edit(contentTypePartDefinition);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

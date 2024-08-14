@@ -1,25 +1,27 @@
+using System;
 using System.Threading.Tasks;
+using Acornima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
-        public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
+        public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> stringLocalizer)
         {
-            S = localizer;
+            S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
             {
@@ -27,8 +29,7 @@ namespace OrchardCore.Html.Settings
 
                 model.Options = settings.Options;
                 model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -36,23 +37,37 @@ namespace OrchardCore.Html.Settings
             if (contentTypePartDefinition.Editor() == "Trumbowyg")
             {
                 var model = new TrumbowygSettingsViewModel();
-                var settings = new HtmlBodyPartTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!model.Options.IsJson())
+                try
                 {
-                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
-                }
-                else
-                {
-                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-                    settings.Options = model.Options;
+                    var options = model.Options.Trim();
+
+                    if (!options.StartsWith('{') || !options.EndsWith('}'))
+                    {
+                        throw new Exception();
+                    }
+
+                    var parser = new Parser();
+
+                    var optionsScript = parser.ParseScript("var config = " + options);
+
+                    var settings = new HtmlBodyPartTrumbowygEditorSettings
+                    {
+                        InsertMediaWithUrl = model.InsertMediaWithUrl,
+                        Options = options
+                    };
+
                     context.Builder.WithSettings(settings);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

@@ -1,13 +1,15 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ExportContentToDeploymentTargetContentDriver : ContentDisplayDriver
+    public sealed class ExportContentToDeploymentTargetContentDriver : ContentDisplayDriver
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
@@ -20,17 +22,17 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             _siteService = siteService;
         }
 
-        public override IDisplayResult Display(ContentItem model)
+        public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
                     .Location("SummaryAdmin", "ActionsMenu:30")
                     .RenderWhen(async () =>
                     {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
-                            var siteSettings = await _siteService.GetSiteSettingsAsync();
-                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+
                             if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                             {
                                 return true;
@@ -45,8 +47,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                     {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
-                            var siteSettings = await _siteService.GetSiteSettingsAsync();
-                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+
                             if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                             {
                                 return true;

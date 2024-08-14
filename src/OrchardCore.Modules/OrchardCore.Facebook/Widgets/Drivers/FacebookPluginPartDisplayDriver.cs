@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
@@ -13,11 +13,12 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Drivers
 {
-    public class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
+    public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<FacebookPluginPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -29,7 +30,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             S = localizer;
         }
 
-        public override IDisplayResult Display(FacebookPluginPart part)
+        public override IDisplayResult Display(FacebookPluginPart part, BuildPartDisplayContext context)
         {
             return Combine(
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part))
@@ -50,7 +51,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             model.ContentItem = part.ContentItem;
         }
 
-        public override IDisplayResult Edit(FacebookPluginPart part)
+        public override IDisplayResult Edit(FacebookPluginPart part, BuildPartEditorContext context)
         {
             return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", async model =>
             {
@@ -69,23 +70,22 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, UpdatePartEditorContext context)
         {
             var viewModel = new FacebookPluginPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
+
+            if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
-                {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-                }
-                else
-                {
-                    model.Liquid = viewModel.Liquid;
-                }
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+            }
+            else
+            {
+                model.Liquid = viewModel.Liquid;
             }
 
-            return Edit(model);
+            return Edit(model, context);
         }
     }
 }

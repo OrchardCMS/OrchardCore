@@ -50,6 +50,8 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 3. Navigate to the Orchard Core solution folder where the file `gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
 
+Note: If Gulp fails on your system, try downgrading to an older Node.js version. If you are using [Node Version Manager](https://github.com/nvm-sh/nvm) ([for Windows](https://github.com/coreybutler/nvm-windows)) you can type `nvm install 18` or `nvm use 18` to switch to the latest version of Node.js 18.
+
 ### Using Visual Studio
 
 Visual Studio 2022 and later comes with a built-in tool window named **Task Runner Explorer** that can be used to execute NPM tasks as well as tasks from different task runners such as Gulp and Grunt among others.
@@ -331,7 +333,7 @@ An array of additional files to be monitored for changes. Paths are relative to 
 
 ### `generateSourceMaps`
 
-`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `true`.
+`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `false`.
 
 ### `flatten`
 

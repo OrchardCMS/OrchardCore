@@ -8,6 +8,7 @@ using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
+using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Recipes
 {
@@ -31,12 +32,17 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+                var localizerMock = new Mock<IStringLocalizer<RecipeExecutor>>();
+
+                localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
+                .Returns((string name) => new LocalizedString(name, name));
 
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
                     recipeEventHandlers,
-                    loggerMock.Object);
+                    loggerMock.Object,
+                    localizerMock.Object);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
@@ -47,6 +53,27 @@ namespace OrchardCore.Recipes
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
 
                 Assert.Equal(expected, recipeStep.SelectNode("data[0].TitlePart.Title").ToString());
+            });
+        }
+
+        [Fact]
+        public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
+        {
+            var context = new BlogContext();
+            await context.InitializeAsync();
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+                // Act
+                var executionId = Guid.NewGuid().ToString("n");
+                var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
+
+                var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>
+                {
+                    await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+                });
+
+                Assert.Contains("Unable to add content-part to the 'Message' content-type. The part name cannot be null or empty.", exception.StepResult.Errors);
             });
         }
 

@@ -61,16 +61,10 @@ namespace OrchardCore.Benchmark
 
         [Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
-        public void EvaluateIsHomepageWithJavascript()
-        {
-            Convert.ToBoolean(_engine.Evaluate(_scope, "isHomepage()"));
-        }
+        public void EvaluateIsHomepageWithJavascript() => _engine.Evaluate(_scope, "isHomepage()");
 
         [Benchmark]
-        public async Task EvaluateIsHomepageWithRule()
-        {
-            await _ruleService.EvaluateAsync(_rule);
-        }
+        public async Task EvaluateIsHomepageWithRule() => await _ruleService.EvaluateAsync(_rule);
 #pragma warning restore CA1822 // Mark members as static
     }
 }

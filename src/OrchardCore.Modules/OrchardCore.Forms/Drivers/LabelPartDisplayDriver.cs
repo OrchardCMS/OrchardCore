@@ -8,9 +8,9 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
+    public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
     {
-        public override IDisplayResult Display(LabelPart part)
+        public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
         {
             return View("LabelPart", part).Location("Detail", "Content");
         }
@@ -23,14 +23,13 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, UpdatePartEditorContext context)
         {
             var viewModel = new LabelPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                part.For = viewModel.For?.Trim();
-            }
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+            part.For = viewModel.For?.Trim();
 
             return Edit(part, context);
         }

@@ -8,15 +8,14 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
+    public sealed class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {
@@ -63,52 +62,50 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(NumericField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(NumericField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditNumericFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value))
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
+            var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
+
+            field.Value = null;
+
+            if (string.IsNullOrWhiteSpace(viewModel.Value))
             {
-                var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
-
-                field.Value = null;
-
-                if (string.IsNullOrWhiteSpace(viewModel.Value))
+                if (settings.Required)
                 {
-                    if (settings.Required)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
-                    }
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
-                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out var value))
+            }
+            else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out var value))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+            }
+            else
+            {
+                field.Value = value;
+
+                if (settings.Minimum.HasValue && value < settings.Minimum.Value)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be greater than {0}.", settings.Minimum.Value]);
                 }
-                else
+
+                if (settings.Maximum.HasValue && value > settings.Maximum.Value)
                 {
-                    field.Value = value;
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be less than {0}.", settings.Maximum.Value]);
+                }
 
-                    if (settings.Minimum.HasValue && value < settings.Minimum.Value)
+                // Check the number of decimals.
+                if (Math.Round(value, settings.Scale) != value)
+                {
+                    if (settings.Scale == 0)
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be greater than {0}.", settings.Minimum.Value]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
                     }
-
-                    if (settings.Maximum.HasValue && value > settings.Maximum.Value)
+                    else
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be less than {0}.", settings.Maximum.Value]);
-                    }
-
-                    // Check the number of decimals.
-                    if (Math.Round(value, settings.Scale) != value)
-                    {
-                        if (settings.Scale == 0)
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
-                        }
-                        else
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
-                        }
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
                     }
                 }
             }

@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Name = "ContentItem";
 
             Field(ci => ci.ContentItemId);
-            Field(ci => ci.ContentItemVersionId);
+            Field(ci => ci.ContentItemVersionId, nullable: true);
             Field(ci => ci.ContentType);
             Field(ci => ci.DisplayText, nullable: true);
             Field(ci => ci.Published);

@@ -10,9 +10,9 @@ namespace OrchardCore.Environment.Extensions
         {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
-            services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
-            services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
-            services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
+            services.AddTransient<IFeaturesProvider, FeaturesProvider>();
+            services.AddTransient<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
+            services.AddTransient<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
 
             return services;
         }

@@ -147,7 +147,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem(S["All versions"], nameof(ContentsStatus.AllVersions)),
             ];
 
-            if (await IsAuthorizedAsync(Permissions.ListContent))
+            if (await IsAuthorizedAsync(CommonPermissions.ListContent))
             {
                 options.ContentStatuses.Insert(1, new SelectListItem(S["Owned by me"], nameof(ContentsStatus.Owner)));
             }
@@ -409,7 +409,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
-        public async Task<IActionResult> Edit(string contentItemId)
+        public async Task<IActionResult> Edit(string contentItemId, string returnUrl = null)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 

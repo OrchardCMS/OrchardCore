@@ -6,16 +6,16 @@ using OrchardCore.Security.Drivers;
 
 namespace OrchardCore.Security
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
             { "area", "OrchardCore.Settings" },
-            { "groupId", SecuritySettingsDisplayDriver.SettingsGroupId },
+            { "groupId", SecuritySettingsDisplayDriver.GroupId },
 
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

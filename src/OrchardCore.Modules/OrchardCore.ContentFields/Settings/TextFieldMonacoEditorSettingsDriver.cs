@@ -5,21 +5,23 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    public sealed class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TextFieldMonacoEditorSettingsDriver(IStringLocalizer<TextFieldMonacoEditorSettingsDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
             {
@@ -30,8 +32,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
 
                 model.Options = settings.Options;
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -39,22 +40,24 @@ namespace OrchardCore.ContentFields.Settings
             if (partFieldDefinition.Editor() == "Monaco")
             {
                 var model = new MonacoSettingsViewModel();
-                var settings = new TextFieldMonacoEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (!model.Options.IsJson())
                 {
-                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(MonacoSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
                 else
                 {
-                    settings.Options = model.Options;
+                    var settings = new TextFieldMonacoEditorSettings
+                    {
+                        Options = model.Options
+                    };
                     context.Builder.WithSettings(settings);
                 }
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

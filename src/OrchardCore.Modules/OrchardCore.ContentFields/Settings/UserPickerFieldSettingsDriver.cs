@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
+    public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<UserPickerField>
     {
         private readonly IRoleService _roleService;
 
@@ -18,7 +19,7 @@ namespace OrchardCore.ContentFields.Settings
             _roleService = roleService;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
             {
@@ -37,7 +38,6 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Roles = roles;
                 model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
-
             }).Location("Content");
         }
 
@@ -45,33 +45,32 @@ namespace OrchardCore.ContentFields.Settings
         {
             var model = new UserPickerFieldSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            var settings = new UserPickerFieldSettings
             {
-                var settings = new UserPickerFieldSettings
-                {
-                    Hint = model.Hint,
-                    Required = model.Required,
-                    Multiple = model.Multiple
-                };
+                Hint = model.Hint,
+                Required = model.Required,
+                Multiple = model.Multiple
+            };
 
-                var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+            var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
 
-                if (model.DisplayAllUsers || selectedRoles.Length == 0)
-                {
-                    // No selected role should have the same effect as display all users
-                    settings.DisplayedRoles = [];
-                    settings.DisplayAllUsers = true;
-                }
-                else
-                {
-                    settings.DisplayedRoles = selectedRoles;
-                    settings.DisplayAllUsers = false;
-                }
-
-                context.Builder.WithSettings(settings);
+            if (model.DisplayAllUsers || selectedRoles.Length == 0)
+            {
+                // No selected role should have the same effect as display all users
+                settings.DisplayedRoles = [];
+                settings.DisplayAllUsers = true;
+            }
+            else
+            {
+                settings.DisplayedRoles = selectedRoles;
+                settings.DisplayAllUsers = false;
             }
 
-            return Edit(partFieldDefinition, context.Updater);
+            context.Builder.WithSettings(settings);
+
+            return Edit(partFieldDefinition, context);
         }
     }
 }

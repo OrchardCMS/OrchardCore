@@ -1,15 +1,15 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 
 namespace OrchardCore.Flows.Drivers
 {
-    public class FlowMetadataDisplayDriver : ContentDisplayDriver
+    public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
     {
-        public override IDisplayResult Edit(ContentItem model, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentItem model, BuildEditorContext context)
         {
             var flowMetadata = model.As<FlowMetadata>();
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Flows.Drivers
             }).Location("Footer");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
         {
             var flowMetadata = contentItem.As<FlowMetadata>();
 
@@ -34,9 +34,9 @@ namespace OrchardCore.Flows.Drivers
                 return null;
             }
 
-            await contentItem.AlterAsync<FlowMetadata>(model => updater.TryUpdateModelAsync(model, Prefix));
+            await contentItem.AlterAsync<FlowMetadata>(model => context.Updater.TryUpdateModelAsync(model, Prefix));
 
-            return Edit(contentItem, updater);
+            return Edit(contentItem, context);
         }
     }
 }

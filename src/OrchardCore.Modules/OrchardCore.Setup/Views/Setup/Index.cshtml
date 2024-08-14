@@ -223,7 +223,7 @@
             <div class="mb-3 col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password" class="form-label">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
@@ -233,7 +233,7 @@
             <div class="mb-3 col-md-6" asp-validation-class-for="PasswordConfirmation">
                 <label asp-for="PasswordConfirmation" class="form-label">@T["Password Confirmation"]</label>
                 <div class="input-group">
-                    <input asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="PasswordConfirmation" class="form-control" autocomplete="new-password" title="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>

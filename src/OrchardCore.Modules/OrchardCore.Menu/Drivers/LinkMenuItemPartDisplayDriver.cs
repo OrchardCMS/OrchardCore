@@ -14,26 +14,27 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers
 {
-    public class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
+    public sealed class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly HtmlEncoder _htmlencoder;
-        protected readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
+
+        internal readonly IStringLocalizer S;
 
         public LinkMenuItemPartDisplayDriver(
             IUrlHelperFactory urlHelperFactory,
             IActionContextAccessor actionContextAccessor,
             IStringLocalizer<LinkMenuItemPartDisplayDriver> localizer,
             IHtmlSanitizerService htmlSanitizerService,
-            HtmlEncoder htmlencoder
+            HtmlEncoder htmlEncoder
             )
         {
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccessor = actionContextAccessor;
             _htmlSanitizerService = htmlSanitizerService;
-            _htmlencoder = htmlencoder;
+            _htmlEncoder = htmlEncoder;
             S = localizer;
         }
 
@@ -53,61 +54,57 @@ namespace OrchardCore.Menu.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LinkMenuItemPart part)
+        public override IDisplayResult Edit(LinkMenuItemPart part, BuildPartEditorContext context)
         {
             return Initialize<LinkMenuItemPartEditViewModel>("LinkMenuItemPart_Edit", model =>
             {
                 model.Name = part.ContentItem.DisplayText;
                 model.Url = part.Url;
+                model.Target = part.Target;
                 model.MenuItemPart = part;
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LinkMenuItemPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LinkMenuItemPart part, UpdatePartEditorContext context)
         {
             var model = new LinkMenuItemPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            part.Url = model.Url;
+            part.Target = model.Target;
+            part.ContentItem.DisplayText = model.Name;
+
+            var urlToValidate = part.Url;
+
+            if (!string.IsNullOrEmpty(urlToValidate))
             {
-                part.Url = model.Url;
-                part.ContentItem.DisplayText = model.Name;
+                urlToValidate = urlToValidate.Split('#', 2)[0];
 
-                // This code can be removed in a later release.
-#pragma warning disable 0618
-                part.Name = model.Name;
-#pragma warning restore 0618
-
-                var urlToValidate = part.Url;
-
-                if (!string.IsNullOrEmpty(urlToValidate))
+                if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    urlToValidate = urlToValidate.Split('#', 2)[0];
+                    var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
+                    urlToValidate = urlHelper.Content(urlToValidate);
+                }
 
-                    if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))
+                urlToValidate = urlToValidate.ToUriComponents();
+
+                if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+                {
+                    context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
+                }
+                else
+                {
+                    var link = $"<a href=\"{_htmlEncoder.Encode(urlToValidate)}\"></a>";
+
+                    if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                     {
-                        var urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-                        urlToValidate = urlHelper.Content(urlToValidate);
-                    }
-
-                    urlToValidate = urlToValidate.ToUriComponents();
-
-                    if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
-                    {
-                        updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                    }
-                    else
-                    {
-                        var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                        if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
-                        {
-                            updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                        }
+                        context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
                     }
                 }
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }
