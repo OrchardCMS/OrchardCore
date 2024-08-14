@@ -4,16 +4,15 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.GraphQL
+namespace OrchardCore.Media.GraphQL;
+
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<ISchemaBuilder, MediaAssetQuery>();
-            services.AddObjectGraphType<MediaField, MediaFieldQueryObjectType>();
-            services.AddTransient<MediaAssetObjectType>();
-        }
+        services.AddSingleton<ISchemaBuilder, MediaAssetQuery>();
+        services.AddObjectGraphType<MediaField, MediaFieldQueryObjectType>();
+        services.AddTransient<MediaAssetObjectType>();
     }
 }

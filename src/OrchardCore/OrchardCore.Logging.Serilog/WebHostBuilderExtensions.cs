@@ -1,17 +1,16 @@
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace OrchardCore.Logging
+namespace OrchardCore.Logging;
+
+public static class WebHostBuilderExtensions
 {
-    public static class WebHostBuilderExtensions
+    public static IHostBuilder UseSerilogWeb(this IHostBuilder builder)
     {
-        public static IHostBuilder UseSerilogWeb(this IHostBuilder builder)
+        return builder.UseSerilog((hostingContext, configBuilder) =>
         {
-            return builder.UseSerilog((hostingContext, configBuilder) =>
-            {
-                configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                .Enrich.FromLogContext();
-            });
-        }
+            configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+            .Enrich.FromLogContext();
+        });
     }
 }

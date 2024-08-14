@@ -1,7 +1,6 @@
-namespace OrchardCore.Sitemaps.Models
+namespace OrchardCore.Sitemaps.Models;
+
+public abstract class SitemapSource
 {
-    public abstract class SitemapSource
-    {
-        public string Id { get; set; }
-    }
+    public string Id { get; set; }
 }

@@ -2,10 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public interface IBackgroundTask
 {
-    public interface IBackgroundTask
-    {
-        Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken);
-    }
+    Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken);
 }

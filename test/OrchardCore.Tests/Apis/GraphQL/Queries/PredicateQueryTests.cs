@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using YesSql.Indexes;
 

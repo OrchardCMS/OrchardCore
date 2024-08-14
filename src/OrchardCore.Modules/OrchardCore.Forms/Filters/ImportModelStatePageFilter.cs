@@ -2,39 +2,38 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Forms.Helpers;
 
-namespace OrchardCore.Forms.Filters
+namespace OrchardCore.Forms.Filters;
+
+// For Razor Pages IActionFilter\ActionFilterAttribute don't apply, IPageFilter have to be used instead.
+public sealed class ImportModelStatePageFilter : IPageFilter
 {
-    // For Razor Pages IActionFilter\ActionFilterAttribute don't apply, IPageFilter have to be used instead.
-    public sealed class ImportModelStatePageFilter : IPageFilter
+    public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
     {
-        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
+        var pageModel = context.HandlerInstance as PageModel;
+
+        var serializedModelState = pageModel?.TempData[ModelStateTransferAttribute.Key] as string;
+
+        if (serializedModelState != null)
         {
-            var pageModel = context.HandlerInstance as PageModel;
-
-            var serializedModelState = pageModel?.TempData[ModelStateTransferAttribute.Key] as string;
-
-            if (serializedModelState != null)
+            // Only Import if we are viewing.
+            if (context.Result is PageResult)
             {
-                // Only Import if we are viewing.
-                if (context.Result is PageResult)
-                {
-                    var modelState = ModelStateHelpers.DeserializeModelState(serializedModelState);
-                    context.ModelState.Merge(modelState);
-                }
-                else
-                {
-                    // Otherwise remove it.
-                    pageModel.TempData.Remove(ModelStateTransferAttribute.Key);
-                }
+                var modelState = ModelStateHelpers.DeserializeModelState(serializedModelState);
+                context.ModelState.Merge(modelState);
+            }
+            else
+            {
+                // Otherwise remove it.
+                pageModel.TempData.Remove(ModelStateTransferAttribute.Key);
             }
         }
+    }
 
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
-        }
+    public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+    {
+    }
 
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
-        {
-        }
+    public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+    {
     }
 }
