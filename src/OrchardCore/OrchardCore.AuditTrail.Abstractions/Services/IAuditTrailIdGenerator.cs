@@ -1,7 +1,6 @@
-namespace OrchardCore.AuditTrail.Services
+namespace OrchardCore.AuditTrail.Services;
+
+public interface IAuditTrailIdGenerator
 {
-    public interface IAuditTrailIdGenerator
-    {
-        string GenerateUniqueId();
-    }
+    string GenerateUniqueId();
 }

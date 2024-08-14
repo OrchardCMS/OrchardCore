@@ -1,7 +1,6 @@
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+public class PreviewAspect
 {
-    public class PreviewAspect
-    {
-        public string PreviewUrl { get; set; }
-    }
+    public string PreviewUrl { get; set; }
 }

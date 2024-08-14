@@ -4,18 +4,17 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Flows.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Flows.GraphQL
-{
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddObjectGraphType<BagPart, BagPartQueryObjectType>();
-            services.AddObjectGraphType<FlowPart, FlowPartQueryObjectType>();
-            services.AddObjectGraphType<FlowMetadata, FlowMetadataQueryObjectType>();
+namespace OrchardCore.Flows.GraphQL;
 
-            services.AddScoped<IContentTypeBuilder, FlowMetadataContentTypeBuilder>();
-        }
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddObjectGraphType<BagPart, BagPartQueryObjectType>();
+        services.AddObjectGraphType<FlowPart, FlowPartQueryObjectType>();
+        services.AddObjectGraphType<FlowMetadata, FlowMetadataQueryObjectType>();
+
+        services.AddScoped<IContentTypeBuilder, FlowMetadataContentTypeBuilder>();
     }
 }

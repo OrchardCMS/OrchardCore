@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using OrchardCore.Google.Analytics.Settings;
 
-namespace OrchardCore.Google.Analytics.Services
+namespace OrchardCore.Google.Analytics.Services;
+
+public interface IGoogleAnalyticsService
 {
-    public interface IGoogleAnalyticsService
-    {
-        Task<GoogleAnalyticsSettings> GetSettingsAsync();
-    }
+    Task<GoogleAnalyticsSettings> GetSettingsAsync();
 }

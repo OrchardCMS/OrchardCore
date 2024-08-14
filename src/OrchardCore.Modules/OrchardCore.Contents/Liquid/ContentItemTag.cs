@@ -7,20 +7,19 @@ using Fluid.Ast;
 using Fluid.Values;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 
-namespace OrchardCore.Contents.Liquid
+namespace OrchardCore.Contents.Liquid;
+
+public class ContentItemTag
 {
-    public class ContentItemTag
+    private static readonly FilterArgument _typeArgument = new("type", new LiteralExpression(StringValue.Create("contentitem")));
+
+    public static ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        private static readonly FilterArgument _typeArgument = new("type", new LiteralExpression(StringValue.Create("contentitem")));
-
-        public static ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        var list = new List<FilterArgument>(argumentsList)
         {
-            var list = new List<FilterArgument>(argumentsList)
-            {
-                _typeArgument
-            };
+            _typeArgument
+        };
 
-            return ShapeTag.WriteToAsync(list, writer, encoder, context);
-        }
+        return ShapeTag.WriteToAsync(list, writer, encoder, context);
     }
 }
