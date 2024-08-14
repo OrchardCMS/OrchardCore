@@ -201,6 +201,7 @@ public class AccountController : AccountBaseController
             IUser user = null;
             if (ModelState.IsValid)
             {
+                user = await _userService.GetUserAsync(model.UserName);
                 if (user != null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
