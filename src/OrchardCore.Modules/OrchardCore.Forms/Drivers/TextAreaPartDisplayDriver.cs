@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -9,12 +9,12 @@ namespace OrchardCore.Forms.Drivers
 {
     public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
     {
-        public override IDisplayResult Display(TextAreaPart part)
+        public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
         {
             return View("TextAreaPart", part).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(TextAreaPart part)
+        public override IDisplayResult Edit(TextAreaPart part, BuildPartEditorContext context)
         {
             return Initialize<TextAreaPartEditViewModel>("TextAreaPart_Fields_Edit", m =>
             {
@@ -23,16 +23,16 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(TextAreaPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
         {
             var viewModel = new InputPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.Placeholder = viewModel.Placeholder?.Trim();
             part.DefaultValue = viewModel.DefaultValue?.Trim();
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

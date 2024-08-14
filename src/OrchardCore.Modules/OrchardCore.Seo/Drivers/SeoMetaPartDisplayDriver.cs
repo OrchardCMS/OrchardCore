@@ -78,10 +78,10 @@ namespace OrchardCore.Seo.Drivers
             return Combine(results);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, UpdatePartEditorContext context)
         {
             var partViewModel = new SeoMetaPartViewModel();
-            await updater.TryUpdateModelAsync(partViewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(partViewModel, Prefix);
 
             try
             {
@@ -98,17 +98,17 @@ namespace OrchardCore.Seo.Drivers
 
                 if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The canonical entry contains invalid characters."]);
+                    context.Updater.ModelState.AddModelError(Prefix, S["The canonical entry contains invalid characters."]);
                 }
             }
             catch
             {
-                updater.ModelState.AddModelError(Prefix, S["The meta entries are written in an incorrect format."]);
+                context.Updater.ModelState.AddModelError(Prefix, S["The meta entries are written in an incorrect format."]);
             }
 
             var openGraphModel = new SeoMetaPartOpenGraphViewModel();
 
-            await updater.TryUpdateModelAsync(openGraphModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(openGraphModel, Prefix);
 
             part.OpenGraphType = openGraphModel.OpenGraphType;
             part.OpenGraphTitle = openGraphModel.OpenGraphTitle;
@@ -116,7 +116,7 @@ namespace OrchardCore.Seo.Drivers
 
             var twitterModel = new SeoMetaPartTwitterViewModel();
 
-            await updater.TryUpdateModelAsync(twitterModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(twitterModel, Prefix);
 
             part.TwitterTitle = twitterModel.TwitterTitle;
             part.TwitterDescription = twitterModel.TwitterDescription;
@@ -126,12 +126,12 @@ namespace OrchardCore.Seo.Drivers
 
             var googleSchemaModel = new SeoMetaPartGoogleSchemaViewModel();
 
-            await updater.TryUpdateModelAsync(googleSchemaModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(googleSchemaModel, Prefix);
 
             part.GoogleSchema = googleSchemaModel.GoogleSchema;
             if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
             {
-                updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
+                context.Updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
             }
 
             return Edit(part, context);

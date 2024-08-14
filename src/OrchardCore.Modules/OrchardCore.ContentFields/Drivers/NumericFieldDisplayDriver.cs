@@ -8,7 +8,6 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -63,11 +62,11 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(NumericField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(NumericField field, UpdateFieldEditorContext context)
         {
             var viewModel = new EditNumericFieldViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Value);
             var settings = context.PartFieldDefinition.GetSettings<NumericFieldSettings>();
 
             field.Value = null;
@@ -76,12 +75,12 @@ namespace OrchardCore.ContentFields.Drivers
             {
                 if (settings.Required)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
             else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out var value))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
             }
             else
             {
@@ -89,12 +88,12 @@ namespace OrchardCore.ContentFields.Drivers
 
                 if (settings.Minimum.HasValue && value < settings.Minimum.Value)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be greater than {0}.", settings.Minimum.Value]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be greater than {0}.", settings.Minimum.Value]);
                 }
 
                 if (settings.Maximum.HasValue && value > settings.Maximum.Value)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be less than {0}.", settings.Maximum.Value]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The value must be less than {0}.", settings.Maximum.Value]);
                 }
 
                 // Check the number of decimals.
@@ -102,11 +101,11 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     if (settings.Scale == 0)
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The {0} field must be an integer.", context.PartFieldDefinition.DisplayName()]);
                     }
                     else
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["Invalid number of digits for {0}, max allowed: {1}.", context.PartFieldDefinition.DisplayName(), settings.Scale]);
                     }
                 }
             }
