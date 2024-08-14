@@ -7,44 +7,44 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
-using OrchardCore.Workflows.WorkflowPruning.Models;
+using OrchardCore.Workflows.Trimming.Models;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Services;
+namespace OrchardCore.Workflows.Trimming.Services;
 
 [BackgroundTask(
     Schedule = "0 0 * * *",
-    Title = "Workflow Pruning Background Task",
+    Title = "Workflow Trimming Background Task",
     Description = "Regularly prunes old workflow instances.",
     LockTimeout = 3_000,
     LockExpiration = 30_000
 )]
-public class WorkflowPruningBackgroundTask : IBackgroundTask
+public class WorkflowTrimmingBackgroundTask : IBackgroundTask
 {
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-        var workflowPruningSettings = await siteService.GetSettingsAsync<WorkflowPruningSettings>();
-        if (workflowPruningSettings.Disabled)
+        var workflowTrimmingSettings = await siteService.GetSettingsAsync<WorkflowTrimmingSettings>();
+        if (workflowTrimmingSettings.Disabled)
         {
             return;
         }
 
-        var logger = serviceProvider.GetRequiredService<ILogger<WorkflowPruningBackgroundTask>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<WorkflowTrimmingBackgroundTask>>();
 
         try
         {
             var clock = serviceProvider.GetRequiredService<IClock>();
-            var workflowCleanUpManager = serviceProvider.GetRequiredService<IWorkflowPruningManager>();
+            var workflowCleanUpManager = serviceProvider.GetRequiredService<IWorkflowTrimmingManager>();
 
-            logger.LogDebug("Starting pruning Workflow instances.");
+            logger.LogDebug("Starting trimming Workflow instances.");
             var prunedCount = await workflowCleanUpManager.PruneWorkflowInstancesAsync(
-                TimeSpan.FromDays(workflowPruningSettings.RetentionDays)
+                TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays)
             );
             logger.LogDebug("Pruned {PrunedCount} workflow instances.", prunedCount);
 
             var siteSettings = await siteService.LoadSiteSettingsAsync();
-            siteSettings.Alter<WorkflowPruningSettings>(settings =>
+            siteSettings.Alter<WorkflowTrimmingSettings>(settings =>
             {
                 settings.LastRunUtc = clock.UtcNow;
             });
@@ -53,7 +53,7 @@ public class WorkflowPruningBackgroundTask : IBackgroundTask
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
-            logger.LogError(ex, "Error while pruning workflow instances.");
+            logger.LogError(ex, "Error while trimming workflow instances.");
         }
     }
 }

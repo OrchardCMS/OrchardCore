@@ -1,9 +1,9 @@
 using System;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.WorkflowPruning.ViewModels;
+namespace OrchardCore.Workflows.Trimming.ViewModels;
 
-public class WorkflowPruningViewModel
+public class WorkflowTrimmingViewModel
 {
     public DateTime? LastRunUtc { get; set; }
 

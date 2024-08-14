@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Services;
+namespace OrchardCore.Workflows.Trimming.Services;
 
-public interface IWorkflowPruningManager
+public interface IWorkflowTrimmingManager
 {
     Task<int> PruneWorkflowInstancesAsync(TimeSpan retentionPeriod);
 }

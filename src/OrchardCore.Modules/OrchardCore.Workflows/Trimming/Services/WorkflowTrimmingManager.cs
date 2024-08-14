@@ -5,19 +5,19 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.WorkflowPruning.Models;
+using OrchardCore.Workflows.Trimming.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Services;
+namespace OrchardCore.Workflows.Trimming.Services;
 
-public class WorkflowPruningManager : IWorkflowPruningManager
+public class WorkflowTrimmingManager : IWorkflowTrimmingManager
 {
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public WorkflowPruningManager(ISiteService siteService, ISession session, IClock clock)
+    public WorkflowTrimmingManager(ISiteService siteService, ISession session, IClock clock)
     {
         _siteService = siteService;
         _session = session;
@@ -27,7 +27,7 @@ public class WorkflowPruningManager : IWorkflowPruningManager
     public async Task<int> PruneWorkflowInstancesAsync(TimeSpan retentionPeriod)
     {
         var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
-        var settings = await _siteService.GetSettingsAsync<WorkflowPruningSettings>();
+        var settings = await _siteService.GetSettingsAsync<WorkflowTrimmingSettings>();
 
         settings.Statuses ??=
         [

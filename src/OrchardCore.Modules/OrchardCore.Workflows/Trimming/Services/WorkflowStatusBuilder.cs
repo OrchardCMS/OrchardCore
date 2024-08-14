@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using OrchardCore.Workflows.Models;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Services;
+namespace OrchardCore.Workflows.Trimming.Services;
 
 internal sealed class WorkflowStatusBuilder
 {

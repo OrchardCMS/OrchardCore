@@ -6,19 +6,19 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.WorkflowPruning.Models;
-using OrchardCore.Workflows.WorkflowPruning.ViewModels;
+using OrchardCore.Workflows.Trimming.Models;
+using OrchardCore.Workflows.Trimming.ViewModels;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Drivers;
+namespace OrchardCore.Workflows.Trimming.Drivers;
 
-public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPruningSettings>
+public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTrimmingSettings>
 {
-    public const string GroupId = "WorkflowPruningSettings";
+    public const string GroupId = "WorkflowTrimmingSettings";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public WorkflowPruningDisplayDriver(
+    public WorkflowTrimmingDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor
     )
@@ -30,9 +30,9 @@ public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPru
     protected override string SettingsGroupId
         => GroupId;
 
-    public override IDisplayResult Edit(ISite site, WorkflowPruningSettings settings, BuildEditorContext context)
+    public override IDisplayResult Edit(ISite site, WorkflowTrimmingSettings settings, BuildEditorContext context)
     {
-        return Initialize<WorkflowPruningViewModel>("WorkflowPruning_Fields_Edit", model =>
+        return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", model =>
         {
             model.RetentionDays = settings.RetentionDays;
             model.LastRunUtc = settings.LastRunUtc;
@@ -53,14 +53,14 @@ public sealed class WorkflowPruningDisplayDriver : SiteDisplayDriver<WorkflowPru
         .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowPruningSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowTrimmingSettings settings, UpdateEditorContext context)
     {
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageWorkflowSettings))
         {
             return null;
         }
 
-        var viewModel = new WorkflowPruningViewModel();
+        var viewModel = new WorkflowTrimmingViewModel();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         settings.RetentionDays = viewModel.RetentionDays;

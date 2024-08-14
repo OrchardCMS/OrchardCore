@@ -1,6 +1,6 @@
-@using OrchardCore.Workflows.WorkflowPruning.Services
-@using OrchardCore.Workflows.WorkflowPruning.ViewModels
-@model WorkflowPruningViewModel
+@using OrchardCore.Workflows.Trimming.Services
+@using OrchardCore.Workflows.Trimming.ViewModels
+@model WorkflowTrimmingViewModel
 @{
     var status = WorkflowStatusBuilder.Build(Model.Statuses);
 }
@@ -25,7 +25,7 @@
                 ? await DisplayAsync(await New.DateTime(Utc: Model.LastRunUtc.Value, Format: "g"))
                 : T["Never"])
         </div>
-        <span class="hint">@T["The last time the background pruning task was run."]</span>
+        <span class="hint">@T["The last time the background trimming task was run."]</span>
     </div>
 
     <div class="row">
