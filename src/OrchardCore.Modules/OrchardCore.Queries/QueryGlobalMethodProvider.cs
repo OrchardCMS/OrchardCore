@@ -22,12 +22,14 @@ namespace OrchardCore.Queries
                 {
                     var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
                     var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
+
                     if (query == null)
                     {
                         return null;
                     }
 
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
+
                     return result.Items;
                 }),
             };
@@ -35,7 +37,7 @@ namespace OrchardCore.Queries
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _executeQuery };
+            return [_executeQuery];
         }
     }
 }

@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             if (exportContentToDeploymentTargetPlan != null)
             {
                 var siteSettings = await _siteService.LoadSiteSettingsAsync();
-                siteSettings.Alter<ExportContentToDeploymentTargetSettings>(nameof(ExportContentToDeploymentTargetSettings), aspect => aspect.ExportContentToDeploymentTargetPlanId = exportContentToDeploymentTargetPlan.Id);
+                siteSettings.Alter<ExportContentToDeploymentTargetSettings>(aspect => aspect.ExportContentToDeploymentTargetPlanId = exportContentToDeploymentTargetPlan.Id);
 
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
             }

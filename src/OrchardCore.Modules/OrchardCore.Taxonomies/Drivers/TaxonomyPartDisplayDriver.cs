@@ -15,9 +15,9 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
-    public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
+    public sealed class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
         {
@@ -27,15 +27,15 @@ namespace OrchardCore.Taxonomies.Drivers
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Count > 0;
+
             return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
             {
                 m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
-            })
-            .Location("Detail", "Content");
+            }).Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(TaxonomyPart part)
+        public override IDisplayResult Edit(TaxonomyPart part, BuildPartEditorContext context)
         {
             return Initialize<TaxonomyPartEditViewModel>("TaxonomyPart_Edit", model =>
             {
@@ -44,15 +44,15 @@ namespace OrchardCore.Taxonomies.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TaxonomyPart part, UpdatePartEditorContext context)
         {
             var model = new TaxonomyPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType);
 
             if (string.IsNullOrWhiteSpace(model.TermContentType))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
             }
 
             if (!string.IsNullOrWhiteSpace(model.Hierarchy))
@@ -73,7 +73,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             part.TermContentType = model.TermContentType;
 
-            return Edit(part);
+            return Edit(part, context);
         }
 
         /// <summary>

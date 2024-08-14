@@ -10,11 +10,6 @@ namespace OrchardCore.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Type> GetExportedExtensionTypes(IExtensionInfo extensionInfo)
-        {
-            throw new NotImplementedException();
-        }
-
         public IExtensionInfo GetExtension(string extensionId)
         {
             throw new NotImplementedException();

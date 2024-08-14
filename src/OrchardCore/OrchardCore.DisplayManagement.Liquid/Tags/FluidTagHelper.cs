@@ -17,17 +17,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         public static readonly Dictionary<string, string> DefaultArgumentsMapping = [];
         private static long _uniqueId;
 
-        public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static ValueTask<Completion> WriteArgumentsTagHelperAsync(IReadOnlyList<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             return WriteToAsync(null, arguments, [], writer, encoder, context);
         }
 
-        public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             return WriteToAsync(null, arguments, statements, writer, encoder, context);
         }
 
-        public static async ValueTask<Completion> WriteToAsync(string identifier, List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(string identifier, IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
 
@@ -43,8 +43,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // such that the tag helper can be matched based on the expected attribute names.
             if (DefaultArgumentsMapping.TryGetValue(identifier, out var mapping))
             {
-                arguments = new List<FilterArgument>(arguments);
-                arguments[0] = new FilterArgument(mapping, arguments[0].Expression);
+                var args = new List<FilterArgument>(arguments)
+                {
+                    [0] = new FilterArgument(mapping, arguments[0].Expression)
+                };
+
+                arguments = args;
             }
 
             var filterArguments = new FilterArguments();

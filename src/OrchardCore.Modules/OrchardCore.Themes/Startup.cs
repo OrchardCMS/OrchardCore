@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -6,6 +7,7 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Themes.Deployment;
 using OrchardCore.Themes.Drivers;
@@ -22,6 +24,7 @@ namespace OrchardCore.Themes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
             services.AddRecipeExecutionStep<ThemesStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, SiteThemeSelector>();

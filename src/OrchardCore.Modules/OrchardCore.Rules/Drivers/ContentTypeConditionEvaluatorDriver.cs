@@ -14,7 +14,7 @@ namespace OrchardCore.Rules.Drivers
     /// <summary>
     /// Saves references to content types which have been displayed during a request.
     /// </summary>
-    public class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, IConditionEvaluator
+    public sealed class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, IConditionEvaluator
     {
         private readonly IConditionOperatorResolver _operatorResolver;
 

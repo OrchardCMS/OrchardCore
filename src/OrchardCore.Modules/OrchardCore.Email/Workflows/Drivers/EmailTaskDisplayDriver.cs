@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Email.Workflows.Drivers
 {
-    public class EmailTaskDisplayDriver : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
+    public sealed class EmailTaskDisplayDriver : ActivityDisplayDriver<EmailTask, EmailTaskViewModel>
     {
         protected override void EditActivity(EmailTask activity, EmailTaskViewModel model)
         {

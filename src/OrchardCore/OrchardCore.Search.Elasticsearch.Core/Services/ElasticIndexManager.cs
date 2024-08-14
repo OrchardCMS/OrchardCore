@@ -577,7 +577,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string GetFullIndexName(string indexName)
         {
-            ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
+            ArgumentException.ThrowIfNullOrEmpty(indexName);
 
             return GetIndexPrefix() + _separator + indexName;
         }

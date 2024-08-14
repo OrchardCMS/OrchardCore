@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
+    public sealed class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
     {
         protected override void EditActivity(WhileLoopTask source, WhileLoopTaskViewModel model)
         {

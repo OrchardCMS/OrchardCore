@@ -1,22 +1,21 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserOptionsDisplayDriver : DisplayDriver<UserIndexOptions>
+    public sealed class UserOptionsDisplayDriver : DisplayDriver<UserIndexOptions>
     {
-        // Maintain the Options prefix for compatability with binding.
+        // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(UserIndexOptions options, string htmlFieldPrefix)
         {
             Prefix = "Options";
         }
 
-        public override IDisplayResult Display(UserIndexOptions model)
+        public override Task<IDisplayResult> DisplayAsync(UserIndexOptions model, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Initialize<UserIndexOptions>("UsersAdminListBulkActions", m => BuildUserOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
                 View("UsersAdminFilters_Thumbnail__Name", model).Location("Thumbnail", "Content:10"),
                 View("UsersAdminFilters_Thumbnail__Email", model).Location("Thumbnail", "Content:20"),
@@ -26,11 +25,12 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(UserIndexOptions model)
+        public override Task<IDisplayResult> EditAsync(UserIndexOptions model, BuildEditorContext context)
         {
             // Map the filter result to a model so the ui can reflect current selections.
             model.FilterResult.MapTo(model);
-            return Combine(
+
+            return CombineAsync(
                 Initialize<UserIndexOptions>("UsersAdminListSearch", m => BuildUserOptionsViewModel(m, model)).Location("Search:10"),
                 Initialize<UserIndexOptions>("UsersAdminListCreate", m => BuildUserOptionsViewModel(m, model)).Location("Create:10"),
                 Initialize<UserIndexOptions>("UsersAdminListSummary", m => BuildUserOptionsViewModel(m, model)).Location("Summary:10"),
@@ -39,12 +39,12 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override Task<IDisplayResult> UpdateAsync(UserIndexOptions model, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(UserIndexOptions model, UpdateEditorContext context)
         {
             // Map the incoming values from a form post to the filter result.
             model.FilterResult.MapFrom(model);
 
-            return Task.FromResult<IDisplayResult>(Edit(model));
+            return EditAsync(model, context);
         }
 
         private static void BuildUserOptionsViewModel(UserIndexOptions m, UserIndexOptions model)

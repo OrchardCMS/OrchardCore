@@ -8,7 +8,7 @@ using OrchardCore.Users.AuditTrail.ViewModels;
 
 namespace OrchardCore.Users.AuditTrail.Drivers
 {
-    public class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailUserEvent>
+    public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailUserEvent>
     {
         public override Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context)
         {
