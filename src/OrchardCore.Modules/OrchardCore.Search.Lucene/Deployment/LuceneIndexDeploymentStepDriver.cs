@@ -2,13 +2,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment
 {
-    public class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexDeploymentStep>
+    public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexDeploymentStep>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
@@ -17,16 +16,16 @@ namespace OrchardCore.Search.Lucene.Deployment
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public override IDisplayResult Display(LuceneIndexDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(LuceneIndexDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("LuceneIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("LuceneIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(LuceneIndexDeploymentStep step)
+        public override IDisplayResult Edit(LuceneIndexDeploymentStep step, BuildEditorContext context)
         {
             return Initialize<LuceneIndexDeploymentStepViewModel>("LuceneIndexDeploymentStep_Fields_Edit", async model =>
             {
@@ -36,11 +35,11 @@ namespace OrchardCore.Search.Lucene.Deployment
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneIndexDeploymentStep step, UpdateEditorContext context)
         {
             step.IndexNames = [];
 
-            await updater.TryUpdateModelAsync(step,
+            await context.Updater.TryUpdateModelAsync(step,
                                               Prefix,
                                               x => x.IndexNames,
                                               x => x.IncludeAll);
@@ -51,7 +50,7 @@ namespace OrchardCore.Search.Lucene.Deployment
                 step.IndexNames = [];
             }
 
-            return Edit(step);
+            return Edit(step, context);
         }
     }
 }

@@ -1,19 +1,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyConditionGroup>
+    public sealed class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyConditionGroup>
     {
-        public override IDisplayResult Display(AnyConditionGroup condition)
+        public override Task<IDisplayResult> DisplayAsync(AnyConditionGroup condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AnyCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("AnyCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
                     Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
@@ -24,7 +23,7 @@ namespace OrchardCore.Rules.Drivers
                 );
         }
 
-        public override IDisplayResult Edit(AnyConditionGroup condition)
+        public override IDisplayResult Edit(AnyConditionGroup condition, BuildEditorContext context)
         {
             return Initialize<AnyConditionViewModel>("AnyCondition_Fields_Edit", m =>
             {
@@ -33,11 +32,11 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AnyConditionGroup condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AnyConditionGroup condition, UpdateEditorContext context)
         {
-            await updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
+            await context.Updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

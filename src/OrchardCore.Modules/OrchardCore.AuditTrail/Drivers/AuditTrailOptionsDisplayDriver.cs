@@ -1,22 +1,21 @@
 using System.Threading.Tasks;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
-    public class AuditTrailOptionsDisplayDriver : DisplayDriver<AuditTrailIndexOptions>
+    public sealed class AuditTrailOptionsDisplayDriver : DisplayDriver<AuditTrailIndexOptions>
     {
-        // Maintain the Options prefix for compatability with binding.
+        // Maintain the Options prefix for compatibility with binding.
         protected override void BuildPrefix(AuditTrailIndexOptions options, string htmlFieldPrefix)
         {
             Prefix = "Options";
         }
 
-        public override IDisplayResult Display(AuditTrailIndexOptions model)
+        public override Task<IDisplayResult> DisplayAsync(AuditTrailIndexOptions model, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 View("AuditTrailAdminFilters_Thumbnail__Category", model).Location("Thumbnail", "Content:10"),
                 View("AuditTrailAdminFilters_Thumbnail__Event", model).Location("Thumbnail", "Content:10"),
                 View("AuditTrailAdminFilters_Thumbnail__Date", model).Location("Thumbnail", "Content:20"),
@@ -26,23 +25,24 @@ namespace OrchardCore.AuditTrail.Drivers
             );
         }
 
-        public override IDisplayResult Edit(AuditTrailIndexOptions model)
+        public override Task<IDisplayResult> EditAsync(AuditTrailIndexOptions model, BuildEditorContext context)
         {
             // Map the filter result to a model so the ui can reflect current selections.
             model.FilterResult.MapTo(model);
-            return Combine(
+
+            return CombineAsync(
                 Initialize<AuditTrailIndexOptions>("AuditTrailAdminListSearch", m => BuildUserOptionsViewModel(m, model)).Location("Search:10"),
                 Initialize<AuditTrailIndexOptions>("AuditTrailAdminListSummary", m => BuildUserOptionsViewModel(m, model)).Location("Summary:10"),
                 Initialize<AuditTrailIndexOptions>("AuditTrailAdminListFilters", m => BuildUserOptionsViewModel(m, model)).Location("Actions:10.1")
             );
         }
 
-        public override Task<IDisplayResult> UpdateAsync(AuditTrailIndexOptions model, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(AuditTrailIndexOptions model, UpdateEditorContext context)
         {
             // Map the incoming values from a form post to the filter result.
             model.FilterResult.MapFrom(model);
 
-            return Task.FromResult<IDisplayResult>(Edit(model));
+            return EditAsync(model, context);
         }
 
         private static void BuildUserOptionsViewModel(AuditTrailIndexOptions m, AuditTrailIndexOptions model)

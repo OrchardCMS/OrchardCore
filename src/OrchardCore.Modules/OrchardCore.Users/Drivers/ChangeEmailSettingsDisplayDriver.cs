@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,9 +9,10 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
+    public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeEmailSettings>
     {
         public const string GroupId = "userChangeEmail";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -23,7 +23,11 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings settings, BuildEditorContext context)
+
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, ChangeEmailSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -35,10 +39,11 @@ namespace OrchardCore.Users.Drivers
             return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
             {
                 model.AllowChangeEmail = settings.AllowChangeEmail;
-            }).Location("Content:5").OnGroup(GroupId);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, ChangeEmailSettings section, UpdateEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -47,12 +52,9 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
 
-            return await EditAsync(section, context);
+            return await EditAsync(site, section, context);
         }
     }
 }

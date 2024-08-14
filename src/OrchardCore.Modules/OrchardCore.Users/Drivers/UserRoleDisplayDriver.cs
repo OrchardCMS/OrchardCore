@@ -17,7 +17,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
-    public class UserRoleDisplayDriver : DisplayDriver<User>
+    public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
@@ -25,7 +25,8 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        protected readonly IHtmlLocalizer H;
+
+        internal readonly IHtmlLocalizer H;
 
         public UserRoleDisplayDriver(
             UserManager<IUser> userManager,
@@ -45,9 +46,9 @@ namespace OrchardCore.Users.Drivers
             H = htmlLocalizer;
         }
 
-        public override IDisplayResult Display(User user)
+        public override Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
                     .Location("SummaryAdmin", "Description"),
 
@@ -56,7 +57,7 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override IDisplayResult Edit(User user)
+        public override IDisplayResult Edit(User user, BuildEditorContext context)
         {
             // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
             return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
@@ -89,7 +90,7 @@ namespace OrchardCore.Users.Drivers
                 model.Roles = roleEntries.ToArray();
             })
             .Location("Content:1.10")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -105,8 +106,7 @@ namespace OrchardCore.Users.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-
-                var roles = await GetRoleAsync();
+            var roles = await GetRoleAsync();
             // Authorize each role in the model to prevent html injection.
             var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
             var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
@@ -169,7 +169,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            return Edit(user);
+            return Edit(user, context);
         }
 
         private async Task<IEnumerable<IRole>> GetRoleAsync()

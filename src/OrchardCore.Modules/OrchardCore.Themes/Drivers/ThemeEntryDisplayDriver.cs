@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Themes.Models;
 
 namespace OrchardCore.Themes.Drivers;
 
-public class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
+public sealed class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
 {
-    public override IDisplayResult Display(ThemeEntry model)
+    public override Task<IDisplayResult> DisplayAsync(ThemeEntry model, BuildDisplayContext context)
     {
         var results = new List<ShapeResult>()
         {
@@ -29,6 +30,6 @@ public class ThemeEntryDisplayDriver : DisplayDriver<ThemeEntry>
             ]);
         }
 
-        return Combine(results);
+        return CombineAsync(results);
     }
 }

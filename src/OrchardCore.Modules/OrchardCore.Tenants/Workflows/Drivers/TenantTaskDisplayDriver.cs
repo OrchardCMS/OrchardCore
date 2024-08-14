@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.ViewModels;
@@ -10,9 +12,9 @@ namespace OrchardCore.Tenants.Workflows.Drivers
     {
         public string TenantName { get; set; }
 
-        public override IDisplayResult Display(TActivity activity)
+        public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new TenantTaskViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
                 Shape($"{typeof(TActivity).Name}_Fields_Design", new TenantTaskViewModel<TActivity>(activity)).Location("Design", "Content")
             );

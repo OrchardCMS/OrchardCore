@@ -7,7 +7,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Lists.RemotePublishing
 {
     [RequireFeatures("OrchardCore.RemotePublishing")]
-    public class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
+    public sealed class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {

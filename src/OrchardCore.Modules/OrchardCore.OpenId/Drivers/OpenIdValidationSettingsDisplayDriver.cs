@@ -12,18 +12,18 @@ using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
+    public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
     {
         private readonly IShellHost _shellHost;
 
         public OpenIdValidationSettingsDisplayDriver(IShellHost shellHost)
             => _shellHost = shellHost;
 
-        public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
+        public override IDisplayResult Edit(OpenIdValidationSettings settings, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
-            return Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
+            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.MetadataAddress = settings.MetadataAddress?.AbsoluteUri;
@@ -49,7 +49,7 @@ namespace OrchardCore.OpenId.Drivers
                 }
 
                 model.AvailableTenants = availableTenants;
-            }).Location("Content:2"));
+            }).Location("Content:2");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)

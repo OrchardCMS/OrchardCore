@@ -4,24 +4,27 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Settings
 {
-    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
+    public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
 
-        public AutoroutePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public AutoroutePartSettingsDisplayDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
             {
@@ -72,7 +75,7 @@ namespace OrchardCore.Autoroute.Settings
                 });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

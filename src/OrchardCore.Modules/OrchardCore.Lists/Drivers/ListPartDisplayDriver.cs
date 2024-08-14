@@ -16,7 +16,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists.Drivers
 {
-    public class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
+    public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;

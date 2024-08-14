@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 {
     public class DisplayDriverBase
     {
-        protected string Prefix { get; set; } = "";
+        protected string Prefix { get; set; } = string.Empty;
 
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
@@ -144,8 +144,16 @@ namespace OrchardCore.DisplayManagement.Handlers
                 .Prefix(Prefix);
         }
 
-        public static CombinedResult Combine(params IDisplayResult[] results) => new(results);
+        public static CombinedResult Combine(params IDisplayResult[] results)
+            => new(results);
 
-        public static CombinedResult Combine(IEnumerable<IDisplayResult> results) => new(results);
+        public static Task<IDisplayResult> CombineAsync(params IDisplayResult[] results)
+            => Task.FromResult<IDisplayResult>(new CombinedResult(results));
+
+        public static CombinedResult Combine(IEnumerable<IDisplayResult> results)
+            => new(results);
+
+        public static Task<IDisplayResult> CombineAsync(IEnumerable<IDisplayResult> results)
+            => Task.FromResult<IDisplayResult>(new CombinedResult(results));
     }
 }

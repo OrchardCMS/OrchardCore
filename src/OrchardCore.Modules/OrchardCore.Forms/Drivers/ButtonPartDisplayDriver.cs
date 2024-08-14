@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -7,14 +8,15 @@ using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
-    public class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
+    public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPart>
     {
-        public override IDisplayResult Display(ButtonPart part)
+        public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
         {
-            return View("ButtonPart", part).Location("Detail", "Content");
+            return View("ButtonPart", part)
+                .Location("Detail", "Content");
         }
 
-        public override IDisplayResult Edit(ButtonPart part)
+        public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
         {
             return Initialize<ButtonPartEditViewModel>("ButtonPart_Fields_Edit", m =>
             {
@@ -23,16 +25,16 @@ namespace OrchardCore.Forms.Drivers
             });
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, IUpdateModel updater)
+        public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
         {
             var viewModel = new ButtonPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
             part.Text = viewModel.Text?.Trim();
             part.Type = viewModel.Type?.Trim();
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }
