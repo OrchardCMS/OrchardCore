@@ -193,7 +193,7 @@ public static class LiquidViewTemplateExtensions
         if (actionContext == null)
         {
             var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                actionContext = await httpContext.GetActionContextAsync();
+            actionContext = await httpContext.GetActionContextAsync();
         }
 
         return GetViewContext(actionContext);
