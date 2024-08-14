@@ -10,20 +10,20 @@ namespace OrchardCore.DisplayManagement.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static async Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
+    public static Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
     {
         var httpContext = httpContextAccessor.HttpContext;
         var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
 
         if (actionContext != null)
         {
-            return actionContext;
+            return Task.FromResult(actionContext);
         }
 
-        return await GetActionContextAsync(httpContext);
+        return GetActionContextAsync(httpContext);
     }
 
-    public static async Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
+    public static Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
         var routeData = new RouteData();
         routeData.Routers.Add(new RouteCollection());
@@ -33,9 +33,9 @@ public static class HttpContextExtensions
 
         foreach (var filter in filters)
         {
-            await filter.OnActionExecutionAsync(actionContext);
+            filter.OnActionExecutionAsync(actionContext);
         }
 
-        return actionContext;
+        return Task.FromResult(actionContext);
     }
 }
