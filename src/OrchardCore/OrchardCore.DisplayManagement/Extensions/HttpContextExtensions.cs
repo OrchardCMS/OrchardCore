@@ -22,6 +22,7 @@ public static class HttpContextExtensions
 
         return await GetActionContextAsync(httpContext);
     }
+
     public static async Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
         var routeData = new RouteData();
