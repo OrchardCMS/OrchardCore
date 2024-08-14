@@ -11,82 +11,81 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Fields;
+
+public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
 {
-    public sealed class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
+    internal readonly IStringLocalizer S;
+
+    public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
     {
-        internal readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
+    public override IDisplayResult Display(MultiTextField field, BuildFieldDisplayContext context)
+    {
+        return Initialize<DisplayMultiTextFieldViewModel>(GetDisplayShapeType(context), model =>
         {
-            S = localizer;
-        }
+            if (context.PartFieldDefinition.Editor() == "EditableList")
+            {
+                model.Values = field.Values;
+            }
+            else
+            {
+                var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+                var editorSettings = context.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
 
-        public override IDisplayResult Display(MultiTextField field, BuildFieldDisplayContext context)
+                model.Values = editorSettings.Options.Where(o => field.Values?.Contains(o.Value) == true).Select(o => o.Value).ToArray();
+            }
+
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        })
+        .Location("Detail", "Content")
+        .Location("Summary", "Content");
+    }
+
+    public override IDisplayResult Edit(MultiTextField field, BuildFieldEditorContext context)
+    {
+        return Initialize<EditMultiTextFieldViewModel>(GetEditorShapeType(context), model =>
         {
-            return Initialize<DisplayMultiTextFieldViewModel>(GetDisplayShapeType(context), model =>
+            if (context.IsNew)
             {
                 if (context.PartFieldDefinition.Editor() == "EditableList")
                 {
-                    model.Values = field.Values;
+                    var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldEditableListEditorSettings>();
+                    model.Values = settings.Items;
                 }
                 else
                 {
-                    var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                    var editorSettings = context.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
-
-                    model.Values = editorSettings.Options.Where(o => field.Values?.Contains(o.Value) == true).Select(o => o.Value).ToArray();
+                    var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
+                    model.Values = settings.Options.Where(o => o.Default).Select(o => o.Value).ToArray();
                 }
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
-        }
-
-        public override IDisplayResult Edit(MultiTextField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditMultiTextFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                if (context.IsNew)
-                {
-                    if (context.PartFieldDefinition.Editor() == "EditableList")
-                    {
-                        var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldEditableListEditorSettings>();
-                        model.Values = settings.Items;
-                    }
-                    else
-                    {
-                        var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldPredefinedListEditorSettings>();
-                        model.Values = settings.Options.Where(o => o.Default).Select(o => o.Value).ToArray();
-                    }
-                }
-                else
-                {
-                    model.Values = field.Values;
-                }
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, UpdateFieldEditorContext context)
-        {
-            var viewModel = new EditMultiTextFieldViewModel();
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-
-            field.Values = viewModel.Values;
-
-            var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-            if (settings.Required && viewModel.Values.Length == 0)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
+            else
+            {
+                model.Values = field.Values;
+            }
+            model.Field = field;
+            model.Part = context.ContentPart;
+            model.PartFieldDefinition = context.PartFieldDefinition;
+        });
+    }
 
-            return Edit(field, context);
+    public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, UpdateFieldEditorContext context)
+    {
+        var viewModel = new EditMultiTextFieldViewModel();
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        field.Values = viewModel.Values;
+
+        var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+        if (settings.Required && viewModel.Values.Length == 0)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
         }
+
+        return Edit(field, context);
     }
 }

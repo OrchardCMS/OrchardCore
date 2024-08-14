@@ -1,7 +1,3 @@
 * text=auto
 
 **/wwwroot/Scripts/* linguist-vendored
-
-# Keep LF line endings in webroot assets files. Otherwise, building them under Windows would change the line endings to CLRF and cause changes without actually editing the source files.
-**/wwwroot/**/*.js text eol=lf
-**/wwwroot/**/*.css text eol=lf

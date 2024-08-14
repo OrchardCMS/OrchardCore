@@ -2,13 +2,12 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 
-namespace OrchardCore.Contents.Workflows.Drivers
+namespace OrchardCore.Contents.Workflows.Drivers;
+
+public sealed class ContentDeletedEventDisplayDriver : ContentEventDisplayDriver<ContentDeletedEvent, ContentDeletedEventViewModel>
 {
-    public sealed class ContentDeletedEventDisplayDriver : ContentEventDisplayDriver<ContentDeletedEvent, ContentDeletedEventViewModel>
+    public ContentDeletedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        : base(contentDefinitionManager)
     {
-        public ContentDeletedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
-            : base(contentDefinitionManager)
-        {
-        }
     }
 }

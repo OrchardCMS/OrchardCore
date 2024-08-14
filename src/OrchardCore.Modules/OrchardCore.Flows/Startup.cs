@@ -15,40 +15,39 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Flows
+namespace OrchardCore.Flows;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<BagPartViewModel>();
-                o.MemberAccessStrategy.Register<FlowPartViewModel>();
-                o.MemberAccessStrategy.Register<FlowMetadata>();
-                o.MemberAccessStrategy.Register<FlowPart>();
-            });
+            o.MemberAccessStrategy.Register<BagPartViewModel>();
+            o.MemberAccessStrategy.Register<FlowPartViewModel>();
+            o.MemberAccessStrategy.Register<FlowMetadata>();
+            o.MemberAccessStrategy.Register<FlowPart>();
+        });
 
-            // Flow Part
-            services.AddContentPart<FlowPart>()
-                .UseDisplayDriver<FlowPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartIndexHandler, FlowPartIndexHandler>();
+        // Flow Part
+        services.AddContentPart<FlowPart>()
+            .UseDisplayDriver<FlowPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartIndexHandler, FlowPartIndexHandler>();
 
-            services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 
-            // Bag Part
-            services.AddContentPart<BagPart>()
-                .UseDisplayDriver<BagPartDisplayDriver>()
-                .AddHandler<BagPartHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
+        // Bag Part
+        services.AddContentPart<BagPart>()
+            .UseDisplayDriver<BagPartDisplayDriver>()
+            .AddHandler<BagPartHandler>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 
-            services.AddContentPart<FlowMetadata>();
+        services.AddContentPart<FlowMetadata>();
 
-            services.AddDataMigration<Migrations>();
+        services.AddDataMigration<Migrations>();
 
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-        }
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 }

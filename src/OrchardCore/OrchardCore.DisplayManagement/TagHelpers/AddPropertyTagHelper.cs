@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.TagHelpers;
 
@@ -22,7 +22,7 @@ public class AddPropertyTagHelper : TagHelper
         shape.Properties[Name.Trim()] = output.Attributes.ContainsName("value")
             ? output.Attributes["value"].Value
             : new HtmlString(content.GetContent());
-            
+
         output.SuppressOutput();
     }
 }
