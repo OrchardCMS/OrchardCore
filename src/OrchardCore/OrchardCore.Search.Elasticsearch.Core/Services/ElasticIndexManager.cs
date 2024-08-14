@@ -277,6 +277,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetFullIndexName(indexName));
 
+            if (!response.Success)
+            {
+                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. {OriginalException}", response.OriginalException);
+            }
+
             return response.Body;
         }
 
@@ -305,6 +310,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </summary>
         public async Task<long> GetLastTaskId(string indexName)
         {
+            var mappings = await GetIndexMappings(indexName);
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
             jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
@@ -333,7 +339,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 if (response.Errors)
                 {
-                    _logger.LogWarning("There were issues deleting documents from Elasticsearch. {result.OriginalException}", response.OriginalException);
+                    _logger.LogWarning("There were issues deleting documents from Elasticsearch. {OriginalException}", response.OriginalException);
                 }
 
                 success = response.IsValid;
@@ -427,7 +433,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 if (result.Errors)
                 {
-                    _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
+                    _logger.LogWarning("There were issues reported indexing the documents. {ServerError}", result.ServerError);
                 }
             }
         }
