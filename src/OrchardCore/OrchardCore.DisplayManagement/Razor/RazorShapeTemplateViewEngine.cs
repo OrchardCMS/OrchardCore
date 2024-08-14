@@ -7,17 +7,14 @@ using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
 
 namespace OrchardCore.DisplayManagement.Razor;
@@ -101,7 +98,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
     {
-        var actionContext = await GetActionContextAsync();
+        var actionContext = await _httpContextAccessor.GetActionContextAsync();
         var view = FindView(actionContext, viewName, viewEngine);
 
         using var output = new ZStringWriter();
@@ -145,30 +142,6 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
             new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 
         throw new InvalidOperationException(errorMessage);
-    }
-
-    private async Task<ActionContext> GetActionContextAsync()
-    {
-        var httpContext = _httpContextAccessor.HttpContext;
-        var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
-
-        if (actionContext != null)
-        {
-            return actionContext;
-        }
-
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 
     private IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
