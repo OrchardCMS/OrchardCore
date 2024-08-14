@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -35,11 +36,13 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
         try
         {
             var clock = serviceProvider.GetRequiredService<IClock>();
-            var workflowCleanUpManager = serviceProvider.GetRequiredService<IWorkflowTrimmingManager>();
+            var workflowTrimmingManager = serviceProvider.GetRequiredService<IWorkflowTrimmingManager>();
+            var batchSize = serviceProvider.GetRequiredService<IOptions<WorkflowTrimmingOptions>>().Value.BatchSize;
 
             logger.LogDebug("Starting trimming Workflow instances.");
-            var prunedCount = await workflowCleanUpManager.PruneWorkflowInstancesAsync(
-                TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays)
+            var prunedCount = await workflowTrimmingManager.TrimWorkflowInstancesAsync(
+                TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays),
+                batchSize
             );
             logger.LogDebug("Pruned {PrunedCount} workflow instances.", prunedCount);
 

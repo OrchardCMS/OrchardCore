@@ -5,5 +5,5 @@ namespace OrchardCore.Workflows.Trimming.Services;
 
 public interface IWorkflowTrimmingManager
 {
-    Task<int> PruneWorkflowInstancesAsync(TimeSpan retentionPeriod);
+    Task<int> TrimWorkflowInstancesAsync(TimeSpan retentionPeriod, int batchSize);
 }
