@@ -23,7 +23,7 @@ public static class HttpContextExtensions
         return GetActionContextAsync(httpContext);
     }
 
-    public static Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
+    public static async Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
         var routeData = new RouteData();
         routeData.Routers.Add(new RouteCollection());
@@ -33,9 +33,9 @@ public static class HttpContextExtensions
 
         foreach (var filter in filters)
         {
-            filter.OnActionExecutionAsync(actionContext);
+            await filter.OnActionExecutionAsync(actionContext);
         }
 
-        return Task.FromResult(actionContext);
+        return actionContext;
     }
 }
