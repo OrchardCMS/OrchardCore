@@ -3,10 +3,12 @@
 @using OrchardCore.Workflows.Trimming.ViewModels
 @model WorkflowTrimmingViewModel
 
-<div class="form-check">
-    <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
-    <label class="form-check-label" asp-for="Disabled">@T["Disable"]</label>
-    <span class="hint dashed">@T["Whether the task is disabled."]</span>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
+        <label class="form-check-label" asp-for="Disabled">@T["Disable"]</label>
+        <span class="hint dashed">@T["Whether the task is disabled."]</span>
+    </div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RetentionDays">
@@ -27,7 +29,7 @@
 
 @* We use a hard-coded list of statuses here instead of iterating over the enum so the explicit T-strings make
        localization easier (and so the default English displayed string can be different than the enum value's name). *@
-<div class="row">
+<div class="mb-3 row">
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[0].Status" />
@@ -107,5 +109,4 @@
             </label>
         </div>
     </div>
-
 </div>
