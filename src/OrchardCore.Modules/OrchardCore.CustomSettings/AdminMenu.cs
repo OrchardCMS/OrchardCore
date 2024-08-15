@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;

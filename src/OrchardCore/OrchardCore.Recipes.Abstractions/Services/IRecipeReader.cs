@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Recipes.Models;
 

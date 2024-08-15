@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.ContentLocalization.Handlers;
 
 public interface IContentLocalizationHandler

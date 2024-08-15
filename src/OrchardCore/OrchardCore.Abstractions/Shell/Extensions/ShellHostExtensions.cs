@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell;

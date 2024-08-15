@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;

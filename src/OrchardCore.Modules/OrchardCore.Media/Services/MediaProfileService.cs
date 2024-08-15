@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.Services;

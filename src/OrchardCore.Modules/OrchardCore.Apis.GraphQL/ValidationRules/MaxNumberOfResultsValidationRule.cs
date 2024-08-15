@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL.Validation;
 using GraphQLParser.AST;
 using Microsoft.Extensions.Localization;

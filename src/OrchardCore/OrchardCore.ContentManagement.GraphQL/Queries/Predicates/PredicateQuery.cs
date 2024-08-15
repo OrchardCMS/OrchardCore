@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;

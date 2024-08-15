@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using OpenIddict.Abstractions;
 
 namespace OrchardCore.OpenId.Abstractions.Descriptors;

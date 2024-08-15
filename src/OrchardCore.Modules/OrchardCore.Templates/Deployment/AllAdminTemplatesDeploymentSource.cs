@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;

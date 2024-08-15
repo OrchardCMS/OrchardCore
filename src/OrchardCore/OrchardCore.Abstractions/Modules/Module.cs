@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;

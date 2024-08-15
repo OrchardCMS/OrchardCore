@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;

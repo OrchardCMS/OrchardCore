@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;

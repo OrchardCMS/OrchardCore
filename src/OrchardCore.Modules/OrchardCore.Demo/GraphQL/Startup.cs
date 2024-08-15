@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.Demo.Models;

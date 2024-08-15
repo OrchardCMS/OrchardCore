@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.ContentManagement.Handlers;
 
 public abstract class ContentFieldHandler<TField> : IContentFieldHandler where TField : ContentField, new()

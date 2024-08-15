@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Indexing;
 using static OrchardCore.Indexing.DocumentIndex;
 

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.DisplayManagement;
 
 public interface INamedEnumerable<T> : IEnumerable<T>

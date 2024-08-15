@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;

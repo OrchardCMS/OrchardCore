@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;

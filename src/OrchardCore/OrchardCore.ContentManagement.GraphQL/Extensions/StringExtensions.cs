@@ -1,4 +1,3 @@
-using System;
 using GraphQL;
 using OrchardCore.ContentManagement.Utilities;
 

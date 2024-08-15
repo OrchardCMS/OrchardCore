@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexRebuildContext

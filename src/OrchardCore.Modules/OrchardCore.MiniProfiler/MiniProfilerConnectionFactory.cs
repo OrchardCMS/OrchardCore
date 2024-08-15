@@ -1,4 +1,3 @@
-using System;
 using System.Data.Common;
 using StackExchange.Profiling.Data;
 using YesSql;

@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Environment.Shell;

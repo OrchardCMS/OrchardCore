@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
