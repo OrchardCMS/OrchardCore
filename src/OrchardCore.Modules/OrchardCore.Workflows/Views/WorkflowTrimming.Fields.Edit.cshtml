@@ -31,8 +31,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[0].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[0].IsSelected" id="status-Idle">
-            <label class="form-check-label" for="status-Idle">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[0].IsSelected" id="@Html.IdFor(m => m.Statuses[0])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[0])">
                 @T["Idle"]
             </label>
         </div>
@@ -41,8 +41,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[1].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[1].IsSelected" id="status-Starting">
-            <label class="form-check-label" for="status-Starting">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[1].IsSelected" id="@Html.IdFor(m => m.Statuses[1])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[1])">
                 @T["Starting"]
             </label>
         </div>
@@ -51,8 +51,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[2].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[2].IsSelected" id="status-Resuming">
-            <label class="form-check-label" for="status-Resuming">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[2].IsSelected" id="@Html.IdFor(m => m.Statuses[2])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[2])">
                 @T["Resuming"]
             </label>
         </div>
@@ -61,8 +61,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[3].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[3].IsSelected" id="status-Executing">
-            <label class="form-check-label" for="status-Executing">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[3].IsSelected" id="@Html.IdFor(m => m.Statuses[3])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[3])">
                 @T["Executing"]
             </label>
         </div>
@@ -71,8 +71,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[4].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[4].IsSelected" id="status-Halted">
-            <label class="form-check-label" for="status-Halted">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[4].IsSelected" id="@Html.IdFor(m => m.Statuses[4])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[4])">
                 @T["Halted"]
             </label>
         </div>
@@ -81,8 +81,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[5].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[5].IsSelected" id="status-Finished">
-            <label class="form-check-label" for="status-Finished">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[5].IsSelected" id="@Html.IdFor(m => m.Statuses[5])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[5])">
                 @T["Finished"]
             </label>
         </div>
@@ -91,8 +91,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[6].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[6].IsSelected" id="status-Faulted">
-            <label class="form-check-label" for="status-Faulted">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[6].IsSelected" id="@Html.IdFor(m => m.Statuses[6])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[6])">
                 @T["Faulted"]
             </label>
         </div>
@@ -101,8 +101,8 @@
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[7].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[7].IsSelected" id="status-Aborted">
-            <label class="form-check-label" for="status-Aborted">
+            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[7].IsSelected" id="@Html.IdFor(m => m.Statuses[7])">
+            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[7])">
                 @T["Aborted"]
             </label>
         </div>
