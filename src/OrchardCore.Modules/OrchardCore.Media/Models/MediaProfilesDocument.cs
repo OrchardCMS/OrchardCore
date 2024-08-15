@@ -1,5 +1,4 @@
 using OrchardCore.Data.Documents;
-using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.Models;
 
@@ -13,8 +12,8 @@ public class MediaProfile
     public string Hint { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public ResizeMode Mode { get; set; }
-    public Format Format { get; set; }
+    public Processing.ResizeMode Mode { get; set; }
+    public Processing.Format Format { get; set; }
     public int Quality { get; set; }
     public string BackgroundColor { get; set; }
 }

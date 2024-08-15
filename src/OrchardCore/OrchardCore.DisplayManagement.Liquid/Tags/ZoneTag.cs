@@ -14,7 +14,7 @@ public class ZoneTag
     public static async ValueTask<Completion> WriteToAsync(
         IReadOnlyList<FilterArgument> argumentsList,
         IReadOnlyList<Statement> statements,
-        TextWriter _,        
+        TextWriter _,
         TextEncoder encoder,
         TemplateContext context)
     {

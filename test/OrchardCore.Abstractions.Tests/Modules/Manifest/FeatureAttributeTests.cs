@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
-
-namespace OrchardCore.Modules.Manifest;
-
 using Xunit;
 using Xunit.Abstractions;
 
+namespace OrchardCore.Modules.Manifest;
 /// <summary>
 /// 
 /// </summary>

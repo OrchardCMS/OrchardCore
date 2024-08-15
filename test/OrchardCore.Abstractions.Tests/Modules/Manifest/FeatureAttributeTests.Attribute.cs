@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-
-namespace OrchardCore.Modules.Manifest;
-
 using Xunit;
 using Xunit.Abstractions;
-using static BindingFlags;
 
+namespace OrchardCore.Modules.Manifest;
 // TODO: TBD: now to test I want to look at actually doing this in a demo-assembly if possible...
 // TODO: TBD: which will be a bit tricky considering ModuleAttribute can appear exactly once...
 // TODO: TBD: testing via the CSPROJ aspect... i.e. to load the assembly in reference and check that it 'works' ...
@@ -78,7 +75,7 @@ public abstract class FeatureAttributeTests<TAttribute>
     /// <summary>
     /// Public|Instance
     /// </summary>
-    private const BindingFlags CtorFlags = Public | Instance;
+    private const BindingFlags CtorFlags = BindingFlags.Public | BindingFlags.Instance;
 
     /// <summary>
     /// Creates a <typeparamref name="TAttribute"/> from its <paramref name="args"/>, with
