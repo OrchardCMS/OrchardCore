@@ -14,7 +14,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Settings
 {
-    public class TaxonomyContentsAdminListSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxonomyContentsAdminListSettings>
+    public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplayDriver<TaxonomyContentsAdminListSettings>
     {
         public const string GroupId = "taxonomyContentsAdminList";
 
@@ -32,7 +32,10 @@ namespace OrchardCore.Taxonomies.Settings
             _session = session;
         }
 
-        public override async Task<IDisplayResult> EditAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => GroupId;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
@@ -52,21 +55,19 @@ namespace OrchardCore.Taxonomies.Settings
             return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>
             {
                 model.TaxonomyEntries = entries;
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, TaxonomyContentsAdminListSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == GroupId)
-            {
-                var model = new TaxonomyContentsAdminListSettingsViewModel();
+            var model = new TaxonomyContentsAdminListSettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
-            }
+            settings.TaxonomyContentItemIds = model.TaxonomyEntries.Where(e => e.IsChecked).Select(e => e.ContentItemId).ToArray();
 
-            return await EditAsync(settings, context);
+            return await EditAsync(site, settings, context);
         }
     }
 }

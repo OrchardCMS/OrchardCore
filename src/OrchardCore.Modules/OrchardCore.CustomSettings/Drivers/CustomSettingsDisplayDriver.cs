@@ -13,7 +13,7 @@ namespace OrchardCore.CustomSettings.Drivers
     /// This driver generates an editor for site settings. The GroupId represents the type of
     /// the settings to use.
     /// </summary>
-    public class CustomSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
     {
         private readonly CustomSettingsService _customSettingsService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;

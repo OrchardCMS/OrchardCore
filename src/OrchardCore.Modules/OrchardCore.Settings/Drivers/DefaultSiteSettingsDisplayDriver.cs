@@ -9,13 +9,13 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
 {
-    public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
+    public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
 
         private readonly IShellReleaseManager _shellReleaseManager;
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
             IShellReleaseManager shellReleaseManager,
@@ -25,14 +25,14 @@ namespace OrchardCore.Settings.Drivers
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site, BuildEditorContext context)
         {
             if (!IsGeneralGroup(context))
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
-            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+            context.AddTenantReloadWarningWrapper();
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
@@ -46,7 +46,7 @@ namespace OrchardCore.Settings.Drivers
                     .OnGroup(GroupId)
             );
 
-            return Task.FromResult<IDisplayResult>(result);
+            return result;
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)

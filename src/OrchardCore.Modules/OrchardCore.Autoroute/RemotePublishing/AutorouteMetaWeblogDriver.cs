@@ -7,7 +7,7 @@ using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.Autoroute.RemotePublishing
 {
-    public class AutorouteMetaWeblogDriver : MetaWeblogDriver
+    public sealed class AutorouteMetaWeblogDriver : MetaWeblogDriver
     {
         public override void SetCapabilities(Action<string, string> setCapability)
         {

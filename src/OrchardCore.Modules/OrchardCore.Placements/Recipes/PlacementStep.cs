@@ -11,7 +11,7 @@ namespace OrchardCore.Placements.Recipes
     /// <summary>
     /// This recipe step creates a set of placements.
     /// </summary>
-    public class PlacementStep : IRecipeStepHandler
+    public sealed class PlacementStep : IRecipeStepHandler
     {
         private readonly PlacementsManager _placementsManager;
 

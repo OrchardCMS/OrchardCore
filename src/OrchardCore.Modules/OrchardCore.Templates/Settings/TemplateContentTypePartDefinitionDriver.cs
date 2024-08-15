@@ -1,21 +1,22 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Settings
 {
-    public class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {

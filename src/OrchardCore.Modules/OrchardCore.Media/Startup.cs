@@ -137,7 +137,7 @@ namespace OrchardCore.Media
                 return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
             });
 
-            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IPermissionProvider, PermissionProvider>();
             services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 

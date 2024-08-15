@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
@@ -11,11 +11,12 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
+    public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
-        protected readonly IStringLocalizer S;
+
+        internal readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -27,7 +28,7 @@ namespace OrchardCore.Lists.Settings
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", async model =>
             {
@@ -67,14 +68,14 @@ namespace OrchardCore.Lists.Settings
                     ShowHeader = model.ShowHeader,
                 });
 
-                // Update order of existing content if enable ordering has been turned on
+                // Update order of existing content if enable ordering has been turned on.
                 if (settings.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {
                     await _containerService.SetInitialOrder(contentTypePartDefinition.ContentTypeDefinition.Name);
                 }
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

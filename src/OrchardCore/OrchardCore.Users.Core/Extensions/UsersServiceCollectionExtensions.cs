@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<DocumentJsonSerializerOptions>(options =>
             {
-                options.SerializerOptions.Converters.Add(new LoginInfoJsonConverter());
+                options.SerializerOptions.Converters.Add(LoginInfoJsonConverter.Instance);
             });
 
             return services;

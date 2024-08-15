@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Workflows;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Json;
@@ -22,7 +22,7 @@ using OrchardCore.Workflows.UserTasks.ViewModels;
 
 namespace OrchardCore.Workflows.UserTasks.Drivers
 {
-    public class UserTaskEventContentDriver : ContentDisplayDriver
+    public sealed class UserTaskEventContentDriver : ContentDisplayDriver
     {
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        protected readonly IHtmlLocalizer H;
+        internal readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,
@@ -52,7 +52,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             H = localizer;
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem)
+        public override Task<IDisplayResult> EditAsync(ContentItem contentItem, BuildEditorContext context)
         {
             var results = new List<IDisplayResult>
             {
@@ -62,10 +62,10 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }).Location("Actions:30"),
             };
 
-            return Combine(results.ToArray());
+            return CombineAsync(results);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
@@ -100,7 +100,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }
             }
 
-            return Edit(model);
+            return await EditAsync(model, context);
         }
 
         private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)

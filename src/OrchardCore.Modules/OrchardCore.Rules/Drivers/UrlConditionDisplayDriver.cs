@@ -1,14 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
+    public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
     {
         private readonly ConditionOperatorOptions _options;
 
@@ -17,16 +16,16 @@ namespace OrchardCore.Rules.Drivers
             _options = options.Value;
         }
 
-        public override IDisplayResult Display(UrlCondition condition)
+        public override Task<IDisplayResult> DisplayAsync(UrlCondition condition, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("UrlCondition_Fields_Summary", condition).Location("Summary", "Content"),
                     View("UrlCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(UrlCondition condition)
+        public override IDisplayResult Edit(UrlCondition condition, BuildEditorContext context)
         {
             return Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", m =>
             {
@@ -39,10 +38,10 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, UpdateEditorContext context)
         {
             var model = new UrlConditionViewModel();
-            await updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
             condition.Value = model.Value;
 
             if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
@@ -50,7 +49,7 @@ namespace OrchardCore.Rules.Drivers
                 condition.Operation = factory.Create();
             }
 
-            return Edit(condition);
+            return Edit(condition, context);
         }
     }
 }

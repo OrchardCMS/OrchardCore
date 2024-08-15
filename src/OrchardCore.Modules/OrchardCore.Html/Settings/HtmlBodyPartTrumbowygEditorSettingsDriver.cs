@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Esprima;
+using Acornima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
@@ -11,16 +12,16 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
             {
@@ -28,8 +29,7 @@ namespace OrchardCore.Html.Settings
 
                 model.Options = settings.Options;
                 model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -49,7 +49,7 @@ namespace OrchardCore.Html.Settings
                         throw new Exception();
                     }
 
-                    var parser = new JavaScriptParser();
+                    var parser = new Parser();
 
                     var optionsScript = parser.ParseScript("var config = " + options);
 
@@ -67,7 +67,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return Edit(contentTypePartDefinition);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

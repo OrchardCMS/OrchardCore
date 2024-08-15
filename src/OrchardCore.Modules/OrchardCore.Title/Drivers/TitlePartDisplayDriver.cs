@@ -10,9 +10,9 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Drivers
 {
-    public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
+    public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
         {
@@ -33,8 +33,7 @@ namespace OrchardCore.Title.Drivers
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
-            })
-            .Location("Detail", "Header")
+            }).Location("Detail", "Header")
             .Location("Summary", "Header");
         }
 
@@ -49,14 +48,14 @@ namespace OrchardCore.Title.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TitlePart model, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
             if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
             }
             else
             {

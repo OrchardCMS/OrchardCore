@@ -1,27 +1,17 @@
+using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Users.Workflows.Drivers
 {
-    public class UserDisabledEventDisplayDriver : ActivityDisplayDriver<UserDisabledEvent, UserDisabledEventViewModel>
+    public sealed class UserDisabledEventDisplayDriver : ActivityDisplayDriver<UserDisabledEvent, UserDisabledEventViewModel>
     {
-        public UserDisabledEventDisplayDriver(IUserService userService)
+        public override Task<IDisplayResult> DisplayAsync(UserDisabledEvent activity, BuildDisplayContext context)
         {
-            UserService = userService;
-        }
-
-        protected IUserService UserService { get; }
-
-        protected override void EditActivity(UserDisabledEvent source, UserDisabledEventViewModel target)
-        {
-        }
-
-        public override IDisplayResult Display(UserDisabledEvent activity)
-        {
-            return Combine(
+            return CombineAsync(
                 Shape("UserDisabledEvent_Fields_Thumbnail", new UserDisabledEventViewModel(activity)).Location("Thumbnail", "Content"),
                 Factory("UserDisabledEvent_Fields_Design", ctx =>
                 {

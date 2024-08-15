@@ -5,20 +5,21 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
             return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
             {
@@ -27,8 +28,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.DefaultValue = settings.DefaultValue;
                 model.Editor = settings.Editor;
                 model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -47,17 +47,16 @@ namespace OrchardCore.ContentFields.Settings
                     settings.Options = string.IsNullOrWhiteSpace(model.Options)
                         ? []
                         : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
+
+                    context.Builder.WithSettings(settings);
                 }
                 catch
                 {
                     context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                    return Edit(partFieldDefinition);
                 }
-
-                context.Builder.WithSettings(settings);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context);
         }
     }
 }

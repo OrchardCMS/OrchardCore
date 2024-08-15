@@ -5,7 +5,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class LogTaskDisplayDriver : ActivityDisplayDriver<LogTask, LogTaskViewModel>
+    public sealed class LogTaskDisplayDriver : ActivityDisplayDriver<LogTask, LogTaskViewModel>
     {
         protected override void EditActivity(LogTask activity, LogTaskViewModel model)
         {
