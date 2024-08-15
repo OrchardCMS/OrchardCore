@@ -239,9 +239,9 @@ public class OpenIdServerService : IOpenIdServerService
     {
         var certificates = ImmutableArray.CreateBuilder<(X509Certificate2, StoreLocation, StoreName)>();
 
-        foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
+        foreach (var location in Enum.GetValues<StoreLocation>())
         {
-            foreach (StoreName name in Enum.GetValues<StoreName>())
+            foreach (var name in Enum.GetValues<StoreName>())
             {
                 // Note: on non-Windows platforms, an exception can
                 // be thrown if the store location/name doesn't exist.

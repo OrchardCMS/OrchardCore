@@ -42,7 +42,11 @@ public class LayerQueryObjectType : ObjectGraphType<Layer>
             var layerWidgets = widgets?.Where(item =>
             {
                 var metadata = item.As<LayerMetadata>();
-                if (metadata == null) return false;
+                if (metadata == null)
+                {
+                    return false;
+                }
+
                 return metadata.Layer == context.Source.Name;
             });
 

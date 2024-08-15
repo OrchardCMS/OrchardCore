@@ -143,11 +143,15 @@ public sealed class SecureMediaPermissions : IPermissionProvider
         await foreach (var entry in _fileStore.GetDirectoryContentAsync())
         {
             if (!entry.IsDirectory)
+            {
                 continue;
+            }
 
             if (entry.Name == _mediaOptions.AssetsUsersFolder ||
                 entry.Name == _attachedMediaFieldFileService.MediaFieldsFolder)
+            {
                 continue;
+            }
 
             var folderPath = entry.Path;
 

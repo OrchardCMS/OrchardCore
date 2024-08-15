@@ -116,15 +116,9 @@ public class Composite : DynamicObject
         get { return _properties; }
     }
 
-    public static bool operator ==(Composite a, Nil _)
-    {
-        return null == a;
-    }
+    public static bool operator ==(Composite a, Nil _) => null == a;
 
-    public static bool operator !=(Composite a, Nil b)
-    {
-        return !(a == b);
-    }
+    public static bool operator !=(Composite a, Nil b) => !(a == b);
 
     protected bool Equals(Composite other)
     {
@@ -199,25 +193,13 @@ public class Nil : DynamicObject
         return base.TryBinaryOperation(binder, arg, out result);
     }
 
-    public static bool operator ==(Nil _1, Nil _2)
-    {
-        return true;
-    }
+    public static bool operator ==(Nil _1, Nil _2) => true;
 
-    public static bool operator !=(Nil _1, Nil _2)
-    {
-        return false;
-    }
+    public static bool operator !=(Nil _1, Nil _2) => false;
 
-    public static bool operator ==(Nil a, object b)
-    {
-        return ReferenceEquals(a, b) || b == null;
-    }
+    public static bool operator ==(Nil a, object b) => ReferenceEquals(a, b) || b == null;
 
-    public static bool operator !=(Nil a, object b)
-    {
-        return !(a == b);
-    }
+    public static bool operator !=(Nil a, object b) => !(a == b);
 
     public override bool Equals(object obj)
     {

@@ -3,7 +3,6 @@ using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AdminDashboard.Drivers;

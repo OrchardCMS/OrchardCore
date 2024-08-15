@@ -47,7 +47,9 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
         foreach (var query in queries)
         {
             if (string.IsNullOrWhiteSpace(query.Schema))
+            {
                 continue;
+            }
 
             var name = query.Name;
 
