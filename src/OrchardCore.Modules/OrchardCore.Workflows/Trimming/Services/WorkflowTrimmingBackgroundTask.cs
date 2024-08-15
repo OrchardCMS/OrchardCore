@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
-using OrchardCore.Entities;
+using OrchardCore.Documents;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Trimming.Models;
@@ -46,13 +46,10 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
             );
             logger.LogDebug("Trimmed {TrimmedCount} workflow instances.", trimmedCount);
 
-            var siteSettings = await siteService.LoadSiteSettingsAsync();
-            siteSettings.Alter<WorkflowTrimmingSettings>(settings =>
-            {
-                settings.LastRunUtc = clock.UtcNow;
-            });
-
-            await siteService.UpdateSiteSettingsAsync(siteSettings);
+            var workflowTrimmingSateDocumentManager = serviceProvider.GetRequiredService<IDocumentManager<WorkflowTrimmingState>>();
+            var workflowTrimmingState = await workflowTrimmingSateDocumentManager.GetOrCreateMutableAsync();
+            workflowTrimmingState.LastRunUtc = clock.UtcNow;
+            await workflowTrimmingSateDocumentManager.UpdateAsync(workflowTrimmingState);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {

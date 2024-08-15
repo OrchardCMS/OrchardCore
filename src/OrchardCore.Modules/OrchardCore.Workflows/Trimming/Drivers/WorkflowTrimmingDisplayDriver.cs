@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Documents;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Trimming.Models;
 using OrchardCore.Workflows.Trimming.ViewModels;
@@ -13,6 +14,7 @@ namespace OrchardCore.Workflows.Trimming.Drivers;
 
 public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTrimmingSettings>
 {
+    private readonly IDocumentManager<WorkflowTrimmingState> _workflowTrimmingStateDocumentManager;
     public const string GroupId = "WorkflowTrimmingSettings";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,10 +23,12 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
     public WorkflowTrimmingDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor
-    )
+    ,
+        IDocumentManager<WorkflowTrimmingState> workflowTrimmingStateDocumentManager)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        _workflowTrimmingStateDocumentManager = workflowTrimmingStateDocumentManager;
     }
 
     protected override string SettingsGroupId
@@ -32,10 +36,10 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
     public override IDisplayResult Edit(ISite site, WorkflowTrimmingSettings settings, BuildEditorContext context)
     {
-        return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", model =>
+        return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", async model =>
         {
             model.RetentionDays = settings.RetentionDays;
-            model.LastRunUtc = settings.LastRunUtc;
+            model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync()).LastRunUtc;
             model.Disabled = settings.Disabled;
 
             foreach (var status in (settings.Statuses ?? []))
