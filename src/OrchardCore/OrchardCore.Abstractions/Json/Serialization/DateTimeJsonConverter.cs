@@ -24,7 +24,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
                 return value;
             }
 
-            throw new JsonException($"Unable to convert \"{stringValue}\" to DateTime.");
+            throw new NotSupportedException($"Unable to convert \"{stringValue}\" to DateTime.");
         }
 
         return value;
