@@ -42,7 +42,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
             model.LastRunUtc = (await _workflowTrimmingStateDocumentManager.GetOrCreateImmutableAsync()).LastRunUtc;
             model.Disabled = settings.Disabled;
 
-            foreach (var status in (settings.Statuses ?? []))
+            foreach (var status in settings.Statuses ?? [])
             {
                 model.Statuses.Single(statusItem => statusItem.Status == status).IsSelected = true;
             }
