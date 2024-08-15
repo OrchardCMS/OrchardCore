@@ -98,7 +98,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, WorkflowTrimmingBackgroundTask>();
         services.AddScoped<IDisplayDriver<ISite>, WorkflowTrimmingDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.Configure<WorkflowTrimmingOptions>(_shellConfiguration.GetSection("OrchardCore_Workflows").GetSection("Trimming"));
+        services.Configure<WorkflowTrimmingOptions>(_shellConfiguration.GetSection("OrchardCore_Workflows:Trimming"));
     }
 }
 
