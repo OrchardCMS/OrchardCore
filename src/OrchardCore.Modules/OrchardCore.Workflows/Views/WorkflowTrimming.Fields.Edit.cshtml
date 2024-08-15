@@ -1,9 +1,7 @@
+@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.Trimming.Services
 @using OrchardCore.Workflows.Trimming.ViewModels
 @model WorkflowTrimmingViewModel
-@{
-    var status = WorkflowStatusBuilder.Build(Model.Statuses);
-}
 
 <section>
     <div class="form-check">
@@ -28,16 +26,88 @@
         <span class="hint">@T["The last time the background trimming task was run."]</span>
     </div>
 
+    @* We use a hard-coded list of statuses here instead of iterating over the enum so the explicit T-strings make 
+       localization easier (and so the default English displayed string can be different than the enum value's name). *@
     <div class="row">
-        @for (var i = 0; i < status.Length; i++)
-        {
-            <div class="col-xs-12">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input workflow-status" id="@Html.IdFor(m => m.Statuses[i])"
-                           name="@Html.NameFor(x => x.Statuses)" checked="@status[i].IsSelected" value="@status[i].Value">
-                    <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[i])">@T[status[i].Value]</label>
-                </div>
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[0].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[0].IsSelected" id="status-Idle">
+                <label class="form-check-label" for="status-Idle">
+                    @T["Idle"]
+                </label>
             </div>
-        }
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[1].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[1].IsSelected" id="status-Starting">
+                <label class="form-check-label" for="status-Starting">
+                    @T["Starting"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[2].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[2].IsSelected" id="status-Resuming">
+                <label class="form-check-label" for="status-Resuming">
+                    @T["Resuming"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[3].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[3].IsSelected" id="status-Executing">
+                <label class="form-check-label" for="status-Executing">
+                    @T["Executing"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[4].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[4].IsSelected" id="status-Halted">
+                <label class="form-check-label" for="status-Halted">
+                    @T["Halted"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[5].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[5].IsSelected" id="status-Finished">
+                <label class="form-check-label" for="status-Finished">
+                    @T["Finished"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[6].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[6].IsSelected" id="status-Faulted">
+                <label class="form-check-label" for="status-Faulted">
+                    @T["Faulted"]
+                </label>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[7].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[7].IsSelected" id="status-Aborted">
+                <label class="form-check-label" for="status-Aborted">
+                    @T["Aborted"]
+                </label>
+            </div>
+        </div>
+
     </div>
 </section>

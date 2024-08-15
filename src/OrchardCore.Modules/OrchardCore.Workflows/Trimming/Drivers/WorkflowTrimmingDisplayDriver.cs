@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -5,7 +6,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Trimming.Models;
 using OrchardCore.Workflows.Trimming.ViewModels;
 
@@ -37,17 +37,11 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
             model.RetentionDays = settings.RetentionDays;
             model.LastRunUtc = settings.LastRunUtc;
             model.Disabled = settings.Disabled;
-            model.Statuses = settings.Statuses ??
-            [
-                WorkflowStatus.Idle,
-                WorkflowStatus.Starting,
-                WorkflowStatus.Resuming,
-                WorkflowStatus.Executing,
-                WorkflowStatus.Halted,
-                WorkflowStatus.Finished,
-                WorkflowStatus.Faulted,
-                WorkflowStatus.Aborted
-            ];
+
+            foreach (var status in (settings.Statuses ?? []))
+            {
+                model.Statuses.Single(statusItem => statusItem.Status == status).IsSelected = true;
+            }
         }).Location("Content:5")
         .OnGroup(GroupId);
     }
@@ -64,7 +58,10 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
         settings.RetentionDays = viewModel.RetentionDays;
         settings.Disabled = viewModel.Disabled;
-        settings.Statuses = viewModel.Statuses;
+        settings.Statuses = viewModel.Statuses
+            .Where(statusItem => statusItem.IsSelected)
+            .Select(statusItem => statusItem.Status)
+            .ToArray();
 
         return await EditAsync(site, settings, context);
     }
