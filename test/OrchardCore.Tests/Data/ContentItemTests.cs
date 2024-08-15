@@ -9,6 +9,25 @@ namespace OrchardCore.Tests.Data;
 
 public class ContentItemTests
 {
+    [Fact]
+    public void NullValueDateTimeFieldSerialisationTest()
+    {
+        // Arrange
+        var jsonStr = """
+         {
+            "NullValueDateTimeFieldTest": {
+                "Value": null 
+            }
+        }
+        """;
+
+        var jobject = JsonNode.Parse(jsonStr);
+
+        var nullValueDateTimeField = jobject.SelectNode("NullValueDateTimeFieldTest").ToObject<DateTimeField>();
+        Assert.Null(nullValueDateTimeField.Value);
+        Assert.Null(JObject.FromObject(nullValueDateTimeField).SelectNode("Value"));
+    }
+    
     /// <summary>
     /// To validate <see cref="DateTimeJsonConverter"/>
     /// and <seealso cref="TimeSpanJsonConverter"/>
@@ -49,8 +68,33 @@ public class ContentItemTests
         Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
         Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
 
+
         var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
         Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    [Fact]
+    public void JsonNode_WhenParseCalled_ThrowsJsonExceptionWithInvalidDateTime()
+    {
+        // Arrange
+        var jsonStr = """
+         {
+            "EmptyValueDateTimeFieldTest": {
+                "Value": ""
+            },
+            "ErrorFormatDateTimeFieldTest": {
+                "Value": "ErrorFormatValue"
+            }
+        }
+        """;
+
+        // Act
+        var jobject = JsonNode.Parse(jsonStr);
+
+        // Assert
+        _ = Assert.Throws<JsonException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
+
+        _ = Assert.Throws<JsonException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
     }
 
     [Fact]

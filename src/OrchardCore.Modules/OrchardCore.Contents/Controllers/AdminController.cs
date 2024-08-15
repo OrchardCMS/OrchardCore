@@ -409,7 +409,7 @@ public class AdminController : Controller, IUpdateModel
     }
 
     [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
-    public async Task<IActionResult> Edit(string contentItemId, string returnUrl = null)
+    public async Task<IActionResult> Edit(string contentItemId)
     {
         var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 

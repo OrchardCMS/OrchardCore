@@ -40,7 +40,9 @@ public class WorkflowOptions
     public WorkflowOptions UnregisterActivityType(Type activityType)
     {
         if (!ActivityDictionary.ContainsKey(activityType))
+        {
             throw new InvalidOperationException("The specified activity type is not registered.");
+        }
 
         ActivityDictionary.Remove(activityType);
         return this;

@@ -179,4 +179,4 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
             aspect.GoogleSchema = part.GoogleSchema;
         });
     }
-    }
+}

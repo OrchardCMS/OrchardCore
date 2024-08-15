@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardCore.Modules.Manifest;
+using static System.StringSplitOptions;
 
-using static StringSplitOptions;
+namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
 /// Defines a Feature in a Module, can be used multiple times.
