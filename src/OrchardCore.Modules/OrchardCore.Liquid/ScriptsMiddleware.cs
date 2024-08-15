@@ -18,9 +18,8 @@ namespace OrchardCore.Liquid;
 public class ScriptsMiddleware
 {
     private readonly RequestDelegate _next;
-
-    byte[] _bytes;
-    string _etag;
+    private byte[] _bytes;
+    private string _etag;
 
     public ScriptsMiddleware(RequestDelegate next)
     {

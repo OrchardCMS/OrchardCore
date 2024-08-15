@@ -128,7 +128,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(LayersIndexViewModel model)
+    public async Task<IActionResult> Index(LayersIndexViewModel _)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
         {

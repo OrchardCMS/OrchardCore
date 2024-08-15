@@ -11,7 +11,7 @@ internal sealed class WorkflowStatusBuilder
     public string Value { get; set; }
 
     public static WorkflowStatusBuilder[] Build(WorkflowStatus[] selectedStatuses) =>
-        Enum.GetValues(typeof(WorkflowStatus))
+        Enum.GetValues<WorkflowStatus>()
             .Cast<WorkflowStatus>()
             .Select(x => new WorkflowStatusBuilder
             {

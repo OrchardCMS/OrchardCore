@@ -129,7 +129,9 @@ public static class IFileStoreExtensions
     public static string Combine(this IFileStore fileStore, params string[] paths)
     {
         if (paths.Length == 0)
+        {
             return null;
+        }
 
         var normalizedParts =
             paths
@@ -140,7 +142,9 @@ public static class IFileStoreExtensions
 
         // Preserve the initial '/' if it's present.
         if (paths[0]?.StartsWith('/') == true)
+        {
             combined = "/" + combined;
+        }
 
         return combined;
     }

@@ -329,10 +329,12 @@ public sealed class ElasticIndexManager
             var descriptor = new BulkDescriptor();
 
             foreach (var id in contentItemIds)
+            {
                 descriptor.Delete<Dictionary<string, object>>(d => d
                     .Index(GetFullIndexName(indexName))
                     .Id(id)
                 );
+            }
 
             var response = await _elasticClient.BulkAsync(descriptor);
 

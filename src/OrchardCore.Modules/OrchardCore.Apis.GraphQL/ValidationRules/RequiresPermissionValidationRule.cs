@@ -47,7 +47,9 @@ public class RequiresPermissionValidationRule : IValidationRule
                 var fieldDef = validationContext.TypeInfo.GetFieldDef();
 
                 if (fieldDef == null)
+                {
                     return;
+                }
 
                 // check target field
                 await AuthorizeNodePermissionAsync(fieldAst, fieldDef, validationContext, userContext);

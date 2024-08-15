@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Demo.ContentElementDisplays;
