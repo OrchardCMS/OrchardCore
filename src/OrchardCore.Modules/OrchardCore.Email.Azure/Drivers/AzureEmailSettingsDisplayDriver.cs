@@ -15,7 +15,6 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 

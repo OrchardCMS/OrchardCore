@@ -28,7 +28,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
     }
 
-    ResourceManifest BuildManifest()
+    private ResourceManifest BuildManifest()
     {
         var manifest = new ResourceManifest();
 

@@ -25,7 +25,9 @@ public class ValidateReCaptchaAttribute : ActionFilterAttribute
         var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
         if (!string.IsNullOrWhiteSpace(reCaptchaResponse))
+        {
             isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
+        }
 
         var isRobot = false;
 

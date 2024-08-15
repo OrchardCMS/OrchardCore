@@ -287,7 +287,9 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
     {
         var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType);
         if (contentTypeDefinition == null)
+        {
             return;
+        }
 
         var contentShape = context.Shape as IZoneHolding;
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",

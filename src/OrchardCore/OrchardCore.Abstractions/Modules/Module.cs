@@ -5,10 +5,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Embedded;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Modules;
-
-using Manifest;
 
 public class Module
 {

@@ -35,7 +35,9 @@ public class CustomPathSitemapSourceBuilder : SitemapSourceBuilderBase<CustomPat
     private static bool BuildUrl(SitemapBuilderContext context, CustomPathSitemapSource source, XElement url)
     {
         if (string.IsNullOrEmpty(source.Path))
+        {
             return false;
+        }
 
         // Add ~/ to the path, because the it is inserted without leading /.
         var path = "~/" + source.Path;

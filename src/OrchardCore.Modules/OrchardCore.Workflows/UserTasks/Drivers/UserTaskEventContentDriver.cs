@@ -126,7 +126,9 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
             var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 
             if (activity.Roles.Count > 0 && !userRoles.Any(activity.Roles.Contains))
+            {
                 yield break;
+            }
 
             foreach (var action in activity.Actions)
             {

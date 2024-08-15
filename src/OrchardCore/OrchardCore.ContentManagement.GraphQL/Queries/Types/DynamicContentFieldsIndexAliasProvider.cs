@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
-    private static string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
+    private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;

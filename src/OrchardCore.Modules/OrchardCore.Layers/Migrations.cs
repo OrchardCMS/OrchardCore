@@ -1,25 +1,12 @@
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
-using OrchardCore.Layers.Services;
-using OrchardCore.Rules.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Layers;
 
 public sealed class Migrations : DataMigration
 {
-    private readonly ILayerService _layerService;
-    private readonly IConditionIdGenerator _conditionIdGenerator;
-
-    public Migrations(
-        ILayerService layerService,
-        IConditionIdGenerator conditionIdGenerator)
-    {
-        _layerService = layerService;
-        _conditionIdGenerator = conditionIdGenerator;
-    }
-
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table

@@ -134,7 +134,9 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
 
         // Don't allow 'mediafields' directly.
         if (attachedMediaPathParts.Length == 0)
+        {
             return;
+        }
 
         if (string.Equals(attachedMediaPathParts[0], "temp", StringComparison.OrdinalIgnoreCase))
         {

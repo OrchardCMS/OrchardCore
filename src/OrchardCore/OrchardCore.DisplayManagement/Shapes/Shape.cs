@@ -6,7 +6,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes;

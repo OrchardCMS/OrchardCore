@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Menu.Models;
