@@ -67,11 +67,12 @@ public class ContentItemTests
 
         // Assert
 
-        var emptyValueTestexcepion = Assert.Throws<JsonException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
-        Assert.Equal("Unable to convert \"\" to DateTime.", emptyValueTestexcepion.Message);
+        var emptyValueTestexcepion = Assert.Throws<NotSupportedException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
+        Assert.Equal("Unable to convert \"\" to DateTime. The unsupported member type is located on type 'System.Nullable`1[System.DateTime]'. Path: $.Value | LineNumber: 0 | BytePositionInLine: 11.", emptyValueTestexcepion.Message);
 
-        var errorFormatValueTestexcepion = Assert.Throws<JsonException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
-        Assert.Equal("Unable to convert \"ErrorFormatValue\" to DateTime.", errorFormatValueTestexcepion.Message);
+        var errorFormatValueTestexcepion = Assert.Throws<NotSupportedException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
+        Assert.Equal("Unable to convert \"ErrorFormatValue\" to DateTime. The unsupported member type is located on type 'System.Nullable`1[System.DateTime]'. Path: $.Value | LineNumber: 0 | BytePositionInLine: 27."
+, errorFormatValueTestexcepion.Message);
 
         Assert.Equal("13:05:00", timeField.Value.Value.ToString());
         Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
