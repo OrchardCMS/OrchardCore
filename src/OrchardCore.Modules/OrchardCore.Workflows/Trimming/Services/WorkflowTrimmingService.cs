@@ -52,7 +52,7 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
         var statuses = settings.Statuses.Select(x => (int)x).ToArray();
         var workflowInstances = await _session
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
-            .OrderBy(x => x.CreatedUtc)
+            .OrderBy(x => x.Id)
             .Take(batchSize)
             .ListAsync();
 
