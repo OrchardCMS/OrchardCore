@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -16,6 +17,7 @@ public class ZoneTag
     public static async ValueTask<Completion> WriteToAsync(
         IReadOnlyList<FilterArgument> argumentsList,
         IReadOnlyList<Statement> statements,
+        TextWriter _,        
         TextEncoder encoder,
         TemplateContext context)
     {
