@@ -5,16 +5,15 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
+namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
+
+[Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
+public sealed class AddToDeploymentPlanStartup : StartupBase
 {
-    [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    public sealed class AddToDeploymentPlanStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<ContentItemDeploymentSource, ContentItemDeploymentStep, ContentItemDeploymentStepDriver>();
-            services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
-        }
+        services.AddDeployment<ContentItemDeploymentSource, ContentItemDeploymentStep, ContentItemDeploymentStepDriver>();
+        services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
+        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
     }
 }
