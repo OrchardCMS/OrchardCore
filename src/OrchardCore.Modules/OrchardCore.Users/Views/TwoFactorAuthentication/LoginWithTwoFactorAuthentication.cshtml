@@ -7,8 +7,9 @@
 
 @inject IDisplayManager<TwoFactorMethod> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
+
 @{
-    ViewLayout = "Layout__Login";
+    ViewLayout = "Layout__TwoFactor";
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication"])</h1></zone>
@@ -52,7 +53,7 @@
                         </div>
                     </div>
                 }
-                <div>
+                <div class="mb-3">
                     <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
                 </div>
 
@@ -68,7 +69,7 @@
                     rememberMe = Model.RememberMe,
                 });
 
-                <p class="text-center my-3">@T["Having trouble? <a href=\"{0}\">Sign in another way</a>.", link]</p>
+                <p class="text-center">@T["Having trouble? <a href=\"{0}\">Sign in another way</a>.", link]</p>
             }
 
             <p class="text-center">

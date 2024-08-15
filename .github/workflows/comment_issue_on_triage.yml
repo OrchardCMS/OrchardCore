@@ -1,0 +1,33 @@
+# Adds a comment on the issue when its milestone is set.
+name: Comment Issue on Triage
+
+on:
+  issues:
+    # Note that this is triggered also when the milestone changes. Preventing that would require jumping through a lot 
+    # of hoops, and that should be rare anyway.
+    types: [milestoned]
+
+jobs:
+  comment-issue-on-triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    # Despite the trigger being called "issues", this would still run for setting the milestone of PRs too.
+    if: github.event.issue.pull_request == null && github.event.issue.state == 'open'
+    steps:
+      - name: Add Comment
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          # The double empty lines in the body are necessary; it'll show up as a single empty line in the comment.
+          BODY: >
+            We triaged this issue and set the milestone according to the priority we think is appropriate (see 
+            [the docs](https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/) on how we 
+            triage and prioritize issues).
+
+
+            This indicates when the core team may start working on it. However, if you'd like to contribute, we'd 
+            warmly welcome you to do that anytime. See our guide on contributions 
+            [here](https://docs.orchardcore.net/en/latest/docs/guides/contributing/).

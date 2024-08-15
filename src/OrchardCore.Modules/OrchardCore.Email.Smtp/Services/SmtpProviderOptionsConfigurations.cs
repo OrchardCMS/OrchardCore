@@ -3,7 +3,7 @@ using OrchardCore.Email.Core.Services;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
+public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
     private readonly SmtpOptions _smtpOptions;
     private readonly DefaultSmtpOptions _defaultSmtpOptions;

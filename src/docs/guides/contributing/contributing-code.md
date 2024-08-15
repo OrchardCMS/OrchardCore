@@ -26,9 +26,10 @@ First, clone the repository using the command `git clone https://github.com/Orch
 
 We warmly welcome fixes and features! Here are some resources to help you get started on how to contribute code:
 
-- Check out [the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues) for open bug reports and feature requests. Prefer to select issues [scheduled for the upcoming release](https://github.com/OrchardCMS/OrchardCore/milestones). You can [sort issues by most commented](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Acomments-desc) and [most thumbs up](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) (as well as other reactions similarly). These correlate with popularity, i.e. we can see what the community most wants. 
+- Check out [the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues) for open bug reports and feature requests. Prefer to select issues [scheduled for the upcoming release](https://github.com/OrchardCMS/OrchardCore/milestones) (see the [issue management docs](managing-issues.md#issue-milestones) on what the milestones mean). You can [sort issues by most commented](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Acomments-desc) and [most thumbs up](https://github.com/OrchardCMS/OrchardCore/issues?q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc) (as well as other reactions similarly). These correlate with popularity, i.e. we can see what the community most wants.
 - ["Good first issue" issues](https://github.com/OrchardCMS/OrchardCore/labels/good%20first%20issue): We think these are a good for newcomers.
 - ["Help wanted" issues](https://github.com/OrchardCMS/OrchardCore/labels/help%20wanted): These issues are up for grabs. Comment on an issue if you want to create a fix.
+- [Documentation issues](https://github.com/OrchardCMS/OrchardCore/labels/documentation) are quite suitable for newcomers too. See the [docs on contributing documentation](contributing-documentation.md).
 
 ## Identifying the scale
 
@@ -67,6 +68,7 @@ All code submissions will be reviewed and tested by the core team, and only thos
 - Feel free to mark conversations that you addressed to keep track of them with an emoji or otherwise, just don't resolve them.
 - Please keep conversations happening in line comments in those convos, otherwise, communication will be a mess. If you have trouble finding them, see [this video](https://github.com/OrchardCMS/OrchardCore/pull/14749#issuecomment-1917976028).
 - When you're done addressing all feedback of a review, click ["Re-request review"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request#re-requesting-a-review) in the top-right corner for each reviewer when you're ready for another round of review, so they know that you're done.
+- [CodeRabbit](https://coderabbit.ai/) is available for AI on-demand code reviews, which they graciously provide for us as an open-source project for free. You can ask the bot for a code review with a `@coderabbitai review` comment under any pull request. You can have a conversation with it under its comments too. Note that AI code reviews can help, but are frequently incorrect; use your best judgment.
 
 !!! tip
     Do you want to demo what you've done to others, to showcase your work and to gather feedback? Join one of [our meetings](../../resources/meeting/README.md).

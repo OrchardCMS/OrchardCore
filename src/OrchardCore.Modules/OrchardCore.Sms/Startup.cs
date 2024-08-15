@@ -13,7 +13,7 @@ using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Sms;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IHostEnvironment _hostEnvironment;
 
@@ -42,7 +42,7 @@ public class Startup : StartupBase
 }
 
 [Feature("OrchardCore.Notifications.Sms")]
-public class NotificationsStartup : StartupBase
+public sealed class NotificationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -51,7 +51,7 @@ public class NotificationsStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
-public class WorkflowsStartup : StartupBase
+public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

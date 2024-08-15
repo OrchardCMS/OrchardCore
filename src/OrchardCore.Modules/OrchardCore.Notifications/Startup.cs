@@ -1,3 +1,6 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
@@ -9,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Drivers;
+using OrchardCore.Notifications.Endpoints.Management;
 using OrchardCore.Notifications.Handlers;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
@@ -16,13 +20,14 @@ using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _shellConfiguration;
 
@@ -66,10 +71,15 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddMarkAsReadEndpoint();
+    }
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
-public class WorkflowsStartup : StartupBase
+public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -77,8 +87,8 @@ public class WorkflowsStartup : StartupBase
     }
 }
 
-[RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users", "OrchardCore.Contents")]
-public class UsersWorkflowStartup : StartupBase
+[RequireFeatures("OrchardCore.Workflows", UserConstants.Features.Users, "OrchardCore.Contents")]
+public sealed class UsersWorkflowStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -87,7 +97,7 @@ public class UsersWorkflowStartup : StartupBase
 }
 
 [Feature("OrchardCore.Notifications.Email")]
-public class EmailNotificationsStartup : StartupBase
+public sealed class EmailNotificationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

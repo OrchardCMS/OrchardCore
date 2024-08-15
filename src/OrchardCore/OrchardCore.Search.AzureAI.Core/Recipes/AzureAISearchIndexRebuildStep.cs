@@ -11,7 +11,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexRebuildStep : IRecipeStepHandler
 {
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
@@ -46,7 +46,7 @@ public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
             foreach (var settings in indexSettings)
             {
                 settings.SetLastTaskId(0);
-                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings);
                 await indexSettingsService.UpdateAsync(settings);
 
                 await indexManager.RebuildAsync(settings);

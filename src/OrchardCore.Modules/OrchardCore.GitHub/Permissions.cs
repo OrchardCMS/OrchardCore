@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.GitHub;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageGitHubAuthentication = new("ManageGitHubAuthentication", "Manage GitHub Authentication settings");
 

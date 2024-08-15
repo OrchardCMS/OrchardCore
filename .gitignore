@@ -16,6 +16,7 @@ build/
 app.publish/
 [Bb]in/
 [Oo]bj/
+*.binlog
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
@@ -194,6 +195,7 @@ node_modules/
 
 wwwroot
 **/Localization/**/*.po
+!test/OrchardCore.Tests/Localization/**/*.po
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
 !src/OrchardCore.Modules/**/Localization/**/*.po

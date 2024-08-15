@@ -9,24 +9,26 @@ using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
+using OrchardCore.Widgets.Services;
 using OrchardCore.Widgets.Settings;
 
-namespace OrchardCore.Widgets
-{
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Add Widget Card Shapes
-            services.AddScoped<IShapeTableProvider, ContentCardShapes>();
-            // Widgets List Part
-            services.AddContentPart<WidgetsListPart>()
-                .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+namespace OrchardCore.Widgets;
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
-            services.AddContentPart<WidgetMetadata>();
-            services.AddDataMigration<Migrations>();
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-        }
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Add Widget Card Shapes
+        services.AddScoped<IShapeTableProvider, ContentCardShapes>();
+        // Widgets List Part
+        services.AddContentPart<WidgetsListPart>()
+            .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+
+        services.AddScoped<IStereotypesProvider, WidgetStereotypesProvider>();
+
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
+        services.AddContentPart<WidgetMetadata>();
+        services.AddDataMigration<Migrations>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 }

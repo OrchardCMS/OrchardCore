@@ -10,49 +10,48 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.HealthChecks.Services;
 using OrchardCore.Modules;
 
-namespace OrchardCore.HealthChecks
+namespace OrchardCore.HealthChecks;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
     {
-        private readonly IShellConfiguration _shellConfiguration;
+        _shellConfiguration = shellConfiguration;
+    }
 
-        public Startup(IShellConfiguration shellConfiguration)
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IHealthChecksResponseWriter, DefaultHealthChecksResponseWriter>();
+        services.AddHealthChecks();
+
+        services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        var healthChecksOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
+
+        if (healthChecksOptions.ShowDetails)
         {
-            _shellConfiguration = shellConfiguration;
-        }
+            var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IHealthChecksResponseWriter, DefaultHealthChecksResponseWriter>();
-            services.AddHealthChecks();
-
-            services.Configure<HealthChecksOptions>(_shellConfiguration.GetSection("OrchardCore_HealthChecks"));
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var healthChecksOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
-
-            if (healthChecksOptions.ShowDetails)
+            app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
             {
-                var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
-
-                app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+                AllowCachingResponses = false,
+                ResultStatusCodes =
                 {
-                    AllowCachingResponses = false,
-                    ResultStatusCodes =
-                    {
-                        [HealthStatus.Healthy] = StatusCodes.Status200OK,
-                        [HealthStatus.Degraded] = StatusCodes.Status200OK,
-                        [HealthStatus.Unhealthy] = StatusCodes.Status200OK
-                    },
-                    ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
-                });
-            }
-            else
-            {
-                app.UseHealthChecks(healthChecksOptions.Url);
-            }
+                    [HealthStatus.Healthy] = StatusCodes.Status200OK,
+                    [HealthStatus.Degraded] = StatusCodes.Status200OK,
+                    [HealthStatus.Unhealthy] = StatusCodes.Status200OK
+                },
+                ResponseWriter = healthChecksResponseWriter.WriteResponseAsync
+            });
+        }
+        else
+        {
+            app.UseHealthChecks(healthChecksOptions.Url);
         }
     }
 }

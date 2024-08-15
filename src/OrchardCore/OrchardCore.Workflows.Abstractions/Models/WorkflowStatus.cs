@@ -1,14 +1,13 @@
-namespace OrchardCore.Workflows.Models
+namespace OrchardCore.Workflows.Models;
+
+public enum WorkflowStatus
 {
-    public enum WorkflowStatus
-    {
-        Idle,
-        Starting,
-        Resuming,
-        Executing,
-        Halted,
-        Finished,
-        Faulted,
-        Aborted
-    }
+    Idle,
+    Starting,
+    Resuming,
+    Executing,
+    Halted,
+    Finished,
+    Faulted,
+    Aborted
 }

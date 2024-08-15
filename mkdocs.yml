@@ -34,6 +34,8 @@ extra:
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore
+    - icon: fontawesome/brands/discord
+      link: https://orchardcore.net/discord
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/OrchardCMS
 
@@ -111,6 +113,7 @@ nav:
       - Create a website: guides/create-cms-application/README.md
       - Leverage CSPROJ meta information: guides/leverage-csproj-meta-info/README.md
       - Create a Decoupled CMS site: guides/decoupled-cms/README.md
+      - Create a Decoupled CMS site with a .NET Blazor Application (Server Side): guides/create-blazor-cms/README.md
       - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
       - Add an admin menu: guides/add-admin-menu/README.md
       - Implement Full Text search: guides/implement-fulltext-search/README.md
@@ -127,9 +130,11 @@ nav:
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
       - Contributing:
           - Contributing to Orchard Core: guides/contributing/README.md
+          - Opening and managing issues: guides/contributing/managing-issues.md
           - Contributing code: guides/contributing/contributing-code.md
           - Contributing documentation: guides/contributing/contributing-documentation.md
           - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
+          - Benchmarking: guides/contributing/benchmarking.md
       - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md

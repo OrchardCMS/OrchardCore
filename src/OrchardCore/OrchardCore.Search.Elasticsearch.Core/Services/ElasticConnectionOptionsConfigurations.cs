@@ -10,7 +10,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticConnectionOptions>
+public sealed class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticConnectionOptions>
 {
     public const string ConfigSectionName = "OrchardCore_Elasticsearch";
 
@@ -62,7 +62,7 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
             optionsAreValid = false;
         }
 
-        if (elasticConnectionOptions.Ports?.Length == 0)
+        if (elasticConnectionOptions.Ports == null || elasticConnectionOptions.Ports.Length == 0)
         {
             _logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
             optionsAreValid = false;

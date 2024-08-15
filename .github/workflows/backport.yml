@@ -1,0 +1,26 @@
+name: Backport PR to branch
+
+on:
+  issue_comment:
+    types: [created]
+  schedule:
+    # Once a day at 14:00 UTC to clean up old runs.
+    - cron: '0 14 * * *'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  backport:
+    if: ${{ contains(github.event.comment.body, '/backport to') || github.event_name == 'schedule' }}
+    uses: dotnet/arcade/.github/workflows/backport-base.yml@main
+    with:
+      repository_owners: 'OrchardCMS'
+      
+      pr_description_template: |
+        Backport of #%source_pr_number% to %target_branch%
+
+        /cc %cc_users%
