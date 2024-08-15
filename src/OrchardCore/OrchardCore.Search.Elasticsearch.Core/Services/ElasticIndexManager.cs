@@ -277,6 +277,11 @@ public sealed class ElasticIndexManager
     {
         var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetFullIndexName(indexName));
 
+        if (!response.Success)
+        {
+            _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. {OriginalException}", response.OriginalException);
+        }
+
         return response.Body;
     }
 
@@ -333,7 +338,7 @@ public sealed class ElasticIndexManager
 
             if (response.Errors)
             {
-                _logger.LogWarning("There were issues deleting documents from Elasticsearch. {result.OriginalException}", response.OriginalException);
+                _logger.LogWarning("There were issues deleting documents from Elasticsearch. {OriginalException}", response.OriginalException);
             }
 
             success = response.IsValid;
@@ -427,7 +432,7 @@ public sealed class ElasticIndexManager
 
             if (result.Errors)
             {
-                _logger.LogWarning("There were issues reported indexing the documents. {result.ServerError}", result.ServerError);
+                _logger.LogWarning("There were issues reported indexing the documents. {ServerError}", result.ServerError);
             }
         }
     }
