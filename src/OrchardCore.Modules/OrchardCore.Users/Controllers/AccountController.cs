@@ -198,9 +198,10 @@ public class AccountController : AccountBaseController
         {
             await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
+            IUser user = null;
             if (ModelState.IsValid)
             {
-                var user = await _userService.GetUserAsync(model.UserName);
+                user = await _userService.GetUserAsync(model.UserName);
                 if (user != null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
@@ -238,16 +239,21 @@ public class AccountController : AccountBaseController
 
                         return View();
                     }
-
-                    // Login failed with a known user.
-                    await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                 }
 
                 ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
             }
 
-            // Login failed unknown user.
-            await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+            if (user == null)
+            {
+                // Login failed unknown user.
+                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+            }
+            else
+            {
+                // Login failed with a known user.
+                await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
+            }
         }
 
         // If we got this far, something failed, redisplay form.
