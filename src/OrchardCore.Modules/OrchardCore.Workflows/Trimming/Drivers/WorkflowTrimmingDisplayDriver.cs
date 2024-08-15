@@ -14,16 +14,15 @@ namespace OrchardCore.Workflows.Trimming.Drivers;
 
 public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTrimmingSettings>
 {
-    private readonly IDocumentManager<WorkflowTrimmingState> _workflowTrimmingStateDocumentManager;
     public const string GroupId = "WorkflowTrimmingSettings";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IDocumentManager<WorkflowTrimmingState> _workflowTrimmingStateDocumentManager;
 
     public WorkflowTrimmingDisplayDriver(
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor
-    ,
+        IHttpContextAccessor httpContextAccessor,
         IDocumentManager<WorkflowTrimmingState> workflowTrimmingStateDocumentManager)
     {
         _authorizationService = authorizationService;
