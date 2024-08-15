@@ -30,5 +30,6 @@ public class WorkflowTrimmingViewModel
 public class WorkflowStatusItem
 {
     public WorkflowStatus Status { get; set; }
+
     public bool IsSelected { get; set; }
 }
