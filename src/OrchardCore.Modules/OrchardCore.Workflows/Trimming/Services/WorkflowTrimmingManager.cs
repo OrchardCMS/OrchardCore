@@ -49,6 +49,7 @@ public class WorkflowTrimmingManager : IWorkflowTrimmingManager
         var statuses = settings.Statuses.Select(x => (int)x).ToArray();
         var workflowInstances = await _session
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
+            .OrderBy(x => x.CreatedUtc)
             .Take(batchSize)
             .ListAsync();
 
