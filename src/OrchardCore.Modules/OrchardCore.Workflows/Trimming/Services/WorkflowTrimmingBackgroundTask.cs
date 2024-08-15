@@ -15,7 +15,7 @@ namespace OrchardCore.Workflows.Trimming.Services;
 [BackgroundTask(
     Schedule = "0 0 * * *",
     Title = "Workflow Trimming Background Task",
-    Description = "Regularly prunes old workflow instances.",
+    Description = "Regularly deletes old workflow instances.",
     LockTimeout = 3_000,
     LockExpiration = 30_000
 )]
@@ -40,11 +40,11 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
             var batchSize = serviceProvider.GetRequiredService<IOptions<WorkflowTrimmingOptions>>().Value.BatchSize;
 
             logger.LogDebug("Starting trimming Workflow instances.");
-            var prunedCount = await workflowTrimmingManager.TrimWorkflowInstancesAsync(
+            var trimmedCount = await workflowTrimmingManager.TrimWorkflowInstancesAsync(
                 TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays),
                 batchSize
             );
-            logger.LogDebug("Pruned {PrunedCount} workflow instances.", prunedCount);
+            logger.LogDebug("Trimmed {TrimmedCount} workflow instances.", trimmedCount);
 
             var siteSettings = await siteService.LoadSiteSettingsAsync();
             siteSettings.Alter<WorkflowTrimmingSettings>(settings =>
