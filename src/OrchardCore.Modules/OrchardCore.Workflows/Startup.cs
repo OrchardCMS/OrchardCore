@@ -32,7 +32,10 @@ public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _shellConfiguration;
 
-    public Startup(IShellConfiguration shellConfiguration) => _shellConfiguration = shellConfiguration;
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
 
     public override void ConfigureServices(IServiceCollection services)
     {
