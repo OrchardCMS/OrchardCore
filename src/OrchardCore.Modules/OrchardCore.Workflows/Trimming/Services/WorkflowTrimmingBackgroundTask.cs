@@ -40,10 +40,12 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
             var batchSize = serviceProvider.GetRequiredService<IOptions<WorkflowTrimmingOptions>>().Value.BatchSize;
 
             logger.LogDebug("Starting trimming Workflow instances.");
+
             var trimmedCount = await workflowTrimmingManager.TrimWorkflowInstancesAsync(
                 TimeSpan.FromDays(workflowTrimmingSettings.RetentionDays),
                 batchSize
             );
+
             logger.LogDebug("Trimmed {TrimmedCount} workflow instances.", trimmedCount);
 
             var workflowTrimmingSateDocumentManager = serviceProvider.GetRequiredService<IDocumentManager<WorkflowTrimmingState>>();
