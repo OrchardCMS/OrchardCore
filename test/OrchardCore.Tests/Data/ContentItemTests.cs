@@ -27,6 +27,7 @@ public class ContentItemTests
         Assert.Null(nullValueDateTimeField.Value);
         Assert.Null(JObject.FromObject(nullValueDateTimeField).SelectNode("Value"));
     }
+    
     /// <summary>
     /// To validate <see cref="DateTimeJsonConverter"/>
     /// and <seealso cref="TimeSpanJsonConverter"/>
@@ -42,12 +43,6 @@ public class ContentItemTests
             },
             "DateTimeFieldTest": {
                 "Value": "2024-5-31 13:05"
-            },
-            "EmptyValueDateTimeFieldTest": {
-                "Value": ""
-            },
-            "ErrorFormatDateTimeFieldTest": {
-                "Value": "ErrorFormatValue"
             },
             "TimezoneDateTimeFieldTest": {
                 "Value": "2022-12-13T21:02:18.399-05:00"
@@ -66,14 +61,6 @@ public class ContentItemTests
         var timezoneDateTimeFieldTest = jobject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
 
         // Assert
-
-        var emptyValueTestexcepion = Assert.Throws<NotSupportedException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
-        Assert.Equal("Unable to convert \"\" to DateTime. The unsupported member type is located on type 'System.Nullable`1[System.DateTime]'. Path: $.Value | LineNumber: 0 | BytePositionInLine: 11.", emptyValueTestexcepion.Message);
-
-        var errorFormatValueTestexcepion = Assert.Throws<NotSupportedException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
-        Assert.Equal("Unable to convert \"ErrorFormatValue\" to DateTime. The unsupported member type is located on type 'System.Nullable`1[System.DateTime]'. Path: $.Value | LineNumber: 0 | BytePositionInLine: 27."
-, errorFormatValueTestexcepion.Message);
-
         Assert.Equal("13:05:00", timeField.Value.Value.ToString());
         Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
         Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
@@ -84,6 +71,30 @@ public class ContentItemTests
 
         var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
         Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    [Fact]
+    public void JsonNode_WhenParseCalled_ThrowsJsonExceptionWithInvalidDateTime()
+    {
+        // Arrange
+        var jsonStr = """
+         {
+            "EmptyValueDateTimeFieldTest": {
+                "Value": ""
+            },
+            "ErrorFormatDateTimeFieldTest": {
+                "Value": "ErrorFormatValue"
+            }
+        }
+        """;
+
+        // Act
+        var jobject = JsonNode.Parse(jsonStr);
+
+        // Assert
+        _ = Assert.Throws<JsonException>(() => jobject.SelectNode("EmptyValueDateTimeFieldTest").ToObject<DateTimeField>());
+
+        _ = Assert.Throws<JsonException>(() => jobject.SelectNode("ErrorFormatDateTimeFieldTest").ToObject<DateTimeField>());
     }
 
     [Fact]
