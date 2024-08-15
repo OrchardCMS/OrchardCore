@@ -1,16 +1,19 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
@@ -23,12 +26,22 @@ using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Trimming;
+using OrchardCore.Workflows.Trimming.Drivers;
+using OrchardCore.Workflows.Trimming.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 
 namespace OrchardCore.Workflows;
 
 public sealed class Startup : StartupBase
 {
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<TemplateOptions>(o =>
@@ -78,6 +91,14 @@ public sealed class Startup : StartupBase
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
+        // Trimming
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<IWorkflowTrimmingManager, WorkflowTrimmingManager>();
+        services.AddSingleton<IBackgroundTask, WorkflowTrimmingBackgroundTask>();
+        services.AddScoped<IDisplayDriver<ISite>, WorkflowTrimmingDisplayDriver>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.Configure<WorkflowTrimmingOptions>(_shellConfiguration.GetSection("OrchardCore_Workflows").GetSection("Trimming"));
     }
 }
 
