@@ -36,7 +36,7 @@ public class WorkflowTrimmingBackgroundTask : IBackgroundTask
         try
         {
             var clock = serviceProvider.GetRequiredService<IClock>();
-            var workflowTrimmingManager = serviceProvider.GetRequiredService<IWorkflowTrimmingManager>();
+            var workflowTrimmingManager = serviceProvider.GetRequiredService<IWorkflowTrimmingService>();
             var batchSize = serviceProvider.GetRequiredService<IOptions<WorkflowTrimmingOptions>>().Value.BatchSize;
 
             logger.LogDebug("Starting trimming Workflow instances.");

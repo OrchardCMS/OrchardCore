@@ -11,13 +11,13 @@ using YesSql.Services;
 
 namespace OrchardCore.Workflows.Trimming.Services;
 
-public class WorkflowTrimmingManager : IWorkflowTrimmingManager
+public class WorkflowTrimmingService : IWorkflowTrimmingService
 {
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public WorkflowTrimmingManager(ISiteService siteService, ISession session, IClock clock)
+    public WorkflowTrimmingService(ISiteService siteService, ISession session, IClock clock)
     {
         _siteService = siteService;
         _session = session;

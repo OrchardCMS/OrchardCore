@@ -94,7 +94,7 @@ public sealed class Startup : StartupBase
 
         // Trimming
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IWorkflowTrimmingManager, WorkflowTrimmingManager>();
+        services.AddScoped<IWorkflowTrimmingService, WorkflowTrimmingService>();
         services.AddSingleton<IBackgroundTask, WorkflowTrimmingBackgroundTask>();
         services.AddScoped<IDisplayDriver<ISite>, WorkflowTrimmingDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
