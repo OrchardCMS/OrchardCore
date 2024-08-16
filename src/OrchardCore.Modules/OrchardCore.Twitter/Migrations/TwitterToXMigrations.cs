@@ -29,38 +29,36 @@ public sealed class TwitterToXMigrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        await using (var connection = _dbAccessor.CreateConnection())
+        await using var connection = _dbAccessor.CreateConnection();
+        await connection.OpenAsync();
+
+        using var transaction = await connection.BeginTransactionAsync();
+
+        _logger.LogDebug("Updating X (Twitter) Workflow Items");
+
+        try
         {
-            await connection.OpenAsync();
+            var dialect = _store.Configuration.SqlDialect;
+            var documentTableName = _store.Configuration.TableNameConvention.GetDocumentTable();
 
-            using (var transaction = await connection.BeginTransactionAsync())
-            {
-                _logger.LogDebug("Updating X (Twitter) Workflow Items");
-                try
-                {
-                    var dialect = _store.Configuration.SqlDialect;
-                    var documentTableName = _store.Configuration.TableNameConvention.GetDocumentTable();
+            var table = dialect.QuoteForTableName($"{_tablePrefix}{documentTableName}", _store.Configuration.Schema);
+            var contentColumn = dialect.QuoteForColumnName("Content");
+            var typeColumn = dialect.QuoteForColumnName("Type");
 
-                    var table = dialect.QuoteForTableName($"{_tablePrefix}{documentTableName}", _store.Configuration.Schema);
-                    var contentColumn = dialect.QuoteForColumnName("Content");
-                    var typeColumn = dialect.QuoteForColumnName("Type");
+            var updateCmd = $"UPDATE {table} SET {contentColumn} = REPLACE({contentColumn}, 'UpdateTwitterStatusTask', 'UpdateXTwitterStatusTask') WHERE {typeColumn} = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions'";
 
-                    var updateCmd = $"UPDATE {table} SET {contentColumn} = REPLACE({contentColumn}, 'UpdateTwitterStatusTask', 'UpdateXTwitterStatusTask') WHERE {typeColumn} = 'OrchardCore.Workflows.Models.WorkflowType, OrchardCore.Workflows.Abstractions'";
+            await connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    await connection.ExecuteAsync(updateCmd, null, transaction);
+            await transaction.CommitAsync();
 
-                    await transaction.CommitAsync();
+            _logger.LogDebug("Updated X (Twitter) Workflow Items");
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(e, "An error occurred while updating X (Twitter) Workflow Items");
 
-                    _logger.LogDebug("Updated X (Twitter) Workflow Items");
-                }
-                catch (Exception e)
-                {
-                    await transaction.RollbackAsync();
-                    _logger.LogError(e, "An error occurred while updating X (Twitter) Workflow Items");
-
-                    throw;
-                }
-            }
+            throw;
         }
 
         return 1;
