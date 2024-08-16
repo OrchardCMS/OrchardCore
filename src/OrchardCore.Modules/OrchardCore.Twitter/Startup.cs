@@ -62,7 +62,7 @@ public sealed class TwitterStartup : StartupBase
                     }
                 })
             );
-        services.AddDataMigration<TwitterMigrations>();
+        services.AddDataMigration<TwitterToXMigrations>();
     }
 }
 

@@ -9,16 +9,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Twitter.Workflows.Activities;
 
-public class UpdateXStatusTask : TaskActivity<UpdateXStatusTask>
+public class UpdateXTwitterStatusTask : TaskActivity<UpdateXTwitterStatusTask>
 {
     private readonly TwitterClient _twitterClient;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public UpdateXStatusTask(
+    public UpdateXTwitterStatusTask(
         TwitterClient twitterClient,
         IWorkflowExpressionEvaluator expressionEvaluator,
-        IStringLocalizer<UpdateXStatusTask> localizer
+        IStringLocalizer<UpdateXTwitterStatusTask> localizer
         )
     {
         _twitterClient = twitterClient;
@@ -26,7 +26,7 @@ public class UpdateXStatusTask : TaskActivity<UpdateXStatusTask>
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Update X Status Task"];
+    public override LocalizedString DisplayText => S["Update X (Twitter) Status Task"];
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
     public override LocalizedString Category => S["Social"];
