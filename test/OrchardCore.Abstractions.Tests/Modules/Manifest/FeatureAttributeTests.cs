@@ -4,9 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Modules.Manifest;
-/// <summary>
-/// 
-/// </summary>
+
 public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 {
     /// <summary>

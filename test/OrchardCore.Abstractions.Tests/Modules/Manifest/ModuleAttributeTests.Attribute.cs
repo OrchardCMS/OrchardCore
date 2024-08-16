@@ -4,6 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Modules.Manifest;
+
 /// <inheritdoc/>
 public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<TAttribute>
     where TAttribute : ModuleAttribute

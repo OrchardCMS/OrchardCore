@@ -5,6 +5,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OrchardCore.Modules.Manifest;
+
 // TODO: TBD: add tests that help us expose non-named ctor args...
 // TODO: TBD: i.e. avoid ambiguous args...
 /// <inheritdoc/>
