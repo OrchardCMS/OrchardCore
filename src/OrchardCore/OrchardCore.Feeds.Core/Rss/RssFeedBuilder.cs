@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.Feeds.Models;
 

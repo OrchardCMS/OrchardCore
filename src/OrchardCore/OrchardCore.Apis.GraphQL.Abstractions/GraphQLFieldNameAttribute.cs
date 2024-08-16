@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Apis.GraphQL;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]

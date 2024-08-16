@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Search.Elasticsearch.ViewModels;

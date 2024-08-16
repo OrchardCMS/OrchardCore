@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 public static class PageConventionCollectionExtensions

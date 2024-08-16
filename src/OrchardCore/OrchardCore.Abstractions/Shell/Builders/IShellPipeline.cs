@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Environment.Shell.Builders;
 
 public interface IShellPipeline

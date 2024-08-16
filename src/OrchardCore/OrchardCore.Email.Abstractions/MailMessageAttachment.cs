@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace OrchardCore.Email;
 
 /// <summary>

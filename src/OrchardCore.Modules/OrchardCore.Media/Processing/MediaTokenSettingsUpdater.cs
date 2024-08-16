@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;

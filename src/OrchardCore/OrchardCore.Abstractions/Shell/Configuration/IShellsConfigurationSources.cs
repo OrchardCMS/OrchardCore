@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell.Configuration;

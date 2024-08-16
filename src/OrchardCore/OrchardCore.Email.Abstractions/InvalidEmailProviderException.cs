@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Email;
 
 public class InvalidEmailProviderException : ArgumentOutOfRangeException

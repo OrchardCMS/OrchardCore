@@ -1,10 +1,5 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
 using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MailKit.Security;

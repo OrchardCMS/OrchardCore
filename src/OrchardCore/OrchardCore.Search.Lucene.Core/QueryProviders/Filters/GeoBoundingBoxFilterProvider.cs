@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json.Nodes;
 using Lucene.Net.Queries.Function;
 using Lucene.Net.Search;

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,11 +9,12 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Models;
-using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using Format = OrchardCore.Media.Processing.Format;
+using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 namespace OrchardCore.Media.Controllers;
 

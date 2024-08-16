@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentManagement;
 
 public abstract class ContentPartOptionBase

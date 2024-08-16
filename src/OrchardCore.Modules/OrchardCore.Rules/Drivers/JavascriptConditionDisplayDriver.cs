@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Acornima;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.ViewModels;

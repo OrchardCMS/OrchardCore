@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Implementation;

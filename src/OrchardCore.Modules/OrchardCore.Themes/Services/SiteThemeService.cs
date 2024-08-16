@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 

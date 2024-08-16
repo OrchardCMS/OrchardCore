@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing;

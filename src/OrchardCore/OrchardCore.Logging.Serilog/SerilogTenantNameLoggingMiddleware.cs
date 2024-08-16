@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Environment.Shell.Scope;
 using Serilog.Context;

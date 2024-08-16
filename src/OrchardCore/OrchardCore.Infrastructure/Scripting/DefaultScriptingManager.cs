@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Environment.Shell.Scope;
 

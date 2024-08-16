@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentManagement;

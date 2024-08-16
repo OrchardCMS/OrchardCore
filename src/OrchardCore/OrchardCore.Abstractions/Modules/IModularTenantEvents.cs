@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Removing;
 
 namespace OrchardCore.Modules;
