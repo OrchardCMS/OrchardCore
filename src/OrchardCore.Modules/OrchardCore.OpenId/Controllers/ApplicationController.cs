@@ -32,8 +32,8 @@ public sealed class ApplicationController : Controller
     private readonly INotifier _notifier;
     private readonly ShellDescriptor _shellDescriptor;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public ApplicationController(
         IShapeFactory shapeFactory,

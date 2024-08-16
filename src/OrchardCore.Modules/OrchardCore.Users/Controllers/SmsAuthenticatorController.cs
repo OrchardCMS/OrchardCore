@@ -226,7 +226,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         return writer.ToString();
     }
 
-    protected async Task SetPendingPhoneNumberAsync(string phoneNumber, string username)
+    private async Task SetPendingPhoneNumberAsync(string phoneNumber, string username)
     {
         var key = GetPhoneChangeCacheKey(username);
 
