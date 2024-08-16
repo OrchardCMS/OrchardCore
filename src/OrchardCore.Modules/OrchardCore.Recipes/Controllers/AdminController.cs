@@ -16,7 +16,7 @@ using OrchardCore.Security;
 namespace OrchardCore.Recipes.Controllers;
 
 [Admin("Recipes/{action}", "Recipes{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
@@ -28,8 +28,8 @@ public class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IShellHost shellHost,

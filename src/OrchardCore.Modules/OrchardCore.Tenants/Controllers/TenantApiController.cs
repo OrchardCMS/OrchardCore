@@ -27,7 +27,7 @@ namespace OrchardCore.Tenants.Controllers;
 [Route("api/tenants")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-public class TenantApiController : ControllerBase
+public sealed class TenantApiController : ControllerBase
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _currentShellSettings;
@@ -42,8 +42,9 @@ public class TenantApiController : ControllerBase
     private readonly TenantsOptions _tenantsOptions;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITenantValidator _tenantValidator;
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    internal readonly IStringLocalizer S;
 
     public TenantApiController(
         IShellHost shellHost,

@@ -12,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Demo.Controllers;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     private readonly ITestDependency _testDependency;
     private readonly IContentManager _contentManager;

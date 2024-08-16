@@ -10,7 +10,7 @@ namespace OrchardCore.Contents.Deployment.Download;
 
 [Admin("Download/{action}/{contentItemId}", AdminAttribute.NameFromControllerAndAction)]
 [Feature("OrchardCore.Contents.Deployment.Download")]
-public class DownloadController : Controller
+public sealed class DownloadController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;

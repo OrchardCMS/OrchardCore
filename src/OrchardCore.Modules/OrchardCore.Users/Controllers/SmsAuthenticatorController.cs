@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 [Feature(UserConstants.Features.SmsAuthenticator)]
-public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
+public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IdentityOptions _identityOptions;
     private readonly IUserService _userService;

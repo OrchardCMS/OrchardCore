@@ -10,14 +10,14 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers;
 
-public class EmailConfirmationController : Controller
+public sealed class EmailConfirmationController : Controller
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,

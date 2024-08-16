@@ -22,7 +22,7 @@ namespace OrchardCore.OpenId.Controllers;
 
 [Feature(OpenIdConstants.Features.Management)]
 [Admin("OpenId/Application/{action}/{id?}", "OpenIdApplication{action}")]
-public class ApplicationController : Controller
+public sealed class ApplicationController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;

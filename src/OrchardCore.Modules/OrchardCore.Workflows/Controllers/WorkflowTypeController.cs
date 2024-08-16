@@ -33,7 +33,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers;
 
 [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
-public class WorkflowTypeController : Controller
+public sealed class WorkflowTypeController : Controller
 {
     private readonly PagerOptions _pagerOptions;
     private readonly ISession _session;
@@ -48,8 +48,8 @@ public class WorkflowTypeController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public WorkflowTypeController
     (

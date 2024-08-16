@@ -14,14 +14,15 @@ using OrchardCore.Themes.Services;
 namespace OrchardCore.Themes.Controllers;
 
 [Admin("Themes/{action}/{id?}", "Themes.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly ISiteThemeService _siteThemeService;
     private readonly IAdminThemeService _adminThemeService;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteThemeService siteThemeService,

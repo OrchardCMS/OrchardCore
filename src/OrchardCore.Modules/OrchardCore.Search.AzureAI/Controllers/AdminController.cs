@@ -24,7 +24,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Search.AzureAI.Controllers;
 
 [Admin("azure-search/{action}/{indexName?}", "AzureAISearch.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -40,8 +40,8 @@ public class AdminController : Controller
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteService siteService,

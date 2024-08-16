@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 [Feature(UserConstants.Features.AuthenticatorApp)]
-public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
+public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 

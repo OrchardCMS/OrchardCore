@@ -11,7 +11,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentPreview.Controllers;
 
-public class PreviewController : Controller
+public sealed class PreviewController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentManagerSession _contentManagerSession;

@@ -12,7 +12,7 @@ using OrchardCore.Contents;
 namespace OrchardCore.ContentFields.Controllers;
 
 [Admin]
-public class ContentPickerAdminController : Controller
+public sealed class ContentPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;

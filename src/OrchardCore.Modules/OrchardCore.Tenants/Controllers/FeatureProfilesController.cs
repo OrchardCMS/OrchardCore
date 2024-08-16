@@ -21,7 +21,7 @@ namespace OrchardCore.Tenants.Controllers;
 
 [Feature("OrchardCore.Tenants.FeatureProfiles")]
 [Admin("TenantFeatureProfiles/{action}/{id?}", "TenantFeatureProfiles{action}")]
-public class FeatureProfilesController : Controller
+public sealed class FeatureProfilesController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -31,8 +31,8 @@ public class FeatureProfilesController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public FeatureProfilesController(
         IAuthorizationService authorizationService,

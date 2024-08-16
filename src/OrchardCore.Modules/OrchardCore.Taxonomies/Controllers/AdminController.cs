@@ -16,7 +16,7 @@ using YesSql;
 namespace OrchardCore.Taxonomies.Controllers;
 
 [Admin]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;
@@ -26,7 +26,7 @@ public class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISession session,

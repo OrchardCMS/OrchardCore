@@ -6,7 +6,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.XmlRpc.Controllers;
 
 [Feature("OrchardCore.RemotePublishing")]
-public class MetaWeblogController : Controller
+public sealed class MetaWeblogController : Controller
 {
     private const string ManifestUri = "http://schemas.microsoft.com/wlw/manifest/weblog";
 

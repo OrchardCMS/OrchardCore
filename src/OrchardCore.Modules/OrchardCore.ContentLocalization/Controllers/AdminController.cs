@@ -10,13 +10,14 @@ using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentLocalizationManager _contentLocalizationManager;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IContentManager contentManager,

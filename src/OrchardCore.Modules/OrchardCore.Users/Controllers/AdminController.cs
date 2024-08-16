@@ -26,7 +26,7 @@ using YesSql.Services;
 namespace OrchardCore.Users.Controllers;
 
 [Admin("Users/{action}/{id?}", "Users{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
@@ -43,8 +43,8 @@ public class AdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IDisplayManager<User> userDisplayManager,
