@@ -30,8 +30,6 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Localization;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Mvc.Localization;
-global using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-global using Microsoft.AspNetCore.Mvc.Routing;
 global using Microsoft.AspNetCore.Mvc.Testing;
 global using Microsoft.AspNetCore.Mvc.ViewFeatures;
 global using Microsoft.AspNetCore.Routing;

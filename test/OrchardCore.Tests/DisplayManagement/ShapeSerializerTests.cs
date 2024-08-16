@@ -6,61 +6,60 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Stubs;
 using Arguments = OrchardCore.DisplayManagement.Arguments;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.Tests.DisplayManagement;
+
+public class ShapeSerializerTests
 {
-    public class ShapeSerializerTests
+    private readonly IServiceProvider _serviceProvider;
+
+    public ShapeSerializerTests()
     {
-        private readonly IServiceProvider _serviceProvider;
+        IServiceCollection serviceCollection = new ServiceCollection();
 
-        public ShapeSerializerTests()
+        serviceCollection.AddLogging();
+        serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+        serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
+        serviceCollection.AddScoped<IThemeManager, ThemeManager>();
+        serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
+        serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+
+        var defaultShapeTable = new ShapeTable
+        (
+            new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
+        );
+
+        serviceCollection.AddSingleton(defaultShapeTable);
+
+        _serviceProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    [Fact]
+    public async Task ShouldSerialize()
+    {
+        var shape = _serviceProvider.GetService<IShapeFactory>();
+
+        var alpha = await shape.CreateAsync("Alpha");
+        var serialized = alpha.ShapeToJson();
+
+        Assert.Contains("Alpha", serialized.ToString());
+    }
+
+    [Fact]
+    public async Task ShouldSkipRecursiveShapes()
+    {
+        var shape = _serviceProvider.GetService<IShapeFactory>();
+
+        var alpha = await shape.CreateAsync("Alpha");
+
+        var beta = await shape.CreateAsync("Beta", Arguments.From(new
         {
-            IServiceCollection serviceCollection = new ServiceCollection();
+            Alpha = alpha
+        }));
 
-            serviceCollection.AddLogging();
-            serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-            serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+        await alpha.AddAsync(beta);
+        var serialized = alpha.ShapeToJson();
 
-            var defaultShapeTable = new ShapeTable
-            (
-                new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
-                new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
-            );
-
-            serviceCollection.AddSingleton(defaultShapeTable);
-
-            _serviceProvider = serviceCollection.BuildServiceProvider();
-        }
-
-        [Fact]
-        public async Task ShouldSerialize()
-        {
-            var shape = _serviceProvider.GetService<IShapeFactory>();
-
-            var alpha = await shape.CreateAsync("Alpha");
-            var serialized = alpha.ShapeToJson();
-
-            Assert.Contains("Alpha", serialized.ToString());
-        }
-
-        [Fact]
-        public async Task ShouldSkipRecursiveShapes()
-        {
-            var shape = _serviceProvider.GetService<IShapeFactory>();
-
-            var alpha = await shape.CreateAsync("Alpha");
-
-            var beta = await shape.CreateAsync("Beta", Arguments.From(new
-            {
-                Alpha = alpha
-            }));
-
-            await alpha.AddAsync(beta);
-            var serialized = alpha.ShapeToJson();
-
-            Assert.Contains("Beta", serialized.ToString());
-        }
+        Assert.Contains("Beta", serialized.ToString());
     }
 }

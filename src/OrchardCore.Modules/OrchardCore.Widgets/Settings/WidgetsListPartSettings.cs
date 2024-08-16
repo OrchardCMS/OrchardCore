@@ -1,7 +1,6 @@
-namespace OrchardCore.Widgets.Settings
+namespace OrchardCore.Widgets.Settings;
+
+public class WidgetsListPartSettings
 {
-    public class WidgetsListPartSettings
-    {
-        public string[] Zones { get; set; } = [];
-    }
+    public string[] Zones { get; set; } = [];
 }

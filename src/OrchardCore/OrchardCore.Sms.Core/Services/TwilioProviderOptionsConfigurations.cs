@@ -4,7 +4,7 @@ using OrchardCore.Sms.Models;
 
 namespace OrchardCore.Sms.Services;
 
-public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProviderOptions>
+public sealed class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProviderOptions>
 {
     private readonly ISiteService _siteService;
 
@@ -17,8 +17,9 @@ public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProvider
     {
         var typeOptions = new SmsProviderTypeOptions(typeof(TwilioSmsProvider));
 
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<TwilioSettings>();
+        var settings = _siteService.GetSettingsAsync<TwilioSettings>()
+            .GetAwaiter()
+            .GetResult();
 
         typeOptions.IsEnabled = settings.IsEnabled;
 

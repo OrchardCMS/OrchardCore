@@ -1,4 +1,4 @@
-# Orchard Core 
+# Orchard Core
 
 Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core.
 
@@ -13,12 +13,12 @@ Orchard Core consists of two distinct projects:
 
 ## Build Status
 
-Stable (`release/1.8.3`): 
+Stable (`release/1.8.3`):
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/release_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
 
-Nightly (`main`): 
+Nightly (`main`):
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/preview_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Preview+-+CI%22)
 [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/preview/nuget/OrchardCore.Application.Cms.Targets/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/preview/packages/detail/nuget/OrchardCore.Application.Cms.Targets/latest/)
@@ -41,13 +41,14 @@ Do you need some help with Orchard Core? Don't worry, there are ways to get help
 
 - Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
 - Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
-- Do you want to chat with other community members? Check out [our Discord server](https://discord.gg/s3e2HtyPZc) and [Gitter chatroom](https://gitter.im/OrchardCMS/OrchardCore]).
+- Do you want to chat with other community members? Check out [our Discord server](https://orchardcore.net/discord).
 
 ## Get in Touch
 
 - [X (Twitter)](https://twitter.com/orchardcms)
-- [LinkedIn](https://www.linkedin.com/groups/13605669/)
+- [LinkedIn](https://orchardcore.net/linkedin)
 - [Facebook](https://www.facebook.com/OrchardCore)
+- [Discord](https://orchardcore.net/discord)
 - Please report security issues privately, via email, to [contact@orchardcore.net](mailto:contact@orchardcore.net).
 
 ### Local Communities

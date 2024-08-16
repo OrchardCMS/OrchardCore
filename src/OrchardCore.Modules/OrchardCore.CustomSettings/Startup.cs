@@ -14,41 +14,40 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.CustomSettings
+namespace OrchardCore.CustomSettings;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
+        services.AddScoped<CustomSettingsService>();
+        services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
+        // Permissions
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
+
+        services.AddRecipeExecutionStep<CustomSettingsStep>();
+
+        services.Configure<ContentTypeDefinitionOptions>(options =>
         {
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
-            services.AddScoped<CustomSettingsService>();
-            services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
-            // Permissions
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
-
-            services.AddRecipeExecutionStep<CustomSettingsStep>();
-
-            services.Configure<ContentTypeDefinitionOptions>(options =>
+            options.Stereotypes.TryAdd("CustomSettings", new ContentTypeDefinitionDriverOptions
             {
-                options.Stereotypes.TryAdd("CustomSettings", new ContentTypeDefinitionDriverOptions
-                {
-                    ShowCreatable = false,
-                    ShowListable = false,
-                    ShowDraftable = false,
-                    ShowVersionable = false,
-                });
+                ShowCreatable = false,
+                ShowListable = false,
+                ShowDraftable = false,
+                ShowVersionable = false,
             });
-        }
+        });
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<CustomSettingsDeploymentSource, CustomSettingsDeploymentStep, CustomSettingsDeploymentStepDriver>();
-        }
+        services.AddDeployment<CustomSettingsDeploymentSource, CustomSettingsDeploymentStep, CustomSettingsDeploymentStepDriver>();
     }
 }

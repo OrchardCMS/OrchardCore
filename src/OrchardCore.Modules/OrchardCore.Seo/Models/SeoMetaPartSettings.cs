@@ -1,11 +1,10 @@
-namespace OrchardCore.Seo.Models
+namespace OrchardCore.Seo.Models;
+
+public class SeoMetaPartSettings
 {
-    public class SeoMetaPartSettings
-    {
-        public bool DisplayKeywords { get; set; }
-        public bool DisplayCustomMetaTags { get; set; }
-        public bool DisplayOpenGraph { get; set; }
-        public bool DisplayTwitter { get; set; }
-        public bool DisplayGoogleSchema { get; set; }
-    }
+    public bool DisplayKeywords { get; set; }
+    public bool DisplayCustomMetaTags { get; set; }
+    public bool DisplayOpenGraph { get; set; }
+    public bool DisplayTwitter { get; set; }
+    public bool DisplayGoogleSchema { get; set; }
 }

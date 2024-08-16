@@ -1,0 +1,14 @@
+
+// If MDE is loaded with 'bootstrap' plugin, the 'blockquote' class is added to all 'blockquote' elements.
+// So if we are using the 'bootstrap' plugin, don't apply our custom style.
+.EasyMDEContainer blockquote:not(.blockquote) {
+    background: var(--bs-secondary-bg-subtle);
+    border-left: 0.4rem solid var(--bs-secondary-border-subtle) !important;
+    margin: 1.5em 10px;
+    padding: 1em 10px .1em;
+    quotes: "\201C""\201D""\2018""\2019";
+}
+
+.EasyMDEContainer blockquote:not(.blockquote) > p {
+    color: var(--bs-secondary-text-emphasis);
+}

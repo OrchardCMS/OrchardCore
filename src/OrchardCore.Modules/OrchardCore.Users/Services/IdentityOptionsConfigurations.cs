@@ -16,9 +16,9 @@ public sealed class IdentityOptionsConfigurations : IConfigureOptions<IdentityOp
 
     public void Configure(IdentityOptions options)
     {
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-
-        var settings = site.As<IdentitySettings>();
+        var settings = _siteService.GetSettingsAsync<IdentitySettings>()
+            .GetAwaiter()
+            .GetResult();
 
         if (!string.IsNullOrEmpty(settings.UserSettings?.AllowedUserNameCharacters))
         {

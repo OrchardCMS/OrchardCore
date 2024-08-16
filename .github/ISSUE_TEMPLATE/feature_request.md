@@ -6,6 +6,7 @@ labels: enhancement
 assignees: ''
 
 ---
+<!-- Please also see the docs on how we manage issues: https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/. -->
 
 ### Is your feature request related to a problem? Please describe.
 A clear and concise description of what the problem is.
