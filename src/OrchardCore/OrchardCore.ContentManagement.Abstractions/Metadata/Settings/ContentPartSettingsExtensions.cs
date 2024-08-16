@@ -57,7 +57,7 @@ public static class ContentPartSettingsExtensions
 
         if (string.IsNullOrEmpty(displayName))
         {
-            displayName = part.Name.TrimEnd("Part");
+            displayName = part.Name.TrimEndString("Part");
         }
 
         return displayName;
