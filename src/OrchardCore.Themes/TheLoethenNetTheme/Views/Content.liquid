@@ -1,0 +1,13 @@
+{% zone "Header" %}
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading text-uppercase">{{ Model.ContentItem | display_text }}</div>
+    </div>
+</header>
+{% endzone %}
+
+<section>
+  <div class="container">
+      {{ Model.Content | shape_render }}
+  </div>
+</section>

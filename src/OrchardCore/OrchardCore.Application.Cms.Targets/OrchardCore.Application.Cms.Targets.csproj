@@ -10,6 +10,7 @@
     - TheAdmin Theme
     - SafeMode Theme
     - TheAgency Theme
+    - TheLoethenNet Theme
     - TheBlog Theme
     - TheComingSoon Theme
     - TheTheme theme</Description>
@@ -35,6 +36,7 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheLoethenNetTheme\TheLoethenNetTheme.csproj" PrivateAssests="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 

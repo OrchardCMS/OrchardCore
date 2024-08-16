@@ -1,0 +1,1656 @@
+{
+  "name": "LoethenNet",
+  "displayName": "LoethenNet",
+  "description": "Ready to use loethen family website.",
+  "author": "The LoethenTech LLC team",
+  "website": "https://www.loethen.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "default" ],
+  "tags": [ "agency" ],
+
+  // The variables are evaluated the first time they are accessed, and reused across steps
+  "variables": {
+    "landingContentItemId": "[js:uuid()]"
+    // "now": "[js: new Date().toISOString()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        // SaaS
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        // Content Management
+        "OrchardCore.Alias",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.CustomSettings",
+        "OrchardCore.Deployment",
+        "OrchardCore.Deployment.Remote",
+        "OrchardCore.Flows",
+        "OrchardCore.Layers",
+        "OrchardCore.Lists",
+        "OrchardCore.Markdown",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Placements",
+        "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
+        "OrchardCore.Title",
+        "OrchardCore.Templates",
+        "OrchardCore.Widgets",
+
+        // Themes
+        "TheLoethenNetTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheLoethenNetTheme"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
+          "Permissions": []
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "OrchardCore.Contents",
+        "ContentItemId": "[js: variables('landingContentItemId')]"
+      },
+      "LayerSettings": {
+        "Zones": [ "Footer" ]
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Page",
+          "DisplayName": "Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Page",
+              "Name": "Page",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LandingPage",
+          "DisplayName": "Landing Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LandingPage",
+              "Name": "LandingPage",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "8"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                },
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Services",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Services",
+                  "Description": "Provides a collection behavior for your content item.",
+                  "Position": "3"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Service"
+                  ]
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Portfolio",
+              "Settings": {
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Project"
+                  ]
+                },
+                "ContentTypePartSettings": {
+                  "DisplayName": "Portfolio",
+                  "Description": "Provides a collection behavior for your content item.",
+                  "Position": "4"
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "About",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "About",
+                  "Description": "A collection of milestones",
+                  "Position": "5"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Milestone"
+                  ]
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Team",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Team",
+                  "Description": "Team members",
+                  "Position": "6"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "TeamMember"
+                  ]
+                }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Clients",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Clients",
+                  "Description": "Provides a collection behavior for your content item.",
+                  "Position": "7"
+                },
+                "BagPartSettings": {
+                  "ContainedContentTypes": [
+                    "Client"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Service",
+          "DisplayName": "Service",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Service",
+              "Name": "Service",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Project",
+          "DisplayName": "Project",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Project",
+              "Name": "Project",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Milestone",
+          "DisplayName": "Milestone",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Milestone",
+              "Name": "Milestone",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TeamMember",
+          "DisplayName": "Team Member",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TeamMember",
+              "Name": "TeamMember",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Client",
+          "DisplayName": "Client",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Client",
+              "Name": "Client",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "DisplayName": "Html",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Container",
+          "DisplayName": "Container",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Container",
+              "Name": "Container",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "DisplayName": "Image",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Image",
+              "Name": "Image",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "DisplayName": "Paragraph",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Paragraph",
+              "Name": "Paragraph",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "Service",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "IconClass",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Icon Class",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "The icon css class from font-awesome. e.g., fa-laptop, fa-shopping-cart, fa-lock"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Project",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Image",
+                  "Position": "1"
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Category",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Category",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "The category that is displayed below the title"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Milestone",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Date",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Date",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Image",
+                  "Position": "1"
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TeamMember",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Occupation",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Occupation",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Picture",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Picture",
+                  "Position": "1"
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Twitter",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Twitter",
+                  "Position": "2"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Twitter handle, e.g. @BillGates"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Facebook",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Facebook",
+                  "Position": "3"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Facebook handle"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "LinkedIn",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "LinkedIn",
+                  "Position": "4"
+                },
+                "TextFieldSettings": {
+                  "Hint": "LinkedIn handle"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Client",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Logo",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Logo",
+                  "Position": "0"
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Url",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Url",
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Content",
+                  "Editor": "Multiline",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Quote",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Quote",
+                  "Position": "0",
+                  "Editor": "TextArea"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "Settings": {
+            "ContentPartSettings": {
+              "Attachable": true
+            }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Media",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Image",
+                  "Position": "0"
+                },
+                "MediaFieldSettings": {
+                  "Required": true,
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Caption",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Caption",
+                  "Position": "1"
+                },
+                "TextFieldSettings": {
+                  "Hint": "A description of the image used as title or alternate text"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Content",
+                  "Position": "0",
+                  "Editor": "Wysiwyg"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "RawHtml",
+          "DisplayText": "Footer",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LayerMetadata": {
+            "Layer": "Always",
+            "Zone": "Footer",
+            "RenderTitle": false,
+            "Position": 10
+          },
+          "RawHtml": {
+            "Content": {
+              "Html": "[file:text('Snippets/footer.html')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },
+          "Description": "The widgets in this layer are displayed on any page of this site."
+        },
+        {
+          "Name": "Homepage",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },
+          "Description": "The widgets in this layer are only displayed on the homepage."
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/assets/img/about/1.jpg"
+        },
+        {
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/assets/img/about/2.jpg"
+        },
+        {
+          "TargetPath": "about/3.jpg",
+          "SourcePath": "../wwwroot/assets/img/about/3.jpg"
+        },
+        {
+          "TargetPath": "about/4.jpg",
+          "SourcePath": "../wwwroot/assets/img/about/4.jpg"
+        },
+        {
+          "TargetPath": "logos/ibm.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/ibm.svg"
+        },
+        {
+          "TargetPath": "logos/google.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/google.svg"
+        },
+        {
+          "TargetPath": "logos/microsoft.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/microsoft.svg"
+        },
+        {
+          "TargetPath": "logos/facebook.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/facebook.svg"
+        },
+        {
+          "TargetPath": "portfolio/1.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/1.jpg"
+        },
+        {
+          "TargetPath": "portfolio/2.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/2.jpg"
+        },
+        {
+          "TargetPath": "portfolio/3.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/3.jpg"
+        },
+        {
+          "TargetPath": "portfolio/4.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/4.jpg"
+        },
+        {
+          "TargetPath": "portfolio/5.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/5.jpg"
+        },
+        {
+          "TargetPath": "portfolio/6.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/6.jpg"
+        },
+        {
+          "TargetPath": "team/1.jpg",
+          "SourcePath": "../wwwroot/assets/img/team/1.jpg"
+        },
+        {
+          "TargetPath": "team/2.jpg",
+          "SourcePath": "../wwwroot/assets/img/team/2.jpg"
+        },
+        {
+          "TargetPath": "team/3.jpg",
+          "SourcePath": "../wwwroot/assets/img/team/3.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Menu",
+          "DisplayText": "Main Menu",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "MenuPart": {},
+          "TitlePart": {
+            "Title": "Main Menu"
+          },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
+                "LinkMenuItemPart": {
+                  "Name": "Services",
+                  "Url": "~/#services"
+                }
+              },
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
+                "LinkMenuItemPart": {
+                  "Name": "Portfolio",
+                  "Url": "~/#portfolio"
+                }
+              },
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
+                "LinkMenuItemPart": {
+                  "Name": "About",
+                  "Url": "~/#about"
+                }
+              },
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
+                "LinkMenuItemPart": {
+                  "Name": "Team",
+                  "Url": "~/#team"
+                }
+              },
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
+                "LinkMenuItemPart": {
+                  "Name": "Contact",
+                  "Url": "~/#contact"
+                }
+              }
+            ]
+          },
+          "AliasPart": {
+            "Alias": "main-menu"
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "LandingPage",
+          "DisplayText": "[js: parameters('SiteName')]",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LandingPage": {},
+          "AutoroutePart": {
+            "Path": "home-page",
+            "SetHomepage": true
+          },
+          "TitlePart": {
+            "Title": "[js: parameters('SiteName')]"
+          },
+          "Services": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Service",
+                "DisplayText": "E-Commerce",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-shopping-cart"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "E-Commerce"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Service",
+                "DisplayText": "Responsive Design",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-laptop"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "Responsive Design"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Service",
+                "DisplayText": "Web Security",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Service": {
+                  "IconClass": {
+                    "Text": "fa-lock"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit."
+                },
+                "TitlePart": {
+                  "Title": "Web Security"
+                }
+              }
+            ]
+          },
+          "Portfolio": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Threads",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/1.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Illustrations"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Threads"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Explore",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/2.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Graphic Design"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Explore"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Finish",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/3.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Identity"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Finish"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Lines",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/4.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Branding"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Lines"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Southwest",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/5.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Web Design"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Southwest"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Project",
+                "DisplayText": "Window",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Project": {
+                  "Image": {
+                    "Paths": [
+                      "/portfolio/6.jpg"
+                    ]
+                  },
+                  "Category": {
+                    "Text": "Photography"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!"
+                },
+                "TitlePart": {
+                  "Title": "Window"
+                }
+              }
+            ]
+          },
+          "About": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Milestone",
+                "DisplayText": "Our Humble Beginnings",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Milestone": {
+                  "Date": {
+                    "Text": "2009-2011"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/1.jpg"
+                    ]
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                },
+                "TitlePart": {
+                  "Title": "Our Humble Beginnings"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Milestone",
+                "DisplayText": "An Agency is Born",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Milestone": {
+                  "Date": {
+                    "Text": "March 2011"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/2.jpg"
+                    ]
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                },
+                "TitlePart": {
+                  "Title": "An Agency is Born"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Milestone",
+                "DisplayText": "Transition to Full Service",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Milestone": {
+                  "Date": {
+                    "Text": "December 2015"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/3.jpg"
+                    ]
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!"
+                },
+                "TitlePart": {
+                  "Title": "Transition to Full Service"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Milestone",
+                "DisplayText": "Phase Two Expansion",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Milestone": {
+                  "Date": {
+                    "Text": "July 2020"
+                  },
+                  "Image": {
+                    "Paths": [
+                      "/about/4.jpg"
+                    ]
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!\r\n"
+                },
+                "TitlePart": {
+                  "Title": "Phase Two Expansion"
+                }
+              }
+            ]
+          },
+          "Team": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "TeamMember",
+                "DisplayText": "Parveen Anand",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Designer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/1.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@"
+                  },
+                  "Facebook": {
+                    "Text": "@"
+                  },
+                  "LinkedIn": {
+                    "Text": "@"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Parveen Anand"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "TeamMember",
+                "DisplayText": "Diana Petersen",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Marketer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/2.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@"
+                  },
+                  "Facebook": {
+                    "Text": "@"
+                  },
+                  "LinkedIn": {
+                    "Text": "@"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Diana Petersen"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "TeamMember",
+                "DisplayText": "Larry Parker",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "TeamMember": {
+                  "Occupation": {
+                    "Text": "Lead Developer"
+                  },
+                  "Picture": {
+                    "Paths": [
+                      "/team/3.jpg"
+                    ]
+                  },
+                  "Twitter": {
+                    "Text": "@"
+                  },
+                  "Facebook": {
+                    "Text": "@"
+                  },
+                  "LinkedIn": {
+                    "Text": "@"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Larry Parker"
+                }
+              }
+            ]
+          },
+          "Clients": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Client",
+                "DisplayText": "Microsoft",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/microsoft.svg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Microsoft"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Client",
+                "DisplayText": "Google",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/google.svg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Google"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Client",
+                "DisplayText": "Facebook",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/facebook.svg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "Facebook"
+                }
+              },
+              {
+                "ContentItemId": "[js:uuid()]",
+                "ContentItemVersionId": "[js:uuid()]",
+                "ContentType": "Client",
+                "DisplayText": "IBM",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "[js: parameters('AdminUsername')]",
+                "Client": {
+                  "Logo": {
+                    "Paths": [
+                      "/logos/ibm.svg"
+                    ]
+                  },
+                  "Url": {
+                    "Text": "#"
+                  }
+                },
+                "TitlePart": {
+                  "Title": "IBM"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "Content__LandingPage": {
+          "Description": "A template for the Landing Page content type",
+          "Content": "[file:text('Snippets/landingpage.liquid')]"
+        }
+      }
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "medium": {
+          "Hint": "A medium image (600px x 480px)",
+          "Width": 600,
+          "Height": 480,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },
+        "small": {
+          "Hint": "A small image (240px x 240px)",
+          "Width": 240,
+          "Height": 240,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },
+        "extrasmall": {
+          "Hint": "A extra small image (160px x 160px)",
+          "Width": 160,
+          "Height": 160,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }
+  ]
+}
