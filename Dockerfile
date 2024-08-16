@@ -17,7 +17,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
-ENV ASPNETCORE_URLS http://+:80
+ENV ASPNETCORE_URLS=http://+:80
 WORKDIR /app
 COPY --from=build-env /app/build/release .
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
