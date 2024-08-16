@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Recipes.Services
+namespace OrchardCore.Recipes.Services;
+
+public interface IRecipeEnvironmentProvider
 {
-    public interface IRecipeEnvironmentProvider
-    {
-        Task PopulateEnvironmentAsync(IDictionary<string, object> environment);
-        int Order { get; }
-    }
+    Task PopulateEnvironmentAsync(IDictionary<string, object> environment);
+    int Order { get; }
 }
