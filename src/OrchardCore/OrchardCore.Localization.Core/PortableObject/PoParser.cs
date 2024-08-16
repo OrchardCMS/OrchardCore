@@ -3,7 +3,6 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Cysharp.Text;
 
 namespace OrchardCore.Localization.PortableObject;

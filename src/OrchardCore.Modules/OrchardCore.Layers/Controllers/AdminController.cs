@@ -127,17 +127,6 @@ public class AdminController : Controller
         return View(model);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Index(LayersIndexViewModel model)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-        {
-            return Forbid();
-        }
-
-        return RedirectToAction(nameof(Index));
-    }
-
     public async Task<IActionResult> Create()
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))

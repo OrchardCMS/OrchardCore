@@ -49,7 +49,9 @@ public static class StringExtensions
         }
 
         if (characterCount < 0 || text.Length <= characterCount)
+        {
             return text;
+        }
 
         // Search beginning of word.
         var backup = characterCount;

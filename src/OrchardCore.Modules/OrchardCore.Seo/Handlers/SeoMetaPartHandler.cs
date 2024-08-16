@@ -1,14 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Media;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Seo.Models;
@@ -74,7 +71,7 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 
             var actionContext = _actionContextAccessor.ActionContext;
 
-            actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
+            actionContext ??= await _httpContextAccessor.GetActionContextAsync();
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
@@ -181,21 +178,5 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
 
             aspect.GoogleSchema = part.GoogleSchema;
         });
-    }
-
-    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 }

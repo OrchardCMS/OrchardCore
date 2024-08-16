@@ -1,18 +1,17 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Workflows.WorkflowPruning.Drivers;
+using OrchardCore.Workflows.Trimming.Drivers;
 
-namespace OrchardCore.Workflows.WorkflowPruning;
+namespace OrchardCore.Workflows.Trimming;
 
 public sealed class AdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", WorkflowPruningDisplayDriver.GroupId },
+        { "groupId", WorkflowTrimmingDisplayDriver.GroupId },
     };
 
     internal readonly IStringLocalizer S;
@@ -31,7 +30,7 @@ public sealed class AdminMenu : INavigationProvider
 
         builder.Add(S["Configuration"], configuration => configuration
             .Add(S["Settings"], settings => settings
-                .Add(S["Workflow Pruning"], S["Workflow Pruning"], pruning => pruning
+                .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
                     .Action("Index", "Admin", _routeValues)
                     .Permission(Permissions.ManageWorkflowSettings)
                     .LocalNav()

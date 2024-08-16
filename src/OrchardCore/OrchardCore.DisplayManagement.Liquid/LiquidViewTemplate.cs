@@ -8,19 +8,18 @@ using Fluid.Accessors;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
@@ -192,26 +191,10 @@ public static class LiquidViewTemplateExtensions
         if (actionContext == null)
         {
             var httpContext = context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            actionContext = await GetActionContextAsync(httpContext);
+            actionContext = await httpContext.GetActionContextAsync();
         }
 
         return GetViewContext(actionContext);
-    }
-
-    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 
     internal static ViewContext GetViewContext(ActionContext actionContext)

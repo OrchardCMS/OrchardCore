@@ -60,16 +60,6 @@ public static class CssOrchardHelperExtensions
     public static TheAdminThemeOptions GetThemeOptions(this IOrchardHelper helper)
         => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
 
-    private static IEnumerable<string> Combine(string optionClasses, string[] additionalClasses)
-    {
-        if (string.IsNullOrEmpty(optionClasses))
-        {
-            return additionalClasses;
-        }
-
-        return additionalClasses.Concat([optionClasses]);
-    }
-
     private static HtmlContentBuilder GetHtmlContentBuilder(string optionClasses, IList<string> values)
     {
         var builder = new HtmlContentBuilder();
