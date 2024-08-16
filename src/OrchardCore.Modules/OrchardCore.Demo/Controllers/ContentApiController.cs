@@ -55,7 +55,6 @@ public class ContentApiController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> AddContent(ContentItem contentItem)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
