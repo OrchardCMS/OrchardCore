@@ -14,14 +14,15 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
 [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
 [Admin("AddToDeploymentPlan/{action}/{deploymentPlanId}", AdminAttribute.NameFromControllerAndAction)]
-public class AddToDeploymentPlanController : Controller
+public sealed class AddToDeploymentPlanController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly ISession _session;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AddToDeploymentPlanController(
         IAuthorizationService authorizationService,

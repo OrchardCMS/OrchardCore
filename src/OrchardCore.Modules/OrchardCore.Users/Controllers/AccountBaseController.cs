@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Controllers;
 
-public class AccountBaseController : Controller
+public abstract class AccountBaseController : Controller
 {
     protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {

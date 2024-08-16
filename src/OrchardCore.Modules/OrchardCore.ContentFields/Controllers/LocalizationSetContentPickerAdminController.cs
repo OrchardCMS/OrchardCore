@@ -17,7 +17,7 @@ namespace OrchardCore.ContentFields.Controllers;
 
 [RequireFeatures("OrchardCore.ContentLocalization")]
 [Admin]
-public class LocalizationSetContentPickerAdminController : Controller
+public sealed class LocalizationSetContentPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentLocalizationManager _contentLocalizationManager;

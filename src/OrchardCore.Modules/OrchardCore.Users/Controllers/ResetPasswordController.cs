@@ -18,7 +18,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers;
 
 [Feature(UserConstants.Features.ResetPassword)]
-public class ResetPasswordController : Controller
+public sealed class ResetPasswordController : Controller
 {
     private static readonly string _controllerName = typeof(ResetPasswordController).ControllerName();
 
@@ -32,7 +32,7 @@ public class ResetPasswordController : Controller
     private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ResetPasswordController(
         IUserService userService,

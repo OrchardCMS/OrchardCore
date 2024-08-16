@@ -25,7 +25,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers;
 
 [Admin]
-public class WorkflowController : Controller
+public sealed class WorkflowController : Controller
 {
     private readonly PagerOptions _pagerOptions;
     private readonly ISession _session;
@@ -39,8 +39,8 @@ public class WorkflowController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly IDistributedLock _distributedLock;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public WorkflowController(
         IOptions<PagerOptions> pagerOptions,

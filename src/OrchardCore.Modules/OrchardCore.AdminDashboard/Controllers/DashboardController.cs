@@ -16,7 +16,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 namespace OrchardCore.AdminDashboard.Controllers;
 
 [Admin]
-public class DashboardController : Controller
+public sealed class DashboardController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IAdminDashboardService _adminDashboardService;

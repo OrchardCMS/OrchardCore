@@ -125,7 +125,7 @@ The `[Admin]` attribute has optional parameters for a custom route template and 
 
 ```csharp
 [Admin("Person/{action}/{id?}", "Person{action}")]
-public class PersonController : Controller
+public sealed class PersonController : Controller
 {
     [Admin("Person", "Person")]
     public IActionResult Index() { ... }

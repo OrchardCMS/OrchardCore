@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Lists.Controllers;
 
 [RequireFeatures("OrchardCore.RemotePublishing")]
-public class RemotePublishingController : Controller
+public sealed class RemotePublishingController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly ILogger _logger;

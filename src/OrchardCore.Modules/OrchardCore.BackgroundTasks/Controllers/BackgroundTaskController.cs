@@ -17,7 +17,7 @@ using OrchardCore.Routing;
 namespace OrchardCore.BackgroundTasks.Controllers;
 
 [Admin("BackgroundTasks/{action}/{name?}", "BackgroundTasks{action}")]
-public class BackgroundTaskController : Controller
+public sealed class BackgroundTaskController : Controller
 {
     private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
     private const string _optionsStatus = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Status)}";
@@ -29,8 +29,8 @@ public class BackgroundTaskController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public BackgroundTaskController(
         IAuthorizationService authorizationService,

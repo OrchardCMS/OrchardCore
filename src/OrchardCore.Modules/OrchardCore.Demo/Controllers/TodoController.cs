@@ -5,7 +5,7 @@ using YesSql;
 
 namespace OrchardCore.Demo.Controllers;
 
-public class TodoController : Controller
+public sealed class TodoController : Controller
 {
     private readonly ISession _session;
     private readonly Entities.IIdGenerator _idGenerator;

@@ -14,7 +14,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers;
 
 [Admin, Feature(OpenIdConstants.Features.Validation)]
-public class ValidationConfigurationController : Controller
+public sealed class ValidationConfigurationController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -23,7 +23,8 @@ public class ValidationConfigurationController : Controller
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public ValidationConfigurationController(
         IAuthorizationService authorizationService,

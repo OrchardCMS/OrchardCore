@@ -12,7 +12,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -21,8 +21,8 @@ public class AdminController : Controller
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,

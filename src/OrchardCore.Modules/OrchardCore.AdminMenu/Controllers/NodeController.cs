@@ -12,16 +12,16 @@ using OrchardCore.Navigation;
 namespace OrchardCore.AdminMenu.Controllers;
 
 [Admin("AdminMenu/Node/{action}", "AdminMenuNode{action}")]
-public class NodeController : Controller
+public sealed class NodeController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<MenuItem> _displayManager;
     private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
     private readonly IAdminMenuService _adminMenuService;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
+    internal readonly IHtmlLocalizer H;
 
     public NodeController(
         IAuthorizationService authorizationService,

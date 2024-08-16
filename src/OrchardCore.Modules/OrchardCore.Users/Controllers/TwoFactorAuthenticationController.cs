@@ -21,7 +21,7 @@ namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
-public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
+public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
 {
     private readonly ILogger _logger;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;

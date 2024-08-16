@@ -12,7 +12,7 @@ using YesSql;
 namespace OrchardCore.Workflows.Controllers;
 
 [Admin]
-public class ActivityController : Controller
+public sealed class ActivityController : Controller
 {
     private readonly ISession _session;
     private readonly IActivityLibrary _activityLibrary;
@@ -22,7 +22,8 @@ public class ActivityController : Controller
     private readonly IActivityDisplayManager _activityDisplayManager;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public ActivityController
     (

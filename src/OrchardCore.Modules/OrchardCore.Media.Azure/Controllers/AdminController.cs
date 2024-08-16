@@ -9,7 +9,7 @@ namespace OrchardCore.Media.Azure;
 
 [Feature("OrchardCore.Media.Azure.Storage")]
 [Admin("MediaAzureBlob/{action}", "AzureBlob.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly MediaBlobStorageOptions _options;

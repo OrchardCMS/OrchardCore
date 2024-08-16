@@ -16,13 +16,14 @@ using YesSql;
 namespace OrchardCore.Queries.Sql.Controllers;
 
 [Feature("OrchardCore.Queries.Sql")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IStore _store;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    protected readonly IStringLocalizer S;
     private readonly TemplateOptions _templateOptions;
+
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,

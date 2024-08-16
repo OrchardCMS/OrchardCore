@@ -10,7 +10,7 @@ using OrchardCore.Widgets.ViewModels;
 namespace OrchardCore.Widgets.Controllers;
 
 [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;

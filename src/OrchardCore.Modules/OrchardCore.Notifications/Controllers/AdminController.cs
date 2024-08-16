@@ -24,7 +24,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Notifications.Controllers;
 
-public class AdminController : Controller, IUpdateModel
+public sealed class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
@@ -36,8 +36,8 @@ public class AdminController : Controller, IUpdateModel
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

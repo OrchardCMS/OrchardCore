@@ -13,7 +13,7 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
     private readonly IShellReleaseManager _shellReleaseManager;
@@ -23,7 +23,7 @@ public class AdminController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly CultureOptions _cultureOptions;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IShellReleaseManager shellReleaseManager,
