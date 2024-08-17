@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.Services;

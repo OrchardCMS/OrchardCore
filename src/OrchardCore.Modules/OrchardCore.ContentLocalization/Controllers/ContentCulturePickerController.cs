@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentLocalization.Models;
@@ -14,7 +10,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.ContentLocalization.Controllers;
 
 [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-public class ContentCulturePickerController : Controller
+public sealed class ContentCulturePickerController : Controller
 {
     private readonly ISiteService _siteService;
     private readonly ILocalizationService _locationService;

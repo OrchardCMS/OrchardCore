@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Frozen;
-using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries.Types;

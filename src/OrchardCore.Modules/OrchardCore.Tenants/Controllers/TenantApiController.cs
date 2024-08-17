@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -32,7 +27,7 @@ namespace OrchardCore.Tenants.Controllers;
 [Route("api/tenants")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-public class TenantApiController : ControllerBase
+public sealed class TenantApiController : ControllerBase
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _currentShellSettings;
@@ -47,8 +42,9 @@ public class TenantApiController : ControllerBase
     private readonly TenantsOptions _tenantsOptions;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITenantValidator _tenantValidator;
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    internal readonly IStringLocalizer S;
 
     public TenantApiController(
         IShellHost shellHost,

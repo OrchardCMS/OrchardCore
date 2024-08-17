@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Environment.Shell.Removing;
 
 public class ShellRemovingContext

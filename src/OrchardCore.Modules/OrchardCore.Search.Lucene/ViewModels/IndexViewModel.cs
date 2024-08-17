@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Search.Lucene.ViewModels;
 
 public class IndexViewModel

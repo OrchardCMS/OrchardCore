@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Users.TimeZone.Services;

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -14,7 +11,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentPreview.Controllers;
 
-public class PreviewController : Controller
+public sealed class PreviewController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentManagerSession _contentManagerSession;

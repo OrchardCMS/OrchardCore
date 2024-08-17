@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Net.Mime;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OrchardCore.HealthChecks.Models;

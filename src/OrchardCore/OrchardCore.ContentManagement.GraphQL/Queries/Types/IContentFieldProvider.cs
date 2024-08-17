@@ -1,4 +1,3 @@
-using System;
 using GraphQL.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 

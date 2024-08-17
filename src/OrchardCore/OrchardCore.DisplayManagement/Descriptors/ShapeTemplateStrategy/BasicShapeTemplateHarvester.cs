@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 
 public class BasicShapeTemplateHarvester : IShapeTemplateHarvester

@@ -1,10 +1,9 @@
 using System;
 using System.Reflection;
-
-namespace OrchardCore.Modules.Manifest;
-
 using Xunit;
 using Xunit.Abstractions;
+
+namespace OrchardCore.Modules.Manifest;
 
 /// <inheritdoc/>
 public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<TAttribute>
@@ -83,7 +82,6 @@ public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<T
         Assert.Equal(type, module.Type);
     }
 
-#pragma warning disable xUnit1013 // Public method on test class should be marked as a Theory
 #pragma warning disable xUnit1003 // Test data fulfilled by derived tests
     /// <summary>
     /// Verifies that the Default instance values, etc, are appropriate.
@@ -93,8 +91,6 @@ public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<T
     [Theory]
     public virtual void Default(string type) => VerifyDefault(CreateFromArgs(classifier: null), type);
 #pragma warning restore xUnit1003
-#pragma warning restore xUnit1013
-
     /// <summary>
     /// Verifies the <paramref name="expected"/> <see cref="Version"/>, including
     /// <paramref name="fieldCount"/> aligned with the <em>OrchardCore</em> usage. Note

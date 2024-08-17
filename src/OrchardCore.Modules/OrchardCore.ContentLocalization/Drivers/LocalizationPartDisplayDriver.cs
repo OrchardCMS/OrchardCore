@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;

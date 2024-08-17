@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell.Builders;

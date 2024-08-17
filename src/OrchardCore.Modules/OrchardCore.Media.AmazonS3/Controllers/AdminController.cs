@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,12 +8,13 @@ using OrchardCore.Media.AmazonS3.ViewModels;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly AwsStorageOptions _options;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

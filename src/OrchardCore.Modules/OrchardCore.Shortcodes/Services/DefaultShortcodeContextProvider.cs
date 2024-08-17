@@ -1,4 +1,3 @@
-using System;
 using Shortcodes;
 
 namespace OrchardCore.Shortcodes.Services;

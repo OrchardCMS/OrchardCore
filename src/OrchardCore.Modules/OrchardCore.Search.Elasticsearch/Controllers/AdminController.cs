@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +32,7 @@ using YesSql;
 namespace OrchardCore.Search.Elasticsearch;
 
 [Admin("elasticsearch/{action}/{id?}", "Elasticsearch.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -58,8 +54,8 @@ public class AdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly ILocalizationService _localizationService;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISession session,

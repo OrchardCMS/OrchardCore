@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,7 +17,7 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
 
         if (!reader.TryGetDateTime(out var value))
         {
-            var stringValue = reader.GetString(); 
+            var stringValue = reader.GetString();
             if (DateTime.TryParse(stringValue, out value))
             {
                 return value;

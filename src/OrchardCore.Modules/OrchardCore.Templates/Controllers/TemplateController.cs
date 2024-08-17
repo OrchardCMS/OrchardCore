@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -21,7 +17,7 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Controllers;
 
 [Admin("Templates/{action}/{name?}", "Templates.{action}")]
-public class TemplateController : Controller
+public sealed class TemplateController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -32,8 +28,8 @@ public class TemplateController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public TemplateController(
         IAuthorizationService authorizationService,

@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security;
