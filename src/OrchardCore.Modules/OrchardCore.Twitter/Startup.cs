@@ -12,7 +12,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
-using OrchardCore.Twitter.Migrations;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
@@ -60,7 +59,6 @@ public sealed class TwitterStartup : StartupBase
                     }
                 })
             );
-        services.AddDataMigration<TwitterToXMigrations>();
     }
 }
 

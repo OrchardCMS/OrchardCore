@@ -7,16 +7,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Twitter.Workflows.Activities;
 
-public class UpdateXTwitterStatusTask : TaskActivity<UpdateXTwitterStatusTask>
+public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
 {
     private readonly TwitterClient _twitterClient;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public UpdateXTwitterStatusTask(
+    public UpdateTwitterStatusTask(
         TwitterClient twitterClient,
         IWorkflowExpressionEvaluator expressionEvaluator,
-        IStringLocalizer<UpdateXTwitterStatusTask> localizer
+        IStringLocalizer<UpdateTwitterStatusTask> localizer
         )
     {
         _twitterClient = twitterClient;
