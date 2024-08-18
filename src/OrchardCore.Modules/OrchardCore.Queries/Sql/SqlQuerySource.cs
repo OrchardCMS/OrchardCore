@@ -50,7 +50,7 @@ public sealed class SqlQuerySource : IQuerySource
     {
         var metadata = query.As<SqlQueryMetadata>();
 
-        var sqlQueryResults = new SQLQueryResults();
+        var sqlQueryResults = new SQLQueryResults { Items = [] };
 
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
             parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
@@ -66,9 +66,7 @@ public sealed class SqlQuerySource : IQuerySource
                 out var rawQuery,
                 out var messages))
         {
-            sqlQueryResults.Items = [];
             _logger.LogError("Couldn't parse SQL query: {Messages}", string.Join(" ", messages));
-
             return sqlQueryResults;
         }
 
