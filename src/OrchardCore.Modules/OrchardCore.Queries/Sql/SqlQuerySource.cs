@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Dapper;
@@ -106,9 +107,18 @@ public sealed class SqlQuerySource : IQuerySource
                     }
                 }
 
-                return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
-                    ? documentId
-                    : -1;
+                return (rowDictionary.TryGetValue(column, out var documentIdObject) ? documentIdObject : null) switch
+                {
+                    long longValue => longValue,
+                    ulong unsignedLongValue => (long)unsignedLongValue,
+                    int intValue => intValue, 
+                    uint unsignedIntValue => unsignedIntValue, 
+                    { } otherObject => 
+                        long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
+                            ? parsedValue
+                            : -1,
+                    _ => -1,
+                };
             })
             .Where(id => id >= 0)
             .Distinct()
