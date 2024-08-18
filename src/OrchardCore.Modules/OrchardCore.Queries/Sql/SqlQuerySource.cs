@@ -108,7 +108,7 @@ public sealed class SqlQuerySource : IQuerySource
             return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
                 ? documentId
                 : 0;
-        }).ToArray();
+        }).Distinct().ToArray();
 
         sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
         return sqlQueryResults;
