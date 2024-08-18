@@ -74,53 +74,43 @@ public sealed class SqlQuerySource : IQuerySource
 
         await connection.OpenAsync();
 
-        if (query.ReturnContentItems)
+        await using var transaction = await connection.BeginTransactionAsync(configuration.IsolationLevel);
+        var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+
+        if (!query.ReturnContentItems)
         {
-            using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
-            var queryResult = await connection.QueryAsync(rawQuery, parameters, transaction);
-
-            string column = null;
-
-            var documentIds = queryResult.Select(row =>
-            {
-                var rowDictionary = (IDictionary<string, object>)row;
-
-                if (column == null)
-                {
-                    if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
-                    {
-                        column = nameof(ContentItemIndex.DocumentId);
-                    }
-                    else
-                    {
-                        column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
-                            ?? rowDictionary.First().Key;
-                    }
-                }
-
-                return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
-                    ? documentId
-                    : 0;
-            }).ToArray();
-
-            sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
+            sqlQueryResults.Items = queryResults
+                .Select<object, JsonObject>(document => JObject.FromObject(document, _jsonSerializerOptions))
+                .ToList();
 
             return sqlQueryResults;
         }
-        else
-        {
-            using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
-            var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
-            var results = new List<JsonObject>();
-            foreach (var document in queryResults)
+        string column = null;
+
+        var documentIds = queryResults.Select(row =>
+        {
+            var rowDictionary = (IDictionary<string, object>)row;
+
+            if (column == null)
             {
-                results.Add(JObject.FromObject(document, _jsonSerializerOptions));
+                if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
+                {
+                    column = nameof(ContentItemIndex.DocumentId);
+                }
+                else
+                {
+                    column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
+                             ?? rowDictionary.First().Key;
+                }
             }
 
-            sqlQueryResults.Items = results;
+            return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
+                ? documentId
+                : 0;
+        }).ToArray();
 
-            return sqlQueryResults;
-        }
+        sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
+        return sqlQueryResults;
     }
 }
