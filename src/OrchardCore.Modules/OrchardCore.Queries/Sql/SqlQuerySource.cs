@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Dapper;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -22,6 +23,7 @@ public sealed class SqlQuerySource : IQuerySource
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IDbConnectionAccessor _dbConnectionAccessor;
     private readonly ISession _session;
+    private readonly ILogger<SqlQuerySource> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly TemplateOptions _templateOptions;
 
@@ -30,11 +32,13 @@ public sealed class SqlQuerySource : IQuerySource
         IDbConnectionAccessor dbConnectionAccessor,
         ISession session,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-        IOptions<TemplateOptions> templateOptions)
+        IOptions<TemplateOptions> templateOptions,
+        ILogger<SqlQuerySource> logger)
     {
         _liquidTemplateManager = liquidTemplateManager;
         _dbConnectionAccessor = dbConnectionAccessor;
         _session = session;
+        _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         _templateOptions = templateOptions.Value;
     }
@@ -51,11 +55,19 @@ public sealed class SqlQuerySource : IQuerySource
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
             parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-        var dialect = _session.Store.Configuration.SqlDialect;
+        var configuration = _session.Store.Configuration;
 
-        if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+        if (!SqlParser.TryParse(
+                tokenizedQuery,
+                configuration.Schema,
+                configuration.SqlDialect,
+                configuration.TablePrefix,
+                parameters,
+                out var rawQuery,
+                out var messages))
         {
             sqlQueryResults.Items = [];
+            _logger.LogError("Couldn't parse SQL query: {Messages}", string.Join(" ", messages));
 
             return sqlQueryResults;
         }
