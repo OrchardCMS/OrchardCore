@@ -114,7 +114,11 @@ public sealed class SqlQuerySource : IQuerySource
             .Distinct()
             .ToArray();
 
-        sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
+        if (documentIds.Length > 0)
+        {
+            sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
+        }
+
         return sqlQueryResults;
     }
 }
