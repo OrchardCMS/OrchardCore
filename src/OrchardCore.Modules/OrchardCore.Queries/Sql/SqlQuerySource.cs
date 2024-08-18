@@ -88,27 +88,31 @@ public sealed class SqlQuerySource : IQuerySource
 
         string column = null;
 
-        var documentIds = queryResults.Select(row =>
-        {
-            var rowDictionary = (IDictionary<string, object>)row;
-
-            if (column == null)
+        var documentIds = queryResults
+            .Select(row =>
             {
-                if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
-                {
-                    column = nameof(ContentItemIndex.DocumentId);
-                }
-                else
-                {
-                    column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
-                             ?? rowDictionary.First().Key;
-                }
-            }
+                var rowDictionary = (IDictionary<string, object>)row;
 
-            return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
-                ? documentId
-                : 0;
-        }).Distinct().ToArray();
+                if (column == null)
+                {
+                    if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
+                    {
+                        column = nameof(ContentItemIndex.DocumentId);
+                    }
+                    else
+                    {
+                        column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
+                                 ?? rowDictionary.First().Key;
+                    }
+                }
+
+                return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
+                    ? documentId
+                    : -1;
+            })
+            .Where(id => id >= 0)
+            .Distinct()
+            .ToArray();
 
         sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
         return sqlQueryResults;
