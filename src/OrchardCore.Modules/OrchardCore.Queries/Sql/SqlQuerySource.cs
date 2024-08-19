@@ -88,9 +88,20 @@ public sealed class SqlQuerySource : IQuerySource
                     }
                 }
 
-                return rowDictionary.TryGetValue(column, out var documentIdObject) && documentIdObject is long documentId
-                    ? documentId
-                    : 0;
+                if (rowDictionary.TryGetValue(column, out var documentIdObject))
+                {
+                    if (documentIdObject is long longDocumentId)
+                    {
+                        return longDocumentId;
+                    }
+
+                    if (documentIdObject is int intDocumentId)
+                    {
+                        return intDocumentId;
+                    }
+                }
+
+                return 0;
             }).ToArray();
 
             sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
