@@ -523,7 +523,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Smtp", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "src\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj", "{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Queries.Core", "src\OrchardCore\OrchardCore.Queries.Core\OrchardCore.Queries.Core.csproj", "{61B358F2-702C-40AA-9DF7-7121248FE6DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Queries.Core", "src\OrchardCore\OrchardCore.Queries.Core\OrchardCore.Queries.Core.csproj", "{61B358F2-702C-40AA-9DF7-7121248FE6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
