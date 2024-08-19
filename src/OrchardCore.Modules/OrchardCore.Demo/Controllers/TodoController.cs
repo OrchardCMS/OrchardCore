@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.ViewModels;
@@ -7,7 +5,7 @@ using YesSql;
 
 namespace OrchardCore.Demo.Controllers;
 
-public class TodoController : Controller
+public sealed class TodoController : Controller
 {
     private readonly ISession _session;
     private readonly Entities.IIdGenerator _idGenerator;

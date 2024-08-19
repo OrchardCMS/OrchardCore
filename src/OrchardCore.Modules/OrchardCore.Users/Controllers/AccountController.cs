@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -34,7 +30,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace OrchardCore.Users.Controllers;
 
 [Authorize]
-public class AccountController : AccountBaseController
+public sealed class AccountController : AccountBaseController
 {
     public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
@@ -60,8 +56,8 @@ public class AccountController : AccountBaseController
         MergeNullValueHandling = MergeNullValueHandling.Merge
     };
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AccountController(
         IUserService userService,
@@ -198,9 +194,10 @@ public class AccountController : AccountBaseController
         {
             await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
+            IUser user = null;
             if (ModelState.IsValid)
             {
-                var user = await _userService.GetUserAsync(model.UserName);
+                user = await _userService.GetUserAsync(model.UserName);
                 if (user != null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
@@ -238,16 +235,21 @@ public class AccountController : AccountBaseController
 
                         return View();
                     }
-
-                    // Login failed with a known user.
-                    await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                 }
 
                 ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
             }
 
-            // Login failed unknown user.
-            await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+            if (user == null)
+            {
+                // Login failed unknown user.
+                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+            }
+            else
+            {
+                // Login failed with a known user.
+                await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
+            }
         }
 
         // If we got this far, something failed, redisplay form.

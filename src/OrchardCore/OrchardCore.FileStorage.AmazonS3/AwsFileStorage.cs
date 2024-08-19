@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AmazonS3;
-
-using static String;
-
 /// <summary>
 /// Provides an <see cref="IFileStore"/> implementation that targets an underlying Amazon S3 Bucket account.
 /// </summary>
@@ -29,7 +21,7 @@ public class AwsFileStore : IFileStore
         _options = options;
         _amazonS3Client = amazonS3Client;
 
-        if (!IsNullOrEmpty(_options.BasePath))
+        if (!string.IsNullOrEmpty(_options.BasePath))
         {
             _basePrefix = NormalizePrefix(_options.BasePath);
         }
@@ -56,7 +48,7 @@ public class AwsFileStore : IFileStore
 
     public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
     {
-        if (IsNullOrEmpty(path))
+        if (string.IsNullOrEmpty(path))
         {
             return new AwsDirectory(path, _clock.UtcNow);
         }
@@ -87,9 +79,9 @@ public class AwsFileStore : IFileStore
         {
             var itemName = Path.GetFileName(WebUtility.UrlDecode(file.Key));
 
-            if (includeSubDirectories || !IsNullOrEmpty(itemName))
+            if (includeSubDirectories || !string.IsNullOrEmpty(itemName))
             {
-                if (IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                 {
                     path = "/";
                 }
@@ -101,7 +93,7 @@ public class AwsFileStore : IFileStore
         foreach (var awsFolderPath in listObjectsResponse.CommonPrefixes)
         {
             var folderPath = awsFolderPath;
-            if (!IsNullOrEmpty(_basePrefix))
+            if (!string.IsNullOrEmpty(_basePrefix))
             {
                 folderPath = folderPath[(_basePrefix.Length - 1)..];
             }
@@ -149,7 +141,7 @@ public class AwsFileStore : IFileStore
 
     public async Task<bool> TryDeleteDirectoryAsync(string path)
     {
-        if (IsNullOrWhiteSpace(path))
+        if (string.IsNullOrWhiteSpace(path))
         {
             throw new FileStoreException("Cannot delete root directory.");
         }
@@ -296,7 +288,7 @@ public class AwsFileStore : IFileStore
         prefix = prefix.Trim('/') + '/';
         if (prefix.Length == 1)
         {
-            return Empty;
+            return string.Empty;
         }
 
         return prefix;

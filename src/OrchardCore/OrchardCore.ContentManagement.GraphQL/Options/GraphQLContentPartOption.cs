@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentManagement.GraphQL.Options;
 
 public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart

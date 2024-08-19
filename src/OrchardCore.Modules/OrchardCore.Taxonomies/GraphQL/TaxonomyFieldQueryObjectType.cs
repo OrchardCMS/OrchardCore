@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;

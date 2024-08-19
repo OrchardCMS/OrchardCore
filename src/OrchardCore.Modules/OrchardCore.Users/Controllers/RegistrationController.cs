@@ -19,7 +19,7 @@ using OrchardCore.Users.Models;
 namespace OrchardCore.Users.Controllers;
 
 [Feature(UserConstants.Features.UserRegistration)]
-public class RegistrationController : Controller
+public sealed class RegistrationController : Controller
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IAuthorizationService _authorizationService;
@@ -29,9 +29,9 @@ public class RegistrationController : Controller
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    protected readonly IHtmlLocalizer H;
 
     public RegistrationController(
         UserManager<IUser> userManager,

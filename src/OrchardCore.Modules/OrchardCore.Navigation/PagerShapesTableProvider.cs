@@ -1,8 +1,5 @@
 #pragma warning disable CA1707 // Remove the underscores from member name
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -161,13 +158,17 @@ public class PagerShapes : IShapeAttributeProvider
         var noFollow = shape.Attributes.ContainsKey("rel") && shape.Attributes["rel"] == "no-follow";
         var currentPage = Page;
         if (currentPage < 1)
+        {
             currentPage = 1;
+        }
 
         var pageSize = PageSize;
 
         var numberOfPagesToShow = Quantity ?? 0;
         if (Quantity == null || Quantity < 0)
+        {
             numberOfPagesToShow = 7;
+        }
 
         var totalPageCount = pageSize > 0 ? (int)Math.Ceiling(TotalItemCount / pageSize) : 1;
 

@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -134,7 +131,9 @@ public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<Permissi
 
         // Don't allow 'mediafields' directly.
         if (attachedMediaPathParts.Length == 0)
+        {
             return;
+        }
 
         if (string.Equals(attachedMediaPathParts[0], "temp", StringComparison.OrdinalIgnoreCase))
         {

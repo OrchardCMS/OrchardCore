@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Search.AzureAI.Models;

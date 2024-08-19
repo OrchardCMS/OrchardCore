@@ -18,7 +18,7 @@
     var disableLocalLogin = (await SiteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
 }
 
-<style asp-name="font-awesome" version="6"></style>
+<script asp-name="font-awesome" at="Foot" version="6"></script>
 
 <div class="row">
     @if (!ViewContext.ModelState.IsValid)

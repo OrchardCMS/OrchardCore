@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;

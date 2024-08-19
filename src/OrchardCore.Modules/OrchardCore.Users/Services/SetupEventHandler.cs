@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 using OrchardCore.Setup.Services;

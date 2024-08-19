@@ -1,33 +1,33 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.WorkflowPruning.Models;
+using OrchardCore.Workflows.Trimming.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Workflows.WorkflowPruning.Services;
+namespace OrchardCore.Workflows.Trimming.Services;
 
-public class WorkflowPruningManager : IWorkflowPruningManager
+public class WorkflowTrimmingService : IWorkflowTrimmingService
 {
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public WorkflowPruningManager(ISiteService siteService, ISession session, IClock clock)
+    public WorkflowTrimmingService(
+        ISiteService siteService,
+        ISession session,
+        IClock clock)
     {
         _siteService = siteService;
         _session = session;
         _clock = clock;
     }
 
-    public async Task<int> PruneWorkflowInstancesAsync(TimeSpan retentionPeriod)
+    public async Task<int> TrimWorkflowInstancesAsync(TimeSpan retentionPeriod, int batchSize)
     {
-        var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
-        var settings = await _siteService.GetSettingsAsync<WorkflowPruningSettings>();
+        var dateThreshold = _clock.UtcNow - retentionPeriod;
+        var settings = await _siteService.GetSettingsAsync<WorkflowTrimmingSettings>();
 
         settings.Statuses ??=
         [
@@ -49,6 +49,8 @@ public class WorkflowPruningManager : IWorkflowPruningManager
         var statuses = settings.Statuses.Select(x => (int)x).ToArray();
         var workflowInstances = await _session
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
+            .OrderBy(x => x.Id)
+            .Take(batchSize)
             .ListAsync();
 
         var total = 0;

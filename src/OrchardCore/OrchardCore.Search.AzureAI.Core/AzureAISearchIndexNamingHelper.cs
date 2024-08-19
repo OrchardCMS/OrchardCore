@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Search.AzureAI;
 
 public static class AzureAISearchIndexNamingHelper

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -116,7 +112,7 @@ public class AuditTrailManager : IAuditTrailManager
 
     public async Task<int> TrimEventsAsync(TimeSpan retentionPeriod)
     {
-        var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
+        var dateThreshold = _clock.UtcNow - retentionPeriod;
 
         var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.CreatedUtc <= dateThreshold)

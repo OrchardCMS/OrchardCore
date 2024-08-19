@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Notifications.Models;
 
 public class NotificationReadInfo

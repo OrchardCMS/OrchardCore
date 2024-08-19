@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -15,14 +12,15 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Cors.Controllers;
 
 [Admin]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IAuthorizationService _authorizationService;
     private readonly CorsService _corsService;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IShellHost shellHost,

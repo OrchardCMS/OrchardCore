@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +38,11 @@ public class LayerQueryObjectType : ObjectGraphType<Layer>
             var layerWidgets = widgets?.Where(item =>
             {
                 var metadata = item.As<LayerMetadata>();
-                if (metadata == null) return false;
+                if (metadata == null)
+                {
+                    return false;
+                }
+
                 return metadata.Layer == context.Source.Name;
             });
 

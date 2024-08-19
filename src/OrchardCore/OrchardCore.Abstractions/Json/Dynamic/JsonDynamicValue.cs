@@ -225,30 +225,15 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return left.Equals(right);
     }
 
-    public static bool operator !=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(JsonDynamicValue left, JsonDynamicValue right) => !(left == right);
 
-    public static bool operator <(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
-    }
+    public static bool operator <(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
 
-    public static bool operator <=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
-    }
+    public static bool operator <=(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
 
-    public static bool operator >(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
-    }
+    public static bool operator >(JsonDynamicValue left, JsonDynamicValue right) => !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
 
-    public static bool operator >=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
-    }
+    public static bool operator >=(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
     public static explicit operator bool(JsonDynamicValue value)
     {
@@ -722,7 +707,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
 
     private static int CompareBigInteger(BigInteger i1, object i2)
     {
-        int result = i1.CompareTo(ToBigInteger(i2));
+        var result = i1.CompareTo(ToBigInteger(i2));
 
         if (result != 0)
         {
@@ -737,7 +722,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         }
         else if (i2 is double || i2 is float)
         {
-            double d = Convert.ToDouble(i2, CultureInfo.InvariantCulture);
+            var d = Convert.ToDouble(i2, CultureInfo.InvariantCulture);
             return (0d).CompareTo(Math.Abs(d - Math.Truncate(d)));
         }
 

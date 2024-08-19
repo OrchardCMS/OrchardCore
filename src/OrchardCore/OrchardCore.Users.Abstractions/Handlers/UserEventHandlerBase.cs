@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Users.Handlers;
 
 public abstract class UserEventHandlerBase : IUserEventHandler

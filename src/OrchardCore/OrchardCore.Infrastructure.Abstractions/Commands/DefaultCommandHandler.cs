@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
 
@@ -119,8 +115,15 @@ public abstract class DefaultCommandHandler : ICommandHandler
 
         var requiredMethodParameters = methodParameters.Where(x => !x.HasDefaultValue).ToArray();
 
-        if (!methodHasParams && args.Count < requiredMethodParameters.Length) return null;
-        if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
+        if (!methodHasParams && args.Count < requiredMethodParameters.Length)
+        {
+            return null;
+        }
+
+        if (methodHasParams && (methodParameters.Length - args.Count >= 2))
+        {
+            return null;
+        }
 
         for (var i = 0; i < methodParameters.Length; i++)
         {
@@ -133,7 +136,10 @@ public abstract class DefaultCommandHandler : ICommandHandler
             if (i < arguments.Length)
             {
                 var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
-                if (val == null) return null;
+                if (val == null)
+                {
+                    return null;
+                }
 
                 invokeParameters.Add(val);
             }
@@ -159,7 +165,9 @@ public abstract class DefaultCommandHandler : ICommandHandler
     private void CheckMethodForSwitches(MethodInfo methodInfo, IDictionary<string, string> switches)
     {
         if (switches == null || switches.Count == 0)
+        {
             return;
+        }
 
         var supportedSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false).Cast<OrchardSwitchesAttribute>())

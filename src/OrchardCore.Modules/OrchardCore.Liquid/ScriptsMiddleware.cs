@@ -1,9 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,9 +13,8 @@ namespace OrchardCore.Liquid;
 public class ScriptsMiddleware
 {
     private readonly RequestDelegate _next;
-
-    byte[] _bytes;
-    string _etag;
+    private byte[] _bytes;
+    private string _etag;
 
     public ScriptsMiddleware(RequestDelegate next)
     {

@@ -1,4 +1,3 @@
-using System;
 using Nest;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;

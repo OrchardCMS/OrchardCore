@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Queries;
 
 namespace OrchardCore.Search.Elasticsearch;

@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Security;
 
 public interface IRoleCreatedEventHandler

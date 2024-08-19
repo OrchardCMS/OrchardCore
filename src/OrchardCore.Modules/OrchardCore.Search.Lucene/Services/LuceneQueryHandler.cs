@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Queries.Core;

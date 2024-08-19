@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -28,7 +24,7 @@ using YesSql;
 namespace OrchardCore.Layers.Controllers;
 
 [Admin("Layers/{action}/{id?}", "Layers.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;
@@ -43,10 +39,11 @@ public class AdminController : Controller
     private readonly IDisplayManager<Rule> _ruleDisplayManager;
     private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
+
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IContentDefinitionManager contentDefinitionManager,
@@ -125,17 +122,6 @@ public class AdminController : Controller
         }
 
         return View(model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Index(LayersIndexViewModel model)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-        {
-            return Forbid();
-        }
-
-        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Create()

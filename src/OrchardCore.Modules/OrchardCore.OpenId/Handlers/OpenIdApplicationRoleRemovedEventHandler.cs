@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Security;
 

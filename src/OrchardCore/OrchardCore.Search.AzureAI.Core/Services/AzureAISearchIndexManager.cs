@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
 using Microsoft.Extensions.Caching.Memory;

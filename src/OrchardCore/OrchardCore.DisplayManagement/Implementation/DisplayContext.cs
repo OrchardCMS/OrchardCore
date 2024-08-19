@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.DisplayManagement.Implementation;
 
 public class DisplayContext

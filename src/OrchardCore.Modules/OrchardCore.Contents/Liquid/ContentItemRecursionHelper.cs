@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Contents.Liquid;

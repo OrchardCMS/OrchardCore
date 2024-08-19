@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Media.Services;
 

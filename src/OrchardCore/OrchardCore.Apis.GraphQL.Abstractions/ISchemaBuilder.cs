@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL;

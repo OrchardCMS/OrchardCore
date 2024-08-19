@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.ContentManagement;
 
 public class DefaultContentManagerSession : IContentManagerSession
