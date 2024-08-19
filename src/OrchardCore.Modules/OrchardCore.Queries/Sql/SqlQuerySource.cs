@@ -121,7 +121,6 @@ public sealed class SqlQuerySource : IQuerySource
                 };
             })
             .Where(id => id >= 0)
-            .Distinct()
             .ToArray();
 
         if (documentIds.Length > 0)
