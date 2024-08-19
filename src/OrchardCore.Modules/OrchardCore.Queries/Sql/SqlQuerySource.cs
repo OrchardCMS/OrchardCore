@@ -112,19 +112,22 @@ public sealed class SqlQuerySource : IQuerySource
                     }
                 }
 
-                return (rowDictionary.TryGetValue(column, out var documentIdObject) ? documentIdObject : null) switch
+                if (rowDictionary.TryGetValue(column, out var documentIdObject))
                 {
-                    long longValue => longValue,
-                    int intValue => intValue, 
-                    { } otherObject => 
-                        long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
-                            ? parsedValue
-                            : -1,
-                    _ => -1,
-                };
-            })
-            .Where(id => id >= 0)
-            .ToArray();
+			return documentIdObject switch
+	                {
+                    	    long longValue => longValue,
+                    	    int intValue => intValue, 
+                    	    { } otherObject => 
+                    	        long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
+                                ? parsedValue
+                                : 0,
+                    	     _ => 0,
+                	};
+                }
+
+                return 0;
+            }).ToArray();
 
         if (documentIds.Length > 0)
         {
