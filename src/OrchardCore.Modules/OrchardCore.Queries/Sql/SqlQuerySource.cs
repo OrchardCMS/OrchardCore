@@ -51,7 +51,10 @@ public sealed class SqlQuerySource : IQuerySource
     {
         var metadata = query.As<SqlQueryMetadata>();
 
-        var sqlQueryResults = new SQLQueryResults { Items = [] };
+        var sqlQueryResults = new SQLQueryResults 
+        { 
+            Items = [] 
+        };
 
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
             parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
@@ -103,7 +106,7 @@ public sealed class SqlQuerySource : IQuerySource
                     else
                     {
                         column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
-                                 ?? rowDictionary.First().Key;
+                             ?? rowDictionary.First().Key;
                     }
                 }
 
