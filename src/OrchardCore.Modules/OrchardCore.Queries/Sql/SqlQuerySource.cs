@@ -71,6 +71,7 @@ public sealed class SqlQuerySource : IQuerySource
                 out var messages))
         {
             _logger.LogError("Couldn't parse SQL query: {Messages}", string.Join(' ', messages));
+
             return sqlQueryResults;
         }
 
