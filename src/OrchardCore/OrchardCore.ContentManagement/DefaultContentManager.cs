@@ -38,7 +38,7 @@ public class DefaultContentManager : IContentManager
         IContentDefinitionManager contentDefinitionManager,
         IContentManagerSession contentManagerSession,
         IEnumerable<IContentHandler> handlers, 
-        IEnumerable<IBulkContentHandler> bulkContentHandlers,
+        IEnumerable<IBulkContentEventHandler> bulkContentEventHandlers,
         ISession session,
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
@@ -46,7 +46,7 @@ public class DefaultContentManager : IContentManager
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
-        BulkContentHandlers = bulkContentHandlers;
+        BulkContentHandlers = bulkContentEventHandlers;
         _session = session;
         _idGenerator = idGenerator;
         _contentManagerSession = contentManagerSession;
@@ -54,7 +54,7 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
     }
 
-    public IEnumerable<IBulkContentHandler> BulkContentHandlers { get; private set; }
+    public IEnumerable<IBulkContentEventHandler> BulkContentHandlers { get; private set; }
     public IEnumerable<IContentHandler> Handlers { get; private set; }
 
     public IEnumerable<IContentHandler> _reversedHandlers;

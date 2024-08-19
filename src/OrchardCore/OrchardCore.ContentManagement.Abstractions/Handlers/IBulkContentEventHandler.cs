@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement.Handlers;
 
-public interface IBulkContentHandler
+public interface IBulkContentEventHandler
 {
     Task ImportingAsync(IEnumerable<ImportContentContext> contexts);
     Task ImportedAsync(IEnumerable<ImportContentContext> contexts);
