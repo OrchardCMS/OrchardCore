@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Scripting;

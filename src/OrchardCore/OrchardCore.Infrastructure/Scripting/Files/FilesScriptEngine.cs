@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Scripting.Files;

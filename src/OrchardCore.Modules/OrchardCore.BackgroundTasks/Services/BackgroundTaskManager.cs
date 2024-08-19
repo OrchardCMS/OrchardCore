@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Cache;

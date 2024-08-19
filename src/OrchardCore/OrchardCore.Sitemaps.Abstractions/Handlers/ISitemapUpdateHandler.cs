@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Sitemaps.Handlers;
 
 /// <summary>

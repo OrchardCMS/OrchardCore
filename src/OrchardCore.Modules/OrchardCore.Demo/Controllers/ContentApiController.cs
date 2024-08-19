@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
@@ -9,12 +8,14 @@ namespace OrchardCore.Demo.Controllers;
 [Route("api/demo")]
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
 [ApiController]
-public class ContentApiController : ControllerBase
+public sealed class ContentApiController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
 
-    public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager)
+    public ContentApiController(
+        IAuthorizationService authorizationService,
+        IContentManager contentManager)
     {
         _authorizationService = authorizationService;
         _contentManager = contentManager;
@@ -55,7 +56,6 @@ public class ContentApiController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<IActionResult> AddContent(ContentItem contentItem)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))

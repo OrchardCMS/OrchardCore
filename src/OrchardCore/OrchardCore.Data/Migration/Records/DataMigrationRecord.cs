@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Data.Migration.Records;
 
 /// <summary>

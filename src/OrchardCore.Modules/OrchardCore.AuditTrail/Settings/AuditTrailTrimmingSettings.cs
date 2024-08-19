@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.AuditTrail.Settings;
 
 public class AuditTrailTrimmingSettings

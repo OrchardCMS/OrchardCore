@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Roles.ViewModels;
 
 public class RolesViewModel

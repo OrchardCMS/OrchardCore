@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Localization;
 
 namespace Microsoft.AspNetCore.Mvc.Localization;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -20,7 +17,7 @@ namespace OrchardCore.ContentFields.Controllers;
 
 [RequireFeatures("OrchardCore.ContentLocalization")]
 [Admin]
-public class LocalizationSetContentPickerAdminController : Controller
+public sealed class LocalizationSetContentPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentLocalizationManager _contentLocalizationManager;

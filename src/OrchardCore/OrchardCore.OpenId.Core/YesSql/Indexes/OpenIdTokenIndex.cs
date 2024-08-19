@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.OpenId.YesSql.Models;
 using YesSql.Indexes;
 

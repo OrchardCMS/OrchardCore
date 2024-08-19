@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Rules;
 
 public class ConditionGroup : Condition

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Workflows.Services;
 
 public interface ISecurityTokenService

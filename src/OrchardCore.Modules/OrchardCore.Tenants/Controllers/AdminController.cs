@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +24,7 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers;
 
 [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
@@ -47,8 +43,8 @@ public class AdminController : Controller
     private readonly ILogger _logger;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IShellHost shellHost,

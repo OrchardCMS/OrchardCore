@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace OrchardCore.DisplayManagement.Notify;

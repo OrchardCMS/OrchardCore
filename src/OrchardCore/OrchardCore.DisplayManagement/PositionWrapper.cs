@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;

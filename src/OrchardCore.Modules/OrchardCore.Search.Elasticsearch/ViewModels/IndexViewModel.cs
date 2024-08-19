@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class IndexViewModel

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell.Configuration;

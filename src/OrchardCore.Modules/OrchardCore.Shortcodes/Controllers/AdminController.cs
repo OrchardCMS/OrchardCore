@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -26,7 +22,7 @@ using Parlot;
 namespace OrchardCore.Shortcodes.Controllers;
 
 [Feature("OrchardCore.Shortcodes.Templates")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -38,8 +34,8 @@ public class AdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

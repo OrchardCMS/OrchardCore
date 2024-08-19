@@ -1,4 +1,3 @@
-using System;
 using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;

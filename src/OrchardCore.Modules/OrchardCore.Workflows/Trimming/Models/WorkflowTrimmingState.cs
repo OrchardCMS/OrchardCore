@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Workflows.Trimming.Models;

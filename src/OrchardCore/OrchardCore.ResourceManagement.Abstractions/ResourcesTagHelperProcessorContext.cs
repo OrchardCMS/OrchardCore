@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace OrchardCore.ResourceManagement;
 
 /// <summary>

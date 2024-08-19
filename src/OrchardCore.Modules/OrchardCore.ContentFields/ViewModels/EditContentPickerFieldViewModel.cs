@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;

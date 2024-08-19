@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Compression;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +33,7 @@ using YesSql.Services;
 namespace OrchardCore.Workflows.Controllers;
 
 [Admin("Workflows/Types/{action}/{id?}", "WorkflowTypes{action}")]
-public class WorkflowTypeController : Controller
+public sealed class WorkflowTypeController : Controller
 {
     private readonly PagerOptions _pagerOptions;
     private readonly ISession _session;
@@ -52,8 +48,8 @@ public class WorkflowTypeController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public WorkflowTypeController
     (

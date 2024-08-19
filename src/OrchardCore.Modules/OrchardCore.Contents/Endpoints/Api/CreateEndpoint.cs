@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

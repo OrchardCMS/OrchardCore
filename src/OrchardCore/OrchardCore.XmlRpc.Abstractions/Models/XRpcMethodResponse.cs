@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.XmlRpc.Models;
 
 public class XRpcMethodResponse

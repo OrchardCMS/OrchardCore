@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.ViewModels;

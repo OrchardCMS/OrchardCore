@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Entities;
 
 public class DefaultIdGenerator : IIdGenerator

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;

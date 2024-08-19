@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services;

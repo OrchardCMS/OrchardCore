@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Twitter.Signin.Settings;
 
 namespace OrchardCore.Twitter.Signin.Services;

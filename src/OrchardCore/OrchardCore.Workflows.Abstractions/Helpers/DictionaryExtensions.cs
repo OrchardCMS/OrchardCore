@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Workflows.Helpers;
 
 public static class DictionaryExtensions

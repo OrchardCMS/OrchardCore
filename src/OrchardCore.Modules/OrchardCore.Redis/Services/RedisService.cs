@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using StackExchange.Redis;
