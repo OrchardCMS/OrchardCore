@@ -108,7 +108,7 @@ public sealed class SqlQuerySource : IQuerySource
                     else
                     {
                         column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
-                             ?? rowDictionary.First().Key;
+                            ?? rowDictionary.First().Key;
                     }
                 }
 
