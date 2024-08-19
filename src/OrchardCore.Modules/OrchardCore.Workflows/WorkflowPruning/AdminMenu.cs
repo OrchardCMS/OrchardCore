@@ -32,7 +32,7 @@ public sealed class AdminMenu : INavigationProvider
         builder.Add(S["Configuration"], configuration => configuration
             .Add(S["Settings"], settings => settings
                 .Add(S["Workflow Pruning"], S["Workflow Pruning"], pruning => pruning
-                    .Action("Index","Admin", _routeValues)
+                    .Action("Index", "Admin", _routeValues)
                     .Permission(Permissions.ManageWorkflowSettings)
                     .LocalNav()
                 )

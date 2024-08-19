@@ -1,7 +1,6 @@
 root = true
 
 [*]
-end_of_line = crlf
 charset = utf-8
 indent_style = space
 indent_size = 4
@@ -32,7 +31,10 @@ dotnet_sort_system_directives_first                        = true
 # Code-block preferences
 csharp_prefer_braces = true
 csharp_prefer_simple_using_statement                       = true
-csharp_style_namespace_declarations                        = file_scoped:suggestion
+csharp_style_namespace_declarations                        = file_scoped:warning
+# Note that currently both IDE* rules and csharp_style_* rules are necessary, because only IDE rules will be enforced
+# during build, see: https://github.com/dotnet/roslyn/issues/44201.
+dotnet_diagnostic.IDE0161.severity                         = warning
 
 # Range operator
 csharp_style_prefer_range_operator                         = false:warning

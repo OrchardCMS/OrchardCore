@@ -3,32 +3,31 @@ using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Redis.Options
+namespace OrchardCore.Redis.Options;
+
+public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManagementOptions>
 {
-    public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManagementOptions>
+    private readonly IRedisService _redis;
+    private readonly string _tenant;
+
+    public RedisKeyManagementOptionsSetup(IRedisService redis, ShellSettings shellSettings)
     {
-        private readonly IRedisService _redis;
-        private readonly string _tenant;
+        _redis = redis;
+        _tenant = shellSettings.Name;
+    }
 
-        public RedisKeyManagementOptionsSetup(IRedisService redis, ShellSettings shellSettings)
+    public void Configure(KeyManagementOptions options)
+    {
+        var redis = _redis;
+        options.XmlRepository = new RedisXmlRepository(() =>
         {
-            _redis = redis;
-            _tenant = shellSettings.Name;
-        }
-
-        public void Configure(KeyManagementOptions options)
-        {
-            var redis = _redis;
-            options.XmlRepository = new RedisXmlRepository(() =>
+            if (redis.Database == null)
             {
-                if (redis.Database == null)
-                {
-                    redis.ConnectAsync().GetAwaiter().GetResult();
-                }
+                redis.ConnectAsync().GetAwaiter().GetResult();
+            }
 
-                return redis.Database;
-            },
-            $"({redis.InstancePrefix}{_tenant}:DataProtection-Keys");
-        }
+            return redis.Database;
+        },
+        $"({redis.InstancePrefix}{_tenant}:DataProtection-Keys");
     }
 }

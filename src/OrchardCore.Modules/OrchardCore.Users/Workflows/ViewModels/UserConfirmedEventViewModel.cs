@@ -1,16 +1,15 @@
 using OrchardCore.Users.Workflows.Activities;
 
-namespace OrchardCore.Users.Workflows.ViewModels
-{
-    public class UserConfirmedEventViewModel : UserEventViewModel<UserConfirmedEvent>
-    {
-        public UserConfirmedEventViewModel()
-        {
-        }
+namespace OrchardCore.Users.Workflows.ViewModels;
 
-        public UserConfirmedEventViewModel(UserConfirmedEvent activity)
-        {
-            Activity = activity;
-        }
+public class UserConfirmedEventViewModel : UserEventViewModel<UserConfirmedEvent>
+{
+    public UserConfirmedEventViewModel()
+    {
+    }
+
+    public UserConfirmedEventViewModel(UserConfirmedEvent activity)
+    {
+        Activity = activity;
     }
 }

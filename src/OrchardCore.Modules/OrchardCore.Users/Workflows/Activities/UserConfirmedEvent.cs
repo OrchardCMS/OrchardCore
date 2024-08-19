@@ -2,16 +2,15 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Users.Workflows.Activities
+namespace OrchardCore.Users.Workflows.Activities;
+
+public class UserConfirmedEvent : UserEvent
 {
-    public class UserConfirmedEvent : UserEvent
+    public UserConfirmedEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserUpdatedEvent> localizer) : base(userService, scriptEvaluator, localizer)
     {
-        public UserConfirmedEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserUpdatedEvent> localizer) : base(userService, scriptEvaluator, localizer)
-        {
-        }
-
-        public override string Name => nameof(UserConfirmedEvent);
-
-        public override LocalizedString DisplayText => S["User Confirmed Event"];
     }
+
+    public override string Name => nameof(UserConfirmedEvent);
+
+    public override LocalizedString DisplayText => S["User Confirmed Event"];
 }
